@@ -10,6 +10,9 @@ type Mutation {
 
     "Update an existing Channel"
     updateChannel(input: UpdateChannelInput!): Channel!
+
+    "Delete a Channel"
+    deleteChannel(id: ID!): DeletionResponse!
 }
 
 input CreateChannelInput {

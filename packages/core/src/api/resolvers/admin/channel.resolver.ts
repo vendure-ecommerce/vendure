@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationCreateChannelArgs,
+    MutationDeleteChannelArgs,
     MutationUpdateChannelArgs,
     Permission,
     QueryChannelArgs,
@@ -50,5 +52,11 @@ export class ChannelResolver {
     @Allow(Permission.SuperAdmin)
     async updateChannel(@Args() args: MutationUpdateChannelArgs): Promise<Channel> {
         return this.channelService.update(args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.SuperAdmin)
+    async deleteChannel(@Args() args: MutationDeleteChannelArgs): Promise<DeletionResponse> {
+        return this.channelService.delete(args.id);
     }
 }

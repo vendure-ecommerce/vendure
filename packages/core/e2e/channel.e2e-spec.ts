@@ -14,6 +14,9 @@ import {
     CreateProduct,
     CreateRole,
     CurrencyCode,
+    DeleteChannel,
+    DeletionResult,
+    GetChannels,
     GetCustomerList,
     GetProductWithVariants,
     LanguageCode,
@@ -351,7 +354,52 @@ describe('Channels', () => {
             expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
         });
     });
+
+    it('deleteChannel', async () => {
+        const PROD_ID = 'T_1';
+
+        const { assignProductsToChannel } = await adminClient.query<
+            AssignProductsToChannel.Mutation,
+            AssignProductsToChannel.Variables
+        >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            input: {
+                channelId: 'T_2',
+                productIds: [PROD_ID],
+            },
+        });
+        expect(assignProductsToChannel[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+
+        const { deleteChannel } = await adminClient.query<DeleteChannel.Mutation, DeleteChannel.Variables>(
+            DELETE_CHANNEL,
+            {
+                id: 'T_2',
+            },
+        );
+
+        expect(deleteChannel.result).toBe(DeletionResult.DELETED);
+
+        const { channels } = await adminClient.query<GetChannels.Query>(GET_CHANNELS);
+        expect(channels.map(c => c.id)).toEqual(['T_1', 'T_3']);
+
+        const { product } = await adminClient.query<
+            GetProductWithVariants.Query,
+            GetProductWithVariants.Variables
+        >(GET_PRODUCT_WITH_VARIANTS, {
+            id: PROD_ID,
+        });
+        expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
+    });
 });
+
+const GET_CHANNELS = gql`
+    query GetChannels {
+        channels {
+            id
+            code
+            token
+        }
+    }
+`;
 
 const ASSIGN_PRODUCT_TO_CHANNEL = gql`
     mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
@@ -369,4 +417,13 @@ const REMOVE_PRODUCT_FROM_CHANNEL = gql`
         }
     }
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+const DELETE_CHANNEL = gql`
+    mutation DeleteChannel($id: ID!) {
+        deleteChannel(id: $id) {
+            message
+            result
+        }
+    }
 `;

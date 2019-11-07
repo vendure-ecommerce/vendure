@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateChannelInput, CurrencyCode, UpdateChannelInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateChannelInput,
+    CurrencyCode,
+    DeletionResponse,
+    DeletionResult,
+    UpdateChannelInput,
+} from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
@@ -14,6 +20,7 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
+import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -159,6 +166,16 @@ export class ChannelService {
         await this.connection.getRepository(Channel).save(updatedChannel);
         await this.updateAllChannels();
         return assertFound(this.findOne(channel.id));
+    }
+
+    async delete(id: ID): Promise<DeletionResponse> {
+        await this.connection.getRepository(Channel).delete(id);
+        await this.connection.getRepository(ProductVariantPrice).delete({
+            channelId: id,
+        });
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     /**

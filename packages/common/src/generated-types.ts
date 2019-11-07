@@ -1683,6 +1683,8 @@ export type Mutation = {
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  /** Delete a Channel */
+  deleteChannel: DeletionResponse,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1837,6 +1839,11 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationDeleteChannelArgs = {
+  id: Scalars['ID']
 };
 
 

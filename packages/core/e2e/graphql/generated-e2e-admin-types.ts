@@ -1686,6 +1686,8 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
+    /** Delete a Channel */
+    deleteChannel: DeletionResponse;
     /** Create a new Collection */
     createCollection: Collection;
     /** Update an existing Collection */
@@ -1833,6 +1835,10 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
+};
+
+export type MutationDeleteChannelArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateCollectionArgs = {
@@ -3430,6 +3436,12 @@ export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
 };
 
+export type GetChannelsQueryVariables = {};
+
+export type GetChannelsQuery = { __typename?: 'Query' } & {
+    channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
+};
+
 export type AssignProductsToChannelMutationVariables = {
     input: AssignProductsToChannelInput;
 };
@@ -3444,6 +3456,14 @@ export type RemoveProductsFromChannelMutationVariables = {
 
 export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
     removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
+export type DeleteChannelMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteChannelMutation = { __typename?: 'Mutation' } & {
+    deleteChannel: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -5107,6 +5127,12 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
+export namespace GetChannels {
+    export type Variables = GetChannelsQueryVariables;
+    export type Query = GetChannelsQuery;
+    export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
+}
+
 export namespace AssignProductsToChannel {
     export type Variables = AssignProductsToChannelMutationVariables;
     export type Mutation = AssignProductsToChannelMutation;
@@ -5117,6 +5143,12 @@ export namespace RemoveProductsFromChannel {
     export type Variables = RemoveProductsFromChannelMutationVariables;
     export type Mutation = RemoveProductsFromChannelMutation;
     export type RemoveProductsFromChannel = ProductWithVariantsFragment;
+}
+
+export namespace DeleteChannel {
+    export type Variables = DeleteChannelMutationVariables;
+    export type Mutation = DeleteChannelMutation;
+    export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
 }
 
 export namespace GetCollectionsWithAssets {
