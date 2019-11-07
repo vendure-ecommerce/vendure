@@ -1,6 +1,13 @@
-import { ActivatedRouteSnapshot, Resolve, ResolveData, RouterStateSnapshot } from '@angular/router';
+import {
+    ActivatedRouteSnapshot,
+    ActivationStart,
+    Resolve,
+    ResolveData,
+    Router,
+    RouterStateSnapshot,
+} from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { filter, map, shareReplay, take } from 'rxjs/operators';
+import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
 import { Type } from 'shared/shared-types';
 import { notNullOrUndefined } from 'shared/shared-utils';
 
@@ -22,6 +29,7 @@ export function createResolveData<T extends BaseEntityResolver<R>, R>(
  */
 export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
     constructor(
+        protected router: Router,
         private readonly emptyEntity: T,
         private entityStream: (id: string) => Observable<T | null | undefined>,
     ) {}
@@ -29,10 +37,14 @@ export class BaseEntityResolver<T> implements Resolve<Observable<T>> {
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Observable<T>> {
         const id = route.paramMap.get('id');
 
+        // Complete the entity stream upon navigating away
+        const navigateAway$ = this.router.events.pipe(filter(event => event instanceof ActivationStart));
+
         if (id === 'create') {
             return of(of(this.emptyEntity));
         } else {
             const stream = this.entityStream(id || '').pipe(
+                takeUntil(navigateAway$),
                 filter(notNullOrUndefined),
                 shareReplay(1),
             );

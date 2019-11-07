@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { ShippingMethod } from '../../../common/generated-types';
@@ -9,8 +10,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class ShippingMethodResolver extends BaseEntityResolver<ShippingMethod.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'ShippingMethod',
                 createdAt: '',
@@ -21,8 +23,7 @@ export class ShippingMethodResolver extends BaseEntityResolver<ShippingMethod.Fr
                 checker: undefined as any,
                 calculator: undefined as any,
             },
-            id =>
-                this.dataService.shippingMethod.getShippingMethod(id).mapStream(data => data.shippingMethod),
+            id => dataService.shippingMethod.getShippingMethod(id).mapStream(data => data.shippingMethod),
         );
     }
 }

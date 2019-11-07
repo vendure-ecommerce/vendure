@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { Channel, CurrencyCode } from '../../../common/generated-types';
@@ -10,8 +11,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'Channel',
                 id: '',
@@ -25,7 +27,7 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,
             },
-            id => this.dataService.settings.getChannel(id).mapStream(data => data.channel),
+            id => dataService.settings.getChannel(id).mapStream(data => data.channel),
         );
     }
 }

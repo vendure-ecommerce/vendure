@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { TaxRate } from '../../../common/generated-types';
@@ -9,8 +10,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class TaxRateResolver extends BaseEntityResolver<TaxRate.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'TaxRate',
                 id: '',
@@ -23,7 +25,7 @@ export class TaxRateResolver extends BaseEntityResolver<TaxRate.Fragment> {
                 zone: {} as any,
                 customerGroup: null,
             },
-            id => this.dataService.settings.getTaxRate(id).mapStream(data => data.taxRate),
+            id => dataService.settings.getTaxRate(id).mapStream(data => data.taxRate),
         );
     }
 }

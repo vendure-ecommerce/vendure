@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { TaxCategory } from '../../../common/generated-types';
@@ -9,8 +10,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class TaxCategoryResolver extends BaseEntityResolver<TaxCategory.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'TaxCategory',
                 id: '',
@@ -18,7 +20,7 @@ export class TaxCategoryResolver extends BaseEntityResolver<TaxCategory.Fragment
                 updatedAt: '',
                 name: '',
             },
-            id => this.dataService.settings.getTaxCategory(id).mapStream(data => data.taxCategory),
+            id => dataService.settings.getTaxCategory(id).mapStream(data => data.taxCategory),
         );
     }
 }

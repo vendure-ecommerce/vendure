@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { FacetWithValues } from '../../../common/generated-types';
@@ -7,8 +8,9 @@ import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
 export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'Facet' as 'Facet',
                 id: '',
@@ -21,7 +23,7 @@ export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> 
                 translations: [],
                 values: [],
             },
-            id => this.dataService.facet.getFacet(id).mapStream(data => data.facet),
+            id => dataService.facet.getFacet(id).mapStream(data => data.facet),
         );
     }
 }

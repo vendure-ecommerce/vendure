@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { Collection, ProductWithVariants } from '../../../common/generated-types';
@@ -7,8 +8,9 @@ import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
 export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'Collection' as 'Collection',
                 id: '',
@@ -25,7 +27,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 parent: {} as any,
                 children: null,
             },
-            id => this.dataService.collection.getCollection(id).mapStream(data => data.collection),
+            id => dataService.collection.getCollection(id).mapStream(data => data.collection),
         );
     }
 }

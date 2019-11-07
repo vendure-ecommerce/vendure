@@ -51,8 +51,7 @@ export class BaseDataService {
             variables,
             fetchPolicy,
         });
-        const queryResult = new QueryResult<T, any>(queryRef);
-        this.refetchOnChannelChange(queryResult);
+        const queryResult = new QueryResult<T, any>(queryRef, this.apollo);
         return queryResult;
     }
 
@@ -72,33 +71,5 @@ export class BaseDataService {
                 update: update as any,
             })
             .pipe(map(result => result.data as T));
-    }
-
-    /**
-     * Causes all active queries to be refetched whenever the activeChannelId changes.
-     */
-    private refetchOnChannelChange(queryResult: QueryResult<any>) {
-        const userStatus$ = this.apollo.watchQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })
-            .valueChanges;
-        const activeChannelId$ = userStatus$.pipe(
-            map(data => data.data.userStatus.activeChannelId),
-            distinctUntilChanged(),
-            skip(1),
-        );
-        const loggedOut$ = userStatus$.pipe(
-            map(data => data.data.userStatus.isLoggedIn),
-            distinctUntilChanged(),
-            skip(1),
-            filter(isLoggedIn => !isLoggedIn),
-        );
-
-        activeChannelId$
-            .pipe(
-                delay(50),
-                takeUntil(merge(queryResult.completed$, loggedOut$)),
-            )
-            .subscribe(() => {
-                queryResult.ref.refetch();
-            });
     }
 }
