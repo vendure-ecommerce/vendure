@@ -10,7 +10,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import { ChannelAware } from '../../common/types/common-types';
-import { assertFound } from '../../common/utils';
+import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -57,6 +57,24 @@ export class ChannelService {
         for (const id of channelIds) {
             const channel = await getEntityOrThrow(this.connection, Channel, id);
             entity.channels.push(channel);
+        }
+        await this.connection.getRepository(entityType).save(entity as any);
+        return entity;
+    }
+
+    /**
+     * Removes the entity from the given Channels and saves.
+     */
+    async removeFromChannels<T extends ChannelAware & VendureEntity>(
+        entityType: Type<T>,
+        entityId: ID,
+        channelIds: ID[],
+    ): Promise<T> {
+        const entity = await getEntityOrThrow(this.connection, entityType, entityId, {
+            relations: ['channels'],
+        });
+        for (const id of channelIds) {
+            entity.channels = entity.channels.filter(c => !idsAreEqual(c.id, id));
         }
         await this.connection.getRepository(entityType).save(entity as any);
         return entity;

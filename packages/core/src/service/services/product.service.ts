@@ -6,6 +6,7 @@ import {
     DeletionResponse,
     DeletionResult,
     Permission,
+    RemoveProductsFromChannelInput,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -25,6 +26,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { findByIdsInChannel } from '../helpers/utils/find-by-ids-in-channel';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -87,6 +89,16 @@ export class ProductService {
             return;
         }
         return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
+    }
+
+    async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
+        return findByIdsInChannel(this.connection, Product, productIds, ctx.channelId, {
+            relations: this.relations,
+        }).then(products =>
+            products.map(product =>
+                translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+            ),
+        );
     }
 
     async getProductChannels(productId: ID): Promise<Channel[]> {
@@ -184,16 +196,32 @@ export class ProductService {
                     input.channelId,
                 );
             }
+            this.eventBus.publish(new CatalogModificationEvent(ctx, product));
         }
+        return this.findByIds(ctx, productsWithVariants.map(p => p.id));
+    }
 
-        return this.connection
-            .getRepository(Product)
-            .findByIds(productsWithVariants.map(p => p.id), { relations: this.relations })
-            .then(products =>
-                products.map(product =>
-                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
-                ),
-            );
+    async removeProductsFromChannel(
+        ctx: RequestContext,
+        input: RemoveProductsFromChannelInput,
+    ): Promise<Array<Translated<Product>>> {
+        const hasPermission = await this.roleService.userHasPermissionOnChannel(
+            ctx.activeUserId,
+            input.channelId,
+            Permission.UpdateCatalog,
+        );
+        if (!hasPermission) {
+            throw new ForbiddenError();
+        }
+        if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
+            throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
+        }
+        const products = await this.connection.getRepository(Product).findByIds(input.productIds);
+        for (const product of products) {
+            await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
+            this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+        }
+        return this.findByIds(ctx, products.map(p => p.id));
     }
 
     async addOptionGroupToProduct(

@@ -1769,6 +1769,8 @@ export type Mutation = {
     deleteProductVariant: DeletionResponse;
     /** Assigns Products to the specified Channel */
     assignProductsToChannel: Array<Product>;
+    /** Removes Products from the specified Channel */
+    removeProductsFromChannel: Array<Product>;
     createPromotion: Promotion;
     updatePromotion: Promotion;
     deletePromotion: DeletionResponse;
@@ -2019,6 +2021,10 @@ export type MutationDeleteProductVariantArgs = {
 
 export type MutationAssignProductsToChannelArgs = {
     input: AssignProductsToChannelInput;
+};
+
+export type MutationRemoveProductsFromChannelArgs = {
+    input: RemoveProductsFromChannelInput;
 };
 
 export type MutationCreatePromotionArgs = {
@@ -2843,6 +2849,11 @@ export type RefundOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type RemoveProductsFromChannelInput = {
+    productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+};
+
 export type Return = Node &
     StockMovement & {
         __typename?: 'Return';
@@ -2931,6 +2942,8 @@ export type SearchResponse = {
 export type SearchResult = {
     __typename?: 'SearchResult';
     enabled: Scalars['Boolean'];
+    /** An array of ids of the Collections in which this result appears */
+    channelIds: Array<Scalars['ID']>;
     sku: Scalars['String'];
     slug: Scalars['String'];
     productId: Scalars['ID'];
@@ -3423,6 +3436,14 @@ export type AssignProductsToChannelMutationVariables = {
 
 export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
     assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
+export type RemoveProductsFromChannelMutationVariables = {
+    input: RemoveProductsFromChannelInput;
+};
+
+export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
+    removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -5090,6 +5111,12 @@ export namespace AssignProductsToChannel {
     export type Variables = AssignProductsToChannelMutationVariables;
     export type Mutation = AssignProductsToChannelMutation;
     export type AssignProductsToChannel = ProductWithVariantsFragment;
+}
+
+export namespace RemoveProductsFromChannel {
+    export type Variables = RemoveProductsFromChannelMutationVariables;
+    export type Mutation = RemoveProductsFromChannelMutation;
+    export type RemoveProductsFromChannel = ProductWithVariantsFragment;
 }
 
 export namespace GetCollectionsWithAssets {

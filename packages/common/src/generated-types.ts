@@ -162,6 +162,12 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type AssignProductsToChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+  priceFactor?: Maybe<Scalars['Float']>,
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig',
   name: Scalars['String'],
@@ -1758,6 +1764,10 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>,
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse,
+  /** Assigns Products to the specified Channel */
+  assignProductsToChannel: Array<Product>,
+  /** Removes Products from the specified Channel */
+  removeProductsFromChannel: Array<Product>,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -2055,6 +2065,16 @@ export type MutationUpdateProductVariantsArgs = {
 
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID']
+};
+
+
+export type MutationAssignProductsToChannelArgs = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type MutationRemoveProductsFromChannelArgs = {
+  input: RemoveProductsFromChannelInput
 };
 
 
@@ -2403,6 +2423,7 @@ export type PriceRange = {
 export type Product = Node & {
   __typename?: 'Product',
   enabled: Scalars['Boolean'],
+  channels: Array<Channel>,
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
@@ -2934,6 +2955,11 @@ export type RefundOrderInput = {
   reason?: Maybe<Scalars['String']>,
 };
 
+export type RemoveProductsFromChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+};
+
 export type Return = Node & StockMovement & {
   __typename?: 'Return',
   id: Scalars['ID'],
@@ -3020,6 +3046,8 @@ export type SearchResponse = {
 export type SearchResult = {
   __typename?: 'SearchResult',
   enabled: Scalars['Boolean'],
+  /** An array of ids of the Collections in which this result appears */
+  channelIds: Array<Scalars['ID']>,
   sku: Scalars['String'],
   slug: Scalars['String'],
   productId: Scalars['ID'],

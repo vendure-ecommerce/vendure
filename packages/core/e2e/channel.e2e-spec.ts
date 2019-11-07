@@ -19,6 +19,7 @@ import {
     LanguageCode,
     Me,
     Permission,
+    RemoveProductsFromChannel,
     UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -260,7 +261,6 @@ describe('Channels', () => {
         it(
             'throws if attempting to assign Product to channel to which the admin has no access',
             assertThrowsWithMessage(async () => {
-                expect(product1).toBeDefined();
                 await adminClient.asUserWithCredentials('admin2@test.com', 'test');
                 await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
                     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -305,12 +305,66 @@ describe('Channels', () => {
                 product1.variants.map(v => v.price * PRICE_FACTOR),
             );
         });
+
+        it('does not assign Product to same channel twice', async () => {
+            const { assignProductsToChannel } = await adminClient.query<
+                AssignProductsToChannel.Mutation,
+                AssignProductsToChannel.Variables
+            >(ASSIGN_PRODUCT_TO_CHANNEL, {
+                input: {
+                    channelId: 'T_2',
+                    productIds: [product1.id],
+                },
+            });
+
+            expect(assignProductsToChannel[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+        });
+
+        it(
+            'throws if attempting to remove Product from default Channel',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: [product1.id],
+                        channelId: 'T_1',
+                    },
+                });
+            }, 'Products cannot be removed from the default Channel'),
+        );
+
+        it('removes Product from Channel', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeProductsFromChannel } = await adminClient.query<
+                RemoveProductsFromChannel.Mutation,
+                RemoveProductsFromChannel.Variables
+            >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                input: {
+                    productIds: [product1.id],
+                    channelId: 'T_2',
+                },
+            });
+
+            expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
+        });
     });
 });
 
 const ASSIGN_PRODUCT_TO_CHANNEL = gql`
     mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
         assignProductsToChannel(input: $input) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+const REMOVE_PRODUCT_FROM_CHANNEL = gql`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
             ...ProductWithVariants
         }
     }

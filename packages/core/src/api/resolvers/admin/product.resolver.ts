@@ -8,6 +8,7 @@ import {
     MutationDeleteProductArgs,
     MutationDeleteProductVariantArgs,
     MutationRemoveOptionGroupFromProductArgs,
+    MutationRemoveProductsFromChannelArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
     Permission,
@@ -148,5 +149,14 @@ export class ProductResolver {
         @Args() args: MutationAssignProductsToChannelArgs,
     ): Promise<Array<Translated<Product>>> {
         return this.productService.assignProductsToChannel(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async removeProductsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveProductsFromChannelArgs,
+    ): Promise<Array<Translated<Product>>> {
+        return this.productService.removeProductsFromChannel(ctx, args.input);
     }
 }

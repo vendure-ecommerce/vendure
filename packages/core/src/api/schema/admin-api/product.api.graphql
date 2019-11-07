@@ -31,6 +31,9 @@ type Mutation {
 
     "Assigns Products to the specified Channel"
     assignProductsToChannel(input: AssignProductsToChannelInput!): [Product!]!
+
+    "Removes Products from the specified Channel"
+    removeProductsFromChannel(input: RemoveProductsFromChannelInput!): [Product!]!
 }
 
 type Product implements Node {
@@ -128,4 +131,9 @@ input AssignProductsToChannelInput {
     productIds: [ID!]!
     channelId: ID!
     priceFactor: Float
+}
+
+input RemoveProductsFromChannelInput {
+    productIds: [ID!]!
+    channelId: ID!
 }

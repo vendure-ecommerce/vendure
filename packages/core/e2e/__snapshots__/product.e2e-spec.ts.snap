@@ -3,6 +3,12 @@
 exports[`Product resolver product mutation createProduct creates a new Product 1`] = `
 Object {
   "assets": Array [],
+  "channels": Array [
+    Object {
+      "code": "__default_channel__",
+      "id": "T_1",
+    },
+  ],
   "description": "A baked potato",
   "enabled": true,
   "facetValues": Array [],
@@ -33,6 +39,12 @@ Object {
 exports[`Product resolver product mutation updateProduct updates a Product 1`] = `
 Object {
   "assets": Array [],
+  "channels": Array [
+    Object {
+      "code": "__default_channel__",
+      "id": "T_1",
+    },
+  ],
   "description": "A blob of mashed potato",
   "enabled": true,
   "facetValues": Array [],
@@ -71,6 +83,12 @@ Object {
       "preview": "test-url/test-assets/alexandru-acea-686569-unsplash__preview.jpg",
       "source": "test-url/test-assets/alexandru-acea-686569-unsplash.jpg",
       "type": "IMAGE",
+    },
+  ],
+  "channels": Array [
+    Object {
+      "code": "__default_channel__",
+      "id": "T_1",
     },
   ],
   "description": "Discover a truly immersive viewing experience with this monitor curved more deeply than any other. Wrapping around your field of vision the 1,800 R screencreates a wider field of view, enhances depth perception, and minimises peripheral distractions to draw you deeper in to your content.",
