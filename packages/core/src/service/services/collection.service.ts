@@ -37,6 +37,7 @@ import { CollectionModificationEvent } from '../../event-bus/events/collection-m
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -103,9 +104,9 @@ export class CollectionService implements OnModuleInit {
             });
     }
 
-    async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Collection> | undefined> {
+    async findOne(ctx: RequestContext, collectionId: ID): Promise<Translated<Collection> | undefined> {
         const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
-        const collection = await this.connection.getRepository(Collection).findOne(productId, {
+        const collection = await findOneInChannel(this.connection, Collection, collectionId, ctx.channelId, {
             relations,
         });
         if (!collection) {

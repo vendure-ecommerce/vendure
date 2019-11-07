@@ -21,6 +21,7 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -42,11 +43,15 @@ export class ShippingMethodService {
         await this.updateActiveShippingMethods();
     }
 
-    findAll(options?: ListQueryOptions<ShippingMethod>): Promise<PaginatedList<ShippingMethod>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ShippingMethod>,
+    ): Promise<PaginatedList<ShippingMethod>> {
         return this.listQueryBuilder
             .build(ShippingMethod, options, {
                 relations: ['channels'],
                 where: { deletedAt: null },
+                channelId: ctx.channelId,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -55,28 +60,28 @@ export class ShippingMethodService {
             }));
     }
 
-    findOne(shippingMethodId: ID): Promise<ShippingMethod | undefined> {
-        return this.connection.manager.findOne(ShippingMethod, shippingMethodId, {
+    findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
+        return findOneInChannel(this.connection, ShippingMethod, shippingMethodId, ctx.channelId, {
             relations: ['channels'],
             where: { deletedAt: null },
         });
     }
 
-    async create(input: CreateShippingMethodInput): Promise<ShippingMethod> {
+    async create(ctx: RequestContext, input: CreateShippingMethodInput): Promise<ShippingMethod> {
         const shippingMethod = new ShippingMethod({
             code: input.code,
             description: input.description,
             checker: this.shippingConfiguration.parseCheckerInput(input.checker),
             calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
         });
-        shippingMethod.channels = [this.channelService.getDefaultChannel()];
+        this.channelService.assignToCurrentChannel(shippingMethod, ctx);
         const newShippingMethod = await this.connection.manager.save(shippingMethod);
         await this.updateActiveShippingMethods();
-        return assertFound(this.findOne(newShippingMethod.id));
+        return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
 
-    async update(input: UpdateShippingMethodInput): Promise<ShippingMethod> {
-        const shippingMethod = await this.findOne(input.id);
+    async update(ctx: RequestContext, input: UpdateShippingMethodInput): Promise<ShippingMethod> {
+        const shippingMethod = await this.findOne(ctx, input.id);
         if (!shippingMethod) {
             throw new EntityNotFoundError('ShippingMethod', input.id);
         }
@@ -91,7 +96,7 @@ export class ShippingMethodService {
         }
         await this.connection.manager.save(updatedShippingMethod);
         await this.updateActiveShippingMethods();
-        return assertFound(this.findOne(shippingMethod.id));
+        return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {

@@ -33,6 +33,7 @@ import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
@@ -59,9 +60,13 @@ export class PromotionService {
         this.availableActions = this.configService.promotionOptions.promotionActions || [];
     }
 
-    findAll(options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Promotion>): Promise<PaginatedList<Promotion>> {
         return this.listQueryBuilder
-            .build(Promotion, options, { where: { deletedAt: null } })
+            .build(Promotion, options, {
+                where: { deletedAt: null },
+                channelId: ctx.channelId,
+                relations: ['channels'],
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -69,8 +74,10 @@ export class PromotionService {
             }));
     }
 
-    async findOne(adjustmentSourceId: ID): Promise<Promotion | undefined> {
-        return this.connection.manager.findOne(Promotion, adjustmentSourceId, { where: { deletedAt: null } });
+    async findOne(ctx: RequestContext, adjustmentSourceId: ID): Promise<Promotion | undefined> {
+        return findOneInChannel(this.connection, Promotion, adjustmentSourceId, ctx.channelId, {
+            where: { deletedAt: null },
+        });
     }
 
     getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
@@ -107,7 +114,7 @@ export class PromotionService {
         this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.manager.save(promotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(newPromotion.id));
+        return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
@@ -123,7 +130,7 @@ export class PromotionService {
         (promotion.priorityScore = this.calculatePriorityScore(input)),
             await this.connection.manager.save(updatedPromotion);
         await this.updatePromotions();
-        return assertFound(this.findOne(updatedPromotion.id));
+        return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
     async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {

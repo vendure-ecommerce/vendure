@@ -29,14 +29,20 @@ export class ShippingMethodResolver {
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingMethods(@Args() args: QueryShippingMethodsArgs): Promise<PaginatedList<ShippingMethod>> {
-        return this.shippingMethodService.findAll(args.options || undefined);
+    shippingMethods(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryShippingMethodsArgs,
+    ): Promise<PaginatedList<ShippingMethod>> {
+        return this.shippingMethodService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    shippingMethod(@Args() args: QueryShippingMethodArgs): Promise<ShippingMethod | undefined> {
-        return this.shippingMethodService.findOne(args.id);
+    shippingMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryShippingMethodArgs,
+    ): Promise<ShippingMethod | undefined> {
+        return this.shippingMethodService.findOne(ctx, args.id);
     }
 
     @Query()
@@ -53,16 +59,22 @@ export class ShippingMethodResolver {
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    createShippingMethod(@Args() args: MutationCreateShippingMethodArgs): Promise<ShippingMethod> {
+    createShippingMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateShippingMethodArgs,
+    ): Promise<ShippingMethod> {
         const { input } = args;
-        return this.shippingMethodService.create(input);
+        return this.shippingMethodService.create(ctx, input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    updateShippingMethod(@Args() args: MutationUpdateShippingMethodArgs): Promise<ShippingMethod> {
+    updateShippingMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateShippingMethodArgs,
+    ): Promise<ShippingMethod> {
         const { input } = args;
-        return this.shippingMethodService.update(input);
+        return this.shippingMethodService.update(ctx, input);
     }
 
     @Mutation()
