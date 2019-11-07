@@ -7,12 +7,11 @@ import {
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -289,63 +288,6 @@ export class ProductVariantService {
         return {
             result: DeletionResult.DELETED,
         };
-    }
-
-    async generateVariantsForProduct(
-        ctx: RequestContext,
-        productId: ID,
-        defaultTaxCategoryId?: string | null,
-        defaultPrice?: number | null,
-        defaultSku?: string | null,
-    ): Promise<Array<Translated<ProductVariant>>> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
-            relations: ['optionGroups', 'optionGroups.options'],
-            where: { deletedAt: null },
-        });
-
-        if (!product) {
-            throw new EntityNotFoundError('Product', productId);
-        }
-        const defaultTranslation = product.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
-
-        const productName = defaultTranslation ? defaultTranslation.name : `product_${productId}`;
-        const optionCombinations = product.optionGroups.length
-            ? generateAllCombinations(product.optionGroups.map(g => g.options))
-            : [[]];
-
-        let taxCategory: TaxCategory;
-        if (defaultTaxCategoryId) {
-            taxCategory = await getEntityOrThrow(this.connection, TaxCategory, defaultTaxCategoryId);
-        } else {
-            const taxCategories = await this.taxCategoryService.findAll();
-            taxCategory = taxCategories[0];
-        }
-
-        if (!taxCategory) {
-            // there is no TaxCategory set up, so create a default
-            taxCategory = await this.taxCategoryService.create({ name: 'Standard Tax' });
-        }
-
-        const variants: ProductVariant[] = [];
-        for (const options of optionCombinations) {
-            const name = this.createVariantName(productName, options);
-            const variant = await this.create(ctx, {
-                productId: productId as string,
-                sku: defaultSku || 'sku-not-set',
-                price: defaultPrice || 0,
-                optionIds: options.map(o => o.id) as string[],
-                taxCategoryId: taxCategory.id as string,
-                translations: [
-                    {
-                        languageCode: ctx.languageCode,
-                        name,
-                    },
-                ],
-            });
-            variants.push(variant);
-        }
-        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
-        return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
     }
 
     /**
