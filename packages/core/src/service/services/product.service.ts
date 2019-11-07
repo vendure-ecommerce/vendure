@@ -26,7 +26,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { findByIdsInChannel } from '../helpers/utils/find-by-ids-in-channel';
+import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -79,7 +79,7 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const product = await this.connection.manager.findOne(Product, productId, {
+        const product = await findOneInChannel(this.connection, Product, productId, ctx.channelId, {
             relations: this.relations,
             where: {
                 deletedAt: null,
@@ -101,8 +101,8 @@ export class ProductService {
         );
     }
 
-    async getProductChannels(productId: ID): Promise<Channel[]> {
-        const product = await getEntityOrThrow(this.connection, Product, productId, {
+    async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
+        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId, {
             relations: ['channels'],
         });
         return product.channels;
@@ -160,7 +160,7 @@ export class ProductService {
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
-        const product = await getEntityOrThrow(this.connection, Product, productId);
+        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
         product.deletedAt = new Date();
         await this.connection.getRepository(Product).save(product);
         this.eventBus.publish(new CatalogModificationEvent(ctx, product));

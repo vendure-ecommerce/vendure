@@ -77,7 +77,7 @@ export class ProductAdminEntityResolver {
         if (product.channels) {
             return product.channels;
         } else {
-            return this.productService.getProductChannels(product.id);
+            return this.productService.getProductChannels(ctx, product.id);
         }
     }
 }

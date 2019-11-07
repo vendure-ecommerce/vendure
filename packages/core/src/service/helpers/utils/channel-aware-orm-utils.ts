@@ -24,3 +24,25 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
         .andWhere('channel.id = :channelId', { channelId })
         .getMany();
 }
+
+/**
+ * Like the TypeOrm `Repository.findOne()` method, but limits the results to
+ * the given Channel.
+ */
+export function findOneInChannel<T extends ChannelAware | VendureEntity>(
+    connection: Connection,
+    entity: Type<T>,
+    id: ID,
+    channelId: ID,
+    findOptions?: FindManyOptions<T>,
+) {
+    const qb = connection.getRepository(entity).createQueryBuilder('product');
+    FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, findOptions);
+    // tslint:disable-next-line:no-non-null-assertion
+    FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+    return qb
+        .leftJoin('product.channels', 'channel')
+        .andWhere('product.id = :id', { id })
+        .andWhere('channel.id = :channelId', { channelId })
+        .getOne();
+}

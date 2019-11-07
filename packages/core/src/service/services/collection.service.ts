@@ -278,7 +278,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const collection = await getEntityOrThrow(this.connection, Collection, id);
+        const collection = await getEntityOrThrow(this.connection, Collection, id, ctx.channelId);
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
@@ -291,9 +291,15 @@ export class CollectionService implements OnModuleInit {
     }
 
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
-        const target = await getEntityOrThrow(this.connection, Collection, input.collectionId, {
-            relations: ['parent'],
-        });
+        const target = await getEntityOrThrow(
+            this.connection,
+            Collection,
+            input.collectionId,
+            ctx.channelId,
+            {
+                relations: ['parent'],
+            },
+        );
         const descendants = await this.getDescendants(ctx, input.collectionId);
 
         if (

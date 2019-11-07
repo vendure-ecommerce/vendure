@@ -94,8 +94,8 @@ export class ShippingMethodService {
         return assertFound(this.findOne(shippingMethod.id));
     }
 
-    async softDelete(id: ID): Promise<DeletionResponse> {
-        const shippingMethod = await getEntityOrThrow(this.connection, ShippingMethod, id, {
+    async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const shippingMethod = await getEntityOrThrow(this.connection, ShippingMethod, id, ctx.channelId, {
             where: { deletedAt: null },
         });
         shippingMethod.deletedAt = new Date();

@@ -20,16 +20,16 @@ Object {
   "slug": "en-baked-potato",
   "translations": Array [
     Object {
-      "description": "A baked potato",
-      "languageCode": "en",
-      "name": "en Baked Potato",
-      "slug": "en-baked-potato",
-    },
-    Object {
       "description": "Eine baked Erdapfel",
       "languageCode": "de",
       "name": "de Baked Potato",
       "slug": "de-baked-potato",
+    },
+    Object {
+      "description": "A baked potato",
+      "languageCode": "en",
+      "name": "en Baked Potato",
+      "slug": "en-baked-potato",
     },
   ],
   "variants": Array [],
@@ -56,16 +56,16 @@ Object {
   "slug": "en-mashed-potato",
   "translations": Array [
     Object {
-      "description": "A blob of mashed potato",
-      "languageCode": "en",
-      "name": "en Mashed Potato",
-      "slug": "en-mashed-potato",
-    },
-    Object {
       "description": "Eine blob von gemashed Erdapfel",
       "languageCode": "de",
       "name": "de Mashed Potato",
       "slug": "de-mashed-potato",
+    },
+    Object {
+      "description": "A blob of mashed potato",
+      "languageCode": "en",
+      "name": "en Mashed Potato",
+      "slug": "en-mashed-potato",
     },
   ],
   "variants": Array [],

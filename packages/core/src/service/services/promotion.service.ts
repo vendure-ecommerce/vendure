@@ -111,7 +111,7 @@ export class PromotionService {
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
-        const promotion = await getEntityOrThrow(this.connection, Promotion, input.id);
+        const promotion = await getEntityOrThrow(this.connection, Promotion, input.id, ctx.channelId);
         const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
             updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));

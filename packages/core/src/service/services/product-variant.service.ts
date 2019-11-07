@@ -147,7 +147,7 @@ export class ProductVariantService {
     }
 
     async create(ctx: RequestContext, input: CreateProductVariantInput): Promise<Translated<ProductVariant>> {
-        await this.validateVariantOptionIds(input);
+        await this.validateVariantOptionIds(ctx, input);
         if (!input.optionIds) {
             input.optionIds = [];
         }
@@ -379,8 +379,8 @@ export class ProductVariantService {
         return variant;
     }
 
-    private async validateVariantOptionIds(input: CreateProductVariantInput) {
-        const product = await getEntityOrThrow(this.connection, Product, input.productId, {
+    private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
+        const product = await getEntityOrThrow(this.connection, Product, input.productId, ctx.channelId, {
             relations: ['optionGroups', 'optionGroups.options', 'variants', 'variants.options'],
         });
         const optionIds = [...(input.optionIds || [])];

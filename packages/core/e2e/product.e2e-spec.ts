@@ -488,9 +488,9 @@ describe('Product resolver', () => {
                 },
             );
             expect(result.updateProduct.translations.length).toBe(2);
-            expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
-            expect(result.updateProduct.translations[0].description).toBe('Possibly the final baked potato');
-            expect(result.updateProduct.translations[1].name).toBe('de Mashed Potato');
+            expect(result.updateProduct.translations[0].name).toBe('de Mashed Potato');
+            expect(result.updateProduct.translations[1].name).toBe('en Very Mashed Potato');
+            expect(result.updateProduct.translations[1].description).toBe('Possibly the final baked potato');
         });
 
         it('updateProduct adds Assets to a product and sets featured asset', async () => {
