@@ -12,6 +12,7 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
@@ -32,8 +33,9 @@ import { CollectionTranslation } from '../../entity/collection/collection-transl
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
+import { ProductEvent } from '../../event-bus/events/product-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -68,8 +70,10 @@ export class CollectionService implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        this.eventBus
-            .ofType(CatalogModificationEvent)
+        const productEvents$ = this.eventBus.ofType(ProductEvent);
+        const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
+
+        merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
             .subscribe(async event => {
                 const collections = await this.connection.getRepository(Collection).find({

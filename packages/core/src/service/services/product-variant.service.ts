@@ -23,7 +23,7 @@ import { ProductVariantTranslation } from '../../entity/product-variant/product-
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -66,6 +66,30 @@ export class ProductVariantService {
                 if (result) {
                     return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
                 }
+            });
+    }
+
+    findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<ProductVariant>>> {
+        return this.connection.manager
+            .getRepository(ProductVariant)
+            .findByIds(ids, {
+                relations: [
+                    'options',
+                    'facetValues',
+                    'facetValues.facet',
+                    'taxCategory',
+                    'assets',
+                    'featuredAsset',
+                ],
+            })
+            .then(variants => {
+                return variants.map(variant =>
+                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
+                        'options',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]),
+                );
             });
     }
 
@@ -145,7 +169,33 @@ export class ProductVariantService {
             );
     }
 
-    async create(ctx: RequestContext, input: CreateProductVariantInput): Promise<Translated<ProductVariant>> {
+    async create(
+        ctx: RequestContext,
+        input: CreateProductVariantInput[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const ids: ID[] = [];
+        for (const productInput of input) {
+            const id = await this.createSingle(ctx, productInput);
+            ids.push(id);
+        }
+        const createdVariants = await this.findByIds(ctx, ids);
+        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'updated'));
+        return createdVariants;
+    }
+
+    async update(
+        ctx: RequestContext,
+        input: UpdateProductVariantInput[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        for (const productInput of input) {
+            await this.updateSingle(ctx, productInput);
+        }
+        const updatedVariants = await this.findByIds(ctx, input.map(i => i.id));
+        this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated'));
+        return updatedVariants;
+    }
+
+    private async createSingle(ctx: RequestContext, input: CreateProductVariantInput): Promise<ID> {
         await this.validateVariantOptionIds(ctx, input);
         if (!input.optionIds) {
             input.optionIds = [];
@@ -192,11 +242,10 @@ export class ProductVariantService {
         }
 
         await this.createProductVariantPrice(createdVariant.id, createdVariant.price, ctx.channelId);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, createdVariant));
-        return await assertFound(this.findOne(ctx, createdVariant.id));
+        return createdVariant.id;
     }
 
-    async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
+    private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
         const existingVariant = await getEntityOrThrow(this.connection, ProductVariant, input.id);
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
@@ -244,24 +293,7 @@ export class ProductVariantService {
             variantPrice.price = input.price;
             await variantPriceRepository.save(variantPrice);
         }
-        const variant = await assertFound(
-            this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: [
-                    'options',
-                    'facetValues',
-                    'facetValues.facet',
-                    'taxCategory',
-                    'assets',
-                    'featuredAsset',
-                ],
-            }),
-        );
-        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
-        return translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
-            'options',
-            'facetValues',
-            ['facetValues', 'facet'],
-        ]);
+        return existingVariant.id;
     }
 
     /**
@@ -284,7 +316,7 @@ export class ProductVariantService {
         const variant = await getEntityOrThrow(this.connection, ProductVariant, id);
         variant.deletedAt = new Date();
         await this.connection.getRepository(ProductVariant).save(variant);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
+        this.eventBus.publish(new ProductVariantEvent(ctx, [variant], 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };

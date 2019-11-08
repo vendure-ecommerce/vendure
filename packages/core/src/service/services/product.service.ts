@@ -23,7 +23,8 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
+import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
+import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
@@ -136,7 +137,7 @@ export class ProductService {
             },
         });
         await this.assetService.updateEntityAssets(product, input);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+        this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -155,7 +156,7 @@ export class ProductService {
                 await this.assetService.updateEntityAssets(p, input);
             },
         });
-        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+        this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -163,7 +164,7 @@ export class ProductService {
         const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
         product.deletedAt = new Date();
         await this.connection.getRepository(Product).save(product);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+        this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };
@@ -196,7 +197,7 @@ export class ProductService {
                     input.channelId,
                 );
             }
-            this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
         return this.findByIds(ctx, productsWithVariants.map(p => p.id));
     }
@@ -219,7 +220,7 @@ export class ProductService {
         const products = await this.connection.getRepository(Product).findByIds(input.productIds);
         for (const product of products) {
             await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
-            this.eventBus.publish(new CatalogModificationEvent(ctx, product));
+            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(ctx, products.map(p => p.id));
     }

@@ -310,3 +310,12 @@ export const CREATE_CHANNEL = gql`
         }
     }
 `;
+
+export const DELETE_PRODUCT_VARIANT = gql`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`;

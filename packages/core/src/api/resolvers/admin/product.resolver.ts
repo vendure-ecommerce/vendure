@@ -120,7 +120,7 @@ export class ProductResolver {
         @Args() args: MutationCreateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(i => this.productVariantService.create(ctx, i)));
+        return this.productVariantService.create(ctx, input);
     }
 
     @Mutation()
@@ -130,7 +130,7 @@ export class ProductResolver {
         @Args() args: MutationUpdateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(i => this.productVariantService.update(ctx, i)));
+        return this.productVariantService.update(ctx, input);
     }
 
     @Mutation()

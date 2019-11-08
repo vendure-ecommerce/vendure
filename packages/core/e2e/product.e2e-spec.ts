@@ -30,6 +30,7 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
@@ -1122,15 +1123,6 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
-        }
-    }
-`;
-
-export const DELETE_PRODUCT_VARIANT = gql`
-    mutation DeleteProductVariant($id: ID!) {
-        deleteProductVariant(id: $id) {
-            result
-            message
         }
     }
 `;
