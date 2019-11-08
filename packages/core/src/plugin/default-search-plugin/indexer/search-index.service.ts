@@ -10,10 +10,12 @@ import { JobReporter, JobService } from '../../../service/services/job.service';
 import { WorkerMessage } from '../../../worker/types';
 import { WorkerService } from '../../../worker/worker.service';
 import {
+    AssignProductToChannelMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
     ReindexMessageResponse,
+    RemoveProductFromChannelMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
     UpdateVariantsByIdMessage,
@@ -83,6 +85,22 @@ export class SearchIndexService {
                     .send(new UpdateVariantsByIdMessage({ ctx, ids }))
                     .subscribe(this.createObserver(reporter));
             },
+        });
+    }
+
+    assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
+        const data = { ctx, productId, channelId };
+        return this.createShortWorkerJob(new AssignProductToChannelMessage(data), {
+            entity: 'Product',
+            id: productId,
+        });
+    }
+
+    removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
+        const data = { ctx, productId, channelId };
+        return this.createShortWorkerJob(new RemoveProductFromChannelMessage(data), {
+            entity: 'Product',
+            id: productId,
         });
     }
 

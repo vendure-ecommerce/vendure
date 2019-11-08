@@ -319,3 +319,21 @@ export const DELETE_PRODUCT_VARIANT = gql`
         }
     }
 `;
+
+export const ASSIGN_PRODUCT_TO_CHANNEL = gql`
+    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
+        assignProductsToChannel(input: $input) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;

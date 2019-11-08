@@ -6,12 +6,10 @@ import path from 'path';
 
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
-import { PRODUCT_WITH_VARIANTS_FRAGMENT } from './graphql/fragments';
 import {
     AssignProductsToChannel,
     CreateAdministrator,
     CreateChannel,
-    CreateProduct,
     CreateRole,
     CurrencyCode,
     DeleteChannel,
@@ -23,17 +21,16 @@ import {
     Me,
     Permission,
     RemoveProductsFromChannel,
-    UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
+    ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_ADMINISTRATOR,
     CREATE_CHANNEL,
-    CREATE_PRODUCT,
     CREATE_ROLE,
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
-    UPDATE_PRODUCT,
+    REMOVE_PRODUCT_FROM_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -399,24 +396,6 @@ const GET_CHANNELS = gql`
             token
         }
     }
-`;
-
-const ASSIGN_PRODUCT_TO_CHANNEL = gql`
-    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
-        assignProductsToChannel(input: $input) {
-            ...ProductWithVariants
-        }
-    }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
-`;
-
-const REMOVE_PRODUCT_FROM_CHANNEL = gql`
-    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
-        removeProductsFromChannel(input: $input) {
-            ...ProductWithVariants
-        }
-    }
-    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
 const DELETE_CHANNEL = gql`

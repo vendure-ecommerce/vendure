@@ -1,18 +1,22 @@
 import { pick } from '@vendure/common/lib/pick';
 import { DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
-import { createTestEnvironment, SimpleGraphQLClient } from '@vendure/testing';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
 import {
+    AssignProductsToChannel,
+    CreateChannel,
     CreateCollection,
     CreateFacet,
+    CurrencyCode,
     DeleteProduct,
     DeleteProductVariant,
     LanguageCode,
+    RemoveProductsFromChannel,
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
@@ -23,10 +27,13 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
+    ASSIGN_PRODUCT_TO_CHANNEL,
+    CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    REMOVE_PRODUCT_FROM_CHANNEL,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -615,6 +622,60 @@ describe('Default search plugin', () => {
                     { productId: 'T_3', enabled: false },
                 ]);
             });
+        });
+
+        describe('channel handling', () => {
+            const SECOND_CHANNEL_TOKEN = 'second-channel-token';
+            let secondChannel: CreateChannel.CreateChannel;
+
+            beforeAll(async () => {
+                const { createChannel } = await adminClient.query<
+                    CreateChannel.Mutation,
+                    CreateChannel.Variables
+                >(CREATE_CHANNEL, {
+                    input: {
+                        code: 'second-channel',
+                        token: SECOND_CHANNEL_TOKEN,
+                        defaultLanguageCode: LanguageCode.en,
+                        currencyCode: CurrencyCode.GBP,
+                        pricesIncludeTax: true,
+                    },
+                });
+                secondChannel = createChannel;
+            });
+
+            it('adding product to channel', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
+                    ASSIGN_PRODUCT_TO_CHANNEL,
+                    {
+                        input: { channelId: secondChannel.id, productIds: ['T_1', 'T_2'] },
+                    },
+                );
+                await awaitRunningJobs(adminClient);
+
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(search.items.map(i => i.productId)).toEqual(['T_1', 'T_2']);
+            }, 10000);
+
+            it('removing product from channel', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { removeProductsFromChannel } = await adminClient.query<
+                    RemoveProductsFromChannel.Mutation,
+                    RemoveProductsFromChannel.Variables
+                >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                    input: {
+                        productIds: ['T_2'],
+                        channelId: secondChannel.id,
+                    },
+                });
+                await awaitRunningJobs(adminClient);
+
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(search.items.map(i => i.productId)).toEqual(['T_1']);
+            }, 10000);
         });
     });
 });

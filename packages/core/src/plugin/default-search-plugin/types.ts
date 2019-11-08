@@ -24,6 +24,12 @@ export interface UpdateVariantsByIdMessageData {
     ids: ID[];
 }
 
+export interface ProductChannelMessageData {
+    ctx: RequestContext;
+    productId: ID;
+    channelId: ID;
+}
+
 export class ReindexMessage extends WorkerMessage<{ ctx: RequestContext }, ReindexMessageResponse> {
     static readonly pattern = 'Reindex';
 }
@@ -44,4 +50,10 @@ export class UpdateVariantsByIdMessage extends WorkerMessage<
     ReindexMessageResponse
 > {
     static readonly pattern = 'UpdateVariantsById';
+}
+export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
+    static readonly pattern = 'AssignProductToChannel';
+}
+export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
+    static readonly pattern = 'RemoveProductFromChannel';
 }
