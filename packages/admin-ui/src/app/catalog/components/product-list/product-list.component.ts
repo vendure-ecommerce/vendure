@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
@@ -36,7 +36,8 @@ export class ProductListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.product.searchProducts(this.searchTerm, ...args),
+            (...args: any[]) =>
+                this.dataService.product.searchProducts(this.searchTerm, ...args).refetchOnChannelChange(),
             data => data.search,
             // tslint:disable-next-line:no-shadowed-variable
             (skip, take) => ({
@@ -53,7 +54,8 @@ export class ProductListComponent
 
     ngOnInit() {
         super.ngOnInit();
-        this.facetValues$ = this.listQuery.mapStream(data => data.search.facetValues);
+        this.facetValues$ = this.result$.pipe(map(data => data.search.facetValues));
+        // this.facetValues$ = of([]);
         this.route.queryParamMap
             .pipe(
                 map(qpm => qpm.get('q')),

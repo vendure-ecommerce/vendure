@@ -163,6 +163,12 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type AssignProductsToChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+  priceFactor?: Maybe<Scalars['Float']>,
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig',
   name: Scalars['String'],
@@ -1685,6 +1691,8 @@ export type Mutation = {
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  /** Delete a Channel */
+  deleteChannel: DeletionResponse,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1766,6 +1774,10 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>,
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse,
+  /** Assigns Products to the specified Channel */
+  assignProductsToChannel: Array<Product>,
+  /** Removes Products from the specified Channel */
+  removeProductsFromChannel: Array<Product>,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1841,6 +1853,11 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationDeleteChannelArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2069,6 +2086,16 @@ export type MutationUpdateProductVariantsArgs = {
 
 export type MutationDeleteProductVariantArgs = {
   id: Scalars['ID']
+};
+
+
+export type MutationAssignProductsToChannelArgs = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type MutationRemoveProductsFromChannelArgs = {
+  input: RemoveProductsFromChannelInput
 };
 
 
@@ -2437,6 +2464,7 @@ export type PriceRange = {
 export type Product = Node & {
   __typename?: 'Product',
   enabled: Scalars['Boolean'],
+  channels: Array<Channel>,
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
@@ -2971,6 +2999,11 @@ export type RefundOrderInput = {
   reason?: Maybe<Scalars['String']>,
 };
 
+export type RemoveProductsFromChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+};
+
 export type Return = Node & StockMovement & {
   __typename?: 'Return',
   id: Scalars['ID'],
@@ -3057,6 +3090,8 @@ export type SearchResponse = {
 export type SearchResult = {
   __typename?: 'SearchResult',
   enabled: Scalars['Boolean'],
+  /** An array of ids of the Collections in which this result appears */
+  channelIds: Array<Scalars['ID']>,
   sku: Scalars['String'],
   slug: Scalars['String'],
   productId: Scalars['ID'],
@@ -3915,7 +3950,7 @@ export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'crea
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
-export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })> });
+export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> });
 
 export type ProductOptionGroupFragment = ({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'ProductOptionGroupTranslation' } & Pick<ProductOptionGroupTranslation, 'id' | 'name'>)>, options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'name'>)> })> });
 
@@ -4031,7 +4066,7 @@ export type SearchProductsQueryVariables = {
 };
 
 
-export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
+export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku' | 'channelIds'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
 
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput
@@ -4053,6 +4088,13 @@ export type GetProductVariantOptionsQueryVariables = {
 
 
 export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>)> })> })> });
+
+export type AssignProductsToChannelMutationVariables = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type AssignProductsToChannelMutation = ({ __typename?: 'Mutation' } & { assignProductsToChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
 
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
@@ -4868,6 +4910,7 @@ export namespace ProductWithVariants {
   export type Variants = ProductVariantFragment;
   export type FacetValues = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
+  export type Channels = (NonNullable<ProductWithVariantsFragment['channels'][0]>);
 }
 
 export namespace ProductOptionGroup {
@@ -5005,6 +5048,13 @@ export namespace GetProductVariantOptions {
   export type Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>)['options'][0]>);
   export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
   export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
+}
+
+export namespace AssignProductsToChannel {
+  export type Variables = AssignProductsToChannelMutationVariables;
+  export type Mutation = AssignProductsToChannelMutation;
+  export type AssignProductsToChannel = (NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>);
+  export type Channels = (NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>)['channels'][0]>);
 }
 
 export namespace Promotion {

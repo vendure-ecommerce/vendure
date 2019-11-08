@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 import { BreadcrumbValue } from '../core/components/breadcrumb/breadcrumb.component';
 import { _ } from '../core/providers/i18n/mark-for-extraction';

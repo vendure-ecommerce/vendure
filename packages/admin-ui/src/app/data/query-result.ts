@@ -49,6 +49,7 @@ export class QueryResult<T, V = Record<string, any>> {
             takeUntil(loggedOut$),
             takeUntil(this.completed$),
         );
+        this.queryRef.valueChanges = this.valueChanges;
         return this;
     }
 

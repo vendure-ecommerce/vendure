@@ -26,7 +26,10 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
         route: ActivatedRoute,
     ) {
         super(router, route);
-        super.setQueryFn((...args: any[]) => this.dataService.facet.getFacets(...args), data => data.facets);
+        super.setQueryFn(
+            (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
+            data => data.facets,
+        );
     }
 
     toggleDisplayLimit(facet: GetFacetList.Items) {

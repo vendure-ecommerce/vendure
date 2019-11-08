@@ -8,6 +8,7 @@ import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
+import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
@@ -57,8 +58,14 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         OptionValueInputComponent,
         UpdateProductOptionDialogComponent,
         ProductVariantsEditorComponent,
+        AssignProductsToChannelDialogComponent,
     ],
-    entryComponents: [ApplyFacetDialogComponent, AssetPreviewComponent, UpdateProductOptionDialogComponent],
+    entryComponents: [
+        ApplyFacetDialogComponent,
+        AssetPreviewComponent,
+        UpdateProductOptionDialogComponent,
+        AssignProductsToChannelDialogComponent,
+    ],
     providers: [
         ProductResolver,
         FacetResolver,

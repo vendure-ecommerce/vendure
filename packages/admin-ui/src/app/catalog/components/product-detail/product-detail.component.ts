@@ -2,9 +2,20 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AssignProductsToChannelDialogComponent } from '@vendure/admin-ui/src/app/catalog/components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
-import { distinctUntilChanged, map, mergeMap, switchMap, take, withLatestFrom } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    map,
+    mergeMap,
+    switchMap,
+    take,
+    takeUntil,
+    withLatestFrom,
+} from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
+import { pick } from 'shared/pick';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 import { notNullOrUndefined } from 'shared/shared-utils';
 import { unique } from 'shared/unique';
 import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
@@ -71,6 +82,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     detailForm: FormGroup;
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
+    productChannels$: Observable<ProductWithVariants.Channels[]>;
     facetValues$: Observable<ProductWithVariants.FacetValues[]>;
     facets$: Observable<FacetWithValues.Fragment[]>;
     selectedVariantIds: string[] = [];
@@ -110,7 +122,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         this.variants$ = this.product$.pipe(map(product => product.variants));
-        this.taxCategories$ = this.productDetailService.getTaxCategories();
+        this.taxCategories$ = this.productDetailService.getTaxCategories().pipe(takeUntil(this.destroy$));
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
         // FacetValues are provided initially by the nested array of the
@@ -138,6 +150,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         );
 
         this.facetValues$ = merge(productFacetValues$, formChangeFacetValues$);
+        this.productChannels$ = this.product$.pipe(map(p => p.channels));
     }
 
     ngOnDestroy() {
@@ -151,6 +164,21 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 [IGNORE_CAN_DEACTIVATE_GUARD]: true,
             },
         });
+    }
+
+    isDefaultChannel(channelCode: string): boolean {
+        return channelCode === DEFAULT_CHANNEL_CODE;
+    }
+
+    assignToChannel() {
+        this.modalService
+            .fromComponent(AssignProductsToChannelDialogComponent, {
+                size: 'lg',
+                locals: {
+                    productIds: [this.id],
+                },
+            })
+            .subscribe();
     }
 
     customFieldIsSet(name: string): boolean {

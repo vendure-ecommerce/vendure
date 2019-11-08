@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { CurrentUserChannel } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
@@ -20,6 +21,9 @@ import { DataService } from '../../../data/providers/data.service';
     ],
 })
 export class ChannelAssignmentControlComponent implements OnInit, ControlValueAccessor {
+    @Input() multiple = true;
+    @Input() includeDefaultChannel = true;
+
     channels$: Observable<CurrentUserChannel[]>;
     value: string[] = [];
     disabled = false;
@@ -31,7 +35,13 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
     ngOnInit() {
         this.channels$ = this.dataService.client
             .userStatus()
-            .single$.pipe(map(data => (data.userStatus ? data.userStatus.channels : [])));
+            .single$.pipe(
+                map(({ userStatus }) =>
+                    userStatus.channels.filter(c =>
+                        this.includeDefaultChannel ? true : c.code !== DEFAULT_CHANNEL_CODE,
+                    ),
+                ),
+            );
     }
 
     registerOnChange(fn: any): void {
@@ -53,10 +63,16 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
     }
 
     focussed() {
-        this.onTouched();
+        if (this.onTouched) {
+            this.onTouched();
+        }
     }
 
-    valueChanged(channels: CurrentUserChannel[]) {
-        this.onChange(channels.map(c => c.id));
+    valueChanged(value: CurrentUserChannel[] | CurrentUserChannel | undefined) {
+        if (Array.isArray(value)) {
+            this.onChange(value.map(c => c.id));
+        } else {
+            this.onChange([value ? value.id : undefined]);
+        }
     }
 }

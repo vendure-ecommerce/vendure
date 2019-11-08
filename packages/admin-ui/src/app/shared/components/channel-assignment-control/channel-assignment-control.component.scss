@@ -1,9 +1,20 @@
 @import "variables";
 
+:host {
+    min-width: 200px;
+    &.clr-input {
+        border-bottom: none;
+        padding: 0;
+    }
+}
+
 ::ng-deep .ng-value, ::ng-deep .ng-option {
     > vdr-channel-badge {
         margin-bottom: -1px;
     }
+}
+::ng-deep .ng-value > vdr-channel-badge {
+    margin-left: 6px;
 }
 
 .channel-label {

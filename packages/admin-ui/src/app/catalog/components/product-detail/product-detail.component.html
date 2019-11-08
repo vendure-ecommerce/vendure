@@ -55,6 +55,22 @@
                 <div class="clr-row">
                     <div class="clr-col">
                         <section class="form-block" formGroupName="product">
+                            <vdr-form-item [label]="'common.channels' | translate" *vdrIfMultichannel>
+                                <div class="flex">
+                                    <div class="product-channels">
+                                        <ng-container *ngFor="let channel of productChannels$ | async">
+                                            <vdr-chip *ngIf="!isDefaultChannel(channel.code)">
+                                                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                                                {{ channel.code | channelCodeToLabel }}
+                                            </vdr-chip>
+                                        </ng-container>
+                                    </div>
+                                    <button class="btn btn-sm" (click)="assignToChannel()">
+                                        <clr-icon shape="layers"></clr-icon>
+                                        {{ 'catalog.assign-to-channel' | translate }}
+                                    </button>
+                                </div>
+                            </vdr-form-item>
                             <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
                                 <input
                                     id="name"
@@ -103,9 +119,11 @@
                                     [removable]="'UpdateCatalog' | hasPermission"
                                     (remove)="removeProductFacetValue(facetValue.id)"
                                 ></vdr-facet-value-chip>
-                                <button class="btn btn-sm btn-secondary"
-                                        *vdrIfPermissions="'UpdateCatalog'"
-                                        (click)="selectProductFacetValue()">
+                                <button
+                                    class="btn btn-sm btn-secondary"
+                                    *vdrIfPermissions="'UpdateCatalog'"
+                                    (click)="selectProductFacetValue()"
+                                >
                                     <clr-icon shape="plus"></clr-icon>
                                     {{ 'catalog.add-facets' | translate }}
                                 </button>

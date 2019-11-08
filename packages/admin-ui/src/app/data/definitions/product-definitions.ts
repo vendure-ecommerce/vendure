@@ -115,6 +115,10 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
                 name
             }
         }
+        channels {
+            id
+            code
+        }
     }
     ${PRODUCT_VARIANT_FRAGMENT}
     ${ASSET_FRAGMENT}
@@ -351,6 +355,7 @@ export const SEARCH_PRODUCTS = gql`
                 productVariantName
                 productVariantPreview
                 sku
+                channelIds
             }
             facetValues {
                 count
@@ -429,6 +434,18 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
                     code
                     groupId
                 }
+            }
+        }
+    }
+`;
+
+export const ASSIGN_PRODUCTS_TO_CHANNEL = gql`
+    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
+        assignProductsToChannel(input: $input) {
+            id
+            channels {
+                id
+                code
             }
         }
     }

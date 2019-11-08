@@ -1,7 +1,7 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { map, shareReplay, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
 
@@ -14,12 +14,13 @@ export type OnPageChangeFn<V> = (skip: number, take: number) => V;
  * a list of data from a query which returns a PaginatedList type.
  */
 export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
+    result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
     totalItems$: Observable<number>;
     itemsPerPage$: Observable<number>;
     currentPage$: Observable<number>;
-    protected listQuery: QueryResult<ResultType, VariableType>;
     protected destroy$ = new Subject<void>();
+    private listQuery: QueryResult<ResultType, VariableType>;
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
     private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
@@ -57,8 +58,9 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
             this.listQuery.ref.refetch(this.onPageChangeFn(skip, take));
         };
 
-        this.items$ = this.listQuery.stream$.pipe(map(data => this.mappingFn(data).items));
-        this.totalItems$ = this.listQuery.stream$.pipe(map(data => this.mappingFn(data).totalItems));
+        this.result$ = this.listQuery.stream$.pipe(shareReplay(1));
+        this.items$ = this.result$.pipe(map(data => this.mappingFn(data).items));
+        this.totalItems$ = this.result$.pipe(map(data => this.mappingFn(data).totalItems));
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
             map(page => (!page ? 1 : +page)),

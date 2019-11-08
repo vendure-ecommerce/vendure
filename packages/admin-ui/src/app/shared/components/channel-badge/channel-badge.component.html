@@ -1,3 +1,1 @@
-<div class="channel-badge"
-    [style.background-color]="(isDefaultChannel ? '' : channelCode) | stringToColor"
-></div>
+<clr-icon shape="layers" [style.color]="isDefaultChannel ? '#aaa' : (channelCode | stringToColor)"></clr-icon>

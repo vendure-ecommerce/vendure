@@ -34,6 +34,8 @@ export { FormFieldControlDirective } from './components/form-field/form-field-co
 export { FormFieldComponent } from './components/form-field/form-field.component';
 export { FormItemComponent } from './components/form-item/form-item.component';
 export { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+export { IfMultichannelDirective } from './directives/if-multichannel.directive';
+export { IfPermissionsDirective } from './directives/if-permissions.directive';
 export {
     ItemsPerPageControlsComponent,
 } from './components/items-per-page-controls/items-per-page-controls.component';
