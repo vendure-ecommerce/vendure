@@ -18,7 +18,14 @@ import { ProductVariantService } from '../../../service/services/product-variant
 import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { AsyncQueue } from '../async-queue';
 import { SearchIndexItem } from '../search-index-item.entity';
-import { ReindexMessage, UpdateProductOrVariantMessage, UpdateVariantsByIdMessage } from '../types';
+import {
+    DeleteProductMessage,
+    DeleteVariantMessage,
+    ReindexMessage,
+    UpdateProductMessage,
+    UpdateVariantMessage,
+    UpdateVariantsByIdMessage,
+} from '../types';
 
 export const BATCH_SIZE = 1000;
 export const variantRelations = [
@@ -26,6 +33,7 @@ export const variantRelations = [
     'product.featuredAsset',
     'product.facetValues',
     'product.facetValues.facet',
+    'product.channels',
     'featuredAsset',
     'facetValues',
     'facetValues.facet',
@@ -51,9 +59,12 @@ export class IndexerController {
         return new Observable(observer => {
             (async () => {
                 const timeStart = Date.now();
-                const qb = this.getSearchIndexQueryBuilder();
-                const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
-                Logger.verbose(`Reindexing ${count} variants`, workerLoggerCtx);
+                const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
+                const count = await qb.getCount();
+                Logger.verbose(
+                    `Reindexing ${count} variants for channel ${ctx.channel.code}`,
+                    workerLoggerCtx,
+                );
                 const batches = Math.ceil(count / BATCH_SIZE);
 
                 // Ensure tax rates are up-to-date.
@@ -61,14 +72,14 @@ export class IndexerController {
 
                 await this.connection
                     .getRepository(SearchIndexItem)
-                    .delete({ languageCode: ctx.languageCode });
+                    .delete({ languageCode: ctx.languageCode, channelId: ctx.channelId });
                 Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
                 for (let i = 0; i < batches; i++) {
                     Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
 
                     const variants = await qb
-                        .where('variants__product.deletedAt IS NULL')
+                        .andWhere('variants__product.deletedAt IS NULL')
                         .take(BATCH_SIZE)
                         .skip(i * BATCH_SIZE)
                         .getMany();
@@ -135,60 +146,87 @@ export class IndexerController {
         });
     }
 
-    /**
-     * Updates the search index only for the affected entities.
-     */
-    @MessagePattern(UpdateProductOrVariantMessage.pattern)
-    updateProductOrVariant(data: UpdateProductOrVariantMessage['data']): Observable<boolean> {
+    @MessagePattern(UpdateProductMessage.pattern)
+    updateProduct(data: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        const { productId, variantId } = data;
-        let updatedVariants: ProductVariant[] = [];
-        let removedVariantIds: ID[] = [];
         return defer(async () => {
-            if (data.productId) {
-                const product = await this.connection.getRepository(Product).findOne(productId, {
-                    relations: ['variants'],
-                });
-                if (product) {
-                    if (product.deletedAt) {
-                        removedVariantIds = product.variants.map(v => v.id);
-                    } else {
-                        updatedVariants = await this.connection
-                            .getRepository(ProductVariant)
-                            .findByIds(product.variants.map(v => v.id), {
-                                relations: variantRelations,
-                            });
-                        if (product.enabled === false) {
-                            updatedVariants.forEach(v => (v.enabled = false));
-                        }
-                    }
+            const product = await this.connection.getRepository(Product).findOne(data.productId, {
+                relations: ['variants'],
+            });
+            if (product) {
+                let updatedVariants = await this.connection
+                    .getRepository(ProductVariant)
+                    .findByIds(product.variants.map(v => v.id), {
+                        relations: variantRelations,
+                    });
+                if (product.enabled === false) {
+                    updatedVariants.forEach(v => (v.enabled = false));
                 }
-            } else {
-                const variant = await this.connection.getRepository(ProductVariant).findOne(variantId, {
-                    relations: variantRelations,
-                });
-                if (variant) {
-                    updatedVariants = [variant];
+                Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
+                updatedVariants = this.hydrateVariants(ctx, updatedVariants);
+                if (updatedVariants.length) {
+                    await this.saveVariants(ctx, updatedVariants);
                 }
-            }
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            updatedVariants = this.hydrateVariants(ctx, updatedVariants);
-            if (updatedVariants.length) {
-                await this.saveVariants(ctx, updatedVariants);
-            }
-            if (removedVariantIds.length) {
-                await this.removeSearchIndexItems(ctx.languageCode, removedVariantIds);
             }
             return true;
         });
     }
 
-    private getSearchIndexQueryBuilder() {
+    @MessagePattern(UpdateVariantMessage.pattern)
+    updateVariants(data: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
+        const ctx = RequestContext.fromObject(data.ctx);
+        return defer(async () => {
+            const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds, {
+                relations: variantRelations,
+            });
+            if (variants) {
+                const updatedVariants = this.hydrateVariants(ctx, variants);
+                Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
+                await this.saveVariants(ctx, updatedVariants);
+            }
+            return true;
+        });
+    }
+
+    @MessagePattern(DeleteProductMessage.pattern)
+    deleteProduct(data: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
+        const ctx = RequestContext.fromObject(data.ctx);
+        return defer(async () => {
+            const product = await this.connection.getRepository(Product).findOne(data.productId, {
+                relations: ['variants'],
+            });
+            if (product && product.deletedAt) {
+                const removedVariantIds = product.variants.map(v => v.id);
+                if (removedVariantIds.length) {
+                    await this.removeSearchIndexItems(ctx, removedVariantIds);
+                }
+            }
+            return true;
+        });
+    }
+
+    @MessagePattern(DeleteVariantMessage.pattern)
+    deleteVariant(data: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
+        const ctx = RequestContext.fromObject(data.ctx);
+        return defer(async () => {
+            const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
+            if (variants.length) {
+                await this.removeSearchIndexItems(ctx, variants.map(v => v.id));
+            }
+            return true;
+        });
+    }
+
+    private getSearchIndexQueryBuilder(channelId: ID) {
         const qb = this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: variantRelations,
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+        qb.leftJoin('variants.product', 'product')
+            .leftJoin('product.channels', 'channel')
+            .where('channel.id = :channelId', { channelId })
+            .andWhere('variants__product.deletedAt IS NULL');
         return qb;
     }
 
@@ -205,19 +243,21 @@ export class IndexerController {
         const items = variants.map(
             (v: ProductVariant) =>
                 new SearchIndexItem({
+                    productVariantId: v.id,
+                    channelId: ctx.channelId,
+                    languageCode: ctx.languageCode,
                     sku: v.sku,
                     enabled: v.enabled,
                     slug: v.product.slug,
                     price: v.price,
                     priceWithTax: v.priceWithTax,
-                    languageCode: ctx.languageCode,
-                    productVariantId: v.id,
                     productId: v.product.id,
                     productName: v.product.name,
                     description: v.product.description,
                     productVariantName: v.name,
                     productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
                     productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
+                    channelIds: v.product.channels.map(c => c.id as string),
                     facetIds: this.getFacetIds(v),
                     facetValueIds: this.getFacetValueIds(v),
                     collectionIds: v.collections.map(c => c.id.toString()),
@@ -243,10 +283,11 @@ export class IndexerController {
     /**
      * Remove items from the search index
      */
-    private async removeSearchIndexItems(languageCode: LanguageCode, variantIds: ID[]) {
+    private async removeSearchIndexItems(ctx: RequestContext, variantIds: ID[]) {
         const compositeKeys = variantIds.map(id => ({
             productVariantId: id,
-            languageCode,
+            channelId: ctx.channelId,
+            languageCode: ctx.languageCode,
         })) as any[];
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).delete(compositeKeys));
     }

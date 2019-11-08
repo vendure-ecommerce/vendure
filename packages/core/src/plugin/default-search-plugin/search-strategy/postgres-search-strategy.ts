@@ -17,14 +17,18 @@ export class PostgresSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>> {
+    async getFacetValueIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
             .select(['"si"."productId"', 'MAX("si"."productVariantId")'])
             .addSelect(`string_agg("si"."facetValueIds",',')`, 'facetValues');
 
-        this.applyTermAndFilters(facetValuesQb, input, true);
+        this.applyTermAndFilters(ctx, facetValuesQb, input, true);
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('"si"."productVariantId", "si"."productId"');
         }
@@ -35,7 +39,11 @@ export class PostgresSearchStrategy implements SearchStrategy {
         return createFacetIdCountMap(facetValuesResult);
     }
 
-    async getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]> {
+    async getSearchResults(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
@@ -49,7 +57,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 .addSelect('MIN("priceWithTax")', 'minPriceWithTax')
                 .addSelect('MAX("priceWithTax")', 'maxPriceWithTax');
         }
-        this.applyTermAndFilters(qb, input);
+        this.applyTermAndFilters(ctx, qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');
         }
@@ -75,6 +83,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
+            ctx,
             this.connection
                 .getRepository(SearchIndexItem)
                 .createQueryBuilder('si')
@@ -93,6 +102,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
     }
 
     private applyTermAndFilters(
+        ctx: RequestContext,
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
         forceGroup: boolean = false,
@@ -110,8 +120,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
                     (ts_rank_cd(to_tsvector(${minIfGrouped('si.sku')}), to_tsquery(:term)) * 10 +
                     ts_rank_cd(to_tsvector(${minIfGrouped('si.productName')}), to_tsquery(:term)) * 2 +
                     ts_rank_cd(to_tsvector(${minIfGrouped(
-                    'si.productVariantName',
-                )}), to_tsquery(:term)) * 1.5 +
+                        'si.productVariantName',
+                    )}), to_tsquery(:term)) * 1.5 +
                     ts_rank_cd(to_tsvector(${minIfGrouped('si.description')}), to_tsquery(:term)) * 1)
                             `,
                 'score',
@@ -137,6 +147,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
         }
+        qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
+        qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
         }

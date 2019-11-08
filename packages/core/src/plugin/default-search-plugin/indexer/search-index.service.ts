@@ -7,11 +7,15 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../service/helpers/job-manager/job';
 import { JobReporter, JobService } from '../../../service/services/job.service';
+import { WorkerMessage } from '../../../worker/types';
 import { WorkerService } from '../../../worker/worker.service';
 import {
+    DeleteProductMessage,
+    DeleteVariantMessage,
     ReindexMessage,
     ReindexMessageResponse,
-    UpdateProductOrVariantMessage,
+    UpdateProductMessage,
+    UpdateVariantMessage,
     UpdateVariantsByIdMessage,
 } from '../types';
 
@@ -33,29 +37,37 @@ export class SearchIndexService {
         });
     }
 
-    /**
-     * Updates the search index only for the affected entities.
-     */
-    updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
-        return this.jobService.createJob({
-            name: 'update-index',
-            metadata: {
-                entity: updatedEntity.constructor.name,
-                id: updatedEntity.id,
-            },
-            work: reporter => {
-                const data =
-                    updatedEntity instanceof Product
-                        ? { ctx, productId: updatedEntity.id }
-                        : { ctx, variantId: updatedEntity.id };
-                this.workerService.send(new UpdateProductOrVariantMessage(data)).subscribe({
-                    complete: () => reporter.complete(true),
-                    error: err => {
-                        Logger.error(err);
-                        reporter.complete(false);
-                    },
-                });
-            },
+    updateProduct(ctx: RequestContext, product: Product) {
+        const data = { ctx, productId: product.id };
+        return this.createShortWorkerJob(new UpdateProductMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
+        const variantIds = variants.map(v => v.id);
+        const data = { ctx, variantIds };
+        return this.createShortWorkerJob(new UpdateVariantMessage(data), {
+            entity: 'ProductVariant',
+            ids: variantIds,
+        });
+    }
+
+    deleteProduct(ctx: RequestContext, product: Product) {
+        const data = { ctx, productId: product.id };
+        return this.createShortWorkerJob(new DeleteProductMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
+        const variantIds = variants.map(v => v.id);
+        const data = { ctx, variantIds };
+        return this.createShortWorkerJob(new DeleteVariantMessage(data), {
+            entity: 'ProductVariant',
+            id: variantIds,
         });
     }
 
@@ -70,6 +82,25 @@ export class SearchIndexService {
                 this.workerService
                     .send(new UpdateVariantsByIdMessage({ ctx, ids }))
                     .subscribe(this.createObserver(reporter));
+            },
+        });
+    }
+
+    /**
+     * Creates a short-running job that does not expect progress updates.
+     */
+    private createShortWorkerJob<T extends WorkerMessage<any, any>>(message: T, metadata: any) {
+        return this.jobService.createJob({
+            name: 'update-index',
+            metadata,
+            work: reporter => {
+                this.workerService.send(message).subscribe({
+                    complete: () => reporter.complete(true),
+                    error: err => {
+                        Logger.error(err);
+                        reporter.complete(false);
+                    },
+                });
             },
         });
     }

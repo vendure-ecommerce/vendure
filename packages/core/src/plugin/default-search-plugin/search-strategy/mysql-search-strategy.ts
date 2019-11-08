@@ -17,14 +17,18 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
     constructor(private connection: Connection) {}
 
-    async getFacetValueIds(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<Map<ID, number>> {
+    async getFacetValueIds(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<Map<ID, number>> {
         const facetValuesQb = this.connection
             .getRepository(SearchIndexItem)
             .createQueryBuilder('si')
             .select(['productId', 'productVariantId'])
             .addSelect('GROUP_CONCAT(facetValueIds)', 'facetValues');
 
-        this.applyTermAndFilters(facetValuesQb, input);
+        this.applyTermAndFilters(ctx, facetValuesQb, input);
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('productVariantId');
         }
@@ -35,7 +39,11 @@ export class MysqlSearchStrategy implements SearchStrategy {
         return createFacetIdCountMap(facetValuesResult);
     }
 
-    async getSearchResults(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<SearchResult[]> {
+    async getSearchResults(
+        ctx: RequestContext,
+        input: SearchInput,
+        enabledOnly: boolean,
+    ): Promise<SearchResult[]> {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
@@ -46,7 +54,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .addSelect('MIN(priceWithTax)', 'minPriceWithTax')
                 .addSelect('MAX(priceWithTax)', 'maxPriceWithTax');
         }
-        this.applyTermAndFilters(qb, input);
+        this.applyTermAndFilters(ctx, qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');
         }
@@ -71,6 +79,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
+            ctx,
             this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
             input,
         );
@@ -87,6 +96,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
     }
 
     private applyTermAndFilters(
+        ctx: RequestContext,
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
@@ -122,6 +132,8 @@ export class MysqlSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`FIND_IN_SET (:collectionId, collectionIds)`, { collectionId });
         }
+        qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
+        qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('productId');
         }

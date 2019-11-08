@@ -29,6 +29,7 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         facetIds: raw.si_facetIds.split(',').map((x: string) => x.trim()),
         facetValueIds: raw.si_facetValueIds.split(',').map((x: string) => x.trim()),
         collectionIds: raw.si_collectionIds.split(',').map((x: string) => x.trim()),
+        channelIds: raw.si_channelIds.split(',').map((x: string) => x.trim()),
         productPreview: raw.si_productPreview,
         productVariantPreview: raw.si_productVariantPreview,
         score: raw.score || 0,

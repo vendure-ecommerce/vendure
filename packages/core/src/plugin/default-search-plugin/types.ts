@@ -9,10 +9,14 @@ export interface ReindexMessageResponse {
     duration: number;
 }
 
-export type UpdateProductOrVariantMessageData = {
+export type UpdateProductMessageData = {
     ctx: RequestContext;
-    productId?: ID;
-    variantId?: ID;
+    productId: ID;
+};
+
+export type UpdateVariantMessageData = {
+    ctx: RequestContext;
+    variantIds: ID[];
 };
 
 export interface UpdateVariantsByIdMessageData {
@@ -23,8 +27,17 @@ export interface UpdateVariantsByIdMessageData {
 export class ReindexMessage extends WorkerMessage<{ ctx: RequestContext }, ReindexMessageResponse> {
     static readonly pattern = 'Reindex';
 }
-export class UpdateProductOrVariantMessage extends WorkerMessage<UpdateProductOrVariantMessageData, boolean> {
-    static readonly pattern = 'UpdateProductOrVariant';
+export class UpdateVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
+    static readonly pattern = 'UpdateProduct';
+}
+export class UpdateProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
+    static readonly pattern = 'UpdateVariant';
+}
+export class DeleteVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
+    static readonly pattern = 'DeleteProduct';
+}
+export class DeleteProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
+    static readonly pattern = 'DeleteVariant';
 }
 export class UpdateVariantsByIdMessage extends WorkerMessage<
     UpdateVariantsByIdMessageData,

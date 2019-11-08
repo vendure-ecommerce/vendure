@@ -3,11 +3,10 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { buffer, debounceTime, filter, map } from 'rxjs/operators';
 
 import { idsAreEqual } from '../../common/utils';
-import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
-import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
+import { ProductEvent } from '../../event-bus/events/product-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { PluginCommonModule } from '../plugin-common.module';
 import { OnVendureBootstrap, VendurePlugin } from '../vendure-plugin';
@@ -66,9 +65,18 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
 
     /** @internal */
     async onVendureBootstrap() {
-        this.eventBus.ofType(CatalogModificationEvent).subscribe(event => {
-            if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return this.searchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
+        this.eventBus.ofType(ProductEvent).subscribe(event => {
+            if (event.type === 'deleted') {
+                return this.searchIndexService.deleteProduct(event.ctx, event.product).start();
+            } else {
+                return this.searchIndexService.updateProduct(event.ctx, event.product).start();
+            }
+        });
+        this.eventBus.ofType(ProductVariantEvent).subscribe(event => {
+            if (event.type === 'deleted') {
+                return this.searchIndexService.deleteVariant(event.ctx, event.variants).start();
+            } else {
+                return this.searchIndexService.updateVariants(event.ctx, event.variants).start();
             }
         });
 

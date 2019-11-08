@@ -20,6 +20,9 @@ export class SearchIndexItem {
     @PrimaryColumn('varchar')
     languageCode: LanguageCode;
 
+    @EntityId({ primary: true })
+    channelId: ID;
+
     @EntityId()
     productId: ID;
 
@@ -60,6 +63,9 @@ export class SearchIndexItem {
 
     @Column('simple-array')
     collectionIds: string[];
+
+    @Column('simple-array')
+    channelIds: string[];
 
     @Column()
     productPreview: string;
