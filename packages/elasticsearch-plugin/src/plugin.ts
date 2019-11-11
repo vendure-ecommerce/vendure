@@ -1,6 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
 import {
-    CatalogModificationEvent,
     CollectionModificationEvent,
     DeepRequired,
     EventBus,
@@ -11,7 +10,10 @@ import {
     OnVendureClose,
     PluginCommonModule,
     Product,
+    ProductChannelEvent,
+    ProductEvent,
     ProductVariant,
+    ProductVariantEvent,
     TaxRateModificationEvent,
     Type,
     VendurePlugin,
@@ -246,9 +248,30 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
 
         await this.elasticsearchService.createIndicesIfNotExists();
 
-        this.eventBus.ofType(CatalogModificationEvent).subscribe(event => {
-            if (event.entity instanceof Product || event.entity instanceof ProductVariant) {
-                return this.elasticsearchIndexService.updateProductOrVariant(event.ctx, event.entity).start();
+        this.eventBus.ofType(ProductEvent).subscribe(event => {
+            if (event.type === 'deleted') {
+                return this.elasticsearchIndexService.deleteProduct(event.ctx, event.product).start();
+            } else {
+                return this.elasticsearchIndexService.updateProduct(event.ctx, event.product).start();
+            }
+        });
+        this.eventBus.ofType(ProductVariantEvent).subscribe(event => {
+            if (event.type === 'deleted') {
+                return this.elasticsearchIndexService.deleteVariant(event.ctx, event.variants).start();
+            } else {
+                return this.elasticsearchIndexService.updateVariants(event.ctx, event.variants).start();
+            }
+        });
+
+        this.eventBus.ofType(ProductChannelEvent).subscribe(event => {
+            if (event.type === 'assigned') {
+                return this.elasticsearchIndexService
+                    .assignProductToChannel(event.ctx, event.product, event.channelId)
+                    .start();
+            } else {
+                return this.elasticsearchIndexService
+                    .removeProductFromChannel(event.ctx, event.product, event.channelId)
+                    .start();
             }
         });
 
@@ -271,7 +294,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
         this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
             if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return this.elasticsearchService.reindex(event.ctx);
+                return this.elasticsearchService.updateAll(event.ctx);
             }
         });
     }

@@ -4,6 +4,7 @@ import { DocumentNode } from 'graphql';
 import { ElasticsearchOptions } from './options';
 
 export function generateSchemaExtensions(options: ElasticsearchOptions): DocumentNode {
+    const customMappingTypes = generateCustomMappingTypes(options);
     return gql`
         extend type SearchResponse {
             prices: SearchResponsePriceData!
@@ -31,7 +32,7 @@ export function generateSchemaExtensions(options: ElasticsearchOptions): Documen
             max: Int!
         }
 
-        ${generateCustomMappingTypes(options)}
+        ${customMappingTypes ? customMappingTypes : ''}
     `;
 }
 
@@ -80,4 +81,5 @@ function generateCustomMappingTypes(options: ElasticsearchOptions): DocumentNode
             ${sdl}
         `;
     }
+    return;
 }

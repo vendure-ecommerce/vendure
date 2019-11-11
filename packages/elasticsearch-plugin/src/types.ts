@@ -30,6 +30,7 @@ export type PriceRangeBucket = {
 };
 
 export type VariantIndexItem = Omit<SearchResult, 'score' | 'price' | 'priceWithTax'> & {
+    channelId: ID;
     price: number;
     priceWithTax: number;
     [customMapping: string]: any;
@@ -38,6 +39,7 @@ export type ProductIndexItem = {
     sku: string[];
     slug: string[];
     productId: ID;
+    channelId: ID;
     productName: string[];
     productPreview: string;
     productVariantId: ID[];
@@ -48,6 +50,7 @@ export type ProductIndexItem = {
     facetIds: ID[];
     facetValueIds: ID[];
     collectionIds: ID[];
+    channelIds: ID[];
     enabled: boolean;
     priceMin: number;
     priceMax: number;
@@ -132,10 +135,14 @@ export interface ReindexMessageResponse {
     duration: number;
 }
 
-export type UpdateProductOrVariantMessageData = {
+export type UpdateProductMessageData = {
     ctx: RequestContext;
-    productId?: ID;
-    variantId?: ID;
+    productId: ID;
+};
+
+export type UpdateVariantMessageData = {
+    ctx: RequestContext;
+    variantIds: ID[];
 };
 
 export interface UpdateVariantsByIdMessageData {
@@ -143,17 +150,38 @@ export interface UpdateVariantsByIdMessageData {
     ids: ID[];
 }
 
+export interface ProductChannelMessageData {
+    ctx: RequestContext;
+    productId: ID;
+    channelId: ID;
+}
+
 export class ReindexMessage extends WorkerMessage<{ ctx: RequestContext }, ReindexMessageResponse> {
     static readonly pattern = 'Reindex';
 }
-export class UpdateProductOrVariantMessage extends WorkerMessage<UpdateProductOrVariantMessageData, boolean> {
-    static readonly pattern = 'UpdateProductOrVariant';
+export class UpdateVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
+    static readonly pattern = 'UpdateProduct';
+}
+export class UpdateProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
+    static readonly pattern = 'UpdateVariant';
+}
+export class DeleteVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {
+    static readonly pattern = 'DeleteProduct';
+}
+export class DeleteProductMessage extends WorkerMessage<UpdateProductMessageData, boolean> {
+    static readonly pattern = 'DeleteVariant';
 }
 export class UpdateVariantsByIdMessage extends WorkerMessage<
     UpdateVariantsByIdMessageData,
     ReindexMessageResponse
 > {
     static readonly pattern = 'UpdateVariantsById';
+}
+export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
+    static readonly pattern = 'AssignProductToChannel';
+}
+export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
+    static readonly pattern = 'RemoveProductFromChannel';
 }
 
 type Maybe<T> = T | null | undefined;

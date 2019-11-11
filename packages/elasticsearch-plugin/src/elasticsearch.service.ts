@@ -79,7 +79,12 @@ export class ElasticsearchService {
     ): Promise<Omit<ElasticSearchResponse, 'facetValues' | 'priceRange'>> {
         const { indexPrefix } = this.options;
         const { groupByProduct } = input;
-        const elasticSearchBody = buildElasticBody(input, this.options.searchConfig, enabledOnly);
+        const elasticSearchBody = buildElasticBody(
+            input,
+            this.options.searchConfig,
+            ctx.channelId,
+            enabledOnly,
+        );
         if (groupByProduct) {
             const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
                 index: indexPrefix + PRODUCT_INDEX_NAME,
@@ -112,7 +117,12 @@ export class ElasticsearchService {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const { indexPrefix } = this.options;
-        const elasticSearchBody = buildElasticBody(input, this.options.searchConfig, enabledOnly);
+        const elasticSearchBody = buildElasticBody(
+            input,
+            this.options.searchConfig,
+            ctx.channelId,
+            enabledOnly,
+        );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
@@ -133,9 +143,10 @@ export class ElasticsearchService {
 
         const facetValues = await this.facetValueService.findByIds(buckets.map(b => b.key), ctx.languageCode);
         return facetValues.map((facetValue, index) => {
+            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             return {
                 facetValue,
-                count: buckets[index].doc_count,
+                count: bucket ? bucket.doc_count : 0,
             };
         });
     }
@@ -143,7 +154,7 @@ export class ElasticsearchService {
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {
         const { indexPrefix, searchConfig } = this.options;
         const { groupByProduct } = input;
-        const elasticSearchBody = buildElasticBody(input, searchConfig, true);
+        const elasticSearchBody = buildElasticBody(input, searchConfig, ctx.channelId, true);
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {
@@ -223,6 +234,15 @@ export class ElasticsearchService {
         return job;
     }
 
+    /**
+     * Rebuilds the full search index.
+     */
+    async updateAll(ctx: RequestContext): Promise<JobInfo> {
+        const job = this.elasticsearchIndexService.reindex(ctx);
+        job.start();
+        return job;
+    }
+
     private async createIndices(prefix: string) {
         try {
             const index = prefix + VARIANT_INDEX_NAME;
@@ -296,6 +316,7 @@ export class ElasticsearchService {
                 min: source.priceWithTaxMin,
                 max: source.priceWithTaxMax,
             },
+            channelIds: [],
             score: hit._score,
         };
         this.addCustomMappings(result, source, this.options.customProductMappings);

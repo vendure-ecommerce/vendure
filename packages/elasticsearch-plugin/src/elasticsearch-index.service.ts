@@ -1,5 +1,4 @@
-import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import {
     ID,
     Job,
@@ -9,11 +8,21 @@ import {
     Product,
     ProductVariant,
     RequestContext,
+    WorkerMessage,
     WorkerService,
 } from '@vendure/core';
 
 import { ReindexMessageResponse } from './indexer.controller';
-import { ReindexMessage, UpdateProductOrVariantMessage, UpdateVariantsByIdMessage } from './types';
+import {
+    AssignProductToChannelMessage,
+    DeleteProductMessage,
+    DeleteVariantMessage,
+    ReindexMessage,
+    RemoveProductFromChannelMessage,
+    UpdateProductMessage,
+    UpdateVariantMessage,
+    UpdateVariantsByIdMessage,
+} from './types';
 
 @Injectable()
 export class ElasticsearchIndexService {
@@ -30,36 +39,86 @@ export class ElasticsearchIndexService {
         });
     }
 
+    updateProduct(ctx: RequestContext, product: Product) {
+        const data = { ctx, productId: product.id };
+        return this.createShortWorkerJob(new UpdateProductMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
+        const variantIds = variants.map(v => v.id);
+        const data = { ctx, variantIds };
+        return this.createShortWorkerJob(new UpdateVariantMessage(data), {
+            entity: 'ProductVariant',
+            ids: variantIds,
+        });
+    }
+
+    deleteProduct(ctx: RequestContext, product: Product) {
+        const data = { ctx, productId: product.id };
+        return this.createShortWorkerJob(new DeleteProductMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
+        const variantIds = variants.map(v => v.id);
+        const data = { ctx, variantIds };
+        return this.createShortWorkerJob(new DeleteVariantMessage(data), {
+            entity: 'ProductVariant',
+            id: variantIds,
+        });
+    }
+
+    assignProductToChannel(ctx: RequestContext, product: Product, channelId: ID) {
+        const data = { ctx, productId: product.id, channelId };
+        return this.createShortWorkerJob(new AssignProductToChannelMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    removeProductFromChannel(ctx: RequestContext, product: Product, channelId: ID) {
+        const data = { ctx, productId: product.id, channelId };
+        return this.createShortWorkerJob(new RemoveProductFromChannelMessage(data), {
+            entity: 'Product',
+            id: product.id,
+        });
+    }
+
+    updateVariantsById(ctx: RequestContext, ids: ID[]) {
+        return this.jobService.createJob({
+            name: 'update-variants',
+            metadata: {
+                variantIds: ids,
+            },
+            work: reporter => {
+                Logger.verbose(`sending UpdateVariantsByIdMessage`);
+                this.workerService
+                    .send(new UpdateVariantsByIdMessage({ ctx, ids }))
+                    .subscribe(this.createObserver(reporter));
+            },
+        });
+    }
+
     /**
-     * Updates the search index only for the affected entities.
+     * Creates a short-running job that does not expect progress updates.
      */
-    updateProductOrVariant(ctx: RequestContext, updatedEntity: Product | ProductVariant) {
+    private createShortWorkerJob<T extends WorkerMessage<any, any>>(message: T, metadata: any) {
         return this.jobService.createJob({
             name: 'update-index',
+            metadata,
             work: reporter => {
-                const data =
-                    updatedEntity instanceof Product
-                        ? { ctx, productId: updatedEntity.id }
-                        : { ctx, variantId: updatedEntity.id };
-                this.workerService.send(new UpdateProductOrVariantMessage(data)).subscribe({
+                this.workerService.send(message).subscribe({
                     complete: () => reporter.complete(true),
                     error: err => {
                         Logger.error(err);
                         reporter.complete(false);
                     },
                 });
-            },
-        });
-    }
-
-    updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.jobService.createJob({
-            name: 'update-index',
-            work: reporter => {
-                Logger.verbose(`sending reindex message`);
-                this.workerService
-                    .send(new UpdateVariantsByIdMessage({ ctx, ids }))
-                    .subscribe(this.createObserver(reporter));
             },
         });
     }

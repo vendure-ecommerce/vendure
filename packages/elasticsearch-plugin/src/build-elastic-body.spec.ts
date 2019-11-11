@@ -6,11 +6,14 @@ import { defaultOptions, SearchConfig } from './options';
 
 describe('buildElasticBody()', () => {
     const searchConfig = defaultOptions.searchConfig;
+    const CHANNEL_ID = 42;
+    const CHANNEL_ID_TERM = { term: { channelId: CHANNEL_ID } };
 
     it('search term', () => {
-        const result = buildElasticBody({ term: 'test' }, searchConfig);
+        const result = buildElasticBody({ term: 'test' }, searchConfig, CHANNEL_ID);
         expect(result.query).toEqual({
             bool: {
+                filter: [CHANNEL_ID_TERM],
                 must: [
                     {
                         multi_match: {
@@ -25,41 +28,41 @@ describe('buildElasticBody()', () => {
     });
 
     it('facetValueIds', () => {
-        const result = buildElasticBody({ facetValueIds: ['1', '2'] }, searchConfig);
+        const result = buildElasticBody({ facetValueIds: ['1', '2'] }, searchConfig, CHANNEL_ID);
         expect(result.query).toEqual({
             bool: {
-                filter: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                filter: [CHANNEL_ID_TERM, { term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
             },
         });
     });
 
     it('collectionId', () => {
-        const result = buildElasticBody({ collectionId: '1' }, searchConfig);
+        const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID);
         expect(result.query).toEqual({
             bool: {
-                filter: [{ term: { collectionIds: '1' } }],
+                filter: [CHANNEL_ID_TERM, { term: { collectionIds: '1' } }],
             },
         });
     });
 
     it('paging', () => {
-        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig);
+        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig, CHANNEL_ID);
         expect(result).toEqual({
             from: 20,
             size: 10,
-            query: { bool: {} },
+            query: { bool: { filter: [CHANNEL_ID_TERM] } },
             sort: [],
         });
     });
 
     describe('sorting', () => {
         it('name', () => {
-            const result = buildElasticBody({ sort: { name: SortOrder.DESC } }, searchConfig);
-            expect(result.sort).toEqual([{ productName: { order: 'desc' } }]);
+            const result = buildElasticBody({ sort: { name: SortOrder.DESC } }, searchConfig, CHANNEL_ID);
+            expect(result.sort).toEqual([{ 'productName.keyword': { order: 'desc' } }]);
         });
 
         it('price', () => {
-            const result = buildElasticBody({ sort: { price: SortOrder.ASC } }, searchConfig);
+            const result = buildElasticBody({ sort: { price: SortOrder.ASC } }, searchConfig, CHANNEL_ID);
             expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
 
@@ -67,24 +70,25 @@ describe('buildElasticBody()', () => {
             const result = buildElasticBody(
                 { sort: { price: SortOrder.ASC }, groupByProduct: true },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
         });
     });
 
     it('enabledOnly true', () => {
-        const result = buildElasticBody({}, searchConfig, true);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, true);
         expect(result.query).toEqual({
             bool: {
-                filter: [{ term: { enabled: true } }],
+                filter: [CHANNEL_ID_TERM, { term: { enabled: true } }],
             },
         });
     });
 
     it('enabledOnly false', () => {
-        const result = buildElasticBody({}, searchConfig, false);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, false);
         expect(result.query).toEqual({
-            bool: {},
+            bool: { filter: [CHANNEL_ID_TERM] },
         });
     });
 
@@ -102,6 +106,7 @@ describe('buildElasticBody()', () => {
                 facetValueIds: ['6', '7'],
             },
             searchConfig,
+            CHANNEL_ID,
             true,
         );
 
@@ -120,6 +125,7 @@ describe('buildElasticBody()', () => {
                         },
                     ],
                     filter: [
+                        CHANNEL_ID_TERM,
                         { term: { facetValueIds: '6' } },
                         { term: { facetValueIds: '7' } },
                         { term: { collectionIds: '42' } },
@@ -127,14 +133,19 @@ describe('buildElasticBody()', () => {
                     ],
                 },
             },
-            sort: [{ productName: { order: 'desc' } }],
+            sort: [{ 'productName.keyword': { order: 'desc' } }],
         });
     });
 
     it('multiMatchType option', () => {
-        const result = buildElasticBody({ term: 'test' }, { ...searchConfig, multiMatchType: 'phrase' });
+        const result = buildElasticBody(
+            { term: 'test' },
+            { ...searchConfig, multiMatchType: 'phrase' },
+            CHANNEL_ID,
+        );
         expect(result.query).toEqual({
             bool: {
+                filter: [CHANNEL_ID_TERM],
                 must: [
                     {
                         multi_match: {
@@ -160,9 +171,10 @@ describe('buildElasticBody()', () => {
                 },
             },
         };
-        const result = buildElasticBody({ term: 'test' }, config);
+        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID);
         expect(result.query).toEqual({
             bool: {
+                filter: [CHANNEL_ID_TERM],
                 must: [
                     {
                         multi_match: {
@@ -181,10 +193,12 @@ describe('buildElasticBody()', () => {
             const result = buildElasticBody(
                 { priceRange: { min: 500, max: 1500 }, groupByProduct: false },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
+                        CHANNEL_ID_TERM,
                         {
                             range: {
                                 price: {
@@ -202,10 +216,12 @@ describe('buildElasticBody()', () => {
             const result = buildElasticBody(
                 { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: false },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
+                        CHANNEL_ID_TERM,
                         {
                             range: {
                                 priceWithTax: {
@@ -223,10 +239,12 @@ describe('buildElasticBody()', () => {
             const result = buildElasticBody(
                 { priceRange: { min: 500, max: 1500 }, groupByProduct: true },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
+                        CHANNEL_ID_TERM,
                         {
                             range: {
                                 priceMin: {
@@ -250,10 +268,12 @@ describe('buildElasticBody()', () => {
             const result = buildElasticBody(
                 { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: true },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
+                        CHANNEL_ID_TERM,
                         {
                             range: {
                                 priceWithTaxMin: {
@@ -282,10 +302,12 @@ describe('buildElasticBody()', () => {
                     facetValueIds: ['5'],
                 },
                 searchConfig,
+                CHANNEL_ID,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
+                        CHANNEL_ID_TERM,
                         { term: { facetValueIds: '5' } },
                         { term: { collectionIds: '3' } },
                         {
