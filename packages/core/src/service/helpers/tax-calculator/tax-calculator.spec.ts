@@ -5,6 +5,7 @@ import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { DefaultTaxCalculationStrategy } from '../../../config/tax/default-tax-calculation-strategy';
 import { EventBus } from '../../../event-bus/event-bus';
+import { WorkerService } from '../../../worker/worker.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 
@@ -36,6 +37,7 @@ describe('TaxCalculator', () => {
                 { provide: Connection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: EventBus, useValue: { publish: () => ({}) } },
+                { provide: WorkerService, useValue: { send: () => ({}) } },
             ],
         }).compile();
 

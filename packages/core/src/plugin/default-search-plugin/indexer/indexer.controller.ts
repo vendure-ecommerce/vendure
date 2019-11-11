@@ -15,7 +15,6 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
-import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { AsyncQueue } from '../async-queue';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
@@ -52,7 +51,6 @@ export class IndexerController {
     constructor(
         @InjectConnection() private connection: Connection,
         private productVariantService: ProductVariantService,
-        private taxRateService: TaxRateService,
     ) {}
 
     @MessagePattern(ReindexMessage.pattern)
@@ -68,9 +66,6 @@ export class IndexerController {
                     workerLoggerCtx,
                 );
                 const batches = Math.ceil(count / BATCH_SIZE);
-
-                // Ensure tax rates are up-to-date.
-                await this.taxRateService.updateActiveTaxRates();
 
                 await this.connection
                     .getRepository(SearchIndexItem)

@@ -13,9 +13,11 @@ import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
+import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
 
 export class TaxRateService {
     /**
@@ -34,6 +36,7 @@ export class TaxRateService {
         @InjectConnection() private connection: Connection,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
+        private workerService: WorkerService,
     ) {}
 
     async initTaxRates() {
@@ -69,6 +72,7 @@ export class TaxRateService {
         }
         const newTaxRate = await this.connection.getRepository(TaxRate).save(taxRate);
         await this.updateActiveTaxRates();
+        await this.workerService.send(new TaxRateUpdatedMessage(newTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
         return assertFound(this.findOne(newTaxRate.id));
     }
@@ -94,6 +98,7 @@ export class TaxRateService {
         }
         await this.connection.getRepository(TaxRate).save(updatedTaxRate);
         await this.updateActiveTaxRates();
+        await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
         return assertFound(this.findOne(taxRate.id));
     }

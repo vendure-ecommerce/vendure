@@ -3442,22 +3442,6 @@ export type GetChannelsQuery = { __typename?: 'Query' } & {
     channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
 };
 
-export type AssignProductsToChannelMutationVariables = {
-    input: AssignProductsToChannelInput;
-};
-
-export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
-    assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
-};
-
-export type RemoveProductsFromChannelMutationVariables = {
-    input: RemoveProductsFromChannelInput;
-};
-
-export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
-    removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
-};
-
 export type DeleteChannelMutationVariables = {
     id: Scalars['ID'];
 };
@@ -4442,6 +4426,30 @@ export type CreateChannelMutation = { __typename?: 'Mutation' } & {
         };
 };
 
+export type DeleteProductVariantMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
+    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type AssignProductsToChannelMutationVariables = {
+    input: AssignProductsToChannelInput;
+};
+
+export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
+    assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
+export type RemoveProductsFromChannelMutationVariables = {
+    input: RemoveProductsFromChannelInput;
+};
+
+export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
+    removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -4722,14 +4730,6 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
                 options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
             }
     >;
-};
-
-export type DeleteProductVariantMutationVariables = {
-    id: Scalars['ID'];
-};
-
-export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
-    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type DeletePromotionMutationVariables = {
@@ -5131,18 +5131,6 @@ export namespace GetChannels {
     export type Variables = GetChannelsQueryVariables;
     export type Query = GetChannelsQuery;
     export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
-}
-
-export namespace AssignProductsToChannel {
-    export type Variables = AssignProductsToChannelMutationVariables;
-    export type Mutation = AssignProductsToChannelMutation;
-    export type AssignProductsToChannel = ProductWithVariantsFragment;
-}
-
-export namespace RemoveProductsFromChannel {
-    export type Variables = RemoveProductsFromChannelMutationVariables;
-    export type Mutation = RemoveProductsFromChannelMutation;
-    export type RemoveProductsFromChannel = ProductWithVariantsFragment;
 }
 
 export namespace DeleteChannel {
@@ -5800,6 +5788,24 @@ export namespace CreateChannel {
     export type DefaultTaxZone = NonNullable<CreateChannelMutation['createChannel']['defaultTaxZone']>;
 }
 
+export namespace DeleteProductVariant {
+    export type Variables = DeleteProductVariantMutationVariables;
+    export type Mutation = DeleteProductVariantMutation;
+    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
+}
+
+export namespace AssignProductsToChannel {
+    export type Variables = AssignProductsToChannelMutationVariables;
+    export type Mutation = AssignProductsToChannelMutation;
+    export type AssignProductsToChannel = ProductWithVariantsFragment;
+}
+
+export namespace RemoveProductsFromChannel {
+    export type Variables = RemoveProductsFromChannelMutationVariables;
+    export type Mutation = RemoveProductsFromChannelMutation;
+    export type RemoveProductsFromChannel = ProductWithVariantsFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -5991,12 +5997,6 @@ export namespace GetOptionGroup {
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
     export type Options = NonNullable<(NonNullable<GetOptionGroupQuery['productOptionGroup']>)['options'][0]>;
-}
-
-export namespace DeleteProductVariant {
-    export type Variables = DeleteProductVariantMutationVariables;
-    export type Mutation = DeleteProductVariantMutation;
-    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
 }
 
 export namespace DeletePromotion {
