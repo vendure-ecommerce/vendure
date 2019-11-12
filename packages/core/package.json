@@ -21,8 +21,7 @@
     "build": "rimraf dist && tsc -p ./build/tsconfig.build.json && tsc -p ./build/tsconfig.cli.json && gulp -f ./build/gulpfile.ts build",
     "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
     "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ./e2e/config/jest-e2e.json --runInBand"
+    "test": "jest --config ./jest.config.js"
   },
   "publishConfig": {
     "access": "public"

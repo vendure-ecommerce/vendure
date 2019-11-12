@@ -13,9 +13,18 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      elasticsearch:
+        image: elasticsearch:7.4.2
+        ports:
+          - 9200/tcp
+
     strategy:
       matrix:
         node-version: [10.x, 12.x]
+
+    env:
+      CI: true
 
     steps:
     - uses: actions/checkout@v1
@@ -28,9 +37,10 @@ jobs:
         yarn install
         yarn bootstrap
         yarn build
-      env:
-        CI: true
-    - name: Unit tests
-      run: yarn test
+    #- name: Unit tests
+    #  run: yarn test
     - name: e2e tests
+      env:
+        ELASTICSEARCH_PORT: ${{ job.services.elasticsearch.ports[9200] }}
+        ELASTICSEARCH_HOST: localhost
       run: yarn e2e

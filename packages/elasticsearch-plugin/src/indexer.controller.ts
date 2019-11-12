@@ -427,7 +427,7 @@ export class ElasticsearchIndexerController {
             return body;
         } catch (e) {
             Logger.error(`Error when attempting to run bulk operations [${e.toString()}]`, loggerCtx);
-            Logger.error('Error details: ' + JSON.stringify(e.body.error, null, 2), loggerCtx);
+            Logger.error('Error details: ' + JSON.stringify(e.body && e.body.error, null, 2), loggerCtx);
         }
     }
 

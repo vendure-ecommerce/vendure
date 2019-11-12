@@ -1,6 +1,6 @@
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
+import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -48,11 +48,14 @@ import { initialData } from './fixtures/e2e-initial-data';
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            logger: new DefaultLogger({ level: LogLevel.Verbose }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
-                    port: 9200,
-                    host: 'http://192.168.99.100',
+                    port: process.env.CI ? +(process.env.ELASTICSEARCH_PORT || 9200) : 9200,
+                    host: process.env.CI
+                        ? process.env.ELASTICSEARCH_HOST || 'elasticsearch'
+                        : 'http://192.168.99.100',
                 }),
             ],
         }),
