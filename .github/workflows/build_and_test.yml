@@ -13,11 +13,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    services:
-      elasticsearch:
-        image: elasticsearch:7.4.2
-        ports:
-          - 9200/tcp
+    #services:
+    #  elasticsearch:
+    #    image: elasticsearch:7.4.2
+    #    ports:
+    #      - 9200/tcp
 
     strategy:
       matrix:
@@ -32,6 +32,12 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Install elasticsearch
+      run: |
+        curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
+        tar -xvf elasticsearch-7.4.2-linux-x86_64.tar.gz
+        cd elasticsearch-7.4.2/bin
+        ./elasticsearch &
     - name: Install & build
       run: |
         yarn install
@@ -41,6 +47,8 @@ jobs:
     #  run: yarn test
     - name: e2e tests
       env:
-        ELASTICSEARCH_PORT: ${{ job.services.elasticsearch.ports[9200] }}
-        ELASTICSEARCH_HOST: localhost
-      run: yarn e2e
+        ELASTICSEARCH_PORT: 9200
+        ELASTICSEARCH_HOST: http://localhost
+      run: |
+        curl -X GET "localhost:9200/_cat/health?v&pretty"
+        yarn e2e
