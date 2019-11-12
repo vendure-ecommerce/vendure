@@ -8,6 +8,7 @@ import {
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    OnVendureWorkerClose,
     PluginCommonModule,
     Product,
     ProductChannelEvent,
@@ -211,7 +212,7 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
     },
     workers: [ElasticsearchIndexerController],
 })
-export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
+export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose, OnVendureWorkerClose {
     private static options: DeepRequired<ElasticsearchOptions>;
     private static client: Client;
 
@@ -301,6 +302,20 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
 
     /** @internal */
     onVendureClose() {
-        return ElasticsearchPlugin.client.close();
+        return this.safeCloseElasticClient();
+    }
+
+    /** @internal */
+    onVendureWorkerClose(): void | Promise<void> {
+        return this.safeCloseElasticClient();
+    }
+
+    private safeCloseElasticClient() {
+        if (ElasticsearchPlugin.client.connectionPool.connections.length) {
+            Logger.info('Closing elasticsearch client');
+            return ElasticsearchPlugin.client.close();
+        } else {
+            return;
+        }
     }
 }

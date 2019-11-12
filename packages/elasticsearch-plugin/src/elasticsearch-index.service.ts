@@ -28,13 +28,15 @@ import {
 export class ElasticsearchIndexService {
     constructor(private workerService: WorkerService, private jobService: JobService) {}
 
-    reindex(ctx: RequestContext): Job {
+    reindex(ctx: RequestContext, dropIndices: boolean): Job {
         return this.jobService.createJob({
             name: 'reindex',
             singleInstance: true,
             work: async reporter => {
                 Logger.verbose(`sending reindex message`);
-                this.workerService.send(new ReindexMessage({ ctx })).subscribe(this.createObserver(reporter));
+                this.workerService
+                    .send(new ReindexMessage({ ctx, dropIndices }))
+                    .subscribe(this.createObserver(reporter));
             },
         });
     }
