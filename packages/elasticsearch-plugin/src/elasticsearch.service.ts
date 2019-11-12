@@ -5,6 +5,7 @@ import {
     DeepRequired,
     FacetValue,
     FacetValueService,
+    ID,
     InternalServerError,
     Logger,
     RequestContext,
@@ -227,8 +228,7 @@ export class ElasticsearchService {
      */
     async reindex(ctx: RequestContext): Promise<JobInfo> {
         const { indexPrefix } = this.options;
-        await this.deleteIndices(indexPrefix);
-        await this.createIndices(indexPrefix);
+        await this.deleteByChannel(indexPrefix, ctx.channelId);
         const job = this.elasticsearchIndexService.reindex(ctx);
         job.start();
         return job;
@@ -260,18 +260,32 @@ export class ElasticsearchService {
         }
     }
 
-    private async deleteIndices(prefix: string) {
+    private async deleteByChannel(prefix: string, channelId: ID) {
         try {
             const index = prefix + VARIANT_INDEX_NAME;
-            await this.client.indices.delete({ index });
-            Logger.verbose(`Deleted index "${index}"`, loggerCtx);
+            await this.client.deleteByQuery({
+                index,
+                body: {
+                    query: {
+                        match: { channelId },
+                    },
+                },
+            });
+            Logger.verbose(`Deleted index "${index} for channel "${channelId}"`, loggerCtx);
         } catch (e) {
             Logger.error(e, loggerCtx);
         }
         try {
             const index = prefix + PRODUCT_INDEX_NAME;
-            await this.client.indices.delete({ index });
-            Logger.verbose(`Deleted index "${index}"`, loggerCtx);
+            await this.client.deleteByQuery({
+                index,
+                body: {
+                    query: {
+                        match: { channelId },
+                    },
+                },
+            });
+            Logger.verbose(`Deleted index "${index}" for channel "${channelId}"`, loggerCtx);
         } catch (e) {
             Logger.error(e, loggerCtx);
         }

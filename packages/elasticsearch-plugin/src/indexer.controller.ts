@@ -231,8 +231,8 @@ export class ElasticsearchIndexerController {
 
         return asyncObservable(async observer => {
             const timeStart = Date.now();
-            const qb = this.getSearchIndexQueryBuilder();
-            const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
+            const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
+            const count = await qb.andWhere('variants__product.deletedAt IS NULL').getCount();
             Logger.verbose(`Reindexing ${count} ProductVariants`, loggerCtx);
 
             const batches = Math.ceil(count / batchSize);
@@ -426,7 +426,7 @@ export class ElasticsearchIndexerController {
         }
     }
 
-    private getSearchIndexQueryBuilder() {
+    private getSearchIndexQueryBuilder(channelId: ID) {
         const qb = this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: variantRelations,
@@ -435,6 +435,9 @@ export class ElasticsearchIndexerController {
             },
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+        qb.leftJoin('variants.product', '__product')
+            .leftJoin('__product.channels', '__channel')
+            .where('__channel.id = :channelId', { channelId });
         return qb;
     }
 
@@ -446,7 +449,7 @@ export class ElasticsearchIndexerController {
         const { batchSize } = this.options;
         const i = Number.parseInt(batchNumber.toString(), 10);
         const variants = await qb
-            .where('variants__product.deletedAt IS NULL')
+            .andWhere('variants__product.deletedAt IS NULL')
             .take(batchSize)
             .skip(i * batchSize)
             .getMany();
