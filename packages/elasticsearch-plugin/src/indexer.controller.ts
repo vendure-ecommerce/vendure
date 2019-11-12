@@ -4,6 +4,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { unique } from '@vendure/common/lib/unique';
 import {
+    asyncObservable,
     FacetValue,
     ID,
     JobService,
@@ -14,7 +15,7 @@ import {
     RequestContext,
     translateDeep,
 } from '@vendure/core';
-import { defer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Connection, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
@@ -82,7 +83,7 @@ export class ElasticsearchIndexerController {
         productId,
     }: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.updateProductInternal(ctx, productId, ctx.channelId);
             return true;
         });
@@ -97,7 +98,7 @@ export class ElasticsearchIndexerController {
         productId,
     }: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.deleteProductInternal(productId, ctx.channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.deleteVariantsInternal(variants.map(v => v.id), ctx.channelId);
@@ -115,7 +116,7 @@ export class ElasticsearchIndexerController {
         channelId,
     }: AssignProductToChannelMessage['data']): Observable<AssignProductToChannelMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.updateProductInternal(ctx, productId, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.updateVariantsInternal(ctx, variants.map(v => v.id), channelId);
@@ -133,7 +134,7 @@ export class ElasticsearchIndexerController {
         channelId,
     }: RemoveProductFromChannelMessage['data']): Observable<RemoveProductFromChannelMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.deleteProductInternal(productId, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.deleteVariantsInternal(variants.map(v => v.id), channelId);
@@ -150,7 +151,7 @@ export class ElasticsearchIndexerController {
         variantIds,
     }: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.updateVariantsInternal(ctx, variantIds, ctx.channelId);
             return true;
         });
@@ -162,7 +163,7 @@ export class ElasticsearchIndexerController {
         variantIds,
     }: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
+        return asyncObservable(async () => {
             await this.deleteVariantsInternal(variantIds, ctx.channelId);
             return true;
         });
@@ -176,53 +177,50 @@ export class ElasticsearchIndexerController {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
-        return new Observable(observer => {
-            (async () => {
-                const timeStart = Date.now();
+        return asyncObservable(async observer => {
+            const timeStart = Date.now();
 
-                if (ids.length) {
-                    const batches = Math.ceil(ids.length / batchSize);
-                    Logger.verbose(`Updating ${ids.length} variants...`);
+            if (ids.length) {
+                const batches = Math.ceil(ids.length / batchSize);
+                Logger.verbose(`Updating ${ids.length} variants...`);
 
-                    let variantsInProduct: ProductVariant[] = [];
+                let variantsInProduct: ProductVariant[] = [];
 
-                    for (let i = 0; i < batches; i++) {
-                        const begin = i * batchSize;
-                        const end = begin + batchSize;
-                        Logger.verbose(`Updating ids from index ${begin} to ${end}`);
-                        const batchIds = ids.slice(begin, end);
-                        const variants = await this.getVariantsByIds(ctx, batchIds);
-                        variantsInProduct = await this.processVariantBatch(
-                            variants,
-                            variantsInProduct,
-                            (operations, variant) => {
-                                operations.push(
-                                    { update: { _id: this.getId(variant.id, ctx.channelId) } },
-                                    { doc: this.createVariantIndexItem(variant, ctx.channelId) },
-                                );
-                            },
-                            (operations, product, _variants) => {
-                                operations.push(
-                                    { update: { _id: this.getId(product.id, ctx.channelId) } },
-                                    { doc: this.createProductIndexItem(_variants, ctx.channelId) },
-                                );
-                            },
-                        );
-                        observer.next({
-                            total: ids.length,
-                            completed: Math.min((i + 1) * batchSize, ids.length),
-                            duration: +new Date() - timeStart,
-                        });
-                    }
+                for (let i = 0; i < batches; i++) {
+                    const begin = i * batchSize;
+                    const end = begin + batchSize;
+                    Logger.verbose(`Updating ids from index ${begin} to ${end}`);
+                    const batchIds = ids.slice(begin, end);
+                    const variants = await this.getVariantsByIds(ctx, batchIds);
+                    variantsInProduct = await this.processVariantBatch(
+                        variants,
+                        variantsInProduct,
+                        (operations, variant) => {
+                            operations.push(
+                                { update: { _id: this.getId(variant.id, ctx.channelId) } },
+                                { doc: this.createVariantIndexItem(variant, ctx.channelId) },
+                            );
+                        },
+                        (operations, product, _variants) => {
+                            operations.push(
+                                { update: { _id: this.getId(product.id, ctx.channelId) } },
+                                { doc: this.createProductIndexItem(_variants, ctx.channelId) },
+                            );
+                        },
+                    );
+                    observer.next({
+                        total: ids.length,
+                        completed: Math.min((i + 1) * batchSize, ids.length),
+                        duration: +new Date() - timeStart,
+                    });
                 }
-                Logger.verbose(`Completed reindexing!`);
-                observer.next({
-                    total: ids.length,
-                    completed: ids.length,
-                    duration: +new Date() - timeStart,
-                });
-                observer.complete();
-            })();
+            }
+            Logger.verbose(`Completed reindexing!`);
+            return {
+                total: ids.length,
+                completed: ids.length,
+                duration: +new Date() - timeStart,
+            };
         });
     }
 
@@ -231,53 +229,50 @@ export class ElasticsearchIndexerController {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
-        return new Observable(observer => {
-            (async () => {
-                const timeStart = Date.now();
-                const qb = this.getSearchIndexQueryBuilder();
-                const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
-                Logger.verbose(`Reindexing ${count} ProductVariants`, loggerCtx);
+        return asyncObservable(async observer => {
+            const timeStart = Date.now();
+            const qb = this.getSearchIndexQueryBuilder();
+            const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
+            Logger.verbose(`Reindexing ${count} ProductVariants`, loggerCtx);
 
-                const batches = Math.ceil(count / batchSize);
-                let variantsInProduct: ProductVariant[] = [];
+            const batches = Math.ceil(count / batchSize);
+            let variantsInProduct: ProductVariant[] = [];
 
-                for (let i = 0; i < batches; i++) {
-                    const variants = await this.getBatch(ctx, qb, i);
+            for (let i = 0; i < batches; i++) {
+                const variants = await this.getBatch(ctx, qb, i);
 
-                    Logger.verbose(
-                        `Processing batch ${i + 1} of ${batches}. ProductVariants count: ${variants.length}`,
-                        loggerCtx,
-                    );
-                    variantsInProduct = await this.processVariantBatch(
-                        variants,
-                        variantsInProduct,
-                        (operations, variant) => {
-                            operations.push(
-                                { index: { _id: this.getId(variant.id, ctx.channelId) } },
-                                this.createVariantIndexItem(variant, ctx.channelId),
-                            );
-                        },
-                        (operations, product, _variants) => {
-                            operations.push(
-                                { index: { _id: this.getId(product.id, ctx.channelId) } },
-                                this.createProductIndexItem(_variants, ctx.channelId),
-                            );
-                        },
-                    );
-                    observer.next({
-                        total: count,
-                        completed: Math.min((i + 1) * batchSize, count),
-                        duration: +new Date() - timeStart,
-                    });
-                }
-                Logger.verbose(`Completed reindexing!`);
+                Logger.verbose(
+                    `Processing batch ${i + 1} of ${batches}. ProductVariants count: ${variants.length}`,
+                    loggerCtx,
+                );
+                variantsInProduct = await this.processVariantBatch(
+                    variants,
+                    variantsInProduct,
+                    (operations, variant) => {
+                        operations.push(
+                            { index: { _id: this.getId(variant.id, ctx.channelId) } },
+                            this.createVariantIndexItem(variant, ctx.channelId),
+                        );
+                    },
+                    (operations, product, _variants) => {
+                        operations.push(
+                            { index: { _id: this.getId(product.id, ctx.channelId) } },
+                            this.createProductIndexItem(_variants, ctx.channelId),
+                        );
+                    },
+                );
                 observer.next({
                     total: count,
-                    completed: count,
+                    completed: Math.min((i + 1) * batchSize, count),
                     duration: +new Date() - timeStart,
                 });
-                observer.complete();
-            })();
+            }
+            Logger.verbose(`Completed reindexing!`);
+            return {
+                total: count,
+                completed: count,
+                duration: +new Date() - timeStart,
+            };
         });
     }
 
