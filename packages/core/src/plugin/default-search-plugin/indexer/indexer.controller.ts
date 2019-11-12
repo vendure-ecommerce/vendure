@@ -9,6 +9,7 @@ import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { AsyncQueue } from '../../../common/async-queue';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -16,7 +17,6 @@ import { Product } from '../../../entity/product/product.entity';
 import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { asyncObservable } from '../../../worker/async-observable';
-import { AsyncQueue } from '../async-queue';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     AssignProductToChannelMessage,
