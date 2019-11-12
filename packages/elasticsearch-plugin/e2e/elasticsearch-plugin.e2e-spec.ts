@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
@@ -44,6 +45,7 @@ import { SEARCH_PRODUCTS_SHOP } from './../../core/e2e/graphql/shop-definitions'
 import { awaitRunningJobs } from './../../core/e2e/utils/await-running-jobs';
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
+import { GetJobInfo, JobState, Reindex } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -69,13 +71,7 @@ describe('Elasticsearch plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        await adminClient.query(gql`
-            mutation {
-                reindex {
-                    id
-                }
-            }
-        `);
+        await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -692,6 +688,22 @@ describe('Elasticsearch plugin', () => {
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
             }, 10000);
+
+            it('reindexes in channel', async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+                const { reindex } = await adminClient.query<Reindex.Mutation>(REINDEX);
+                await awaitRunningJobs(adminClient);
+
+                const { job } = await adminClient.query<GetJobInfo.Query, GetJobInfo.Variables>(
+                    GET_JOB_INFO,
+                    { id: reindex.id },
+                );
+                expect(job!.state).toBe(JobState.COMPLETED);
+
+                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(search.items.map(i => i.productId).sort()).toEqual(['T_1']);
+            });
         });
     });
 });
@@ -752,6 +764,32 @@ export const SEARCH_GET_PRICES = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+const REINDEX = gql`
+    mutation Reindex {
+        reindex {
+            id
+            name
+            state
+            progress
+            duration
+            result
+        }
+    }
+`;
+
+const GET_JOB_INFO = gql`
+    query GetJobInfo($id: String!) {
+        job(jobId: $id) {
+            id
+            name
+            state
+            progress
+            duration
+            result
         }
     }
 `;
