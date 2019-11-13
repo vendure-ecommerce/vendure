@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateRoleInput, Permission, UpdateRoleInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateRoleInput,
+    DeletionResponse,
+    DeletionResult,
+    Permission,
+    UpdateRoleInput,
+} from '@vendure/common/lib/generated-types';
 import {
     CUSTOMER_ROLE_CODE,
     CUSTOMER_ROLE_DESCRIPTION,
@@ -146,6 +152,20 @@ export class RoleService {
         }
         await this.connection.manager.save(updatedRole);
         return assertFound(this.findOne(role.id));
+    }
+
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const role = await this.findOne(id);
+        if (!role) {
+            throw new EntityNotFoundError('Role', id);
+        }
+        if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
+            throw new InternalServerError(`error.cannot-delete-role`, { roleCode: role.code });
+        }
+        await this.connection.getRepository(Role).remove(role);
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     async assignRoleToChannel(roleId: ID, channelId: ID) {

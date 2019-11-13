@@ -169,6 +169,7 @@ export class ChannelService {
     }
 
     async delete(id: ID): Promise<DeletionResponse> {
+        await getEntityOrThrow(this.connection, Channel, id);
         await this.connection.getRepository(Channel).delete(id);
         await this.connection.getRepository(ProductVariantPrice).delete({
             channelId: id,

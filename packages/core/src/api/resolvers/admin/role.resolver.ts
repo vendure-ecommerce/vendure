@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationCreateRoleArgs,
+    MutationDeleteRoleArgs,
     MutationUpdateRoleArgs,
     Permission,
     QueryRoleArgs,
@@ -36,11 +38,17 @@ export class RoleResolver {
         const { input } = args;
         return this.roleService.create(ctx, input);
     }
-
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
     updateRole(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateRoleArgs): Promise<Role> {
         const { input } = args;
         return this.roleService.update(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteAdministrator)
+    deleteRole(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteRoleArgs): Promise<DeletionResponse> {
+        const { id } = args;
+        return this.roleService.delete(ctx, id);
     }
 }

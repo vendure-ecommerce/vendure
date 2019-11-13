@@ -1777,6 +1777,8 @@ export type Mutation = {
   createRole: Role,
   /** Update an existing Role */
   updateRole: Role,
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse,
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
@@ -2107,6 +2109,11 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']
 };
 
 

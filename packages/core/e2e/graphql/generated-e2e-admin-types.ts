@@ -1780,6 +1780,8 @@ export type Mutation = {
     createRole: Role;
     /** Update an existing Role */
     updateRole: Role;
+    /** Delete an existing Role */
+    deleteRole: DeletionResponse;
     /** Create a new ShippingMethod */
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
@@ -2051,6 +2053,10 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
     input: UpdateRoleInput;
+};
+
+export type MutationDeleteRoleArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateShippingMethodArgs = {
@@ -4810,6 +4816,14 @@ export type UpdateRoleMutation = { __typename?: 'Mutation' } & {
     updateRole: { __typename?: 'Role' } & RoleFragment;
 };
 
+export type DeleteRoleMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteRoleMutation = { __typename?: 'Mutation' } & {
+    deleteRole: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
     ShippingMethod,
     'id' | 'code' | 'description'
@@ -6053,6 +6067,12 @@ export namespace UpdateRole {
     export type Variables = UpdateRoleMutationVariables;
     export type Mutation = UpdateRoleMutation;
     export type UpdateRole = RoleFragment;
+}
+
+export namespace DeleteRole {
+    export type Variables = DeleteRoleMutationVariables;
+    export type Mutation = DeleteRoleMutation;
+    export type DeleteRole = DeleteRoleMutation['deleteRole'];
 }
 
 export namespace ShippingMethod {

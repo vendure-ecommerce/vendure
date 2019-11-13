@@ -15,6 +15,8 @@ import {
     CreateChannel,
     CreateRole,
     CurrencyCode,
+    DeleteRole,
+    DeletionResult,
     GetRole,
     GetRoles,
     LanguageCode,
@@ -232,6 +234,50 @@ describe('Role resolver', () => {
         }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
     );
 
+    it(
+        'deleteRole is not allowed for Customer role',
+        assertThrowsWithMessage(async () => {
+            const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
+            if (!customerRole) {
+                fail(`Could not find Customer role`);
+                return;
+            }
+            return adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, {
+                id: customerRole.id,
+            });
+        }, `The role '${CUSTOMER_ROLE_CODE}' cannot be deleted`),
+    );
+
+    it(
+        'deleteRole is not allowed for SuperAdmin role',
+        assertThrowsWithMessage(async () => {
+            const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
+            if (!superAdminRole) {
+                fail(`Could not find Customer role`);
+                return;
+            }
+            return adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, {
+                id: superAdminRole.id,
+            });
+        }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be deleted`),
+    );
+
+    it('deleteRole deletes a role', async () => {
+        const { deleteRole } = await adminClient.query<DeleteRole.Mutation, DeleteRole.Variables>(
+            DELETE_ROLE,
+            {
+                id: createdRole.id,
+            },
+        );
+
+        expect(deleteRole.result).toBe(DeletionResult.DELETED);
+
+        const { role } = await adminClient.query<GetRole.Query, GetRole.Variables>(GET_ROLE, {
+            id: createdRole.id,
+        });
+        expect(role).toBeNull();
+    });
+
     describe('multi-channel', () => {
         let secondChannel: CreateChannel.CreateChannel;
         let multiChannelRole: CreateRole.CreateRole;
@@ -336,4 +382,13 @@ export const UPDATE_ROLE = gql`
         }
     }
     ${ROLE_FRAGMENT}
+`;
+
+export const DELETE_ROLE = gql`
+    mutation DeleteRole($id: ID!) {
+        deleteRole(id: $id) {
+            result
+            message
+        }
+    }
 `;
