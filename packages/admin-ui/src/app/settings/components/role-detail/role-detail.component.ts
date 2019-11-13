@@ -77,7 +77,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             code: formValue.code,
             description: formValue.description,
             permissions: this.getSelectedPermissions(),
-            channelIds: [formValue.channelId],
+            channelIds: formValue.channelIds,
         };
         this.dataService.administrator.createRole(role).subscribe(
             data => {
