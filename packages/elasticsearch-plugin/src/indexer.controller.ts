@@ -68,7 +68,7 @@ export interface ReindexMessageResponse {
 @Controller()
 export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDestroy {
     private client: Client;
-    private asyncQueue = new AsyncQueue('elasticsearch-indexer', 1);
+    private asyncQueue = new AsyncQueue('elasticsearch-indexer', 5);
 
     constructor(
         @InjectConnection() private connection: Connection,

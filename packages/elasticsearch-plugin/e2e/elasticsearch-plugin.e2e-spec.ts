@@ -50,7 +50,6 @@ import { GetJobInfo, JobState, Reindex } from './graphql/generated-e2e-elasticse
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
-            logger: new DefaultLogger({ level: LogLevel.Verbose }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
