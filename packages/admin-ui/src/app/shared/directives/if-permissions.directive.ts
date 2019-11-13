@@ -1,5 +1,13 @@
-import { Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Directive,
+    EmbeddedViewRef,
+    Input,
+    TemplateRef,
+    ViewContainerRef,
+} from '@angular/core';
 import { of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Permission } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
@@ -26,6 +34,7 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
         _viewContainer: ViewContainerRef,
         templateRef: TemplateRef<any>,
         private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {
         super(_viewContainer, templateRef, permission => {
             if (!permission) {
@@ -33,7 +42,8 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
             }
             return this.dataService.client
                 .userStatus()
-                .mapSingle(({ userStatus }) => userStatus.permissions.includes(permission));
+                .mapSingle(({ userStatus }) => userStatus.permissions.includes(permission))
+                .pipe(tap(() => this.changeDetectorRef.markForCheck()));
         });
     }
 

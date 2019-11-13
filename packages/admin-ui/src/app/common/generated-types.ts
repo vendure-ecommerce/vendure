@@ -4109,6 +4109,13 @@ export type AssignProductsToChannelMutationVariables = {
 
 export type AssignProductsToChannelMutation = ({ __typename?: 'Mutation' } & { assignProductsToChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
 
+export type RemoveProductsFromChannelMutationVariables = {
+  input: RemoveProductsFromChannelInput
+};
+
+
+export type RemoveProductsFromChannelMutation = ({ __typename?: 'Mutation' } & { removeProductsFromChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
+
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
 export type GetPromotionListQueryVariables = {
@@ -5081,6 +5088,13 @@ export namespace AssignProductsToChannel {
   export type Mutation = AssignProductsToChannelMutation;
   export type AssignProductsToChannel = (NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>);
   export type Channels = (NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>)['channels'][0]>);
+}
+
+export namespace RemoveProductsFromChannel {
+  export type Variables = RemoveProductsFromChannelMutationVariables;
+  export type Mutation = RemoveProductsFromChannelMutation;
+  export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
+  export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
 }
 
 export namespace Promotion {

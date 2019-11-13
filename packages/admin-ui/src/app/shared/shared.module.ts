@@ -50,6 +50,7 @@ import {
     FormFieldComponent,
     FormFieldControlDirective,
     FormItemComponent,
+    IfDefaultChannelActiveDirective,
     IfMultichannelDirective,
     IfPermissionsDirective,
     ItemsPerPageControlsComponent,
@@ -138,6 +139,7 @@ const DECLARATIONS = [
     ChannelBadgeComponent,
     ChannelAssignmentControlComponent,
     ChannelLabelPipe,
+    IfDefaultChannelActiveDirective,
 ];
 
 @NgModule({

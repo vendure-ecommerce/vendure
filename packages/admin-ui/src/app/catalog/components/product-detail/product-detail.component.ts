@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssignProductsToChannelDialogComponent } from '@vendure/admin-ui/src/app/catalog/components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
+import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
@@ -14,7 +15,6 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
-import { pick } from 'shared/pick';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 import { notNullOrUndefined } from 'shared/shared-utils';
 import { unique } from 'shared/unique';
@@ -97,6 +97,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
+        private dataService: DataService,
         private location: Location,
         private changeDetector: ChangeDetectorRef,
     ) {
@@ -179,6 +180,35 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 },
             })
             .subscribe();
+    }
+
+    removeFromChannel(channelId: string) {
+        this.modalService
+            .dialog({
+                title: _('catalog.remove-product-from-channel'),
+                buttons: [
+                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'danger', label: _('catalog.remove-from-channel'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(response =>
+                    response
+                        ? this.dataService.product.removeProductsFromChannel({
+                              channelId,
+                              productIds: [this.id],
+                          })
+                        : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('catalog.notify-remove-product-from-channel-success'));
+                },
+                err => {
+                    this.notificationService.error(_('catalog.notify-remove-product-from-channel-error'));
+                },
+            );
     }
 
     customFieldIsSet(name: string): boolean {

@@ -55,22 +55,33 @@
                 <div class="clr-row">
                     <div class="clr-col">
                         <section class="form-block" formGroupName="product">
-                            <vdr-form-item [label]="'common.channels' | translate" *vdrIfMultichannel>
-                                <div class="flex">
-                                    <div class="product-channels">
-                                        <ng-container *ngFor="let channel of productChannels$ | async">
-                                            <vdr-chip *ngIf="!isDefaultChannel(channel.code)">
-                                                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
-                                                {{ channel.code | channelCodeToLabel }}
-                                            </vdr-chip>
-                                        </ng-container>
+                            <ng-container *vdrIfMultichannel>
+                                <vdr-form-item
+                                    [label]="'common.channels' | translate"
+                                    *vdrIfDefaultChannelActive
+                                >
+                                    <div class="flex">
+                                        <div class="product-channels">
+                                            <ng-container *ngFor="let channel of productChannels$ | async">
+                                                <vdr-chip
+                                                    *ngIf="!isDefaultChannel(channel.code)"
+                                                    icon="times-circle"
+                                                    (iconClick)="removeFromChannel(channel.id)"
+                                                >
+                                                    <vdr-channel-badge
+                                                        [channelCode]="channel.code"
+                                                    ></vdr-channel-badge>
+                                                    {{ channel.code | channelCodeToLabel }}
+                                                </vdr-chip>
+                                            </ng-container>
+                                        </div>
+                                        <button class="btn btn-sm" (click)="assignToChannel()">
+                                            <clr-icon shape="layers"></clr-icon>
+                                            {{ 'catalog.assign-to-channel' | translate }}
+                                        </button>
                                     </div>
-                                    <button class="btn btn-sm" (click)="assignToChannel()">
-                                        <clr-icon shape="layers"></clr-icon>
-                                        {{ 'catalog.assign-to-channel' | translate }}
-                                    </button>
-                                </div>
-                            </vdr-form-item>
+                                </vdr-form-item>
+                            </ng-container>
                             <vdr-form-field [label]="'catalog.product-name' | translate" for="name">
                                 <input
                                     id="name"

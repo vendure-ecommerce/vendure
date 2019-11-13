@@ -23,6 +23,8 @@ import {
     GetProductWithVariants,
     Reindex,
     RemoveOptionGroupFromProduct,
+    RemoveProductsFromChannel,
+    RemoveProductsFromChannelInput,
     SearchProducts,
     SortOrder,
     UpdateProduct,
@@ -49,6 +51,7 @@ import {
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    REMOVE_PRODUCTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
@@ -267,6 +270,15 @@ export class ProductDataService {
             AssignProductsToChannel.Mutation,
             AssignProductsToChannel.Variables
         >(ASSIGN_PRODUCTS_TO_CHANNEL, {
+            input,
+        });
+    }
+
+    removeProductsFromChannel(input: RemoveProductsFromChannelInput) {
+        return this.baseDataService.mutate<
+            RemoveProductsFromChannel.Mutation,
+            RemoveProductsFromChannel.Variables
+        >(REMOVE_PRODUCTS_FROM_CHANNEL, {
             input,
         });
     }

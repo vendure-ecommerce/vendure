@@ -450,3 +450,15 @@ export const ASSIGN_PRODUCTS_TO_CHANNEL = gql`
         }
     }
 `;
+
+export const REMOVE_PRODUCTS_FROM_CHANNEL = gql`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`;
