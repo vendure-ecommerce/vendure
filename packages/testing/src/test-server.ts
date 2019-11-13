@@ -112,10 +112,10 @@ export class TestServer {
             logging: false,
             ...options,
         });
-        await app.close();
         if (worker) {
             await worker.close();
         }
+        await app.close();
 
         (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
     }
