@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { Controller, Inject } from '@nestjs/common';
+import { Controller, Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { unique } from '@vendure/common/lib/unique';
@@ -21,7 +21,6 @@ import { Connection, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import {
-    ELASTIC_SEARCH_CLIENT,
     ELASTIC_SEARCH_OPTIONS,
     loggerCtx,
     PRODUCT_INDEX_NAME,
@@ -67,16 +66,27 @@ export interface ReindexMessageResponse {
 }
 
 @Controller()
-export class ElasticsearchIndexerController {
+export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDestroy {
+    private client: Client;
     private asyncQueue = new AsyncQueue('elasticsearch-indexer', 1);
 
     constructor(
         @InjectConnection() private connection: Connection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
-        @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
         private productVariantService: ProductVariantService,
         private jobService: JobService,
     ) {}
+
+    onModuleInit(): any {
+        const { host, port } = this.options;
+        this.client = new Client({
+            node: `${host}:${port}`,
+        });
+    }
+
+    onModuleDestroy(): any {
+        return this.client.close();
+    }
 
     /**
      * Updates the search index only for the affected product.

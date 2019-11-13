@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JobInfo, SearchResult } from '@vendure/common/lib/generated-types';
 import {
     DeepRequired,
@@ -13,7 +13,6 @@ import {
 
 import { buildElasticBody } from './build-elastic-body';
 import {
-    ELASTIC_SEARCH_CLIENT,
     ELASTIC_SEARCH_OPTIONS,
     loggerCtx,
     PRODUCT_INDEX_NAME,
@@ -36,15 +35,27 @@ import {
 } from './types';
 
 @Injectable()
-export class ElasticsearchService {
+export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
+    private client: Client;
+
     constructor(
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>,
-        @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
         private facetValueService: FacetValueService,
     ) {
         searchService.adopt(this);
+    }
+
+    onModuleInit(): any {
+        const { host, port } = this.options;
+        this.client = new Client({
+            node: `${host}:${port}`,
+        });
+    }
+
+    onModuleDestroy(): any {
+        return this.client.close();
     }
 
     checkConnection() {

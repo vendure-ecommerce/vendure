@@ -651,6 +651,7 @@ describe('Elasticsearch plugin', () => {
                         defaultLanguageCode: LanguageCode.en,
                         currencyCode: CurrencyCode.GBP,
                         pricesIncludeTax: true,
+                        defaultTaxZoneId: 'T_2',
                     },
                 });
                 secondChannel = createChannel;
@@ -669,7 +670,7 @@ describe('Elasticsearch plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId).sort()).toEqual(['T_1', 'T_2']);
-            }, 10000);
+            });
 
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
@@ -687,7 +688,7 @@ describe('Elasticsearch plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
-            }, 10000);
+            });
 
             it('reindexes in channel', async () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
