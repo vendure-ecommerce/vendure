@@ -9,13 +9,14 @@ import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { AsyncQueue } from '../../../common/async-queue';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
-import { AsyncQueue } from '../async-queue';
+import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     AssignProductToChannelMessage,
@@ -56,46 +57,40 @@ export class IndexerController {
     @MessagePattern(ReindexMessage.pattern)
     reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return new Observable(observer => {
-            (async () => {
-                const timeStart = Date.now();
-                const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
-                const count = await qb.getCount();
-                Logger.verbose(
-                    `Reindexing ${count} variants for channel ${ctx.channel.code}`,
-                    workerLoggerCtx,
-                );
-                const batches = Math.ceil(count / BATCH_SIZE);
+        return asyncObservable(async observer => {
+            const timeStart = Date.now();
+            const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
+            const count = await qb.getCount();
+            Logger.verbose(`Reindexing ${count} variants for channel ${ctx.channel.code}`, workerLoggerCtx);
+            const batches = Math.ceil(count / BATCH_SIZE);
 
-                await this.connection
-                    .getRepository(SearchIndexItem)
-                    .delete({ languageCode: ctx.languageCode, channelId: ctx.channelId });
-                Logger.verbose('Deleted existing index items', workerLoggerCtx);
+            await this.connection
+                .getRepository(SearchIndexItem)
+                .delete({ languageCode: ctx.languageCode, channelId: ctx.channelId });
+            Logger.verbose('Deleted existing index items', workerLoggerCtx);
 
-                for (let i = 0; i < batches; i++) {
-                    Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
+            for (let i = 0; i < batches; i++) {
+                Logger.verbose(`Processing batch ${i + 1} of ${batches}`, workerLoggerCtx);
 
-                    const variants = await qb
-                        .andWhere('variants__product.deletedAt IS NULL')
-                        .take(BATCH_SIZE)
-                        .skip(i * BATCH_SIZE)
-                        .getMany();
-                    const hydratedVariants = this.hydrateVariants(ctx, variants);
-                    await this.saveVariants(ctx.languageCode, ctx.channelId, hydratedVariants);
-                    observer.next({
-                        total: count,
-                        completed: Math.min((i + 1) * BATCH_SIZE, count),
-                        duration: +new Date() - timeStart,
-                    });
-                }
-                Logger.verbose(`Completed reindexing`, workerLoggerCtx);
+                const variants = await qb
+                    .andWhere('variants__product.deletedAt IS NULL')
+                    .take(BATCH_SIZE)
+                    .skip(i * BATCH_SIZE)
+                    .getMany();
+                const hydratedVariants = this.hydrateVariants(ctx, variants);
+                await this.saveVariants(ctx.languageCode, ctx.channelId, hydratedVariants);
                 observer.next({
                     total: count,
-                    completed: count,
+                    completed: Math.min((i + 1) * BATCH_SIZE, count),
                     duration: +new Date() - timeStart,
                 });
-                observer.complete();
-            })();
+            }
+            Logger.verbose(`Completed reindexing`, workerLoggerCtx);
+            return {
+                total: count,
+                completed: count,
+                duration: +new Date() - timeStart,
+            };
         });
     }
 
@@ -106,47 +101,42 @@ export class IndexerController {
     }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
 
-        return new Observable(observer => {
-            (async () => {
-                const timeStart = Date.now();
-                if (ids.length) {
-                    const batches = Math.ceil(ids.length / BATCH_SIZE);
-                    Logger.verbose(`Updating ${ids.length} variants...`);
+        return asyncObservable(async observer => {
+            const timeStart = Date.now();
+            if (ids.length) {
+                const batches = Math.ceil(ids.length / BATCH_SIZE);
+                Logger.verbose(`Updating ${ids.length} variants...`);
 
-                    for (let i = 0; i < batches; i++) {
-                        const begin = i * BATCH_SIZE;
-                        const end = begin + BATCH_SIZE;
-                        Logger.verbose(`Updating ids from index ${begin} to ${end}`);
-                        const batchIds = ids.slice(begin, end);
-                        const batch = await this.connection
-                            .getRepository(ProductVariant)
-                            .findByIds(batchIds, {
-                                relations: variantRelations,
-                            });
-                        const variants = this.hydrateVariants(ctx, batch);
-                        await this.saveVariants(ctx.languageCode, ctx.channelId, variants);
-                        observer.next({
-                            total: ids.length,
-                            completed: Math.min((i + 1) * BATCH_SIZE, ids.length),
-                            duration: +new Date() - timeStart,
-                        });
-                    }
+                for (let i = 0; i < batches; i++) {
+                    const begin = i * BATCH_SIZE;
+                    const end = begin + BATCH_SIZE;
+                    Logger.verbose(`Updating ids from index ${begin} to ${end}`);
+                    const batchIds = ids.slice(begin, end);
+                    const batch = await this.connection.getRepository(ProductVariant).findByIds(batchIds, {
+                        relations: variantRelations,
+                    });
+                    const variants = this.hydrateVariants(ctx, batch);
+                    await this.saveVariants(ctx.languageCode, ctx.channelId, variants);
+                    observer.next({
+                        total: ids.length,
+                        completed: Math.min((i + 1) * BATCH_SIZE, ids.length),
+                        duration: +new Date() - timeStart,
+                    });
                 }
-                Logger.verbose(`Completed reindexing!`);
-                observer.next({
-                    total: ids.length,
-                    completed: ids.length,
-                    duration: +new Date() - timeStart,
-                });
-                observer.complete();
-            })();
+            }
+            Logger.verbose(`Completed reindexing!`);
+            return {
+                total: ids.length,
+                completed: ids.length,
+                duration: +new Date() - timeStart,
+            };
         });
     }
 
     @MessagePattern(UpdateProductMessage.pattern)
     updateProduct(data: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
         });
     }
@@ -154,7 +144,7 @@ export class IndexerController {
     @MessagePattern(UpdateVariantMessage.pattern)
     updateVariants(data: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
         });
     }
@@ -162,7 +152,7 @@ export class IndexerController {
     @MessagePattern(DeleteProductMessage.pattern)
     deleteProduct(data: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
         });
     }
@@ -170,7 +160,7 @@ export class IndexerController {
     @MessagePattern(DeleteVariantMessage.pattern)
     deleteVariant(data: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
             if (variants.length) {
                 await this.removeSearchIndexItems(ctx.languageCode, ctx.channelId, variants.map(v => v.id));
@@ -184,7 +174,7 @@ export class IndexerController {
         data: AssignProductToChannelMessage['data'],
     ): Observable<AssignProductToChannelMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             return this.updateProductInChannel(ctx, data.productId, data.channelId);
         });
     }
@@ -194,7 +184,7 @@ export class IndexerController {
         data: RemoveProductFromChannelMessage['data'],
     ): Observable<RemoveProductFromChannelMessage['response']> {
         const ctx = RequestContext.fromObject(data.ctx);
-        return defer(async () => {
+        return asyncObservable(async () => {
             return this.deleteProductInChannel(ctx, data.productId, data.channelId);
         });
     }

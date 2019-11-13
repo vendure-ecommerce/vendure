@@ -1,4 +1,3 @@
-import { Client } from '@elastic/elasticsearch';
 import {
     CollectionModificationEvent,
     DeepRequired,
@@ -7,12 +6,9 @@ import {
     idsAreEqual,
     Logger,
     OnVendureBootstrap,
-    OnVendureClose,
     PluginCommonModule,
-    Product,
     ProductChannelEvent,
     ProductEvent,
-    ProductVariant,
     ProductVariantEvent,
     TaxRateModificationEvent,
     Type,
@@ -20,7 +16,7 @@ import {
 } from '@vendure/core';
 import { buffer, debounceTime, filter, map } from 'rxjs/operators';
 
-import { ELASTIC_SEARCH_CLIENT, ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { CustomMappingsResolver } from './custom-mappings.resolver';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { AdminElasticSearchResolver, ShopElasticSearchResolver } from './elasticsearch-resolver';
@@ -194,7 +190,6 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
         ElasticsearchIndexService,
         ElasticsearchService,
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
-        { provide: ELASTIC_SEARCH_CLIENT, useFactory: () => ElasticsearchPlugin.client },
     ],
     adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
     shopApiExtensions: {
@@ -211,9 +206,8 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
     },
     workers: [ElasticsearchIndexerController],
 })
-export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
+export class ElasticsearchPlugin implements OnVendureBootstrap {
     private static options: DeepRequired<ElasticsearchOptions>;
-    private static client: Client;
 
     /** @internal */
     constructor(
@@ -226,11 +220,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
      * Set the plugin options.
      */
     static init(options: ElasticsearchOptions): Type<ElasticsearchPlugin> {
-        const { host, port } = options;
         this.options = mergeWithDefaults(options);
-        this.client = new Client({
-            node: `${host}:${port}`,
-        });
         return ElasticsearchPlugin;
     }
 
@@ -297,10 +287,5 @@ export class ElasticsearchPlugin implements OnVendureBootstrap, OnVendureClose {
                 return this.elasticsearchService.updateAll(event.ctx);
             }
         });
-    }
-
-    /** @internal */
-    onVendureClose() {
-        return ElasticsearchPlugin.client.close();
     }
 }

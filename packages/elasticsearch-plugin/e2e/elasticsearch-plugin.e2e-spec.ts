@@ -1,6 +1,7 @@
+/* tslint:disable:no-non-null-assertion */
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
+import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -44,6 +45,7 @@ import { SEARCH_PRODUCTS_SHOP } from './../../core/e2e/graphql/shop-definitions'
 import { awaitRunningJobs } from './../../core/e2e/utils/await-running-jobs';
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
+import { GetJobInfo, JobState, Reindex } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -51,8 +53,10 @@ describe('Elasticsearch plugin', () => {
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
-                    port: 9200,
-                    host: 'http://192.168.99.100',
+                    port: process.env.CI ? +(process.env.ELASTICSEARCH_PORT || 9200) : 9200,
+                    host: process.env.CI
+                        ? process.env.ELASTICSEARCH_HOST || 'elasticsearch'
+                        : 'http://192.168.99.100',
                 }),
             ],
         }),
@@ -66,13 +70,7 @@ describe('Elasticsearch plugin', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
-        await adminClient.query(gql`
-            mutation {
-                reindex {
-                    id
-                }
-            }
-        `);
+        await adminClient.query(REINDEX);
         await awaitRunningJobs(adminClient);
     }, TEST_SETUP_TIMEOUT_MS);
 
@@ -652,6 +650,7 @@ describe('Elasticsearch plugin', () => {
                         defaultLanguageCode: LanguageCode.en,
                         currencyCode: CurrencyCode.GBP,
                         pricesIncludeTax: true,
+                        defaultTaxZoneId: 'T_2',
                     },
                 });
                 secondChannel = createChannel;
@@ -670,7 +669,7 @@ describe('Elasticsearch plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId).sort()).toEqual(['T_1', 'T_2']);
-            }, 10000);
+            });
 
             it('removing product from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
@@ -688,7 +687,23 @@ describe('Elasticsearch plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
-            }, 10000);
+            });
+
+            it('reindexes in channel', async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+                const { reindex } = await adminClient.query<Reindex.Mutation>(REINDEX);
+                await awaitRunningJobs(adminClient);
+
+                const { job } = await adminClient.query<GetJobInfo.Query, GetJobInfo.Variables>(
+                    GET_JOB_INFO,
+                    { id: reindex.id },
+                );
+                expect(job!.state).toBe(JobState.COMPLETED);
+
+                const { search } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(search.items.map(i => i.productId).sort()).toEqual(['T_1']);
+            });
         });
     });
 });
@@ -749,6 +764,32 @@ export const SEARCH_GET_PRICES = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+const REINDEX = gql`
+    mutation Reindex {
+        reindex {
+            id
+            name
+            state
+            progress
+            duration
+            result
+        }
+    }
+`;
+
+const GET_JOB_INFO = gql`
+    query GetJobInfo($id: String!) {
+        job(jobId: $id) {
+            id
+            name
+            state
+            progress
+            duration
+            result
         }
     }
 `;

@@ -1,5 +1,5 @@
 import { Client } from '@elastic/elasticsearch';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JobInfo, SearchResult } from '@vendure/common/lib/generated-types';
 import {
     DeepRequired,
@@ -13,7 +13,6 @@ import {
 
 import { buildElasticBody } from './build-elastic-body';
 import {
-    ELASTIC_SEARCH_CLIENT,
     ELASTIC_SEARCH_OPTIONS,
     loggerCtx,
     PRODUCT_INDEX_NAME,
@@ -22,6 +21,7 @@ import {
     VARIANT_INDEX_TYPE,
 } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
+import { createIndices } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
     CustomMapping,
@@ -35,15 +35,27 @@ import {
 } from './types';
 
 @Injectable()
-export class ElasticsearchService {
+export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
+    private client: Client;
+
     constructor(
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>,
-        @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
         private facetValueService: FacetValueService,
     ) {
         searchService.adopt(this);
+    }
+
+    onModuleInit(): any {
+        const { host, port } = this.options;
+        this.client = new Client({
+            node: `${host}:${port}`,
+        });
+    }
+
+    onModuleDestroy(): any {
+        return this.client.close();
     }
 
     checkConnection() {
@@ -59,7 +71,7 @@ export class ElasticsearchService {
 
             if (result.body === false) {
                 Logger.verbose(`Index "${index}" does not exist. Creating...`, loggerCtx);
-                await this.createIndices(indexPrefix);
+                await createIndices(this.client, indexPrefix);
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
             }
@@ -225,56 +237,20 @@ export class ElasticsearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext): Promise<JobInfo> {
+    async reindex(ctx: RequestContext, dropIndices = true): Promise<JobInfo> {
         const { indexPrefix } = this.options;
-        await this.deleteIndices(indexPrefix);
-        await this.createIndices(indexPrefix);
-        const job = this.elasticsearchIndexService.reindex(ctx);
+        const job = this.elasticsearchIndexService.reindex(ctx, dropIndices);
         job.start();
         return job;
     }
 
     /**
-     * Rebuilds the full search index.
+     * Reindexes all in current Channel without dropping indices.
      */
     async updateAll(ctx: RequestContext): Promise<JobInfo> {
-        const job = this.elasticsearchIndexService.reindex(ctx);
+        const job = this.elasticsearchIndexService.reindex(ctx, false);
         job.start();
         return job;
-    }
-
-    private async createIndices(prefix: string) {
-        try {
-            const index = prefix + VARIANT_INDEX_NAME;
-            await this.client.indices.create({ index });
-            Logger.verbose(`Created index "${index}"`, loggerCtx);
-        } catch (e) {
-            Logger.error(JSON.stringify(e, null, 2), loggerCtx);
-        }
-        try {
-            const index = prefix + PRODUCT_INDEX_NAME;
-            await this.client.indices.create({ index });
-            Logger.verbose(`Created index "${index}"`, loggerCtx);
-        } catch (e) {
-            Logger.error(JSON.stringify(e, null, 2), loggerCtx);
-        }
-    }
-
-    private async deleteIndices(prefix: string) {
-        try {
-            const index = prefix + VARIANT_INDEX_NAME;
-            await this.client.indices.delete({ index });
-            Logger.verbose(`Deleted index "${index}"`, loggerCtx);
-        } catch (e) {
-            Logger.error(e, loggerCtx);
-        }
-        try {
-            const index = prefix + PRODUCT_INDEX_NAME;
-            await this.client.indices.delete({ index });
-            Logger.verbose(`Deleted index "${index}"`, loggerCtx);
-        } catch (e) {
-            Logger.error(e, loggerCtx);
-        }
     }
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {

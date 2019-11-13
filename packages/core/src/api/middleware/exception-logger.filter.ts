@@ -1,5 +1,4 @@
 import { ArgumentsHost, ExceptionFilter, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express';
 
 import { Logger, LogLevel } from '../../config';
 import { I18nError } from '../../i18n/i18n-error';

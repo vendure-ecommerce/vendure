@@ -3450,6 +3450,28 @@ export type SearchGetPricesQuery = { __typename?: 'Query' } & {
         >;
     };
 };
+
+export type ReindexMutationVariables = {};
+
+export type ReindexMutation = { __typename?: 'Mutation' } & {
+    reindex: { __typename?: 'JobInfo' } & Pick<
+        JobInfo,
+        'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'
+    >;
+};
+
+export type GetJobInfoQueryVariables = {
+    id: Scalars['String'];
+};
+
+export type GetJobInfoQuery = { __typename?: 'Query' } & {
+    job: Maybe<
+        { __typename?: 'JobInfo' } & Pick<
+            JobInfo,
+            'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'
+        >
+    >;
+};
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -3492,4 +3514,16 @@ export namespace SearchGetPrices {
         RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'], '__typename'>,
         { __typename: 'SinglePrice' }
     >;
+}
+
+export namespace Reindex {
+    export type Variables = ReindexMutationVariables;
+    export type Mutation = ReindexMutation;
+    export type Reindex = ReindexMutation['reindex'];
+}
+
+export namespace GetJobInfo {
+    export type Variables = GetJobInfoQueryVariables;
+    export type Query = GetJobInfoQuery;
+    export type Job = NonNullable<GetJobInfoQuery['job']>;
 }

@@ -3,7 +3,6 @@ import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 
@@ -14,6 +13,7 @@ import {
 import { Logger } from '../../config/logger/vendure-logger';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { asyncObservable } from '../../worker/async-observable';
 import { CollectionService } from '../services/collection.service';
 import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
@@ -32,27 +32,24 @@ export class CollectionController {
     applyCollectionFilters({
         collectionIds,
     }: ApplyCollectionFiltersMessage['data']): Observable<ApplyCollectionFiltersMessage['response']> {
-        return new Observable(observer => {
-            (async () => {
-                Logger.verbose(`Processing ${collectionIds.length} Collections`);
-                const timeStart = Date.now();
-                const collections = await this.connection.getRepository(Collection).findByIds(collectionIds, {
-                    relations: ['productVariants'],
-                });
-                let completed = 0;
-                for (const collection of collections) {
-                    const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
+        return asyncObservable(async observer => {
+            Logger.verbose(`Processing ${collectionIds.length} Collections`);
+            const timeStart = Date.now();
+            const collections = await this.connection.getRepository(Collection).findByIds(collectionIds, {
+                relations: ['productVariants'],
+            });
+            let completed = 0;
+            for (const collection of collections) {
+                const affectedVariantIds = await this.applyCollectionFiltersInternal(collection);
 
-                    observer.next({
-                        total: collectionIds.length,
-                        completed: ++completed,
-                        duration: +new Date() - timeStart,
-                        collectionId: collection.id,
-                        affectedVariantIds,
-                    });
-                }
-                observer.complete();
-            })();
+                observer.next({
+                    total: collectionIds.length,
+                    completed: ++completed,
+                    duration: +new Date() - timeStart,
+                    collectionId: collection.id,
+                    affectedVariantIds,
+                });
+            }
         });
     }
 

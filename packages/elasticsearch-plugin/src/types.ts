@@ -135,6 +135,11 @@ export interface ReindexMessageResponse {
     duration: number;
 }
 
+export type ReindexMessageData = {
+    ctx: RequestContext;
+    dropIndices: boolean;
+};
+
 export type UpdateProductMessageData = {
     ctx: RequestContext;
     productId: ID;
@@ -156,7 +161,7 @@ export interface ProductChannelMessageData {
     channelId: ID;
 }
 
-export class ReindexMessage extends WorkerMessage<{ ctx: RequestContext }, ReindexMessageResponse> {
+export class ReindexMessage extends WorkerMessage<ReindexMessageData, ReindexMessageResponse> {
     static readonly pattern = 'Reindex';
 }
 export class UpdateVariantMessage extends WorkerMessage<UpdateVariantMessageData, boolean> {

@@ -72,6 +72,6 @@ export class AdminElasticSearchResolver implements SearchResolver {
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async reindex(@Ctx() ctx: RequestContext): Promise<JobInfo> {
-        return this.elasticsearchService.reindex(ctx);
+        return this.elasticsearchService.reindex(ctx, false);
     }
 }
