@@ -28,13 +28,26 @@
             <ng-container *ngIf="!isDefaultRole(role)">
                 <vdr-chip *ngFor="let channel of role.channels">
                     <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
-                    {{ channel.code }}
+                    {{ channel.code | channelCodeToLabel | translate }}
                 </vdr-chip>
             </ng-container>
         </td>
         <td class="left align-middle">
             <ng-container *ngIf="!isDefaultRole(role); else defaultRole">
-                <vdr-chip *ngFor="let permission of role.permissions">{{ permission }}</vdr-chip>
+                <vdr-chip *ngFor="let permission of role.permissions |  slice: 0:displayLimit[role.id] || 3">{{ permission }}</vdr-chip>
+                <button
+                    class="btn btn-sm btn-secondary btn-icon"
+                    *ngIf="role.permissions.length > initialLimit"
+                    (click)="toggleDisplayLimit(role)"
+                >
+                    <ng-container *ngIf="(displayLimit[role.id] || 0) < role.permissions.length; else collapse">
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ role.permissions.length - initialLimit }}
+                    </ng-container>
+                    <ng-template #collapse>
+                        <clr-icon shape="minus"></clr-icon>
+                    </ng-template>
+                </button>
             </ng-container>
             <ng-template #defaultRole>
                 <span class="default-role-label">{{ 'settings.default-role-label' | translate }}</span>

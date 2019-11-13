@@ -13,12 +13,23 @@ import { DataService } from '../../../data/providers/data.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRoles.Items> {
+    readonly initialLimit = 3;
+    displayLimit: { [id: string]: number } = {};
+
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.administrator.getRoles(...args),
             data => data.roles,
         );
+    }
+
+    toggleDisplayLimit(role: GetRoles.Items) {
+        if (this.displayLimit[role.id] === role.permissions.length) {
+            this.displayLimit[role.id] = this.initialLimit;
+        } else {
+            this.displayLimit[role.id] = role.permissions.length;
+        }
     }
 
     isDefaultRole(role: Role): boolean {
