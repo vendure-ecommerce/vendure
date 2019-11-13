@@ -1,27 +1,5 @@
 import gql from 'graphql-tag';
 
-export const ADMINISTRATOR_FRAGMENT = gql`
-    fragment Administrator on Administrator {
-        id
-        createdAt
-        updatedAt
-        firstName
-        lastName
-        emailAddress
-        user {
-            id
-            identifier
-            lastLogin
-            roles {
-                id
-                code
-                description
-                permissions
-            }
-        }
-    }
-`;
-
 export const ROLE_FRAGMENT = gql`
     fragment Role on Role {
         id
@@ -36,6 +14,26 @@ export const ROLE_FRAGMENT = gql`
             token
         }
     }
+`;
+
+export const ADMINISTRATOR_FRAGMENT = gql`
+    fragment Administrator on Administrator {
+        id
+        createdAt
+        updatedAt
+        firstName
+        lastName
+        emailAddress
+        user {
+            id
+            identifier
+            lastLogin
+            roles {
+                ...Role
+            }
+        }
+    }
+    ${ROLE_FRAGMENT}
 `;
 
 export const GET_ADMINISTRATORS = gql`

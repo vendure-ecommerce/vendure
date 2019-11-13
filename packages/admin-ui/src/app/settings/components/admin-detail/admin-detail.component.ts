@@ -8,9 +8,11 @@ import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
     Administrator,
     CreateAdministratorInput,
+    GetAdministrator,
     LanguageCode,
     Permission,
     Role,
+    RoleFragment,
     UpdateAdministratorInput,
 } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
@@ -18,18 +20,30 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 
+export interface PermissionsByChannel {
+    channelId: string;
+    channelCode: string;
+    permissions: { [K in Permission]: boolean };
+}
+
 @Component({
     selector: 'vdr-admin-detail',
     templateUrl: './admin-detail.component.html',
     styleUrls: ['./admin-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDetailComponent extends BaseDetailComponent<Administrator> implements OnInit, OnDestroy {
-    administrator$: Observable<Administrator>;
+export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.Administrator>
+    implements OnInit, OnDestroy {
+    administrator$: Observable<GetAdministrator.Administrator>;
     allRoles$: Observable<Role.Fragment[]>;
     selectedRoles: Role.Fragment[] = [];
     detailForm: FormGroup;
-    selectedRolePermissions: { [K in Permission]: boolean } = {} as any;
+    selectedRolePermissions: { [channelId: string]: PermissionsByChannel } = {} as any;
+    selectedChannelId: string | null = null;
+
+    getAvailableChannels(): PermissionsByChannel[] {
+        return Object.values(this.selectedRolePermissions);
+    }
 
     constructor(
         router: Router,
@@ -70,6 +84,21 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
 
     rolesChanged(roles: Role[]) {
         this.buildPermissionsMap();
+    }
+
+    getPermissionsForSelectedChannel() {
+        if (this.selectedChannelId) {
+            const selectedChannel = this.selectedRolePermissions[this.selectedChannelId];
+            if (selectedChannel) {
+                return this.selectedRolePermissions[this.selectedChannelId].permissions;
+            }
+        }
+        const channels = Object.values(this.selectedRolePermissions);
+        if (0 < channels.length) {
+            this.selectedChannelId = channels[0].channelId;
+            return channels[0].permissions;
+        }
+        return [];
     }
 
     create() {
@@ -152,13 +181,36 @@ export class AdminDetailComponent extends BaseDetailComponent<Administrator> imp
     private buildPermissionsMap() {
         const permissionsControl = this.detailForm.get('roles');
         if (permissionsControl) {
-            const permissions = permissionsControl.value.reduce(
-                (output, role: Role) => [...output, ...role.permissions],
-                [],
-            );
+            const roles: RoleFragment[] = permissionsControl.value;
+            const channelIdPermissionsMap = new Map<string, Set<Permission>>();
+            const channelIdCodeMap = new Map<string, string>();
+
+            for (const role of roles) {
+                for (const channel of role.channels) {
+                    const channelPermissions = channelIdPermissionsMap.get(channel.id);
+                    const permissionSet = channelPermissions || new Set<Permission>();
+
+                    role.permissions.forEach(p => permissionSet.add(p));
+                    channelIdPermissionsMap.set(channel.id, permissionSet);
+                    channelIdCodeMap.set(channel.id, channel.code);
+                }
+            }
+
             this.selectedRolePermissions = {} as any;
-            for (const permission of Object.keys(Permission)) {
-                this.selectedRolePermissions[permission] = permissions.includes(permission);
+            for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
+                // tslint:disable-next-line:no-non-null-assertion
+                const permissionSet = channelIdPermissionsMap.get(channelId)!;
+                const permissionsHash: { [K in Permission]: boolean } = {} as any;
+                for (const permission of Object.keys(Permission)) {
+                    permissionsHash[permission] = permissionSet.has(permission as Permission);
+                }
+                this.selectedRolePermissions[channelId] = {
+                    // tslint:disable:no-non-null-assertion
+                    channelId,
+                    channelCode: channelIdCodeMap.get(channelId)!,
+                    permissions: permissionsHash,
+                    // tslint:enable:no-non-null-assertion
+                };
             }
         }
     }
