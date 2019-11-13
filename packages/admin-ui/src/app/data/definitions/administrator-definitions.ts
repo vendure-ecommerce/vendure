@@ -114,6 +114,15 @@ export const UPDATE_ROLE = gql`
     ${ROLE_FRAGMENT}
 `;
 
+export const DELETE_ROLE = gql`
+    mutation DeleteRole($id: ID!) {
+        deleteRole(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const ASSIGN_ROLE_TO_ADMINISTRATOR = gql`
     mutation AssignRoleToAdministrator($administratorId: ID!, $roleId: ID!) {
         assignRoleToAdministrator(administratorId: $administratorId, roleId: $roleId) {

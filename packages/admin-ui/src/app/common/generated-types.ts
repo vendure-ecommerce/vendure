@@ -1785,6 +1785,8 @@ export type Mutation = {
   createRole: Role,
   /** Update an existing Role */
   updateRole: Role,
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse,
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
@@ -2122,6 +2124,11 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -3566,9 +3573,9 @@ export type Zone = Node & {
   name: Scalars['String'],
   members: Array<Country>,
 };
-export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'>)> }) });
-
 export type RoleFragment = ({ __typename?: 'Role' } & Pick<Role, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description' | 'permissions'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>)> });
+
+export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & RoleFragment)> }) });
 
 export type GetAdministratorsQueryVariables = {
   options?: Maybe<AdministratorListOptions>
@@ -3625,6 +3632,13 @@ export type UpdateRoleMutationVariables = {
 
 
 export type UpdateRoleMutation = ({ __typename?: 'Mutation' } & { updateRole: ({ __typename?: 'Role' } & RoleFragment) });
+
+export type DeleteRoleMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteRoleMutation = ({ __typename?: 'Mutation' } & { deleteRole: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
 
 export type AssignRoleToAdministratorMutationVariables = {
   administratorId: Scalars['ID'],
@@ -4492,15 +4506,15 @@ type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
 
-export namespace Administrator {
-  export type Fragment = AdministratorFragment;
-  export type User = AdministratorFragment['user'];
-  export type Roles = (NonNullable<AdministratorFragment['user']['roles'][0]>);
-}
-
 export namespace Role {
   export type Fragment = RoleFragment;
   export type Channels = (NonNullable<RoleFragment['channels'][0]>);
+}
+
+export namespace Administrator {
+  export type Fragment = AdministratorFragment;
+  export type User = AdministratorFragment['user'];
+  export type Roles = RoleFragment;
 }
 
 export namespace GetAdministrators {
@@ -4551,6 +4565,12 @@ export namespace UpdateRole {
   export type Variables = UpdateRoleMutationVariables;
   export type Mutation = UpdateRoleMutation;
   export type UpdateRole = RoleFragment;
+}
+
+export namespace DeleteRole {
+  export type Variables = DeleteRoleMutationVariables;
+  export type Mutation = DeleteRoleMutation;
+  export type DeleteRole = DeleteRoleMutation['deleteRole'];
 }
 
 export namespace AssignRoleToAdministrator {
