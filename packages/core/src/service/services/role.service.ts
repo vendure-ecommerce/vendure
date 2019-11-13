@@ -59,6 +59,10 @@ export class RoleService {
         });
     }
 
+    getChannelsForRole(roleId: ID): Promise<Channel[]> {
+        return this.findOne(roleId).then(role => (role ? role.channels : []));
+    }
+
     getSuperAdminRole(): Promise<Role> {
         return this.getRoleByCode(SUPER_ADMIN_ROLE_CODE).then(role => {
             if (!role) {
