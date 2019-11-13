@@ -85,3 +85,12 @@ export const SET_ACTIVE_CHANNEL = gql`
     }
     ${USER_STATUS_FRAGMENT}
 `;
+
+export const UPDATE_USER_CHANNELS = gql`
+    mutation UpdateUserChannels($channels: [CurrentUserChannelInput!]!) {
+        updateUserChannels(channels: $channels) @client {
+            ...UserStatus
+        }
+    }
+    ${USER_STATUS_FRAGMENT}
+`;

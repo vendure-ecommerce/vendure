@@ -1815,6 +1815,7 @@ export type Mutation = {
   setAsLoggedOut: UserStatus,
   setUiLanguage?: Maybe<LanguageCode>,
   setActiveChannel: UserStatus,
+  updateUserChannels: UserStatus,
 };
 
 
@@ -2198,6 +2199,11 @@ export type MutationSetUiLanguageArgs = {
 
 export type MutationSetActiveChannelArgs = {
   channelId: Scalars['ID']
+};
+
+
+export type MutationUpdateUserChannelsArgs = {
+  channels: Array<CurrentUserChannelInput>
 };
 
 export type NetworkStatus = {
@@ -3702,6 +3708,13 @@ export type SetActiveChannelMutationVariables = {
 
 export type SetActiveChannelMutation = ({ __typename?: 'Mutation' } & { setActiveChannel: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
+export type UpdateUserChannelsMutationVariables = {
+  channels: Array<CurrentUserChannelInput>
+};
+
+
+export type UpdateUserChannelsMutation = ({ __typename?: 'Mutation' } & { updateUserChannels: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+
 export type GetCollectionFiltersQueryVariables = {};
 
 
@@ -4315,6 +4328,13 @@ export type UpdateChannelMutationVariables = {
 
 export type UpdateChannelMutation = ({ __typename?: 'Mutation' } & { updateChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
 
+export type DeleteChannelMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteChannelMutation = ({ __typename?: 'Mutation' } & { deleteChannel: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type PaymentMethodFragment = ({ __typename?: 'PaymentMethod' } & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'> & { configArgs: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
 export type GetPaymentMethodListQueryVariables = {
@@ -4609,6 +4629,12 @@ export namespace SetActiveChannel {
   export type Variables = SetActiveChannelMutationVariables;
   export type Mutation = SetActiveChannelMutation;
   export type SetActiveChannel = UserStatusFragment;
+}
+
+export namespace UpdateUserChannels {
+  export type Variables = UpdateUserChannelsMutationVariables;
+  export type Mutation = UpdateUserChannelsMutation;
+  export type UpdateUserChannels = UserStatusFragment;
 }
 
 export namespace GetCollectionFilters {
@@ -5280,6 +5306,12 @@ export namespace UpdateChannel {
   export type Variables = UpdateChannelMutationVariables;
   export type Mutation = UpdateChannelMutation;
   export type UpdateChannel = ChannelFragment;
+}
+
+export namespace DeleteChannel {
+  export type Variables = DeleteChannelMutationVariables;
+  export type Mutation = DeleteChannelMutation;
+  export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
 }
 
 export namespace PaymentMethod {

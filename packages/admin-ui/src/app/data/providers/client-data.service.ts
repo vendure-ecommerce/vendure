@@ -1,5 +1,6 @@
 import {
     CurrentUserChannel,
+    CurrentUserChannelInput,
     GetNetworkStatus,
     GetUiState,
     GetUserStatus,
@@ -9,6 +10,7 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
+    UpdateUserChannels,
 } from '../../common/generated-types';
 import {
     GET_NEWTORK_STATUS,
@@ -20,6 +22,7 @@ import {
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
+    UPDATE_USER_CHANNELS,
 } from '../definitions/client-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -80,6 +83,15 @@ export class ClientDataService {
             SET_ACTIVE_CHANNEL,
             {
                 channelId,
+            },
+        );
+    }
+
+    updateUserChannels(channels: CurrentUserChannelInput[]) {
+        return this.baseDataService.mutate<UpdateUserChannels.Mutation, UpdateUserChannels.Variables>(
+            UPDATE_USER_CHANNELS,
+            {
+                channels,
             },
         );
     }

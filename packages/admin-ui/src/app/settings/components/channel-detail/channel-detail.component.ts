@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getDefaultLanguage } from '@vendure/admin-ui/src/app/common/utilities/get-default-language';
 import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap, take } from 'rxjs/operators';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
@@ -79,21 +79,37 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             defaultShippingZoneId: formValue.defaultShippingZoneId,
             defaultTaxZoneId: formValue.defaultTaxZoneId,
         };
-        this.dataService.settings.createChannel(input).subscribe(
-            data => {
-                this.notificationService.success(_('common.notify-create-success'), {
-                    entity: 'Channel',
-                });
-                this.detailForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createChannel.id], { relativeTo: this.route });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-create-error'), {
-                    entity: 'Channel',
-                });
-            },
-        );
+        this.dataService.settings
+            .createChannel(input)
+            .pipe(
+                mergeMap(({ createChannel }) =>
+                    this.dataService.auth.currentUser().single$.pipe(
+                        map(({ me }) => ({
+                            me,
+                            createChannel,
+                        })),
+                    ),
+                ),
+                mergeMap(({ me, createChannel }) =>
+                    // tslint:disable-next-line:no-non-null-assertion
+                    this.dataService.client.updateUserChannels(me!.channels).pipe(map(() => createChannel)),
+                ),
+            )
+            .subscribe(
+                data => {
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'Channel',
+                    });
+                    this.detailForm.markAsPristine();
+                    this.changeDetector.markForCheck();
+                    this.router.navigate(['../', data.id], { relativeTo: this.route });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'Channel',
+                    });
+                },
+            );
     }
 
     save() {
@@ -117,7 +133,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                 }),
             )
             .subscribe(
-                data => {
+                () => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Channel',
                     });
@@ -138,7 +154,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     protected setFormValues(entity: Channel.Fragment, languageCode: LanguageCode): void {
         this.detailForm.patchValue({
             code: entity.code,
-            token: entity.token,
+            token: entity.token || this.generateToken(),
             pricesIncludeTax: entity.pricesIncludeTax,
             currencyCode: entity.currencyCode,
             defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
@@ -150,5 +166,13 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                 codeControl.disable();
             }
         }
+    }
+
+    private generateToken(): string {
+        const randomString = () =>
+            Math.random()
+                .toString(36)
+                .substr(3, 10);
+        return `${randomString()}${randomString()}`;
     }
 }

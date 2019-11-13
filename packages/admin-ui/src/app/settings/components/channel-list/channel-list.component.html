@@ -11,6 +11,7 @@
 <vdr-data-table [items]="channels$ | async">
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <ng-template let-channel="item">
         <td class="left align-middle">
             <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
@@ -22,6 +23,26 @@
                 [label]="'common.edit' | translate"
                 [linkTo]="['./', channel.id]"
             ></vdr-table-row-action>
+        </td>
+        <td class="right align-middle">
+            <vdr-dropdown>
+                <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger [disabled]="isDefaultChannel(channel.code)">
+                    {{ 'common.actions' | translate }}
+                    <clr-icon shape="caret down"></clr-icon>
+                </button>
+                <vdr-dropdown-menu vdrPosition="bottom-right">
+                    <button
+                        type="button"
+                        class="delete-button"
+                        (click)="deleteChannel(channel.id)"
+                        [disabled]="!('SuperAdmin' | hasPermission)"
+                        vdrDropdownItem
+                    >
+                        <clr-icon shape="trash" class="is-danger"></clr-icon>
+                        {{ 'common.delete' | translate }}
+                    </button>
+                </vdr-dropdown-menu>
+            </vdr-dropdown>
         </td>
     </ng-template>
 </vdr-data-table>

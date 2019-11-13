@@ -13,6 +13,7 @@ import {
     CreateTaxRateInput,
     CreateZone,
     CreateZoneInput,
+    DeleteChannel,
     DeleteCountry,
     GetActiveChannel,
     GetAllJobs,
@@ -56,6 +57,7 @@ import {
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
+    DELETE_CHANNEL,
     DELETE_COUNTRY,
     GET_ACTIVE_CHANNEL,
     GET_ALL_JOBS,
@@ -253,6 +255,12 @@ export class SettingsDataService {
     updateChannel(input: UpdateChannelInput) {
         return this.baseDataService.mutate<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
             input,
+        });
+    }
+
+    deleteChannel(id: string) {
+        return this.baseDataService.mutate<DeleteChannel.Mutation, DeleteChannel.Variables>(DELETE_CHANNEL, {
+            id,
         });
     }
 

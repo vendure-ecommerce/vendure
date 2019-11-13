@@ -9,6 +9,7 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
+    UpdateUserChannels,
     UserStatus,
 } from '../../common/generated-types';
 import { GET_NEWTORK_STATUS, GET_USER_STATUS } from '../definitions/client-definitions';
@@ -91,6 +92,18 @@ export const clientResolvers: ResolverDefinition = {
                     __typename: 'UserStatus',
                     permissions,
                     activeChannelId: activeChannel.id,
+                },
+            };
+            cache.writeData({ data });
+            return { ...previous.userStatus, ...data.userStatus };
+        },
+        updateUserChannels: (_, args: UpdateUserChannels.Variables, { cache }): UserStatus => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
+            const data = {
+                userStatus: {
+                    __typename: 'UserStatus' as const,
+                    channels: args.channels,
                 },
             };
             cache.writeData({ data });
