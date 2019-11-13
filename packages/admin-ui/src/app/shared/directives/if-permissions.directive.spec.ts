@@ -54,7 +54,7 @@ class MockDataService {
     client = {
         userStatus() {
             return {
-                mapSingle: (mapFn: any) =>
+                mapStream: (mapFn: any) =>
                     of(
                         mapFn({
                             userStatus: {

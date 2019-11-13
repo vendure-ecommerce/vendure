@@ -42,7 +42,7 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
             }
             return this.dataService.client
                 .userStatus()
-                .mapSingle(({ userStatus }) => userStatus.permissions.includes(permission))
+                .mapStream(({ userStatus }) => userStatus.permissions.includes(permission))
                 .pipe(tap(() => this.changeDetectorRef.markForCheck()));
         });
     }
