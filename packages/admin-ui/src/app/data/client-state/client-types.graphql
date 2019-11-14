@@ -7,9 +7,11 @@ type Query {
 type Mutation {
     requestStarted: Int!
     requestCompleted: Int!
-    setAsLoggedIn(username: String!, loginTime: String!, permissions: [String!]!): UserStatus!
+    setAsLoggedIn(input: UserStatusInput!): UserStatus!
     setAsLoggedOut: UserStatus!
     setUiLanguage(languageCode: LanguageCode): LanguageCode
+    setActiveChannel(channelId: ID!): UserStatus!
+    updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
 }
 
 type NetworkStatus {
@@ -20,9 +22,25 @@ type UserStatus {
     username: String!
     isLoggedIn: Boolean!
     loginTime: String!
-    permissions: [String!]!
+    permissions: [Permission!]!
+    activeChannelId: ID
+    channels: [CurrentUserChannel!]!
 }
 
 type UiState {
     language: LanguageCode!
+}
+
+input CurrentUserChannelInput {
+    id: ID!
+    token: String!
+    code: String!
+    permissions: [Permission!]!
+}
+
+input UserStatusInput {
+    username: String!
+    loginTime: String!
+    activeChannelId: ID!
+    channels: [CurrentUserChannelInput!]!
 }

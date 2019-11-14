@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { dayOfWeekIndex } from '@vendure/admin-ui/src/app/shared/components/datetime-picker/constants';
 import * as dayjs from 'dayjs';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { dayOfWeekIndex } from './constants';
 import { CalendarView, DayCell, DayOfWeek } from './types';
 
 @Injectable()

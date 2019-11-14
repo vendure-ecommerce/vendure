@@ -1,3 +1,43 @@
+## 0.6.0 (2019-11-14)
+
+
+#### Fixes
+
+* **admin-ui** Correctly display HttpErrorResponse messages ([8cc6885](https://github.com/vendure-ecommerce/vendure/commit/8cc6885))
+* **admin-ui** Correctly specify channels when creating a Role ([34a6a3e](https://github.com/vendure-ecommerce/vendure/commit/34a6a3e))
+* **admin-ui** Update permissions-based display when permissions change ([aec08be](https://github.com/vendure-ecommerce/vendure/commit/aec08be))
+* **core** Add resolver for Role.channels ([5a2ddc5](https://github.com/vendure-ecommerce/vendure/commit/5a2ddc5))
+
+#### Features
+
+* **admin-ui** Add channel switcher ([0396e88](https://github.com/vendure-ecommerce/vendure/commit/0396e88)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **admin-ui** Display color-coded label for Channels ([571c379](https://github.com/vendure-ecommerce/vendure/commit/571c379))
+* **admin-ui** Display permissions by Channel in Admin detail view ([586f2d7](https://github.com/vendure-ecommerce/vendure/commit/586f2d7))
+* **admin-ui** Enable assigning Products to Channels ([59b9c91](https://github.com/vendure-ecommerce/vendure/commit/59b9c91)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **admin-ui** Enable deletion of Channels ([b295e52](https://github.com/vendure-ecommerce/vendure/commit/b295e52)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **admin-ui** Enable deletion of Roles ([2a674a3](https://github.com/vendure-ecommerce/vendure/commit/2a674a3))
+* **admin-ui** Enable removal of Product from Channel ([27eea68](https://github.com/vendure-ecommerce/vendure/commit/27eea68)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **admin-ui** Enable setting Role channel on update ([8379a82](https://github.com/vendure-ecommerce/vendure/commit/8379a82)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **admin-ui** Truncate display of role permissions if too long ([98d971f](https://github.com/vendure-ecommerce/vendure/commit/98d971f))
+* **core** Add channel handling to DefaultSearchPlugin ([280a38b](https://github.com/vendure-ecommerce/vendure/commit/280a38b))
+* **core** Allow Roles to be created in other channels ([df5f006](https://github.com/vendure-ecommerce/vendure/commit/df5f006)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **core** Allow Roles to have Channels specified on update ([b3dd6c1](https://github.com/vendure-ecommerce/vendure/commit/b3dd6c1))
+* **core** Assign superadmin Role to newly created Channels ([6fc421a](https://github.com/vendure-ecommerce/vendure/commit/6fc421a))
+* **core** Automatically assign Customer role to all new Channels ([da826f2](https://github.com/vendure-ecommerce/vendure/commit/da826f2))
+* **core** Constrain channel-aware queries by channelId ([51c1b07](https://github.com/vendure-ecommerce/vendure/commit/51c1b07)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **core** Implement `assignProductsToChannel` mutation ([5fda66b](https://github.com/vendure-ecommerce/vendure/commit/5fda66b)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **core** Implement deleteChannel mutation ([989960b](https://github.com/vendure-ecommerce/vendure/commit/989960b)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **core** Implement deleteRole mutation ([7b338a4](https://github.com/vendure-ecommerce/vendure/commit/7b338a4))
+* **core** Implement removeProductsFromChannel mutation ([6a165dc](https://github.com/vendure-ecommerce/vendure/commit/6a165dc))
+* **core** Make product/variant events more granular ([4f9a186](https://github.com/vendure-ecommerce/vendure/commit/4f9a186))
+* **core** Update search index on Product assigned/removed from Channel ([3a6c277](https://github.com/vendure-ecommerce/vendure/commit/3a6c277)), closes [#12](https://github.com/vendure-ecommerce/vendure/issues/12)
+* **elasticsearch-plugin** Add support for multiple channels ([aacfaf4](https://github.com/vendure-ecommerce/vendure/commit/aacfaf4))
+
+
+### BREAKING CHANGE
+
+* The `CatalogModificationEvent` which was previously published whenever changes were made to `Product` or `ProductVariant` entities has been replaced with a `ProductEvent` and `ProductVariantEvent`, including the type of event ('created', 'updated', 'deleted').
+* The `SearchIndexItem` entity used by the `DefaultSearchPlugin` has a couple of new fields related to Channel handling. Once the schema is updated (either by synchronizing or running a migration), the search index should be rebuilt.
 ## <small>0.5.1 (2019-11-04)</small>
 
 

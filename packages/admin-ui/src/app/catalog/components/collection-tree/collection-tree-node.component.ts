@@ -1,8 +1,10 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+
+import { Permission } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 import { RootNode, TreeNode } from './array-to-tree';
 import { CollectionPartial, CollectionTreeComponent } from './collection-tree.component';
@@ -38,8 +40,8 @@ export class CollectionTreeNodeComponent implements OnInit {
             .userStatus()
             .mapStream(data => data.userStatus.permissions)
             .pipe(shareReplay(1));
-        this.hasUpdatePermission$ = permissions$.pipe(map(perms => perms.includes('UpdateCatalog')));
-        this.hasDeletePermission$ = permissions$.pipe(map(perms => perms.includes('DeleteCatalog')));
+        this.hasUpdatePermission$ = permissions$.pipe(map(perms => perms.includes(Permission.UpdateCatalog)));
+        this.hasDeletePermission$ = permissions$.pipe(map(perms => perms.includes(Permission.DeleteCatalog)));
     }
 
     trackByFn(index: number, item: CollectionPartial) {

@@ -3,6 +3,8 @@ import { pick } from 'shared/pick';
 import {
     AddOptionGroupToProduct,
     AddOptionToGroup,
+    AssignProductsToChannel,
+    AssignProductsToChannelInput,
     CreateAssets,
     CreateProduct,
     CreateProductInput,
@@ -21,6 +23,8 @@ import {
     GetProductWithVariants,
     Reindex,
     RemoveOptionGroupFromProduct,
+    RemoveProductsFromChannel,
+    RemoveProductsFromChannelInput,
     SearchProducts,
     SortOrder,
     UpdateProduct,
@@ -30,10 +34,10 @@ import {
     UpdateProductVariantInput,
     UpdateProductVariants,
 } from '../../common/generated-types';
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     ADD_OPTION_TO_GROUP,
+    ASSIGN_PRODUCTS_TO_CHANNEL,
     CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
@@ -47,6 +51,7 @@ import {
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
+    REMOVE_PRODUCTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
@@ -257,6 +262,24 @@ export class ProductDataService {
     createAssets(files: File[]) {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
             input: files.map(file => ({ file })),
+        });
+    }
+
+    assignProductsToChannel(input: AssignProductsToChannelInput) {
+        return this.baseDataService.mutate<
+            AssignProductsToChannel.Mutation,
+            AssignProductsToChannel.Variables
+        >(ASSIGN_PRODUCTS_TO_CHANNEL, {
+            input,
+        });
+    }
+
+    removeProductsFromChannel(input: RemoveProductsFromChannelInput) {
+        return this.baseDataService.mutate<
+            RemoveProductsFromChannel.Mutation,
+            RemoveProductsFromChannel.Variables
+        >(REMOVE_PRODUCTS_FROM_CHANNEL, {
+            input,
         });
     }
 }

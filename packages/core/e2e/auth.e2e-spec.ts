@@ -7,7 +7,6 @@ import path from 'path';
 
 import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
 import { initialData } from './fixtures/e2e-initial-data';
-import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     CreateAdministrator,
     CreateRole,
@@ -23,6 +22,7 @@ import {
     CREATE_PRODUCT,
     CREATE_ROLE,
     GET_PRODUCT_LIST,
+    ME,
     UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -221,12 +221,3 @@ describe('Authorization & permissions', () => {
         };
     }
 });
-
-export const ME = gql`
-    query Me {
-        me {
-            ...CurrentUser
-        }
-    }
-    ${CURRENT_USER_FRAGMENT}
-`;

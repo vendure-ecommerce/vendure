@@ -6,10 +6,13 @@ import {
     GetUiState,
     GetUserStatus,
     LanguageCode,
+    SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
+    UpdateUserChannels,
+    UserStatus,
 } from '../../common/generated-types';
-import { GET_NEWTORK_STATUS } from '../definitions/client-definitions';
+import { GET_NEWTORK_STATUS, GET_USER_STATUS } from '../definitions/client-definitions';
 
 export type ResolverContext = {
     cache: InMemoryCache;
@@ -32,14 +35,20 @@ export const clientResolvers: ResolverDefinition = {
             return updateRequestsInFlight(cache, -1);
         },
         setAsLoggedIn: (_, args: SetAsLoggedIn.Variables, { cache }): GetUserStatus.UserStatus => {
-            const { username, loginTime, permissions } = args;
-            const data: GetUserStatus.Query = {
+            const {
+                input: { username, loginTime, channels, activeChannelId },
+            } = args;
+            // tslint:disable-next-line:no-non-null-assertion
+            const permissions = channels.find(c => c.id === activeChannelId)!.permissions;
+            const data: { userStatus: UserStatus } = {
                 userStatus: {
                     __typename: 'UserStatus',
                     username,
                     loginTime,
                     isLoggedIn: true,
                     permissions,
+                    channels,
+                    activeChannelId,
                 },
             };
             cache.writeData({ data });
@@ -53,6 +62,8 @@ export const clientResolvers: ResolverDefinition = {
                     loginTime: '',
                     isLoggedIn: false,
                     permissions: [],
+                    channels: [],
+                    activeChannelId: null,
                 },
             };
             cache.writeData({ data });
@@ -67,6 +78,36 @@ export const clientResolvers: ResolverDefinition = {
             };
             cache.writeData({ data });
             return args.languageCode;
+        },
+        setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
+            const activeChannel = previous.userStatus.channels.find(c => c.id === args.channelId);
+            if (!activeChannel) {
+                throw new Error('setActiveChannel: Could not find Channel with ID ' + args.channelId);
+            }
+            const permissions = activeChannel.permissions;
+            const data: { userStatus: Partial<UserStatus> } = {
+                userStatus: {
+                    __typename: 'UserStatus',
+                    permissions,
+                    activeChannelId: activeChannel.id,
+                },
+            };
+            cache.writeData({ data });
+            return { ...previous.userStatus, ...data.userStatus };
+        },
+        updateUserChannels: (_, args: UpdateUserChannels.Variables, { cache }): UserStatus => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
+            const data = {
+                userStatus: {
+                    __typename: 'UserStatus' as const,
+                    channels: args.channels,
+                },
+            };
+            cache.writeData({ data });
+            return { ...previous.userStatus, ...data.userStatus };
         },
     },
 };

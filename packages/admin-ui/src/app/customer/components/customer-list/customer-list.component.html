@@ -10,7 +10,7 @@
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="customer-list"></vdr-action-bar-items>
-        <a class="btn btn-primary" [routerLink]="['./create']">
+        <a class="btn btn-primary" [routerLink]="['./create']" *vdrIfPermissions="'CreateCustomer'">
             <clr-icon shape="plus"></clr-icon>
             {{ 'customer.create-new-customer' | translate }}
         </a>

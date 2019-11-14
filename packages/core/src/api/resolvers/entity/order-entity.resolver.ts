@@ -6,7 +6,9 @@ import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { ApiType } from '../../common/get-api-type';
+import { RequestContext } from '../../common/request-context';
 import { Api } from '../../decorators/api.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Order')
 export class OrderEntityResolver {
@@ -25,12 +27,12 @@ export class OrderEntityResolver {
     }
 
     @ResolveProperty()
-    async shippingMethod(@Parent() order: Order) {
+    async shippingMethod(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.shippingMethodId) {
             // Does not need to be decoded because it is an internal property
             // which is never exposed to the outside world.
             const shippingMethodId = order.shippingMethodId;
-            return this.shippingMethodService.findOne(shippingMethodId);
+            return this.shippingMethodService.findOne(ctx, shippingMethodId);
         } else {
             return null;
         }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { Country } from '../../../common/generated-types';
@@ -9,8 +10,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class CountryResolver extends BaseEntityResolver<Country.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'Country',
                 id: '',
@@ -21,7 +23,7 @@ export class CountryResolver extends BaseEntityResolver<Country.Fragment> {
                 enabled: false,
                 translations: [],
             },
-            id => this.dataService.settings.getCountry(id).mapStream(data => data.country),
+            id => dataService.settings.getCountry(id).mapStream(data => data.country),
         );
     }
 }

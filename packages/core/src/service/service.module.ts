@@ -7,6 +7,7 @@ import { EventBusModule } from '../event-bus/event-bus.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
+import { TaxRateController } from './controllers/tax-rate.controller';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
@@ -96,7 +97,7 @@ const helpers = [
     ShippingConfiguration,
 ];
 
-const workerControllers = [CollectionController];
+const workerControllers = [CollectionController, TaxRateController];
 
 let defaultTypeOrmModule: DynamicModule;
 let workerTypeOrmModule: DynamicModule;

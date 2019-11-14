@@ -630,6 +630,7 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
     __typename?: 'CurrentUserChannel';
+    id: Scalars['ID'];
     token: Scalars['String'];
     code: Scalars['String'];
     permissions: Array<Permission>;

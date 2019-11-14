@@ -3,6 +3,7 @@ import {
     CreateAdministratorInput,
     CreateRole,
     CreateRoleInput,
+    DeleteRole,
     GetAdministrator,
     GetAdministrators,
     GetRole,
@@ -15,6 +16,7 @@ import {
 import {
     CREATE_ADMINISTRATOR,
     CREATE_ROLE,
+    DELETE_ROLE,
     GET_ADMINISTRATOR,
     GET_ADMINISTRATORS,
     GET_ROLE,
@@ -82,5 +84,9 @@ export class AdministratorDataService {
 
     updateRole(input: UpdateRoleInput) {
         return this.baseDataService.mutate<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, { input });
+    }
+
+    deleteRole(id: string) {
+        return this.baseDataService.mutate<DeleteRole.Mutation, DeleteRole.Variables>(DELETE_ROLE, { id });
     }
 }

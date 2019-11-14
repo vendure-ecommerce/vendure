@@ -1,12 +1,16 @@
 import {
+    CurrentUserChannel,
+    CurrentUserChannelInput,
     GetNetworkStatus,
     GetUiState,
     GetUserStatus,
     LanguageCode,
     RequestCompleted,
     RequestStarted,
+    SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
+    UpdateUserChannels,
 } from '../../common/generated-types';
 import {
     GET_NEWTORK_STATUS,
@@ -14,9 +18,11 @@ import {
     GET_USER_STATUS,
     REQUEST_COMPLETED,
     REQUEST_STARTED,
+    SET_ACTIVE_CHANNEL,
     SET_AS_LOGGED_IN,
     SET_AS_LOGGED_OUT,
     SET_UI_LANGUAGE,
+    UPDATE_USER_CHANNELS,
 } from '../definitions/client-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -40,13 +46,16 @@ export class ClientDataService {
         return this.baseDataService.query<GetNetworkStatus.Query>(GET_NEWTORK_STATUS, {}, 'cache-first');
     }
 
-    loginSuccess(username: string, permissions: string[]) {
+    loginSuccess(username: string, activeChannelId: string, channels: CurrentUserChannel[]) {
         return this.baseDataService.mutate<SetAsLoggedIn.Mutation, SetAsLoggedIn.Variables>(
             SET_AS_LOGGED_IN,
             {
-                username,
-                loginTime: Date.now().toString(),
-                permissions,
+                input: {
+                    username,
+                    loginTime: Date.now().toString(),
+                    activeChannelId,
+                    channels,
+                },
             },
         );
     }
@@ -67,5 +76,23 @@ export class ClientDataService {
         return this.baseDataService.mutate<SetUiLanguage.Mutation, SetUiLanguage.Variables>(SET_UI_LANGUAGE, {
             languageCode,
         });
+    }
+
+    setActiveChannel(channelId: string) {
+        return this.baseDataService.mutate<SetActiveChannel.Mutation, SetActiveChannel.Variables>(
+            SET_ACTIVE_CHANNEL,
+            {
+                channelId,
+            },
+        );
+    }
+
+    updateUserChannels(channels: CurrentUserChannelInput[]) {
+        return this.baseDataService.mutate<UpdateUserChannels.Mutation, UpdateUserChannels.Variables>(
+            UPDATE_USER_CHANNELS,
+            {
+                channels,
+            },
+        );
     }
 }

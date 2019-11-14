@@ -1,18 +1,18 @@
 export type Task<T = any> = () => Promise<T> | T;
 export type Resolve<T> = (val: T) => void;
 export type Reject<T> = (val: T) => void;
-type TaskQueueItem = { task: Task; resolve: Resolve<any>; reject: Reject<any>; };
+type TaskQueueItem = { task: Task; resolve: Resolve<any>; reject: Reject<any> };
 
 /**
+ * @description
  * A queue class for limiting concurrent async tasks. This can be used e.g. to prevent
  * race conditions when working on a shared resource such as writing to a database.
  *
- * The task queue itself is shared across instances (even across processes) by means of the
- * 'label' constructor argument.
+ * @docsCategory common
  */
 export class AsyncQueue {
     private static running: { [label: string]: number } = {};
-    private static taskQueue: { [label: string]: TaskQueueItem[]; } = {};
+    private static taskQueue: { [label: string]: TaskQueueItem[] } = {};
 
     constructor(private label: string = 'default', private concurrency: number = 1) {
         if (!AsyncQueue.taskQueue[label]) {
@@ -34,13 +34,16 @@ export class AsyncQueue {
     }
 
     /**
+     * @description
      * Pushes a new task onto the queue, upon which the task will either execute immediately or
      * (if the number of running tasks is equal to the concurrency limit) enqueue the task to
      * be executed at the soonest opportunity.
      */
     push<T>(task: Task<T>): Promise<T> {
         return new Promise<T>((resolve, reject) => {
-            this.running < this.concurrency ? this.runTask(task, resolve, reject) : this.enqueueTask(task, resolve, reject);
+            this.running < this.concurrency
+                ? this.runTask(task, resolve, reject)
+                : this.enqueueTask(task, resolve, reject);
         });
     }
 

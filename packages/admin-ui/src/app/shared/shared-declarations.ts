@@ -8,6 +8,11 @@ export { AssetFileInputComponent } from './components/asset-file-input/asset-fil
 export { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 export { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 export { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
+export {
+    ChannelAssignmentControlComponent,
+} from './components/channel-assignment-control/channel-assignment-control.component';
+export { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
+export { ChannelLabelPipe } from './pipes/channel-label.pipe';
 export { ChipComponent } from './components/chip/chip.component';
 export { ConfigurableInputComponent } from './components/configurable-input/configurable-input.component';
 export { CurrencyInputComponent } from './components/currency-input/currency-input.component';
@@ -29,6 +34,9 @@ export { FormFieldControlDirective } from './components/form-field/form-field-co
 export { FormFieldComponent } from './components/form-field/form-field.component';
 export { FormItemComponent } from './components/form-item/form-item.component';
 export { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+export { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
+export { IfMultichannelDirective } from './directives/if-multichannel.directive';
+export { IfPermissionsDirective } from './directives/if-permissions.directive';
 export {
     ItemsPerPageControlsComponent,
 } from './components/items-per-page-controls/items-per-page-controls.component';

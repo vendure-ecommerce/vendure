@@ -122,6 +122,10 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
                 name
             }
         }
+        channels {
+            id
+            code
+        }
     }
     ${PRODUCT_VARIANT_FRAGMENT}
     ${ASSET_FRAGMENT}

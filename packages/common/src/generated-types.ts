@@ -162,6 +162,12 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type AssignProductsToChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+  priceFactor?: Maybe<Scalars['Float']>,
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig',
   name: Scalars['String'],
@@ -536,6 +542,7 @@ export type CreateRoleInput = {
   code: Scalars['String'],
   description: Scalars['String'],
   permissions: Array<Permission>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type CreateShippingMethodInput = {
@@ -894,6 +901,7 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
   __typename?: 'CurrentUserChannel',
+  id: Scalars['ID'],
   token: Scalars['String'],
   code: Scalars['String'],
   permissions: Array<Permission>,
@@ -1675,6 +1683,8 @@ export type Mutation = {
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  /** Delete a Channel */
+  deleteChannel: DeletionResponse,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1756,6 +1766,10 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>,
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse,
+  /** Assigns Products to the specified Channel */
+  assignProductsToChannel: Array<Product>,
+  /** Removes Products from the specified Channel */
+  removeProductsFromChannel: Array<Product>,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1763,6 +1777,8 @@ export type Mutation = {
   createRole: Role,
   /** Update an existing Role */
   updateRole: Role,
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse,
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
@@ -1825,6 +1841,11 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationDeleteChannelArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2056,6 +2077,16 @@ export type MutationDeleteProductVariantArgs = {
 };
 
 
+export type MutationAssignProductsToChannelArgs = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type MutationRemoveProductsFromChannelArgs = {
+  input: RemoveProductsFromChannelInput
+};
+
+
 export type MutationCreatePromotionArgs = {
   input: CreatePromotionInput
 };
@@ -2078,6 +2109,11 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2401,6 +2437,7 @@ export type PriceRange = {
 export type Product = Node & {
   __typename?: 'Product',
   enabled: Scalars['Boolean'],
+  channels: Array<Channel>,
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
@@ -2932,6 +2969,11 @@ export type RefundOrderInput = {
   reason?: Maybe<Scalars['String']>,
 };
 
+export type RemoveProductsFromChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+};
+
 export type Return = Node & StockMovement & {
   __typename?: 'Return',
   id: Scalars['ID'],
@@ -3018,6 +3060,8 @@ export type SearchResponse = {
 export type SearchResult = {
   __typename?: 'SearchResult',
   enabled: Scalars['Boolean'],
+  /** An array of ids of the Collections in which this result appears */
+  channelIds: Array<Scalars['ID']>,
   sku: Scalars['String'],
   slug: Scalars['String'],
   productId: Scalars['ID'],
@@ -3412,6 +3456,7 @@ export type UpdateRoleInput = {
   code?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   permissions?: Maybe<Array<Permission>>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type UpdateShippingMethodInput = {

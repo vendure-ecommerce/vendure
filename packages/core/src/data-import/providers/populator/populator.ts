@@ -197,7 +197,7 @@ export class Populator {
         shippingMethods: Array<{ name: string; price: number }>,
     ) {
         for (const method of shippingMethods) {
-            await this.shippingMethodService.create({
+            await this.shippingMethodService.create(ctx, {
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
                     arguments: [{ name: 'orderMinimum', value: '0', type: 'int' }],

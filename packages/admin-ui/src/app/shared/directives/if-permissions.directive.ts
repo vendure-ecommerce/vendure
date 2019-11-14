@@ -1,5 +1,18 @@
-import { Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
+import {
+    ChangeDetectorRef,
+    Directive,
+    EmbeddedViewRef,
+    Input,
+    TemplateRef,
+    ViewContainerRef,
+} from '@angular/core';
+import { of } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+import { Permission } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
+
+import { IfDirectiveBase } from './if-directive-base';
 
 /**
  * Conditionally shows/hides templates based on the current active user having the specified permission.
@@ -14,19 +27,24 @@ import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.servi
 @Directive({
     selector: '[vdrIfPermissions]',
 })
-export class IfPermissionsDirective {
-    private readonly _thenTemplateRef: TemplateRef<any> | null = null;
-    private _elseTemplateRef: TemplateRef<any> | null = null;
-    private _thenViewRef: EmbeddedViewRef<any> | null = null;
-    private _elseViewRef: EmbeddedViewRef<any> | null = null;
+export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]> {
     private permissionToCheck: string | null = '__initial_value__';
 
     constructor(
-        private _viewContainer: ViewContainerRef,
+        _viewContainer: ViewContainerRef,
         templateRef: TemplateRef<any>,
         private dataService: DataService,
+        private changeDetectorRef: ChangeDetectorRef,
     ) {
-        this._thenTemplateRef = templateRef;
+        super(_viewContainer, templateRef, permission => {
+            if (!permission) {
+                return of(false);
+            }
+            return this.dataService.client
+                .userStatus()
+                .mapStream(({ userStatus }) => userStatus.permissions.includes(permission))
+                .pipe(tap(() => this.changeDetectorRef.markForCheck()));
+        });
     }
 
     /**
@@ -35,7 +53,7 @@ export class IfPermissionsDirective {
     @Input()
     set vdrIfPermissions(permission: string | null) {
         this.permissionToCheck = permission;
-        this._updateView(permission);
+        this.updateArgs$.next([permission as Permission]);
     }
 
     /**
@@ -43,50 +61,7 @@ export class IfPermissionsDirective {
      */
     @Input()
     set vdrIfPermissionsElse(templateRef: TemplateRef<any> | null) {
-        assertTemplate('vdrIfPermissionsElse', templateRef);
-        this._elseTemplateRef = templateRef;
-        this._elseViewRef = null; // clear previous view if any.
-        this._updateView(this.permissionToCheck);
-    }
-
-    private _updateView(permission: string | null) {
-        if (!permission) {
-            this.showThen();
-            return;
-        }
-        this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
-            if (userStatus.permissions.includes(permission)) {
-                this.showThen();
-            } else {
-                this.showElse();
-            }
-        });
-    }
-
-    private showThen() {
-        if (!this._thenViewRef) {
-            this._viewContainer.clear();
-            this._elseViewRef = null;
-            if (this._thenTemplateRef) {
-                this._thenViewRef = this._viewContainer.createEmbeddedView(this._thenTemplateRef);
-            }
-        }
-    }
-
-    private showElse() {
-        if (!this._elseViewRef) {
-            this._viewContainer.clear();
-            this._thenViewRef = null;
-            if (this._elseTemplateRef) {
-                this._elseViewRef = this._viewContainer.createEmbeddedView(this._elseTemplateRef);
-            }
-        }
-    }
-}
-
-function assertTemplate(property: string, templateRef: TemplateRef<any> | null): void {
-    const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
-    if (!isTemplateRefOrNull) {
-        throw new Error(`${property} must be a TemplateRef, but received '${templateRef}'.`);
+        this.setElseTemplate(templateRef);
+        this.updateArgs$.next([this.permissionToCheck as Permission]);
     }
 }

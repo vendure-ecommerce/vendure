@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { BaseEntityResolver } from '../../../common/base-entity-resolver';
 import { Promotion } from '../../../common/generated-types';
@@ -9,8 +10,9 @@ import { DataService } from '../../../data/providers/data.service';
  */
 @Injectable()
 export class PromotionResolver extends BaseEntityResolver<Promotion.Fragment> {
-    constructor(private dataService: DataService) {
+    constructor(router: Router, dataService: DataService) {
         super(
+            router,
             {
                 __typename: 'Promotion',
                 id: '',
@@ -21,7 +23,7 @@ export class PromotionResolver extends BaseEntityResolver<Promotion.Fragment> {
                 conditions: [],
                 actions: [],
             },
-            id => this.dataService.promotion.getPromotion(id).mapStream(data => data.promotion),
+            id => dataService.promotion.getPromotion(id).mapStream(data => data.promotion),
         );
     }
 }

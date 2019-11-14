@@ -1,9 +1,11 @@
 import { Client } from '@elastic/elasticsearch';
-import { Controller, Inject } from '@nestjs/common';
+import { Controller, Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { unique } from '@vendure/common/lib/unique';
 import {
+    asyncObservable,
+    AsyncQueue,
     FacetValue,
     ID,
     JobService,
@@ -14,12 +16,11 @@ import {
     RequestContext,
     translateDeep,
 } from '@vendure/core';
-import { defer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Connection, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import {
-    ELASTIC_SEARCH_CLIENT,
     ELASTIC_SEARCH_OPTIONS,
     loggerCtx,
     PRODUCT_INDEX_NAME,
@@ -27,14 +28,20 @@ import {
     VARIANT_INDEX_NAME,
     VARIANT_INDEX_TYPE,
 } from './constants';
+import { createIndices, deleteByChannel, deleteIndices } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
+    AssignProductToChannelMessage,
     BulkOperation,
     BulkOperationDoc,
     BulkResponseBody,
+    DeleteProductMessage,
+    DeleteVariantMessage,
     ProductIndexItem,
     ReindexMessage,
-    UpdateProductOrVariantMessage,
+    RemoveProductFromChannelMessage,
+    UpdateProductMessage,
+    UpdateVariantMessage,
     UpdateVariantsByIdMessage,
     VariantIndexItem,
 } from './types';
@@ -44,6 +51,7 @@ export const variantRelations = [
     'product.featuredAsset',
     'product.facetValues',
     'product.facetValues.facet',
+    'product.channels',
     'featuredAsset',
     'facetValues',
     'facetValues.facet',
@@ -58,31 +66,121 @@ export interface ReindexMessageResponse {
 }
 
 @Controller()
-export class ElasticsearchIndexerController {
+export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDestroy {
+    private client: Client;
+    private asyncQueue = new AsyncQueue('elasticsearch-indexer', 5);
+
     constructor(
         @InjectConnection() private connection: Connection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
-        @Inject(ELASTIC_SEARCH_CLIENT) private client: Client,
         private productVariantService: ProductVariantService,
         private jobService: JobService,
     ) {}
 
+    onModuleInit(): any {
+        const { host, port } = this.options;
+        this.client = new Client({
+            node: `${host}:${port}`,
+        });
+    }
+
+    onModuleDestroy(): any {
+        return this.client.close();
+    }
+
+    /**
+     * Updates the search index only for the affected product.
+     */
+    @MessagePattern(UpdateProductMessage.pattern)
+    updateProduct({
+        ctx: rawContext,
+        productId,
+    }: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
+        const ctx = RequestContext.fromObject(rawContext);
+        return asyncObservable(async () => {
+            await this.updateProductInternal(ctx, productId, ctx.channelId);
+            return true;
+        });
+    }
+
+    /**
+     * Updates the search index only for the affected product.
+     */
+    @MessagePattern(DeleteProductMessage.pattern)
+    deleteProduct({
+        ctx: rawContext,
+        productId,
+    }: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
+        const ctx = RequestContext.fromObject(rawContext);
+        return asyncObservable(async () => {
+            await this.deleteProductInternal(productId, ctx.channelId);
+            const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+            await this.deleteVariantsInternal(variants.map(v => v.id), ctx.channelId);
+            return true;
+        });
+    }
+
+    /**
+     * Updates the search index only for the affected product.
+     */
+    @MessagePattern(AssignProductToChannelMessage.pattern)
+    assignProductsToChannel({
+        ctx: rawContext,
+        productId,
+        channelId,
+    }: AssignProductToChannelMessage['data']): Observable<AssignProductToChannelMessage['response']> {
+        const ctx = RequestContext.fromObject(rawContext);
+        return asyncObservable(async () => {
+            await this.updateProductInternal(ctx, productId, channelId);
+            const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+            await this.updateVariantsInternal(ctx, variants.map(v => v.id), channelId);
+            return true;
+        });
+    }
+
+    /**
+     * Updates the search index only for the affected product.
+     */
+    @MessagePattern(RemoveProductFromChannelMessage.pattern)
+    removeProductFromChannel({
+        ctx: rawContext,
+        productId,
+        channelId,
+    }: RemoveProductFromChannelMessage['data']): Observable<RemoveProductFromChannelMessage['response']> {
+        const ctx = RequestContext.fromObject(rawContext);
+        return asyncObservable(async () => {
+            await this.deleteProductInternal(productId, channelId);
+            const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
+            await this.deleteVariantsInternal(variants.map(v => v.id), channelId);
+            return true;
+        });
+    }
+
     /**
      * Updates the search index only for the affected entities.
      */
-    @MessagePattern(UpdateProductOrVariantMessage.pattern)
-    updateProductOrVariant({
+    @MessagePattern(UpdateVariantMessage.pattern)
+    updateVariants({
         ctx: rawContext,
-        productId,
-        variantId,
-    }: UpdateProductOrVariantMessage['data']): Observable<boolean> {
+        variantIds,
+    }: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
-        return defer(async () => {
-            if (productId) {
-                await this.updateProduct(ctx, productId);
-            } else if (variantId) {
-                await this.updateProductVariant(ctx, variantId);
-            }
+        return asyncObservable(async () => {
+            return this.asyncQueue.push(async () => {
+                await this.updateVariantsInternal(ctx, variantIds, ctx.channelId);
+                return true;
+            });
+        });
+    }
+
+    @MessagePattern(DeleteVariantMessage.pattern)
+    private deleteVaiants({
+        ctx: rawContext,
+        variantIds,
+    }: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
+        const ctx = RequestContext.fromObject(rawContext);
+        return asyncObservable(async () => {
+            await this.deleteVariantsInternal(variantIds, ctx.channelId);
             return true;
         });
     }
@@ -95,50 +193,35 @@ export class ElasticsearchIndexerController {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
-        return new Observable(observer => {
-            (async () => {
+        return asyncObservable(async observer => {
+            return this.asyncQueue.push(async () => {
                 const timeStart = Date.now();
-
                 if (ids.length) {
                     const batches = Math.ceil(ids.length / batchSize);
-                    Logger.verbose(`Updating ${ids.length} variants...`);
+                    Logger.verbose(`Updating ${ids.length} variants...`, loggerCtx);
 
                     let variantsInProduct: ProductVariant[] = [];
 
                     for (let i = 0; i < batches; i++) {
                         const begin = i * batchSize;
                         const end = begin + batchSize;
-                        Logger.verbose(`Updating ids from index ${begin} to ${end}`);
                         const batchIds = ids.slice(begin, end);
-
                         const variants = await this.getVariantsByIds(ctx, batchIds);
-
-                        const variantsToIndex: Array<BulkOperation | BulkOperationDoc<VariantIndexItem>> = [];
-                        const productsToIndex: Array<BulkOperation | BulkOperationDoc<ProductIndexItem>> = [];
-
-                        // tslint:disable-next-line:prefer-for-of
-                        for (let j = 0; j < variants.length; j++) {
-                            const variant = variants[j];
-                            variantsInProduct.push(variant);
-                            variantsToIndex.push({ update: { _id: variant.id.toString() } });
-                            variantsToIndex.push({ doc: this.createVariantIndexItem(variant) });
-
-                            const nextVariant = variants[j + 1];
-                            if (nextVariant && nextVariant.productId !== variant.productId) {
-                                productsToIndex.push({ update: { _id: variant.productId.toString() } });
-                                productsToIndex.push({ doc: this.createProductIndexItem(variantsInProduct) });
-                                variantsInProduct = [];
-                            }
-                        }
-                        await this.executeBulkOperations(
-                            VARIANT_INDEX_NAME,
-                            VARIANT_INDEX_TYPE,
-                            variantsToIndex,
-                        );
-                        await this.executeBulkOperations(
-                            PRODUCT_INDEX_NAME,
-                            PRODUCT_INDEX_TYPE,
-                            productsToIndex,
+                        variantsInProduct = await this.processVariantBatch(
+                            variants,
+                            variantsInProduct,
+                            (operations, variant) => {
+                                operations.push(
+                                    { update: { _id: this.getId(variant.id, ctx.channelId) } },
+                                    { doc: this.createVariantIndexItem(variant, ctx.channelId) },
+                                );
+                            },
+                            (operations, product, _variants) => {
+                                operations.push(
+                                    { update: { _id: this.getId(product.id, ctx.channelId) } },
+                                    { doc: this.createProductIndexItem(_variants, ctx.channelId) },
+                                );
+                            },
                         );
                         observer.next({
                             total: ids.length,
@@ -147,102 +230,138 @@ export class ElasticsearchIndexerController {
                         });
                     }
                 }
-                Logger.verbose(`Completed reindexing!`);
-                observer.next({
+                Logger.verbose(`Completed updating variants`, loggerCtx);
+                return {
                     total: ids.length,
                     completed: ids.length,
                     duration: +new Date() - timeStart,
-                });
-                observer.complete();
-            })();
+                };
+            });
         });
     }
 
     @MessagePattern(ReindexMessage.pattern)
-    reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
+    reindex({
+        ctx: rawContext,
+        dropIndices,
+    }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
         const { batchSize } = this.options;
 
-        return new Observable(observer => {
-            (async () => {
+        return asyncObservable(async observer => {
+            return this.asyncQueue.push(async () => {
                 const timeStart = Date.now();
-                const qb = this.getSearchIndexQueryBuilder();
-                const count = await qb.where('variants__product.deletedAt IS NULL').getCount();
+
+                if (dropIndices) {
+                    await deleteIndices(this.client, this.options.indexPrefix);
+                    await createIndices(this.client, this.options.indexPrefix);
+                } else {
+                    await deleteByChannel(this.client, this.options.indexPrefix, ctx.channelId);
+                }
+
+                const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
+                const count = await qb.andWhere('variants__product.deletedAt IS NULL').getCount();
                 Logger.verbose(`Reindexing ${count} ProductVariants`, loggerCtx);
 
                 const batches = Math.ceil(count / batchSize);
                 let variantsInProduct: ProductVariant[] = [];
 
                 for (let i = 0; i < batches; i++) {
-                    Logger.verbose(`Processing batch ${i + 1} of ${batches}`, loggerCtx);
-
                     const variants = await this.getBatch(ctx, qb, i);
-                    Logger.verbose(`ProductVariants count: ${variants.length}`);
 
-                    const variantsToIndex: Array<BulkOperation | VariantIndexItem> = [];
-                    const productsToIndex: Array<BulkOperation | ProductIndexItem> = [];
-
-                    // tslint:disable-next-line:prefer-for-of
-                    for (let j = 0; j < variants.length; j++) {
-                        const variant = variants[j];
-                        variantsInProduct.push(variant);
-                        variantsToIndex.push({ index: { _id: variant.id.toString() } });
-                        variantsToIndex.push(this.createVariantIndexItem(variant));
-
-                        const nextVariant = variants[j + 1];
-                        if (nextVariant && nextVariant.productId !== variant.productId) {
-                            productsToIndex.push({ index: { _id: variant.productId.toString() } });
-                            productsToIndex.push(this.createProductIndexItem(variantsInProduct) as any);
-                            variantsInProduct = [];
-                        }
-                    }
-                    await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, variantsToIndex);
-                    await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, productsToIndex);
+                    Logger.verbose(
+                        `Processing batch ${i + 1} of ${batches}. ProductVariants count: ${variants.length}`,
+                        loggerCtx,
+                    );
+                    variantsInProduct = await this.processVariantBatch(
+                        variants,
+                        variantsInProduct,
+                        (operations, variant) => {
+                            operations.push(
+                                { index: { _id: this.getId(variant.id, ctx.channelId) } },
+                                this.createVariantIndexItem(variant, ctx.channelId),
+                            );
+                        },
+                        (operations, product, _variants) => {
+                            operations.push(
+                                { index: { _id: this.getId(product.id, ctx.channelId) } },
+                                this.createProductIndexItem(_variants, ctx.channelId),
+                            );
+                        },
+                    );
                     observer.next({
                         total: count,
                         completed: Math.min((i + 1) * batchSize, count),
                         duration: +new Date() - timeStart,
                     });
                 }
-                Logger.verbose(`Completed reindexing!`);
-                observer.next({
+                Logger.verbose(`Completed reindexing!`, loggerCtx);
+                return {
                     total: count,
                     completed: count,
                     duration: +new Date() - timeStart,
-                });
-                observer.complete();
-            })();
+                };
+            });
         });
     }
 
-    private async updateProductVariant(ctx: RequestContext, variantId: ID) {
-        let updatedVariants: ProductVariant[] = [];
-        let removedVariantId: ID | undefined;
-
-        const productVariant = await this.connection.getRepository(ProductVariant).findOne(variantId, {
-            relations: variantRelations,
-        });
-        if (productVariant) {
-            if (productVariant.deletedAt) {
-                removedVariantId = variantId;
-            } else {
-                updatedVariants = this.hydrateVariants(ctx, [productVariant]);
+    private async processVariantBatch(
+        variants: ProductVariant[],
+        variantsInProduct: ProductVariant[],
+        processVariants: (
+            operations: Array<BulkOperation | BulkOperationDoc<VariantIndexItem> | VariantIndexItem>,
+            variant: ProductVariant,
+        ) => void,
+        processProducts: (
+            operations: Array<BulkOperation | BulkOperationDoc<ProductIndexItem> | ProductIndexItem>,
+            product: Product,
+            variants: ProductVariant[],
+        ) => void,
+    ) {
+        const variantsToIndex: Array<BulkOperation | VariantIndexItem> = [];
+        const productsToIndex: Array<BulkOperation | ProductIndexItem> = [];
+        const productIdsIndexed = new Set<ID>();
+        // tslint:disable-next-line:prefer-for-of
+        for (let j = 0; j < variants.length; j++) {
+            const variant = variants[j];
+            variantsInProduct.push(variant);
+            processVariants(variantsToIndex, variant);
+            const nextVariant = variants[j + 1];
+            const nextVariantIsNewProduct = nextVariant && nextVariant.productId !== variant.productId;
+            const thisVariantIsLastAndProductNotAdded =
+                !nextVariant && !productIdsIndexed.has(variant.productId);
+            if (nextVariantIsNewProduct || thisVariantIsLastAndProductNotAdded) {
+                processProducts(productsToIndex, variant.product, variantsInProduct);
+                variantsInProduct = [];
+                productIdsIndexed.add(variant.productId);
             }
         }
+        await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, variantsToIndex);
+        await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, productsToIndex);
+        return variantsInProduct;
+    }
+
+    private async updateVariantsInternal(ctx: RequestContext, variantIds: ID[], channelId: ID) {
+        let updatedVariants: ProductVariant[] = [];
+
+        const productVariants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
+            relations: variantRelations,
+        });
+        updatedVariants = this.hydrateVariants(ctx, productVariants);
 
         if (updatedVariants.length) {
             // When ProductVariants change, we need to update the corresponding Product index
             // since e.g. price changes must be reflected on the Product level too.
             const productIdsOfVariants = unique(updatedVariants.map(v => v.productId));
             for (const variantProductId of productIdsOfVariants) {
-                await this.updateProduct(ctx, variantProductId);
+                await this.updateProductInternal(ctx, variantProductId, channelId);
             }
             const operations = updatedVariants.reduce(
                 (ops, variant) => {
                     return [
                         ...ops,
-                        { update: { _id: variant.id.toString() } },
-                        { doc: this.createVariantIndexItem(variant), doc_as_upsert: true },
+                        { update: { _id: this.getId(variant.id, channelId) } },
+                        { doc: this.createVariantIndexItem(variant, channelId), doc_as_upsert: true },
                     ];
                 },
                 [] as Array<BulkOperation | BulkOperationDoc<VariantIndexItem>>,
@@ -250,57 +369,47 @@ export class ElasticsearchIndexerController {
             Logger.verbose(`Updating ${updatedVariants.length} ProductVariants`, loggerCtx);
             await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
         }
-        if (removedVariantId) {
-            Logger.verbose(`Deleting 1 ProductVariant (${removedVariantId})`, loggerCtx);
-            const operations: BulkOperation[] = [{ delete: { _id: removedVariantId.toString() } }];
-            await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
-        }
     }
 
-    private async updateProduct(ctx: RequestContext, productId: ID) {
+    private async updateProductInternal(ctx: RequestContext, productId: ID, channelId: ID) {
         let updatedProductVariants: ProductVariant[] = [];
-        let removedProductId: ID | undefined;
-        let removedVariantIds: ID[] = [];
         const product = await this.connection.getRepository(Product).findOne(productId, {
             relations: ['variants'],
         });
         if (product) {
-            if (product.deletedAt) {
-                removedProductId = productId;
-                removedVariantIds = product.variants.map(v => v.id);
-            } else {
-                updatedProductVariants = await this.connection
-                    .getRepository(ProductVariant)
-                    .findByIds(product.variants.map(v => v.id), {
-                        relations: variantRelations,
-                    });
+            updatedProductVariants = await this.connection
+                .getRepository(ProductVariant)
+                .findByIds(product.variants.map(v => v.id), {
+                    relations: variantRelations,
+                });
+            if (product.enabled === false) {
+                updatedProductVariants.forEach(v => (v.enabled = false));
             }
         }
         if (updatedProductVariants.length) {
             Logger.verbose(`Updating 1 Product (${productId})`, loggerCtx);
             updatedProductVariants = this.hydrateVariants(ctx, updatedProductVariants);
-            const updatedProductIndexItem = this.createProductIndexItem(updatedProductVariants);
+            const updatedProductIndexItem = this.createProductIndexItem(updatedProductVariants, channelId);
             const operations: [BulkOperation, BulkOperationDoc<ProductIndexItem>] = [
-                { update: { _id: updatedProductIndexItem.productId.toString() } },
+                { update: { _id: this.getId(updatedProductIndexItem.productId, channelId) } },
                 { doc: updatedProductIndexItem, doc_as_upsert: true },
             ];
             await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
         }
-        if (removedVariantIds.length) {
-            const operations = removedVariantIds.reduce(
-                (ops, id) => {
-                    Logger.verbose(`Deleting 1 ProductVariant (${id})`, loggerCtx);
-                    return [...ops, { delete: { _id: id.toString() } }];
-                },
-                [] as BulkOperation[],
-            );
-            await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
-        }
-        if (removedProductId) {
-            Logger.verbose(`Deleting 1 Product (${removedProductId})`, loggerCtx);
-            const operations: BulkOperation[] = [{ delete: { _id: removedProductId.toString() } }];
-            await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
-        }
+    }
+
+    private async deleteProductInternal(productId: ID, channelId: ID) {
+        Logger.verbose(`Deleting 1 Product (${productId})`, loggerCtx);
+        const operations: BulkOperation[] = [{ delete: { _id: this.getId(productId, channelId) } }];
+        await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
+    }
+
+    private async deleteVariantsInternal(variantIds: ID[], channelId: ID) {
+        Logger.verbose(`Deleting ${variantIds.length} ProductVariants`, loggerCtx);
+        const operations: BulkOperation[] = variantIds.map(id => ({
+            delete: { _id: this.getId(id, channelId) },
+        }));
+        await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
     }
 
     private async executeBulkOperations(
@@ -334,16 +443,19 @@ export class ElasticsearchIndexerController {
                     }
                 });
             } else {
-                Logger.verbose(`Executed ${body.items.length} bulk operations on index [${fullIndexName}]`);
+                Logger.verbose(
+                    `Executed ${body.items.length} bulk operations on index [${fullIndexName}]`,
+                    loggerCtx,
+                );
             }
             return body;
         } catch (e) {
             Logger.error(`Error when attempting to run bulk operations [${e.toString()}]`, loggerCtx);
-            Logger.error('Error details: ' + JSON.stringify(e.body.error, null, 2), loggerCtx);
+            Logger.error('Error details: ' + JSON.stringify(e.body && e.body.error, null, 2), loggerCtx);
         }
     }
 
-    private getSearchIndexQueryBuilder() {
+    private getSearchIndexQueryBuilder(channelId: ID) {
         const qb = this.connection.getRepository(ProductVariant).createQueryBuilder('variants');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: variantRelations,
@@ -352,6 +464,9 @@ export class ElasticsearchIndexerController {
             },
         });
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+        qb.leftJoin('variants.product', '__product')
+            .leftJoin('__product.channels', '__channel')
+            .where('__channel.id = :channelId', { channelId });
         return qb;
     }
 
@@ -363,7 +478,7 @@ export class ElasticsearchIndexerController {
         const { batchSize } = this.options;
         const i = Number.parseInt(batchNumber.toString(), 10);
         const variants = await qb
-            .where('variants__product.deletedAt IS NULL')
+            .andWhere('variants__product.deletedAt IS NULL')
             .take(batchSize)
             .skip(i * batchSize)
             .getMany();
@@ -386,14 +501,15 @@ export class ElasticsearchIndexerController {
             .map(v => translateDeep(v, ctx.languageCode, ['product']));
     }
 
-    private createVariantIndexItem(v: ProductVariant): VariantIndexItem {
+    private createVariantIndexItem(v: ProductVariant, channelId: ID): VariantIndexItem {
         const item: VariantIndexItem = {
+            channelId,
+            productVariantId: v.id as string,
             sku: v.sku,
             slug: v.product.slug,
             productId: v.product.id as string,
             productName: v.product.name,
             productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
-            productVariantId: v.id as string,
             productVariantName: v.name,
             productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
             price: v.price,
@@ -401,6 +517,7 @@ export class ElasticsearchIndexerController {
             currencyCode: v.currencyCode,
             description: v.product.description,
             facetIds: this.getFacetIds([v]),
+            channelIds: v.product.channels.map(c => c.id as string),
             facetValueIds: this.getFacetValueIds([v]),
             collectionIds: v.collections.map(c => c.id.toString()),
             enabled: v.enabled && v.product.enabled,
@@ -412,11 +529,12 @@ export class ElasticsearchIndexerController {
         return item;
     }
 
-    private createProductIndexItem(variants: ProductVariant[]): ProductIndexItem {
+    private createProductIndexItem(variants: ProductVariant[], channelId: ID): ProductIndexItem {
         const first = variants[0];
         const prices = variants.map(v => v.price);
         const pricesWithTax = variants.map(v => v.priceWithTax);
         const item: ProductIndexItem = {
+            channelId,
             sku: variants.map(v => v.sku),
             slug: variants.map(v => v.product.slug),
             productId: first.product.id,
@@ -434,7 +552,8 @@ export class ElasticsearchIndexerController {
             facetIds: this.getFacetIds(variants),
             facetValueIds: this.getFacetValueIds(variants),
             collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
-            enabled: first.product.enabled,
+            channelIds: first.product.channels.map(c => c.id as string),
+            enabled: variants.some(v => v.enabled),
         };
 
         const customMappings = Object.entries(this.options.customProductMappings);
@@ -462,5 +581,9 @@ export class ElasticsearchIndexerController {
         );
         const productFacetValueIds = variants[0].product.facetValues.map(facetValueIds);
         return unique([...variantFacetValueIds, ...productFacetValueIds]);
+    }
+
+    private getId(entityId: ID, channelId: ID): string {
+        return `${channelId.toString()}__${entityId.toString()}`;
     }
 }

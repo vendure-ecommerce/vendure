@@ -283,3 +283,57 @@ export const CREATE_PROMOTION = gql`
     }
     ${PROMOTION_FRAGMENT}
 `;
+export const ME = gql`
+    query Me {
+        me {
+            ...CurrentUser
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;
+
+export const CREATE_CHANNEL = gql`
+    mutation CreateChannel($input: CreateChannelInput!) {
+        createChannel(input: $input) {
+            id
+            code
+            token
+            currencyCode
+            defaultLanguageCode
+            defaultShippingZone {
+                id
+            }
+            defaultTaxZone {
+                id
+            }
+            pricesIncludeTax
+        }
+    }
+`;
+
+export const DELETE_PRODUCT_VARIANT = gql`
+    mutation DeleteProductVariant($id: ID!) {
+        deleteProductVariant(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const ASSIGN_PRODUCT_TO_CHANNEL = gql`
+    mutation AssignProductsToChannel($input: AssignProductsToChannelInput!) {
+        assignProductsToChannel(input: $input) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+
+export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
+    mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
+        removeProductsFromChannel(input: $input) {
+            ...ProductWithVariants
+        }
+    }
+    ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;

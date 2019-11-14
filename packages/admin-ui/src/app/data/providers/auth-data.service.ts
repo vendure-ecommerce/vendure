@@ -6,7 +6,7 @@ import { BaseDataService } from './base-data.service';
 export class AuthDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    checkLoggedIn() {
+    currentUser() {
         return this.baseDataService.query<GetCurrentUser.Query>(GET_CURRENT_USER);
     }
 

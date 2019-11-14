@@ -30,6 +30,7 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
+    DELETE_PRODUCT_VARIANT,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
@@ -488,9 +489,9 @@ describe('Product resolver', () => {
                 },
             );
             expect(result.updateProduct.translations.length).toBe(2);
-            expect(result.updateProduct.translations[0].name).toBe('en Very Mashed Potato');
-            expect(result.updateProduct.translations[0].description).toBe('Possibly the final baked potato');
-            expect(result.updateProduct.translations[1].name).toBe('de Mashed Potato');
+            expect(result.updateProduct.translations[0].name).toBe('de Mashed Potato');
+            expect(result.updateProduct.translations[1].name).toBe('en Very Mashed Potato');
+            expect(result.updateProduct.translations[1].description).toBe('Possibly the final baked potato');
         });
 
         it('updateProduct adds Assets to a product and sets featured asset', async () => {
@@ -1122,15 +1123,6 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
-        }
-    }
-`;
-
-export const DELETE_PRODUCT_VARIANT = gql`
-    mutation DeleteProductVariant($id: ID!) {
-        deleteProductVariant(id: $id) {
-            result
-            message
         }
     }
 `;

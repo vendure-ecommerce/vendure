@@ -163,6 +163,12 @@ export enum AssetType {
   BINARY = 'BINARY'
 }
 
+export type AssignProductsToChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+  priceFactor?: Maybe<Scalars['Float']>,
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
   __typename?: 'BooleanCustomFieldConfig',
   name: Scalars['String'],
@@ -537,6 +543,7 @@ export type CreateRoleInput = {
   code: Scalars['String'],
   description: Scalars['String'],
   permissions: Array<Permission>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type CreateShippingMethodInput = {
@@ -895,6 +902,14 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
   __typename?: 'CurrentUserChannel',
+  id: Scalars['ID'],
+  token: Scalars['String'],
+  code: Scalars['String'],
+  permissions: Array<Permission>,
+};
+
+export type CurrentUserChannelInput = {
+  id: Scalars['ID'],
   token: Scalars['String'],
   code: Scalars['String'],
   permissions: Array<Permission>,
@@ -1676,6 +1691,8 @@ export type Mutation = {
   createChannel: Channel,
   /** Update an existing Channel */
   updateChannel: Channel,
+  /** Delete a Channel */
+  deleteChannel: DeletionResponse,
   /** Create a new Collection */
   createCollection: Collection,
   /** Update an existing Collection */
@@ -1757,6 +1774,10 @@ export type Mutation = {
   updateProductVariants: Array<Maybe<ProductVariant>>,
   /** Delete a ProductVariant */
   deleteProductVariant: DeletionResponse,
+  /** Assigns Products to the specified Channel */
+  assignProductsToChannel: Array<Product>,
+  /** Removes Products from the specified Channel */
+  removeProductsFromChannel: Array<Product>,
   createPromotion: Promotion,
   updatePromotion: Promotion,
   deletePromotion: DeletionResponse,
@@ -1764,6 +1785,8 @@ export type Mutation = {
   createRole: Role,
   /** Update an existing Role */
   updateRole: Role,
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse,
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod,
   /** Update an existing ShippingMethod */
@@ -1793,6 +1816,8 @@ export type Mutation = {
   setAsLoggedIn: UserStatus,
   setAsLoggedOut: UserStatus,
   setUiLanguage?: Maybe<LanguageCode>,
+  setActiveChannel: UserStatus,
+  updateUserChannels: UserStatus,
 };
 
 
@@ -1831,6 +1856,11 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
   input: UpdateChannelInput
+};
+
+
+export type MutationDeleteChannelArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2062,6 +2092,16 @@ export type MutationDeleteProductVariantArgs = {
 };
 
 
+export type MutationAssignProductsToChannelArgs = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type MutationRemoveProductsFromChannelArgs = {
+  input: RemoveProductsFromChannelInput
+};
+
+
 export type MutationCreatePromotionArgs = {
   input: CreatePromotionInput
 };
@@ -2084,6 +2124,11 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
   input: UpdateRoleInput
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -2150,14 +2195,22 @@ export type MutationRemoveMembersFromZoneArgs = {
 
 
 export type MutationSetAsLoggedInArgs = {
-  username: Scalars['String'],
-  loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>
+  input: UserStatusInput
 };
 
 
 export type MutationSetUiLanguageArgs = {
   languageCode?: Maybe<LanguageCode>
+};
+
+
+export type MutationSetActiveChannelArgs = {
+  channelId: Scalars['ID']
+};
+
+
+export type MutationUpdateUserChannelsArgs = {
+  channels: Array<CurrentUserChannelInput>
 };
 
 export type NetworkStatus = {
@@ -2424,6 +2477,7 @@ export type PriceRange = {
 export type Product = Node & {
   __typename?: 'Product',
   enabled: Scalars['Boolean'],
+  channels: Array<Channel>,
   id: Scalars['ID'],
   createdAt: Scalars['DateTime'],
   updatedAt: Scalars['DateTime'],
@@ -2958,6 +3012,11 @@ export type RefundOrderInput = {
   reason?: Maybe<Scalars['String']>,
 };
 
+export type RemoveProductsFromChannelInput = {
+  productIds: Array<Scalars['ID']>,
+  channelId: Scalars['ID'],
+};
+
 export type Return = Node & StockMovement & {
   __typename?: 'Return',
   id: Scalars['ID'],
@@ -3044,6 +3103,8 @@ export type SearchResponse = {
 export type SearchResult = {
   __typename?: 'SearchResult',
   enabled: Scalars['Boolean'],
+  /** An array of ids of the Collections in which this result appears */
+  channelIds: Array<Scalars['ID']>,
   sku: Scalars['String'],
   slug: Scalars['String'],
   productId: Scalars['ID'],
@@ -3443,6 +3504,7 @@ export type UpdateRoleInput = {
   code?: Maybe<Scalars['String']>,
   description?: Maybe<Scalars['String']>,
   permissions?: Maybe<Array<Permission>>,
+  channelIds?: Maybe<Array<Scalars['ID']>>,
 };
 
 export type UpdateShippingMethodInput = {
@@ -3491,7 +3553,16 @@ export type UserStatus = {
   username: Scalars['String'],
   isLoggedIn: Scalars['Boolean'],
   loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>,
+  permissions: Array<Permission>,
+  activeChannelId?: Maybe<Scalars['ID']>,
+  channels: Array<CurrentUserChannel>,
+};
+
+export type UserStatusInput = {
+  username: Scalars['String'],
+  loginTime: Scalars['String'],
+  activeChannelId: Scalars['ID'],
+  channels: Array<CurrentUserChannelInput>,
 };
 
 export type Zone = Node & {
@@ -3502,9 +3573,9 @@ export type Zone = Node & {
   name: Scalars['String'],
   members: Array<Country>,
 };
-export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'>)> }) });
-
 export type RoleFragment = ({ __typename?: 'Role' } & Pick<Role, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description' | 'permissions'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>)> });
+
+export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & RoleFragment)> }) });
 
 export type GetAdministratorsQueryVariables = {
   options?: Maybe<AdministratorListOptions>
@@ -3562,6 +3633,13 @@ export type UpdateRoleMutationVariables = {
 
 export type UpdateRoleMutation = ({ __typename?: 'Mutation' } & { updateRole: ({ __typename?: 'Role' } & RoleFragment) });
 
+export type DeleteRoleMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteRoleMutation = ({ __typename?: 'Mutation' } & { deleteRole: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type AssignRoleToAdministratorMutationVariables = {
   administratorId: Scalars['ID'],
   roleId: Scalars['ID']
@@ -3570,7 +3648,7 @@ export type AssignRoleToAdministratorMutationVariables = {
 
 export type AssignRoleToAdministratorMutation = ({ __typename?: 'Mutation' } & { assignRoleToAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
 
-export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>)> });
+export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
 
 export type AttemptLoginMutationVariables = {
   username: Scalars['String'],
@@ -3601,19 +3679,19 @@ export type RequestCompletedMutationVariables = {};
 
 export type RequestCompletedMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'requestCompleted'>);
 
+export type UserStatusFragment = ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'activeChannelId' | 'permissions'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
+
 export type SetAsLoggedInMutationVariables = {
-  username: Scalars['String'],
-  loginTime: Scalars['String'],
-  permissions: Array<Scalars['String']>
+  input: UserStatusInput
 };
 
 
-export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type SetAsLoggedOutMutationVariables = {};
 
 
-export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type SetUiLanguageMutationVariables = {
   languageCode: LanguageCode
@@ -3630,12 +3708,26 @@ export type GetNetworkStatusQuery = ({ __typename?: 'Query' } & { networkStatus:
 export type GetUserStatusQueryVariables = {};
 
 
-export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'permissions'>) });
+export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type GetUiStateQueryVariables = {};
 
 
 export type GetUiStateQuery = ({ __typename?: 'Query' } & { uiState: ({ __typename?: 'UiState' } & Pick<UiState, 'language'>) });
+
+export type SetActiveChannelMutationVariables = {
+  channelId: Scalars['ID']
+};
+
+
+export type SetActiveChannelMutation = ({ __typename?: 'Mutation' } & { setActiveChannel: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+
+export type UpdateUserChannelsMutationVariables = {
+  channels: Array<CurrentUserChannelInput>
+};
+
+
+export type UpdateUserChannelsMutation = ({ __typename?: 'Mutation' } & { updateUserChannels: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
 
 export type GetCollectionFiltersQueryVariables = {};
 
@@ -3885,7 +3977,7 @@ export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'crea
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
-export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })> });
+export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> });
 
 export type ProductOptionGroupFragment = ({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'ProductOptionGroupTranslation' } & Pick<ProductOptionGroupTranslation, 'id' | 'name'>)>, options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'name'>)> })> });
 
@@ -4001,7 +4093,7 @@ export type SearchProductsQueryVariables = {
 };
 
 
-export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
+export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku' | 'channelIds'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
 
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput
@@ -4023,6 +4115,20 @@ export type GetProductVariantOptionsQueryVariables = {
 
 
 export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>)> })> })> });
+
+export type AssignProductsToChannelMutationVariables = {
+  input: AssignProductsToChannelInput
+};
+
+
+export type AssignProductsToChannelMutation = ({ __typename?: 'Mutation' } & { assignProductsToChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
+
+export type RemoveProductsFromChannelMutationVariables = {
+  input: RemoveProductsFromChannelInput
+};
+
+
+export type RemoveProductsFromChannelMutation = ({ __typename?: 'Mutation' } & { removeProductsFromChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
 
 export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
 
@@ -4243,6 +4349,13 @@ export type UpdateChannelMutationVariables = {
 
 export type UpdateChannelMutation = ({ __typename?: 'Mutation' } & { updateChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
 
+export type DeleteChannelMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteChannelMutation = ({ __typename?: 'Mutation' } & { deleteChannel: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type PaymentMethodFragment = ({ __typename?: 'PaymentMethod' } & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'> & { configArgs: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
 
 export type GetPaymentMethodListQueryVariables = {
@@ -4393,15 +4506,15 @@ type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
 
-export namespace Administrator {
-  export type Fragment = AdministratorFragment;
-  export type User = AdministratorFragment['user'];
-  export type Roles = (NonNullable<AdministratorFragment['user']['roles'][0]>);
-}
-
 export namespace Role {
   export type Fragment = RoleFragment;
   export type Channels = (NonNullable<RoleFragment['channels'][0]>);
+}
+
+export namespace Administrator {
+  export type Fragment = AdministratorFragment;
+  export type User = AdministratorFragment['user'];
+  export type Roles = RoleFragment;
 }
 
 export namespace GetAdministrators {
@@ -4454,6 +4567,12 @@ export namespace UpdateRole {
   export type UpdateRole = RoleFragment;
 }
 
+export namespace DeleteRole {
+  export type Variables = DeleteRoleMutationVariables;
+  export type Mutation = DeleteRoleMutation;
+  export type DeleteRole = DeleteRoleMutation['deleteRole'];
+}
+
 export namespace AssignRoleToAdministrator {
   export type Variables = AssignRoleToAdministratorMutationVariables;
   export type Mutation = AssignRoleToAdministratorMutation;
@@ -4493,16 +4612,21 @@ export namespace RequestCompleted {
   export type Mutation = RequestCompletedMutation;
 }
 
+export namespace UserStatus {
+  export type Fragment = UserStatusFragment;
+  export type Channels = (NonNullable<UserStatusFragment['channels'][0]>);
+}
+
 export namespace SetAsLoggedIn {
   export type Variables = SetAsLoggedInMutationVariables;
   export type Mutation = SetAsLoggedInMutation;
-  export type SetAsLoggedIn = SetAsLoggedInMutation['setAsLoggedIn'];
+  export type SetAsLoggedIn = UserStatusFragment;
 }
 
 export namespace SetAsLoggedOut {
   export type Variables = SetAsLoggedOutMutationVariables;
   export type Mutation = SetAsLoggedOutMutation;
-  export type SetAsLoggedOut = SetAsLoggedOutMutation['setAsLoggedOut'];
+  export type SetAsLoggedOut = UserStatusFragment;
 }
 
 export namespace SetUiLanguage {
@@ -4519,13 +4643,25 @@ export namespace GetNetworkStatus {
 export namespace GetUserStatus {
   export type Variables = GetUserStatusQueryVariables;
   export type Query = GetUserStatusQuery;
-  export type UserStatus = GetUserStatusQuery['userStatus'];
+  export type UserStatus = UserStatusFragment;
 }
 
 export namespace GetUiState {
   export type Variables = GetUiStateQueryVariables;
   export type Query = GetUiStateQuery;
   export type UiState = GetUiStateQuery['uiState'];
+}
+
+export namespace SetActiveChannel {
+  export type Variables = SetActiveChannelMutationVariables;
+  export type Mutation = SetActiveChannelMutation;
+  export type SetActiveChannel = UserStatusFragment;
+}
+
+export namespace UpdateUserChannels {
+  export type Variables = UpdateUserChannelsMutationVariables;
+  export type Mutation = UpdateUserChannelsMutation;
+  export type UpdateUserChannels = UserStatusFragment;
 }
 
 export namespace GetCollectionFilters {
@@ -4827,6 +4963,7 @@ export namespace ProductWithVariants {
   export type Variants = ProductVariantFragment;
   export type FacetValues = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
+  export type Channels = (NonNullable<ProductWithVariantsFragment['channels'][0]>);
 }
 
 export namespace ProductOptionGroup {
@@ -4964,6 +5101,20 @@ export namespace GetProductVariantOptions {
   export type Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>)['options'][0]>);
   export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
   export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
+}
+
+export namespace AssignProductsToChannel {
+  export type Variables = AssignProductsToChannelMutationVariables;
+  export type Mutation = AssignProductsToChannelMutation;
+  export type AssignProductsToChannel = (NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>);
+  export type Channels = (NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>)['channels'][0]>);
+}
+
+export namespace RemoveProductsFromChannel {
+  export type Variables = RemoveProductsFromChannelMutationVariables;
+  export type Mutation = RemoveProductsFromChannelMutation;
+  export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
+  export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
 }
 
 export namespace Promotion {
@@ -5189,6 +5340,12 @@ export namespace UpdateChannel {
   export type Variables = UpdateChannelMutationVariables;
   export type Mutation = UpdateChannelMutation;
   export type UpdateChannel = ChannelFragment;
+}
+
+export namespace DeleteChannel {
+  export type Variables = DeleteChannelMutationVariables;
+  export type Mutation = DeleteChannelMutation;
+  export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
 }
 
 export namespace PaymentMethod {

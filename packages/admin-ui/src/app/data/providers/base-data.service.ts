@@ -5,12 +5,13 @@ import { DataProxy } from 'apollo-cache';
 import { WatchQueryFetchPolicy } from 'apollo-client';
 import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { merge, Observable } from 'rxjs';
+import { delay, distinctUntilChanged, filter, map, skip, takeUntil } from 'rxjs/operators';
 
-import { CustomFields } from '../../common/generated-types';
+import { CustomFields, GetUserStatus } from '../../common/generated-types';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
 import { addCustomFields } from '../add-custom-fields';
+import { GET_USER_STATUS } from '../definitions/client-definitions';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 
@@ -50,7 +51,8 @@ export class BaseDataService {
             variables,
             fetchPolicy,
         });
-        return new QueryResult<T, any>(queryRef);
+        const queryResult = new QueryResult<T, any>(queryRef, this.apollo);
+        return queryResult;
     }
 
     /**

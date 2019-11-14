@@ -12,6 +12,7 @@ import {
 import { pick } from '@vendure/common/lib/pick';
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
@@ -32,11 +33,13 @@ import { CollectionTranslation } from '../../entity/collection/collection-transl
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
+import { ProductEvent } from '../../event-bus/events/product-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -48,7 +51,7 @@ import { FacetValueService } from './facet-value.service';
 import { JobService } from './job.service';
 
 export class CollectionService implements OnModuleInit {
-    private rootCollections: { [channelCode: string]: Collection } = {};
+    private rootCollection: Collection | undefined;
     private availableFilters: Array<CollectionFilter<any>> = [
         facetValueCollectionFilter,
         variantNameCollectionFilter,
@@ -67,8 +70,10 @@ export class CollectionService implements OnModuleInit {
     ) {}
 
     onModuleInit() {
-        this.eventBus
-            .ofType(CatalogModificationEvent)
+        const productEvents$ = this.eventBus.ofType(ProductEvent);
+        const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
+
+        merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
             .subscribe(async event => {
                 const collections = await this.connection.getRepository(Collection).find({
@@ -103,9 +108,9 @@ export class CollectionService implements OnModuleInit {
             });
     }
 
-    async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Collection> | undefined> {
+    async findOne(ctx: RequestContext, collectionId: ID): Promise<Translated<Collection> | undefined> {
         const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
-        const collection = await this.connection.getRepository(Collection).findOne(productId, {
+        const collection = await findOneInChannel(this.connection, Collection, collectionId, ctx.channelId, {
             relations,
         });
         if (!collection) {
@@ -243,7 +248,7 @@ export class CollectionService implements OnModuleInit {
             entityType: Collection,
             translationType: CollectionTranslation,
             beforeSave: async coll => {
-                await this.channelService.assignToChannels(coll, ctx);
+                await this.channelService.assignToCurrentChannel(coll, ctx);
                 const parent = await this.getParentCollection(ctx, input.parentId);
                 if (parent) {
                     coll.parent = parent;
@@ -278,7 +283,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const collection = await getEntityOrThrow(this.connection, Collection, id);
+        const collection = await getEntityOrThrow(this.connection, Collection, id, ctx.channelId);
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
@@ -291,9 +296,15 @@ export class CollectionService implements OnModuleInit {
     }
 
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
-        const target = await getEntityOrThrow(this.connection, Collection, input.collectionId, {
-            relations: ['parent'],
-        });
+        const target = await getEntityOrThrow(
+            this.connection,
+            Collection,
+            input.collectionId,
+            ctx.channelId,
+            {
+                relations: ['parent'],
+            },
+        );
         const descendants = await this.getDescendants(ctx, input.collectionId);
 
         if (
@@ -431,7 +442,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     private async getRootCollection(ctx: RequestContext): Promise<Collection> {
-        const cachedRoot = this.rootCollections[ctx.channel.code];
+        const cachedRoot = this.rootCollection;
 
         if (cachedRoot) {
             return cachedRoot;
@@ -447,8 +458,8 @@ export class CollectionService implements OnModuleInit {
             .getOne();
 
         if (existingRoot) {
-            this.rootCollections[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
-            return this.rootCollections[ctx.channel.code];
+            this.rootCollection = translateDeep(existingRoot, ctx.languageCode);
+            return this.rootCollection;
         }
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
@@ -468,7 +479,7 @@ export class CollectionService implements OnModuleInit {
         });
 
         await this.connection.getRepository(Collection).save(newRoot);
-        this.rootCollections[ctx.channel.code] = newRoot;
+        this.rootCollection = newRoot;
         return newRoot;
     }
 

@@ -49,6 +49,8 @@ export class PermissionGridComponent {
     ];
 
     setPermission(permission: string, value: boolean) {
-        this.permissionChange.emit({ permission, value });
+        if (!this.readonly) {
+            this.permissionChange.emit({ permission, value });
+        }
     }
 }

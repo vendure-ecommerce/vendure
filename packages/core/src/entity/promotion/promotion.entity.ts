@@ -87,6 +87,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
     @Column('simple-json') actions: ConfigurableOperation[];
 
     /**
+     * @description
      * The PriorityScore is used to determine the sequence in which multiple promotions are tested
      * on a given order. A higher number moves the Promotion towards the end of the sequence.
      *

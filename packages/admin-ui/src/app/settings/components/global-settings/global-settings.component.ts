@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { switchMap } from 'rxjs/operators';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
-import { CustomFieldConfig, GlobalSettings, LanguageCode } from '../../../common/generated-types';
+import { CustomFieldConfig, GlobalSettings, LanguageCode, Permission } from '../../../common/generated-types';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
@@ -44,7 +44,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
     ngOnInit(): void {
         this.init();
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
-            if (!userStatus.permissions.includes('UpdateSettings')) {
+            if (!userStatus.permissions.includes(Permission.UpdateSettings)) {
                 const languagesSelect = this.detailForm.get('availableLanguages');
                 if (languagesSelect) {
                     languagesSelect.disable();

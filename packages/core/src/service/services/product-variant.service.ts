@@ -7,12 +7,11 @@ import {
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -24,7 +23,7 @@ import { ProductVariantTranslation } from '../../entity/product-variant/product-
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { CatalogModificationEvent } from '../../event-bus/events/catalog-modification-event';
+import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -67,6 +66,30 @@ export class ProductVariantService {
                 if (result) {
                     return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
                 }
+            });
+    }
+
+    findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<ProductVariant>>> {
+        return this.connection.manager
+            .getRepository(ProductVariant)
+            .findByIds(ids, {
+                relations: [
+                    'options',
+                    'facetValues',
+                    'facetValues.facet',
+                    'taxCategory',
+                    'assets',
+                    'featuredAsset',
+                ],
+            })
+            .then(variants => {
+                return variants.map(variant =>
+                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
+                        'options',
+                        'facetValues',
+                        ['facetValues', 'facet'],
+                    ]),
+                );
             });
     }
 
@@ -146,8 +169,34 @@ export class ProductVariantService {
             );
     }
 
-    async create(ctx: RequestContext, input: CreateProductVariantInput): Promise<Translated<ProductVariant>> {
-        await this.validateVariantOptionIds(input);
+    async create(
+        ctx: RequestContext,
+        input: CreateProductVariantInput[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        const ids: ID[] = [];
+        for (const productInput of input) {
+            const id = await this.createSingle(ctx, productInput);
+            ids.push(id);
+        }
+        const createdVariants = await this.findByIds(ctx, ids);
+        this.eventBus.publish(new ProductVariantEvent(ctx, createdVariants, 'updated'));
+        return createdVariants;
+    }
+
+    async update(
+        ctx: RequestContext,
+        input: UpdateProductVariantInput[],
+    ): Promise<Array<Translated<ProductVariant>>> {
+        for (const productInput of input) {
+            await this.updateSingle(ctx, productInput);
+        }
+        const updatedVariants = await this.findByIds(ctx, input.map(i => i.id));
+        this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated'));
+        return updatedVariants;
+    }
+
+    private async createSingle(ctx: RequestContext, input: CreateProductVariantInput): Promise<ID> {
+        await this.validateVariantOptionIds(ctx, input);
         if (!input.optionIds) {
             input.optionIds = [];
         }
@@ -191,17 +240,12 @@ export class ProductVariantService {
                 input.stockOnHand,
             );
         }
-        const variantPrice = new ProductVariantPrice({
-            price: createdVariant.price,
-            channelId: ctx.channelId,
-        });
-        variantPrice.variant = createdVariant;
-        await this.connection.getRepository(ProductVariantPrice).save(variantPrice);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, createdVariant));
-        return await assertFound(this.findOne(ctx, createdVariant.id));
+
+        await this.createProductVariantPrice(createdVariant.id, createdVariant.price, ctx.channelId);
+        return createdVariant.id;
     }
 
-    async update(ctx: RequestContext, input: UpdateProductVariantInput): Promise<Translated<ProductVariant>> {
+    private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
         const existingVariant = await getEntityOrThrow(this.connection, ProductVariant, input.id);
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
@@ -249,91 +293,33 @@ export class ProductVariantService {
             variantPrice.price = input.price;
             await variantPriceRepository.save(variantPrice);
         }
-        const variant = await assertFound(
-            this.connection.manager.getRepository(ProductVariant).findOne(input.id, {
-                relations: [
-                    'options',
-                    'facetValues',
-                    'facetValues.facet',
-                    'taxCategory',
-                    'assets',
-                    'featuredAsset',
-                ],
-            }),
-        );
-        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
-        return translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
-            'options',
-            'facetValues',
-            ['facetValues', 'facet'],
-        ]);
+        return existingVariant.id;
+    }
+
+    /**
+     * Creates a ProductVariantPrice for the given ProductVariant/Channel combination.
+     */
+    async createProductVariantPrice(
+        productVariantId: ID,
+        price: number,
+        channelId: ID,
+    ): Promise<ProductVariantPrice> {
+        const variantPrice = new ProductVariantPrice({
+            price,
+            channelId,
+        });
+        variantPrice.variant = new ProductVariant({ id: productVariantId });
+        return this.connection.getRepository(ProductVariantPrice).save(variantPrice);
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const variant = await getEntityOrThrow(this.connection, ProductVariant, id);
         variant.deletedAt = new Date();
         await this.connection.getRepository(ProductVariant).save(variant);
-        this.eventBus.publish(new CatalogModificationEvent(ctx, variant));
+        this.eventBus.publish(new ProductVariantEvent(ctx, [variant], 'deleted'));
         return {
             result: DeletionResult.DELETED,
         };
-    }
-
-    async generateVariantsForProduct(
-        ctx: RequestContext,
-        productId: ID,
-        defaultTaxCategoryId?: string | null,
-        defaultPrice?: number | null,
-        defaultSku?: string | null,
-    ): Promise<Array<Translated<ProductVariant>>> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
-            relations: ['optionGroups', 'optionGroups.options'],
-            where: { deletedAt: null },
-        });
-
-        if (!product) {
-            throw new EntityNotFoundError('Product', productId);
-        }
-        const defaultTranslation = product.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
-
-        const productName = defaultTranslation ? defaultTranslation.name : `product_${productId}`;
-        const optionCombinations = product.optionGroups.length
-            ? generateAllCombinations(product.optionGroups.map(g => g.options))
-            : [[]];
-
-        let taxCategory: TaxCategory;
-        if (defaultTaxCategoryId) {
-            taxCategory = await getEntityOrThrow(this.connection, TaxCategory, defaultTaxCategoryId);
-        } else {
-            const taxCategories = await this.taxCategoryService.findAll();
-            taxCategory = taxCategories[0];
-        }
-
-        if (!taxCategory) {
-            // there is no TaxCategory set up, so create a default
-            taxCategory = await this.taxCategoryService.create({ name: 'Standard Tax' });
-        }
-
-        const variants: ProductVariant[] = [];
-        for (const options of optionCombinations) {
-            const name = this.createVariantName(productName, options);
-            const variant = await this.create(ctx, {
-                productId: productId as string,
-                sku: defaultSku || 'sku-not-set',
-                price: defaultPrice || 0,
-                optionIds: options.map(o => o.id) as string[],
-                taxCategoryId: taxCategory.id as string,
-                translations: [
-                    {
-                        languageCode: ctx.languageCode,
-                        name,
-                    },
-                ],
-            });
-            variants.push(variant);
-        }
-        this.eventBus.publish(new CatalogModificationEvent(ctx, product));
-        return variants.map(v => translateDeep(v, DEFAULT_LANGUAGE_CODE));
     }
 
     /**
@@ -367,8 +353,8 @@ export class ProductVariantService {
         return variant;
     }
 
-    private async validateVariantOptionIds(input: CreateProductVariantInput) {
-        const product = await getEntityOrThrow(this.connection, Product, input.productId, {
+    private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
+        const product = await getEntityOrThrow(this.connection, Product, input.productId, ctx.channelId, {
             relations: ['optionGroups', 'optionGroups.options', 'variants', 'variants.options'],
         });
         const optionIds = [...(input.optionIds || [])];

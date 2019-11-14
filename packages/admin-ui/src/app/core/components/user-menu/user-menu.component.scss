@@ -1,3 +1,5 @@
+@import "variables";
+
 :host {
     display: flex;
     align-items: center;
@@ -6,7 +8,7 @@
 }
 
 .user-name {
-    color: lightgrey;
+    color: $color-grey-200;
     margin-right: 12px;
 }
 

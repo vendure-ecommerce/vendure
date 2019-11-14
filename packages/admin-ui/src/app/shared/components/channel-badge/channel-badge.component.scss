@@ -1,0 +1,13 @@
+@import "variables";
+
+:host {
+    display: inline-block;
+
+    button & {
+        margin-bottom: -1px;
+    }
+}
+
+clr-icon {
+    margin-right: 6px;
+}

@@ -46,6 +46,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],
+            channelIds: [],
         });
     }
 
@@ -76,6 +77,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
             code: formValue.code,
             description: formValue.description,
             permissions: this.getSelectedPermissions(),
+            channelIds: formValue.channelIds,
         };
         this.dataService.administrator.createRole(role).subscribe(
             data => {
@@ -104,6 +106,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
                         code: formValue.code,
                         description: formValue.description,
                         permissions: this.getSelectedPermissions(),
+                        channelIds: formValue.channelIds,
                     };
                     return this.dataService.administrator.updateRole(role);
                 }),
@@ -127,6 +130,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.detailForm.patchValue({
             description: role.description,
             code: role.code,
+            channelIds: role.channels.map(c => c.id),
         });
         for (const permission of Object.keys(this.permissions)) {
             this.permissions[permission] = role.permissions.includes(permission as Permission);

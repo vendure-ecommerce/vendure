@@ -33,7 +33,7 @@ export class CollectionListComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.queryResult = this.dataService.collection.getCollections(99999, 0);
+        this.queryResult = this.dataService.collection.getCollections(99999, 0).refetchOnChannelChange();
         this.items$ = this.queryResult.mapStream(data => data.collections.items);
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),

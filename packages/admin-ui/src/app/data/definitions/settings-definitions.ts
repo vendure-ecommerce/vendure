@@ -322,6 +322,15 @@ export const UPDATE_CHANNEL = gql`
     ${CHANNEL_FRAGMENT}
 `;
 
+export const DELETE_CHANNEL = gql`
+    mutation DeleteChannel($id: ID!) {
+        deleteChannel(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const PAYMENT_METHOD_FRAGMENT = gql`
     fragment PaymentMethod on PaymentMethod {
         id

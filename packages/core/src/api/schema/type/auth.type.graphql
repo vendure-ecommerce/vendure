@@ -9,6 +9,7 @@ type CurrentUser {
 }
 
 type CurrentUserChannel {
+    id: ID!
     token: String!
     code: String!
     permissions: [Permission!]!

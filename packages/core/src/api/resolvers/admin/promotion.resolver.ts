@@ -27,7 +27,7 @@ export class PromotionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryPromotionsArgs,
     ): Promise<PaginatedList<Promotion>> {
-        return this.promotionService.findAll(args.options || undefined).then(res => {
+        return this.promotionService.findAll(ctx, args.options || undefined).then(res => {
             res.items.forEach(this.encodeConditionsAndActions);
             return res;
         });
@@ -36,7 +36,7 @@ export class PromotionResolver {
     @Query()
     @Allow(Permission.ReadPromotion)
     promotion(@Ctx() ctx: RequestContext, @Args() args: QueryPromotionArgs): Promise<Promotion | undefined> {
-        return this.promotionService.findOne(args.id).then(this.encodeConditionsAndActions);
+        return this.promotionService.findOne(ctx, args.id).then(this.encodeConditionsAndActions);
     }
 
     @Query()

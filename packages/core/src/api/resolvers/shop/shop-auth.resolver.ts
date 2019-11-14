@@ -1,8 +1,7 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    MutationLoginArgs,
     LoginResult,
-    Permission,
+    MutationLoginArgs,
     MutationRefreshCustomerVerificationArgs,
     MutationRegisterCustomerAccountArgs,
     MutationRequestPasswordResetArgs,
@@ -11,10 +10,15 @@ import {
     MutationUpdateCustomerEmailAddressArgs,
     MutationUpdateCustomerPasswordArgs,
     MutationVerifyCustomerAccountArgs,
+    Permission,
 } from '@vendure/common/lib/generated-shop-types';
 import { Request, Response } from 'express';
 
-import { ForbiddenError, PasswordResetTokenError, VerificationTokenError } from '../../../common/error/errors';
+import {
+    ForbiddenError,
+    PasswordResetTokenError,
+    VerificationTokenError,
+} from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -48,9 +52,11 @@ export class ShopAuthResolver extends BaseAuthResolver {
 
     @Mutation()
     @Allow(Permission.Public)
-    logout(@Ctx() ctx: RequestContext,
-           @Context('req') req: Request,
-           @Context('res') res: Response): Promise<boolean> {
+    logout(
+        @Ctx() ctx: RequestContext,
+        @Context('req') req: Request,
+        @Context('res') res: Response,
+    ): Promise<boolean> {
         return super.logout(ctx, req, res);
     }
 

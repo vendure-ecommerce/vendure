@@ -9,6 +9,8 @@ import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
 import { TestingAssetStorageStrategy } from './testing-asset-storage-strategy';
 import { TestingEntityIdStrategy } from './testing-entity-id-strategy';
 
+export const E2E_DEFAULT_CHANNEL_TOKEN = 'e2e-default-channel';
+
 /**
  * @description
  * A {@link VendureConfig} object used for e2e tests. This configuration uses sqljs as the database
@@ -27,7 +29,7 @@ export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
     adminApiPath: ADMIN_API_PATH,
     shopApiPath: SHOP_API_PATH,
     cors: true,
-    defaultChannelToken: 'e2e-default-channel',
+    defaultChannelToken: E2E_DEFAULT_CHANNEL_TOKEN,
     authOptions: {
         sessionSecret: 'some-secret',
         tokenMethod: 'bearer',

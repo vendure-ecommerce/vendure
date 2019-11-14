@@ -1,10 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ProductDetailService } from '@vendure/admin-ui/src/app/catalog/providers/product-detail.service';
-import { getDefaultLanguage } from '@vendure/admin-ui/src/app/common/utilities/get-default-language';
-import { NotificationService } from '@vendure/admin-ui/src/app/core/providers/notification/notification.service';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
-import { ModalService } from '@vendure/admin-ui/src/app/shared/providers/modal/modal.service';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
@@ -19,7 +14,12 @@ import {
     LanguageCode,
     ProductOptionGroupFragment,
 } from '../../../common/generated-types';
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+import { NotificationService } from '../../../core/providers/notification/notification.service';
+import { DataService } from '../../../data/providers/data.service';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { ProductDetailService } from '../../providers/product-detail.service';
 
 export interface VariantInfo {
     productVariantId?: string;

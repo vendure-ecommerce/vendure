@@ -9,15 +9,23 @@ const find = require('find');
  * source files of the monorepo packages. This prevents bad imports (which work locally
  * and go undetected) from getting into published releases of Vendure.
  */
-const illegalImportPatters: RegExp[] = [
+const illegalImportPatterns: RegExp[] = [
     /@vendure\/common\/src/,
+    /@vendure\/core\/src/,
+    /@vendure\/admin-ui\/src/,
 ];
 
-findInFiles(illegalImportPatters, path.join(__dirname, '../packages'), /\.ts$/);
+const exclude: string[] = [
+    path.join(__dirname, '../packages/dev-server'),
+];
 
-function findInFiles(patterns: RegExp[], directory: string, fileFilter: RegExp) {
+findInFiles(illegalImportPatterns, path.join(__dirname, '../packages'), /\.ts$/, exclude);
+
+function findInFiles(patterns: RegExp[], directory: string, fileFilter: RegExp, excludePaths: string[]) {
     find.file(fileFilter, directory, async (files: string[]) => {
-        const matches = await getMatchedFiles(patterns, files);
+        const nonNodeModulesFiles = files.filter(f => !f.includes('node_modules'));
+        console.log(`Checking imports in ${nonNodeModulesFiles.length} files...`);
+        const matches = await getMatchedFiles(patterns, nonNodeModulesFiles, excludePaths);
         if (matches.length) {
             console.error(`Found illegal imports in the following files:`);
             console.error(matches.join('\n'));
@@ -28,9 +36,15 @@ function findInFiles(patterns: RegExp[], directory: string, fileFilter: RegExp) 
     });
 }
 
-async function getMatchedFiles(patterns: RegExp[], files: string[]) {
+async function getMatchedFiles(patterns: RegExp[], files: string[], excludePaths: string[]) {
     const matchedFiles = [];
+    outer:
     for (let i = files.length - 1; i >= 0; i--) {
+        for (const excludedPath of excludePaths) {
+            if (files[i].includes(excludedPath)) {
+                continue outer;
+            }
+        }
         const content = await readFile(files[i]);
         for (const pattern of patterns) {
             if (pattern.test(content)) {

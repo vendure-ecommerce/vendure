@@ -1,5 +1,5 @@
 import { PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
-import { DeepRequired } from '@vendure/core';
+import { DeepRequired, ID } from '@vendure/core';
 
 import { SearchConfig } from './options';
 import { ElasticSearchInput, SearchRequestBody } from './types';
@@ -10,6 +10,7 @@ import { ElasticSearchInput, SearchRequestBody } from './types';
 export function buildElasticBody(
     input: ElasticSearchInput,
     searchConfig: DeepRequired<SearchConfig>,
+    channelId: ID,
     enabledOnly: boolean = false,
 ): SearchRequestBody {
     const {
@@ -26,6 +27,9 @@ export function buildElasticBody(
     const query: any = {
         bool: {},
     };
+    ensureBoolFilterExists(query);
+    query.bool.filter.push({ term: { channelId } });
+
     if (term) {
         query.bool.must = [
             {
@@ -70,7 +74,9 @@ export function buildElasticBody(
     const sortArray = [];
     if (sort) {
         if (sort.name) {
-            sortArray.push({ productName: { order: sort.name === SortOrder.ASC ? 'asc' : 'desc' } });
+            sortArray.push({
+                'productName.keyword': { order: sort.name === SortOrder.ASC ? 'asc' : 'desc' },
+            });
         }
         if (sort.price) {
             const priceField = groupByProduct ? 'priceMin' : 'price';

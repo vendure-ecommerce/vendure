@@ -29,7 +29,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             .select(['productId', 'productVariantId'])
             .addSelect('GROUP_CONCAT(si.facetValueIds)', 'facetValues');
 
-        this.applyTermAndFilters(facetValuesQb, input);
+        this.applyTermAndFilters(ctx, facetValuesQb, input);
         if (!input.groupByProduct) {
             facetValuesQb.groupBy('productVariantId');
         }
@@ -56,7 +56,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 'maxPriceWithTax',
             );
         }
-        this.applyTermAndFilters(qb, input);
+        this.applyTermAndFilters(ctx, qb, input);
         if (input.term && input.term.length > this.minTermLength) {
             qb.orderBy('score', 'DESC');
         }
@@ -83,6 +83,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
+            ctx,
             this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
             input,
         );
@@ -100,6 +101,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
     }
 
     private applyTermAndFilters(
+        ctx: RequestContext,
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
@@ -140,6 +142,8 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 collectionId: `%,${collectionId},%`,
             });
         }
+        qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
+        qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('productId');
         }

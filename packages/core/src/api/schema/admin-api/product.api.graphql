@@ -28,10 +28,17 @@ type Mutation {
 
     "Delete a ProductVariant"
     deleteProductVariant(id: ID!): DeletionResponse!
+
+    "Assigns Products to the specified Channel"
+    assignProductsToChannel(input: AssignProductsToChannelInput!): [Product!]!
+
+    "Removes Products from the specified Channel"
+    removeProductsFromChannel(input: RemoveProductsFromChannelInput!): [Product!]!
 }
 
 type Product implements Node {
     enabled: Boolean!
+    channels: [Channel!]!
 }
 
 type ProductVariant implements Node {
@@ -118,4 +125,15 @@ input UpdateProductVariantInput {
     assetIds: [ID!]
     stockOnHand: Int
     trackInventory: Boolean
+}
+
+input AssignProductsToChannelInput {
+    productIds: [ID!]!
+    channelId: ID!
+    priceFactor: Float
+}
+
+input RemoveProductsFromChannelInput {
+    productIds: [ID!]!
+    channelId: ID!
 }

@@ -61,4 +61,12 @@ export class NotificationComponent {
                 return 'exclamation-triangle';
         }
     }
+
+    stringifyMessage(message: unknown) {
+        if (typeof message === 'string') {
+            return message;
+        } else {
+            return JSON.stringify(message, null, 2);
+        }
+    }
 }

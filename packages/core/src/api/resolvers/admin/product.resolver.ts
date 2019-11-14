@@ -2,11 +2,13 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
     MutationAddOptionGroupToProductArgs,
+    MutationAssignProductsToChannelArgs,
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
     MutationDeleteProductVariantArgs,
     MutationRemoveOptionGroupFromProductArgs,
+    MutationRemoveProductsFromChannelArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
     Permission,
@@ -118,7 +120,7 @@ export class ProductResolver {
         @Args() args: MutationCreateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(i => this.productVariantService.create(ctx, i)));
+        return this.productVariantService.create(ctx, input);
     }
 
     @Mutation()
@@ -128,7 +130,7 @@ export class ProductResolver {
         @Args() args: MutationUpdateProductVariantsArgs,
     ): Promise<Array<Translated<ProductVariant>>> {
         const { input } = args;
-        return Promise.all(input.map(i => this.productVariantService.update(ctx, i)));
+        return this.productVariantService.update(ctx, input);
     }
 
     @Mutation()
@@ -138,5 +140,23 @@ export class ProductResolver {
         @Args() args: MutationDeleteProductVariantArgs,
     ): Promise<DeletionResponse> {
         return this.productVariantService.softDelete(ctx, args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async assignProductsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignProductsToChannelArgs,
+    ): Promise<Array<Translated<Product>>> {
+        return this.productService.assignProductsToChannel(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async removeProductsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveProductsFromChannelArgs,
+    ): Promise<Array<Translated<Product>>> {
+        return this.productService.removeProductsFromChannel(ctx, args.input);
     }
 }

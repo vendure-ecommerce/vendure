@@ -10,7 +10,9 @@ export const clientDefaults = {
         username: '',
         isLoggedIn: false,
         loginTime: '',
+        activeChannelId: null,
         permissions: [],
+        channels: [],
         __typename: 'UserStatus',
     } as GetUserStatus.UserStatus,
     uiState: {

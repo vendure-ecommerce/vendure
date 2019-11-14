@@ -162,6 +162,12 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export type AssignProductsToChannelInput = {
+    productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+    priceFactor?: Maybe<Scalars['Float']>;
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -536,6 +542,7 @@ export type CreateRoleInput = {
     code: Scalars['String'];
     description: Scalars['String'];
     permissions: Array<Permission>;
+    channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type CreateShippingMethodInput = {
@@ -894,6 +901,7 @@ export type CurrentUser = {
 
 export type CurrentUserChannel = {
     __typename?: 'CurrentUserChannel';
+    id: Scalars['ID'];
     token: Scalars['String'];
     code: Scalars['String'];
     permissions: Array<Permission>;
@@ -1678,6 +1686,8 @@ export type Mutation = {
     createChannel: Channel;
     /** Update an existing Channel */
     updateChannel: Channel;
+    /** Delete a Channel */
+    deleteChannel: DeletionResponse;
     /** Create a new Collection */
     createCollection: Collection;
     /** Update an existing Collection */
@@ -1759,6 +1769,10 @@ export type Mutation = {
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
+    /** Assigns Products to the specified Channel */
+    assignProductsToChannel: Array<Product>;
+    /** Removes Products from the specified Channel */
+    removeProductsFromChannel: Array<Product>;
     createPromotion: Promotion;
     updatePromotion: Promotion;
     deletePromotion: DeletionResponse;
@@ -1766,6 +1780,8 @@ export type Mutation = {
     createRole: Role;
     /** Update an existing Role */
     updateRole: Role;
+    /** Delete an existing Role */
+    deleteRole: DeletionResponse;
     /** Create a new ShippingMethod */
     createShippingMethod: ShippingMethod;
     /** Update an existing ShippingMethod */
@@ -1821,6 +1837,10 @@ export type MutationCreateChannelArgs = {
 
 export type MutationUpdateChannelArgs = {
     input: UpdateChannelInput;
+};
+
+export type MutationDeleteChannelArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateCollectionArgs = {
@@ -2007,6 +2027,14 @@ export type MutationDeleteProductVariantArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationAssignProductsToChannelArgs = {
+    input: AssignProductsToChannelInput;
+};
+
+export type MutationRemoveProductsFromChannelArgs = {
+    input: RemoveProductsFromChannelInput;
+};
+
 export type MutationCreatePromotionArgs = {
     input: CreatePromotionInput;
 };
@@ -2025,6 +2053,10 @@ export type MutationCreateRoleArgs = {
 
 export type MutationUpdateRoleArgs = {
     input: UpdateRoleInput;
+};
+
+export type MutationDeleteRoleArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateShippingMethodArgs = {
@@ -2335,6 +2367,7 @@ export type PriceRange = {
 export type Product = Node & {
     __typename?: 'Product';
     enabled: Scalars['Boolean'];
+    channels: Array<Channel>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2828,6 +2861,11 @@ export type RefundOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type RemoveProductsFromChannelInput = {
+    productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+};
+
 export type Return = Node &
     StockMovement & {
         __typename?: 'Return';
@@ -2916,6 +2954,8 @@ export type SearchResponse = {
 export type SearchResult = {
     __typename?: 'SearchResult';
     enabled: Scalars['Boolean'];
+    /** An array of ids of the Collections in which this result appears */
+    channelIds: Array<Scalars['ID']>;
     sku: Scalars['String'];
     slug: Scalars['String'];
     productId: Scalars['ID'];
@@ -3311,6 +3351,7 @@ export type UpdateRoleInput = {
     code?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     permissions?: Maybe<Array<Permission>>;
+    channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type UpdateShippingMethodInput = {
@@ -3401,10 +3442,18 @@ export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
 };
 
-export type MeQueryVariables = {};
+export type GetChannelsQueryVariables = {};
 
-export type MeQuery = { __typename?: 'Query' } & {
-    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
+export type GetChannelsQuery = { __typename?: 'Query' } & {
+    channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
+};
+
+export type DeleteChannelMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteChannelMutation = { __typename?: 'Mutation' } & {
+    deleteChannel: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -3928,6 +3977,7 @@ export type ProductWithVariantsFragment = { __typename?: 'Product' } & Pick<
                     facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
                 }
         >;
+        channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>>;
     };
 
 export type RoleFragment = { __typename?: 'Role' } & Pick<
@@ -4362,6 +4412,50 @@ export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
     createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
 };
 
+export type MeQueryVariables = {};
+
+export type MeQuery = { __typename?: 'Query' } & {
+    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
+};
+
+export type CreateChannelMutationVariables = {
+    input: CreateChannelInput;
+};
+
+export type CreateChannelMutation = { __typename?: 'Mutation' } & {
+    createChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
+    > & {
+            defaultShippingZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+            defaultTaxZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+        };
+};
+
+export type DeleteProductVariantMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
+    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type AssignProductsToChannelMutationVariables = {
+    input: AssignProductsToChannelInput;
+};
+
+export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
+    assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
+export type RemoveProductsFromChannelMutationVariables = {
+    input: RemoveProductsFromChannelInput;
+};
+
+export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
+    removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -4644,14 +4738,6 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
     >;
 };
 
-export type DeleteProductVariantMutationVariables = {
-    id: Scalars['ID'];
-};
-
-export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
-    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
-
 export type DeletePromotionMutationVariables = {
     id: Scalars['ID'];
 };
@@ -4728,6 +4814,14 @@ export type UpdateRoleMutationVariables = {
 
 export type UpdateRoleMutation = { __typename?: 'Mutation' } & {
     updateRole: { __typename?: 'Role' } & RoleFragment;
+};
+
+export type DeleteRoleMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteRoleMutation = { __typename?: 'Mutation' } & {
+    deleteRole: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
@@ -5047,10 +5141,16 @@ export namespace GetCustomerCount {
     export type Customers = GetCustomerCountQuery['customers'];
 }
 
-export namespace Me {
-    export type Variables = MeQueryVariables;
-    export type Query = MeQuery;
-    export type Me = CurrentUserFragment;
+export namespace GetChannels {
+    export type Variables = GetChannelsQueryVariables;
+    export type Query = GetChannelsQuery;
+    export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
+}
+
+export namespace DeleteChannel {
+    export type Variables = DeleteChannelMutationVariables;
+    export type Mutation = DeleteChannelMutation;
+    export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
 }
 
 export namespace GetCollectionsWithAssets {
@@ -5406,6 +5506,7 @@ export namespace ProductWithVariants {
     export type Variants = ProductVariantFragment;
     export type FacetValues = NonNullable<ProductWithVariantsFragment['facetValues'][0]>;
     export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
+    export type Channels = NonNullable<ProductWithVariantsFragment['channels'][0]>;
 }
 
 export namespace Role {
@@ -5685,6 +5786,40 @@ export namespace CreatePromotion {
     export type CreatePromotion = PromotionFragment;
 }
 
+export namespace Me {
+    export type Variables = MeQueryVariables;
+    export type Query = MeQuery;
+    export type Me = CurrentUserFragment;
+}
+
+export namespace CreateChannel {
+    export type Variables = CreateChannelMutationVariables;
+    export type Mutation = CreateChannelMutation;
+    export type CreateChannel = CreateChannelMutation['createChannel'];
+    export type DefaultShippingZone = NonNullable<
+        CreateChannelMutation['createChannel']['defaultShippingZone']
+    >;
+    export type DefaultTaxZone = NonNullable<CreateChannelMutation['createChannel']['defaultTaxZone']>;
+}
+
+export namespace DeleteProductVariant {
+    export type Variables = DeleteProductVariantMutationVariables;
+    export type Mutation = DeleteProductVariantMutation;
+    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
+}
+
+export namespace AssignProductsToChannel {
+    export type Variables = AssignProductsToChannelMutationVariables;
+    export type Mutation = AssignProductsToChannelMutation;
+    export type AssignProductsToChannel = ProductWithVariantsFragment;
+}
+
+export namespace RemoveProductsFromChannel {
+    export type Variables = RemoveProductsFromChannelMutationVariables;
+    export type Mutation = RemoveProductsFromChannelMutation;
+    export type RemoveProductsFromChannel = ProductWithVariantsFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -5878,12 +6013,6 @@ export namespace GetOptionGroup {
     export type Options = NonNullable<(NonNullable<GetOptionGroupQuery['productOptionGroup']>)['options'][0]>;
 }
 
-export namespace DeleteProductVariant {
-    export type Variables = DeleteProductVariantMutationVariables;
-    export type Mutation = DeleteProductVariantMutation;
-    export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
-}
-
 export namespace DeletePromotion {
     export type Variables = DeletePromotionMutationVariables;
     export type Mutation = DeletePromotionMutation;
@@ -5938,6 +6067,12 @@ export namespace UpdateRole {
     export type Variables = UpdateRoleMutationVariables;
     export type Mutation = UpdateRoleMutation;
     export type UpdateRole = RoleFragment;
+}
+
+export namespace DeleteRole {
+    export type Variables = DeleteRoleMutationVariables;
+    export type Mutation = DeleteRoleMutation;
+    export type DeleteRole = DeleteRoleMutation['deleteRole'];
 }
 
 export namespace ShippingMethod {

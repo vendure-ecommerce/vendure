@@ -17,20 +17,32 @@ jobs:
       matrix:
         node-version: [10.x, 12.x]
 
+    env:
+      CI: true
+
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    # This is required for the elasticsearch-plugin e2e tests. It would be better to use the
+    # "services" feature, but I cannot figure out how to connect to it from the test server.
+    - name: Install elasticsearch
+      run: |
+        curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
+        tar -xvf elasticsearch-7.4.2-linux-x86_64.tar.gz
+        cd elasticsearch-7.4.2/bin
+        ./elasticsearch &
     - name: Install & build
       run: |
         yarn install
         yarn bootstrap
         yarn build
-      env:
-        CI: true
     - name: Unit tests
       run: yarn test
     - name: e2e tests
+      env:
+        ELASTICSEARCH_PORT: 9200
+        ELASTICSEARCH_HOST: http://localhost
       run: yarn e2e
