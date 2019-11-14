@@ -4,4 +4,4 @@ The `AssetServerPlugin` serves assets (images and other files) from the local fi
 
 `npm install @vendure/asset-server-plugin`
 
-For documentation, see [www.vendure.io/docs/plugins/asset-server-plugin](https://www.vendure.io/docs/plugins/asset-server-plugin)
+For documentation, see [www.vendure.io/docs/typescript-api/asset-server-plugin](https://www.vendure.io/docs/typescript-api/asset-server-plugin/)
