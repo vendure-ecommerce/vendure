@@ -51,7 +51,7 @@ import { FacetValueService } from './facet-value.service';
 import { JobService } from './job.service';
 
 export class CollectionService implements OnModuleInit {
-    private rootCollections: { [channelCode: string]: Collection } = {};
+    private rootCollection: Collection | undefined;
     private availableFilters: Array<CollectionFilter<any>> = [
         facetValueCollectionFilter,
         variantNameCollectionFilter,
@@ -442,7 +442,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     private async getRootCollection(ctx: RequestContext): Promise<Collection> {
-        const cachedRoot = this.rootCollections[ctx.channel.code];
+        const cachedRoot = this.rootCollection;
 
         if (cachedRoot) {
             return cachedRoot;
@@ -458,8 +458,8 @@ export class CollectionService implements OnModuleInit {
             .getOne();
 
         if (existingRoot) {
-            this.rootCollections[ctx.channel.code] = translateDeep(existingRoot, ctx.languageCode);
-            return this.rootCollections[ctx.channel.code];
+            this.rootCollection = translateDeep(existingRoot, ctx.languageCode);
+            return this.rootCollection;
         }
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
@@ -479,7 +479,7 @@ export class CollectionService implements OnModuleInit {
         });
 
         await this.connection.getRepository(Collection).save(newRoot);
-        this.rootCollections[ctx.channel.code] = newRoot;
+        this.rootCollection = newRoot;
         return newRoot;
     }
 
