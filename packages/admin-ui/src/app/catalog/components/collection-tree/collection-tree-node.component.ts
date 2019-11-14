@@ -1,10 +1,10 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ChangeDetectionStrategy, Component, Input, OnInit, Optional, SkipSelf } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { Permission } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 import { RootNode, TreeNode } from './array-to-tree';
 import { CollectionPartial, CollectionTreeComponent } from './collection-tree.component';

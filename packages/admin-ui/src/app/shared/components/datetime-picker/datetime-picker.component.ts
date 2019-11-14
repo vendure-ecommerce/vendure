@@ -10,9 +10,10 @@ import {
     ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DropdownComponent } from '@vendure/admin-ui/src/app/shared/components/dropdown/dropdown.component';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
+
+import { DropdownComponent } from '../dropdown/dropdown.component';
 
 import { dayOfWeekIndex, weekDayNames } from './constants';
 import { DatetimePickerService } from './datetime-picker.service';

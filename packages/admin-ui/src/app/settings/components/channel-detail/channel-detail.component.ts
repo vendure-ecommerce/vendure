@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { getDefaultLanguage } from '@vendure/admin-ui/src/app/common/utilities/get-default-language';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
@@ -15,6 +14,7 @@ import {
     LanguageCode,
     UpdateChannelInput,
 } from '../../../common/generated-types';
+import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

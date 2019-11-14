@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { _ } from '@vendure/admin-ui/src/app/core/providers/i18n/mark-for-extraction';
-import { NotificationService } from '@vendure/admin-ui/src/app/core/providers/notification/notification.service';
-import { ModalService } from '@vendure/admin-ui/src/app/shared/providers/modal/modal.service';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { mergeMap, startWith, switchMap } from 'rxjs/operators';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { Channel } from '../../../common/generated-types';
+import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
+import { ModalService } from '../../../shared/providers/modal/modal.service';
 
 @Component({
     selector: 'vdr-channel-list',

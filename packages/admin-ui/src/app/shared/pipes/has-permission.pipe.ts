@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { Observable, Subscription } from 'rxjs';
+
+import { DataService } from '../../data/providers/data.service';
 
 /**
  * A pipe which checks the provided permission against all the permissions of the current user.

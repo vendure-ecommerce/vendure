@@ -2,8 +2,6 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AssignProductsToChannelDialogComponent } from '@vendure/admin-ui/src/app/catalog/components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
@@ -38,10 +36,12 @@ import { createUpdatedTranslatable } from '../../../common/utilities/create-upda
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
+import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
 import { ProductDetailService } from '../../providers/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
+import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
 import { VariantAssetChange } from '../product-variants-list/product-variants-list.component';
 

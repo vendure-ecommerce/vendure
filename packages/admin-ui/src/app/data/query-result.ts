@@ -1,10 +1,12 @@
-import { GetUserStatus } from '@vendure/admin-ui/src/app/common/generated-types';
-import { GET_USER_STATUS } from '@vendure/admin-ui/src/app/data/definitions/client-definitions';
 import { Apollo, QueryRef } from 'apollo-angular';
 import { ApolloQueryResult, NetworkStatus } from 'apollo-client';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, finalize, map, skip, take, takeUntil, tap } from 'rxjs/operators';
 import { notNullOrUndefined } from 'shared/shared-utils';
+
+import { GetUserStatus } from '../common/generated-types';
+
+import { GET_USER_STATUS } from './definitions/client-definitions';
 
 /**
  * This class wraps the Apollo Angular QueryRef object and exposes some getters

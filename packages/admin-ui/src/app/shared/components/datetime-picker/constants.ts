@@ -1,6 +1,6 @@
-import { DayOfWeek } from '@vendure/admin-ui/src/app/shared/components/datetime-picker/types';
-
 import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+
+import { DayOfWeek } from './types';
 
 export const dayOfWeekIndex: { [day in DayOfWeek]: number } = {
     sun: 0,

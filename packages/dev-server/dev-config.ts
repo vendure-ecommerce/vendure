@@ -1,6 +1,5 @@
 /* tslint:disable:no-console */
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { LanguageCode } from '@vendure/admin-ui/src/app/common/generated-types';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
