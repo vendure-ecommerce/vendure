@@ -1,3 +1,11 @@
+## <small>0.6.1 (2019-11-18)</small>
+
+
+#### Fixes
+
+* **asset-server-plugin** Update sharp dependency for node 13 compat ([186b47e](https://github.com/vendure-ecommerce/vendure/commit/186b47e)), closes [#204](https://github.com/vendure-ecommerce/vendure/issues/204)
+* **core** Fix product search with postgres ([dadef4c](https://github.com/vendure-ecommerce/vendure/commit/dadef4c)), closes [#206](https://github.com/vendure-ecommerce/vendure/issues/206)
+
 ## 0.6.0 (2019-11-14)
 
 
