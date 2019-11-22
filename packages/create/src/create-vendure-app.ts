@@ -153,6 +153,9 @@ async function createApp(
                         .then(() => fs.writeFile(srcPathScript('index-worker'), indexWorkerSource))
                         .then(() => fs.writeFile(rootPathScript('migration'), migrationSource))
                         .then(() => fs.writeFile(path.join(root, 'README.md'), readmeSource))
+                        .then(() =>
+                            fs.copyFile(assetPath('gitignore.template'), path.join(root, '.gitignore')),
+                        )
                         .then(() => {
                             subscriber.next(`Created files`);
                             if (usingTs) {
