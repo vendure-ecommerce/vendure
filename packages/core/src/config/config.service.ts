@@ -1,6 +1,7 @@
 import { DynamicModule, Injectable, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { PluginDefinition } from 'apollo-server-core';
 import { RequestHandler } from 'express';
 import { ConnectionOptions } from 'typeorm';
 
@@ -108,6 +109,10 @@ export class ConfigService implements VendureConfig {
 
     get middleware(): Array<{ handler: RequestHandler; route: string }> {
         return this.activeConfig.middleware;
+    }
+
+    get apolloServerPlugins(): PluginDefinition[] {
+        return this.activeConfig.apolloServerPlugins;
     }
 
     get plugins(): Array<DynamicModule | Type<any>> {

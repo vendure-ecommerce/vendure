@@ -2,6 +2,7 @@ import { DynamicModule, Type } from '@nestjs/common';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { PluginDefinition } from 'apollo-server-core';
 import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
@@ -476,6 +477,17 @@ export interface VendureConfig {
      * @default []
      */
     middleware?: Array<{ handler: RequestHandler; route: string }>;
+    /**
+     * @description
+     * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
+     * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
+     *
+     * Apollo plugins can be used e.g. to perform custom data transformations on incoming operations or outgoing
+     * data.
+     *
+     * @default []
+     */
+    apolloServerPlugins?: PluginDefinition[];
     /**
      * @description
      * Configures available payment processing methods.
