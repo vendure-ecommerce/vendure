@@ -38,7 +38,7 @@ export interface MigrationOptions {
  */
 export async function runMigrations(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    const connection = await createConnection(createConnectionOptions(userConfig));
+    const connection = await createConnection(createConnectionOptions(config));
     await disableForeignKeysForSqLite(connection, () => connection.runMigrations({ transaction: 'each' }));
     await connection.close();
 }
@@ -52,7 +52,7 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
  */
 export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    const connection = await createConnection(createConnectionOptions(userConfig));
+    const connection = await createConnection(createConnectionOptions(config));
     await disableForeignKeysForSqLite(connection, () =>
         connection.undoLastMigration({ transaction: 'each' }),
     );
