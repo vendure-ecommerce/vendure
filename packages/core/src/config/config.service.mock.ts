@@ -36,6 +36,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     customFields = {};
     middleware = [];
     logger = {} as any;
+    apolloServerPlugins = [];
     plugins = [];
 }
 
