@@ -17,8 +17,9 @@ import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
-import { initialData } from './fixtures/e2e-initial-data';
+import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+
 import {
     CreateAdministrator,
     CreateRole,
@@ -84,7 +85,7 @@ describe('Shop auth & accounts', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir,
+            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 2,
@@ -544,7 +545,7 @@ describe('Expiring tokens', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir,
+            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
@@ -633,7 +634,7 @@ describe('Registration without email verification', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir,
+            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
@@ -707,7 +708,7 @@ describe('Updating email address without email verification', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir,
+            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,

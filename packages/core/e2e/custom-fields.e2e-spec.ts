@@ -7,8 +7,9 @@ import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
-import { dataDir, TEST_SETUP_TIMEOUT_MS, testConfig } from './config/test-config';
-import { initialData } from './fixtures/e2e-initial-data';
+import { initialData } from '../../../e2e-common/e2e-initial-data';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
@@ -100,7 +101,7 @@ describe('Custom fields', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir,
+            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,

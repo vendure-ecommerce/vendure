@@ -2,6 +2,8 @@ import { mergeConfig } from '@vendure/core';
 import { testConfig as defaultTestConfig } from '@vendure/testing';
 import path from 'path';
 
+import { getPackageDir } from './get-package-dir';
+
 /**
  * We use a relatively long timeout on the initial beforeAll() function of the
  * e2e tests because on the first run (and always in CI) the sqlite databases
@@ -19,10 +21,10 @@ if (process.env.E2E_DEBUG) {
     jest.setTimeout(1800 * 1000);
 }
 
-export const dataDir = path.join(__dirname, '../__data__');
+const packageDir = getPackageDir();
 
 export const testConfig = mergeConfig(defaultTestConfig, {
     importExportOptions: {
-        importAssetsDir: path.join(__dirname, '..', 'fixtures/assets'),
+        importAssetsDir: path.join(packageDir, 'fixtures/assets'),
     },
 });
