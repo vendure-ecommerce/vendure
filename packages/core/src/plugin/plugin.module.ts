@@ -26,10 +26,16 @@ const PLUGIN_PROCESS_CONTEXT = 'PLUGIN_PROCESS_CONTEXT';
  * modules and in responsible for executing any lifecycle methods defined by the plugins.
  */
 @Module({
-    imports: [ConfigModule, ...getConfig().plugins],
-    providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
+    imports: [ConfigModule],
 })
 export class PluginModule implements OnModuleInit, OnModuleDestroy {
+    static forRoot(): DynamicModule {
+        return {
+            module: PluginModule,
+            providers: [{ provide: PLUGIN_PROCESS_CONTEXT, useValue: PluginProcessContext.Main }],
+            imports: [...getConfig().plugins],
+        };
+    }
     static forWorker(): DynamicModule {
         return {
             module: PluginModule,

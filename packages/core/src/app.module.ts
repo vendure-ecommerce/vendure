@@ -11,7 +11,7 @@ import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule, PluginModule],
+    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot()],
 })
 export class AppModule implements NestModule, OnApplicationShutdown {
     constructor(private configService: ConfigService, private i18nService: I18nService) {}

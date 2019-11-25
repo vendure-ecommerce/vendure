@@ -16,6 +16,7 @@ import {
 
 describe('Plugins', () => {
     const bootstrapMockFn = jest.fn();
+    const onConstructorFn = jest.fn();
     const onBootstrapFn = jest.fn();
     const onWorkerBootstrapFn = jest.fn();
     const onCloseFn = jest.fn();
@@ -25,6 +26,7 @@ describe('Plugins', () => {
         ...testConfig,
         plugins: [
             TestPluginWithAllLifecycleHooks.init(
+                onConstructorFn,
                 onBootstrapFn,
                 onWorkerBootstrapFn,
                 onCloseFn,
@@ -51,16 +53,20 @@ describe('Plugins', () => {
         await server.destroy();
     });
 
+    it('constructs one instance for each process', () => {
+        expect(onConstructorFn).toHaveBeenCalledTimes(2);
+    });
+
     it('calls onVendureBootstrap', () => {
-        expect(onBootstrapFn).toHaveBeenCalled();
+        expect(onBootstrapFn).toHaveBeenCalledTimes(1);
     });
 
     it('calls onWorkerVendureBootstrap', () => {
-        expect(onWorkerBootstrapFn).toHaveBeenCalled();
+        expect(onWorkerBootstrapFn).toHaveBeenCalledTimes(1);
     });
 
     it('can modify the config in configure()', () => {
-        expect(bootstrapMockFn).toHaveBeenCalled();
+        expect(bootstrapMockFn).toHaveBeenCalledTimes(1);
         const configService: ConfigService = bootstrapMockFn.mock.calls[0][0];
         expect(configService instanceof ConfigService).toBe(true);
         expect(configService.defaultLanguageCode).toBe(LanguageCode.zh);

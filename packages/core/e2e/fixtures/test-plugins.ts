@@ -16,16 +16,27 @@ import {
 
 export class TestPluginWithAllLifecycleHooks
     implements OnVendureBootstrap, OnVendureWorkerBootstrap, OnVendureClose, OnVendureWorkerClose {
+    private static onConstructorFn: any;
     private static onBootstrapFn: any;
     private static onWorkerBootstrapFn: any;
     private static onCloseFn: any;
     private static onWorkerCloseFn: any;
-    static init(bootstrapFn: any, workerBootstrapFn: any, closeFn: any, workerCloseFn: any) {
+    static init(
+        constructorFn: any,
+        bootstrapFn: any,
+        workerBootstrapFn: any,
+        closeFn: any,
+        workerCloseFn: any,
+    ) {
+        this.onConstructorFn = constructorFn;
         this.onBootstrapFn = bootstrapFn;
         this.onWorkerBootstrapFn = workerBootstrapFn;
         this.onCloseFn = closeFn;
         this.onWorkerCloseFn = workerCloseFn;
         return this;
+    }
+    constructor() {
+        TestPluginWithAllLifecycleHooks.onConstructorFn();
     }
     onVendureBootstrap(): void | Promise<void> {
         TestPluginWithAllLifecycleHooks.onBootstrapFn();
