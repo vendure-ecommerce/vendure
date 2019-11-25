@@ -1,26 +1,30 @@
+import { ModuleRef } from '@nestjs/core';
+import { InjectConnection } from '@nestjs/typeorm';
 import {
     createProxyHandler,
     EventBus,
-    EventBusModule,
     InternalServerError,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    PluginCommonModule,
     RuntimeVendureConfig,
     Type,
     VendurePlugin,
 } from '@vendure/core';
 import fs from 'fs-extra';
+import { Connection } from 'typeorm';
 
 import { DevMailbox } from './dev-mailbox';
 import { EmailSender } from './email-sender';
-import { EmailEventHandler } from './event-listener';
+import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { TemplateLoader } from './template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
     EmailTransportOptions,
+    EventWithAsyncData,
     EventWithContext,
 } from './types';
 
@@ -133,7 +137,7 @@ import {
  * @docsCategory EmailPlugin
  */
 @VendurePlugin({
-    imports: [EventBusModule],
+    imports: [PluginCommonModule],
     configuration: config => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
@@ -145,7 +149,11 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private devMailbox: DevMailbox | undefined;
 
     /** @internal */
-    constructor(private eventBus: EventBus) {}
+    constructor(
+        private eventBus: EventBus,
+        @InjectConnection() private connection: Connection,
+        private moduleRef: ModuleRef,
+    ) {}
 
     /**
      * Set the plugin options.
@@ -222,22 +230,36 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
         }
     }
 
-    private async handleEvent(handler: EmailEventHandler, event: EventWithContext) {
+    private async handleEvent(
+        handler: EmailEventHandler | EmailEventHandlerWithAsyncData<any>,
+        event: EventWithContext,
+    ) {
         Logger.debug(`Handling event "${handler.type}"`, 'EmailPlugin');
         const { type } = handler;
-        const result = handler.handle(event, EmailPlugin.options.globalTemplateVars);
-        if (!result) {
-            return;
+        try {
+            if (handler instanceof EmailEventHandlerWithAsyncData) {
+                (event as EventWithAsyncData<EventWithContext, any>).data = await handler._loadDataFn({
+                    event,
+                    connection: this.connection,
+                    inject: t => this.moduleRef.get(t, { strict: false }),
+                });
+            }
+            const result = await handler.handle(event as any, EmailPlugin.options.globalTemplateVars);
+            if (!result) {
+                return;
+            }
+            const bodySource = await this.templateLoader.loadTemplate(type, result.templateFile);
+            const generated = await this.generator.generate(
+                result.from,
+                result.subject,
+                bodySource,
+                result.templateVars,
+            );
+            const emailDetails = { ...generated, recipient: result.recipient };
+            await this.emailSender.send(emailDetails, this.transport);
+        } catch (e) {
+            Logger.error(e.message, 'EmailPlugin', e.stack);
         }
-        const bodySource = await this.templateLoader.loadTemplate(type, result.templateFile);
-        const generated = await this.generator.generate(
-            result.from,
-            result.subject,
-            bodySource,
-            result.templateVars,
-        );
-        const emailDetails = { ...generated, recipient: result.recipient };
-        await this.emailSender.send(emailDetails, this.transport);
     }
 }
 

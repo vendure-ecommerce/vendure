@@ -1,16 +1,20 @@
 /* tslint:disable:no-non-null-assertion */
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import {
+    EventBus,
+    LanguageCode,
+    Order,
+    OrderStateTransitionEvent,
+    PluginCommonModule,
+    VendureEvent,
+} from '@vendure/core';
 import path from 'path';
 
-import { LanguageCode } from '../../common/lib/generated-types';
-import { DEFAULT_CHANNEL_CODE } from '../../common/lib/shared-constants';
-import { Order } from '../../core/dist/entity/order/order.entity';
-import { EventBus } from '../../core/dist/event-bus/event-bus';
-import { OrderStateTransitionEvent } from '../../core/dist/event-bus/events/order-state-transition-event';
-import { VendureEvent } from '../../core/dist/event-bus/vendure-event';
-
 import { orderConfirmationHandler } from './default-email-handlers';
-import { EmailEventHandler, EmailEventListener } from './event-listener';
+import { EmailEventHandler } from './event-handler';
+import { EmailEventListener } from './event-listener';
 import { EmailPlugin } from './plugin';
 import { EmailPluginOptions } from './types';
 
@@ -26,6 +30,10 @@ describe('EmailPlugin', () => {
         onSend = jest.fn();
         const module = await Test.createTestingModule({
             imports: [
+                TypeOrmModule.forRoot({
+                    type: 'sqljs',
+                }),
+                PluginCommonModule,
                 EmailPlugin.init({
                     templatePath: path.join(__dirname, '../test-templates'),
                     transport: {
@@ -36,6 +44,7 @@ describe('EmailPlugin', () => {
                     ...options,
                 }),
             ],
+            providers: [MockService],
         }).compile();
 
         plugin = module.get(EmailPlugin);
@@ -234,6 +243,34 @@ describe('EmailPlugin', () => {
         });
     });
 
+    describe('loadData', () => {
+        it('loads async data', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .loadData(async ({ inject }) => {
+                    const service = inject(MockService);
+                    return service.someAsyncMethod();
+                })
+                .setFrom('"test from" <noreply@test.com>')
+                .setSubject('Hello, {{ testData }}!')
+                .setRecipient(() => 'test@test.com')
+                .setTemplateVars(event => ({ testData: event.data }));
+
+            const module = await initPluginWithHandlers([handler]);
+
+            eventBus.publish(
+                new MockEvent(
+                    { channel: { code: DEFAULT_CHANNEL_CODE }, languageCode: LanguageCode.en },
+                    true,
+                ),
+            );
+            await pause();
+
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello, loaded data!');
+            await module.close();
+        });
+    });
+
     describe('orderConfirmationHandler', () => {
         let module: TestingModule;
         beforeEach(async () => {
@@ -297,5 +334,11 @@ const pause = () => new Promise(resolve => setTimeout(resolve, 50));
 class MockEvent extends VendureEvent {
     constructor(public ctx: any, public shouldSend: boolean) {
         super();
+    }
+}
+
+class MockService {
+    someAsyncMethod() {
+        return Promise.resolve('loaded data');
     }
 }
