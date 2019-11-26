@@ -7,6 +7,10 @@ showtoc: true
 
 Vendure can support many kinds of payment workflows, such as authorizing and capturing payment in a single step upon checkout or authorizing on checkout and then capturing on fulfillment. 
 
+{{% alert "primary" %}}
+  For a complete working example of a real payment integration, see the [real-world-vendure Braintree plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/braintree)
+{{% /alert %}}
+
 ## Creating an integration
 
 Payment integrations are created by creating a new [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and passing that handler into the [`paymentOptions.paymentMethodHandlers`]({{< relref "payment-options" >}}) array in the VendureConfig.
