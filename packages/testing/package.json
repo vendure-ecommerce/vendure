@@ -1,6 +1,6 @@
 {
   "name": "@vendure/testing",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "End-to-end testing tools for Vendure projects",
   "keywords": [
     "vendure",
@@ -40,7 +40,7 @@
     "sql.js": "^1.0.0"
   },
   "devDependencies": {
-    "@vendure/core": "^0.6.1",
+    "@vendure/core": "^0.6.2",
     "rimraf": "^3.0.0",
     "typescript": "^3.6.4"
   }

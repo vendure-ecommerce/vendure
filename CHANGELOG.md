@@ -1,3 +1,19 @@
+## <small>0.6.2 (2019-11-26)</small>
+
+
+#### Features
+
+* **core** Allow custom ApolloServerPlugins to be specified ([dc45c87](https://github.com/vendure-ecommerce/vendure/commit/dc45c87)), closes [#210](https://github.com/vendure-ecommerce/vendure/issues/210)
+* **create** Include a .gitignore file ([6b6b3e3](https://github.com/vendure-ecommerce/vendure/commit/6b6b3e3))
+* **email-plugin** Allow async data loading in EmailEventHandlers ([155d429](https://github.com/vendure-ecommerce/vendure/commit/155d429)), closes [#184](https://github.com/vendure-ecommerce/vendure/issues/184)
+
+#### Fixes
+
+* **core** Ensure plugins instantiated only once per process ([7198b85](https://github.com/vendure-ecommerce/vendure/commit/7198b85)), closes [#213](https://github.com/vendure-ecommerce/vendure/issues/213)
+* **core** Export LoginEvent & RefundStateTransitionEvent ([90e161b](https://github.com/vendure-ecommerce/vendure/commit/90e161b))
+* **core** Use correct config & output path when generating migrations ([637c863](https://github.com/vendure-ecommerce/vendure/commit/637c863))
+* **core** Use correct config for runMigrations & revertLastMigration ([c9acd68](https://github.com/vendure-ecommerce/vendure/commit/c9acd68))
+
 ## <small>0.6.1 (2019-11-18)</small>
 
 
