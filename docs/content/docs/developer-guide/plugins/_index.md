@@ -33,6 +33,10 @@ A plugin in Vendure is a specialized Nestjs Module which is decorated with the [
 
 Here are some simplified examples of plugins which serve to illustrate what can be done with Vendure plugins. *Note: implementation details are skipped in these examples for the sake of brevity. A complete example with explanation can be found in [Writing A Vendure Plugin]({{< relref "writing-a-vendure-plugin" >}}).*
 
+{{% alert "primary" %}}
+  For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+{{% /alert %}}
+
 ### Modifying the VendureConfig
 
 This example shows how to modify the VendureConfig, in this case by adding a custom field to allow product ratings.
@@ -49,6 +53,26 @@ This example shows how to modify the VendureConfig, in this case by adding a cus
   },
 })
 class ProductRatingPlugin {}
+```
+
+### Defining a new database entity
+
+This example shows how new TypeORM database entities can be defined by plugins.
+
+```TypeScript
+@Entity()
+class ProductReview extends VendureEntity {
+  @Column()
+  text: string;
+  
+  @Column()
+  rating: number;
+}
+
+@VendurePlugin({
+  entites: [ProductReview],
+})
+export class ReviewsPlugin {}
 ```
 
 ### Extending the GraphQL API
@@ -112,7 +136,9 @@ export class ProductsController {
 
 ### Running processes on the Worker
 
-This example shows how to set up a microservice running on the Worker process, as well as subcribing to events via the EventBus.
+This example shows how to set up a microservice running on the Worker process, as well as subscribing to events via the EventBus.
+
+Also see the docs for [WorkerService]({{< relref "worker-service" >}}) and [WorkerMessage]({{< relref "worker-message" >}}).
 
 ```TypeScript
 @VendurePlugin({
@@ -122,7 +148,7 @@ This example shows how to set up a microservice running on the Worker process, a
 export class OrderAnalyticsPlugin implements OnVendureBootstrap {
 
   constructor(
-    @Inject(VENDURE_WORKER_CLIENT) private client: ClientProxy,
+    private workerService: WorkerService,
     private eventBus: EventBus,
   ) {}
   
@@ -133,9 +159,9 @@ export class OrderAnalyticsPlugin implements OnVendureBootstrap {
    * the Worker process to let it process that order.
    */
   onVendureBootstrap() {
-    this.eventBus.subscribe(OrderStateTransitionEvent, event => {
+    this.eventBus.ofType(OrderStateTransitionEvent).subscribe(event => {
       if (event.toState === 'Fulfilled') {
-        this.client.send('ORDER_PLACED', event.order).subscribe();
+        this.workerService.send(new ProcessOrderMessage({ order: event.order })).subscribe();
       }
     });
   }
@@ -148,7 +174,7 @@ export class OrderAnalyticsPlugin implements OnVendureBootstrap {
 @Controller()
 class OrderProcessingController {
 
-  @MessagePattern('ORDER_PLACED')
+  @MessagePattern(ProcessOrderMessage.pattern)
   async processOrder(order) {
     // Do some expensive computation
   }

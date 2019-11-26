@@ -38,7 +38,7 @@ export interface MigrationOptions {
  */
 export async function runMigrations(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    const connection = await createConnection(createConnectionOptions(userConfig));
+    const connection = await createConnection(createConnectionOptions(config));
     await disableForeignKeysForSqLite(connection, () => connection.runMigrations({ transaction: 'each' }));
     await connection.close();
 }
@@ -52,7 +52,7 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
  */
 export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
-    const connection = await createConnection(createConnectionOptions(userConfig));
+    const connection = await createConnection(createConnectionOptions(config));
     await disableForeignKeysForSqLite(connection, () =>
         connection.undoLastMigration({ transaction: 'each' }),
     );
@@ -69,7 +69,7 @@ export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
  */
 export async function generateMigration(userConfig: Partial<VendureConfig>, options: MigrationOptions) {
     const config = await preBootstrapConfig(userConfig);
-    const connection = await createConnection(createConnectionOptions(userConfig));
+    const connection = await createConnection(createConnectionOptions(config));
 
     // TODO: This can hopefully be simplified if/when TypeORM exposes this CLI command directly.
     // See https://github.com/typeorm/typeorm/issues/4494
@@ -125,18 +125,16 @@ export async function generateMigration(userConfig: Partial<VendureConfig>, opti
             const filename = timestamp + '-' + options.name + '.ts';
             const directory = options.outputDir;
             const fileContent = getTemplate(options.name as any, timestamp, upSqls, downSqls.reverse());
-            const outputPath = path.join(process.cwd(), directory ? directory + '/' : '', filename);
+            const outputPath = directory
+                ? path.join(directory, filename)
+                : path.join(process.cwd(), filename);
             await fs.ensureFile(outputPath);
             await fs.writeFileSync(outputPath, fileContent);
 
             console.log(chalk.green(`Migration ${chalk.blue(outputPath)} has been generated successfully.`));
         }
     } else {
-        console.log(
-            chalk.yellow(
-                `No changes in database schema were found - cannot generate a migration. To create a new empty migration use "typeorm migration:create" command`,
-            ),
-        );
+        console.log(chalk.yellow(`No changes in database schema were found - cannot generate a migration.`));
     }
     await connection.close();
 }

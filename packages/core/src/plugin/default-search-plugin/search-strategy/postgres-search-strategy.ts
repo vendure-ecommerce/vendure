@@ -147,8 +147,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
         }
-        qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
-        qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
+        qb.andWhere('si.languageCode = :languageCode', { languageCode: ctx.languageCode });
+        qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('si.productId');
         }
@@ -176,6 +176,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             'facetIds',
             'facetValueIds',
             'collectionIds',
+            'channelIds',
             'productPreview',
             'productVariantPreview',
         ]
@@ -183,7 +184,12 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
                 if (groupByProduct && col !== 'productId') {
-                    if (col === 'facetIds' || col === 'facetValueIds' || col === 'collectionIds') {
+                    if (
+                        col === 'facetIds' ||
+                        col === 'facetValueIds' ||
+                        col === 'collectionIds' ||
+                        col === 'channelIds'
+                    ) {
                         return `string_agg(${qualifiedName}, ',') as "${alias}"`;
                     } else if (col === 'enabled') {
                         return `bool_or(${qualifiedName}) as "${alias}"`;

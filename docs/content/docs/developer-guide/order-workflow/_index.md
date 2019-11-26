@@ -25,14 +25,5 @@ So if the customer adds 2 *Widgets* to the Order, there will be **one OrderLine*
 
 ## Shop client order workflow
 
-The following is a description of the flow and related GraphQL operations which are used when dealing with Orders in a customer-facing client application (i.e. a storefront).
+The [GraphQL API Guide]({{< relref "/docs/developer-guide/graphql-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 
-1. [`activeOrder` query]({{< relref "/docs/graphql-api/shop/queries#activeorder" >}}) returns the currently-active Order for the session.
-* [`addItemToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#additemtoorder" >}}) adds an item to the order. The first time it is called will also create a new Order for the session.
-* [`adjustOrderLine` mutation]({{< relref "/docs/graphql-api/shop/mutations#adjustorderline" >}}) is used to adjust the quantity of an OrderLine.
-* [`removeOrderLine` mutation]({{< relref "/docs/graphql-api/shop/mutations#removeorderline" >}}) removes an OrderLine from the Order.
-* [`setCustomerForOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#setcustomerfororder" >}}) specifies the Customer details (required if the customer is not logged in as an authenticated user).
-* [`setOrderShippingAddress` mutation]({{< relref "/docs/graphql-api/shop/mutations#setordershippingaddress" >}}) sets the shipping address for the Order.
-* [`eligibleShippingMethods` query]({{< relref "/docs/graphql-api/shop/queries#eligibleshippingmethods" >}}) returns all available shipping methods based on the customer's shipping address and the contents of the Order.
-* [`setOrderShippingMethod` mutation]({{< relref "/docs/graphql-api/shop/mutations#setordershippingmethod" >}}) sets the shipping method to use.
-* [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}) adds a payment to the Order. If the payment amount equals the order total, then the Order will be transitioned to either the `PaymentAuthorized` or `PaymentSettled` state (depending on how the payment provider is configured) and the order process is complete from the customer's side.

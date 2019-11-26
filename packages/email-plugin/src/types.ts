@@ -1,9 +1,8 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Type } from '@vendure/common/lib/shared-types';
-import { RequestContext, VendureEvent } from '@vendure/core';
+import { RequestContext, Type, VendureEvent } from '@vendure/core';
+import { Connection } from 'typeorm';
 
-import { EmailEventHandler } from './event-listener';
+import { EmailEventHandler } from './event-handler';
 
 /**
  * @description
@@ -15,6 +14,16 @@ import { EmailEventHandler } from './event-listener';
  * @docsPage Email Plugin Types
  */
 export type EventWithContext = VendureEvent & { ctx: RequestContext };
+
+/**
+ * @description
+ * A VendureEvent with a {@link RequestContext} and a `data` property which contains the
+ * value resolved from the {@link EmailEventHandler}`.loadData()` callback.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type EventWithAsyncData<Event extends EventWithContext, R> = Event & { data: R };
 
 /**
  * @description
@@ -251,3 +260,15 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         templateVars: { [key: string]: any },
     ): Omit<EmailDetails, 'recipient'>;
 }
+
+/**
+ * @description
+ * A function used to load async data for use by an {@link EmailEventHandler}.
+ *
+ * @docsCategory EmailPlugin
+ */
+export type LoadDataFn<Event extends EventWithContext, R> = (context: {
+    event: Event;
+    connection: Connection;
+    inject: <T>(type: Type<T>) => T;
+}) => Promise<R>;

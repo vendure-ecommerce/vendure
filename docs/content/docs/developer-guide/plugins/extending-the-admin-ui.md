@@ -12,6 +12,10 @@ This is possible by defining [AdminUiExtensions]({{< ref "admin-ui-extension" >}
 Note: an understanding of [Angular](https://angular.io/) is required to successfully work with UI extensions. Try [Angular's "Getting Started" guide](https://angular.io/start) to learn more.
 {{% /alert %}}
 
+{{% alert "primary" %}}
+  For a complete working example of a Vendure plugin which extends the Admin UI, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+{{% /alert %}}
+
 ## Simple Example
 
 Here is a very simple example to illustrate how a UI extension works:

@@ -104,5 +104,6 @@ export const defaultConfig: RuntimeVendureConfig = {
         User: [],
     },
     middleware: [],
+    apolloServerPlugins: [],
     plugins: [],
 };

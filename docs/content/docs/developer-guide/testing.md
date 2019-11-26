@@ -9,6 +9,10 @@ Vendure plugins allow you to extend all aspects of the standard Vendure server. 
 
 The `@vendure/testing` package gives you some simple but powerful tooling for creating end-to-end tests for your custom Vendure code.
 
+{{% alert "primary" %}}
+  For a working example of a Vendure plugin with e2e testing, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+{{% /alert %}}
+
 ## Usage
 
 ### Install dependencies

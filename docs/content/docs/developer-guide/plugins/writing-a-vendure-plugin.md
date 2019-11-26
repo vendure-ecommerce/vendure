@@ -7,6 +7,10 @@ weight: 0
 
 This is a complete example of how to implement a simple plugin step-by-step.
 
+{{% alert "primary" %}}
+  For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+{{% /alert %}}
+
 ## Example: RandomCatPlugin
 
 Let's learn about Vendure plugins by writing a plugin which defines a new database entity and GraphQL mutation.

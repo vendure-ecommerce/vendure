@@ -69,3 +69,8 @@ Log in with the superadmin credentials:
 * **username**: superadmin
 * **password**: superadmin
 {{% /alert %}}
+
+## Next Steps
+
+* Get a better understanding of how Vendure works by reading the [Architecture Overview]({{< relref "/docs/developer-guide/overview" >}})
+* Learn how to implement a storefront with the [GraphQL API Guide]({{< relref "/docs/developer-guide/graphql-api-guide" >}})

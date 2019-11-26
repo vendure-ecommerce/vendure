@@ -1,0 +1,4 @@
+node_modules
+dist
+static/assets
+static/email/test-emails

@@ -8,10 +8,10 @@ import { Observable, Observer } from 'rxjs';
  *
  * @example
  * ```TypeScript
- * @Controller()
+ * \@Controller()
  * export class MyWorkerController {
  *
- *     @MessagePattern('test')
+ *     \@MessagePattern('test')
  *     handleTest() {
  *         return asyncObservable(async observer => {
  *             const value = await this.connection.fetchSomething();

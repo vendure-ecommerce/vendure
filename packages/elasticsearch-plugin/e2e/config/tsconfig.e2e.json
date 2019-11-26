@@ -1,13 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "types": ["jest", "node"],
-    "lib": ["es2015"],
-    "skipLibCheck": false,
-    "inlineSourceMap": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "allowJs": true
-  },
+  "extends": "../../../../e2e-common/tsconfig.e2e.json",
   "include": ["../**/*.e2e-spec.ts", "../**/*.d.ts"]
 }

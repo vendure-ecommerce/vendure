@@ -14,6 +14,7 @@ This project is a monorepo managed with [Lerna](https://github.com/lerna/lerna).
 ```
 vendure/
 ├── docs/           # Documentation source
+├── e2e-common/     # Shared config for package e2e tests
 ├── packages/       # Source for the Vendure server, admin-ui & plugin packages
 ├── scripts/
     ├── changelog/  # Scripts used to generate the changelog based on the git history

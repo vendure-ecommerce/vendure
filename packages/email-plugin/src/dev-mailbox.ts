@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import http from 'http';
 import path from 'path';
 
-import { EmailEventHandler } from './event-listener';
+import { EmailEventHandler } from './event-handler';
 import { EmailPluginDevModeOptions, EventWithContext } from './types';
 
 /**
