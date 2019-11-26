@@ -26,6 +26,10 @@ There are 2 separate GraphQL APIs: shop and admin.
 
     [Admin API Documentation]({{< relref "/docs/graphql-api/admin" >}}).
 
+## ServiceModule
+
+This is an internal module which contains the bulk of the Vendure business logic for managing products, customers, orders, collections etc.
+
 ## Database
 
 Vendure supports multiple databases. Currently it is tested with MySQL/MariaDB, PostgreSQL, SQLite and SQL.js. Since Vendure uses [TypeORM](https://typeorm.io/#/) to manage data access, it can theoretically also work with CockroachDB, Microsoft SQL Server and MongoDB, though these are as yet untested.
