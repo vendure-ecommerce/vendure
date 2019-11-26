@@ -1,3 +1,11 @@
+## <small>0.6.3 (2019-11-26)</small>
+
+*Note: only the `@vendure/email-plugin` package was updated in this release, as v0.6.2 included a critical bug which prevented installation via `@vendure/create`*
+
+#### Fixes
+
+* **email-plugin** Fix TypeScript compiler error on defaultEmailHandlers ([d794e5f](https://github.com/vendure-ecommerce/vendure/commit/d794e5f))
+
 ## <small>0.6.2 (2019-11-26)</small>
 
 
