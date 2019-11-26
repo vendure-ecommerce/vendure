@@ -54,7 +54,7 @@ export const devConfig: VendureConfig = {
         // }),
         EmailPlugin.init({
             devMode: true,
-            handlers: defaultEmailHandlers as any,
+            handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
             mailboxPort: 5003,

@@ -6,6 +6,7 @@ import {
     PasswordResetEvent,
 } from '@vendure/core';
 
+import { EmailEventHandler } from './event-handler';
 import { EmailEventListener } from './event-listener';
 import {
     mockAccountRegistrationEvent,
@@ -47,7 +48,7 @@ export const emailAddressChangeHandler = new EmailEventListener('email-address-c
     .setTemplateVars(event => ({ user: event.user }))
     .setMockEvent(mockEmailAddressChangeEvent);
 
-export const defaultEmailHandlers = [
+export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
     orderConfirmationHandler,
     emailVerificationHandler,
     passwordResetHandler,
