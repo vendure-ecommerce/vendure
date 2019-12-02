@@ -425,8 +425,8 @@ export type CreateChannelInput = {
   defaultLanguageCode: LanguageCode,
   pricesIncludeTax: Scalars['Boolean'],
   currencyCode: CurrencyCode,
-  defaultTaxZoneId?: Maybe<Scalars['ID']>,
-  defaultShippingZoneId?: Maybe<Scalars['ID']>,
+  defaultTaxZoneId: Scalars['ID'],
+  defaultShippingZoneId: Scalars['ID'],
 };
 
 export type CreateCollectionInput = {

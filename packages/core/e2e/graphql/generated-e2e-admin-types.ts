@@ -425,8 +425,8 @@ export type CreateChannelInput = {
     defaultLanguageCode: LanguageCode;
     pricesIncludeTax: Scalars['Boolean'];
     currencyCode: CurrencyCode;
-    defaultTaxZoneId?: Maybe<Scalars['ID']>;
-    defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    defaultTaxZoneId: Scalars['ID'];
+    defaultShippingZoneId: Scalars['ID'];
 };
 
 export type CreateCollectionInput = {
@@ -3428,6 +3428,18 @@ export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
     updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
 };
 
+export type Q1QueryVariables = {};
+
+export type Q1Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+};
+
+export type Q2QueryVariables = {};
+
+export type Q2Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+};
+
 export type CanCreateCustomerMutationVariables = {
     input: CreateCustomerInput;
 };
@@ -5127,6 +5139,18 @@ export namespace UpdateAdministrator {
     export type Variables = UpdateAdministratorMutationVariables;
     export type Mutation = UpdateAdministratorMutation;
     export type UpdateAdministrator = AdministratorFragment;
+}
+
+export namespace Q1 {
+    export type Variables = Q1QueryVariables;
+    export type Query = Q1Query;
+    export type Product = NonNullable<Q1Query['product']>;
+}
+
+export namespace Q2 {
+    export type Variables = Q2QueryVariables;
+    export type Query = Q2Query;
+    export type Product = NonNullable<Q2Query['product']>;
 }
 
 export namespace CanCreateCustomer {

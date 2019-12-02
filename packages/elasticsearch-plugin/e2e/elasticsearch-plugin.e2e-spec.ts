@@ -651,6 +651,7 @@ describe('Elasticsearch plugin', () => {
                         currencyCode: CurrencyCode.GBP,
                         pricesIncludeTax: true,
                         defaultTaxZoneId: 'T_2',
+                        defaultShippingZoneId: 'T_1',
                     },
                 });
                 secondChannel = createChannel;
