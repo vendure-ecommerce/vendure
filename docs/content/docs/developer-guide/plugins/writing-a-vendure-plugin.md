@@ -150,7 +150,7 @@ export class RandomCatPlugin {}
 
 ### Step 7: Extend the GraphQL API
 
-Now that we've defined the new mutation and we have a resolver capable of handling it, we just need to tell Vendure to extend the API. This is done with the [`adminApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#adminapiextensions). If we wanted to extend the Shop API, we'd use the [`adminApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#shopapiextensions) instead.
+Now that we've defined the new mutation and we have a resolver capable of handling it, we just need to tell Vendure to extend the API. This is done with the [`adminApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#adminapiextensions). If we wanted to extend the Shop API, we'd use the [`shopApiExtensions` metadata property]({{< relref "vendure-plugin-metadata" >}}#shopapiextensions) instead.
 
 ```TypeScript
 @VendurePlugin({
