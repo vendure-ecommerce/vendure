@@ -47,8 +47,8 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             token: ['', Validators.required],
             pricesIncludeTax: [false],
             currencyCode: [''],
-            defaultShippingZoneId: [''],
-            defaultTaxZoneId: [''],
+            defaultShippingZoneId: ['', Validators.required],
+            defaultTaxZoneId: ['', Validators.required],
         });
     }
 
