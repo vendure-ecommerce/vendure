@@ -62,9 +62,7 @@ function registerCustomFieldsForEntity(
                     const length = customField.length || 255;
                     if (MAX_STRING_LENGTH < length) {
                         throw new Error(
-                            `ERROR: The "length" property of the custom field "${
-                                customField.name
-                            }" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                            `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
                         );
                     }
                     options.length = length;
@@ -119,7 +117,7 @@ function getColumnType(dbEngine: ConnectionOptions['type'], type: CustomFieldTyp
         case 'int':
             return 'int';
         case 'float':
-            return 'double';
+            return 'double precision';
         case 'datetime':
             switch (dbEngine) {
                 case 'postgres':
