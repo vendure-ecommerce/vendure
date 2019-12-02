@@ -1,8 +1,9 @@
 import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { Permission, MutationUpdateGlobalSettingsArgs } from '@vendure/common/lib/generated-types';
+import { MutationUpdateGlobalSettingsArgs, Permission } from '@vendure/common/lib/generated-types';
 
 import { VendureConfig } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
+import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
 import { Allow } from '../../decorators/allow.decorator';
 
@@ -21,8 +22,15 @@ export class GlobalSettingsResolver {
      */
     @ResolveProperty()
     serverConfig() {
+        // Do not expose custom fields marked as "internal".
+        const exposedCustomFieldConfig: CustomFields = {};
+        for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
+            exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields.filter(
+                c => !c.internal,
+            );
+        }
         return {
-            customFieldConfig: this.configService.customFields,
+            customFieldConfig: exposedCustomFieldConfig,
         };
     }
 
