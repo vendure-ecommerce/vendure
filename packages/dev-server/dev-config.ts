@@ -36,7 +36,12 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        Product: [
+            { name: 'rating', type: 'float', readonly: true },
+            { name: 'markup', type: 'float', internal: true },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
@@ -79,7 +84,7 @@ function getDbConfig(): ConnectionOptions {
         case 'postgres':
             console.log('Using postgres connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'postgres',
                 host: '127.0.0.1',
                 port: 5432,
@@ -106,7 +111,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'mysql',
                 host: '192.168.99.100',
                 port: 3306,

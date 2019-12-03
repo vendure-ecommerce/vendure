@@ -1,19 +1,22 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {
+    isEntityCreateOrUpdateMutation,
+    removeReadonlyCustomFields,
+} from '@vendure/admin-ui/src/app/data/utils/remove-readonly-custom-fields';
 import { Apollo } from 'apollo-angular';
 import { DataProxy } from 'apollo-cache';
 import { WatchQueryFetchPolicy } from 'apollo-client';
 import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
-import { merge, Observable } from 'rxjs';
-import { delay, distinctUntilChanged, filter, map, skip, takeUntil } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { CustomFields, GetUserStatus } from '../../common/generated-types';
+import { CustomFields } from '../../common/generated-types';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
-import { addCustomFields } from '../add-custom-fields';
-import { GET_USER_STATUS } from '../definitions/client-definitions';
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
+import { addCustomFields } from '../utils/add-custom-fields';
 
 /**
  * Make the MutationUpdaterFn type-safe until this issue is resolved: https://github.com/apollographql/apollo-link/issues/616
@@ -64,12 +67,25 @@ export class BaseDataService {
         update?: TypedMutationUpdateFn<T>,
     ): Observable<T> {
         const withCustomFields = addCustomFields(mutation, this.customFields);
+        const withoutReadonlyFields = this.removeReadonlyCustomFieldsFromVariables(mutation, variables);
+
         return this.apollo
             .mutate<T, V>({
                 mutation: withCustomFields,
-                variables,
+                variables: withoutReadonlyFields,
                 update: update as any,
             })
             .pipe(map(result => result.data as T));
+    }
+
+    private removeReadonlyCustomFieldsFromVariables<V>(mutation: DocumentNode, variables: V): V {
+        const entity = isEntityCreateOrUpdateMutation(mutation);
+        if (entity) {
+            const customFieldConfig = this.customFields[entity];
+            if (variables && customFieldConfig) {
+                return removeReadonlyCustomFields(variables, customFieldConfig);
+            }
+        }
+        return variables;
     }
 }

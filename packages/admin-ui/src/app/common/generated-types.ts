@@ -487,16 +487,12 @@ export type CreateGroupOptionInput = {
   translations: Array<ProductOptionGroupTranslationInput>,
 };
 
-export type CreateProductCustomFieldsInput = {
-  rating?: Maybe<Scalars['Float']>,
-};
-
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>,
   assetIds?: Maybe<Array<Scalars['ID']>>,
   facetValueIds?: Maybe<Array<Scalars['ID']>>,
   translations: Array<ProductTranslationInput>,
-  customFields?: Maybe<CreateProductCustomFieldsInput>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type CreateProductOptionGroupInput = {
@@ -2508,12 +2504,7 @@ export type Product = Node & {
   facetValues: Array<FacetValue>,
   translations: Array<ProductTranslation>,
   collections: Array<Collection>,
-  customFields?: Maybe<ProductCustomFields>,
-};
-
-export type ProductCustomFields = {
-  __typename?: 'ProductCustomFields',
-  rating?: Maybe<Scalars['Float']>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type ProductFilterParameter = {
@@ -2524,7 +2515,6 @@ export type ProductFilterParameter = {
   name?: Maybe<StringOperators>,
   slug?: Maybe<StringOperators>,
   description?: Maybe<StringOperators>,
-  rating?: Maybe<NumberOperators>,
 };
 
 export type ProductList = PaginatedList & {
@@ -2605,7 +2595,6 @@ export type ProductSortParameter = {
   name?: Maybe<SortOrder>,
   slug?: Maybe<SortOrder>,
   description?: Maybe<SortOrder>,
-  rating?: Maybe<SortOrder>,
 };
 
 export type ProductTranslation = {
@@ -3473,10 +3462,6 @@ export type UpdatePaymentMethodInput = {
   configArgs?: Maybe<Array<ConfigArgInput>>,
 };
 
-export type UpdateProductCustomFieldsInput = {
-  rating?: Maybe<Scalars['Float']>,
-};
-
 export type UpdateProductInput = {
   id: Scalars['ID'],
   enabled?: Maybe<Scalars['Boolean']>,
@@ -3484,7 +3469,7 @@ export type UpdateProductInput = {
   assetIds?: Maybe<Array<Scalars['ID']>>,
   facetValueIds?: Maybe<Array<Scalars['ID']>>,
   translations?: Maybe<Array<ProductTranslationInput>>,
-  customFields?: Maybe<UpdateProductCustomFieldsInput>,
+  customFields?: Maybe<Scalars['JSON']>,
 };
 
 export type UpdateProductOptionGroupInput = {
@@ -4422,7 +4407,7 @@ export type UpdateGlobalSettingsMutationVariables = {
 
 export type UpdateGlobalSettingsMutation = ({ __typename?: 'Mutation' } & { updateGlobalSettings: ({ __typename?: 'GlobalSettings' } & GlobalSettingsFragment) });
 
-export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
+export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type' | 'readonly'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
 
 export type StringCustomFieldFragment = ({ __typename?: 'StringCustomFieldConfig' } & Pick<StringCustomFieldConfig, 'pattern'> & { options: Maybe<Array<({ __typename?: 'StringFieldOption' } & Pick<StringFieldOption, 'value'> & { label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> })>> } & CustomFieldConfigFragment);
 

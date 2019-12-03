@@ -7,7 +7,7 @@ import {
     SelectionNode,
 } from 'graphql';
 
-import { CustomFields } from '../common/generated-types';
+import { CustomFields } from '../../common/generated-types';
 
 /**
  * Given a GraphQL AST (DocumentNode), this function looks for fragment definitions and adds and configured

@@ -26,13 +26,13 @@
         [id]="customField.name"
         [pattern]="customField.pattern"
         [formControl]="formGroup.get(customField.name)"
-        [readonly]="readonly"
+        [readonly]="readonly || customField.readonly"
     />
     <select
         *ngIf="isSelectInput"
         clrSelect
         [formControl]="formGroup.get(customField.name)"
-        [disabled]="readonly"
+        [disabled]="readonly || customField.readonly"
     >
         <option *ngFor="let option of stringOptions" [value]="option.value">
             {{ getLabel(option.value, option.label) }}
@@ -46,7 +46,7 @@
         [max]="max"
         [step]="step"
         [formControl]="formGroup.get(customField.name)"
-        [readonly]="readonly"
+        [readonly]="readonly || customField.readonly"
     />
     <clr-toggle-wrapper *ngIf="customField.type === 'boolean'">
         <input
@@ -54,7 +54,7 @@
             clrToggle
             [id]="customField.name"
             [formControl]="formGroup.get(customField.name)"
-            [readonly]="readonly"
+            [readonly]="readonly || customField.readonly"
         />
     </clr-toggle-wrapper>
     <vdr-datetime-picker
@@ -63,7 +63,7 @@
         [formControl]="formGroup.get(customField.name)"
         [min]="min"
         [max]="max"
-        [readonly]="readonly"
+        [readonly]="readonly || customField.readonly"
     >
 
     </vdr-datetime-picker>

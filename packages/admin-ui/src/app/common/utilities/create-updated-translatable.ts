@@ -28,7 +28,6 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
         translatable.translations.find(t => t.languageCode === languageCode) || defaultTranslation;
     const index = translatable.translations.indexOf(currentTranslation);
     const newTranslation = patchObject(currentTranslation, updatedFields);
-    const customFields = translatable.customFields;
     const newCustomFields: CustomFieldsObject = {};
     const newTranslatedCustomFields: CustomFieldsObject = {};
     if (customFieldConfig && updatedFields.hasOwnProperty('customFields')) {

@@ -1,6 +1,6 @@
 import { DocumentNode, FieldNode, FragmentDefinitionNode } from 'graphql';
 
-import { CustomFieldConfig, CustomFields } from '../common/generated-types';
+import { CustomFieldConfig, CustomFields } from '../../common/generated-types';
 
 import { addCustomFields } from './add-custom-fields';
 

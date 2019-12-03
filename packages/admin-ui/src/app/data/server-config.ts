@@ -1,7 +1,13 @@
 import { Injectable, Injector } from '@angular/core';
 import gql from 'graphql-tag';
 
-import { GetGlobalSettings, GetServerConfig, ServerConfig } from '../common/generated-types';
+import {
+    CustomFieldConfig,
+    CustomFields,
+    GetGlobalSettings,
+    GetServerConfig,
+    ServerConfig,
+} from '../common/generated-types';
 
 import { GET_GLOBAL_SETTINGS, GET_SERVER_CONFIG } from './definitions/settings-definitions';
 import { BaseDataService } from './providers/base-data.service';
@@ -61,6 +67,13 @@ export class ServerConfigService {
     refreshGlobalSettings() {
         return this.baseDataService.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS, {}, 'network-only')
             .single$;
+    }
+
+    /**
+     * Retrieves the custom field configs for the given entity type.
+     */
+    getCustomFieldsFor(type: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
+        return this.serverConfig.customFieldConfig[type] || [];
     }
 
     get serverConfig(): ServerConfig {
