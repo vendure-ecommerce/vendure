@@ -4,6 +4,7 @@ export * from './helpers/utils/patch-entity';
 export * from './helpers/utils/channel-aware-orm-utils';
 export * from './helpers/utils/get-entity-or-throw';
 export * from './helpers/list-query-builder/list-query-builder';
+export * from './helpers/order-calculator/order-calculator';
 export * from './helpers/order-state-machine/order-state';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './services/administrator.service';
