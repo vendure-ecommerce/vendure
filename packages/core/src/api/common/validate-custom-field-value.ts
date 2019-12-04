@@ -22,6 +22,9 @@ export function validateCustomFieldValue(
     value: any,
     languageCode?: LanguageCode,
 ): void {
+    if (config.readonly) {
+        throw new UserInputError('error.field-invalid-readonly', { name: config.name });
+    }
     switch (config.type) {
         case 'string':
         case 'localeString':

@@ -21,8 +21,8 @@ input CreateChannelInput {
     defaultLanguageCode: LanguageCode!
     pricesIncludeTax: Boolean!
     currencyCode: CurrencyCode!
-    defaultTaxZoneId: ID
-    defaultShippingZoneId: ID
+    defaultTaxZoneId: ID!
+    defaultShippingZoneId: ID!
 }
 
 input UpdateChannelInput {

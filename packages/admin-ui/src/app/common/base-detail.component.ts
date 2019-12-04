@@ -68,7 +68,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     protected abstract setFormValues(entity: Entity, languageCode: LanguageCode): void;
 
     protected getCustomFieldConfig(key: Exclude<keyof CustomFields, '__typename'>): CustomFieldConfig[] {
-        return this.serverConfigService.serverConfig.customFieldConfig[key] || [];
+        return this.serverConfigService.getCustomFieldsFor(key);
     }
 
     protected setQueryParam(key: string, value: any) {

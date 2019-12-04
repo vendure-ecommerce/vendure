@@ -3,6 +3,8 @@ interface CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
 }
 
 type StringCustomFieldConfig implements CustomField {
@@ -11,6 +13,8 @@ type StringCustomFieldConfig implements CustomField {
     length: Int
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
     pattern: String
     options: [StringFieldOption!]
 }
@@ -25,6 +29,8 @@ type LocaleStringCustomFieldConfig implements CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
     pattern: String
 }
 type IntCustomFieldConfig implements CustomField {
@@ -32,6 +38,8 @@ type IntCustomFieldConfig implements CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
     min: Int
     max: Int
     step: Int
@@ -41,6 +49,8 @@ type FloatCustomFieldConfig implements CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
     min: Float
     max: Float
     step: Float
@@ -50,6 +60,8 @@ type BooleanCustomFieldConfig implements CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
 }
 """
 Expects the same validation formats as the <input type="datetime-local"> HTML element.
@@ -60,6 +72,8 @@ type DateTimeCustomFieldConfig implements CustomField {
     type: String!
     label: [LocalizedString!]
     description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
     min: String
     max: String
     step: Int

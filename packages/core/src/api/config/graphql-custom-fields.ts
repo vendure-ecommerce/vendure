@@ -33,12 +33,14 @@ export function addGraphQLCustomFields(
     for (const entityName of Object.keys(customFieldConfig)) {
         const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
             config => {
-                return publicOnly === true ? config.public !== false : true;
+                return !config.internal && (publicOnly === true ? config.public !== false : true);
             },
         );
 
         const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
         const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
+        const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
+        const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
@@ -73,10 +75,10 @@ export function addGraphQLCustomFields(
         }
 
         if (schema.getType(`Create${entityName}Input`)) {
-            if (nonLocaleStringFields.length) {
+            if (writeableNonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Create${entityName}CustomFieldsInput {
-                       ${mapToFields(nonLocaleStringFields, getGraphQlType)}
+                       ${mapToFields(writeableNonLocaleStringFields, getGraphQlType)}
                     }
 
                     extend input Create${entityName}Input {
@@ -93,10 +95,10 @@ export function addGraphQLCustomFields(
         }
 
         if (schema.getType(`Update${entityName}Input`)) {
-            if (nonLocaleStringFields.length) {
+            if (writeableNonLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input Update${entityName}CustomFieldsInput {
-                       ${mapToFields(nonLocaleStringFields, getGraphQlType)}
+                       ${mapToFields(writeableNonLocaleStringFields, getGraphQlType)}
                     }
 
                     extend input Update${entityName}Input {
@@ -128,11 +130,11 @@ export function addGraphQLCustomFields(
                 `;
         }
 
-        if (localeStringFields && schema.getType(`${entityName}TranslationInput`)) {
-            if (localeStringFields.length) {
+        if (writeableLocaleStringFields && schema.getType(`${entityName}TranslationInput`)) {
+            if (writeableLocaleStringFields.length) {
                 customFieldTypeDefs += `
                     input ${entityName}TranslationCustomFieldsInput {
-                        ${mapToFields(localeStringFields, getGraphQlType)}
+                        ${mapToFields(writeableLocaleStringFields, getGraphQlType)}
                     }
 
                     extend input ${entityName}TranslationInput {

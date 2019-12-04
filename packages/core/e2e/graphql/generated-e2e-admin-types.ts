@@ -174,6 +174,8 @@ export type BooleanCustomFieldConfig = CustomField & {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
 };
 
 export type BooleanOperators = {
@@ -425,8 +427,8 @@ export type CreateChannelInput = {
     defaultLanguageCode: LanguageCode;
     pricesIncludeTax: Scalars['Boolean'];
     currencyCode: CurrencyCode;
-    defaultTaxZoneId?: Maybe<Scalars['ID']>;
-    defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    defaultTaxZoneId: Scalars['ID'];
+    defaultShippingZoneId: Scalars['ID'];
 };
 
 export type CreateCollectionInput = {
@@ -975,6 +977,8 @@ export type CustomField = {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
 };
 
 export type CustomFieldConfig =
@@ -1023,6 +1027,8 @@ export type DateTimeCustomFieldConfig = CustomField & {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
     min?: Maybe<Scalars['String']>;
     max?: Maybe<Scalars['String']>;
     step?: Maybe<Scalars['Int']>;
@@ -1145,6 +1151,8 @@ export type FloatCustomFieldConfig = CustomField & {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
     min?: Maybe<Scalars['Float']>;
     max?: Maybe<Scalars['Float']>;
     step?: Maybe<Scalars['Float']>;
@@ -1238,6 +1246,8 @@ export type IntCustomFieldConfig = CustomField & {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
     min?: Maybe<Scalars['Int']>;
     max?: Maybe<Scalars['Int']>;
     step?: Maybe<Scalars['Int']>;
@@ -1650,6 +1660,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
     pattern?: Maybe<Scalars['String']>;
 };
 
@@ -3102,6 +3114,8 @@ export type StringCustomFieldConfig = CustomField & {
     length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
     pattern?: Maybe<Scalars['String']>;
     options?: Maybe<Array<StringFieldOption>>;
 };
@@ -3426,6 +3440,18 @@ export type UpdateAdministratorMutationVariables = {
 
 export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
     updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
+};
+
+export type Q1QueryVariables = {};
+
+export type Q1Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+};
+
+export type Q2QueryVariables = {};
+
+export type Q2Query = { __typename?: 'Query' } & {
+    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
 };
 
 export type CanCreateCustomerMutationVariables = {
@@ -5127,6 +5153,18 @@ export namespace UpdateAdministrator {
     export type Variables = UpdateAdministratorMutationVariables;
     export type Mutation = UpdateAdministratorMutation;
     export type UpdateAdministrator = AdministratorFragment;
+}
+
+export namespace Q1 {
+    export type Variables = Q1QueryVariables;
+    export type Query = Q1Query;
+    export type Product = NonNullable<Q1Query['product']>;
+}
+
+export namespace Q2 {
+    export type Variables = Q2QueryVariables;
+    export type Query = Q2Query;
+    export type Product = NonNullable<Q2Query['product']>;
 }
 
 export namespace CanCreateCustomer {

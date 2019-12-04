@@ -1,6 +1,5 @@
-import { LanguageCode } from '../../common/lib/generated-types';
-import { Omit } from '../../common/lib/omit';
-import { Type } from '../../common/lib/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { Type } from '@vendure/common/lib/shared-types';
 
 import { EmailEventListener, EmailTemplateConfig, SetTemplateVarsFn } from './event-listener';
 import { EventWithAsyncData, EventWithContext, LoadDataFn } from './types';

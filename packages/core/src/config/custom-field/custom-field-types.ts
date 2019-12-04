@@ -75,6 +75,8 @@ export type CustomFieldConfig =
  * * `label?: LocalizedString[]`: An array of localized labels for the field.
  * * `description?: LocalizedString[]`: An array of localized descriptions for the field.
  * * `public?: boolean`: Whether or not the custom field is available via the Shop API. Defaults to `true`
+ * * `readonly?: boolean`: Whether or not the custom field can be updated via the GraphQL APIs. Defaults to `false`
+ * * `internal?: boolean`: Whether or not the custom field is exposed at all via the GraphQL APIs. Defaults to `false`
  * * `defaultValue?: any`: The default value when an Entity is created with this field.
  * * `nullable?: boolean`: Whether the field is nullable in the database. If set to `false`, then a `defaultValue` should be provided.
  * * `validate?: (value: any) => string | LocalizedString[] | void`: A custom validation function.

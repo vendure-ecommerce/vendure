@@ -413,6 +413,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
             languageCode
             value
         }
+        readonly
     }
 `;
 

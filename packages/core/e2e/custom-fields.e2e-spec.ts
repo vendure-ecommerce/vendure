@@ -85,11 +85,28 @@ const customConfig = {
                     name: 'longString',
                     type: 'string',
                 },
+                {
+                    name: 'readonlyString',
+                    type: 'string',
+                    readonly: true,
+                },
+                {
+                    name: 'internalString',
+                    type: 'string',
+                    internal: true,
+                },
             ],
             Facet: [
                 {
                     name: 'translated',
                     type: 'localeString',
+                },
+            ],
+            Customer: [
+                {
+                    name: 'score',
+                    type: 'int',
+                    readonly: true,
                 },
             ],
         } as CustomFields,
@@ -152,6 +169,9 @@ describe('Custom fields', () => {
                 { name: 'nonPublic', type: 'string' },
                 { name: 'public', type: 'string' },
                 { name: 'longString', type: 'string' },
+                { name: 'readonlyString', type: 'string' },
+                // The internal type should not be exposed at all
+                // { name: 'internalString', type: 'string' },
             ],
         });
     });
@@ -243,6 +263,50 @@ describe('Custom fields', () => {
                 }
             `);
         }, 'NOT NULL constraint failed: product.customFieldsNotnullable'),
+    );
+
+    it(
+        'thows on attempt to update readonly field',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { readonlyString: "hello" } }) {
+                        id
+                    }
+                }
+            `);
+        }, `Field "readonlyString" is not defined by type UpdateProductCustomFieldsInput`),
+    );
+
+    it(
+        'thows on attempt to update readonly field when no other custom fields defined',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query(gql`
+                mutation {
+                    updateCustomer(input: { id: "T_1", customFields: { score: 5 } }) {
+                        id
+                    }
+                }
+            `);
+        }, `The custom field 'score' is readonly`),
+    );
+
+    it(
+        'thows on attempt to create readonly field',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query(gql`
+                mutation {
+                    createProduct(
+                        input: {
+                            translations: [{ languageCode: en, name: "test" }]
+                            customFields: { readonlyString: "hello" }
+                        }
+                    ) {
+                        id
+                    }
+                }
+            `);
+        }, `Field "readonlyString" is not defined by type CreateProductCustomFieldsInput`),
     );
 
     it('string length allows long strings', async () => {
@@ -431,6 +495,38 @@ describe('Custom fields', () => {
 
             expect(product.customFields.public).toBe('ho!');
         });
+
+        it(
+            'internal throws for Shop API',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(gql`
+                    query {
+                        product(id: "T_1") {
+                            id
+                            customFields {
+                                internalString
+                            }
+                        }
+                    }
+                `);
+            }, `Cannot query field "internalString" on type "ProductCustomFields"`),
+        );
+
+        it(
+            'internal throws for Admin API',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    query {
+                        product(id: "T_1") {
+                            id
+                            customFields {
+                                internalString
+                            }
+                        }
+                    }
+                `);
+            }, `Cannot query field "internalString" on type "ProductCustomFields"`),
+        );
     });
 
     describe('sort & filter', () => {
@@ -457,5 +553,31 @@ describe('Custom fields', () => {
 
             expect(products.totalItems).toBe(1);
         });
+
+        it(
+            'cannot filter by internal field in Admin API',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    query {
+                        products(options: { filter: { internalString: { contains: "hello" } } }) {
+                            totalItems
+                        }
+                    }
+                `);
+            }, `Field "internalString" is not defined by type ProductFilterParameter`),
+        );
+
+        it(
+            'cannot filter by internal field in Shop API',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query(gql`
+                    query {
+                        products(options: { filter: { internalString: { contains: "hello" } } }) {
+                            totalItems
+                        }
+                    }
+                `);
+            }, `Field "internalString" is not defined by type ProductFilterParameter`),
+        );
     });
 });

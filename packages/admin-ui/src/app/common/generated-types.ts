@@ -175,6 +175,8 @@ export type BooleanCustomFieldConfig = CustomField & {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
 };
 
 export type BooleanOperators = {
@@ -426,8 +428,8 @@ export type CreateChannelInput = {
   defaultLanguageCode: LanguageCode,
   pricesIncludeTax: Scalars['Boolean'],
   currencyCode: CurrencyCode,
-  defaultTaxZoneId?: Maybe<Scalars['ID']>,
-  defaultShippingZoneId?: Maybe<Scalars['ID']>,
+  defaultTaxZoneId: Scalars['ID'],
+  defaultShippingZoneId: Scalars['ID'],
 };
 
 export type CreateCollectionInput = {
@@ -984,6 +986,8 @@ export type CustomField = {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
 };
 
 export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
@@ -1027,6 +1031,8 @@ export type DateTimeCustomFieldConfig = CustomField & {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
   min?: Maybe<Scalars['String']>,
   max?: Maybe<Scalars['String']>,
   step?: Maybe<Scalars['Int']>,
@@ -1149,6 +1155,8 @@ export type FloatCustomFieldConfig = CustomField & {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
   min?: Maybe<Scalars['Float']>,
   max?: Maybe<Scalars['Float']>,
   step?: Maybe<Scalars['Float']>,
@@ -1242,6 +1250,8 @@ export type IntCustomFieldConfig = CustomField & {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
   min?: Maybe<Scalars['Int']>,
   max?: Maybe<Scalars['Int']>,
   step?: Maybe<Scalars['Int']>,
@@ -1655,6 +1665,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
   type: Scalars['String'],
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
   pattern?: Maybe<Scalars['String']>,
 };
 
@@ -3250,6 +3262,8 @@ export type StringCustomFieldConfig = CustomField & {
   length?: Maybe<Scalars['Int']>,
   label?: Maybe<Array<LocalizedString>>,
   description?: Maybe<Array<LocalizedString>>,
+  readonly?: Maybe<Scalars['Boolean']>,
+  internal?: Maybe<Scalars['Boolean']>,
   pattern?: Maybe<Scalars['String']>,
   options?: Maybe<Array<StringFieldOption>>,
 };
@@ -4393,7 +4407,7 @@ export type UpdateGlobalSettingsMutationVariables = {
 
 export type UpdateGlobalSettingsMutation = ({ __typename?: 'Mutation' } & { updateGlobalSettings: ({ __typename?: 'GlobalSettings' } & GlobalSettingsFragment) });
 
-export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
+export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type' | 'readonly'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
 
 export type StringCustomFieldFragment = ({ __typename?: 'StringCustomFieldConfig' } & Pick<StringCustomFieldConfig, 'pattern'> & { options: Maybe<Array<({ __typename?: 'StringFieldOption' } & Pick<StringFieldOption, 'value'> & { label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> })>> } & CustomFieldConfigFragment);
 

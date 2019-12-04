@@ -640,6 +640,8 @@ describe('Default search plugin', () => {
                         defaultLanguageCode: LanguageCode.en,
                         currencyCode: CurrencyCode.GBP,
                         pricesIncludeTax: true,
+                        defaultTaxZoneId: 'T_1',
+                        defaultShippingZoneId: 'T_1',
                     },
                 });
                 secondChannel = createChannel;
