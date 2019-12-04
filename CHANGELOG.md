@@ -1,3 +1,21 @@
+## <small>0.6.4 (2019-12-04)</small>
+
+
+#### Fixes
+
+* **admin-ui** Correct bad imports ([3cd74ab](https://github.com/vendure-ecommerce/vendure/commit/3cd74ab))
+* **admin-ui** Make Channel zones required in ChannelDetailComponent ([ba27360](https://github.com/vendure-ecommerce/vendure/commit/ba27360)), closes [#218](https://github.com/vendure-ecommerce/vendure/issues/218)
+* **admin-ui** Order detail - fix broken app when no featuredAsset (#219) ([e0bfa4d](https://github.com/vendure-ecommerce/vendure/commit/e0bfa4d)), closes [#219](https://github.com/vendure-ecommerce/vendure/issues/219)
+* **core** Enforce Channels created with a default tax/shipping Zone ([f57fb51](https://github.com/vendure-ecommerce/vendure/commit/f57fb51)), closes [#218](https://github.com/vendure-ecommerce/vendure/issues/218)
+* **core** Use "double precision" as column type for float custom fields ([8f2d034](https://github.com/vendure-ecommerce/vendure/commit/8f2d034)), closes [#217](https://github.com/vendure-ecommerce/vendure/issues/217)
+* **email-plugin** Fix incorrect relative imports ([561c793](https://github.com/vendure-ecommerce/vendure/commit/561c793))
+
+#### Features
+
+* **admin-ui** Make readonly custom fields readonly in the UI ([cf1d7f1](https://github.com/vendure-ecommerce/vendure/commit/cf1d7f1)), closes [#216](https://github.com/vendure-ecommerce/vendure/issues/216)
+* **core** Export OrderCalculator helper service ([6340045](https://github.com/vendure-ecommerce/vendure/commit/6340045))
+* **core** Implement internal and readonly CustomField properties ([c2ae44f](https://github.com/vendure-ecommerce/vendure/commit/c2ae44f)), closes [#216](https://github.com/vendure-ecommerce/vendure/issues/216)
+
 ## <small>0.6.3 (2019-11-26)</small>
 
 *Note: only the `@vendure/email-plugin` package was updated in this release, as v0.6.2 included a critical bug which prevented installation via `@vendure/create`*
