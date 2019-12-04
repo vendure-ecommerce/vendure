@@ -1,9 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-    isEntityCreateOrUpdateMutation,
-    removeReadonlyCustomFields,
-} from '@vendure/admin-ui/src/app/data/utils/remove-readonly-custom-fields';
 import { Apollo } from 'apollo-angular';
 import { DataProxy } from 'apollo-cache';
 import { WatchQueryFetchPolicy } from 'apollo-client';
@@ -17,6 +13,10 @@ import { LocalStorageService } from '../../core/providers/local-storage/local-st
 import { QueryResult } from '../query-result';
 import { ServerConfigService } from '../server-config';
 import { addCustomFields } from '../utils/add-custom-fields';
+import {
+    isEntityCreateOrUpdateMutation,
+    removeReadonlyCustomFields,
+} from '../utils/remove-readonly-custom-fields';
 
 /**
  * Make the MutationUpdaterFn type-safe until this issue is resolved: https://github.com/apollographql/apollo-link/issues/616
