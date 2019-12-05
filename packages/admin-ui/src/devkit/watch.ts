@@ -31,7 +31,7 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
     createExtensionsModules(extensions);
 
     const config = isInVendureMonorepo() ? 'plugin-dev' : 'plugin';
-    const buildProcess = spawn('yarn', ['ng', 'serve', `-c=${config}`, `--port=${port}`], {
+    const buildProcess = spawn('yarn', ['ng', 'serve', `-c=${config}`, `--port=${port}`, `--poll=1000`], {
         cwd,
         shell: true,
         stdio: 'inherit',
