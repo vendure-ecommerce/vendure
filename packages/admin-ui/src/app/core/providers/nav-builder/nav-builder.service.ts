@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, scan, shareReplay } from 'rxjs/operators';
 
+import { Permission } from '../../../common/generated-types';
+
 import { ActionBarItem, NavMenuItem, NavMenuSection, RouterLinkDefinition } from './nav-builder-types';
 
 /**
@@ -94,6 +96,9 @@ export class NavBuilderService {
         const combinedConfig$ = combineLatest(this.initialNavMenuConfig$, sectionAdditions$).pipe(
             map(([initalConfig, additions]) => {
                 for (const { config, before } of additions) {
+                    if (!config.requiresPermission) {
+                        config.requiresPermission = Permission.Authenticated;
+                    }
                     const index = initalConfig.findIndex(c => c.id === before);
                     if (-1 < index) {
                         initalConfig.splice(index, 0, config);
