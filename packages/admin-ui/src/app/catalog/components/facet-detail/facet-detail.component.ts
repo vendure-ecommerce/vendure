@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
@@ -30,13 +30,11 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fragment>
-    implements OnInit, OnDestroy {
-    facet$: Observable<FacetWithValues.Fragment>;
-    values$: Observable<FacetWithValues.Values[]>;
+export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fragment> implements OnDestroy {
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
+    values: Array<FacetWithValues.Values | { name: string; code: string }>;
 
     constructor(
         router: Router,
@@ -62,12 +60,6 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             }),
             values: this.formBuilder.array([]),
         });
-    }
-
-    ngOnInit() {
-        this.init();
-        this.facet$ = this.entity$;
-        this.values$ = this.facet$.pipe(map(facet => facet.values));
     }
 
     ngOnDestroy() {
@@ -107,7 +99,14 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     addFacetValue() {
         const valuesFormArray = this.detailForm.get('values') as FormArray | null;
         if (valuesFormArray) {
-            valuesFormArray.insert(valuesFormArray.length, this.formBuilder.group({ name: '', code: '' }));
+            valuesFormArray.insert(
+                valuesFormArray.length,
+                this.formBuilder.group({
+                    name: ['', Validators.required],
+                    code: '',
+                }),
+            );
+            this.values.push({ name: '', code: '' });
         }
     }
 
@@ -116,7 +115,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         if (!facetForm || !facetForm.dirty) {
             return;
         }
-        combineLatest(this.facet$, this.languageCode$)
+        combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
                 mergeMap(([facet, languageCode]) => {
@@ -144,7 +143,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
     }
 
     save() {
-        combineLatest(this.facet$, this.languageCode$)
+        combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
                 mergeMap(([facet, languageCode]) => {
@@ -171,7 +170,11 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                                 translations: [{ name: c.value.name, languageCode }],
                             }));
                         if (newValues.length) {
-                            updateOperations.push(this.dataService.facet.createFacetValues(newValues));
+                            updateOperations.push(
+                                this.dataService.facet
+                                    .createFacetValues(newValues)
+                                    .pipe(switchMap(() => this.dataService.facet.getFacet(this.id).single$)),
+                            );
                         }
                         const updatedValues = this.getUpdatedFacetValues(
                             facet,
@@ -200,7 +203,16 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             );
     }
 
-    deleteFacetValue(facetValueId: string) {
+    deleteFacetValue(facetValueId: string | undefined, index: number) {
+        if (!facetValueId) {
+            // deleting a newly-added (not persisted) FacetValue
+            const valuesFormArray = this.detailForm.get('values') as FormArray | null;
+            if (valuesFormArray) {
+                valuesFormArray.removeAt(index);
+            }
+            this.values.splice(index, 1);
+            return;
+        }
         this.showModalAndDelete(facetValueId)
             .pipe(
                 switchMap(response => {
@@ -276,20 +288,18 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             }
         }
 
-        const valuesFormArray = this.detailForm.get('values') as FormArray;
+        const currentValuesFormArray = this.detailForm.get('values') as FormArray;
+        currentValuesFormArray.clear();
+        this.values = facet.values;
         facet.values.forEach((value, i) => {
-            const valueTranslation = value.translations.find(t => t.languageCode === languageCode);
+            const valueTranslation =
+                value.translations && value.translations.find(t => t.languageCode === languageCode);
             const group = {
                 id: value.id,
                 code: value.code,
                 name: valueTranslation ? valueTranslation.name : '',
             };
-            const existing = valuesFormArray.at(i);
-            if (existing) {
-                existing.patchValue(group);
-            } else {
-                valuesFormArray.insert(i, this.formBuilder.group(group));
-            }
+            currentValuesFormArray.insert(i, this.formBuilder.group(group));
             if (this.customValueFields.length) {
                 let customValueFieldsGroup = this.detailForm.get(['values', i, 'customFields']) as FormGroup;
                 if (!customValueFieldsGroup) {
