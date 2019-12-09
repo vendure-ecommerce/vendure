@@ -43,6 +43,7 @@ import {
     DropdownMenuComponent,
     DropdownTriggerDirective,
     EntityInfoComponent,
+    ExtensionHostComponent,
     FacetValueChipComponent,
     FacetValueSelectorComponent,
     FileSizePipe,
@@ -140,6 +141,7 @@ const DECLARATIONS = [
     ChannelAssignmentControlComponent,
     ChannelLabelPipe,
     IfDefaultChannelActiveDirective,
+    ExtensionHostComponent,
 ];
 
 @NgModule({

@@ -4,6 +4,7 @@ import * as path from 'path';
 
 const EXTENSIONS_DIR = path.join(__dirname, '../src/app/extensions');
 const EXTENSIONS_MODULES_DIR = 'modules';
+const STATIC_ASSETS_OUTPUT_DIR = path.join(EXTENSIONS_DIR, '__static-assets__');
 const lazyExtensionsModuleFile = path.join(EXTENSIONS_DIR, 'lazy-extensions.module.ts');
 const sharedExtensionsModuleFile = path.join(EXTENSIONS_DIR, 'shared-extensions.module.ts');
 
@@ -20,6 +21,7 @@ export function isInVendureMonorepo(): boolean {
  */
 export function deleteExistingExtensionModules() {
     fs.removeSync(path.join(EXTENSIONS_DIR, EXTENSIONS_MODULES_DIR));
+    fs.removeSync(STATIC_ASSETS_OUTPUT_DIR);
 }
 
 /**
@@ -31,6 +33,21 @@ export function copyExtensionModules(extensions: Array<Required<AdminUiExtension
         const dirName = path.basename(path.dirname(extension.extensionPath));
         const dest = getModuleOutputDir(extension);
         fs.copySync(extension.extensionPath, dest);
+        if (Array.isArray(extension.staticAssets)) {
+            for (const asset of extension.staticAssets) {
+                copyStaticAsset(asset);
+            }
+        }
+    }
+}
+
+export function copyStaticAsset(staticAssetPath: string) {
+    const stats = fs.statSync(staticAssetPath);
+    if (stats.isDirectory()) {
+        const assetDirname = path.basename(staticAssetPath);
+        fs.copySync(staticAssetPath, path.join(STATIC_ASSETS_OUTPUT_DIR, assetDirname));
+    } else {
+        fs.copySync(staticAssetPath, STATIC_ASSETS_OUTPUT_DIR);
     }
 }
 

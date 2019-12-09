@@ -45,6 +45,8 @@ export { LanguageSelectorComponent } from './components/language-selector/langua
 export { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 export { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
 export { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
+export { ExtensionHostComponent } from './components/extension-host/extension-host.component';
+export * from './components/extension-host/extension-host-config';
 export { ModalDialogComponent } from './components/modal-dialog/modal-dialog.component';
 export { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 export { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';

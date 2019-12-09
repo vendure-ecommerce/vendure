@@ -6,6 +6,7 @@ import * as path from 'path';
 
 import {
     copyExtensionModules,
+    copyStaticAsset,
     createExtensionsModules,
     deleteExistingExtensionModules,
     getModuleOutputDir,
@@ -53,6 +54,14 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
         watcher.on('change', filePath => {
             const extension = extensions.find(e => filePath.includes(e.extensionPath));
             if (extension) {
+                if (extension.staticAssets) {
+                    for (const assetPath of extension.staticAssets) {
+                        if (filePath.includes(assetPath)) {
+                            copyStaticAsset(assetPath);
+                            return;
+                        }
+                    }
+                }
                 const outputDir = getModuleOutputDir(extension);
                 const filePart = path.relative(extension.extensionPath, filePath);
                 const dest = path.join(outputDir, filePart);
