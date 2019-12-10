@@ -16,6 +16,8 @@ let targetOrigin = 'http://localhost:3000';
  * `targetOrigin`. The Vendure ui-devkit uses the postMessage API to
  * enable cross-frame and cross-origin communication between the ui extension code and the Admin UI
  * app. The `targetOrigin` is a security feature intended to provide control over where messages are sent.
+ *
+ * @docsCategory ui-devkit
  */
 export function setTargetOrigin(value: string) {
     targetOrigin = value;
@@ -24,6 +26,8 @@ export function setTargetOrigin(value: string) {
 /**
  * @description
  * Perform a GraphQL query and returns either an Observable or a Promise of the result.
+ *
+ * @docsCategory ui-devkit
  */
 export function graphQlQuery<T, V extends { [key: string]: any }>(
     document: string,
@@ -47,6 +51,8 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
 /**
  * @description
  * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
+ *
+ * @docsCategory ui-devkit
  */
 export function graphQlMutation<T, V extends { [key: string]: any }>(
     document: string,
@@ -69,6 +75,8 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
 /**
  * @description
  * Display a toast notification.
+ *
+ * @docsCategory ui-devkit
  */
 export function notify(options: NotificationMessage['data']) {
     sendMessage('notification', options).toPromise();
