@@ -5,6 +5,7 @@ import { merge, Observer, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { assertNever } from 'shared/shared-utils';
 
+import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class ExtensionHostService implements OnDestroy {
     private cancellationMessage$ = new Subject<string>();
     private destroyMessage$ = new Subject<void>();
 
-    constructor(private dataService: DataService) {}
+    constructor(private dataService: DataService, private notificationService: NotificationService) {}
 
     init(extensionWindow: Window) {
         this.extensionWindow = extensionWindow;
@@ -55,6 +56,10 @@ export class ExtensionHostService implements OnDestroy {
                         .mutate(parse(document), variables)
                         .pipe(takeUntil(end$))
                         .subscribe(this.createObserver(data.requestId, origin));
+                    break;
+                }
+                case 'notification': {
+                    this.notificationService.notify(data.data);
                     break;
                 }
                 default:

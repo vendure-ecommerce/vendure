@@ -2,6 +2,7 @@ import {
     BaseExtensionMessage,
     ExtensionMesssage,
     MessageResponse,
+    NotificationMessage,
     WatchQueryFetchPolicy,
 } from '@vendure/common/lib/extension-host-types';
 import { Observable } from 'rxjs';
@@ -10,6 +11,7 @@ import { take } from 'rxjs/operators';
 let targetOrigin = 'http://localhost:3000';
 
 /**
+ * @description
  * Set the [window.postMessage API](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)
  * `targetOrigin`. The Vendure ui-devkit uses the postMessage API to
  * enable cross-frame and cross-origin communication between the ui extension code and the Admin UI
@@ -20,6 +22,7 @@ export function setTargetOrigin(value: string) {
 }
 
 /**
+ * @description
  * Perform a GraphQL query and returns either an Observable or a Promise of the result.
  */
 export function graphQlQuery<T, V extends { [key: string]: any }>(
@@ -42,6 +45,7 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
 }
 
 /**
+ * @description
  * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
  */
 export function graphQlMutation<T, V extends { [key: string]: any }>(
@@ -60,6 +64,14 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
                 .then(...args),
         stream: result$,
     };
+}
+
+/**
+ * @description
+ * Display a toast notification.
+ */
+export function notify(options: NotificationMessage['data']) {
+    sendMessage('notification', options).toPromise();
 }
 
 function sendMessage<T extends ExtensionMesssage>(type: T['type'], data: T['data']): Observable<any> {

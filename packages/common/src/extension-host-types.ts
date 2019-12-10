@@ -24,6 +24,16 @@ export interface MutationMessage extends BaseExtensionMessage {
     };
 }
 
+export interface NotificationMessage extends BaseExtensionMessage {
+    type: 'notification';
+    data: {
+        message: string;
+        translationVars?: { [key: string]: string | number };
+        type?: 'info' | 'success' | 'error' | 'warning';
+        duration?: number;
+    };
+}
+
 export interface CancellationMessage extends BaseExtensionMessage {
     type: 'cancellation';
     data: null;
@@ -34,7 +44,12 @@ export interface DestroyMessage extends BaseExtensionMessage {
     data: null;
 }
 
-export type ExtensionMesssage = QueryMessage | MutationMessage | CancellationMessage | DestroyMessage;
+export type ExtensionMesssage =
+    | QueryMessage
+    | MutationMessage
+    | NotificationMessage
+    | CancellationMessage
+    | DestroyMessage;
 
 export interface MessageResponse {
     requestId: string;
