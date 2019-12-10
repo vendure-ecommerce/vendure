@@ -39,10 +39,15 @@ export function copyExtensionModules(extensions: Array<Required<AdminUiExtension
             }
         }
     }
-    fs.copySync(
-        require.resolve('@vendure/ui-extension-devkit'),
-        path.join(STATIC_ASSETS_OUTPUT_DIR, 'ui-extension-devkit.js'),
-    );
+}
+
+/**
+ * Copy the @vendure/ui-devkit files to the static assets dir.
+ */
+export function copyUiDevkit() {
+    const devkitDir = path.join(STATIC_ASSETS_OUTPUT_DIR, 'devkit');
+    fs.ensureDirSync(devkitDir);
+    fs.copySync(require.resolve('@vendure/ui-devkit'), path.join(devkitDir, 'ui-devkit.js'));
 }
 
 /**

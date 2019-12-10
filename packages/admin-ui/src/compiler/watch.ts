@@ -7,6 +7,7 @@ import * as path from 'path';
 import {
     copyExtensionModules,
     copyStaticAsset,
+    copyUiDevkit,
     createExtensionsModules,
     deleteExistingExtensionModules,
     getModuleOutputDir,
@@ -29,6 +30,7 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
     restoreExtensionsModules();
     deleteExistingExtensionModules();
     copyExtensionModules(extensions);
+    copyUiDevkit();
     createExtensionsModules(extensions);
 
     const config = isInVendureMonorepo() ? 'plugin-dev' : 'plugin';
@@ -37,6 +39,7 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
         shell: true,
         stdio: 'inherit',
     });
+    const devkitPath = require.resolve('@vendure/ui-devkit');
 
     let watcher: FSWatcher | undefined;
     for (const extension of extensions) {
@@ -48,6 +51,11 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
         } else {
             watcher.add(extension.extensionPath);
         }
+    }
+
+    if (watcher) {
+        // watch the ui-devkit package files too
+        watcher.add(devkitPath);
     }
 
     if (watcher) {
@@ -66,6 +74,9 @@ export function watchAdminUiApp(extensions: Array<Required<AdminUiExtension>>, p
                 const filePart = path.relative(extension.extensionPath, filePath);
                 const dest = path.join(outputDir, filePart);
                 fs.copyFile(filePath, dest);
+            }
+            if (filePath.includes(devkitPath)) {
+                copyUiDevkit();
             }
         });
     }

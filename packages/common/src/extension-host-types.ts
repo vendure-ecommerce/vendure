@@ -1,0 +1,44 @@
+export type FetchPolicy = 'cache-first' | 'network-only' | 'cache-only' | 'no-cache' | 'standby';
+export type WatchQueryFetchPolicy = FetchPolicy | 'cache-and-network';
+
+export interface BaseExtensionMessage {
+    requestId: string;
+    type: string;
+    data: any;
+}
+
+export interface QueryMessage extends BaseExtensionMessage {
+    type: 'graphql-query';
+    data: {
+        document: string;
+        variables?: { [key: string]: any };
+        fetchPolicy?: WatchQueryFetchPolicy;
+    };
+}
+
+export interface MutationMessage extends BaseExtensionMessage {
+    type: 'graphql-mutation';
+    data: {
+        document: string;
+        variables?: { [key: string]: any };
+    };
+}
+
+export interface CancellationMessage extends BaseExtensionMessage {
+    type: 'cancellation';
+    data: null;
+}
+
+export interface DestroyMessage extends BaseExtensionMessage {
+    type: 'destroy';
+    data: null;
+}
+
+export type ExtensionMesssage = QueryMessage | MutationMessage | CancellationMessage | DestroyMessage;
+
+export interface MessageResponse {
+    requestId: string;
+    data: any;
+    complete: boolean;
+    error: boolean;
+}

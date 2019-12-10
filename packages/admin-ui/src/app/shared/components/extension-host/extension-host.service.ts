@@ -1,51 +1,83 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
+import { ExtensionMesssage, MessageResponse } from '@vendure/common/lib/extension-host-types';
 import { parse } from 'graphql';
+import { merge, Observer, Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
+import { assertNever } from 'shared/shared-utils';
 
-import { ExtensionMesssage } from './extension-message-types';
+import { DataService } from '../../../data/providers/data.service';
 
 @Injectable()
 export class ExtensionHostService implements OnDestroy {
     private extensionWindow: Window;
+    private cancellationMessage$ = new Subject<string>();
+    private destroyMessage$ = new Subject<void>();
 
     constructor(private dataService: DataService) {}
 
     init(extensionWindow: Window) {
         this.extensionWindow = extensionWindow;
-
         window.addEventListener('message', this.handleMessage);
     }
 
     ngOnDestroy(): void {
         window.removeEventListener('message', this.handleMessage);
+        this.destroyMessage$.next();
     }
 
     private handleMessage = (message: MessageEvent) => {
         const { data, origin } = message;
         if (this.isExtensionMessage(data)) {
+            const cancellation$ = this.cancellationMessage$.pipe(
+                filter(requestId => requestId === data.requestId),
+            );
+            const end$ = merge(cancellation$, this.destroyMessage$);
             switch (data.type) {
-                case 'query': {
+                case 'cancellation': {
+                    this.cancellationMessage$.next(data.requestId);
+                    break;
+                }
+                case 'destroy': {
+                    this.destroyMessage$.next();
+                    break;
+                }
+                case 'graphql-query': {
                     const { document, variables, fetchPolicy } = data.data;
                     this.dataService
                         .query(parse(document), variables, fetchPolicy)
-                        .single$.subscribe(result => this.sendMessage(result, origin, data.requestId));
+                        .stream$.pipe(takeUntil(end$))
+                        .subscribe(this.createObserver(data.requestId, origin));
                     break;
                 }
-                case 'mutation': {
+                case 'graphql-mutation': {
                     const { document, variables } = data.data;
                     this.dataService
                         .mutate(parse(document), variables)
-                        .subscribe(result => this.sendMessage(result, origin, data.requestId));
+                        .pipe(takeUntil(end$))
+                        .subscribe(this.createObserver(data.requestId, origin));
+                    break;
                 }
+                default:
+                    assertNever(data);
             }
         }
     };
 
-    private sendMessage(message: any, origin, requestId: string) {
-        this.extensionWindow.postMessage({ requestId, data: message }, origin);
+    private createObserver(requestId: string, origin: string): Observer<any> {
+        return {
+            next: data => this.sendMessage({ data, error: false, complete: false, requestId }, origin),
+            error: err => this.sendMessage({ data: err, error: true, complete: false, requestId }, origin),
+            complete: () => this.sendMessage({ data: null, error: false, complete: true, requestId }, origin),
+        };
+    }
+
+    private sendMessage(response: MessageResponse, origin: string) {
+        this.extensionWindow.postMessage(response, origin);
     }
 
     private isExtensionMessage(input: any): input is ExtensionMesssage {
-        return input.hasOwnProperty('type') && input.hasOwnProperty('data');
+        return (
+            input.hasOwnProperty('type') && input.hasOwnProperty('data') && input.hasOwnProperty('requestId')
+        );
     }
 }

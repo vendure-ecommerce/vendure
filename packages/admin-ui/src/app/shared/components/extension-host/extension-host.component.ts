@@ -9,7 +9,7 @@ import { ExtensionHostService } from './extension-host.service';
     selector: 'vdr-extension-host',
     templateUrl: './extension-host.component.html',
     styleUrls: ['./extension-host.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.Default,
     providers: [ExtensionHostService],
 })
 export class ExtensionHostComponent implements OnInit {
