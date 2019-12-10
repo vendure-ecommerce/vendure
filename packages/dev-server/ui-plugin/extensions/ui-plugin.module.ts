@@ -1,6 +1,11 @@
 import { Component, NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { ModalService, SharedModule } from '@vendure/admin-ui/src';
+import {
+    ExtensionHostComponent,
+    ExtensionHostConfig,
+    ModalService,
+    SharedModule,
+} from '@vendure/admin-ui/src';
 
 @Component({
     selector: 'plugin-test-component',
@@ -26,15 +31,35 @@ export class TestComponent {
 }
 
 @NgModule({
+    declarations: [TestComponent],
     imports: [
         SharedModule,
         RouterModule.forChild([
             {
-                path: 'test',
-                component: TestComponent,
+                path: 'js-app',
+                component: ExtensionHostComponent,
+                data: {
+                    extensionHostConfig: new ExtensionHostConfig({
+                        extensionUrl: './assets/js-app/index.html',
+                    }),
+                },
+            },
+            {
+                path: 'vue-app',
+                component: ExtensionHostComponent,
+                data: {
+                    breadcrumb: [
+                        {
+                            label: 'Vue.js extension',
+                            link: ['./'],
+                        },
+                    ],
+                    extensionHostConfig: new ExtensionHostConfig({
+                        extensionUrl: './assets/vue-app/index.html',
+                    }),
+                },
             },
         ]),
     ],
-    declarations: [TestComponent],
 })
 export class TestModule {}

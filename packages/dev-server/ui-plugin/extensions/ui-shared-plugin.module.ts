@@ -10,7 +10,6 @@ import {
     NavBuilderService,
     SharedModule,
 } from '@vendure/admin-ui/src';
-import { unique } from '@vendure/common/lib/unique';
 import gql from 'graphql-tag';
 import { Observable, of } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
@@ -142,13 +141,19 @@ export function addNavItems(navBuilder: NavBuilderService) {
         navBuilder.addNavMenuSection(
             {
                 id: 'test-plugin',
-                label: 'Test Plugin',
+                label: 'UI Test Plugin',
                 items: [
                     {
-                        id: 'stats',
-                        label: 'Test',
-                        routerLink: ['/extensions/test'],
-                        icon: 'line-chart',
+                        id: 'js-app',
+                        label: 'Plain JS App',
+                        routerLink: ['/extensions/js-app'],
+                        icon: 'code',
+                    },
+                    {
+                        id: 'vue-app',
+                        label: 'Vue App',
+                        routerLink: ['/extensions/vue-app'],
+                        icon: 'code',
                     },
                 ],
             },
