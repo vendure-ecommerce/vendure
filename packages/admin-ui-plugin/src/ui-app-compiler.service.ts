@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { compileAdminUiApp, watchAdminUiApp, Watcher } from '@vendure/admin-ui/devkit';
+import { compileAdminUiApp, watchAdminUiApp, Watcher } from '@vendure/admin-ui/compiler';
 import { AdminUiExtension } from '@vendure/common/lib/shared-types';
 import { Logger } from '@vendure/core';
 import crypto from 'crypto';
@@ -43,7 +43,7 @@ export class UiAppCompiler {
             const hash = crypto.createHash('sha256');
             hash.update(JSON.stringify(e));
             const id = hash.digest('hex');
-            return { ...e, id };
+            return { staticAssets: [], ...e, id };
         });
     }
 

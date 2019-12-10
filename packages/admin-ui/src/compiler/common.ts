@@ -39,8 +39,17 @@ export function copyExtensionModules(extensions: Array<Required<AdminUiExtension
             }
         }
     }
+    fs.copySync(
+        require.resolve('@vendure/ui-extension-devkit'),
+        path.join(STATIC_ASSETS_OUTPUT_DIR, 'ui-extension-devkit.js'),
+    );
 }
 
+/**
+ * Copies over any files defined by the extensions' `staticAssets` array to the shared
+ * static assets directory. When the app is built by the ng cli, this assets directory is
+ * the copied over to the final static assets location (i.e. http://domain/admin/assets/)
+ */
 export function copyStaticAsset(staticAssetPath: string) {
     const stats = fs.statSync(staticAssetPath);
     if (stats.isDirectory()) {

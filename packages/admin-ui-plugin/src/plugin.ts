@@ -1,4 +1,4 @@
-import { Watcher } from '@vendure/admin-ui/devkit/watch';
+import { Watcher } from '@vendure/admin-ui/compiler/watch';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
 import {

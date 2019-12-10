@@ -14,8 +14,8 @@
 /src/app/extensions/extensions.module.ts.generated
 /src/app/extensions/extensions.module.ts.temp
 
-# compiled devkit files
-/devkit
+# compiled compiler files
+/compiler
 
 # IDEs and editors
 /.idea
