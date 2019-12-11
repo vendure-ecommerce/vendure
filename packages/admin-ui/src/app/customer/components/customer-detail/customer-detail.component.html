@@ -63,7 +63,7 @@
             <vdr-custom-field-control
                 *ngIf="customFieldIsSet(customField.name)"
                 entityName="Customer"
-                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customFieldsFormGroup]="detailForm.get(['customer', 'customFields'])"
                 [customField]="customField"
             ></vdr-custom-field-control>
         </ng-container>

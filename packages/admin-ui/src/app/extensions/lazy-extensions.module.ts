@@ -8,6 +8,8 @@ import { NgModule } from '@angular/core';
  * by a generated module which includes all of the configured extension modules.
  */
 @NgModule({
-    imports: [CommonModule],
+    imports: [
+        CommonModule,
+    ],
 })
 export class LazyExtensionsModule {}

@@ -1,11 +1,11 @@
 {
-  "name": "@vendure/testing",
+  "name": "@vendure/ui-devkit",
   "version": "0.6.5",
-  "description": "End-to-end testing tools for Vendure projects",
+  "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
-    "testing",
-    "e2e"
+    "javascript",
+    "extensions"
   ],
   "author": "Michael Bromley <michael@michaelbromley.co.uk>",
   "homepage": "https://github.com/vendure-ecommerce/vendure#readme",
@@ -23,8 +23,8 @@
     "url": "git+https://github.com/vendure-ecommerce/vendure.git"
   },
   "scripts": {
-    "build": "tsc -p ./tsconfig.build.json",
-    "watch": "tsc -p ./tsconfig.build.json -w",
+    "build": "rimraf ./lib && rollup -c rollup.config.js --configProduction",
+    "watch": "rimraf ./lib && rollup -c rollup.config.js -w",
     "lint": "tslint --fix --project ./"
   },
   "bugs": {
@@ -32,16 +32,16 @@
   },
   "dependencies": {
     "@vendure/common": "^0.6.5",
-    "faker": "^4.1.0",
-    "graphql": "^14.5.8",
-    "graphql-tag": "^2.10.1",
-    "node-fetch": "^2.6.0",
-    "node-libcurl": "^2.0.2",
-    "sql.js": "^1.0.0"
+    "rxjs": "^6.5.3"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^6.0.0",
     "@vendure/core": "^0.6.5",
     "rimraf": "^3.0.0",
+    "rollup": "^1.27.9",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.25.3",
+    "tslib": "^1.10.0",
     "typescript": "^3.6.4"
   }
 }

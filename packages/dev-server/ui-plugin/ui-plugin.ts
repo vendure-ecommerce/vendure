@@ -19,6 +19,10 @@ export class UiPlugin {
                     ngModuleName: 'TestSharedModule',
                 },
             ],
+            staticAssets: [
+                path.join(__dirname, 'extensions/js-app'),
+                path.join(__dirname, 'extensions/vue-app'),
+            ],
         },
     ];
 }

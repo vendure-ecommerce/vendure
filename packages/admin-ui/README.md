@@ -6,6 +6,10 @@ It is an Angular application built with the Angular CLI.
 
 The UI is powered by the [Clarity Design System](https://vmware.github.io/clarity/).
 
+## Compiler
+
+The `/src/compiler` directory contains the code which is used to dynamically compile the Admin UI app with UI extensions. This code is used by the `@vendure/admin-ui-plugin`.
+
 ## Localization
 
 Localization of UI strings is handled by [ngx-translate](http://www.ngx-translate.com/). The translation strings should use the [ICU MessageFormat](http://userguide.icu-project.org/formatparse/messages).

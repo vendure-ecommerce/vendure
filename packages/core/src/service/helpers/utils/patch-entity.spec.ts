@@ -60,4 +60,23 @@ describe('patchEntity()', () => {
             },
         });
     });
+
+    it('handles missing input customFields', () => {
+        const entity: any = {
+            f1: 'f1',
+            customFields: {
+                cf1: 'cf1',
+                cf2: 'cf2',
+            },
+        };
+
+        const result = patchEntity(entity, { f1: 'foo' });
+        expect(result).toEqual({
+            f1: 'foo',
+            customFields: {
+                cf1: 'cf1',
+                cf2: 'cf2',
+            },
+        });
+    });
 });

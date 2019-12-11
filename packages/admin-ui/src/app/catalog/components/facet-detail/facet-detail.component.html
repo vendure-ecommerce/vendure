@@ -105,7 +105,7 @@
             <tbody>
                 <tr
                     class="facet-value"
-                    *ngFor="let value of values$ | async; let i = index"
+                    *ngFor="let value of values; let i = index"
                     [formGroupName]="i"
                 >
                     <td class="align-middle">
@@ -141,7 +141,7 @@
                                 <button
                                     type="button"
                                     class="delete-button"
-                                    (click)="deleteFacetValue(facet.values[i].id)"
+                                    (click)="deleteFacetValue(facet.values[i]?.id, i)"
                                     [disabled]="!('UpdateCatalog' | hasPermission)"
                                     vdrDropdownItem
                                 >

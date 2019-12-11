@@ -7,7 +7,7 @@ export { NotificationService } from './app/core/providers/notification/notificat
 export { DataModule } from './app/data/data.module';
 export { DataService } from './app/data/providers/data.service';
 export { ServerConfigService } from './app/data/server-config';
-export { ModalService } from './app/shared/providers/modal/modal.service';
+export * from './app/shared/providers/modal/modal.service';
 export { SharedModule } from './app/shared/shared.module';
 export { NavBuilderService } from './app/core/providers/nav-builder/nav-builder.service';
 export { BaseListComponent } from './app/common/base-list.component';

@@ -25,6 +25,7 @@ const VALID_SCOPES: string[] = [
     'email-plugin',
     'email',
     'testing',
+    'ui-devkit',
 ];
 
 const mainTemplate = fs.readFileSync(path.join(__dirname, 'template.hbs'), 'utf-8');

@@ -22,7 +22,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
     ? {
           [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
               ? NonNullable<T[P]>
-              : DeepRequired<NonNullable<T[P]>, U>
+              : DeepRequired<NonNullable<T[P]>, U>;
       }
     : T;
 // tslint:enable:ban-types
@@ -121,6 +121,13 @@ export interface AdminUiExtension {
      * One or more Angular modules which extend the default Admin UI.
      */
     ngModules: AdminUiExtensionModule[];
+
+    /**
+     * @description
+     * Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
+     * directory.
+     */
+    staticAssets?: string[];
 }
 
 /**

@@ -3,15 +3,15 @@ import path from 'path';
 import readline from 'readline';
 
 export type DataPoint = {
-    type: 'Point',
+    type: 'Point';
     data: {
         time: string;
         value: number;
-    },
+    };
     metric: string;
 };
 
-export type TimeSeriesPoint = { timestamp: number; value: number; };
+export type TimeSeriesPoint = { timestamp: number; value: number };
 
 export type LoadTestSummary = {
     timestamp: string;
@@ -28,20 +28,19 @@ export type LoadTestSummary = {
         p90: number;
         p95: number;
         p99: number;
-    },
+    };
     requestDurationTimeSeries: TimeSeriesPoint[];
     concurrentUsersTimeSeries: TimeSeriesPoint[];
+    requestCountTimeSeries: TimeSeriesPoint[];
 };
 
 if (require.main === module) {
     const resultsFile = process.argv[2];
-    generateSummary(resultsFile)
-        .then(result => {
-            // tslint:disable-next-line:no-console
-            console.log(JSON.stringify(result, null, 2));
-            process.exit(0);
-        });
-
+    generateSummary(resultsFile).then(result => {
+        // tslint:disable-next-line:no-console
+        console.log(JSON.stringify(result, null, 2));
+        process.exit(0);
+    });
 }
 
 /**
@@ -61,6 +60,7 @@ export async function generateSummary(rawResultsFile: string): Promise<LoadTestS
     const durations: number[] = [];
     const requestDurationTimeSeries: TimeSeriesPoint[] = [];
     const concurrentUsersTimeSeries: TimeSeriesPoint[] = [];
+    const requestCountTimeSeries: TimeSeriesPoint[] = [];
 
     return new Promise((resolve, reject) => {
         lineReader.on('line', line => {
@@ -68,11 +68,15 @@ export async function generateSummary(rawResultsFile: string): Promise<LoadTestS
             if (isDataPoint(row)) {
                 if (row.metric === 'http_reqs') {
                     reqs++;
+                    requestCountTimeSeries.push({ timestamp: +new Date(row.data.time), value: reqs });
                 }
                 if (row.metric === 'http_req_duration') {
                     const duration = row.data.value;
                     durations.push(duration);
-                    requestDurationTimeSeries.push({ timestamp: +(new Date(row.data.time)), value: row.data.value });
+                    requestDurationTimeSeries.push({
+                        timestamp: +new Date(row.data.time),
+                        value: row.data.value,
+                    });
                     if (duration > max) {
                         max = duration;
                     }
@@ -82,12 +86,15 @@ export async function generateSummary(rawResultsFile: string): Promise<LoadTestS
                     sum += duration;
                 }
                 if (row.metric === 'vus') {
-                    concurrentUsersTimeSeries.push({ timestamp: +(new Date(row.data.time)), value: row.data.value });
+                    concurrentUsersTimeSeries.push({
+                        timestamp: +new Date(row.data.time),
+                        value: row.data.value,
+                    });
                 }
                 if (!startTime) {
-                    startTime = +(new Date(row.data.time));
+                    startTime = +new Date(row.data.time);
                 }
-                endTime = +(new Date(row.data.time));
+                endTime = +new Date(row.data.time);
             }
         });
 
@@ -98,7 +105,7 @@ export async function generateSummary(rawResultsFile: string): Promise<LoadTestS
             resolve({
                 timestamp: new Date().toISOString(),
                 script: rawResultsFile.split('.')[0],
-                productCount: +(rawResultsFile.split('.')[2]),
+                productCount: +rawResultsFile.split('.')[2],
                 testDuration: duration,
                 requests: reqs,
                 throughput: reqs / duration,
@@ -113,6 +120,7 @@ export async function generateSummary(rawResultsFile: string): Promise<LoadTestS
                 },
                 requestDurationTimeSeries,
                 concurrentUsersTimeSeries,
+                requestCountTimeSeries,
             });
         });
     });
@@ -123,7 +131,7 @@ function isDataPoint(row: any): row is DataPoint {
 }
 
 function percentile(p: number, sortedValues: number[]): number {
-    const ordinalRank = ((p / 100) * sortedValues.length) - 1;
+    const ordinalRank = (p / 100) * sortedValues.length - 1;
     if (Number.isInteger(ordinalRank)) {
         return sortedValues[ordinalRank];
     }

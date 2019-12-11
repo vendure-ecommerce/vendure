@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "./devkit",
+    "outDir": "./compiler",
     "sourceMap": true,
     "module": "commonjs",
     "declaration": true,
@@ -15,7 +15,7 @@
     ]
   },
   "files": [
-    "src/devkit/index.ts"
+    "src/compiler/index.ts"
   ],
   "exclude": [
     "src/**/*"

@@ -273,7 +273,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         }
 
         if (this.customFields.length) {
-            const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
+            const customFieldsGroup = this.detailForm.get(['customer', 'customFields']) as FormGroup;
 
             for (const fieldDef of this.customFields) {
                 const key = fieldDef.name;

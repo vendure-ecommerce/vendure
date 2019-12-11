@@ -65,3 +65,10 @@ export function getProductCount() {
     }
     return count;
 }
+
+export function getScriptToRun(): string[] | undefined {
+    const script = process.argv[3];
+    if (script) {
+        return [script];
+    }
+}
