@@ -1,1 +1,3 @@
 generated-types.ts
+lazy-extensions.module.ts
+shared-extensions.module.ts
