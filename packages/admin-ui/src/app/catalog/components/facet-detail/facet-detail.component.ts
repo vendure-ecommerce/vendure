@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
@@ -30,7 +30,8 @@ import { ModalService } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./facet-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fragment> implements OnDestroy {
+export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fragment>
+    implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     customValueFields: CustomFieldConfig[];
     detailForm: FormGroup;
@@ -60,6 +61,10 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             }),
             values: this.formBuilder.array([]),
         });
+    }
+
+    ngOnInit() {
+        this.init();
     }
 
     ngOnDestroy() {
