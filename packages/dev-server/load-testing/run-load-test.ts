@@ -9,14 +9,18 @@ import path from 'path';
 import { omit } from '../../common/src/omit';
 
 import { generateSummary, LoadTestSummary } from './generate-summary';
-import { getLoadTestConfig, getProductCount } from './load-test-config';
+import { getLoadTestConfig, getProductCount, getScriptToRun } from './load-test-config';
 
 const count = getProductCount();
 
 if (require.main === module) {
+    const ALL_SCRIPTS = ['deep-query.js', 'search-and-checkout.js', 'very-large-order.js'];
+
+    const scriptsToRun = getScriptToRun() || ALL_SCRIPTS;
+
     console.log(`\n============= Vendure Load Test: ${count} products ============\n`);
 
-// Runs the init script to generate test data and populate the test database
+    // Runs the init script to generate test data and populate the test database
     const init = spawn('node', ['-r', 'ts-node/register', './init-load-test.ts', count.toString()], {
         cwd: __dirname,
         stdio: 'inherit',
@@ -25,12 +29,13 @@ if (require.main === module) {
     init.on('exit', code => {
         if (code === 0) {
             return bootstrap(getLoadTestConfig('cookie'))
-                .then(app => {
-                    return runLoadTestScript('deep-query.js')
-                        .then((summary1) => runLoadTestScript('search-and-checkout.js').then(summary2 => [summary1, summary2]))
-                        .then(summaries => {
-                            closeAndExit(app, summaries);
-                        });
+                .then(async app => {
+                    const summaries: LoadTestSummary[] = [];
+                    for (const script of scriptsToRun) {
+                        const summary = await runLoadTestScript(script);
+                        summaries.push(summary);
+                    }
+                    return closeAndExit(app, summaries);
                 })
                 .catch(err => {
                     // tslint:disable-next-line
@@ -46,10 +51,14 @@ function runLoadTestScript(script: string): Promise<LoadTestSummary> {
     const rawResultsFile = `${script}.${count}.json`;
 
     return new Promise((resolve, reject) => {
-        const loadTest = spawn('k6', ['run', `./scripts/${script}`, '--out', `json=results/${rawResultsFile}`], {
-            cwd: __dirname,
-            stdio: 'inherit',
-        });
+        const loadTest = spawn(
+            'k6',
+            ['run', `./scripts/${script}`, '--out', `json=results/${rawResultsFile}`],
+            {
+                cwd: __dirname,
+                stdio: 'inherit',
+            },
+        );
         loadTest.on('exit', code => {
             if (code === 0) {
                 resolve(code);
@@ -60,8 +69,7 @@ function runLoadTestScript(script: string): Promise<LoadTestSummary> {
         loadTest.on('error', err => {
             reject(err);
         });
-    })
-        .then(() => generateSummary(rawResultsFile));
+    }).then(() => generateSummary(rawResultsFile));
 }
 
 async function closeAndExit(app: INestApplication, summaries: LoadTestSummary[]) {
@@ -72,7 +80,9 @@ async function closeAndExit(app: INestApplication, summaries: LoadTestSummary[])
     const dateString = getDateString();
 
     // write summary JSON
-    const summaryData = summaries.map(s => omit(s, ['requestDurationTimeSeries', 'concurrentUsersTimeSeries']));
+    const summaryData = summaries.map(s =>
+        omit(s, ['requestDurationTimeSeries', 'concurrentUsersTimeSeries', 'requestCountTimeSeries']),
+    );
     const summaryFile = path.join(__dirname, `results/load-test-${dateString}-${count}.json`);
     fs.writeFileSync(summaryFile, JSON.stringify(summaryData, null, 2), 'utf-8');
     console.log(`Summary written to ${path.relative(__dirname, summaryFile)}`);
@@ -80,7 +90,10 @@ async function closeAndExit(app: INestApplication, summaries: LoadTestSummary[])
     // write time series CSV
     for (const summary of summaries) {
         const csvData = await getTimeSeriesCsvData(summary);
-        const timeSeriesFile = path.join(__dirname, `results/load-test-${dateString}-${count}-${summary.script}.csv`);
+        const timeSeriesFile = path.join(
+            __dirname,
+            `results/load-test-${dateString}-${count}-${summary.script}.csv`,
+        );
         fs.writeFileSync(timeSeriesFile, csvData, 'utf-8');
         console.log(`Time series data written to ${path.relative(__dirname, timeSeriesFile)}`);
     }
@@ -89,7 +102,6 @@ async function closeAndExit(app: INestApplication, summaries: LoadTestSummary[])
 }
 
 async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
-
     const stringifier = stringify({
         delimiter: ',',
     });
@@ -99,7 +111,7 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
     stringifier.on('readable', () => {
         let row;
         // tslint:disable-next-line:no-conditional-assignment
-        while (row = stringifier.read()) {
+        while ((row = stringifier.read())) {
             data.push(row);
         }
     });
@@ -108,6 +120,7 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
         `${summary.script}:elapsed`,
         `${summary.script}:request_duration`,
         `${summary.script}:user_count`,
+        `${summary.script}:reqs`,
     ]);
 
     let startTime: number | undefined;
@@ -116,13 +129,19 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
         if (!startTime) {
             startTime = row.timestamp;
         }
-        stringifier.write([row.timestamp - startTime, row.value, '']);
+        stringifier.write([row.timestamp - startTime, row.value, '', '']);
     }
     for (const row of summary.concurrentUsersTimeSeries) {
         if (!startTime) {
             startTime = row.timestamp;
         }
-        stringifier.write([row.timestamp - startTime, '', row.value]);
+        stringifier.write([row.timestamp - startTime, '', row.value, '']);
+    }
+    for (const row of summary.requestCountTimeSeries) {
+        if (!startTime) {
+            startTime = row.timestamp;
+        }
+        stringifier.write([row.timestamp - startTime, '', '', row.value]);
     }
 
     stringifier.end();
@@ -138,5 +157,8 @@ async function getTimeSeriesCsvData(summary: LoadTestSummary): Promise<string> {
 }
 
 function getDateString(): string {
-    return (new Date().toISOString()).split('.')[0].replace(/[:\.]/g, '_');
+    return new Date()
+        .toISOString()
+        .split('.')[0]
+        .replace(/[:\.]/g, '_');
 }

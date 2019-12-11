@@ -38,8 +38,19 @@ The load tests assume the existence of the following tables in the MySQL databas
 
 The npm scripts `load-test:1k`, `load-test:10k` and `load-test:100k` will populate their respective databases with test data and then run the k6 scripts against them.
 
+## Running individual scripts
+
+An individual test script may be by specifying the script name as an argument:
+
+```
+yarn ts-node load-testing/run-load-test.ts 1000 deep-query.js
+```
+
 ### Results
 
-The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory.
+The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory. Each test run creates two files:
+
+* `load-test-<date>-<product-count>-<script-name>.json` Contains a summary of the test
+* `load-test-<date>-<product-count>-<script-name>.csv` Contains time-series data which can be used to create charts
 
 
