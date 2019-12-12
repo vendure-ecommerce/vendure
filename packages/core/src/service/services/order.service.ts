@@ -91,18 +91,20 @@ export class OrderService {
     }
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
-        const order = await this.connection.getRepository(Order).findOne(orderId, {
-            relations: [
-                'customer',
-                'lines',
-                'lines.productVariant',
-                'lines.productVariant.taxCategory',
-                'lines.featuredAsset',
-                'lines.items',
-                'lines.items.fulfillment',
-                'lines.taxCategory',
-            ],
-        });
+        const order = await this.connection
+            .getRepository(Order)
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('order.lines', 'lines')
+            .leftJoinAndSelect('lines.productVariant', 'productVariant')
+            .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
+            .leftJoinAndSelect('productVariant.productVariantPrices', 'prices')
+            .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
+            .leftJoinAndSelect('lines.items', 'items')
+            .leftJoinAndSelect('items.fulfillment', 'fulfillment')
+            .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
+            .where('order.id = :orderId', { orderId })
+            .getOne();
         if (order) {
             order.lines.forEach(line => {
                 line.productVariant = translateDeep(
@@ -280,7 +282,7 @@ export class OrderService {
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        await this.connection.getRepository(OrderLine).save(orderLine);
+        await this.connection.getRepository(OrderLine).save(orderLine, { reload: false });
         return this.applyPriceAdjustments(ctx, order);
     }
 
@@ -788,9 +790,9 @@ export class OrderService {
             order: { priorityScore: 'ASC' },
         });
         order = await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
-        await this.connection.getRepository(Order).save(order);
-        await this.connection.getRepository(OrderItem).save(order.getOrderItems());
-        await this.connection.getRepository(OrderLine).save(order.lines);
+        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(OrderItem).save(order.getOrderItems(), { reload: false });
+        await this.connection.getRepository(OrderLine).save(order.lines, { reload: false });
         return order;
     }
 
