@@ -554,7 +554,7 @@ export class OrderService {
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             lines,
-            i => !i.cancellationId,
+            i => !i.cancelled,
             'error.cancel-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -569,7 +569,11 @@ export class OrderService {
                 state: order.state,
             });
         }
+
+        // Perform the cancellation
         await this.stockMovementService.createCancellationsForOrderItems(items);
+        items.forEach(i => (i.cancelled = true));
+        await this.connection.getRepository(OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
             relations: ['lines', 'lines.items'],
@@ -588,7 +592,7 @@ export class OrderService {
         });
         const allOrderItemsCancelled = orderWithItems.lines
             .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
-            .every(orderItem => !!orderItem.cancellationId);
+            .every(orderItem => orderItem.cancelled);
         return allOrderItemsCancelled;
     }
 
@@ -603,7 +607,7 @@ export class OrderService {
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             input.lines,
-            i => !i.cancellationId,
+            i => !i.cancelled,
             'error.refund-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {

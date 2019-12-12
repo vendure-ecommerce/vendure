@@ -48,13 +48,8 @@ export class OrderItem extends VendureEntity {
     @OneToOne(type => Cancellation, cancellation => cancellation.orderItem)
     cancellation: Cancellation;
 
-    @RelationId('cancellation')
-    cancellationId: ID | null;
-
-    @Calculated()
-    get cancelled(): boolean {
-        return !!this.cancellationId;
-    }
+    @Column({ default: false })
+    cancelled: boolean;
 
     @Calculated()
     get unitPriceWithTax(): number {

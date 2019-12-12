@@ -745,7 +745,7 @@ describe('Orders resolver', () => {
             );
 
             expect(cancelOrder.lines[0].quantity).toBe(1);
-            expect(cancelOrder.lines[0].items).toEqual([
+            expect(cancelOrder.lines[0].items.sort((a, b) => (a.id < b.id ? -1 : 1))).toEqual([
                 { id: 'T_13', cancelled: true },
                 { id: 'T_14', cancelled: false },
             ]);
