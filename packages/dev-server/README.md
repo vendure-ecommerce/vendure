@@ -43,14 +43,14 @@ The npm scripts `load-test:1k`, `load-test:10k` and `load-test:100k` will popula
 An individual test script may be by specifying the script name as an argument:
 
 ```
-yarn ts-node load-testing/run-load-test.ts 1000 deep-query.js
+yarn load-test:1k deep-query.js
 ```
 
 ### Results
 
 The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory. Each test run creates two files:
 
-* `load-test-<date>-<product-count>-<script-name>.json` Contains a summary of the test
+* `load-test-<date>-<product-count>.json` Contains a summary of all load tests run
 * `load-test-<date>-<product-count>-<script-name>.csv` Contains time-series data which can be used to create charts
 
-
+Historical benchmark results with charts can be found in [this Google Sheet](https://docs.google.com/spreadsheets/d/1UaNhmokbNmKDehrnh4m9XO6-DJte-AI-l_Lnji47Qn8/edit?usp=sharing)
