@@ -37,6 +37,8 @@ export type TypeTreeNode = {
  * This class is used to transform the values of input variables or an output object.
  */
 export class GraphqlValueTransformer {
+    private outputCache = new WeakMap<DocumentNode, TypeTree>();
+    private inputCache = new WeakMap<OperationDefinitionNode, TypeTree>();
     constructor(private schema: GraphQLSchema) {}
 
     /**
@@ -58,6 +60,10 @@ export class GraphqlValueTransformer {
      * Constructs a tree of TypeTreeNodes for the output of a GraphQL operation.
      */
     getOutputTypeTree(document: DocumentNode): TypeTree {
+        const cached = this.outputCache.get(document);
+        if (cached) {
+            return cached;
+        }
         const typeInfo = new TypeInfo(this.schema);
         const typeTree: TypeTree = {
             operation: {} as any,
@@ -113,6 +119,7 @@ export class GraphqlValueTransformer {
         for (const operation of document.definitions) {
             visit(operation, visitWithTypeInfo(typeInfo, visitor));
         }
+        this.outputCache.set(document, typeTree);
         return typeTree;
     }
 
@@ -120,6 +127,10 @@ export class GraphqlValueTransformer {
      * Constructs a tree of TypeTreeNodes for the input variables of a GraphQL operation.
      */
     getInputTypeTree(definition: OperationDefinitionNode): TypeTree {
+        const cached = this.inputCache.get(definition);
+        if (cached) {
+            return cached;
+        }
         const typeInfo = new TypeInfo(this.schema);
         const typeTree: TypeTree = {
             operation: {} as any,
@@ -167,6 +178,7 @@ export class GraphqlValueTransformer {
             },
         };
         visit(definition, visitWithTypeInfo(typeInfo, visitor));
+        this.inputCache.set(definition, typeTree);
         return typeTree;
     }
 
