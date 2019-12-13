@@ -91,6 +91,9 @@ export class Order extends VendureEntity implements HasCustomFields {
     @Column(type => CustomOrderFields)
     customFields: CustomOrderFields;
 
+    @EntityId({ nullable: true })
+    taxZoneId?: ID;
+
     @Calculated()
     get totalBeforeTax(): number {
         return this.subTotalBeforeTax + this.promotionAdjustmentsTotal + (this.shipping || 0);
@@ -103,7 +106,7 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get adjustments(): Adjustment[] {
-        return this.pendingAdjustments;
+        return this.pendingAdjustments || [];
     }
 
     get promotionAdjustmentsTotal(): number {

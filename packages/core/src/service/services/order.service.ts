@@ -99,6 +99,7 @@ export class OrderService {
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
             .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
             .leftJoinAndSelect('productVariant.productVariantPrices', 'prices')
+            .leftJoinAndSelect('productVariant.translations', 'translations')
             .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
             .leftJoinAndSelect('lines.items', 'items')
             .leftJoinAndSelect('items.fulfillment', 'fulfillment')
@@ -283,7 +284,7 @@ export class OrderService {
             orderLine.customFields = customFields;
         }
         await this.connection.getRepository(OrderLine).save(orderLine, { reload: false });
-        return this.applyPriceAdjustments(ctx, order);
+        return this.applyPriceAdjustments(ctx, order, orderLine);
     }
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
@@ -788,15 +789,23 @@ export class OrderService {
     /**
      * Applies promotions, taxes and shipping to the Order.
      */
-    private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
+    private async applyPriceAdjustments(
+        ctx: RequestContext,
+        order: Order,
+        updatedOrderLine?: OrderLine,
+    ): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true, deletedAt: null },
             order: { priorityScore: 'ASC' },
         });
-        order = await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
+        const updatedItems = await this.orderCalculator.applyPriceAdjustments(
+            ctx,
+            order,
+            promotions,
+            updatedOrderLine,
+        );
         await this.connection.getRepository(Order).save(order, { reload: false });
-        await this.connection.getRepository(OrderItem).save(order.getOrderItems(), { reload: false });
-        await this.connection.getRepository(OrderLine).save(order.lines, { reload: false });
+        await this.connection.getRepository(OrderItem).save(updatedItems, { reload: false });
         return order;
     }
 

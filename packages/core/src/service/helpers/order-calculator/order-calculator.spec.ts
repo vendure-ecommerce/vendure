@@ -458,10 +458,12 @@ describe('OrderCalculator', () => {
                 // bring the order total below the threshold for the second promotion.
                 order.lines[0].items.push(new OrderItem({ unitPrice: 42 }));
 
-                await orderCalculator.applyPriceAdjustments(ctx, order, [
-                    buy3Get10pcOffOrder,
-                    spend100Get10pcOffOrder,
-                ]);
+                await orderCalculator.applyPriceAdjustments(
+                    ctx,
+                    order,
+                    [buy3Get10pcOffOrder, spend100Get10pcOffOrder],
+                    order.lines[0],
+                );
 
                 expect(order.subTotal).toBe(150);
                 expect(order.adjustments.length).toBe(1);

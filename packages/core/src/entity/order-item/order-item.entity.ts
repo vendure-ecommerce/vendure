@@ -65,6 +65,9 @@ export class OrderItem extends VendureEntity {
      */
     @Calculated()
     get adjustments(): Adjustment[] {
+        if (!this.pendingAdjustments) {
+            return [];
+        }
         if (this.unitPriceIncludesTax) {
             return this.pendingAdjustments;
         } else {
@@ -106,6 +109,9 @@ export class OrderItem extends VendureEntity {
     }
 
     get promotionAdjustmentsTotal(): number {
+        if (!this.pendingAdjustments) {
+            return 0;
+        }
         return this.pendingAdjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
