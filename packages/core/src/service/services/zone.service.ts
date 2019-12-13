@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    MutationAddMembersToZoneArgs,
     CreateZoneInput,
     DeletionResponse,
     DeletionResult,
+    MutationAddMembersToZoneArgs,
     MutationRemoveMembersFromZoneArgs,
     UpdateZoneInput,
 } from '@vendure/common/lib/generated-types';
@@ -67,7 +67,7 @@ export class ZoneService implements OnModuleInit {
     async update(ctx: RequestContext, input: UpdateZoneInput): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
-        await this.connection.getRepository(Zone).save(updatedZone);
+        await this.connection.getRepository(Zone).save(updatedZone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }
@@ -103,7 +103,7 @@ export class ZoneService implements OnModuleInit {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
-        await this.connection.getRepository(Zone).save(zone);
+        await this.connection.getRepository(Zone).save(zone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }
@@ -114,7 +114,7 @@ export class ZoneService implements OnModuleInit {
     ): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));
-        await this.connection.getRepository(Zone).save(zone);
+        await this.connection.getRepository(Zone).save(zone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }

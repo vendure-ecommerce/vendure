@@ -80,7 +80,7 @@ export class StockMovementService {
 
             if (productVariant.trackInventory === true) {
                 productVariant.stockOnHand -= line.quantity;
-                await this.connection.getRepository(ProductVariant).save(productVariant);
+                await this.connection.getRepository(ProductVariant).save(productVariant, { reload: false });
             }
         }
         return this.connection.getRepository(Sale).save(sales);

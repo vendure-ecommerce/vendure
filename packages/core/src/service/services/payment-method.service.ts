@@ -82,7 +82,7 @@ export class PaymentMethodService {
             .getRepository(Payment)
             .save(new Payment({ ...result, state: 'Created' }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
-        await this.connection.getRepository(Payment).save(payment);
+        await this.connection.getRepository(Payment).save(payment, { reload: false });
         return payment;
     }
 
@@ -127,7 +127,7 @@ export class PaymentMethodService {
         refund = await this.connection.getRepository(Refund).save(refund);
         if (createRefundResult) {
             await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-            await this.connection.getRepository(Refund).save(refund);
+            await this.connection.getRepository(Refund).save(refund, { reload: false });
         }
         return refund;
     }
@@ -173,7 +173,7 @@ export class PaymentMethodService {
                 continue;
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod);
+            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
         }
         for (const handler of toCreate) {
             let paymentMethod = existingPaymentMethods.find(pm => pm.code === handler.code);
@@ -186,7 +186,7 @@ export class PaymentMethodService {
                 });
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod);
+            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
         }
         await this.connection.getRepository(PaymentMethod).remove(toRemove);
     }

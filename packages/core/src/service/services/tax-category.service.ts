@@ -33,7 +33,7 @@ export class TaxCategoryService {
             throw new EntityNotFoundError('TaxCategory', input.id);
         }
         const updatedTaxCategory = patchEntity(taxCategory, input);
-        await this.connection.getRepository(TaxCategory).save(updatedTaxCategory);
+        await this.connection.getRepository(TaxCategory).save(updatedTaxCategory, { reload: false });
         return assertFound(this.findOne(taxCategory.id));
     }
 }

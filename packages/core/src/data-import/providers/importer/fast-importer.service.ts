@@ -69,7 +69,7 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(ProductAsset).save(productAssets);
+            await this.connection.getRepository(ProductAsset).save(productAssets, { reload: false });
         }
         return product.id;
     }
@@ -137,7 +137,7 @@ export class FastImporterService {
                         position: i,
                     }),
             );
-            await this.connection.getRepository(ProductVariantAsset).save(variantAssets);
+            await this.connection.getRepository(ProductVariantAsset).save(variantAssets, { reload: false });
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
@@ -151,7 +151,7 @@ export class FastImporterService {
             channelId: this.defaultChannel.id,
         });
         variantPrice.variant = createdVariant;
-        await this.connection.getRepository(ProductVariantPrice).save(variantPrice);
+        await this.connection.getRepository(ProductVariantPrice).save(variantPrice, { reload: false });
         return createdVariant.id;
     }
 }

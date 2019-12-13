@@ -236,7 +236,7 @@ export class OrderService {
             const newLine = this.createOrderLineFromVariant(productVariant, customFields);
             orderLine = await this.connection.getRepository(OrderLine).save(newLine);
             order.lines.push(orderLine);
-            await this.connection.getRepository(Order).save(order);
+            await this.connection.getRepository(Order).save(order, { reload: false });
         }
         return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
     }
@@ -371,7 +371,7 @@ export class OrderService {
             throw new UserInputError(`error.shipping-method-unavailable`);
         }
         order.shippingMethod = selectedMethod.method;
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(Order).save(order);
     }
@@ -379,7 +379,7 @@ export class OrderService {
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         await this.orderStateMachine.transition(ctx, order, state);
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         return order;
     }
 
@@ -397,7 +397,7 @@ export class OrderService {
 
         const existingPayments = await this.getOrderPayments(orderId);
         order.payments = [...existingPayments, payment];
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
             throw new InternalServerError(payment.errorMessage);
@@ -425,7 +425,7 @@ export class OrderService {
         if (settlePaymentResult.success) {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
             payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
-            await this.connection.getRepository(Payment).save(payment);
+            await this.connection.getRepository(Payment).save(payment, { reload: false });
             if (payment.amount === payment.order.total) {
                 await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
             }
@@ -652,7 +652,7 @@ export class OrderService {
             throw new IllegalOperationError(`error.order-already-has-customer`);
         }
         order.customer = customer;
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
         if (order.couponCodes) {
@@ -712,7 +712,7 @@ export class OrderService {
         const customer = await this.customerService.findOneByUserId(user.id);
         if (order && customer) {
             order.customer = customer;
-            await this.connection.getRepository(Order).save(order);
+            await this.connection.getRepository(Order).save(order, { reload: false });
         }
         return order;
     }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
-    MutationAddCustomersToGroupArgs,
     CreateCustomerGroupInput,
+    MutationAddCustomersToGroupArgs,
     MutationRemoveCustomersFromGroupArgs,
     UpdateCustomerGroupInput,
 } from '@vendure/common/lib/generated-types';
@@ -40,7 +40,7 @@ export class CustomerGroupService {
     async update(input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
-        await this.connection.getRepository(CustomerGroup).save(updatedCustomerGroup);
+        await this.connection.getRepository(CustomerGroup).save(updatedCustomerGroup, { reload: false });
         return assertFound(this.findOne(customerGroup.id));
     }
 
@@ -49,7 +49,7 @@ export class CustomerGroupService {
         const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         const customers = unique(customerGroup.customers.concat(countries), 'id');
         customerGroup.customers = customers;
-        await this.connection.getRepository(CustomerGroup).save(customerGroup);
+        await this.connection.getRepository(CustomerGroup).save(customerGroup, { reload: false });
         return customerGroup;
     }
 
@@ -58,7 +58,7 @@ export class CustomerGroupService {
         customerGroup.customers = customerGroup.customers.filter(
             customer => !input.customerIds.includes(customer.id as string),
         );
-        await this.connection.getRepository(CustomerGroup).save(customerGroup);
+        await this.connection.getRepository(CustomerGroup).save(customerGroup, { reload: false });
         return customerGroup;
     }
 

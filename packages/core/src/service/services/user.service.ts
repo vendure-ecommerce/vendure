@@ -117,7 +117,7 @@ export class UserService {
         }
     }
 
-    async changeIdentifierByToken(token: string): Promise<{ user: User; oldIdentifier: string; }> {
+    async changeIdentifierByToken(token: string): Promise<{ user: User; oldIdentifier: string }> {
         const user = await this.connection.getRepository(User).findOne({
             where: { identifierChangeToken: token },
         });
@@ -135,12 +135,14 @@ export class UserService {
         user.identifier = pendingIdentifier;
         user.identifierChangeToken = null;
         user.pendingIdentifier = null;
-        await this.connection.getRepository(User).save(user);
+        await this.connection.getRepository(User).save(user, { reload: false });
         return { user, oldIdentifier };
     }
 
     async updatePassword(userId: ID, currentPassword: string, newPassword: string): Promise<boolean> {
-        const user = await this.connection.getRepository(User).findOne(userId, { select: ['id', 'passwordHash'] });
+        const user = await this.connection
+            .getRepository(User)
+            .findOne(userId, { select: ['id', 'passwordHash'] });
         if (!user) {
             throw new InternalServerError(`error.no-active-user-id`);
         }
@@ -149,7 +151,7 @@ export class UserService {
             throw new UnauthorizedError();
         }
         user.passwordHash = await this.passwordCipher.hash(newPassword);
-        await this.connection.getRepository(User).save(user);
+        await this.connection.getRepository(User).save(user, { reload: false });
         return true;
     }
 

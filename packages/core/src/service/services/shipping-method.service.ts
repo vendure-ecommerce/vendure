@@ -94,7 +94,7 @@ export class ShippingMethodService {
                 input.calculator,
             );
         }
-        await this.connection.manager.save(updatedShippingMethod);
+        await this.connection.manager.save(updatedShippingMethod, { reload: false });
         await this.updateActiveShippingMethods();
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
@@ -104,7 +104,7 @@ export class ShippingMethodService {
             where: { deletedAt: null },
         });
         shippingMethod.deletedAt = new Date();
-        await this.connection.getRepository(ShippingMethod).save(shippingMethod);
+        await this.connection.getRepository(ShippingMethod).save(shippingMethod, { reload: false });
         await this.updateActiveShippingMethods();
         return {
             result: DeletionResult.DELETED,
