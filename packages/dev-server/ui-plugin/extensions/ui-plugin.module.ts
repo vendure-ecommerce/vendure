@@ -56,6 +56,7 @@ export class TestComponent {
                     ],
                     extensionHostConfig: new ExtensionHostConfig({
                         extensionUrl: './assets/vue-app/index.html',
+                        openInNewTab: true,
                     }),
                 },
             },

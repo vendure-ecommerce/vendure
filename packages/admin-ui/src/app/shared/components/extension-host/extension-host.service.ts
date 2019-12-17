@@ -21,9 +21,13 @@ export class ExtensionHostService implements OnDestroy {
         window.addEventListener('message', this.handleMessage);
     }
 
-    ngOnDestroy(): void {
+    destroy() {
         window.removeEventListener('message', this.handleMessage);
         this.destroyMessage$.next();
+    }
+
+    ngOnDestroy(): void {
+        this.destroy();
     }
 
     private handleMessage = (message: MessageEvent) => {
