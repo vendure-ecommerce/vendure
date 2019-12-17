@@ -157,7 +157,7 @@ export class CountryListComponent implements OnInit, OnDestroy {
             .dialog({
                 title: _('catalog.confirm-delete-country'),
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })

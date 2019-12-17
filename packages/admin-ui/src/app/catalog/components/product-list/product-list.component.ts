@@ -117,7 +117,7 @@ export class ProductListComponent
             .dialog({
                 title: _('catalog.confirm-delete-product'),
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })

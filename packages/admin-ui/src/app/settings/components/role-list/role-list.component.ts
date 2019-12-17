@@ -52,7 +52,7 @@ export class RoleListComponent extends BaseListComponent<GetRoles.Query, GetRole
             .dialog({
                 title: _('settings.confirm-delete-role'),
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })

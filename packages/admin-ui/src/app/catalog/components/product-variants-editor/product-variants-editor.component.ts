@@ -162,7 +162,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             .dialog({
                 title: _('catalog.confirm-delete-product-variant'),
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })
@@ -225,7 +225,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     title: _('catalog.confirm-adding-options-delete-default-title'),
                     body: _('catalog.confirm-adding-options-delete-default-body'),
                     buttons: [
-                        { type: 'seconday', label: _('common.cancel') },
+                        { type: 'secondary', label: _('common.cancel') },
                         { type: 'danger', label: _('catalog.delete-default-variant'), returnValue: true },
                     ],
                 })
