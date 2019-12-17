@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, scan, shareReplay } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 
 import { Permission } from '../../../common/generated-types';
 
@@ -16,15 +16,13 @@ export class NavBuilderService {
     actionBarConfig$: Observable<ActionBarItem[]>;
 
     private initialNavMenuConfig$ = new BehaviorSubject<NavMenuSection[]>([]);
-    private addNavMenuSection$ = new BehaviorSubject<{ config: NavMenuSection; before?: string } | null>(
-        null,
-    );
-    private addNavMenuItem$ = new BehaviorSubject<{
+    private addedNavMenuSections: Array<{ config: NavMenuSection; before?: string }> = [];
+    private addedNavMenuItems: Array<{
         config: NavMenuItem;
         sectionId: string;
         before?: string;
-    } | null>(null);
-    private addActionBarItem$ = new BehaviorSubject<ActionBarItem | null>(null);
+    }> = [];
+    private addedActionBarItems: ActionBarItem[] = [];
 
     constructor() {
         this.setupStreams();
@@ -44,7 +42,7 @@ export class NavBuilderService {
      * existing set of sections.
      */
     addNavMenuSection(config: NavMenuSection, before?: string) {
-        this.addNavMenuSection$.next({ config, before });
+        this.addedNavMenuSections.push({ config, before });
     }
 
     /**
@@ -55,7 +53,7 @@ export class NavBuilderService {
      * end of the section.
      */
     addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string) {
-        this.addNavMenuItem$.next({ config, sectionId, before });
+        this.addedNavMenuItems.push({ config, sectionId, before });
     }
 
     /**
@@ -64,7 +62,7 @@ export class NavBuilderService {
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
-        this.addActionBarItem$.next(config);
+        this.addedActionBarItems.push(config);
     }
 
     getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
@@ -78,20 +76,8 @@ export class NavBuilderService {
     }
 
     private setupStreams() {
-        const sectionAdditions$ = this.addNavMenuSection$.pipe(
-            scan((acc, value) => (value ? [...acc, value] : acc), [] as Array<{
-                config: NavMenuSection;
-                before?: string;
-            }>),
-        );
-
-        const itemAdditions$ = this.addNavMenuItem$.pipe(
-            scan((acc, value) => (value ? [...acc, value] : acc), [] as Array<{
-                config: NavMenuItem;
-                sectionId: string;
-                before?: string;
-            }>),
-        );
+        const sectionAdditions$ = of(this.addedNavMenuSections);
+        const itemAdditions$ = of(this.addedNavMenuItems);
 
         const combinedConfig$ = combineLatest(this.initialNavMenuConfig$, sectionAdditions$).pipe(
             map(([initalConfig, additions]) => {
@@ -133,8 +119,6 @@ export class NavBuilderService {
             }),
         );
 
-        this.actionBarConfig$ = this.addActionBarItem$.pipe(
-            scan((acc, value) => (value ? [...acc, value] : acc), [] as ActionBarItem[]),
-        );
+        this.actionBarConfig$ = of(this.addedActionBarItems);
     }
 }
