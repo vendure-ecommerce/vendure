@@ -74,7 +74,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                 title: _('catalog.confirm-delete-facet'),
                 body: message,
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })

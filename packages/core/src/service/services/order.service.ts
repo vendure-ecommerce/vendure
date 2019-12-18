@@ -91,18 +91,21 @@ export class OrderService {
     }
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
-        const order = await this.connection.getRepository(Order).findOne(orderId, {
-            relations: [
-                'customer',
-                'lines',
-                'lines.productVariant',
-                'lines.productVariant.taxCategory',
-                'lines.featuredAsset',
-                'lines.items',
-                'lines.items.fulfillment',
-                'lines.taxCategory',
-            ],
-        });
+        const order = await this.connection
+            .getRepository(Order)
+            .createQueryBuilder('order')
+            .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('order.lines', 'lines')
+            .leftJoinAndSelect('lines.productVariant', 'productVariant')
+            .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
+            .leftJoinAndSelect('productVariant.productVariantPrices', 'prices')
+            .leftJoinAndSelect('productVariant.translations', 'translations')
+            .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
+            .leftJoinAndSelect('lines.items', 'items')
+            .leftJoinAndSelect('items.fulfillment', 'fulfillment')
+            .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
+            .where('order.id = :orderId', { orderId })
+            .getOne();
         if (order) {
             order.lines.forEach(line => {
                 line.productVariant = translateDeep(
@@ -233,7 +236,7 @@ export class OrderService {
             const newLine = this.createOrderLineFromVariant(productVariant, customFields);
             orderLine = await this.connection.getRepository(OrderLine).save(newLine);
             order.lines.push(orderLine);
-            await this.connection.getRepository(Order).save(order);
+            await this.connection.getRepository(Order).save(order, { reload: false });
         }
         return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
     }
@@ -280,8 +283,8 @@ export class OrderService {
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        await this.connection.getRepository(OrderLine).save(orderLine);
-        return this.applyPriceAdjustments(ctx, order);
+        await this.connection.getRepository(OrderLine).save(orderLine, { reload: false });
+        return this.applyPriceAdjustments(ctx, order, orderLine);
     }
 
     async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
@@ -368,7 +371,7 @@ export class OrderService {
             throw new UserInputError(`error.shipping-method-unavailable`);
         }
         order.shippingMethod = selectedMethod.method;
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(Order).save(order);
     }
@@ -376,7 +379,7 @@ export class OrderService {
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         await this.orderStateMachine.transition(ctx, order, state);
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         return order;
     }
 
@@ -394,7 +397,7 @@ export class OrderService {
 
         const existingPayments = await this.getOrderPayments(orderId);
         order.payments = [...existingPayments, payment];
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
             throw new InternalServerError(payment.errorMessage);
@@ -422,7 +425,7 @@ export class OrderService {
         if (settlePaymentResult.success) {
             await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
             payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
-            await this.connection.getRepository(Payment).save(payment);
+            await this.connection.getRepository(Payment).save(payment, { reload: false });
             if (payment.amount === payment.order.total) {
                 await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
             }
@@ -552,7 +555,7 @@ export class OrderService {
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             lines,
-            i => !i.cancellationId,
+            i => !i.cancelled,
             'error.cancel-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -567,7 +570,11 @@ export class OrderService {
                 state: order.state,
             });
         }
+
+        // Perform the cancellation
         await this.stockMovementService.createCancellationsForOrderItems(items);
+        items.forEach(i => (i.cancelled = true));
+        await this.connection.getRepository(OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
             relations: ['lines', 'lines.items'],
@@ -586,7 +593,7 @@ export class OrderService {
         });
         const allOrderItemsCancelled = orderWithItems.lines
             .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
-            .every(orderItem => !!orderItem.cancellationId);
+            .every(orderItem => orderItem.cancelled);
         return allOrderItemsCancelled;
     }
 
@@ -601,7 +608,7 @@ export class OrderService {
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             input.lines,
-            i => !i.cancellationId,
+            i => !i.cancelled,
             'error.refund-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -645,7 +652,7 @@ export class OrderService {
             throw new IllegalOperationError(`error.order-already-has-customer`);
         }
         order.customer = customer;
-        await this.connection.getRepository(Order).save(order);
+        await this.connection.getRepository(Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
         if (order.couponCodes) {
@@ -705,7 +712,7 @@ export class OrderService {
         const customer = await this.customerService.findOneByUserId(user.id);
         if (order && customer) {
             order.customer = customer;
-            await this.connection.getRepository(Order).save(order);
+            await this.connection.getRepository(Order).save(order, { reload: false });
         }
         return order;
     }
@@ -782,15 +789,23 @@ export class OrderService {
     /**
      * Applies promotions, taxes and shipping to the Order.
      */
-    private async applyPriceAdjustments(ctx: RequestContext, order: Order): Promise<Order> {
+    private async applyPriceAdjustments(
+        ctx: RequestContext,
+        order: Order,
+        updatedOrderLine?: OrderLine,
+    ): Promise<Order> {
         const promotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true, deletedAt: null },
             order: { priorityScore: 'ASC' },
         });
-        order = await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions);
-        await this.connection.getRepository(Order).save(order);
-        await this.connection.getRepository(OrderItem).save(order.getOrderItems());
-        await this.connection.getRepository(OrderLine).save(order.lines);
+        const updatedItems = await this.orderCalculator.applyPriceAdjustments(
+            ctx,
+            order,
+            promotions,
+            updatedOrderLine,
+        );
+        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(OrderItem).save(updatedItems, { reload: false });
         return order;
     }
 

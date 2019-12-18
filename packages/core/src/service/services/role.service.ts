@@ -150,7 +150,7 @@ export class RoleService {
         if (input.channelIds && ctx.activeUserId) {
             updatedRole.channels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
         }
-        await this.connection.manager.save(updatedRole);
+        await this.connection.manager.save(updatedRole, { reload: false });
         return assertFound(this.findOne(role.id));
     }
 
@@ -219,7 +219,7 @@ export class RoleService {
             );
             if (!hasAllPermissions) {
                 superAdminRole.permissions = allPermissions;
-                await this.connection.getRepository(Role).save(superAdminRole);
+                await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
             }
         } catch (err) {
             await this.createRoleForChannels(

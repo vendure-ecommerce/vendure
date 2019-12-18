@@ -17,7 +17,7 @@
                             [routerLink]="getRouterLink(item)"
                             routerLinkActive="active"
                         >
-                            <clr-icon [attr.shape]="item.icon" size="20"></clr-icon>
+                            <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
                             {{ item.label | translate }}
                         </a>
                     </li>

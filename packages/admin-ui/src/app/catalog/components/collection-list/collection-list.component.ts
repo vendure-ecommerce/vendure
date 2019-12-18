@@ -75,7 +75,7 @@ export class CollectionListComponent implements OnInit {
                             ? _('catalog.confirm-delete-collection-and-children-body')
                             : undefined,
                         buttons: [
-                            { type: 'seconday', label: _('common.cancel') },
+                            { type: 'secondary', label: _('common.cancel') },
                             { type: 'danger', label: _('common.delete'), returnValue: true },
                         ],
                     });

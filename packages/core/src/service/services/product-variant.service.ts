@@ -315,7 +315,7 @@ export class ProductVariantService {
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const variant = await getEntityOrThrow(this.connection, ProductVariant, id);
         variant.deletedAt = new Date();
-        await this.connection.getRepository(ProductVariant).save(variant);
+        await this.connection.getRepository(ProductVariant).save(variant, { reload: false });
         this.eventBus.publish(new ProductVariantEvent(ctx, [variant], 'deleted'));
         return {
             result: DeletionResult.DELETED,

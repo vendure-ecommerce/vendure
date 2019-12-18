@@ -187,7 +187,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .dialog({
                 title: _('catalog.remove-product-from-channel'),
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('catalog.remove-from-channel'), returnValue: true },
                 ],
             })

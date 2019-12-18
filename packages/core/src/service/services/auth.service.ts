@@ -97,10 +97,17 @@ export class AuthService {
      * Looks for a valid session with the given token and returns one if found.
      */
     async validateSession(token: string): Promise<Session | undefined> {
-        const session = await this.connection.getRepository(Session).findOne({
-            where: { token, invalidated: false },
-            relations: ['user', 'user.roles', 'user.roles.channels', 'activeOrder'],
-        });
+        const session = await this.connection
+            .getRepository(Session)
+            .createQueryBuilder('session')
+            .leftJoinAndSelect('session.activeOrder', 'activeOrder')
+            .leftJoinAndSelect('session.user', 'user')
+            .leftJoinAndSelect('user.roles', 'roles')
+            .leftJoinAndSelect('roles.channels', 'channels')
+            .where('session.token = :token', { token })
+            .andWhere('session.invalidated = false')
+            .getOne();
+
         if (session && session.expires > new Date()) {
             await this.updateSessionExpiry(session);
             return session;

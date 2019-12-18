@@ -32,6 +32,7 @@ import {
     CurrencyNamePipe,
     CustomerLabelComponent,
     CustomFieldControlComponent,
+    CustomFieldLabelPipe,
     DataTableColumnComponent,
     DataTableComponent,
     DatetimePickerComponent,
@@ -142,6 +143,7 @@ const DECLARATIONS = [
     ChannelLabelPipe,
     IfDefaultChannelActiveDirective,
     ExtensionHostComponent,
+    CustomFieldLabelPipe,
 ];
 
 @NgModule({

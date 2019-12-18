@@ -10,7 +10,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
 import { PromotionUtils, ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
-import { OrderLine, ProductVariant } from '../../../entity';
+import { OrderItem, OrderLine, ProductVariant, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
@@ -33,76 +33,145 @@ export class OrderCalculator {
 
     /**
      * Applies taxes and promotions to an Order. Mutates the order object.
+     * Returns an array of any OrderItems which had new adjustments
+     * applied, either tax or promotions.
      */
-    async applyPriceAdjustments(ctx: RequestContext, order: Order, promotions: Promotion[]): Promise<Order> {
+    async applyPriceAdjustments(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+        updatedOrderLine?: OrderLine,
+    ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
         const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel, order);
-        order.clearAdjustments();
-        if (order.lines.length) {
-            // First apply taxes to the non-discounted prices
-            this.applyTaxes(ctx, order, activeTaxZone);
-            // Then test and apply promotions
-            await this.applyPromotions(order, promotions);
-            // Finally, re-calculate taxes because the promotions may have
-            // altered the unit prices, which in turn will alter the tax payable.
-            this.applyTaxes(ctx, order, activeTaxZone);
-            await this.applyShipping(ctx, order);
-        } else {
-            this.calculateOrderTotals(order);
+        let taxZoneChanged = false;
+        if (!order.taxZoneId || !idsAreEqual(order.taxZoneId, activeTaxZone.id)) {
+            order.taxZoneId = activeTaxZone.id;
+            taxZoneChanged = true;
         }
-        return order;
+        const updatedOrderItems = new Set<OrderItem>();
+        if (updatedOrderLine) {
+            this.applyTaxesToOrderLine(
+                ctx,
+                updatedOrderLine,
+                activeTaxZone,
+                this.createTaxRateGetter(activeTaxZone),
+            );
+            updatedOrderLine.activeItems.forEach(item => updatedOrderItems.add(item));
+        }
+        order.clearAdjustments();
+        this.calculateOrderTotals(order);
+        if (order.lines.length) {
+            if (taxZoneChanged) {
+                // First apply taxes to the non-discounted prices
+                this.applyTaxes(ctx, order, activeTaxZone);
+            }
+
+            // Then test and apply promotions
+            const totalBeforePromotions = order.total;
+            const itemsModifiedByPromotions = await this.applyPromotions(order, promotions);
+            itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
+
+            if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
+                // Finally, re-calculate taxes because the promotions may have
+                // altered the unit prices, which in turn will alter the tax payable.
+                this.applyTaxes(ctx, order, activeTaxZone);
+            }
+            await this.applyShipping(ctx, order);
+        }
+        this.calculateOrderTotals(order);
+        return taxZoneChanged ? order.getOrderItems() : Array.from(updatedOrderItems);
     }
 
     /**
      * Applies the correct TaxRate to each OrderItem in the order.
      */
     private applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
+        const getTaxRate = this.createTaxRateGetter(activeZone);
         for (const line of order.lines) {
-            line.clearAdjustments(AdjustmentType.TAX);
+            this.applyTaxesToOrderLine(ctx, line, activeZone, getTaxRate);
+        }
+        this.calculateOrderTotals(order);
+    }
 
-            const applicableTaxRate = this.taxRateService.getApplicableTaxRate(activeZone, line.taxCategory);
-            const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
-                line.unitPrice,
-                line.taxCategory,
-                activeZone,
-                ctx,
-            );
+    /**
+     * Applies the correct TaxRate to an OrderLine
+     */
+    private applyTaxesToOrderLine(
+        ctx: RequestContext,
+        line: OrderLine,
+        activeZone: Zone,
+        getTaxRate: (taxCategory: TaxCategory) => TaxRate,
+    ) {
+        line.clearAdjustments(AdjustmentType.TAX);
 
-            line.setUnitPriceIncludesTax(priceIncludesTax);
-            line.setTaxRate(applicableTaxRate.value);
+        const applicableTaxRate = getTaxRate(line.taxCategory);
+        const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
+            line.unitPrice,
+            line.taxCategory,
+            activeZone,
+            ctx,
+        );
 
+        for (const item of line.activeItems) {
+            item.unitPriceIncludesTax = priceIncludesTax;
+            item.taxRate = applicableTaxRate.value;
             if (!priceIncludesTax) {
-                for (const item of line.items) {
-                    item.pendingAdjustments = item.pendingAdjustments.concat(
-                        applicableTaxRate.apply(item.unitPriceWithPromotions),
-                    );
-                }
+                item.pendingAdjustments = item.pendingAdjustments.concat(
+                    applicableTaxRate.apply(item.unitPriceWithPromotions),
+                );
             }
-            this.calculateOrderTotals(order);
         }
     }
 
     /**
-     * Applies any eligible promotions to each OrderItem in the order.
+     * Returns a memoized function for performing an efficient
+     * lookup of the correct TaxRate for a given TaxCategory.
      */
-    private async applyPromotions(order: Order, promotions: Promotion[]) {
+    private createTaxRateGetter(activeZone: Zone): (taxCategory: TaxCategory) => TaxRate {
+        const taxRateCache = new Map<TaxCategory, TaxRate>();
+
+        return (taxCategory: TaxCategory): TaxRate => {
+            const cached = taxRateCache.get(taxCategory);
+            if (cached) {
+                return cached;
+            }
+            const rate = this.taxRateService.getApplicableTaxRate(activeZone, taxCategory);
+            taxRateCache.set(taxCategory, rate);
+            return rate;
+        };
+    }
+
+    /**
+     * Applies any eligible promotions to each OrderItem in the order. Returns an array of
+     * any OrderItems which had their Adjustments modified.
+     */
+    private async applyPromotions(order: Order, promotions: Promotion[]): Promise<OrderItem[]> {
         const utils = this.createPromotionUtils();
-        await this.applyOrderItemPromotions(order, promotions, utils);
+        const updatedItems = await this.applyOrderItemPromotions(order, promotions, utils);
         await this.applyOrderPromotions(order, promotions, utils);
+        return updatedItems;
     }
 
     private async applyOrderItemPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+        const updatedOrderItems = new Set<OrderItem>();
+
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
             const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
 
-            line.clearAdjustments(AdjustmentType.PROMOTION);
-
             for (const promotion of applicablePromotions) {
+                let priceAdjusted = false;
                 if (await promotion.test(order, utils)) {
                     for (const item of line.items) {
+                        const itemHasPromotions =
+                            item.pendingAdjustments &&
+                            !!item.pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+                        if (itemHasPromotions) {
+                            item.clearAdjustments(AdjustmentType.PROMOTION);
+                        }
                         if (applicablePromotions) {
                             const adjustment = await promotion.apply({
                                 orderItem: item,
@@ -111,13 +180,21 @@ export class OrderCalculator {
                             });
                             if (adjustment) {
                                 item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+                                priceAdjusted = true;
+                                updatedOrderItems.add(item);
+                            } else if (itemHasPromotions) {
+                                updatedOrderItems.add(item);
                             }
                         }
                     }
+                    if (priceAdjusted) {
+                        this.calculateOrderTotals(order);
+                        priceAdjusted = false;
+                    }
                 }
-                this.calculateOrderTotals(order);
             }
         }
+        return Array.from(updatedOrderItems.values());
     }
 
     private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {

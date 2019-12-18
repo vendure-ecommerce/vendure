@@ -135,7 +135,7 @@ export class CustomerService {
             user = await this.userService.setVerificationToken(user);
         }
         customer.user = user;
-        await this.connection.getRepository(Customer).save(customer);
+        await this.connection.getRepository(Customer).save(customer, { reload: false });
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
         }
@@ -202,8 +202,8 @@ export class CustomerService {
             const oldIdentifier = user.identifier;
             user.identifier = newEmailAddress;
             customer.emailAddress = newEmailAddress;
-            await this.connection.getRepository(User).save(user);
-            await this.connection.getRepository(Customer).save(customer);
+            await this.connection.getRepository(User).save(user, { reload: false });
+            await this.connection.getRepository(Customer).save(customer, { reload: false });
             this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
             return true;
         }
@@ -220,14 +220,14 @@ export class CustomerService {
         }
         this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
         customer.emailAddress = user.identifier;
-        await this.connection.getRepository(Customer).save(customer);
+        await this.connection.getRepository(Customer).save(customer, { reload: false });
         return true;
     }
 
     async update(input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
         const updatedCustomer = patchEntity(customer, input);
-        await this.connection.getRepository(Customer).save(customer);
+        await this.connection.getRepository(Customer).save(customer, { reload: false });
         return assertFound(this.findOne(customer.id));
     }
 
@@ -270,7 +270,7 @@ export class CustomerService {
         });
         const createdAddress = await this.connection.manager.getRepository(Address).save(address);
         customer.addresses.push(createdAddress);
-        await this.connection.manager.save(customer);
+        await this.connection.manager.save(customer, { reload: false });
         await this.enforceSingleDefaultAddress(createdAddress.id, input);
         return createdAddress;
     }
@@ -285,7 +285,7 @@ export class CustomerService {
             address.country = translateDeep(address.country, ctx.languageCode);
         }
         const updatedAddress = patchEntity(address, input);
-        await this.connection.getRepository(Address).save(updatedAddress);
+        await this.connection.getRepository(Address).save(updatedAddress, { reload: false });
         await this.enforceSingleDefaultAddress(input.id, input);
         return updatedAddress;
     }
@@ -353,7 +353,7 @@ export class CustomerService {
                 if (addressToDelete.defaultBillingAddress) {
                     otherAddresses[0].defaultBillingAddress = true;
                 }
-                await this.connection.getRepository(Address).save(otherAddresses[0]);
+                await this.connection.getRepository(Address).save(otherAddresses[0], { reload: false });
             }
         }
     }

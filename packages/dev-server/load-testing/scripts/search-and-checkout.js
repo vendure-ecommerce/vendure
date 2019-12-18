@@ -31,7 +31,7 @@ export default function() {
     const data = getShippingMethodsQuery.post().data;
     const result = completeOrderMutation.post({ id: data.eligibleShippingMethods[0].id }).data;
     check(result, {
-        'Order completed': r => r.addPaymentToOrder.state === 'PaymentSettled',
+        'Order completed': r => r.addPaymentToOrder.state === 'PaymentAuthorized',
     });
 }
 

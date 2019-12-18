@@ -96,6 +96,7 @@ function sendMessage<T extends ExtensionMesssage>(type: T['type'], data: T['data
     };
 
     return new Observable<any>(subscriber => {
+        const hostWindow = window.opener || window.parent;
         const handleReply = (event: MessageEvent) => {
             const response: MessageResponse = event.data;
             if (response && response.requestId === requestId) {
@@ -113,10 +114,10 @@ function sendMessage<T extends ExtensionMesssage>(type: T['type'], data: T['data
             }
         };
         const tearDown = () => {
-            window.parent.postMessage({ requestId, type: 'cancellation', data: null }, targetOrigin);
+            hostWindow.postMessage({ requestId, type: 'cancellation', data: null }, targetOrigin);
         };
         window.addEventListener('message', handleReply);
-        window.parent.postMessage(message, targetOrigin);
+        hostWindow.postMessage(message, targetOrigin);
 
         return tearDown;
     });

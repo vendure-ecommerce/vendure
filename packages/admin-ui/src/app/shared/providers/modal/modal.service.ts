@@ -22,7 +22,7 @@ export interface Dialog<R = any> {
 
 export interface DialogButtonConfig<T> {
     label: string;
-    type: 'seconday' | 'primary' | 'danger';
+    type: 'secondary' | 'primary' | 'danger';
     returnValue?: T;
 }
 

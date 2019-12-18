@@ -163,7 +163,7 @@ export class ProductService {
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
         product.deletedAt = new Date();
-        await this.connection.getRepository(Product).save(product);
+        await this.connection.getRepository(Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
         return {
             result: DeletionResult.DELETED,
@@ -242,7 +242,7 @@ export class ProductService {
             product.optionGroups = [optionGroup];
         }
 
-        await this.connection.manager.save(product);
+        await this.connection.manager.save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -264,7 +264,7 @@ export class ProductService {
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 
-        await this.connection.manager.save(product);
+        await this.connection.manager.save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 

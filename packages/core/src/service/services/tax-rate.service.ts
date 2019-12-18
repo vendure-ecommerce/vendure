@@ -96,7 +96,7 @@ export class TaxRateService {
                 input.customerGroupId,
             );
         }
-        await this.connection.getRepository(TaxRate).save(updatedTaxRate);
+        await this.connection.getRepository(TaxRate).save(updatedTaxRate, { reload: false });
         await this.updateActiveTaxRates();
         await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));

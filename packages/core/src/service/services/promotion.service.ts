@@ -127,8 +127,8 @@ export class PromotionService {
             updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
         this.validatePromotionConditions(updatedPromotion);
-        (promotion.priorityScore = this.calculatePriorityScore(input)),
-            await this.connection.manager.save(updatedPromotion);
+        promotion.priorityScore = this.calculatePriorityScore(input);
+        await this.connection.manager.save(updatedPromotion, { reload: false });
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }

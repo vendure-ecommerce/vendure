@@ -22,7 +22,7 @@ export class GlobalSettingsService {
             const settings = new GlobalSettings({
                 availableLanguages: [DEFAULT_LANGUAGE_CODE],
             });
-            await this.connection.getRepository(GlobalSettings).save(settings);
+            await this.connection.getRepository(GlobalSettings).save(settings, { reload: false });
         }
     }
 

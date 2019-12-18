@@ -19,6 +19,7 @@ export { CurrencyInputComponent } from './components/currency-input/currency-inp
 export {
     CustomFieldControlComponent,
 } from './components/custom-field-control/custom-field-control.component';
+export { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 export { CustomerLabelComponent } from './components/customer-label/customer-label.component';
 export { DataTableColumnComponent } from './components/data-table/data-table-column.component';
 export { DataTableComponent } from './components/data-table/data-table.component';

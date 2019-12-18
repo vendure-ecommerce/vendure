@@ -65,7 +65,7 @@ export class ChannelService {
             const channel = await getEntityOrThrow(this.connection, Channel, id);
             entity.channels.push(channel);
         }
-        await this.connection.getRepository(entityType).save(entity as any);
+        await this.connection.getRepository(entityType).save(entity as any, { reload: false });
         return entity;
     }
 
@@ -83,7 +83,7 @@ export class ChannelService {
         for (const id of channelIds) {
             entity.channels = entity.channels.filter(c => !idsAreEqual(c.id, id));
         }
-        await this.connection.getRepository(entityType).save(entity as any);
+        await this.connection.getRepository(entityType).save(entity as any, { reload: false });
         return entity;
     }
 
@@ -163,7 +163,7 @@ export class ChannelService {
                 input.defaultShippingZoneId,
             );
         }
-        await this.connection.getRepository(Channel).save(updatedChannel);
+        await this.connection.getRepository(Channel).save(updatedChannel, { reload: false });
         await this.updateAllChannels();
         return assertFound(this.findOne(channel.id));
     }
@@ -199,10 +199,10 @@ export class ChannelService {
                 currencyCode: CurrencyCode.USD,
                 token: defaultChannelToken,
             });
-            await this.connection.manager.save(newDefaultChannel);
+            await this.connection.manager.save(newDefaultChannel, { reload: false });
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
-            await this.connection.manager.save(defaultChannel);
+            await this.connection.manager.save(defaultChannel, { reload: false });
         }
     }
 

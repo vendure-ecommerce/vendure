@@ -28,6 +28,9 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
         paymentOptions: {
             paymentMethodHandlers: [examplePaymentHandler],
         },
+        orderOptions: {
+            orderItemsLimit: 99999,
+        },
         logger: new DefaultLogger({ level: LogLevel.Info }),
         dbConnectionOptions: getMysqlConnectionOptions(count),
         authOptions: {

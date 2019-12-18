@@ -71,14 +71,14 @@ export class AdministratorService {
             throw new EntityNotFoundError('Administrator', input.id);
         }
         let updatedAdministrator = patchEntity(administrator, input);
-        await this.connection.manager.save(administrator);
+        await this.connection.manager.save(administrator, { reload: false });
 
         if (input.password) {
             administrator.user.passwordHash = await this.passwordCipher.hash(input.password);
         }
         if (input.roleIds) {
             administrator.user.roles = [];
-            await this.connection.manager.save(administrator.user);
+            await this.connection.manager.save(administrator.user, { reload: false });
             for (const roleId of input.roleIds) {
                 updatedAdministrator = await this.assignRole(administrator.id, roleId);
             }
@@ -99,7 +99,7 @@ export class AdministratorService {
             throw new EntityNotFoundError('Role', roleId);
         }
         administrator.user.roles.push(role);
-        await this.connection.manager.save(administrator.user);
+        await this.connection.manager.save(administrator.user, { reload: false });
         return administrator;
     }
 

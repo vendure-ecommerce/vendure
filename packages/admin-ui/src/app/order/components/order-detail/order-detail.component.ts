@@ -36,6 +36,8 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     history$: Observable<GetOrderHistory.Items[] | null>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
+    orderLineCustomFields: CustomFieldConfig[];
+    orderLineCustomFieldsVisible = false;
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -48,9 +50,19 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         super(route, router, serverConfigService);
     }
 
+    get visibileOrderLineCustomFields(): CustomFieldConfig[] {
+        return this.orderLineCustomFieldsVisible ? this.orderLineCustomFields : [];
+    }
+
+    get showElided(): boolean {
+        return !this.orderLineCustomFieldsVisible && 0 < this.orderLineCustomFields.length;
+    }
+
     ngOnInit() {
         this.init();
         this.customFields = this.getCustomFieldConfig('Order');
+        this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
+        this.orderLineCustomFieldsVisible = this.orderLineCustomFields.length < 2;
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
             switchMap(() => {
@@ -67,6 +79,10 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
 
     ngOnDestroy() {
         this.destroy();
+    }
+
+    toggleOrderLineCustomFields() {
+        this.orderLineCustomFieldsVisible = !this.orderLineCustomFieldsVisible;
     }
 
     getLinePromotions(line: OrderDetail.Lines) {

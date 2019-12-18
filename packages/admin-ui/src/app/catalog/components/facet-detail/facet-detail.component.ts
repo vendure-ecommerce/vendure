@@ -251,7 +251,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 title: _('catalog.confirm-delete-facet-value'),
                 body: message,
                 buttons: [
-                    { type: 'seconday', label: _('common.cancel') },
+                    { type: 'secondary', label: _('common.cancel') },
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })

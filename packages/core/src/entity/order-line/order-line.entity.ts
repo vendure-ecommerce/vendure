@@ -75,7 +75,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     get activeItems(): OrderItem[] {
-        return (this.items || []).filter(i => !i.cancellationId);
+        return (this.items || []).filter(i => !i.cancelled);
     }
 
     /**
