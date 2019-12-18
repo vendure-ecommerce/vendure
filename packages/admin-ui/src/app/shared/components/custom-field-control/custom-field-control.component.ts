@@ -3,15 +3,13 @@ import {
     Component,
     ComponentFactory,
     Input,
-    OnDestroy,
     OnInit,
     ViewChild,
     ViewContainerRef,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
 
-import { CustomFieldsFragment, LanguageCode, LocalizedString } from '../../../common/generated-types';
+import { CustomFieldsFragment } from '../../../common/generated-types';
 import {
     CustomFieldComponentService,
     CustomFieldControl,
@@ -28,7 +26,7 @@ import { DataService } from '../../../data/providers/data.service';
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
 })
-export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CustomFieldControlComponent implements OnInit, AfterViewInit {
     @Input() entityName: CustomFieldEntityName;
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldsFragment;
@@ -39,8 +37,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
     @ViewChild('customComponentPlaceholder', { read: ViewContainerRef, static: false })
     private customComponentPlaceholder: ViewContainerRef;
     private customComponentFactory: ComponentFactory<CustomFieldControl> | undefined;
-    private uiLanguageCode: LanguageCode;
-    private sub: Subscription;
 
     constructor(
         private dataService: DataService,
@@ -48,12 +44,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
     ) {}
 
     ngOnInit(): void {
-        this.sub = this.dataService.client
-            .uiState()
-            .mapStream(data => data.uiState.language)
-            .subscribe(language => {
-                this.uiLanguageCode = language;
-            });
         this.customComponentFactory = this.customFieldComponentService.getCustomFieldComponent(
             this.entityName,
             this.customField.name,
@@ -70,12 +60,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
             customComponentRef.instance.formControl = this.formGroup.get(
                 this.customField.name,
             ) as FormControl;
-        }
-    }
-
-    ngOnDestroy(): void {
-        if (this.sub) {
-            this.sub.unsubscribe();
         }
     }
 
@@ -99,12 +83,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
             return this.customField.options || [];
         }
         return [];
-    }
-
-    get label(): string | undefined {
-        if (this.showLabel) {
-            return this.getLabel(this.customField.name, this.customField.label);
-        }
     }
 
     get min(): string | number | undefined | null {
@@ -137,15 +115,6 @@ export class CustomFieldControlComponent implements OnInit, OnDestroy, AfterView
                 return this.customField.floatStep;
             case 'DateTimeCustomFieldConfig':
                 return this.customField.datetimeStep;
-        }
-    }
-
-    getLabel(defaultLabel: string, label?: LocalizedString[] | null): string {
-        if (label) {
-            const match = label.find(l => l.languageCode === this.uiLanguageCode);
-            return match ? match.value : label[0].value;
-        } else {
-            return defaultLabel;
         }
     }
 }

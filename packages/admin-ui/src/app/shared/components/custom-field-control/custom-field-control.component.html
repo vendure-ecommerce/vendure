@@ -1,5 +1,5 @@
 <div class="clr-form-control" *ngIf="compact">
-    <label for="basic" class="clr-control-label">{{ label }}</label>
+    <label for="basic" class="clr-control-label">{{ customField | customFieldLabel }}</label>
     <div class="clr-control-container">
         <div class="clr-input-wrapper">
             <ng-container *ngIf="hasCustomControl; else standardControls">
@@ -11,7 +11,7 @@
         </div>
     </div>
 </div>
-<vdr-form-field [label]="label" [for]="customField.name" *ngIf="!compact">
+<vdr-form-field [label]="customField | customFieldLabel" [for]="customField.name" *ngIf="!compact">
     <ng-container *ngIf="hasCustomControl; else standardControls">
         <div #customComponentPlaceholder></div>
     </ng-container>
@@ -35,7 +35,7 @@
         [disabled]="readonly || customField.readonly"
     >
         <option *ngFor="let option of stringOptions" [value]="option.value">
-            {{ getLabel(option.value, option.label) }}
+            {{ option | customFieldLabel }}
         </option>
     </select>
     <input
