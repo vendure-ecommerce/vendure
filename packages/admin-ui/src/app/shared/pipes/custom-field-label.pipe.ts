@@ -1,8 +1,8 @@
 import { OnDestroy, Pipe, PipeTransform } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/src/app/data/providers/data.service';
 import { Subscription } from 'rxjs';
 
 import { CustomFieldConfig, LanguageCode, StringFieldOption } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
 
 /**
  * Displays a localized label for a CustomField or StringFieldOption, falling back to the
