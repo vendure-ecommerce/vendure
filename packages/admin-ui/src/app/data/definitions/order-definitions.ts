@@ -62,6 +62,39 @@ export const FULFILLMENT_FRAGMENT = gql`
     }
 `;
 
+export const ORDER_LINE_FRAGMENT = gql`
+    fragment OrderLine on OrderLine {
+        id
+        featuredAsset {
+            preview
+        }
+        productVariant {
+            id
+            name
+            sku
+        }
+        adjustments {
+            ...Adjustment
+        }
+        unitPrice
+        unitPriceWithTax
+        quantity
+        items {
+            id
+            unitPrice
+            unitPriceIncludesTax
+            unitPriceWithTax
+            taxRate
+            refundId
+            cancelled
+            fulfillment {
+                ...Fulfillment
+            }
+        }
+        totalPrice
+    }
+`;
+
 export const ORDER_DETAIL_FRAGMENT = gql`
     fragment OrderDetail on Order {
         id
@@ -76,34 +109,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             lastName
         }
         lines {
-            id
-            featuredAsset {
-                preview
-            }
-            productVariant {
-                id
-                name
-                sku
-            }
-            adjustments {
-                ...Adjustment
-            }
-            unitPrice
-            unitPriceWithTax
-            quantity
-            items {
-                id
-                unitPrice
-                unitPriceIncludesTax
-                unitPriceWithTax
-                taxRate
-                refundId
-                cancelled
-                fulfillment {
-                    ...Fulfillment
-                }
-            }
-            totalPrice
+            ...OrderLine
         }
         adjustments {
             ...Adjustment
@@ -159,6 +165,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
     ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
     ${FULFILLMENT_FRAGMENT}
+    ${ORDER_LINE_FRAGMENT}
 `;
 
 export const GET_ORDERS_LIST = gql`

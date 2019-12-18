@@ -23,6 +23,23 @@
     }
 }
 
+.custom-field-header-button {
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    color: $color-primary-600;
+}
+
+.order-line-custom-field {
+    background-color: $color-grey-100;
+
+    .custom-field-ellipsis {
+        color: $color-grey-300;
+    }
+}
+
 .net-price {
     font-size: 11px;
     color: $color-grey-400;
