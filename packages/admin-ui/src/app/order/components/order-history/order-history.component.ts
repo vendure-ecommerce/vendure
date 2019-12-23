@@ -59,7 +59,7 @@ export class OrderHistoryComponent {
         }
     }
 
-    getFullfillment(entry: GetOrderHistory.Items): OrderDetail.Fulfillment | undefined {
+    getFullfillment(entry: GetOrderHistory.Items): OrderDetail.Fulfillments | undefined {
         if (entry.type === HistoryEntryType.ORDER_FULLFILLMENT && this.order.fulfillments) {
             return this.order.fulfillments.find(f => f.id === entry.data.fulfillmentId);
         }

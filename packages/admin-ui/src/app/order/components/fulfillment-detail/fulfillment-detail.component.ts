@@ -12,7 +12,7 @@ export class FulfillmentDetailComponent {
     @Input() fulfillmentId: string;
     @Input() order: OrderDetail.Fragment;
 
-    get fulfillment(): OrderDetail.Fulfillment | undefined | null {
+    get fulfillment(): OrderDetail.Fulfillments | undefined | null {
         return this.order.fulfillments && this.order.fulfillments.find(f => f.id === this.fulfillmentId);
     }
 
