@@ -4,7 +4,7 @@ type TaxRate implements Node {
     updatedAt: DateTime!
     name: String!
     enabled: Boolean!
-    value: Int!
+    value: Float!
     category: TaxCategory!
     zone: Zone!
     customerGroup: CustomerGroup

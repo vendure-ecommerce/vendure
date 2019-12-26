@@ -561,7 +561,7 @@ export type CreateTaxCategoryInput = {
 export type CreateTaxRateInput = {
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
-    value: Scalars['Int'];
+    value: Scalars['Float'];
     categoryId: Scalars['ID'];
     zoneId: Scalars['ID'];
     customerGroupId?: Maybe<Scalars['ID']>;
@@ -3146,7 +3146,7 @@ export type TaxRate = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
-    value: Scalars['Int'];
+    value: Scalars['Float'];
     category: TaxCategory;
     zone: Zone;
     customerGroup?: Maybe<CustomerGroup>;
@@ -3384,7 +3384,7 @@ export type UpdateTaxCategoryInput = {
 export type UpdateTaxRateInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
-    value?: Maybe<Scalars['Int']>;
+    value?: Maybe<Scalars['Float']>;
     enabled?: Maybe<Scalars['Boolean']>;
     categoryId?: Maybe<Scalars['ID']>;
     zoneId?: Maybe<Scalars['ID']>;
@@ -5091,6 +5091,39 @@ export type UpdateStockMutation = { __typename?: 'Mutation' } & {
     updateProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>>;
 };
 
+export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
+    TaxRate,
+    'id' | 'name' | 'value' | 'enabled'
+> & {
+        zone: { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>;
+        category: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
+        customerGroup: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+    };
+
+export type GetTaxRatesQueryVariables = {};
+
+export type GetTaxRatesQuery = { __typename?: 'Query' } & {
+    taxRates: { __typename?: 'TaxRateList' } & Pick<TaxRateList, 'totalItems'> & {
+            items: Array<{ __typename?: 'TaxRate' } & TaxRateFragment>;
+        };
+};
+
+export type GetTaxRateQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetTaxRateQuery = { __typename?: 'Query' } & {
+    taxRate: Maybe<{ __typename?: 'TaxRate' } & TaxRateFragment>;
+};
+
+export type CreateTaxRateMutationVariables = {
+    input: CreateTaxRateInput;
+};
+
+export type CreateTaxRateMutation = { __typename?: 'Mutation' } & {
+    createTaxRate: { __typename?: 'TaxRate' } & TaxRateFragment;
+};
+
 export type DeleteZoneMutationVariables = {
     id: Scalars['ID'];
 };
@@ -6290,6 +6323,32 @@ export namespace UpdateStock {
     export type Variables = UpdateStockMutationVariables;
     export type Mutation = UpdateStockMutation;
     export type UpdateProductVariants = VariantWithStockFragment;
+}
+
+export namespace TaxRate {
+    export type Fragment = TaxRateFragment;
+    export type Zone = TaxRateFragment['zone'];
+    export type Category = TaxRateFragment['category'];
+    export type CustomerGroup = NonNullable<TaxRateFragment['customerGroup']>;
+}
+
+export namespace GetTaxRates {
+    export type Variables = GetTaxRatesQueryVariables;
+    export type Query = GetTaxRatesQuery;
+    export type TaxRates = GetTaxRatesQuery['taxRates'];
+    export type Items = TaxRateFragment;
+}
+
+export namespace GetTaxRate {
+    export type Variables = GetTaxRateQueryVariables;
+    export type Query = GetTaxRateQuery;
+    export type TaxRate = TaxRateFragment;
+}
+
+export namespace CreateTaxRate {
+    export type Variables = CreateTaxRateMutationVariables;
+    export type Mutation = CreateTaxRateMutation;
+    export type CreateTaxRate = TaxRateFragment;
 }
 
 export namespace DeleteZone {

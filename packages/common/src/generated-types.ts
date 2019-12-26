@@ -561,7 +561,7 @@ export type CreateTaxCategoryInput = {
 export type CreateTaxRateInput = {
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
-  value: Scalars['Int'],
+  value: Scalars['Float'],
   categoryId: Scalars['ID'],
   zoneId: Scalars['ID'],
   customerGroupId?: Maybe<Scalars['ID']>,
@@ -3251,7 +3251,7 @@ export type TaxRate = Node & {
   updatedAt: Scalars['DateTime'],
   name: Scalars['String'],
   enabled: Scalars['Boolean'],
-  value: Scalars['Int'],
+  value: Scalars['Float'],
   category: TaxCategory,
   zone: Zone,
   customerGroup?: Maybe<CustomerGroup>,
@@ -3489,7 +3489,7 @@ export type UpdateTaxCategoryInput = {
 export type UpdateTaxRateInput = {
   id: Scalars['ID'],
   name?: Maybe<Scalars['String']>,
-  value?: Maybe<Scalars['Int']>,
+  value?: Maybe<Scalars['Float']>,
   enabled?: Maybe<Scalars['Boolean']>,
   categoryId?: Maybe<Scalars['ID']>,
   zoneId?: Maybe<Scalars['ID']>,

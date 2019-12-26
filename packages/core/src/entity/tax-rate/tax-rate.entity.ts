@@ -30,7 +30,7 @@ export class TaxRate extends AdjustmentSource {
 
     @Column() enabled: boolean;
 
-    @Column() value: number;
+    @Column({ type: 'decimal', precision: 5, scale: 2 }) value: number;
 
     @ManyToOne(type => TaxCategory)
     category: TaxCategory;
