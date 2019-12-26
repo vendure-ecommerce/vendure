@@ -24,6 +24,7 @@ import {
     GetCustomer,
     GetCustomerList,
     GetCustomerOrders,
+    GetCustomerWithUser,
     UpdateAddress,
     UpdateCustomer,
 } from './graphql/generated-e2e-admin-types';
@@ -84,6 +85,21 @@ describe('Customer resolver', () => {
         firstCustomer = result.customers.items[0];
         secondCustomer = result.customers.items[1];
         thirdCustomer = result.customers.items[2];
+    });
+
+    it('customer resolver resolves User', async () => {
+        const { customer } = await adminClient.query<
+            GetCustomerWithUser.Query,
+            GetCustomerWithUser.Variables
+        >(GET_CUSTOMER_WITH_USER, {
+            id: firstCustomer.id,
+        });
+
+        expect(customer!.user).toEqual({
+            id: 'T_2',
+            identifier: firstCustomer.emailAddress,
+            verified: true,
+        });
     });
 
     describe('addresses', () => {
@@ -428,6 +444,19 @@ describe('Customer resolver', () => {
         );
     });
 });
+
+const GET_CUSTOMER_WITH_USER = gql`
+    query GetCustomerWithUser($id: ID!) {
+        customer(id: $id) {
+            id
+            user {
+                id
+                identifier
+                verified
+            }
+        }
+    }
+`;
 
 const CREATE_ADDRESS = gql`
     mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {

@@ -2251,7 +2251,11 @@ export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
         shippingMethod: Maybe<
             { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
         >;
-        customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+        customer: Maybe<
+            { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                    user: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier'>>;
+                }
+        >;
         history: { __typename?: 'HistoryEntryList' } & {
             items: Array<{ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'>>;
         };
@@ -2617,6 +2621,7 @@ export namespace TestOrderFragment {
     export type ProductVariant = (NonNullable<TestOrderFragmentFragment['lines'][0]>)['productVariant'];
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
+    export type User = NonNullable<(NonNullable<TestOrderFragmentFragment['customer']>)['user']>;
     export type History = TestOrderFragmentFragment['history'];
     export type Items = NonNullable<TestOrderFragmentFragment['history']['items'][0]>;
 }

@@ -29,6 +29,10 @@ export const TEST_ORDER_FRAGMENT = gql`
         }
         customer {
             id
+            user {
+                id
+                identifier
+            }
         }
         history {
             items {

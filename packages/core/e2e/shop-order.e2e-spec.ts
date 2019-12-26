@@ -484,6 +484,14 @@ describe('Shop orders', () => {
             expect(result.activeOrder!.state).toBe('AddingItems');
         });
 
+        it('activeOrder resolves customer user', async () => {
+            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result.activeOrder!.customer!.user).toEqual({
+                id: 'T_2',
+                identifier: 'hayden.zieme12@hotmail.com',
+            });
+        });
+
         it('addItemToOrder with an existing productVariantId adds quantity to the existing OrderLine', async () => {
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrder.Mutation,

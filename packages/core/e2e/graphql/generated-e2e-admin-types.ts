@@ -3660,6 +3660,18 @@ export type DeleteCustomerAddressMutation = { __typename?: 'Mutation' } & Pick<
     'deleteCustomerAddress'
 >;
 
+export type GetCustomerWithUserQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetCustomerWithUserQuery = { __typename?: 'Query' } & {
+    customer: Maybe<
+        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                user: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified'>>;
+            }
+    >;
+};
+
 export type CreateAddressMutationVariables = {
     id: Scalars['ID'];
     input: CreateAddressInput;
@@ -5323,6 +5335,13 @@ export namespace CreateCountry {
 export namespace DeleteCustomerAddress {
     export type Variables = DeleteCustomerAddressMutationVariables;
     export type Mutation = DeleteCustomerAddressMutation;
+}
+
+export namespace GetCustomerWithUser {
+    export type Variables = GetCustomerWithUserQueryVariables;
+    export type Query = GetCustomerWithUserQuery;
+    export type Customer = NonNullable<GetCustomerWithUserQuery['customer']>;
+    export type User = NonNullable<(NonNullable<GetCustomerWithUserQuery['customer']>)['user']>;
 }
 
 export namespace CreateAddress {

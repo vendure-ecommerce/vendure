@@ -37,10 +37,10 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {
-        Product: [
+        /*Product: [
             { name: 'rating', type: 'float', readonly: true },
             { name: 'markup', type: 'float', internal: true },
-        ],
+        ],*/
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
