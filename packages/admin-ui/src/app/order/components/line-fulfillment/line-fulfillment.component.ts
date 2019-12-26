@@ -16,7 +16,7 @@ export class LineFulfillmentComponent implements OnChanges {
     @Input() orderState: string;
     fulfilledCount = 0;
     fulfillmentStatus: FulfillmentStatus;
-    fulfillments: Array<{ count: number; fulfillment: OrderDetail.Fulfillment }> = [];
+    fulfillments: Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> = [];
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
@@ -45,7 +45,7 @@ export class LineFulfillmentComponent implements OnChanges {
 
     private getFulfillments(
         line: OrderDetail.Lines,
-    ): Array<{ count: number; fulfillment: OrderDetail.Fulfillment }> {
+    ): Array<{ count: number; fulfillment: OrderDetail.Fulfillments }> {
         const counts: { [fulfillmentId: string]: number } = {};
 
         for (const item of line.items) {
@@ -61,7 +61,7 @@ export class LineFulfillmentComponent implements OnChanges {
             (fulfillments, item) => {
                 return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
             },
-            [] as OrderDetail.Fulfillment[],
+            [] as OrderDetail.Fulfillments[],
         );
 
         return Object.entries(counts).map(([id, count]) => {
