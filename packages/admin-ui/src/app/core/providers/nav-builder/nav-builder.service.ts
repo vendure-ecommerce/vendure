@@ -62,7 +62,10 @@ export class NavBuilderService {
      * `data-location-id` attribute.
      */
     addActionBarItem(config: ActionBarItem) {
-        this.addedActionBarItems.push(config);
+        this.addedActionBarItems.push({
+            requiresPermission: Permission.Authenticated,
+            ...config,
+        });
     }
 
     getRouterLink(config: { routerLink?: RouterLinkDefinition }, route: ActivatedRoute): string[] | null {
@@ -104,7 +107,9 @@ export class NavBuilderService {
                     if (!section) {
                         // tslint:disable-next-line:no-console
                         console.error(
-                            `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
+                            `Could not add menu item "${item.config.id}", section "${
+                                item.sectionId
+                            }" does not exist`,
                         );
                     } else {
                         const index = section.items.findIndex(i => i.id === item.before);
