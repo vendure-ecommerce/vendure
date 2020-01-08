@@ -208,6 +208,7 @@ export function addNavItems(navBuilderService: NavBuilderService) {
             locationId: 'product-detail',
             buttonStyle: 'outline',
             routerLink: ['./reviews'],
+            requiresPermission: 'SuperAdmin'
         });
     };
 }
