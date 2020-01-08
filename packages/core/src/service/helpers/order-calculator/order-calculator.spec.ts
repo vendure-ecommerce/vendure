@@ -541,6 +541,37 @@ describe('OrderCalculator', () => {
                 expect(order.total).toBe(126263);
                 expect(order.adjustments.length).toBe(1);
             });
+
+            it('empty string couponCode does not prevent promotion being applied', async () => {
+                const hasEmptyStringCouponCode = new Promotion({
+                    id: 2,
+                    name: 'Has empty string couponCode',
+                    couponCode: '',
+                    conditions: [
+                        {
+                            code: orderTotalCondition.code,
+                            args: [{ name: 'minimum', type: 'int', value: '10' }],
+                        },
+                    ],
+                    promotionConditions: [orderTotalCondition],
+                    actions: [
+                        {
+                            code: percentageOrderAction.code,
+                            args: [{ name: 'discount', type: 'int', value: '10' }],
+                        },
+                    ],
+                    promotionActions: [percentageOrderAction],
+                });
+
+                const ctx = createRequestContext(false);
+                const order = createOrder({
+                    lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
+                });
+                await orderCalculator.applyPriceAdjustments(ctx, order, [hasEmptyStringCouponCode]);
+
+                expect(order.adjustments.length).toBe(1);
+                expect(order.adjustments[0].description).toBe(hasEmptyStringCouponCode.name);
+            });
         });
     });
 });
