@@ -29,7 +29,7 @@ export class Product extends VendureEntity
         super(input);
     }
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     name: LocaleString;
