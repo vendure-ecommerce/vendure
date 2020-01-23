@@ -7,22 +7,18 @@ import { FSM, StateMachineConfig } from '../../../common/finite-state-machine';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
-import { EventBus } from '../../../event-bus/event-bus';
-import { RefundStateTransitionEvent } from '../../../event-bus/events/refund-state-transition-event';
 import { HistoryService } from '../../services/history.service';
 
 import { RefundState, refundStateTransitions, RefundTransitionData } from './refund-state';
 
 @Injectable()
 export class RefundStateMachine {
-
     private readonly config: StateMachineConfig<RefundState, RefundTransitionData> = {
         transitions: refundStateTransitions,
         onTransitionStart: async (fromState, toState, data) => {
             return true;
         },
         onTransitionEnd: async (fromState, toState, data) => {
-            this.eventBus.publish(new RefundStateTransitionEvent(fromState, toState, data.ctx, data.refund, data.order));
             await this.historyService.createHistoryEntryForOrder({
                 ctx: data.ctx,
                 orderId: data.order.id,
@@ -43,9 +39,7 @@ export class RefundStateMachine {
         },
     };
 
-    constructor(private configService: ConfigService,
-                private historyService: HistoryService,
-                private eventBus: EventBus) {}
+    constructor(private configService: ConfigService, private historyService: HistoryService) {}
 
     getNextStates(refund: Refund): RefundState[] {
         const fsm = new FSM(this.config, refund.state);

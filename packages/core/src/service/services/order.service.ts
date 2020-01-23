@@ -38,6 +38,10 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { User } from '../../entity/user/user.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
+import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
+import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
@@ -76,6 +80,7 @@ export class OrderService {
         private refundStateMachine: RefundStateMachine,
         private historyService: HistoryService,
         private promotionService: PromotionService,
+        private eventBus: EventBus,
     ) {}
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -378,8 +383,10 @@ export class OrderService {
 
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        const fromState = order.state;
         await this.orderStateMachine.transition(ctx, order, state);
         await this.connection.getRepository(Order).save(order, { reload: false });
+        this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
     }
 
@@ -423,9 +430,14 @@ export class OrderService {
         const payment = await getEntityOrThrow(this.connection, Payment, paymentId, { relations: ['order'] });
         const settlePaymentResult = await this.paymentMethodService.settlePayment(payment, payment.order);
         if (settlePaymentResult.success) {
-            await this.paymentStateMachine.transition(ctx, payment.order, payment, 'Settled');
+            const fromState = payment.state;
+            const toState = 'Settled';
+            await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
             payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
             await this.connection.getRepository(Payment).save(payment, { reload: false });
+            this.eventBus.publish(
+                new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
+            );
             if (payment.amount === payment.order.total) {
                 await this.transitionToState(ctx, payment.order.id, 'PaymentSettled');
             }
@@ -642,8 +654,14 @@ export class OrderService {
             relations: ['payment', 'payment.order'],
         });
         refund.transactionId = input.transactionId;
-        await this.refundStateMachine.transition(ctx, refund.payment.order, refund, 'Settled');
-        return this.connection.getRepository(Refund).save(refund);
+        const fromState = refund.state;
+        const toState = 'Settled';
+        await this.refundStateMachine.transition(ctx, refund.payment.order, refund, toState);
+        await this.connection.getRepository(Refund).save(refund);
+        this.eventBus.publish(
+            new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
+        );
+        return refund;
     }
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
