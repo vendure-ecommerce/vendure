@@ -105,7 +105,7 @@ export class FSM<T extends string, Data = any> {
      * Returns true if the machine can transition from its current state to the given state.
      */
     canTransitionTo(state: T): boolean {
-        return -1 < this.config.transitions[this._currentState].to.indexOf(state);
+        return this.config.transitions[this._currentState] && -1 < this.config.transitions[this._currentState].to.indexOf(state);
     }
 
     private onError(fromState: T, toState: T, message?: string) {
