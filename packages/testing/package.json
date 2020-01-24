@@ -40,7 +40,9 @@
     "sql.js": "^1.0.0"
   },
   "devDependencies": {
+    "@types/mysql": "^2.15.8",
     "@vendure/core": "^0.7.0",
+    "mysql": "^2.17.1",
     "rimraf": "^3.0.0",
     "typescript": "^3.6.4"
   }

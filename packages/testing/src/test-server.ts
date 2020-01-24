@@ -3,7 +3,9 @@ import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, Logger, VendureConfig } from '@vendure/core';
 import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 import fs from 'fs';
+import { Connection } from 'mysql';
 import path from 'path';
+import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
 import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
 import { populateForTesting } from './data-population/populate-for-testing';
@@ -31,16 +33,19 @@ export class TestServer {
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
     async init(options: TestServerOptions): Promise<void> {
-        const dbFilePath = this.getDbFilePath(options.dataDir);
-        (this.vendureConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
-        if (!fs.existsSync(dbFilePath)) {
-            if (options.logging) {
-                console.log(`Test data not found. Populating database and caching...`);
-            }
-            await this.populateInitialData(this.vendureConfig, options);
-        }
-        if (options.logging) {
-            console.log(`Loading test data from "${dbFilePath}"`);
+        const { type } = this.vendureConfig.dbConnectionOptions;
+        switch (type) {
+            case 'sqljs':
+                await this.initSqljs(options);
+                break;
+            case 'mysql':
+                await this.initMysql(
+                    this.vendureConfig.dbConnectionOptions as MysqlConnectionOptions,
+                    options,
+                );
+                break;
+            default:
+                throw new Error(`The TestServer does not support the database type "${type}"`);
         }
         const [app, worker] = await this.bootstrapForTesting(this.vendureConfig);
         if (app) {
@@ -68,15 +73,79 @@ export class TestServer {
         }
     }
 
+    private async initSqljs(options: TestServerOptions) {
+        const dbFilePath = this.getDbFilePath(options.dataDir);
+        (this.vendureConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
+        if (!fs.existsSync(dbFilePath)) {
+            if (options.logging) {
+                console.log(`Test data not found. Populating database and caching...`);
+            }
+            await this.populateInitialData(this.vendureConfig, options);
+        }
+        if (options.logging) {
+            console.log(`Loading test data from "${dbFilePath}"`);
+        }
+    }
+
+    private async initMysql(connectionOptions: MysqlConnectionOptions, options: TestServerOptions) {
+        const filename = this.getCallerFilename(2);
+        const conn = await this.getMysqlConnection(connectionOptions);
+        const dbName = 'e2e_' + path.basename(filename).replace(/[^a-z0-9_]/gi, '_');
+        (connectionOptions as any).database = dbName;
+        (connectionOptions as any).synchronize = true;
+        await new Promise((resolve, reject) => {
+            conn.query(`DROP DATABASE IF EXISTS ${dbName}`, err => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+        await new Promise((resolve, reject) => {
+            conn.query(`CREATE DATABASE IF NOT EXISTS ${dbName}`, err => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+        await this.populateInitialData(this.vendureConfig, options);
+        conn.destroy();
+    }
+
+    private async getMysqlConnection(connectionOptions: MysqlConnectionOptions): Promise<Connection> {
+        const { createConnection } = await import('mysql');
+        const conn = createConnection({
+            host: connectionOptions.host,
+            port: connectionOptions.port,
+            user: connectionOptions.username,
+            password: connectionOptions.password,
+        });
+        await new Promise((resolve, reject) => {
+            conn.connect(err => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                resolve();
+            });
+        });
+        return conn;
+    }
+
     private getDbFilePath(dataDir: string) {
         // tslint:disable-next-line:no-non-null-assertion
-        const testFilePath = this.getCallerFilename(2);
+        const testFilePath = this.getCallerFilename(3);
         const dbFileName = path.basename(testFilePath) + '.sqlite';
         const dbFilePath = path.join(dataDir, dbFileName);
         return dbFilePath;
     }
 
-    private getCallerFilename(depth: number) {
+    private getCallerFilename(depth: number): string {
         let pst: ErrorConstructor['prepareStackTrace'];
         let stack: any;
         let file: any;
@@ -106,7 +175,11 @@ export class TestServer {
         testingConfig: Required<VendureConfig>,
         options: TestServerOptions,
     ): Promise<void> {
-        (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
+        const isSqljs = testingConfig.dbConnectionOptions.type === 'sqljs';
+        if (isSqljs) {
+            (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
+            (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).synchronize = true;
+        }
 
         const [app, worker] = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
@@ -117,7 +190,9 @@ export class TestServer {
         }
         await app.close();
 
-        (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
+        if (isSqljs) {
+            (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
+        }
     }
 
     /**
