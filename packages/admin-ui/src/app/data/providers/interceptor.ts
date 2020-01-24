@@ -85,7 +85,8 @@ export class DefaultInterceptor implements HttpInterceptor {
                 if (firstCode === 'FORBIDDEN') {
                     this.authService.logOut().subscribe(() => {
                         if (!window.location.pathname.includes('login')) {
-                            this.displayErrorNotification(_(`error.403-forbidden`));
+                            const path = graqhQLErrors[0].path.join(' > ');
+                            this.displayErrorNotification(_(`error.403-forbidden`), { path });
                         }
                         this.router.navigate(['/login'], {
                             queryParams: {
