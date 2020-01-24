@@ -14,6 +14,8 @@ import { assertNever } from 'shared/shared-utils';
 
 import { ActionBarItem } from '../../../core/providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../../core/providers/nav-builder/nav-builder.service';
+import { NotificationService } from '../../../core/providers/notification/notification.service';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-action-bar-items',
@@ -29,7 +31,12 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
     items$: Observable<ActionBarItem[]>;
     private locationId$ = new BehaviorSubject<string>('');
 
-    constructor(private navBuilderService: NavBuilderService, private route: ActivatedRoute) {}
+    constructor(
+        private navBuilderService: NavBuilderService,
+        private route: ActivatedRoute,
+        private dataService: DataService,
+        private notificationService: NotificationService,
+    ) {}
 
     ngOnInit() {
         this.items$ = combineLatest(this.navBuilderService.actionBarConfig$, this.locationId$).pipe(
@@ -45,7 +52,11 @@ export class ActionBarItemsComponent implements OnInit, OnChanges {
 
     handleClick(event: MouseEvent, item: ActionBarItem) {
         if (typeof item.onClick === 'function') {
-            item.onClick(event, this.route);
+            item.onClick(event, {
+                route: this.route,
+                dataService: this.dataService,
+                notificationService: this.notificationService,
+            });
         }
     }
 
