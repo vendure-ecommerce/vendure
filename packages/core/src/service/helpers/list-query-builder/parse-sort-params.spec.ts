@@ -145,5 +145,8 @@ export class MockConnection {
             columns: this.columnsMap.get(entity) || [],
             relations: this.relationsMap.get(entity) || [],
         };
-    }
+    };
+    readonly options = {
+        type: 'sqljs',
+    };
 }
