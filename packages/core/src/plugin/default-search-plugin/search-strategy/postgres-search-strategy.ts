@@ -58,9 +58,6 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 .addSelect('MAX("priceWithTax")', 'maxPriceWithTax');
         }
         this.applyTermAndFilters(ctx, qb, input);
-        if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
-        }
 
         if (sort) {
             if (sort.name) {
@@ -68,6 +65,12 @@ export class PostgresSearchStrategy implements SearchStrategy {
             }
             if (sort.price) {
                 qb.addOrderBy('"si_price"', sort.price);
+            }
+        } else {
+            if (input.term && input.term.length > this.minTermLength) {
+                qb.addOrderBy('score', 'DESC');
+            } else {
+                qb.addOrderBy('"si_productVariantId"', 'ASC');
             }
         }
         if (enabledOnly) {
