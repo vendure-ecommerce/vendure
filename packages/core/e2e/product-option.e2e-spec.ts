@@ -25,7 +25,6 @@ describe('ProductOption resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             customerCount: 1,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),

@@ -3498,7 +3498,7 @@ export type GetProductsWithVariantIdsQuery = { __typename?: 'Query' } & {
     products: { __typename?: 'ProductList' } & {
         items: Array<
             { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                    variants: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>>;
+                    variants: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
                 }
         >;
     };
@@ -5091,15 +5091,6 @@ export type UpdateStockMutation = { __typename?: 'Mutation' } & {
     updateProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>>;
 };
 
-export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
-    TaxRate,
-    'id' | 'name' | 'value' | 'enabled'
-> & {
-        zone: { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>;
-        category: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
-        customerGroup: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
-    };
-
 export type GetTaxRatesQueryVariables = {};
 
 export type GetTaxRatesQuery = { __typename?: 'Query' } & {
@@ -6323,13 +6314,6 @@ export namespace UpdateStock {
     export type Variables = UpdateStockMutationVariables;
     export type Mutation = UpdateStockMutation;
     export type UpdateProductVariants = VariantWithStockFragment;
-}
-
-export namespace TaxRate {
-    export type Fragment = TaxRateFragment;
-    export type Zone = TaxRateFragment['zone'];
-    export type Category = TaxRateFragment['category'];
-    export type CustomerGroup = NonNullable<TaxRateFragment['customerGroup']>;
 }
 
 export namespace GetTaxRates {

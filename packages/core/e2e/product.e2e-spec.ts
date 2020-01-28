@@ -40,6 +40,7 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { sortById } from './utils/test-order-utils';
 
 // tslint:disable:no-non-null-assertion
 
@@ -48,7 +49,6 @@ describe('Product resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             customerCount: 1,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
@@ -151,8 +151,8 @@ describe('Product resolver', () => {
                 'Orchid',
                 'Road Bike',
                 'Running Shoe',
-                'SLR Camera',
                 'Skipping Rope',
+                'Slr Camera',
                 'Spiky Cactus',
                 'Tent',
                 'Tripod',
@@ -205,8 +205,8 @@ describe('Product resolver', () => {
                 'Orchid',
                 'Road Bike',
                 'Running Shoe',
-                'SLR Camera',
                 'Skipping Rope',
+                'Slr Camera',
                 'Spiky Cactus',
                 'Tent',
                 'Tripod',
@@ -338,7 +338,11 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.createProduct).toMatchSnapshot();
+            expect(omit(result.createProduct, ['translations'])).toMatchSnapshot();
+            expect(result.createProduct.translations.map(t => t.description).sort()).toEqual([
+                'A baked potato',
+                'Eine baked Erdapfel',
+            ]);
             newProduct = result.createProduct;
         });
 
@@ -394,7 +398,10 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.updateProduct).toMatchSnapshot();
+            expect(result.updateProduct.translations.map(t => t.description).sort()).toEqual([
+                'A blob of mashed potato',
+                'Eine blob von gemashed Erdapfel',
+            ]);
         });
 
         it('slug is normalized to be url-safe', async () => {
@@ -490,9 +497,15 @@ describe('Product resolver', () => {
                 },
             );
             expect(result.updateProduct.translations.length).toBe(2);
-            expect(result.updateProduct.translations[0].name).toBe('de Mashed Potato');
-            expect(result.updateProduct.translations[1].name).toBe('en Very Mashed Potato');
-            expect(result.updateProduct.translations[1].description).toBe('Possibly the final baked potato');
+            expect(
+                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.de)!.name,
+            ).toBe('de Mashed Potato');
+            expect(
+                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.en)!.name,
+            ).toBe('en Very Mashed Potato');
+            expect(
+                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.en)!.description,
+            ).toBe('Possibly the final baked potato');
         });
 
         it('updateProduct adds Assets to a product and sets featured asset', async () => {
@@ -777,10 +790,12 @@ describe('Product resolver', () => {
                     ],
                 });
                 expect(createProductVariants[0]!.name).toBe('Variant 1');
-                expect(createProductVariants[0]!.options.map(pick(['id']))).toEqual([
-                    { id: optionGroup2.options[0].id },
-                    { id: optionGroup3.options[0].id },
-                ]);
+                expect(createProductVariants[0]!.options.map(pick(['id']))).toContainEqual({
+                    id: optionGroup2.options[0].id,
+                });
+                expect(createProductVariants[0]!.options.map(pick(['id']))).toContainEqual({
+                    id: optionGroup3.options[0].id,
+                });
             });
 
             it('createProductVariants adds multiple variants at once', async () => {
@@ -803,16 +818,13 @@ describe('Product resolver', () => {
                         },
                     ],
                 });
-                expect(createProductVariants[0]!.name).toBe('Variant 2');
-                expect(createProductVariants[1]!.name).toBe('Variant 3');
-                expect(createProductVariants[0]!.options.map(pick(['id']))).toEqual([
-                    { id: optionGroup2.options[1].id },
-                    { id: optionGroup3.options[0].id },
-                ]);
-                expect(createProductVariants[1]!.options.map(pick(['id']))).toEqual([
-                    { id: optionGroup2.options[1].id },
-                    { id: optionGroup3.options[1].id },
-                ]);
+                const variant2 = createProductVariants.find(v => v!.name === 'Variant 2')!;
+                const variant3 = createProductVariants.find(v => v!.name === 'Variant 3')!;
+                expect(variant2.options.map(pick(['id']))).toContainEqual({ id: optionGroup2.options[1].id });
+                expect(variant2.options.map(pick(['id']))).toContainEqual({ id: optionGroup3.options[0].id });
+                expect(variant3.options.map(pick(['id']))).toContainEqual({ id: optionGroup2.options[1].id });
+                expect(variant3.options.map(pick(['id']))).toContainEqual({ id: optionGroup3.options[1].id });
+
                 variants = createProductVariants.filter(notNullOrUndefined);
             });
 
@@ -832,7 +844,7 @@ describe('Product resolver', () => {
                             ],
                         },
                     );
-                }, 'A ProductVariant already exists with the options: 16gb, 24-inch'),
+                }, 'A ProductVariant already exists with the options:'),
             );
 
             it('updateProductVariants updates variants', async () => {
@@ -978,13 +990,14 @@ describe('Product resolver', () => {
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
-                expect(result1.product!.variants.map(v => v.id)).toEqual(['T_35', 'T_36', 'T_37']);
+                const sortedVariantIds = result1.product!.variants.map(v => v.id).sort();
+                expect(sortedVariantIds).toEqual(['T_35', 'T_36', 'T_37']);
 
                 const { deleteProductVariant } = await adminClient.query<
                     DeleteProductVariant.Mutation,
                     DeleteProductVariant.Variables
                 >(DELETE_PRODUCT_VARIANT, {
-                    id: result1.product!.variants[0].id,
+                    id: sortedVariantIds[0],
                 });
 
                 expect(deleteProductVariant.result).toBe(DeletionResult.DELETED);
@@ -995,7 +1008,7 @@ describe('Product resolver', () => {
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
-                expect(result2.product!.variants.map(v => v.id)).toEqual(['T_36', 'T_37']);
+                expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
             });
         });
     });
@@ -1005,7 +1018,16 @@ describe('Product resolver', () => {
         let productToDelete: GetProductList.Items;
 
         beforeAll(async () => {
-            const result = await adminClient.query<GetProductList.Query>(GET_PRODUCT_LIST);
+            const result = await adminClient.query<GetProductList.Query, GetProductList.Variables>(
+                GET_PRODUCT_LIST,
+                {
+                    options: {
+                        sort: {
+                            id: SortOrder.ASC,
+                        },
+                    },
+                },
+            );
             allProducts = result.products.items;
         });
 

@@ -1,3 +1,4 @@
+import { omit } from '@vendure/common/lib/omit';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -16,7 +17,6 @@ describe('Import resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-empty.csv'),
             customerCount: 0,
@@ -160,6 +160,46 @@ describe('Import resolver', () => {
         );
 
         expect(productResult.products.totalItems).toBe(4);
-        expect(productResult.products.items).toMatchSnapshot();
+
+        const paperStretcher = productResult.products.items.find(
+            (p: any) => p.name === 'Perfect Paper Stretcher',
+        );
+        const easel = productResult.products.items.find((p: any) => p.name === 'Mabef M/02 Studio Easel');
+        const pencils = productResult.products.items.find((p: any) => p.name === 'Giotto Mega Pencils');
+        const smock = productResult.products.items.find((p: any) => p.name === 'Artists Smock');
+
+        // Omit FacetValues & options due to variations in the ordering between different DB engines
+        expect(omit(paperStretcher, ['facetValues', 'options'], true)).toMatchSnapshot();
+        expect(omit(easel, ['facetValues', 'options'], true)).toMatchSnapshot();
+        expect(omit(pencils, ['facetValues', 'options'], true)).toMatchSnapshot();
+        expect(omit(smock, ['facetValues', 'options'], true)).toMatchSnapshot();
+
+        const byName = (e: { name: string }) => e.name;
+        const byCode = (e: { code: string }) => e.code;
+
+        expect(paperStretcher.facetValues).toEqual([]);
+        expect(easel.facetValues).toEqual([]);
+        expect(pencils.facetValues).toEqual([]);
+        expect(smock.facetValues.map(byName).sort()).toEqual(['Denim', 'clothes']);
+
+        expect(paperStretcher.variants[0].facetValues.map(byName).sort()).toEqual(['Accessory', 'KB']);
+        expect(paperStretcher.variants[1].facetValues.map(byName).sort()).toEqual(['Accessory', 'KB']);
+        expect(paperStretcher.variants[2].facetValues.map(byName).sort()).toEqual(['Accessory', 'KB']);
+        expect(paperStretcher.variants[0].options.map(byCode).sort()).toEqual(['half-imperial']);
+        expect(paperStretcher.variants[1].options.map(byCode).sort()).toEqual(['quarter-imperial']);
+        expect(paperStretcher.variants[2].options.map(byCode).sort()).toEqual(['full-imperial']);
+        expect(easel.variants[0].facetValues.map(byName).sort()).toEqual(['Easel', 'Mabef']);
+        expect(pencils.variants[0].facetValues.map(byName).sort()).toEqual(['Xmas Sale']);
+        expect(pencils.variants[1].facetValues.map(byName).sort()).toEqual(['Xmas Sale']);
+        expect(pencils.variants[0].options.map(byCode).sort()).toEqual(['box-of-8']);
+        expect(pencils.variants[1].options.map(byCode).sort()).toEqual(['box-of-12']);
+        expect(smock.variants[0].facetValues.map(byName).sort()).toEqual([]);
+        expect(smock.variants[1].facetValues.map(byName).sort()).toEqual([]);
+        expect(smock.variants[2].facetValues.map(byName).sort()).toEqual([]);
+        expect(smock.variants[3].facetValues.map(byName).sort()).toEqual([]);
+        expect(smock.variants[0].options.map(byCode).sort()).toEqual(['beige', 'small']);
+        expect(smock.variants[1].options.map(byCode).sort()).toEqual(['beige', 'large']);
+        expect(smock.variants[2].options.map(byCode).sort()).toEqual(['navy', 'small']);
+        expect(smock.variants[3].options.map(byCode).sort()).toEqual(['large', 'navy']);
     }, 20000);
 });

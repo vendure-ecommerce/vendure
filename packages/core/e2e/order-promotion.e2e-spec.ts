@@ -67,7 +67,6 @@ describe('Promotions applied to Orders', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
             customerCount: 2,

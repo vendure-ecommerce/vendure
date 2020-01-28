@@ -44,7 +44,6 @@ describe('Channels', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
@@ -289,7 +288,7 @@ describe('Channels', () => {
                 },
             });
 
-            expect(assignProductsToChannel[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
             await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { product } = await adminClient.query<
                 GetProductWithVariants.Query,
@@ -318,7 +317,7 @@ describe('Channels', () => {
                 },
             });
 
-            expect(assignProductsToChannel[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
         it(
@@ -365,7 +364,7 @@ describe('Channels', () => {
                 productIds: [PROD_ID],
             },
         });
-        expect(assignProductsToChannel[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+        expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
 
         const { deleteChannel } = await adminClient.query<DeleteChannel.Mutation, DeleteChannel.Variables>(
             DELETE_CHANNEL,
@@ -377,7 +376,7 @@ describe('Channels', () => {
         expect(deleteChannel.result).toBe(DeletionResult.DELETED);
 
         const { channels } = await adminClient.query<GetChannels.Query>(GET_CHANNELS);
-        expect(channels.map(c => c.id)).toEqual(['T_1', 'T_3']);
+        expect(channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
 
         const { product } = await adminClient.query<
             GetProductWithVariants.Query,

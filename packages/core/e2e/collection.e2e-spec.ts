@@ -61,7 +61,6 @@ describe('Collection resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-collections.csv'),
             customerCount: 1,
@@ -846,6 +845,7 @@ describe('Collection resolver', () => {
                         ],
                     },
                 });
+                await awaitRunningJobs(adminClient);
                 return createCollection;
             }
 
@@ -931,12 +931,13 @@ describe('Collection resolver', () => {
             beforeAll(async () => {
                 const result = await adminClient.query<GetProductsWithVariantIds.Query>(gql`
                     query GetProductsWithVariantIds {
-                        products {
+                        products(options: { sort: { id: ASC } }) {
                             items {
                                 id
                                 name
                                 variants {
                                     id
+                                    name
                                 }
                             }
                         }
@@ -975,13 +976,15 @@ describe('Collection resolver', () => {
             });
 
             it('updates contents when ProductVariant is updated', async () => {
-                const gamingPcFirstVariant = products.find(p => p.name === 'Gaming PC')!.variants[0];
+                const gamingPc240GB = products
+                    .find(p => p.name === 'Gaming PC')!
+                    .variants.find(v => v.name.includes('240GB'))!;
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: [
                             {
-                                id: gamingPcFirstVariant.id,
+                                id: gamingPc240GB.id,
                                 facetValueIds: [getFacetValueId('pear')],
                             },
                         ],
@@ -1007,18 +1010,23 @@ describe('Collection resolver', () => {
             });
 
             it('correctly filters when ProductVariant and Product both have matching FacetValue', async () => {
-                const gamingPcFirstVariant = products.find(p => p.name === 'Gaming PC')!.variants[0];
+                const gamingPc240GB = products
+                    .find(p => p.name === 'Gaming PC')!
+                    .variants.find(v => v.name.includes('240GB'))!;
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
                         input: [
                             {
-                                id: gamingPcFirstVariant.id,
+                                id: gamingPc240GB.id,
                                 facetValueIds: [getFacetValueId('electronics'), getFacetValueId('pear')],
                             },
                         ],
                     },
                 );
+
+                await awaitRunningJobs(adminClient);
+
                 const result = await adminClient.query<
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
@@ -1037,6 +1045,7 @@ describe('Collection resolver', () => {
         });
 
         it('filter inheritance of nested collections (issue #158)', async () => {
+            const a = 1;
             const { createCollection: pearElectronics } = await adminClient.query<
                 CreateCollectionSelectVariants.Mutation,
                 CreateCollectionSelectVariants.Variables
@@ -1189,7 +1198,7 @@ const GET_COLLECTIONS = gql`
 const GET_COLLECTION_PRODUCT_VARIANTS = gql`
     query GetCollectionProducts($id: ID!) {
         collection(id: $id) {
-            productVariants {
+            productVariants(options: { sort: { id: ASC } }) {
                 items {
                     id
                     name

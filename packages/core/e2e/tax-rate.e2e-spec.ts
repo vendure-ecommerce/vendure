@@ -7,14 +7,15 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
+import { TAX_RATE_FRAGMENT } from './graphql/fragments';
 import { CreateTaxRate, GetTaxRate, GetTaxRates, UpdateTaxRate } from './graphql/generated-e2e-admin-types';
+import { UPDATE_TAX_RATE } from './graphql/shared-definitions';
 
 describe('TaxRate resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 2,
@@ -80,27 +81,6 @@ describe('TaxRate resolver', () => {
     });
 });
 
-export const TAX_RATE_FRAGMENT = gql`
-    fragment TaxRate on TaxRate {
-        id
-        name
-        value
-        enabled
-        zone {
-            id
-            name
-        }
-        category {
-            id
-            name
-        }
-        customerGroup {
-            id
-            name
-        }
-    }
-`;
-
 export const GET_TAX_RATES_LIST = gql`
     query GetTaxRates {
         taxRates {
@@ -125,15 +105,6 @@ export const GET_TAX_RATE = gql`
 export const CREATE_TAX_RATE = gql`
     mutation CreateTaxRate($input: CreateTaxRateInput!) {
         createTaxRate(input: $input) {
-            ...TaxRate
-        }
-    }
-    ${TAX_RATE_FRAGMENT}
-`;
-
-export const UPDATE_TAX_RATE = gql`
-    mutation UpdateTaxRate($input: UpdateTaxRateInput!) {
-        updateTaxRate(input: $input) {
             ...TaxRate
         }
     }
