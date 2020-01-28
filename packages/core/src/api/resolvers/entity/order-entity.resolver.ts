@@ -1,5 +1,5 @@
 import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
-import { OrderHistoryArgs } from '@vendure/common/lib/generated-types';
+import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../../service/services/history.service';
@@ -46,7 +46,11 @@ export class OrderEntityResolver {
     @ResolveProperty()
     async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: OrderHistoryArgs) {
         const publicOnly = apiType === 'shop';
-        return this.historyService.getHistoryForOrder(order.id, publicOnly, args.options || undefined);
+        const options: HistoryEntryListOptions = { ...args.options };
+        if (!options.sort) {
+            options.sort = { createdAt: SortOrder.ASC };
+        }
+        return this.historyService.getHistoryForOrder(order.id, publicOnly, options);
     }
 
     @ResolveProperty()

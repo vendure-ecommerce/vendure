@@ -110,6 +110,8 @@ export class OrderService {
             .leftJoinAndSelect('items.fulfillment', 'fulfillment')
             .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
             .where('order.id = :orderId', { orderId })
+            .addOrderBy('lines.createdAt', 'ASC')
+            .addOrderBy('items.createdAt', 'ASC')
             .getOne();
         if (order) {
             order.lines.forEach(line => {
@@ -839,6 +841,7 @@ export class OrderService {
             .getRepository(OrderLine)
             .findByIds(orderLinesInput.map(l => l.orderLineId), {
                 relations: ['order', 'items', 'items.fulfillment'],
+                order: { id: 'ASC' },
             });
         for (const line of lines) {
             const inputLine = orderLinesInput.find(l => idsAreEqual(l.orderLineId, line.id));
@@ -849,7 +852,7 @@ export class OrderService {
             if (!orders.has(order.id)) {
                 orders.set(order.id, order);
             }
-            const matchingItems = line.items.filter(itemMatcher);
+            const matchingItems = line.items.sort((a, b) => (a.id < b.id ? -1 : 1)).filter(itemMatcher);
             if (matchingItems.length < inputLine.quantity) {
                 throw new IllegalOperationError(noMatchesError);
             }

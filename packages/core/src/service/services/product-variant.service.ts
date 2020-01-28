@@ -109,6 +109,9 @@ export class ProductVariantService {
                     'assets',
                     'featuredAsset',
                 ],
+                order: {
+                    id: 'ASC',
+                },
             })
             .then(variants =>
                 variants.map(variant => {

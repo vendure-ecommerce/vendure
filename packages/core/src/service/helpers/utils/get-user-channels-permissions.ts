@@ -34,5 +34,5 @@ export function getUserChannelsPermissions(user: User): UserChannelPermissions[]
         }
     }
 
-    return Object.values(channelsMap);
+    return Object.values(channelsMap).sort((a, b) => (a.id < b.id ? -1 : 1));
 }

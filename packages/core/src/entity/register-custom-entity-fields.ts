@@ -62,10 +62,15 @@ function registerCustomFieldsForEntity(
                     const length = customField.length || 255;
                     if (MAX_STRING_LENGTH < length) {
                         throw new Error(
-                            `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                            `ERROR: The "length" property of the custom field "${
+                                customField.name
+                            }" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
                         );
                     }
                     options.length = length;
+                }
+                if (customField.type === 'datetime' && options.precision == null) {
+                    options.precision = 6;
                 }
                 Column(options)(new ctor(), name);
             };
@@ -94,7 +99,8 @@ function formatDefaultDatetime(dbEngine: ConnectionOptions['type'], datetime: an
         case 'mysql':
         case 'postgres':
         default:
-            return DateUtils.mixedDateToDate(datetime, true, true);
+            return DateUtils.mixedDateToUtcDatetimeString(datetime);
+        // return DateUtils.mixedDateToDate(datetime, true, true);
     }
 }
 

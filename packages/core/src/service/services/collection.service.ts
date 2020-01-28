@@ -361,12 +361,11 @@ export class CollectionService implements OnModuleInit {
      */
     private async applyCollectionFilters(ctx: RequestContext, collections: Collection[]): Promise<void> {
         const collectionIds = collections.map(c => c.id);
-        // Logger.info('applyCollectionFilters');
 
         const job = this.jobService.createJob({
             name: 'apply-collection-filters',
             metadata: { collectionIds },
-            singleInstance: true,
+            singleInstance: false,
             work: async reporter => {
                 Logger.verbose(`sending ApplyCollectionFiltersMessage message`);
                 this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
