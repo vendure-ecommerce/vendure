@@ -262,7 +262,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, 'NOT NULL constraint failed: product.customFieldsNotnullable'),
+        }, "The custom field 'notNullable' value cannot be set to null"),
     );
 
     it(
