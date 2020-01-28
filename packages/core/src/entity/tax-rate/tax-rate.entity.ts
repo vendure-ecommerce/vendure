@@ -6,6 +6,7 @@ import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { idsAreEqual } from '../../common/utils';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
+import { DecimalTransformer } from '../value-transformers';
 import { Zone } from '../zone/zone.entity';
 
 /**
@@ -30,7 +31,7 @@ export class TaxRate extends AdjustmentSource {
 
     @Column() enabled: boolean;
 
-    @Column({ type: 'decimal', precision: 5, scale: 2 }) value: number;
+    @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() }) value: number;
 
     @ManyToOne(type => TaxCategory)
     category: TaxCategory;
