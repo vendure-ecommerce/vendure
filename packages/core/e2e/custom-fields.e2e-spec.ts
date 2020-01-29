@@ -92,7 +92,7 @@ const customConfig = mergeConfig(testConfig, {
             {
                 name: 'longString',
                 type: 'string',
-                length: 60000,
+                length: 10000,
             },
             {
                 name: 'readonlyString',
@@ -317,7 +317,7 @@ describe('Custom fields', () => {
     );
 
     it('string length allows long strings', async () => {
-        const longString = Array.from({ length: 4000 }, v => 'hello there!').join(' ');
+        const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
         const result = await adminClient.query(
             gql`
                 mutation($stringValue: String!) {

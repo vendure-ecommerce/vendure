@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: bitnami/mariadb:latest
+        image: bitnami/mariadb:10.3
         env:
           ALLOW_EMPTY_PASSWORD: yes
         ports:
