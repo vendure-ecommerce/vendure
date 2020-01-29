@@ -12,6 +12,7 @@ jobs:
   env:
     CI: true
   build:
+    name: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -24,20 +25,15 @@ jobs:
         yarn install
         yarn bootstrap
         yarn build
-    - name: Unit tests
-      run: yarn test
-    - name: e2e tests
-      env:
-        ELASTICSEARCH_PORT: 9200
-        ELASTICSEARCH_HOST: http://localhost
-      run: yarn e2e
   unit-tests:
     needs: build
+    name: unit tests
     steps:
       - name: Unit tests
         run: yarn test
   e2e-tests:
     needs: build
+    name: e2e tests
     services:
       mysql:
         image: bitnami/mariadb:latest
@@ -62,7 +58,14 @@ jobs:
         ports:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      matrix:
+        db: [sqljs, mysql, postgres]
     env:
       E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
       E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
       E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+      DB: ${{ matrix.db }}
+    steps:
+      - name: e2e tests
+        run: yarn e2e
