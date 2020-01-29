@@ -1,11 +1,5 @@
-import { mergeConfig } from '@vendure/core';
-import {
-    MysqlInitializer,
-    PostgresInitializer,
-    registerInitializer,
-    SqljsInitializer,
-    testConfig as defaultTestConfig,
-} from '@vendure/testing';
+import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
+import { MysqlInitializer, PostgresInitializer, registerInitializer, SqljsInitializer, testConfig as defaultTestConfig } from '@vendure/testing';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
@@ -39,6 +33,7 @@ export const testConfig = mergeConfig(defaultTestConfig, {
         importAssetsDir: path.join(packageDir, 'fixtures/assets'),
     },
     dbConnectionOptions: getDbConfig(),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
 });
 
 function getDbConfig(): ConnectionOptions {
