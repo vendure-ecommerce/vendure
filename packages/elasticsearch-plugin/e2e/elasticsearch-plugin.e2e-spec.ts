@@ -53,10 +53,8 @@ describe('Elasticsearch plugin', () => {
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
-                    port: process.env.CI ? +(process.env.ELASTICSEARCH_PORT || 9200) : 9200,
-                    host: process.env.CI
-                        ? process.env.ELASTICSEARCH_HOST || 'elasticsearch'
-                        : 'http://192.168.99.100',
+                    port: process.env.CI ? +(process.env.E2E_ELASTIC_PORT || 9200) : 9200,
+                    host: process.env.CI ? 'http://127.0.0.1' : 'http://192.168.99.100',
                 }),
             ],
         }),

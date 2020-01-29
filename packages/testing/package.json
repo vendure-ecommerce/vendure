@@ -25,7 +25,8 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.build.json",
     "watch": "tsc -p ./tsconfig.build.json -w",
-    "lint": "tslint --fix --project ./"
+    "lint": "tslint --fix --project ./",
+    "ci": "yarn build"
   },
   "bugs": {
     "url": "https://github.com/vendure-ecommerce/vendure/issues"

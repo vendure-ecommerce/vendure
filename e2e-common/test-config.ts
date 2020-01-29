@@ -43,7 +43,7 @@ function getDbConfig(): ConnectionOptions {
                 synchronize: true,
                 type: 'postgres',
                 host: '127.0.0.1',
-                port: 5432,
+                port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
                 username: 'postgres',
                 password: 'Be70',
             };
@@ -51,8 +51,8 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'mysql',
-                host: '192.168.99.100',
-                port: 3306,
+                host: process.env.CI ? '127.0.0.1' : '192.168.99.100',
+                port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
                 username: 'root',
                 password: '',
             };
