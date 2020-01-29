@@ -13,7 +13,7 @@ on:
 #  deployment
 jobs:
   publish_install:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     services:
       verdaccio:
         image: verdaccio/verdaccio:4
@@ -21,7 +21,7 @@ jobs:
           - 4873
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
+        #os: [ubuntu-latest, macOS-latest]
         node-version: [10.x, 12.x]
     steps:
     - uses: actions/checkout@v1
