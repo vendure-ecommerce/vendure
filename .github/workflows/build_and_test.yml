@@ -63,11 +63,11 @@ jobs:
     strategy:
       matrix:
         db: [sqljs, mysql, postgres]
-    env:
-      E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
-      E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
-      E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
-      DB: ${{ matrix.db }}
     steps:
       - name: e2e tests
+        env:
+          E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+          E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+          DB: ${{ matrix.db }}
         run: yarn e2e
