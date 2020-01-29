@@ -21,3 +21,21 @@ jobs:
       run: |
         sudo apt-get install -y mysql-client
         mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -ppassword -e "SHOW DATABASES"
+
+  postgres-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: password
+        ports:
+        - 5432
+        options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+    - name: Verify Postgres connection from host
+      env:
+        PGPASSWORD: password
+      run: |
+        sudo apt-get install -y postgresql
+        psql --host=127.0.0.1 --port=${{ job.services.postgres.ports['5432'] }} -username=postgres -c "SELECT * FROM pg_catalog.pg_tables;"
