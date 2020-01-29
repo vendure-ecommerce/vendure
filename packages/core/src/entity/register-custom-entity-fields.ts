@@ -69,7 +69,14 @@ function registerCustomFieldsForEntity(
                     }
                     options.length = length;
                 }
-                if (customField.type === 'datetime' && options.precision == null) {
+                if (
+                    customField.type === 'datetime' &&
+                    options.precision == null &&
+                    // Setting precision on an sqlite datetime will cause
+                    // spurious migration commands. See https://github.com/typeorm/typeorm/issues/2333
+                    dbEngine !== 'sqljs' &&
+                    dbEngine !== 'sqlite'
+                ) {
                     options.precision = 6;
                 }
                 Column(options)(new ctor(), name);

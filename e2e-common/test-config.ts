@@ -1,11 +1,5 @@
 import { mergeConfig } from '@vendure/core';
-import {
-    MysqlInitializer,
-    PostgresInitializer,
-    registerInitializer,
-    SqljsInitializer,
-    testConfig as defaultTestConfig,
-} from '@vendure/testing';
+import { MysqlInitializer, PostgresInitializer, registerInitializer, SqljsInitializer, testConfig as defaultTestConfig } from '@vendure/testing';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
