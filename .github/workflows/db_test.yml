@@ -38,4 +38,4 @@ jobs:
         PGPASSWORD: password
       run: |
         sudo apt-get install -y postgresql
-        psql --host=127.0.0.1 --port=${{ job.services.postgres.ports['5432'] }} -username=postgres -c "SELECT * FROM pg_catalog.pg_tables;"
+        psql --host=127.0.0.1 --port=${{ job.services.postgres.ports['5432'] }} --username=postgres -c "SELECT * FROM pg_catalog.pg_tables;"
