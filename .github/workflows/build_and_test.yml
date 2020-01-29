@@ -8,9 +8,9 @@ on:
     branches:
     - master
 
+env:
+  CI: true
 jobs:
-  env:
-    CI: true
   build:
     name: build
     runs-on: ubuntu-latest
