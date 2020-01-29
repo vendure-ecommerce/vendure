@@ -22,7 +22,8 @@
     "watch": "concurrently yarn:tsc:watch yarn:gulp:watch",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=core"
+    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=core",
+    "ci": "yarn build"
   },
   "publishConfig": {
     "access": "public"

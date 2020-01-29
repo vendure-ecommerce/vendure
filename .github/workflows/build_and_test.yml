@@ -10,30 +10,39 @@ on:
 
 env:
   CI: true
+  node: 12.x
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ env.node }}
       uses: actions/setup-node@v1
       with:
-        node-version: 12.x
+        node-version: ${{ env.node }}
     - name: Install & build
       run: |
         yarn install
         yarn bootstrap
         yarn build
   unit-tests:
-    needs: build
     name: unit tests
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ env.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node }}
+      - name: Install & build
+        run: |
+          yarn install
+          yarn bootstrap
+          yarn lerna run ci
       - name: Unit tests
         run: yarn test
   e2e-tests:
-    needs: build
     name: e2e tests
     runs-on: ubuntu-latest
     services:
@@ -64,6 +73,16 @@ jobs:
       matrix:
         db: [sqljs, mysql, postgres]
     steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ env.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node }}
+      - name: Install & build
+        run: |
+          yarn install
+          yarn bootstrap
+          yarn lerna run ci
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
