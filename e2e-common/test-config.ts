@@ -33,7 +33,7 @@ export const testConfig = mergeConfig(defaultTestConfig, {
         importAssetsDir: path.join(packageDir, 'fixtures/assets'),
     },
     dbConnectionOptions: getDbConfig(),
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new DefaultLogger({ level: LogLevel.Verbose }),
 });
 
 function getDbConfig(): ConnectionOptions {

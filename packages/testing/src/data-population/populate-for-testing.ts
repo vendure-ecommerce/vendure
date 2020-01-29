@@ -6,6 +6,7 @@ import fs from 'fs-extra';
 
 import { TestServerOptions } from '../types';
 
+import { clearAllTables } from './clear-all-tables';
 import { populateCustomers } from './populate-customers';
 
 // tslint:disable:no-floating-promises
@@ -24,6 +25,7 @@ export async function populateForTesting(
 
     const [app, worker] = await bootstrapFn(config);
 
+    await clearAllTables(config);
     await populateInitialData(app, options.initialData, logging);
     await populateProducts(app, options.productsCsvPath, logging);
     await populateCollections(app, options.initialData, logging);
