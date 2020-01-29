@@ -69,7 +69,7 @@ describe('EntityIdStrategy', () => {
 
         expect(products.items[0].id).toBe('T_1');
         expect(products.items[0].variants[0].id).toBe('T_1');
-        expect(products.items[0].variants[0].options[0].id).toBe('T_1');
+        expect(products.items[0].variants[0].options.map(o => o.id).sort()).toEqual(['T_1', 'T_3']);
     });
 
     it('decodes embedded argument', async () => {
