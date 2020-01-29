@@ -46,9 +46,9 @@ jobs:
       elastic:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
         env:
-          - discovery.type=single-node
-          - bootstrap.memory_lock=true
-          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+          discovery.type: single-node
+          bootstrap.memory_lock: true
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
         ports:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
