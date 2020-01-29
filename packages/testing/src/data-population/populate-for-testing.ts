@@ -23,9 +23,9 @@ export async function populateForTesting(
     const originalRequireVerification = config.authOptions.requireVerification;
     config.authOptions.requireVerification = false;
 
+    await clearAllTables(config);
     const [app, worker] = await bootstrapFn(config);
 
-    await clearAllTables(config);
     await populateInitialData(app, options.initialData, logging);
     await populateProducts(app, options.productsCsvPath, logging);
     await populateCollections(app, options.initialData, logging);
