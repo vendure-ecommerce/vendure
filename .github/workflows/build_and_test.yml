@@ -9,31 +9,16 @@ name: Build & Test
 #    - master
 
 jobs:
+  env:
+    CI: true
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
-    env:
-      CI: true
-
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    # This is required for the elasticsearch-plugin e2e tests. It would be better to use the
-    # "services" feature, but I cannot figure out how to connect to it from the test server.
-    - name: Install elasticsearch
-      run: |
-        curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
-        tar -xvf elasticsearch-7.4.2-linux-x86_64.tar.gz
-        cd elasticsearch-7.4.2/bin
-        ./elasticsearch &
+        node-version: 12.x
     - name: Install & build
       run: |
         yarn install
@@ -46,3 +31,38 @@ jobs:
         ELASTICSEARCH_PORT: 9200
         ELASTICSEARCH_HOST: http://localhost
       run: yarn e2e
+  unit-tests:
+    needs: build
+    steps:
+      - name: Unit tests
+        run: yarn test
+  e2e-tests:
+    needs: build
+    services:
+      mysql:
+        image: bitnami/mariadb:latest
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: Be70
+        ports:
+          - 5432
+        options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+      elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+        env:
+          discovery.type: single-node
+          bootstrap.memory_lock: true
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200
+        options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+    env:
+      E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+      E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+      E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
