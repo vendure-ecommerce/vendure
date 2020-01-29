@@ -2,18 +2,23 @@ name: Publish & Install
 # Temporarily disabled this workflow because the last step (installing from Verdaccio) is flaky and
 # randomly failing despite numerous attempts to stabilize. Therefore this is not useful at
 # the moment.
-# on:
-#   push:
-#     branches:
-#     - master
-#   pull_request:
-#     branches:
-#     - master
 on:
-  deployment
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+#on:
+#  deployment
 jobs:
   publish_install:
     runs-on: ${{ matrix.os }}
+    services:
+      verdaccio:
+        image: verdaccio/verdaccio:4
+        ports:
+          - 4873
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
@@ -30,18 +35,20 @@ jobs:
         yarn bootstrap
       env:
         CI: true
-    - name: Install Verdaccio
-      run: |
-        npm install -g verdaccio
-        mkdir -p $HOME/.config/verdaccio
-        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
-        verdaccio --config $HOME/.config/verdaccio/config.yaml &
+    #- name: Install Verdaccio
+    #  run: |
+    #    npm install -g verdaccio
+    #    mkdir -p $HOME/.config/verdaccio
+    #    cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+    #    verdaccio --config $HOME/.config/verdaccio/config.yaml &
     - name: Publish to Verdaccio
+      env:
+        VERDACCIO_PORT: ${{ job.services.verdaccio.ports['4873'] }}
       run: |
         npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
-        npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
-        npm set registry=http://localhost:4873/
-        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873/
+        npm set //localhost:${{ env.VERDACCIO_PORT }}/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
+        npm set registry=http://localhost:${{ env.VERDACCIO_PORT }}/
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:${{ env.VERDACCIO_PORT }}/
     - name: Install via @vendure/create
       run: |
         mkdir -p $HOME/install
