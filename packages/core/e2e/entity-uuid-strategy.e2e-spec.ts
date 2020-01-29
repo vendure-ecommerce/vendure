@@ -1,21 +1,20 @@
 /* tslint:disable:no-non-null-assertion */
 import { UuidIdStrategy } from '@vendure/core';
+// This import is here to simulate the behaviour of
+// the package end-user importing symbols from the
+// @vendure/core barrel file. Doing so will then cause the
+// recursive evaluation of all imported files. This tests
+// the resilience of the id strategy implementation to the
+// order of file evaluation.
+import '@vendure/core/dist/index';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import '../src/index';
 
 import { GetProductList } from './graphql/generated-e2e-admin-types';
 import { GET_PRODUCT_LIST } from './graphql/shared-definitions';
-
-// This import is here to simulate the behaviour of
-// the package end-user importing symbols from the
-// @vendure/core barrel file. Doing so will then cause the
-// recusrsive evaluation of all imported files. This tests
-// the resilience of the id strategy implementation to the
-// order of file evaluation.
 
 describe('UuidIdStrategy', () => {
     const { server, adminClient } = createTestEnvironment({
