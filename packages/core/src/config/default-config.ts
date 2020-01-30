@@ -54,6 +54,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         uploadMaxFileSize: 20971520,
     },
     dbConnectionOptions: {
+        timezone: 'Z',
         type: 'mysql',
         logger: new TypeOrmLogger(),
     },
