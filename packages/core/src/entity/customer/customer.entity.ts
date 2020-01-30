@@ -24,7 +24,7 @@ export class Customer extends VendureEntity implements HasCustomFields, SoftDele
         super(input);
     }
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     @Column({ nullable: true })

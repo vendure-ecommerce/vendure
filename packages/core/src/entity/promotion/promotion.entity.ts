@@ -59,19 +59,19 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         this.allActions = actions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     startsAt: Date | null;
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     endsAt: Date | null;
 
-    @Column({ nullable: true, default: null })
+    @Column({ nullable: true })
     couponCode: string;
 
-    @Column({ nullable: true, default: null })
+    @Column({ nullable: true })
     perCustomerUsageLimit: number;
 
     @Column() name: string;

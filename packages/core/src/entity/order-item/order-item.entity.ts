@@ -9,6 +9,7 @@ import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Refund } from '../refund/refund.entity';
 import { Cancellation } from '../stock-movement/cancellation.entity';
+import { DecimalTransformer } from '../value-transformers';
 
 /**
  * @description
@@ -29,7 +30,8 @@ export class OrderItem extends VendureEntity {
 
     @Column() unitPriceIncludesTax: boolean;
 
-    @Column() taxRate: number;
+    @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() })
+    taxRate: number;
 
     @Column('simple-json') pendingAdjustments: Adjustment[];
 

@@ -14,12 +14,6 @@ export type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 export interface TestServerOptions {
     /**
      * @description
-     * The directory in which the populated SQLite database files will be
-     * saved. These files are a cache to speed up subsequent runs of e2e tests.
-     */
-    dataDir: string;
-    /**
-     * @description
      * The path to a CSV file containing product data to import.
      */
     productsCsvPath: string;

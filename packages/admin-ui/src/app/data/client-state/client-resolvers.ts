@@ -1,5 +1,4 @@
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import { GraphQLFieldResolver } from 'graphql';
 
 import {
     GetNetworkStatus,
@@ -22,7 +21,7 @@ export type ResolverContext = {
 
 export type ResolverDefinition = {
     Mutation: {
-        [name: string]: GraphQLFieldResolver<any, ResolverContext, any>;
+        [name: string]: (rootValue: any, args: any, context: ResolverContext, info?: any) => any;
     };
 };
 

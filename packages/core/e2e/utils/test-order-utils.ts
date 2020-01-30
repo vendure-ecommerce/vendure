@@ -63,3 +63,11 @@ export async function addPaymentToOrder(
     const order = result.addPaymentToOrder!;
     return order as any;
 }
+
+/**
+ * Sorts an array of entities by the id key. Useful for compensating for the fact that different DBs
+ * return arrays in different orders.
+ */
+export function sortById<T extends { id: string | number }>(a: T, b: T): 1 | -1 {
+    return a.id < b.id ? -1 : 1;
+}

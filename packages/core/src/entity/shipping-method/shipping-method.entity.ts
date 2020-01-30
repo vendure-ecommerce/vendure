@@ -36,7 +36,7 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
         this.allCalculators = calculators.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     @Column() code: string;

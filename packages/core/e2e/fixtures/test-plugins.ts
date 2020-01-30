@@ -1,18 +1,17 @@
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import gql from 'graphql-tag';
-
-import { VendureConfig } from '../../src/config';
-import { ConfigModule } from '../../src/config/config.module';
-import { ConfigService } from '../../src/config/config.service';
 import {
+    ConfigService,
     OnVendureBootstrap,
     OnVendureClose,
     OnVendureWorkerBootstrap,
     OnVendureWorkerClose,
+    VendureConfig,
     VendurePlugin,
-} from '../../src/plugin/vendure-plugin';
+} from '@vendure/core';
+import { ConfigModule } from '@vendure/core/dist/config/config.module';
+import gql from 'graphql-tag';
 
 export class TestPluginWithAllLifecycleHooks
     implements OnVendureBootstrap, OnVendureWorkerBootstrap, OnVendureClose, OnVendureWorkerClose {

@@ -78,7 +78,6 @@ describe('Shop orders', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 2,
@@ -482,6 +481,14 @@ describe('Shop orders', () => {
             const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             expect(result.activeOrder!.id).toBe(activeOrder.id);
             expect(result.activeOrder!.state).toBe('AddingItems');
+        });
+
+        it('activeOrder resolves customer user', async () => {
+            const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(result.activeOrder!.customer!.user).toEqual({
+                id: 'T_2',
+                identifier: 'hayden.zieme12@hotmail.com',
+            });
         });
 
         it('addItemToOrder with an existing productVariantId adds quantity to the existing OrderLine', async () => {

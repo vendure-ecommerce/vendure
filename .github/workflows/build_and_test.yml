@@ -8,41 +8,85 @@ on:
     branches:
     - master
 
+env:
+  CI: true
+  node: 12.x
 jobs:
   build:
-
+    name: build
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x]
-
-    env:
-      CI: true
-
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ env.node }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    # This is required for the elasticsearch-plugin e2e tests. It would be better to use the
-    # "services" feature, but I cannot figure out how to connect to it from the test server.
-    - name: Install elasticsearch
-      run: |
-        curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.4.2-linux-x86_64.tar.gz
-        tar -xvf elasticsearch-7.4.2-linux-x86_64.tar.gz
-        cd elasticsearch-7.4.2/bin
-        ./elasticsearch &
+        node-version: ${{ env.node }}
     - name: Install & build
       run: |
         yarn install
         yarn bootstrap
         yarn build
-    - name: Unit tests
-      run: yarn test
-    - name: e2e tests
-      env:
-        ELASTICSEARCH_PORT: 9200
-        ELASTICSEARCH_HOST: http://localhost
-      run: yarn e2e
+  unit-tests:
+    name: unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ env.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node }}
+      - name: Install & build
+        run: |
+          yarn install
+          yarn bootstrap
+          yarn lerna run ci
+      - name: Unit tests
+        run: yarn test
+  e2e-tests:
+    name: e2e tests
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: bitnami/mariadb:10.3
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_PASSWORD: Be70
+        ports:
+          - 5432
+        options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3
+      elastic:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+        env:
+          discovery.type: single-node
+          bootstrap.memory_lock: true
+          ES_JAVA_OPTS: -Xms512m -Xmx512m
+        ports:
+          - 9200
+        options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
+    strategy:
+      matrix:
+        db: [sqljs, mysql, postgres]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ env.node }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.node }}
+      - name: Install & build
+        run: |
+          yarn install
+          yarn bootstrap
+          yarn lerna run ci
+      - name: e2e tests
+        env:
+          E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
+          E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
+          DB: ${{ matrix.db }}
+        run: yarn e2e

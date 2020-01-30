@@ -2,12 +2,10 @@ import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, Logger, VendureConfig } from '@vendure/core';
 import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
-import fs from 'fs';
-import path from 'path';
-import { SqljsConnectionOptions } from 'typeorm/driver/sqljs/SqljsConnectionOptions';
 
 import { populateForTesting } from './data-population/populate-for-testing';
-import { Mutable, TestServerOptions } from './types';
+import { getInitializerFor } from './initializers/initializers';
+import { TestServerOptions } from './types';
 
 // tslint:disable:no-console
 /**
@@ -31,17 +29,20 @@ export class TestServer {
      * is loaded so that the populate step can be skipped, which speeds up the tests significantly.
      */
     async init(options: TestServerOptions): Promise<void> {
-        const dbFilePath = this.getDbFilePath(options.dataDir);
-        (this.vendureConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).location = dbFilePath;
-        if (!fs.existsSync(dbFilePath)) {
-            if (options.logging) {
-                console.log(`Test data not found. Populating database and caching...`);
-            }
-            await this.populateInitialData(this.vendureConfig, options);
+        const { type } = this.vendureConfig.dbConnectionOptions;
+        const { dbConnectionOptions } = this.vendureConfig;
+        const testFilename = this.getCallerFilename(1);
+        const initializer = getInitializerFor(type);
+        try {
+            await initializer.init(testFilename, dbConnectionOptions);
+            const populateFn = () => this.populateInitialData(this.vendureConfig, options);
+            await initializer.populate(populateFn);
+            await initializer.destroy();
+        } catch (e) {
+            console.error(e);
+            process.exit(1);
         }
-        if (options.logging) {
-            console.log(`Loading test data from "${dbFilePath}"`);
-        }
+
         const [app, worker] = await this.bootstrapForTesting(this.vendureConfig);
         if (app) {
             this.app = app;
@@ -68,15 +69,7 @@ export class TestServer {
         }
     }
 
-    private getDbFilePath(dataDir: string) {
-        // tslint:disable-next-line:no-non-null-assertion
-        const testFilePath = this.getCallerFilename(2);
-        const dbFileName = path.basename(testFilePath) + '.sqlite';
-        const dbFilePath = path.join(dataDir, dbFileName);
-        return dbFilePath;
-    }
-
-    private getCallerFilename(depth: number) {
+    private getCallerFilename(depth: number): string {
         let pst: ErrorConstructor['prepareStackTrace'];
         let stack: any;
         let file: any;
@@ -106,8 +99,6 @@ export class TestServer {
         testingConfig: Required<VendureConfig>,
         options: TestServerOptions,
     ): Promise<void> {
-        (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = true;
-
         const [app, worker] = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
             ...options,
@@ -116,8 +107,6 @@ export class TestServer {
             await worker.close();
         }
         await app.close();
-
-        (testingConfig.dbConnectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
     }
 
     /**

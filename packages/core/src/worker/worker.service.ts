@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { filter, mergeMap, take, tap } from 'rxjs/operators';
+import { filter, finalize, mergeMap, take } from 'rxjs/operators';
 
 import { VENDURE_WORKER_CLIENT } from './constants';
 import { WorkerMessage } from './types';
@@ -36,7 +36,7 @@ export class WorkerService implements OnModuleDestroy {
             return this.client
                 .send<R, T>((message.constructor as typeof WorkerMessage).pattern, message.data)
                 .pipe(
-                    tap(() => {
+                    finalize(() => {
                         this.initialConnection.next(true);
                         this.pendingConnection = false;
                     }),

@@ -18,56 +18,6 @@ Object {
   "name": "en Baked Potato",
   "optionGroups": Array [],
   "slug": "en-baked-potato",
-  "translations": Array [
-    Object {
-      "description": "Eine baked Erdapfel",
-      "languageCode": "de",
-      "name": "de Baked Potato",
-      "slug": "de-baked-potato",
-    },
-    Object {
-      "description": "A baked potato",
-      "languageCode": "en",
-      "name": "en Baked Potato",
-      "slug": "en-baked-potato",
-    },
-  ],
-  "variants": Array [],
-}
-`;
-
-exports[`Product resolver product mutation updateProduct updates a Product 1`] = `
-Object {
-  "assets": Array [],
-  "channels": Array [
-    Object {
-      "code": "__default_channel__",
-      "id": "T_1",
-    },
-  ],
-  "description": "A blob of mashed potato",
-  "enabled": true,
-  "facetValues": Array [],
-  "featuredAsset": null,
-  "id": "T_21",
-  "languageCode": "en",
-  "name": "en Mashed Potato",
-  "optionGroups": Array [],
-  "slug": "en-mashed-potato",
-  "translations": Array [
-    Object {
-      "description": "Eine blob von gemashed Erdapfel",
-      "languageCode": "de",
-      "name": "de Mashed Potato",
-      "slug": "de-mashed-potato",
-    },
-    Object {
-      "description": "A blob of mashed potato",
-      "languageCode": "en",
-      "name": "en Mashed Potato",
-      "slug": "en-mashed-potato",
-    },
-  ],
   "variants": Array [],
 }
 `;

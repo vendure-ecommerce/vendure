@@ -344,9 +344,9 @@ export class CustomerService {
         if (result) {
             const customerAddresses = result.customer.addresses;
             if (1 < customerAddresses.length) {
-                const otherAddresses = customerAddresses.filter(
-                    address => !idsAreEqual(address.id, addressToDelete.id),
-                );
+                const otherAddresses = customerAddresses
+                    .filter(address => !idsAreEqual(address.id, addressToDelete.id))
+                    .sort((a, b) => (a.id < b.id ? -1 : 1));
                 if (addressToDelete.defaultShippingAddress) {
                     otherAddresses[0].defaultShippingAddress = true;
                 }

@@ -1,7 +1,7 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Connection } from 'typeorm';
-import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
+import { Connection, ConnectionOptions } from 'typeorm';
+import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { UserInputError } from '../../../common/error/errors';
 import {
@@ -13,6 +13,8 @@ import {
     StringOperators,
 } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
+
+import { getColumnMetadata } from './get-column-metadata';
 
 export interface WhereCondition {
     clause: string;
@@ -30,21 +32,9 @@ export function parseFilterParams<T extends VendureEntity>(
     if (!filterParams) {
         return [];
     }
-
-    const metadata = connection.getMetadata(entity);
-    const columns = metadata.columns;
-    let translationColumns: ColumnMetadata[] = [];
-    const relations = metadata.relations;
-
-    const translationRelation = relations.find(r => r.propertyName === 'translations');
-    if (translationRelation) {
-        const translationMetadata = connection.getMetadata(translationRelation.type);
-        translationColumns = columns.concat(translationMetadata.columns.filter(c => !c.relationMetadata));
-    }
-
+    const { columns, translationColumns, alias } = getColumnMetadata(connection, entity);
     const output: WhereCondition[] = [];
-    const alias = metadata.name.toLowerCase();
-
+    const dbType = connection.options.type;
     let argIndex = 1;
     for (const [key, operation] of Object.entries(filterParams)) {
         if (operation) {
@@ -57,7 +47,13 @@ export function parseFilterParams<T extends VendureEntity>(
                 } else {
                     throw new UserInputError('error.invalid-filter-field');
                 }
-                const condition = buildWhereCondition(fieldName, operator as Operator, operand, argIndex);
+                const condition = buildWhereCondition(
+                    fieldName,
+                    operator as Operator,
+                    operand,
+                    argIndex,
+                    dbType,
+                );
                 output.push(condition);
                 argIndex++;
             }
@@ -67,29 +63,36 @@ export function parseFilterParams<T extends VendureEntity>(
     return output;
 }
 
-function buildWhereCondition(fieldName: string, operator: Operator, operand: any, argIndex: number): WhereCondition {
+function buildWhereCondition(
+    fieldName: string,
+    operator: Operator,
+    operand: any,
+    argIndex: number,
+    dbType: ConnectionOptions['type'],
+): WhereCondition {
     switch (operator) {
         case 'eq':
             return {
                 clause: `${fieldName} = :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'contains':
+            const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
             return {
-                clause: `${fieldName} LIKE :arg${argIndex}`,
+                clause: `${fieldName} ${LIKE} :arg${argIndex}`,
                 parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
         case 'lt':
         case 'before':
             return {
                 clause: `${fieldName} < :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'gt':
         case 'after':
             return {
                 clause: `${fieldName} > :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'lte':
             return {
@@ -104,7 +107,10 @@ function buildWhereCondition(fieldName: string, operator: Operator, operand: any
         case 'between':
             return {
                 clause: `${fieldName} BETWEEN :arg${argIndex}_a AND :arg${argIndex}_b`,
-                parameters: { [`arg${argIndex}_a`]: operand.start, [`arg${argIndex}_b`]: operand.end },
+                parameters: {
+                    [`arg${argIndex}_a`]: convertDate(operand.start),
+                    [`arg${argIndex}_b`]: convertDate(operand.end),
+                },
             };
         default:
             assertNever(operator);
@@ -113,4 +119,15 @@ function buildWhereCondition(fieldName: string, operator: Operator, operand: any
         clause: '1',
         parameters: {},
     };
+}
+
+/**
+ * Converts a JS Date object to a string format recognized by all DB engines.
+ * See https://github.com/vendure-ecommerce/vendure/issues/251
+ */
+function convertDate(input: Date | string | number): string | number {
+    if (input instanceof Date) {
+        return DateUtils.mixedDateToUtcDatetimeString(input);
+    }
+    return input;
 }

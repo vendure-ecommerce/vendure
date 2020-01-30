@@ -1,3 +1,4 @@
+import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -42,7 +43,6 @@ describe('Facet resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
@@ -85,25 +85,41 @@ describe('Facet resolver', () => {
     });
 
     it('createFacetValues', async () => {
-        const result = await adminClient.query<CreateFacetValues.Mutation, CreateFacetValues.Variables>(
-            CREATE_FACET_VALUES,
-            {
-                input: [
-                    {
-                        facetId: speakerTypeFacet.id,
-                        code: 'pc',
-                        translations: [{ languageCode: LanguageCode.en, name: 'PC Speakers' }],
-                    },
-                    {
-                        facetId: speakerTypeFacet.id,
-                        code: 'hi-fi',
-                        translations: [{ languageCode: LanguageCode.en, name: 'Hi Fi Speakers' }],
-                    },
-                ],
-            },
-        );
+        const { createFacetValues } = await adminClient.query<
+            CreateFacetValues.Mutation,
+            CreateFacetValues.Variables
+        >(CREATE_FACET_VALUES, {
+            input: [
+                {
+                    facetId: speakerTypeFacet.id,
+                    code: 'pc',
+                    translations: [{ languageCode: LanguageCode.en, name: 'PC Speakers' }],
+                },
+                {
+                    facetId: speakerTypeFacet.id,
+                    code: 'hi-fi',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Hi Fi Speakers' }],
+                },
+            ],
+        });
 
-        expect(result.createFacetValues).toMatchSnapshot();
+        expect(createFacetValues.length).toBe(2);
+        expect(pick(createFacetValues[0], ['code', 'facet', 'name'])).toEqual({
+            code: 'pc',
+            facet: {
+                id: 'T_2',
+                name: 'Speaker Category',
+            },
+            name: 'PC Speakers',
+        });
+        expect(pick(createFacetValues[1], ['code', 'facet', 'name'])).toEqual({
+            code: 'hi-fi',
+            facet: {
+                id: 'T_2',
+                name: 'Speaker Category',
+            },
+            name: 'Hi Fi Speakers',
+        });
     });
 
     it('updateFacetValues', async () => {

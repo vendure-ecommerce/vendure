@@ -21,6 +21,7 @@ import {
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
+    SortOrder,
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
@@ -50,7 +51,6 @@ describe('Default search plugin', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
@@ -99,13 +99,16 @@ describe('Default search plugin', () => {
                 input: {
                     term: 'camera',
                     groupByProduct: true,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
                 },
             },
         );
         expect(result.search.items.map(i => i.productName)).toEqual([
-            'Instant Camera',
             'Camera Lens',
-            'SLR Camera',
+            'Instant Camera',
+            'Slr Camera',
         ]);
     }
 
@@ -536,7 +539,7 @@ describe('Default search plugin', () => {
                     'Instant Camera',
                     'Camera Lens',
                     'Tripod',
-                    'SLR Camera',
+                    'Slr Camera',
                 ]);
             });
 
@@ -567,7 +570,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            it('returns disabled field when not grouped', async () => {
+            it('returns enabled field when not grouped', async () => {
                 const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
                     { productVariantId: 'T_1', enabled: true },
@@ -576,7 +579,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            it('when grouped, disabled is false if at least one variant is enabled', async () => {
+            it('when grouped, enabled is true if at least one variant is enabled', async () => {
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
@@ -592,7 +595,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            it('when grouped, disabled is true if all variants are disabled', async () => {
+            it('when grouped, enabled is false if all variants are disabled', async () => {
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
@@ -608,7 +611,7 @@ describe('Default search plugin', () => {
                 ]);
             });
 
-            it('when grouped, disabled is true product is disabled', async () => {
+            it('when grouped, enabled is false if product is disabled', async () => {
                 await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
                     input: {
                         id: 'T_3',

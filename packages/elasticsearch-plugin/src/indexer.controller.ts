@@ -346,6 +346,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         const productVariants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
             relations: variantRelations,
+            order: {
+                id: 'ASC',
+            },
         });
         updatedVariants = this.hydrateVariants(ctx, productVariants);
 
@@ -481,6 +484,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             .andWhere('variants__product.deletedAt IS NULL')
             .take(batchSize)
             .skip(i * batchSize)
+            .addOrderBy('variants.id', 'ASC')
             .getMany();
 
         return this.hydrateVariants(ctx, variants);
@@ -489,6 +493,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private async getVariantsByIds(ctx: RequestContext, ids: ID[]) {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
             relations: variantRelations,
+            order: {
+                id: 'ASC',
+            },
         });
         return this.hydrateVariants(ctx, variants);
     }

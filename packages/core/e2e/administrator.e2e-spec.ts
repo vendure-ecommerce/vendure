@@ -22,7 +22,6 @@ describe('Administrator resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,

@@ -35,7 +35,7 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
         super(input);
     }
 
-    @Column({ type: Date, nullable: true, default: null })
+    @Column({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     name: LocaleString;

@@ -82,15 +82,16 @@ export const variantNameCollectionFilter = new CollectionFilter({
     description: [{ languageCode: LanguageCode.en, value: 'Filter by ProductVariant name' }],
     apply: (qb, args) => {
         qb.leftJoin('productVariant.translations', 'translation');
+        const LIKE = qb.connection.options.type === 'postgres' ? 'ILIKE' : 'LIKE';
         switch (args.operator) {
             case 'contains':
-                return qb.andWhere('translation.name LIKE :term', { term: `%${args.term}%` });
+                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `%${args.term}%` });
             case 'doesNotContain':
-                return qb.andWhere('translation.name NOT LIKE :term', { term: `%${args.term}%` });
+                return qb.andWhere(`translation.name NOT ${LIKE} :term`, { term: `%${args.term}%` });
             case 'startsWith':
-                return qb.andWhere('translation.name LIKE :term', { term: `${args.term}%` });
+                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `${args.term}%` });
             case 'endsWith':
-                return qb.andWhere('translation.name LIKE :term', { term: `%${args.term}` });
+                return qb.andWhere(`translation.name ${LIKE} :term`, { term: `%${args.term}` });
             default:
                 throw new UserInputError(`${args.operator} is not a valid operator`);
         }

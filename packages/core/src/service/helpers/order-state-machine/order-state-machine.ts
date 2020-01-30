@@ -6,8 +6,6 @@ import { IllegalOperationError } from '../../../common/error/errors';
 import { FSM, StateMachineConfig, Transitions } from '../../../common/finite-state-machine';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
-import { EventBus } from '../../../event-bus/event-bus';
-import { OrderStateTransitionEvent } from '../../../event-bus/events/order-state-transition-event';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
@@ -24,7 +22,6 @@ export class OrderStateMachine {
         private stockMovementService: StockMovementService,
         private historyService: HistoryService,
         private promotionService: PromotionService,
-        private eventBus: EventBus,
     ) {
         this.config = this.initConfig();
     }
@@ -75,7 +72,6 @@ export class OrderStateMachine {
         if (toState === 'Cancelled') {
             data.order.active = false;
         }
-        this.eventBus.publish(new OrderStateTransitionEvent(fromState, toState, data.ctx, data.order));
         await this.historyService.createHistoryEntryForOrder({
             orderId: data.order.id,
             type: HistoryEntryType.ORDER_STATE_TRANSITION,

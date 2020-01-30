@@ -11,9 +11,6 @@ export async function clearAllTables(config: VendureConfig, logging = true) {
     config = await preBootstrapConfig(config);
     const entityIdStrategy = config.entityIdStrategy;
     const connection = await createConnection({ ...config.dbConnectionOptions });
-    if (logging) {
-        console.log('Clearing all tables...');
-    }
     try {
         await connection.synchronize(true);
     } catch (err) {

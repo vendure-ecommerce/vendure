@@ -39,13 +39,13 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Shop catalog', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 1,
@@ -262,6 +262,7 @@ describe('Shop catalog', () => {
                 },
             });
             collection = createCollection;
+            await awaitRunningJobs(adminClient);
         });
 
         it('returns collection with variants', async () => {
@@ -287,6 +288,7 @@ describe('Shop catalog', () => {
             await adminClient.query<DisableProduct.Mutation, DisableProduct.Variables>(DISABLE_PRODUCT, {
                 id: 'T_17',
             });
+            await awaitRunningJobs(adminClient);
 
             const result = await shopClient.query<
                 GetCollectionVariants.Query,
@@ -302,13 +304,14 @@ describe('Shop catalog', () => {
             ]);
         });
 
-        it('omits variants from disabled products', async () => {
+        it('omits disabled product variants', async () => {
             await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                 UPDATE_PRODUCT_VARIANTS,
                 {
                     input: [{ id: 'T_22', enabled: false }],
                 },
             );
+            await awaitRunningJobs(adminClient);
 
             const result = await shopClient.query<
                 GetCollectionVariants.Query,
@@ -342,6 +345,7 @@ describe('Shop catalog', () => {
                     },
                 },
             );
+            await awaitRunningJobs(adminClient);
             const result = await shopClient.query<GetCollectionList.Query>(GET_COLLECTION_LIST);
 
             expect(result.collections.items).toEqual([{ id: 'T_2', name: 'Plants' }]);

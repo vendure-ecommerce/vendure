@@ -6,7 +6,6 @@ import fs from 'fs-extra';
 
 import { TestServerOptions } from '../types';
 
-import { clearAllTables } from './clear-all-tables';
 import { populateCustomers } from './populate-customers';
 
 // tslint:disable:no-floating-promises
@@ -23,7 +22,6 @@ export async function populateForTesting(
     const originalRequireVerification = config.authOptions.requireVerification;
     config.authOptions.requireVerification = false;
 
-    await clearAllTables(config, logging);
     const [app, worker] = await bootstrapFn(config);
 
     await populateInitialData(app, options.initialData, logging);

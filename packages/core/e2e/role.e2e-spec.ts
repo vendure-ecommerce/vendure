@@ -27,6 +27,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { CREATE_CHANNEL, CREATE_ROLE } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { sortById } from './utils/test-order-utils';
 
 describe('Role resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
@@ -35,7 +36,6 @@ describe('Role resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
@@ -339,7 +339,7 @@ describe('Role resolver', () => {
                 },
             );
 
-            expect(updateRole.channels).toEqual([
+            expect(updateRole.channels.sort(sortById)).toEqual([
                 {
                     code: DEFAULT_CHANNEL_CODE,
                     id: 'T_1',

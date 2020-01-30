@@ -9,7 +9,6 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
-import { getConfig } from '../../config/config-helpers';
 import { ConfigService } from '../../config/config.service';
 import {
     PaymentMethodArgs,
@@ -17,11 +16,13 @@ import {
     PaymentMethodHandler,
 } from '../../config/payment-method/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
+import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
@@ -36,6 +37,7 @@ export class PaymentMethodService {
         private listQueryBuilder: ListQueryBuilder,
         private paymentStateMachine: PaymentStateMachine,
         private refundStateMachine: RefundStateMachine,
+        private eventBus: EventBus,
     ) {}
 
     async initPaymentMethods() {
@@ -78,11 +80,15 @@ export class PaymentMethodService {
     ): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
+        const initialState = 'Created';
         const payment = await this.connection
             .getRepository(Payment)
-            .save(new Payment({ ...result, state: 'Created' }));
+            .save(new Payment({ ...result, state: initialState }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(Payment).save(payment, { reload: false });
+        this.eventBus.publish(
+            new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, payment.order),
+        );
         return payment;
     }
 
@@ -126,8 +132,12 @@ export class PaymentMethodService {
         }
         refund = await this.connection.getRepository(Refund).save(refund);
         if (createRefundResult) {
+            const fromState = refund.state;
             await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
             await this.connection.getRepository(Refund).save(refund, { reload: false });
+            this.eventBus.publish(
+                new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
+            );
         }
         return refund;
     }

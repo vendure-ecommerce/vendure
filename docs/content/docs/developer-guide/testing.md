@@ -23,6 +23,29 @@ The `@vendure/testing` package gives you some simple but powerful tooling for cr
 
 Please see the [Jest documentation](https://jestjs.io/docs/en/getting-started) on how to get set up. The remainder of this article will assume a working Jest setup configured to work with TypeScript.
 
+### Register database-specific initializers
+
+The `@vendure/testing` package uses "initializers" to create the test databases and populate them with initial data. We ship with initializers for `sqljs`, `postgres` and `mysql`. Custom initializers can be created to support running e2e tests against other databases supported by TypeORM. See the [`TestDbInitializer` docs]({{< relref "test-db-initializer" >}}) for more details.
+
+```TypeScript
+import {
+    MysqlInitializer,
+    PostgresInitializer,
+    SqljsInitializer,
+    registerInitializer,
+} from '@vendure/testing';
+
+const sqliteDataDir = path.join(__dirname, '__data__');
+
+registerInitializer('sqljs', new SqljsInitializer(sqliteDataDir));
+registerInitializer('postgres', new PostgresInitializer());
+registerInitializer('mysql', new MysqlInitializer());
+```
+
+{{% alert "primary" %}}
+Note re. the `sqliteDataDir`: The first time this test suite is run with the `SqljsInitializer`, the populated data will be saved into an SQLite file, stored in the directory specified by this constructor arg. On subsequent runs of the test suite, the data-population step will be skipped and the initial data directly loaded from the SQLite file. This method of caching significantly speeds up the e2e test runs. All the .sqlite files created in the `sqliteDataDir` can safely be deleted at any time.
+{{% /alert %}}
+
 ### Create a test environment
 
 The `@vendure/testing` package exports a [`createTestEnvironment` function]({{< relref "create-test-environment" >}}) which is used to set up a Vendure server and GraphQL clients to interact with both the Shop and Admin APIs:
@@ -60,7 +83,6 @@ beforeAll(async () => {
     await server.init({
         productsCsvPath: path.join(__dirname, 'fixtures/e2e-products.csv'),
         initialData: myInitialData,
-        dataDir: path.join(__dirname, '__data__'),
         customerCount: 2,
     });
     await adminClient.asSuperAdmin();
@@ -74,8 +96,7 @@ afterAll(async () => {
 An explanation of the options:
 
 * `productsCsvPath` This is a path to a CSV file containing product data. The format is as-yet undocumented and may be subject to change, but you can see [an example used in the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-products-full.csv) to get an idea of how it works. To start with you can just copy this file directly and use it as-is.
-* `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. Again, the best idea is to [copy this example from the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/e2e/fixtures/e2e-initial-data.ts)
-* `dataDir` The first time this test suite is run, the data populated by the options above will be saved into an SQLite file, stored in the directory specified by this options. On subsequent runs of the test suite, the data-population step will be skipped and the data directly loaded from the SQLite file. This method of caching significantly speeds up the e2e test runs. All the .sqlite files created in the `dataDir` can safely be deleted at any time.
+* `initialData` This is an object which defines how other non-product data (Collections, ShippingMethods, Countries etc.) is populated. Again, the best idea is to [copy this example from the Vendure e2e tests](https://github.com/vendure-ecommerce/vendure/blob/master/e2e-common/e2e-initial-data.ts)
 * `customerCount` Specifies the number of fake Customers to create. Defaults to 10 if not specified.
 
 ### Write your tests

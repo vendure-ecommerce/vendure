@@ -2177,7 +2177,7 @@ export type TaxRate = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     enabled: Scalars['Boolean'];
-    value: Scalars['Int'];
+    value: Scalars['Float'];
     category: TaxCategory;
     zone: Zone;
     customerGroup?: Maybe<CustomerGroup>;

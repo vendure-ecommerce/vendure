@@ -14,11 +14,13 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         raw.minPriceWithTax !== undefined
             ? ({ min: raw.minPriceWithTax, max: raw.maxPriceWithTax } as PriceRange)
             : ({ value: raw.si_priceWithTax } as SinglePrice);
+
+    const enabled = raw.productEnabled != null ? !!Number(raw.productEnabled) : raw.si_enabled;
     return {
         sku: raw.si_sku,
         slug: raw.si_slug,
         price,
-        enabled: raw.si_enabled,
+        enabled,
         priceWithTax,
         currencyCode,
         productVariantId: raw.si_productVariantId,

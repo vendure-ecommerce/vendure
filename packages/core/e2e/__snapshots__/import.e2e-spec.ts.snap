@@ -1,537 +1,346 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Import resolver imports products 1`] = `
-Array [
-  Object {
-    "assets": Array [
-      Object {
-        "id": "T_1",
-        "name": "pps1.jpg",
-        "preview": "test-url/test-assets/pps1__preview.jpg",
-        "source": "test-url/test-assets/pps1.jpg",
-      },
-      Object {
-        "id": "T_2",
-        "name": "pps2.jpg",
-        "preview": "test-url/test-assets/pps2__preview.jpg",
-        "source": "test-url/test-assets/pps2.jpg",
-      },
-    ],
-    "customFields": Object {
-      "pageType": "default",
-    },
-    "description": "A great device for stretching paper.",
-    "facetValues": Array [],
-    "featuredAsset": Object {
+Object {
+  "assets": Array [
+    Object {
       "id": "T_1",
       "name": "pps1.jpg",
       "preview": "test-url/test-assets/pps1__preview.jpg",
       "source": "test-url/test-assets/pps1.jpg",
     },
+    Object {
+      "id": "T_2",
+      "name": "pps2.jpg",
+      "preview": "test-url/test-assets/pps2__preview.jpg",
+      "source": "test-url/test-assets/pps2.jpg",
+    },
+  ],
+  "customFields": Object {
+    "pageType": "default",
+  },
+  "description": "A great device for stretching paper.",
+  "featuredAsset": Object {
     "id": "T_1",
-    "name": "Perfect Paper Stretcher",
-    "optionGroups": Array [
-      Object {
-        "code": "perfect-paper-stretcher-size",
-        "id": "T_1",
-        "name": "size",
-      },
-    ],
-    "slug": "perfect-paper-stretcher",
-    "variants": Array [
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 100,
-        },
-        "facetValues": Array [
-          Object {
-            "code": "kb",
-            "facet": Object {
-              "id": "T_1",
-              "name": "Brand",
-            },
-            "id": "T_1",
-            "name": "KB",
-          },
-          Object {
-            "code": "accessory",
-            "facet": Object {
-              "id": "T_2",
-              "name": "Type",
-            },
-            "id": "T_2",
-            "name": "Accessory",
-          },
-        ],
-        "featuredAsset": null,
-        "id": "T_1",
-        "name": "Perfect Paper Stretcher Half Imperial",
-        "options": Array [
-          Object {
-            "code": "half-imperial",
-            "id": "T_1",
-          },
-        ],
-        "price": 4530,
-        "sku": "PPS12",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
-      },
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 100,
-        },
-        "facetValues": Array [
-          Object {
-            "code": "kb",
-            "facet": Object {
-              "id": "T_1",
-              "name": "Brand",
-            },
-            "id": "T_1",
-            "name": "KB",
-          },
-          Object {
-            "code": "accessory",
-            "facet": Object {
-              "id": "T_2",
-              "name": "Type",
-            },
-            "id": "T_2",
-            "name": "Accessory",
-          },
-        ],
-        "featuredAsset": null,
-        "id": "T_2",
-        "name": "Perfect Paper Stretcher Quarter Imperial",
-        "options": Array [
-          Object {
-            "code": "quarter-imperial",
-            "id": "T_2",
-          },
-        ],
-        "price": 3250,
-        "sku": "PPS14",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
-      },
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 100,
-        },
-        "facetValues": Array [
-          Object {
-            "code": "kb",
-            "facet": Object {
-              "id": "T_1",
-              "name": "Brand",
-            },
-            "id": "T_1",
-            "name": "KB",
-          },
-          Object {
-            "code": "accessory",
-            "facet": Object {
-              "id": "T_2",
-              "name": "Type",
-            },
-            "id": "T_2",
-            "name": "Accessory",
-          },
-        ],
-        "featuredAsset": null,
-        "id": "T_3",
-        "name": "Perfect Paper Stretcher Full Imperial",
-        "options": Array [
-          Object {
-            "code": "full-imperial",
-            "id": "T_3",
-          },
-        ],
-        "price": 5950,
-        "sku": "PPSF",
-        "stockMovements": Object {
-          "items": Array [
-            Object {
-              "id": "T_1",
-              "quantity": -10,
-              "type": "ADJUSTMENT",
-            },
-          ],
-        },
-        "stockOnHand": -10,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
-      },
-    ],
+    "name": "pps1.jpg",
+    "preview": "test-url/test-assets/pps1__preview.jpg",
+    "source": "test-url/test-assets/pps1.jpg",
   },
-  Object {
-    "assets": Array [],
-    "customFields": Object {
-      "pageType": "expanded",
+  "id": "T_1",
+  "name": "Perfect Paper Stretcher",
+  "optionGroups": Array [
+    Object {
+      "code": "perfect-paper-stretcher-size",
+      "id": "T_1",
+      "name": "size",
     },
-    "description": "Mabef description",
-    "facetValues": Array [],
-    "featuredAsset": null,
-    "id": "T_2",
-    "name": "Mabef M/02 Studio Easel",
-    "optionGroups": Array [],
-    "slug": "mabef-m02-studio-easel",
-    "variants": Array [
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 300,
-        },
-        "facetValues": Array [
+  ],
+  "slug": "perfect-paper-stretcher",
+  "variants": Array [
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 100,
+      },
+      "featuredAsset": null,
+      "id": "T_1",
+      "name": "Perfect Paper Stretcher Half Imperial",
+      "price": 4530,
+      "sku": "PPS12",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 100,
+      },
+      "featuredAsset": null,
+      "id": "T_2",
+      "name": "Perfect Paper Stretcher Quarter Imperial",
+      "price": 3250,
+      "sku": "PPS14",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 100,
+      },
+      "featuredAsset": null,
+      "id": "T_3",
+      "name": "Perfect Paper Stretcher Full Imperial",
+      "price": 5950,
+      "sku": "PPSF",
+      "stockMovements": Object {
+        "items": Array [
           Object {
-            "code": "mabef",
-            "facet": Object {
-              "id": "T_1",
-              "name": "Brand",
-            },
-            "id": "T_3",
-            "name": "Mabef",
-          },
-          Object {
-            "code": "easel",
-            "facet": Object {
-              "id": "T_2",
-              "name": "Type",
-            },
-            "id": "T_4",
-            "name": "Easel",
+            "id": "T_1",
+            "quantity": -10,
+            "type": "ADJUSTMENT",
           },
         ],
-        "featuredAsset": null,
-        "id": "T_4",
-        "name": "Mabef M/02 Studio Easel",
-        "options": Array [],
-        "price": 91070,
-        "sku": "M02",
-        "stockMovements": Object {
-          "items": Array [
-            Object {
-              "id": "T_2",
-              "quantity": 100,
-              "type": "ADJUSTMENT",
-            },
-          ],
-        },
-        "stockOnHand": 100,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
       },
-    ],
+      "stockOnHand": -10,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": false,
+    },
+  ],
+}
+`;
+
+exports[`Import resolver imports products 2`] = `
+Object {
+  "assets": Array [],
+  "customFields": Object {
+    "pageType": "expanded",
   },
-  Object {
-    "assets": Array [],
-    "customFields": Object {
-      "pageType": "default",
-    },
-    "description": "Really mega pencils",
-    "facetValues": Array [],
-    "featuredAsset": null,
-    "id": "T_3",
-    "name": "Giotto Mega Pencils",
-    "optionGroups": Array [
-      Object {
-        "code": "giotto-mega-pencils-box-size",
-        "id": "T_2",
-        "name": "box size",
+  "description": "Mabef description",
+  "featuredAsset": null,
+  "id": "T_2",
+  "name": "Mabef M/02 Studio Easel",
+  "optionGroups": Array [],
+  "slug": "mabef-m02-studio-easel",
+  "variants": Array [
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 300,
       },
-    ],
-    "slug": "giotto-mega-pencils",
-    "variants": Array [
-      Object {
-        "assets": Array [
+      "featuredAsset": null,
+      "id": "T_4",
+      "name": "Mabef M/02 Studio Easel",
+      "price": 91070,
+      "sku": "M02",
+      "stockMovements": Object {
+        "items": Array [
           Object {
-            "id": "T_3",
-            "name": "box-of-8.jpg",
-            "preview": "test-url/test-assets/box-of-8__preview.jpg",
-            "source": "test-url/test-assets/box-of-8.jpg",
+            "id": "T_2",
+            "quantity": 100,
+            "type": "ADJUSTMENT",
           },
         ],
-        "customFields": Object {
-          "weight": 200,
-        },
-        "facetValues": Array [
-          Object {
-            "code": "xmas-sale",
-            "facet": Object {
-              "id": "T_3",
-              "name": "Collection",
-            },
-            "id": "T_5",
-            "name": "Xmas Sale",
-          },
-        ],
-        "featuredAsset": Object {
+      },
+      "stockOnHand": 100,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": false,
+    },
+  ],
+}
+`;
+
+exports[`Import resolver imports products 3`] = `
+Object {
+  "assets": Array [],
+  "customFields": Object {
+    "pageType": "default",
+  },
+  "description": "Really mega pencils",
+  "featuredAsset": null,
+  "id": "T_3",
+  "name": "Giotto Mega Pencils",
+  "optionGroups": Array [
+    Object {
+      "code": "giotto-mega-pencils-box-size",
+      "id": "T_2",
+      "name": "box size",
+    },
+  ],
+  "slug": "giotto-mega-pencils",
+  "variants": Array [
+    Object {
+      "assets": Array [
+        Object {
           "id": "T_3",
           "name": "box-of-8.jpg",
           "preview": "test-url/test-assets/box-of-8__preview.jpg",
           "source": "test-url/test-assets/box-of-8.jpg",
         },
-        "id": "T_5",
-        "name": "Giotto Mega Pencils Box of 8",
-        "options": Array [
-          Object {
-            "code": "box-of-8",
-            "id": "T_4",
-          },
-        ],
-        "price": 416,
-        "sku": "225400",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
+      ],
+      "customFields": Object {
+        "weight": 200,
       },
-      Object {
-        "assets": Array [
-          Object {
-            "id": "T_4",
-            "name": "box-of-12.jpg",
-            "preview": "test-url/test-assets/box-of-12__preview.jpg",
-            "source": "test-url/test-assets/box-of-12.jpg",
-          },
-        ],
-        "customFields": Object {
-          "weight": 200,
-        },
-        "facetValues": Array [
-          Object {
-            "code": "xmas-sale",
-            "facet": Object {
-              "id": "T_3",
-              "name": "Collection",
-            },
-            "id": "T_5",
-            "name": "Xmas Sale",
-          },
-        ],
-        "featuredAsset": Object {
+      "featuredAsset": Object {
+        "id": "T_3",
+        "name": "box-of-8.jpg",
+        "preview": "test-url/test-assets/box-of-8__preview.jpg",
+        "source": "test-url/test-assets/box-of-8.jpg",
+      },
+      "id": "T_5",
+      "name": "Giotto Mega Pencils Box of 8",
+      "price": 416,
+      "sku": "225400",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [
+        Object {
           "id": "T_4",
           "name": "box-of-12.jpg",
           "preview": "test-url/test-assets/box-of-12__preview.jpg",
           "source": "test-url/test-assets/box-of-12.jpg",
         },
-        "id": "T_6",
-        "name": "Giotto Mega Pencils Box of 12",
-        "options": Array [
-          Object {
-            "code": "box-of-12",
-            "id": "T_5",
-          },
-        ],
-        "price": 624,
-        "sku": "225600",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_1",
-          "name": "Standard Tax",
-        },
-        "trackInventory": false,
+      ],
+      "customFields": Object {
+        "weight": 200,
       },
-    ],
-  },
-  Object {
-    "assets": Array [],
-    "customFields": Object {
-      "pageType": "default",
-    },
-    "description": "Keeps the paint off the clothes",
-    "facetValues": Array [
-      Object {
-        "facet": Object {
-          "id": "T_4",
-          "name": "Material",
-        },
-        "id": "T_6",
-        "name": "Denim",
-      },
-      Object {
-        "facet": Object {
-          "id": "T_3",
-          "name": "Collection",
-        },
-        "id": "T_7",
-        "name": "clothes",
-      },
-    ],
-    "featuredAsset": null,
-    "id": "T_4",
-    "name": "Artists Smock",
-    "optionGroups": Array [
-      Object {
-        "code": "artists-smock-size",
-        "id": "T_3",
-        "name": "size",
-      },
-      Object {
-        "code": "artists-smock-colour",
+      "featuredAsset": Object {
         "id": "T_4",
-        "name": "colour",
+        "name": "box-of-12.jpg",
+        "preview": "test-url/test-assets/box-of-12__preview.jpg",
+        "source": "test-url/test-assets/box-of-12.jpg",
       },
-    ],
-    "slug": "artists-smock",
-    "variants": Array [
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 500,
-        },
-        "facetValues": Array [],
-        "featuredAsset": null,
-        "id": "T_7",
-        "name": "Artists Smock small beige",
-        "options": Array [
-          Object {
-            "code": "small",
-            "id": "T_6",
-          },
-          Object {
-            "code": "beige",
-            "id": "T_8",
-          },
-        ],
-        "price": 1199,
-        "sku": "10112",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_2",
-          "name": "Reduced Tax",
-        },
-        "trackInventory": false,
+      "id": "T_6",
+      "name": "Giotto Mega Pencils Box of 12",
+      "price": 624,
+      "sku": "225600",
+      "stockMovements": Object {
+        "items": Array [],
       },
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 500,
-        },
-        "facetValues": Array [],
-        "featuredAsset": null,
-        "id": "T_8",
-        "name": "Artists Smock large beige",
-        "options": Array [
-          Object {
-            "code": "large",
-            "id": "T_7",
-          },
-          Object {
-            "code": "beige",
-            "id": "T_8",
-          },
-        ],
-        "price": 1199,
-        "sku": "10113",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_2",
-          "name": "Reduced Tax",
-        },
-        "trackInventory": false,
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_1",
+        "name": "Standard Tax",
       },
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 500,
-        },
-        "facetValues": Array [],
-        "featuredAsset": null,
-        "id": "T_9",
-        "name": "Artists Smock small navy",
-        "options": Array [
-          Object {
-            "code": "small",
-            "id": "T_6",
-          },
-          Object {
-            "code": "navy",
-            "id": "T_9",
-          },
-        ],
-        "price": 1199,
-        "sku": "10114",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_2",
-          "name": "Reduced Tax",
-        },
-        "trackInventory": false,
-      },
-      Object {
-        "assets": Array [],
-        "customFields": Object {
-          "weight": 500,
-        },
-        "facetValues": Array [],
-        "featuredAsset": null,
-        "id": "T_10",
-        "name": "Artists Smock large navy",
-        "options": Array [
-          Object {
-            "code": "large",
-            "id": "T_7",
-          },
-          Object {
-            "code": "navy",
-            "id": "T_9",
-          },
-        ],
-        "price": 1199,
-        "sku": "10115",
-        "stockMovements": Object {
-          "items": Array [],
-        },
-        "stockOnHand": 0,
-        "taxCategory": Object {
-          "id": "T_2",
-          "name": "Reduced Tax",
-        },
-        "trackInventory": false,
-      },
-    ],
+      "trackInventory": false,
+    },
+  ],
+}
+`;
+
+exports[`Import resolver imports products 4`] = `
+Object {
+  "assets": Array [],
+  "customFields": Object {
+    "pageType": "default",
   },
-]
+  "description": "Keeps the paint off the clothes",
+  "featuredAsset": null,
+  "id": "T_4",
+  "name": "Artists Smock",
+  "optionGroups": Array [
+    Object {
+      "code": "artists-smock-size",
+      "id": "T_3",
+      "name": "size",
+    },
+    Object {
+      "code": "artists-smock-colour",
+      "id": "T_4",
+      "name": "colour",
+    },
+  ],
+  "slug": "artists-smock",
+  "variants": Array [
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 500,
+      },
+      "featuredAsset": null,
+      "id": "T_7",
+      "name": "Artists Smock small beige",
+      "price": 1199,
+      "sku": "10112",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_2",
+        "name": "Reduced Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 500,
+      },
+      "featuredAsset": null,
+      "id": "T_8",
+      "name": "Artists Smock large beige",
+      "price": 1199,
+      "sku": "10113",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_2",
+        "name": "Reduced Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 500,
+      },
+      "featuredAsset": null,
+      "id": "T_9",
+      "name": "Artists Smock small navy",
+      "price": 1199,
+      "sku": "10114",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_2",
+        "name": "Reduced Tax",
+      },
+      "trackInventory": false,
+    },
+    Object {
+      "assets": Array [],
+      "customFields": Object {
+        "weight": 500,
+      },
+      "featuredAsset": null,
+      "id": "T_10",
+      "name": "Artists Smock large navy",
+      "price": 1199,
+      "sku": "10115",
+      "stockMovements": Object {
+        "items": Array [],
+      },
+      "stockOnHand": 0,
+      "taxCategory": Object {
+        "id": "T_2",
+        "name": "Reduced Tax",
+      },
+      "trackInventory": false,
+    },
+  ],
+}
 `;

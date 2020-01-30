@@ -43,7 +43,7 @@ import {
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
@@ -61,7 +61,6 @@ describe('Orders resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            dataDir: path.join(__dirname, '__data__'),
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
@@ -314,10 +313,14 @@ describe('Orders resolver', () => {
             });
 
             expect(result.order!.state).toBe('PartiallyFulfilled');
+
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
-            expect(result.order!.lines[1].items[2].fulfillment!.id).toBe(fulfillOrder!.id);
-            expect(result.order!.lines[1].items[1].fulfillment).toBeNull();
-            expect(result.order!.lines[1].items[0].fulfillment).toBeNull();
+            expect(
+                result.order!.lines[1].items.filter(
+                    i => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
+                ).length,
+            ).toBe(1);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(2);
         });
 
         it('creates a second partial fulfillment', async () => {
@@ -341,11 +344,9 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            // expect(result.order!.lines).toEqual({});
             expect(result.order!.state).toBe('PartiallyFulfilled');
-            expect(result.order!.lines[1].items[2].fulfillment).not.toBeNull();
-            expect(result.order!.lines[1].items[1].fulfillment).not.toBeNull();
-            expect(result.order!.lines[1].items[0].fulfillment).toBeNull();
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment != null).length).toBe(2);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(1);
         });
 
         it(
@@ -382,6 +383,7 @@ describe('Orders resolver', () => {
                 (items, line) => [...items, ...line.items],
                 [] as OrderItemFragment[],
             );
+            const unfulfilledItem = order!.lines[1].items.find(i => i.fulfillment == null)!;
 
             const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
@@ -401,7 +403,7 @@ describe('Orders resolver', () => {
 
             expect(fulfillOrder!.method).toBe('Test3');
             expect(fulfillOrder!.trackingCode).toBe('333');
-            expect(fulfillOrder!.orderItems).toEqual([{ id: orderItems[1].id }]);
+            expect(fulfillOrder!.orderItems).toEqual([{ id: unfulfilledItem.id }]);
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',

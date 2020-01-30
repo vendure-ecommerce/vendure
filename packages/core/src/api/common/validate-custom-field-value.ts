@@ -25,6 +25,13 @@ export function validateCustomFieldValue(
     if (config.readonly) {
         throw new UserInputError('error.field-invalid-readonly', { name: config.name });
     }
+    if (config.nullable === false) {
+        if (value === null) {
+            throw new UserInputError('error.field-invalid-non-nullable', {
+                name: config.name,
+            });
+        }
+    }
     switch (config.type) {
         case 'string':
         case 'localeString':

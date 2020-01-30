@@ -55,15 +55,16 @@ export class MysqlSearchStrategy implements SearchStrategy {
                 .addSelect('MAX(priceWithTax)', 'maxPriceWithTax');
         }
         this.applyTermAndFilters(ctx, qb, input);
-        if (input.term && input.term.length > this.minTermLength) {
-            qb.orderBy('score', 'DESC');
-        }
         if (sort) {
             if (sort.name) {
                 qb.addOrderBy('productName', sort.name);
             }
             if (sort.price) {
                 qb.addOrderBy('price', sort.price);
+            }
+        } else {
+            if (input.term && input.term.length > this.minTermLength) {
+                qb.orderBy('score', 'DESC');
             }
         }
         if (enabledOnly) {
@@ -136,6 +137,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
             qb.groupBy('productId');
+            qb.addSelect('BIT_OR(enabled)', 'productEnabled');
         }
         return qb;
     }
