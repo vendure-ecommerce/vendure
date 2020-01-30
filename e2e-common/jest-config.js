@@ -8,7 +8,7 @@ module.exports = {
     rootDir: packageDirname,
     testRegex: '.e2e-spec.ts$',
     transform: {
-        '^.+\\.(t|j)s$': 'ts-jest',
+        '^.+\\.ts$': 'ts-jest',
     },
     testEnvironment: 'node',
     reporters: ['default', path.join(__dirname, 'custom-reporter.js')],

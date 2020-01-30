@@ -3,10 +3,11 @@
   "compilerOptions": {
     "types": ["jest", "node"],
     "lib": ["es2015"],
-    "skipLibCheck": false,
-    "inlineSourceMap": true,
+    "skipLibCheck": true,
+    "inlineSourceMap": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "allowJs": true
+    "allowJs": false,
+    "diagnostics": false
   }
 }
