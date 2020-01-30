@@ -1,12 +1,3 @@
-// Force the timezone to avoid tests failing in other locales
-// process.env.TZ = 'UTC';
-if (process.env.DB === 'postgres') {
-    // Hack to fix pg driver date handling. See https://github.com/typeorm/typeorm/issues/2622#issuecomment-476416712
-    // tslint:disable-next-line:no-var-requires
-    const pg = require('pg');
-    pg.types.setTypeParser(1114, (stringValue: string) => new Date(`${stringValue}+0000`));
-}
-
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { mergeConfig } from '@vendure/core';
 import { CustomFields } from '@vendure/core/dist/config/custom-field/custom-field-types';
@@ -18,6 +9,9 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
+import { fixPostgresTimezone } from './utils/fix-pg-timezone';
+
+fixPostgresTimezone();
 
 // tslint:disable:no-non-null-assertion
 
