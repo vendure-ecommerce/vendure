@@ -1,6 +1,7 @@
 import { Type } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Connection, ConnectionOptions } from 'typeorm';
+import { DateUtils } from 'typeorm/util/DateUtils';
 
 import { UserInputError } from '../../../common/error/errors';
 import {
@@ -73,7 +74,7 @@ function buildWhereCondition(
         case 'eq':
             return {
                 clause: `${fieldName} = :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'contains':
             const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
@@ -85,13 +86,13 @@ function buildWhereCondition(
         case 'before':
             return {
                 clause: `${fieldName} < :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'gt':
         case 'after':
             return {
                 clause: `${fieldName} > :arg${argIndex}`,
-                parameters: { [`arg${argIndex}`]: operand },
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
         case 'lte':
             return {
@@ -106,7 +107,10 @@ function buildWhereCondition(
         case 'between':
             return {
                 clause: `${fieldName} BETWEEN :arg${argIndex}_a AND :arg${argIndex}_b`,
-                parameters: { [`arg${argIndex}_a`]: operand.start, [`arg${argIndex}_b`]: operand.end },
+                parameters: {
+                    [`arg${argIndex}_a`]: convertDate(operand.start),
+                    [`arg${argIndex}_b`]: convertDate(operand.end),
+                },
             };
         default:
             assertNever(operator);
@@ -115,4 +119,15 @@ function buildWhereCondition(
         clause: '1',
         parameters: {},
     };
+}
+
+/**
+ * Converts a JS Date object to a string format recognized by all DB engines.
+ * See https://github.com/vendure-ecommerce/vendure/issues/251
+ */
+function convertDate(input: Date | string | number): string | number {
+    if (input instanceof Date) {
+        return DateUtils.mixedDateToUtcDatetimeString(input);
+    }
+    return input;
 }

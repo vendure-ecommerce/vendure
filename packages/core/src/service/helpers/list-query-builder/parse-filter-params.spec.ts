@@ -186,12 +186,12 @@ describe('parseFilterParams()', () => {
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
                 createdAt: {
-                    eq: '2018-01-01',
+                    eq: new Date('2018-01-01T10:00:00.000Z'),
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
             expect(result[0].clause).toBe(`product.createdAt = :arg1`);
-            expect(result[0].parameters).toEqual({ arg1: '2018-01-01' });
+            expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
         describe('before', () => {
@@ -199,12 +199,12 @@ describe('parseFilterParams()', () => {
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
                 createdAt: {
-                    before: '2018-01-01',
+                    before: new Date('2018-01-01T10:00:00.000Z'),
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
             expect(result[0].clause).toBe(`product.createdAt < :arg1`);
-            expect(result[0].parameters).toEqual({ arg1: '2018-01-01' });
+            expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
         describe('after', () => {
@@ -212,12 +212,12 @@ describe('parseFilterParams()', () => {
             connection.setColumns(Product, [{ propertyName: 'createdAt', type: 'datetime' }]);
             const filterParams: FilterParameter<Product> = {
                 createdAt: {
-                    after: '2018-01-01',
+                    after: new Date('2018-01-01T10:00:00.000Z'),
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
             expect(result[0].clause).toBe(`product.createdAt > :arg1`);
-            expect(result[0].parameters).toEqual({ arg1: '2018-01-01' });
+            expect(result[0].parameters).toEqual({ arg1: '2018-01-01 10:00:00.000' });
         });
 
         describe('between', () => {
@@ -226,14 +226,17 @@ describe('parseFilterParams()', () => {
             const filterParams: FilterParameter<Product> = {
                 createdAt: {
                     between: {
-                        start: '2018-01-01',
-                        end: '2018-02-01',
+                        start: new Date('2018-01-01T10:00:00.000Z'),
+                        end: new Date('2018-02-01T10:00:00.000Z'),
                     },
                 },
             };
             const result = parseFilterParams(connection as any, Product, filterParams);
             expect(result[0].clause).toBe(`product.createdAt BETWEEN :arg1_a AND :arg1_b`);
-            expect(result[0].parameters).toEqual({ arg1_a: '2018-01-01', arg1_b: '2018-02-01' });
+            expect(result[0].parameters).toEqual({
+                arg1_a: '2018-01-01 10:00:00.000',
+                arg1_b: '2018-02-01 10:00:00.000',
+            });
         });
     });
 
