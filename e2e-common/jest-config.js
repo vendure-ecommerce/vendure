@@ -16,6 +16,7 @@ module.exports = {
         'ts-jest': {
             tsConfig: '<rootDir>/config/tsconfig.e2e.json',
             diagnostics: false,
+            isolatedModules: true,
         },
     },
 };
