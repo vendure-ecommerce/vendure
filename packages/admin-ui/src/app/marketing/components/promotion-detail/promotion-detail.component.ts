@@ -253,7 +253,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             const argsHash = operation.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: getDefaultConfigArgValue(arg),
+                    [arg.name]: arg.value != null ? arg.value : getDefaultConfigArgValue(arg),
                 }),
                 {},
             );
