@@ -7,6 +7,7 @@ import { RequestHandler } from 'express';
 import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
+import { RequestContext } from '../api/common/request-context';
 import { Transitions } from '../common/finite-state-machine';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
@@ -152,6 +153,17 @@ export interface OrderOptions {
      * @default UseGuestStrategy
      */
     checkoutMergeStrategy?: OrderMergeStrategy;
+    /**
+     * @description
+     * Allows a user-defined function to create Order codes. This can be useful when
+     * integrating with existing systems. By default, Vendure will generate a 16-character
+     * alphanumeric string.
+     *
+     * Note: when using a custom function for Order codes, bear in mind the database limit
+     * for string types (e.g. 255 chars for a varchar field in MySQL), and also the need
+     * for codes to be unique.
+     */
+    generateOrderCode?: (ctx: RequestContext) => string | Promise<string>;
 }
 
 /**
