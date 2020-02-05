@@ -95,7 +95,7 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
                     this.paginationConfig.itemsPerPage,
                     this.searchTerm.value,
                 );
-                this.notificationService.success(_('catalog.notify-create-assets-success'), {
+                this.notificationService.success(_('asset.notify-create-assets-success'), {
                     count: files.length,
                 });
             });

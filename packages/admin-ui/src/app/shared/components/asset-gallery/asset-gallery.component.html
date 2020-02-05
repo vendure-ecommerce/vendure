@@ -35,7 +35,7 @@
         <div class="card-block details" *ngIf="selection.length >= 1">
             <div class="name">{{ lastSelected().name }}</div>
             <div>
-                {{ 'catalog.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}
+                {{ 'asset.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}
             </div>
             <div>
                 <button (click)="previewAsset(lastSelected())" class="btn btn-link">
@@ -44,7 +44,7 @@
             </div>
             <div>
                 <a [href]="lastSelected().source" target="_blank" class="btn btn-link">
-                    {{ 'catalog.open-asset-source' | translate }}
+                    {{ 'asset.open-asset-source' | translate }}
                 </a>
             </div>
         </div>
@@ -53,7 +53,7 @@
     <div class="selection-count" [class.visible]="selection.length > 1">
         <clr-tooltip>
             <div clrTooltipTrigger class="trigger">
-                {{ 'catalog.assets-selected-count' | translate: { count: selection.length } }}
+                {{ 'asset.assets-selected-count' | translate: { count: selection.length } }}
             </div>
             <clr-tooltip-content vdrPosition="top-left" clrSize="lg">
                 <ul>

@@ -16,7 +16,7 @@
     <div class="card-footer" *vdrIfPermissions="'UpdateCatalog'">
         <button class="btn" (click)="selectAssets()">
             <clr-icon shape="attachment"></clr-icon>
-            {{ 'catalog.add-asset' | translate }}
+            {{ 'asset.add-asset' | translate }}
         </button>
     </div>
 </div>
@@ -35,11 +35,11 @@
     <button
         *vdrIfPermissions="'UpdateCatalog'"
         class="compact-select btn btn-icon btn-sm btn-block"
-        [title]="'catalog.add-asset' | translate"
+        [title]="'asset.add-asset' | translate"
         (click)="selectAssets()"
     >
         <clr-icon shape="attachment"></clr-icon>
-        {{ 'catalog.add-asset' | translate }}
+        {{ 'asset.add-asset' | translate }}
     </button>
 </ng-template>
 
@@ -78,7 +78,7 @@
                         vdrDropdownItem
                         (click)="setAsFeatured(asset)"
                     >
-                        {{ 'catalog.set-as-featured-asset' | translate }}
+                        {{ 'asset.set-as-featured-asset' | translate }}
                     </button>
                     <div class="dropdown-divider"></div>
                     <button
@@ -88,7 +88,7 @@
                         [disabled]="!('UpdateCatalog' | hasPermission)"
                         (click)="removeAsset(asset)"
                     >
-                        {{ 'catalog.remove-asset' | translate }}
+                        {{ 'asset.remove-asset' | translate }}
                     </button>
                 </vdr-dropdown-menu>
             </vdr-dropdown>

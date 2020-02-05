@@ -46,7 +46,7 @@ export class SliderControl implements CustomFieldControl {
         </div>
         <button class="btn" (click)="selectAssets()">
             <clr-icon shape="attachment"></clr-icon>
-            {{ 'catalog.add-asset' | translate }}
+            {{ 'asset.add-asset' | translate }}
         </button>
     `,
 })
