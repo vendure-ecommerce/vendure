@@ -11,6 +11,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import {
     CreateAdministrator,
     CreateRole,
+    GetCustomerList,
     Me,
     MutationCreateProductArgs,
     MutationLoginArgs,
@@ -22,6 +23,7 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_PRODUCT,
     CREATE_ROLE,
+    GET_CUSTOMER_LIST,
     GET_PRODUCT_LIST,
     ME,
     UPDATE_PRODUCT,
@@ -64,6 +66,22 @@ describe('Authorization & permissions', () => {
                     rememberMe: false,
                 });
             });
+        });
+
+        describe('Customer user', () => {
+            let customerEmailAddress: string;
+            beforeAll(async () => {
+                await adminClient.asSuperAdmin();
+                const { customers } = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+                customerEmailAddress = customers.items[0].emailAddress;
+            });
+
+            it(
+                'cannot login',
+                assertThrowsWithMessage(async () => {
+                    await adminClient.asUserWithCredentials(customerEmailAddress, 'test');
+                }, 'The credentials did not match. Please check and try again'),
+            );
         });
 
         describe('ReadCatalog permission', () => {

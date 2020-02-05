@@ -24,7 +24,6 @@ import {
     OrderItemsLimitError,
     UserInputError,
 } from '../../common/error/errors';
-import { generatePublicId } from '../../common/generate-public-id';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -200,7 +199,7 @@ export class OrderService {
 
     async create(ctx: RequestContext, userId?: ID): Promise<Order> {
         const newOrder = new Order({
-            code: generatePublicId(),
+            code: await this.configService.orderOptions.generateOrderCode(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
             couponCodes: [],

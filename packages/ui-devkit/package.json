@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^6.0.0",
-    "@vendure/core": "^0.8.0",
+    "@vendure/core": "^0.8.1",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.9",
     "rollup-plugin-terser": "^5.1.2",

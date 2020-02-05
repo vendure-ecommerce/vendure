@@ -2,6 +2,8 @@ import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 
+import { generatePublicId } from '../common/generate-public-id';
+
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
@@ -71,6 +73,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: {},
+        generateOrderCode: () => generatePublicId(),
     },
     paymentOptions: {
         paymentMethodHandlers: [],
