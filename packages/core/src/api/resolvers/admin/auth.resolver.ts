@@ -3,6 +3,7 @@ import { LoginResult, MutationLoginArgs, Permission } from '@vendure/common/lib/
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../../config/config.service';
+import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -14,8 +15,13 @@ import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
 export class AuthResolver extends BaseAuthResolver {
-    constructor(authService: AuthService, userService: UserService, configService: ConfigService) {
-        super(authService, userService, configService);
+    constructor(
+        authService: AuthService,
+        userService: UserService,
+        configService: ConfigService,
+        administratorService: AdministratorService,
+    ) {
+        super(authService, userService, administratorService, configService);
     }
 
     @Mutation()
@@ -26,7 +32,7 @@ export class AuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return super.login(args, ctx, req, res);
+        return super.login(args, ctx, req, res, 'admin');
     }
 
     @Mutation()
@@ -42,6 +48,6 @@ export class AuthResolver extends BaseAuthResolver {
     @Query()
     @Allow(Permission.Authenticated, Permission.Owner)
     me(@Ctx() ctx: RequestContext) {
-        return super.me(ctx);
+        return super.me(ctx, 'admin');
     }
 }

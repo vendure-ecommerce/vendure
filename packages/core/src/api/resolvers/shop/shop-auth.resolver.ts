@@ -20,6 +20,7 @@ import {
     VerificationTokenError,
 } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
+import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
 import { UserService } from '../../../service/services/user.service';
@@ -31,12 +32,13 @@ import { BaseAuthResolver } from '../base/base-auth.resolver';
 @Resolver()
 export class ShopAuthResolver extends BaseAuthResolver {
     constructor(
-        protected authService: AuthService,
-        protected userService: UserService,
+        authService: AuthService,
+        userService: UserService,
+        administratorService: AdministratorService,
+        configService: ConfigService,
         protected customerService: CustomerService,
-        protected configService: ConfigService,
     ) {
-        super(authService, userService, configService);
+        super(authService, userService, administratorService, configService);
     }
 
     @Mutation()
@@ -47,7 +49,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return super.login(args, ctx, req, res);
+        return super.login(args, ctx, req, res, 'shop');
     }
 
     @Mutation()
@@ -63,7 +65,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Query()
     @Allow(Permission.Authenticated)
     me(@Ctx() ctx: RequestContext) {
-        return super.me(ctx);
+        return super.me(ctx, 'shop');
     }
 
     @Mutation()

@@ -7,13 +7,15 @@ import {
 import { unique } from '@vendure/common/lib/unique';
 import { Request, Response } from 'express';
 
-import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
+import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
+import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
 import { extractAuthToken } from '../../common/extract-auth-token';
+import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
 import { setAuthToken } from '../../common/set-auth-token';
 
@@ -21,6 +23,7 @@ export class BaseAuthResolver {
     constructor(
         protected authService: AuthService,
         protected userService: UserService,
+        protected administratorService: AdministratorService,
         protected configService: ConfigService,
     ) {}
 
@@ -33,8 +36,9 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         req: Request,
         res: Response,
+        apiType: ApiType,
     ): Promise<LoginResult> {
-        return await this.createAuthenticatedSession(ctx, args, req, res);
+        return await this.createAuthenticatedSession(ctx, args, req, res, apiType);
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
@@ -56,10 +60,16 @@ export class BaseAuthResolver {
     /**
      * Returns information about the current authenticated user.
      */
-    async me(ctx: RequestContext) {
+    async me(ctx: RequestContext, apiType: ApiType) {
         const userId = ctx.activeUserId;
         if (!userId) {
             throw new ForbiddenError();
+        }
+        if (apiType === 'admin') {
+            const administrator = await this.administratorService.findOneByUserId(userId);
+            if (!administrator) {
+                throw new ForbiddenError();
+            }
         }
         const user = userId && (await this.userService.getUserById(userId));
         return user ? this.publiclyAccessibleUser(user) : null;
@@ -73,8 +83,15 @@ export class BaseAuthResolver {
         args: MutationLoginArgs,
         req: Request,
         res: Response,
+        apiType?: ApiType,
     ) {
         const session = await this.authService.authenticate(ctx, args.username, args.password);
+        if (apiType && apiType === 'admin') {
+            const administrator = await this.administratorService.findOneByUserId(session.user.id);
+            if (!administrator) {
+                throw new UnauthorizedError();
+            }
+        }
         setAuthToken({
             req,
             res,
