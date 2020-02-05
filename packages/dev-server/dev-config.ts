@@ -72,8 +72,8 @@ export const devConfig: VendureConfig = {
         UiPlugin,
         AdminUiPlugin.init({
             port: 5001,
-            extensions: UiPlugin.uiExtensions,
-            watch: true,
+            // extensions: UiPlugin.uiExtensions,
+            // watch: true,
         }),
     ],
 };

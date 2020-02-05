@@ -1,9 +1,10 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationCreateAssetsArgs,
+    MutationUpdateAssetArgs,
+    Permission,
     QueryAssetArgs,
     QueryAssetsArgs,
-    MutationCreateAssetsArgs,
-    Permission,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -38,5 +39,11 @@ export class AssetResolver {
             assets.push(asset);
         }
         return assets;
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async updateAsset(@Args() { input }: MutationUpdateAssetArgs) {
+        return this.assetService.update(input);
     }
 }

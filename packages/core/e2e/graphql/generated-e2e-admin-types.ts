@@ -115,6 +115,7 @@ export type Asset = Node & {
     height: Scalars['Int'];
     source: Scalars['String'];
     preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 export type AssetFilterParameter = {
@@ -335,6 +336,17 @@ export type ConfigurableOperationDefinition = {
 export type ConfigurableOperationInput = {
     code: Scalars['String'];
     arguments: Array<ConfigArgInput>;
+};
+
+export type Coordinate = {
+    __typename?: 'Coordinate';
+    x: Scalars['Float'];
+    y: Scalars['Float'];
+};
+
+export type CoordinateInput = {
+    x: Scalars['Float'];
+    y: Scalars['Float'];
 };
 
 export type Country = Node & {
@@ -1692,6 +1704,8 @@ export type Mutation = {
     assignRoleToAdministrator: Administrator;
     /** Create a new Asset */
     createAssets: Array<Asset>;
+    /** Update an existing Asset */
+    updateAsset: Asset;
     login: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -1839,6 +1853,10 @@ export type MutationAssignRoleToAdministratorArgs = {
 
 export type MutationCreateAssetsArgs = {
     input: Array<CreateAssetInput>;
+};
+
+export type MutationUpdateAssetArgs = {
+    input: UpdateAssetInput;
 };
 
 export type MutationLoginArgs = {
@@ -2660,7 +2678,9 @@ export type Query = {
     __typename?: 'Query';
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
+    /** Get a list of Assets */
     assets: AssetList;
+    /** Get a single Asset by id */
     asset?: Maybe<Asset>;
     me?: Maybe<CurrentUser>;
     channels: Array<Channel>;
@@ -3249,6 +3269,12 @@ export type UpdateAdministratorInput = {
     roleIds?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type UpdateAssetInput = {
+    id: Scalars['ID'];
+    name?: Maybe<Scalars['String']>;
+    focalPoint?: Maybe<CoordinateInput>;
+};
+
 export type UpdateChannelInput = {
     id: Scalars['ID'];
     code?: Maybe<Scalars['String']>;
@@ -3464,6 +3490,36 @@ export type Q2QueryVariables = {};
 
 export type Q2Query = { __typename?: 'Query' } & {
     product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+};
+
+export type GetAssetQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetAssetQuery = { __typename?: 'Query' } & {
+    asset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'width' | 'height'> & AssetFragment>;
+};
+
+export type CreateAssetsMutationVariables = {
+    input: Array<CreateAssetInput>;
+};
+
+export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
+    createAssets: Array<
+        { __typename?: 'Asset' } & {
+            focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+        } & AssetFragment
+    >;
+};
+
+export type UpdateAssetMutationVariables = {
+    input: UpdateAssetInput;
+};
+
+export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
+    updateAsset: { __typename?: 'Asset' } & {
+        focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+    } & AssetFragment;
 };
 
 export type CanCreateCustomerMutationVariables = {
@@ -5259,6 +5315,28 @@ export namespace Q2 {
     export type Variables = Q2QueryVariables;
     export type Query = Q2Query;
     export type Product = NonNullable<Q2Query['product']>;
+}
+
+export namespace GetAsset {
+    export type Variables = GetAssetQueryVariables;
+    export type Query = GetAssetQuery;
+    export type Asset = AssetFragment;
+}
+
+export namespace CreateAssets {
+    export type Variables = CreateAssetsMutationVariables;
+    export type Mutation = CreateAssetsMutation;
+    export type CreateAssets = AssetFragment;
+    export type FocalPoint = NonNullable<
+        (NonNullable<CreateAssetsMutation['createAssets'][0]>)['focalPoint']
+    >;
+}
+
+export namespace UpdateAsset {
+    export type Variables = UpdateAssetMutationVariables;
+    export type Mutation = UpdateAssetMutation;
+    export type UpdateAsset = AssetFragment;
+    export type FocalPoint = NonNullable<UpdateAssetMutation['updateAsset']['focalPoint']>;
 }
 
 export namespace CanCreateCustomer {

@@ -10,6 +10,12 @@ type Asset implements Node {
     height: Int!
     source: String!
     preview: String!
+    focalPoint: Coordinate
+}
+
+type Coordinate {
+    x: Float!
+    y: Float!
 }
 
 type AssetList implements PaginatedList {

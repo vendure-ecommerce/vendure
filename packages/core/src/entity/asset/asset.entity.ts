@@ -35,4 +35,7 @@ export class Asset extends VendureEntity {
     @Column() source: string;
 
     @Column() preview: string;
+
+    @Column('simple-json', { nullable: true })
+    focalPoint?: { x: number; y: number };
 }

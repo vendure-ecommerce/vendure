@@ -85,6 +85,7 @@ export type Asset = Node & {
     height: Scalars['Int'];
     source: Scalars['String'];
     preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 export type AssetList = PaginatedList & {
@@ -248,6 +249,12 @@ export type ConfigurableOperationDefinition = {
 export type ConfigurableOperationInput = {
     code: Scalars['String'];
     arguments: Array<ConfigArgInput>;
+};
+
+export type Coordinate = {
+    __typename?: 'Coordinate';
+    x: Scalars['Float'];
+    y: Scalars['Float'];
 };
 
 export type Country = Node & {

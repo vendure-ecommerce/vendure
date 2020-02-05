@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { AssetType, CreateAssetInput } from '@vendure/common/lib/generated-types';
+import { AssetType, CreateAssetInput, UpdateAssetInput } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
@@ -9,7 +9,7 @@ import path from 'path';
 import { Stream } from 'stream';
 import { Connection, Like } from 'typeorm';
 
-import { InternalServerError } from '../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -18,6 +18,8 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -137,6 +139,12 @@ export class AssetService {
         return this.createAssetInternal(stream, filename, mimetype);
     }
 
+    async update(input: UpdateAssetInput): Promise<Asset> {
+        const asset = await getEntityOrThrow(this.connection, Asset, input.id);
+        patchEntity(asset, input);
+        return this.connection.getRepository(Asset).save(asset);
+    }
+
     /**
      * Create an Asset from a file stream created during data import.
      */
@@ -176,6 +184,7 @@ export class AssetService {
             mimeType: mimetype,
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
+            focalPoint: null,
         });
         return this.connection.manager.save(asset);
     }
