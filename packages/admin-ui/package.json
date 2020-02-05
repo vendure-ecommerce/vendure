@@ -1,6 +1,6 @@
 {
   "name": "@vendure/admin-ui",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
@@ -36,7 +36,7 @@
     "@ng-select/ng-select": "^3.0.5",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
-    "@vendure/ui-devkit": "^0.8.0",
+    "@vendure/ui-devkit": "^0.8.1",
     "@webcomponents/custom-elements": "^1.2.4",
     "apollo-angular": "^1.6.0",
     "apollo-cache-inmemory": "^1.6.2",

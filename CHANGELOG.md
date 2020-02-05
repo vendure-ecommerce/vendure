@@ -1,3 +1,15 @@
+## <small>0.8.1 (2020-02-05)</small>
+
+
+#### Fixes
+
+* **admin-ui** Do not reset Promotion actions & conditions on update ([2b3fc72](https://github.com/vendure-ecommerce/vendure/commit/2b3fc72)), closes [#256](https://github.com/vendure-ecommerce/vendure/issues/256)
+* **core** Prevent Customers from logging in to admin API ([09eb30c](https://github.com/vendure-ecommerce/vendure/commit/09eb30c)), closes [#77](https://github.com/vendure-ecommerce/vendure/issues/77)
+
+#### Features
+
+* **core** Allow a custom function for generating order codes ([7d36de9](https://github.com/vendure-ecommerce/vendure/commit/7d36de9)), closes [#252](https://github.com/vendure-ecommerce/vendure/issues/252)
+
 ## 0.8.0 (2020-01-30)
 
 
