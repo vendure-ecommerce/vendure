@@ -1,8 +1,8 @@
-@import "variables";
+@import "src/styles/variables";
 
 :host {
     display: flex;
-    flex-direction: column;
+    height: 100%;
 }
 
 .preview-image {
@@ -13,6 +13,7 @@
     text-align: center;
     box-shadow: inset 0 0 5px 0 rgba(0,0,0,0.1);
     background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAACuoAAArqAVDM774AAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTZEaa/1AAAAK0lEQVQ4T2P4jwP8xgFGNSADqDwGIF0DlMYAUH0YYFQDMoDKYwASNfz/DwB/JvcficphowAAAABJRU5ErkJggg==");
+    flex: 1;
 
     &.centered {
         display: flex;
@@ -28,8 +29,9 @@
 
 .controls {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
-    flex: 1;
+    margin-left: 12px;
 
     label {
         color: $color-grey-500;

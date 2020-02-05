@@ -23,6 +23,8 @@ import {
     AssetFileInputComponent,
     AssetGalleryComponent,
     AssetPickerDialogComponent,
+    AssetPreviewComponent,
+    AssetPreviewDialogComponent,
     ChannelAssignmentControlComponent,
     ChannelBadgeComponent,
     ChannelLabelPipe,
@@ -89,6 +91,8 @@ const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
+    AssetPreviewComponent,
+    AssetPreviewDialogComponent,
     ConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,
@@ -158,7 +162,12 @@ const DECLARATIONS = [
         ModalService,
         CanDeactivateDetailGuard,
     ],
-    entryComponents: [ModalDialogComponent, SimpleDialogComponent, AssetPickerDialogComponent],
+    entryComponents: [
+        ModalDialogComponent,
+        SimpleDialogComponent,
+        AssetPickerDialogComponent,
+        AssetPreviewDialogComponent,
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

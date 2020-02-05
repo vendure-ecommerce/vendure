@@ -7,6 +7,10 @@ export { AffixedInputComponent } from './components/affixed-input/affixed-input.
 export { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
 export { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.component';
 export { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
+export {
+    AssetPreviewDialogComponent,
+} from './components/asset-preview-dialog/asset-preview-dialog.component';
+export { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 export { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 export {
     ChannelAssignmentControlComponent,

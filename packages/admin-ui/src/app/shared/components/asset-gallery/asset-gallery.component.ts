@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { AssetPreviewComponent } from '../../../catalog/components/asset-preview/asset-preview.component';
 import { Asset } from '../../../common/generated-types';
 import { ModalService } from '../../providers/modal/modal.service';
+import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
 
 @Component({
     selector: 'vdr-asset-gallery',
@@ -52,7 +52,7 @@ export class AssetGalleryComponent {
 
     previewAsset(asset: Asset) {
         this.modalService
-            .fromComponent(AssetPreviewComponent, {
+            .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',
                 closable: true,
                 locals: { asset },

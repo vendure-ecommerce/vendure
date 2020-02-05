@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 import { Asset } from '../../../common/generated-types';
-import { Dialog } from '../../../shared/providers/modal/modal.service';
+import { Dialog } from '../../providers/modal/modal.service';
 
 @Component({
     selector: 'vdr-asset-preview',
@@ -9,8 +9,9 @@ import { Dialog } from '../../../shared/providers/modal/modal.service';
     styleUrls: ['./asset-preview.component.scss'],
     changeDetection: ChangeDetectionStrategy.Default,
 })
-export class AssetPreviewComponent implements Dialog<void> {
-    asset: Asset;
+export class AssetPreviewComponent {
+    @Input() asset: Asset;
+
     size = 'medium';
     resolveWith: (result?: void) => void;
     width = 0;

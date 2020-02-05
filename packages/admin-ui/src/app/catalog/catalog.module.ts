@@ -7,7 +7,6 @@ import { SharedModule } from '../shared/shared.module';
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
-import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
@@ -53,7 +52,6 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         CollectionTreeNodeComponent,
         CollectionContentsComponent,
         ProductVariantsTableComponent,
-        AssetPreviewComponent,
         ProductSearchInputComponent,
         OptionValueInputComponent,
         UpdateProductOptionDialogComponent,
@@ -62,7 +60,6 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
     ],
     entryComponents: [
         ApplyFacetDialogComponent,
-        AssetPreviewComponent,
         UpdateProductOptionDialogComponent,
         AssignProductsToChannelDialogComponent,
     ],

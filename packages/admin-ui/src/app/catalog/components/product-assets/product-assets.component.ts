@@ -1,11 +1,4 @@
-import {
-    CdkDrag,
-    CdkDragDrop,
-    CdkDragMove,
-    CdkDropList,
-    CdkDropListGroup,
-    moveItemInArray,
-} from '@angular/cdk/drag-drop';
+import { CdkDrag, CdkDragMove, CdkDropList, CdkDropListGroup, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ViewportRuler } from '@angular/cdk/overlay';
 import {
     AfterViewInit,
@@ -22,8 +15,8 @@ import { unique } from 'shared/unique';
 
 import { Asset } from '../../../common/generated-types';
 import { AssetPickerDialogComponent } from '../../../shared/components/asset-picker-dialog/asset-picker-dialog.component';
+import { AssetPreviewDialogComponent } from '../../../shared/components/asset-preview-dialog/asset-preview-dialog.component';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
-import { AssetPreviewComponent } from '../asset-preview/asset-preview.component';
 
 export interface AssetChange {
     assetIds: string[];
@@ -103,7 +96,7 @@ export class ProductAssetsComponent implements AfterViewInit {
 
     previewAsset(asset: Asset) {
         this.modalService
-            .fromComponent(AssetPreviewComponent, {
+            .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',
                 closable: true,
                 locals: { asset },
