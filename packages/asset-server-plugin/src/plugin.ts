@@ -3,6 +3,7 @@ import {
     AssetStorageStrategy,
     createProxyHandler,
     LocalAssetStorageStrategy,
+    Logger,
     OnVendureBootstrap,
     OnVendureClose,
     RuntimeVendureConfig,
@@ -14,97 +15,7 @@ import path from 'path';
 
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
-
-/**
- * @description
- * Specifies the way in which an asset preview image will be resized to fit in the
- * proscribed dimensions:
- *
- * * crop: crops the image to cover both provided dimensions
- * * resize: Preserving aspect ratio, resizes the image to be as large as possible
- * while ensuring its dimensions are less than or equal to both those specified.
- *
- * @docsCategory AssetServerPlugin
- */
-export type ImageTransformMode = 'crop' | 'resize';
-
-/**
- * @description
- * A configuration option for an image size preset for the AssetServerPlugin.
- *
- * Presets allow a shorthand way to generate a thumbnail preview of an asset. For example,
- * the built-in "tiny" preset generates a 50px x 50px cropped preview, which can be accessed
- * by appending the string `preset=tiny` to the asset url:
- *
- * `http://localhost:3000/assets/some-asset.jpg?preset=tiny`
- *
- * is equivalent to:
- *
- * `http://localhost:3000/assets/some-asset.jpg?w=50&h=50&mode=crop`
- *
- * @docsCategory AssetServerPlugin
- */
-export interface ImageTransformPreset {
-    name: string;
-    width: number;
-    height: number;
-    mode: ImageTransformMode;
-}
-
-/**
- * @description
- * The configuration options for the AssetServerPlugin.
- *
- * @docsCategory AssetServerPlugin
- */
-export interface AssetServerOptions {
-    hostname?: string;
-    /**
-     * @description
-     * The local port that the server will run on. Note that the AssetServerPlugin
-     * includes a proxy server which allows the asset server to be accessed on the same
-     * port as the main Vendure server.
-     */
-    port: number;
-    /**
-     * @description
-     * The proxy route to the asset server.
-     */
-    route: string;
-    /**
-     * @description
-     * The local directory to which assets will be uploaded.
-     */
-    assetUploadDir: string;
-    /**
-     * @description
-     * The complete URL prefix of the asset files. For example, "https://demo.vendure.io/assets/"
-     *
-     * If not provided, the plugin will attempt to guess based off the incoming
-     * request and the configured route. However, in all but the simplest cases,
-     * this guess may not yield correct results.
-     */
-    assetUrlPrefix?: string;
-    /**
-     * @description
-     * The max width in pixels of a generated preview image.
-     *
-     * @default 1600
-     */
-    previewMaxWidth?: number;
-    /**
-     * @description
-     * The max height in pixels of a generated preview image.
-     *
-     * @default 1600
-     */
-    previewMaxHeight?: number;
-    /**
-     * @description
-     * An array of additional {@link ImageTransformPreset} objects.
-     */
-    presets?: ImageTransformPreset[];
-}
+import { AssetServerOptions, ImageTransformPreset } from './types';
 
 /**
  * @description
@@ -148,6 +59,20 @@ export interface AssetServerOptions {
  * ### Preview mode
  *
  * The `mode` parameter can be either `crop` or `resize`. See the [ImageTransformMode]({{< relref "image-transform-mode" >}}) docs for details.
+ *
+ * ### Focal point
+ *
+ * When cropping an image (`mode=crop`), Vendure will attempt to keep the most "interesting" area of the image in the cropped frame. It does this
+ * by finding the area of the image with highest entropy (the busiest area of the image). However, sometimes this does not yield a satisfactory
+ * result - part or all of the main subject may still be cropped out.
+ *
+ * This is where specifying the focal point can help. The focal point of the image may be specified by passing the `fpx` and `fpy` query parameters.
+ * These are normalized coordinates (i.e. a number between 0 and 1), so the `fpx=0&fpy=0` corresponds to the top left of the image.
+ *
+ * For example, let's say there is a very wide landscape image which we want to crop to be square. The main subject is a house to the far left of the
+ * image. The following query would crop it to a square with the house centered:
+ *
+ * `http://localhost:3000/assets/landscape.jpg?w=150&h=150&mode=crop&fpx=0.2&fpy=0.7`
  *
  * ### Transform presets
  *
@@ -298,11 +223,16 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                         return;
                     }
                     const image = await transformImage(file, req.query, this.presets || []);
-                    const imageBuffer = await image.toBuffer();
-                    const cachedFileName = this.getFileNameFromRequest(req);
-                    await AssetServerPlugin.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
-                    res.set('Content-Type', `image/${(await image.metadata()).format}`);
-                    res.send(imageBuffer);
+                    try {
+                        const imageBuffer = await image.toBuffer();
+                        const cachedFileName = this.getFileNameFromRequest(req);
+                        await AssetServerPlugin.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
+                        res.set('Content-Type', `image/${(await image.metadata()).format}`);
+                        res.send(imageBuffer);
+                    } catch (e) {
+                        Logger.error(e, 'AssetServerPlugin', e.stack);
+                        res.status(500).send(e.message);
+                    }
                 }
             }
             next();
@@ -310,14 +240,22 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     private getFileNameFromRequest(req: Request): string {
-        if (req.query.w || req.query.h) {
-            const width = req.query.w || '';
-            const height = req.query.h || '';
-            const mode = req.query.mode || '';
-            return this.cacheDir + '/' + this.addSuffix(req.path, `_transform_w${width}_h${height}_m${mode}`);
-        } else if (req.query.preset) {
-            if (this.presets && !!this.presets.find(p => p.name === req.query.preset)) {
-                return this.cacheDir + '/' + this.addSuffix(req.path, `_transform_pre_${req.query.preset}`);
+        const { w, h, mode, preset, fpx, fpy } = req.query;
+        const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
+        if (w || h) {
+            const width = w || '';
+            const height = h || '';
+            // TODO: make sure no bug / attack vector with the naming of files
+            return (
+                this.cacheDir +
+                '/' +
+                this.addSuffix(req.path, `_transform_w${width}_h${height}_m${mode}${focalPoint}`)
+            );
+        } else if (preset) {
+            if (this.presets && !!this.presets.find(p => p.name === preset)) {
+                return (
+                    this.cacheDir + '/' + this.addSuffix(req.path, `_transform_pre_${preset}${focalPoint}`)
+                );
             }
         }
         return req.path;
