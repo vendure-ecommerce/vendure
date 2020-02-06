@@ -35,6 +35,7 @@ export { FacetValueChipComponent } from './components/facet-value-chip/facet-val
 export {
     FacetValueSelectorComponent,
 } from './components/facet-value-selector/facet-value-selector.component';
+export { FocalPointControlComponent } from './components/focal-point-control/focal-point-control.component';
 export { FormFieldControlDirective } from './components/form-field/form-field-control.directive';
 export { FormFieldComponent } from './components/form-field/form-field.component';
 export { FormItemComponent } from './components/form-item/form-item.component';

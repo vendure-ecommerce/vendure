@@ -4,8 +4,8 @@
     </div>
 </ng-template>
 
-<vdr-asset-preview [asset]="asset" (assetChange)="assetChanges = $event"></vdr-asset-preview>
-
-<ng-template vdrDialogButtons>
-    <button class="btn btn-primary" [disabled]="!assetChanges" (click)="updateAsset()">{{ 'common.update' | translate }}</button>
-</ng-template>
+<vdr-asset-preview
+    [asset]="asset"
+    (assetChange)="assetChanges = $event"
+    (editClick)="resolveWith()"
+></vdr-asset-preview>

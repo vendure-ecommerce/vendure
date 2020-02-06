@@ -43,8 +43,8 @@
                 </button>
             </div>
             <div>
-                <a [href]="lastSelected().source" target="_blank" class="btn btn-link">
-                    {{ 'asset.open-asset-source' | translate }}
+                <a [routerLink]="['./', lastSelected().id]" class="btn btn-link">
+                    {{ 'common.edit' | translate }}
                 </a>
             </div>
         </div>

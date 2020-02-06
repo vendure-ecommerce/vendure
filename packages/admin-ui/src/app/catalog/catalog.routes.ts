@@ -4,11 +4,18 @@ import { map } from 'rxjs/operators';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
-import { FacetWithValues, OrderDetail, ProductWithVariants } from '../common/generated-types';
+import {
+    Asset,
+    Collection,
+    FacetWithValues,
+    OrderDetail,
+    ProductWithVariants,
+} from '../common/generated-types';
 import { BreadcrumbValue } from '../core/components/breadcrumb/breadcrumb.component';
 import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
+import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { CollectionDetailComponent } from './components/collection-detail/collection-detail.component';
 import { CollectionListComponent } from './components/collection-list/collection-list.component';
@@ -17,6 +24,7 @@ import { FacetListComponent } from './components/facet-list/facet-list.component
 import { ProductDetailComponent } from './components/product-detail/product-detail.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { ProductVariantsEditorComponent } from './components/product-variants-editor/product-variants-editor.component';
+import { AssetResolver } from './providers/routing/asset-resolver';
 import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
@@ -87,6 +95,14 @@ export const catalogRoutes: Route[] = [
             breadcrumb: _('breadcrumb.assets'),
         },
     },
+    {
+        path: 'assets/:id',
+        component: AssetDetailComponent,
+        resolve: createResolveData(AssetResolver),
+        data: {
+            breadcrumb: assetBreadcrumb,
+        },
+    },
 ];
 
 export function productBreadcrumb(data: any, params: any) {
@@ -131,11 +147,21 @@ export function facetBreadcrumb(data: any, params: any) {
 }
 
 export function collectionBreadcrumb(data: any, params: any) {
-    return detailBreadcrumb<FacetWithValues.Fragment>({
+    return detailBreadcrumb<Collection.Fragment>({
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.collections',
-        getName: facet => facet.name,
+        getName: collection => collection.name,
         route: 'collections',
+    });
+}
+
+export function assetBreadcrumb(data: any, params: any) {
+    return detailBreadcrumb<Asset.Fragment>({
+        entity: data.entity,
+        id: params.id,
+        breadcrumbKey: 'breadcrumb.assets',
+        getName: asset => asset.name,
+        route: 'assets',
     });
 }

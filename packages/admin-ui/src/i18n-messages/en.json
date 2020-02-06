@@ -7,16 +7,22 @@
     "add-asset-with-count": "Add {count, plural, 0 {assets} one {1 asset} other {{count} assets}}",
     "assets-selected-count": "{ count } assets selected",
     "dimensions": "Dimensions",
+    "focal-point": "Focal point",
     "notify-create-assets-success": "Created {count, plural, one {new Asset} other {{count} new Assets}}",
     "open-asset-source": "Open asset source",
     "original-asset-size": "Source size",
+    "preview": "Preview",
     "remove-asset": "Remove asset",
     "search-asset-name": "Search assets by name",
     "select-assets": "Select assets",
     "set-as-featured-asset": "Set as featured asset",
+    "set-focal-point": "Set focal point",
     "source-file": "Source file",
-    "upload-assets": "Upload assets",
-    "preview": "Preview"
+    "unset-focal-point": "Unset",
+    "update-focal-point": "Update point",
+    "update-focal-point-error": "Could not update focal point",
+    "update-focal-point-success": "Updated focal point",
+    "upload-assets": "Upload assets"
   },
   "breadcrumb": {
     "administrators": "Administrators",
@@ -74,7 +80,6 @@
     "filter-by-name": "Filter by name",
     "filters": "Filters",
     "group-by-product": "Group by product",
-    "height": "Height",
     "manage-variants": "Manage variants",
     "move-down": "Move down",
     "move-to": "Move to",
@@ -117,8 +122,7 @@
     "values": "Values",
     "variant": "Variant",
     "view-contents": "View contents",
-    "visibility": "Visibility",
-    "width": "Width"
+    "visibility": "Visibility"
   },
   "common": {
     "ID": "ID",
@@ -156,6 +160,7 @@
     "more": "More...",
     "name": "Name",
     "no-results": "No results",
+    "not-set": "Not set",
     "notify-create-error": "An error occurred, could not create { entity }",
     "notify-create-success": "Created new { entity }",
     "notify-delete-error": "An error occurred, could not delete { entity }",

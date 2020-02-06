@@ -1,4 +1,3 @@
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
@@ -6,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 
 import { catalogRoutes } from './catalog.routes';
 import { ApplyFacetDialogComponent } from './components/apply-facet-dialog/apply-facet-dialog.component';
+import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
 import { AssetListComponent } from './components/asset-list/asset-list.component';
 import { AssignProductsToChannelDialogComponent } from './components/assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CollectionContentsComponent } from './components/collection-contents/collection-contents.component';
@@ -27,13 +27,14 @@ import { ProductVariantsTableComponent } from './components/product-variants-tab
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
 import { ProductDetailService } from './providers/product-detail.service';
+import { AssetResolver } from './providers/routing/asset-resolver';
 import { CollectionResolver } from './providers/routing/collection-resolver';
 import { FacetResolver } from './providers/routing/facet-resolver';
 import { ProductResolver } from './providers/routing/product-resolver';
 import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
 
 @NgModule({
-    imports: [SharedModule, RouterModule.forChild(catalogRoutes), DragDropModule],
+    imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
     exports: [],
     declarations: [
         ProductListComponent,
@@ -57,6 +58,7 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         UpdateProductOptionDialogComponent,
         ProductVariantsEditorComponent,
         AssignProductsToChannelDialogComponent,
+        AssetDetailComponent,
     ],
     entryComponents: [
         ApplyFacetDialogComponent,
@@ -69,6 +71,7 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         CollectionResolver,
         ProductDetailService,
         ProductVariantsResolver,
+        AssetResolver,
     ],
 })
 export class CatalogModule {}

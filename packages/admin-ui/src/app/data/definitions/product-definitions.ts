@@ -13,6 +13,10 @@ export const ASSET_FRAGMENT = gql`
         source
         width
         height
+        focalPoint {
+            x
+            y
+        }
     }
 `;
 
@@ -330,6 +334,15 @@ export const GET_ASSET_LIST = gql`
                 ...Asset
             }
             totalItems
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const GET_ASSET = gql`
+    query GetAsset($id: ID!) {
+        asset(id: $id) {
+            ...Asset
         }
     }
     ${ASSET_FRAGMENT}

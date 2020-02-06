@@ -15,6 +15,7 @@ import {
     CreateProductVariants,
     DeleteProduct,
     DeleteProductVariant,
+    GetAsset,
     GetAssetList,
     GetProductList,
     GetProductOptionGroup,
@@ -46,6 +47,7 @@ import {
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    GET_ASSET,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUP,
@@ -259,6 +261,12 @@ export class ProductDataService {
                     createdAt: SortOrder.DESC,
                 },
             },
+        });
+    }
+
+    getAsset(id: string) {
+        return this.baseDataService.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
+            id,
         });
     }
 

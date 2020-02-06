@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
@@ -50,6 +51,7 @@ import {
     FacetValueChipComponent,
     FacetValueSelectorComponent,
     FileSizePipe,
+    FocalPointControlComponent,
     FormattedAddressComponent,
     FormFieldComponent,
     FormFieldControlDirective,
@@ -85,6 +87,7 @@ const IMPORTS = [
     NgxPaginationModule,
     TranslateModule,
     OverlayModule,
+    DragDropModule,
 ];
 
 const DECLARATIONS = [
@@ -148,6 +151,7 @@ const DECLARATIONS = [
     IfDefaultChannelActiveDirective,
     ExtensionHostComponent,
     CustomFieldLabelPipe,
+    FocalPointControlComponent,
 ];
 
 @NgModule({

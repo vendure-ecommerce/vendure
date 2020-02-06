@@ -4138,6 +4138,13 @@ export type GetAssetListQueryVariables = {
 
 export type GetAssetListQuery = ({ __typename?: 'Query' } & { assets: ({ __typename?: 'AssetList' } & Pick<AssetList, 'totalItems'> & { items: Array<({ __typename?: 'Asset' } & AssetFragment)> }) });
 
+export type GetAssetQueryVariables = {
+  id: Scalars['ID']
+};
+
+
+export type GetAssetQuery = ({ __typename?: 'Query' } & { asset: Maybe<({ __typename?: 'Asset' } & AssetFragment)> });
+
 export type CreateAssetsMutationVariables = {
   input: Array<CreateAssetInput>
 };
@@ -5145,6 +5152,12 @@ export namespace GetAssetList {
   export type Query = GetAssetListQuery;
   export type Assets = GetAssetListQuery['assets'];
   export type Items = AssetFragment;
+}
+
+export namespace GetAsset {
+  export type Variables = GetAssetQueryVariables;
+  export type Query = GetAssetQuery;
+  export type Asset = AssetFragment;
 }
 
 export namespace CreateAssets {
