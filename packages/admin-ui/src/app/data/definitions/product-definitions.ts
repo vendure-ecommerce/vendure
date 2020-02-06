@@ -11,6 +11,8 @@ export const ASSET_FRAGMENT = gql`
         type
         preview
         source
+        width
+        height
     }
 `;
 
@@ -336,6 +338,15 @@ export const GET_ASSET_LIST = gql`
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
+            ...Asset
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const UPDATE_ASSET = gql`
+    mutation UpdateAsset($input: UpdateAssetInput!) {
+        updateAsset(input: $input) {
             ...Asset
         }
     }

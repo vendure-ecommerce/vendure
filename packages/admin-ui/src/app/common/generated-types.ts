@@ -1709,6 +1709,7 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator,
   /** Create a new Asset */
   createAssets: Array<Asset>,
+  /** Update an existing Asset */
   updateAsset: Asset,
   login: LoginResult,
   logout: Scalars['Boolean'],
@@ -2791,7 +2792,9 @@ export type Query = {
   __typename?: 'Query',
   administrators: AdministratorList,
   administrator?: Maybe<Administrator>,
+  /** Get a list of Assets */
   assets: AssetList,
+  /** Get a single Asset by id */
   asset?: Maybe<Asset>,
   me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
@@ -4027,7 +4030,7 @@ export type AddNoteToOrderMutationVariables = {
 
 export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id'>) });
 
-export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'>);
+export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>);
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
@@ -4141,6 +4144,13 @@ export type CreateAssetsMutationVariables = {
 
 
 export type CreateAssetsMutation = ({ __typename?: 'Mutation' } & { createAssets: Array<({ __typename?: 'Asset' } & AssetFragment)> });
+
+export type UpdateAssetMutationVariables = {
+  input: UpdateAssetInput
+};
+
+
+export type UpdateAssetMutation = ({ __typename?: 'Mutation' } & { updateAsset: ({ __typename?: 'Asset' } & AssetFragment) });
 
 export type SearchProductsQueryVariables = {
   input: SearchInput
@@ -5141,6 +5151,12 @@ export namespace CreateAssets {
   export type Variables = CreateAssetsMutationVariables;
   export type Mutation = CreateAssetsMutation;
   export type CreateAssets = AssetFragment;
+}
+
+export namespace UpdateAsset {
+  export type Variables = UpdateAssetMutationVariables;
+  export type Mutation = UpdateAssetMutation;
+  export type UpdateAsset = AssetFragment;
 }
 
 export namespace SearchProducts {

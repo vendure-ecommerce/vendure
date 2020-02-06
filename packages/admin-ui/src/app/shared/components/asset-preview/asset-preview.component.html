@@ -3,9 +3,33 @@
 </div>
 
 <div class="controls">
-    <div>
-        <label>{{ 'catalog.preview-size' | translate }}:</label>
-        <vdr-form-field>
+    <form [formGroup]="form">
+        <clr-input-container>
+            <label>{{ 'common.name' | translate }}</label>
+            <input
+                clrInput
+                type="text"
+                formControlName="name"
+                [readonly]="!('UpdateCatalog' | hasPermission)"
+            />
+        </clr-input-container>
+        <div class="asset-detail">
+            {{ 'asset.source-file' | translate }}:
+            <a [href]="asset.source" [title]="asset.source" target="_blank" class="source-link">{{
+                getSourceFileName()
+            }}</a>
+        </div>
+        <div class="asset-detail">
+            {{ 'asset.original-asset-size' | translate }}: {{ asset.fileSize | filesize }}
+        </div>
+        <div class="asset-detail">
+            {{ 'asset.dimensions' | translate }}: {{ asset.width }} x {{ asset.height }}
+        </div>
+    </form>
+    <div class="flex-spacer"></div>
+    <div class="preview-select">
+        <clr-select-container>
+            <label>{{ 'asset.preview' | translate }}</label>
             <select clrSelect name="options" [(ngModel)]="size">
                 <option value="tiny">tiny</option>
                 <option value="thumb">thumb</option>
@@ -14,18 +38,8 @@
                 <option value="large">large</option>
                 <option value="">full size</option>
             </select>
-        </vdr-form-field>
-        <div class="dimension">
-            <label>{{ 'catalog.width' | translate }}:</label>
-            {{ width }}px
-        </div>
-        <div class="dimension">
-            <label>{{ 'catalog.height' | translate }}:</label>
-            {{ height }}px
-        </div>
+        </clr-select-container>
+        <div class="asset-detail">{{ width }} x {{ height }}</div>
     </div>
-    <div class="flex-spacer"></div>
-    <a [href]="asset.source" target="_blank" class="btn btn-link">
-        {{ 'asset.open-asset-source' | translate }}
-    </a>
+
 </div>

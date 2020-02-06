@@ -30,19 +30,36 @@
 .controls {
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
     margin-left: 12px;
+    min-width: 15vw;
 
-    label {
-        color: $color-grey-500;
+    ::ng-deep .clr-control-container {
+        width: 100%;
+        .clr-input {
+            width: 100%;
+        }
     }
-    vdr-form-field {
-        height: 40px;
-        margin-left: 6px;
-        margin-right: 24px;
-        max-width: 112px;
+
+    .asset-detail {
+        font-size: 12px;
+        display: flex;
     }
-    .dimension {
-        margin: 0 6px;
+
+    .source-link {
+        max-width: 191px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        flex: none;
+        direction: rtl;
+    }
+
+    .preview-select {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 30px;
+        clr-select-container {
+            margin-right: 6px;
+        }
     }
 }

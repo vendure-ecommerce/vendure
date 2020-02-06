@@ -27,6 +27,8 @@ import {
     RemoveProductsFromChannelInput,
     SearchProducts,
     SortOrder,
+    UpdateAsset,
+    UpdateAssetInput,
     UpdateProduct,
     UpdateProductInput,
     UpdateProductOption,
@@ -53,6 +55,7 @@ import {
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
+    UPDATE_ASSET,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
     UPDATE_PRODUCT_VARIANTS,
@@ -262,6 +265,12 @@ export class ProductDataService {
     createAssets(files: File[]) {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
             input: files.map(file => ({ file })),
+        });
+    }
+
+    updateAsset(input: UpdateAssetInput) {
+        return this.baseDataService.mutate<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+            input,
         });
     }
 
