@@ -53,6 +53,28 @@ describe('EmailPlugin', () => {
         return module;
     }
 
+    it('setting from, recipient, subject', async () => {
+        const ctx = {
+            channel: { code: DEFAULT_CHANNEL_CODE },
+            languageCode: LanguageCode.en,
+        } as any;
+        const handler = new EmailEventListener('test')
+            .on(MockEvent)
+            .setFrom('"test from" <noreply@test.com>')
+            .setRecipient(() => 'test@test.com')
+            .setSubject('Hello')
+            .setTemplateVars(event => ({ subjectVar: 'foo' }));
+
+        const module = await initPluginWithHandlers([handler]);
+
+        eventBus.publish(new MockEvent(ctx, true));
+        await pause();
+        expect(onSend.mock.calls[0][0].subject).toBe('Hello');
+        expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
+        expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+        await module.close();
+    });
+
     describe('event filtering', () => {
         const ctx = {
             channel: { code: DEFAULT_CHANNEL_CODE },
@@ -95,6 +117,27 @@ describe('EmailPlugin', () => {
             expect(onSend).not.toHaveBeenCalled();
 
             eventBus.publish(new MockEvent({ ...ctx, user: 'joe' }, true));
+            await pause();
+            expect(onSend).toHaveBeenCalledTimes(1);
+            await module.close();
+        });
+
+        it('with .loadData() after .filter()', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .filter(event => event.shouldSend === true)
+                .loadData(context => Promise.resolve('loaded data'))
+                .setRecipient(() => 'test@test.com')
+                .setFrom('"test from" <noreply@test.com>')
+                .setSubject('test subject');
+
+            const module = await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, false));
+            await pause();
+            expect(onSend).not.toHaveBeenCalled();
+
+            eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend).toHaveBeenCalledTimes(1);
             await module.close();
@@ -267,6 +310,34 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(onSend.mock.calls[0][0].subject).toBe('Hello, loaded data!');
+            await module.close();
+        });
+
+        it('works when loadData is called after other setup', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setSubject('Hello, {{ testData }}!')
+                .setRecipient(() => 'test@test.com')
+                .loadData(async ({ inject }) => {
+                    const service = inject(MockService);
+                    return service.someAsyncMethod();
+                })
+                .setTemplateVars(event => ({ testData: event.data }));
+
+            const module = await initPluginWithHandlers([handler]);
+
+            eventBus.publish(
+                new MockEvent(
+                    { channel: { code: DEFAULT_CHANNEL_CODE }, languageCode: LanguageCode.en },
+                    true,
+                ),
+            );
+            await pause();
+
+            expect(onSend.mock.calls[0][0].subject).toBe('Hello, loaded data!');
+            expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
+            expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
             await module.close();
         });
     });
