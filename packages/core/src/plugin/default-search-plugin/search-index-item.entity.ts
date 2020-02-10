@@ -53,8 +53,6 @@ export class SearchIndexItem {
     @Column()
     priceWithTax: number;
 
-    currencyCode: CurrencyCode;
-
     @Column('simple-array')
     facetIds: string[];
 
@@ -70,6 +68,18 @@ export class SearchIndexItem {
     @Column()
     productPreview: string;
 
+    @Column('simple-json', { nullable: true })
+    productPreviewFocalPoint?: { x: number; y: number } | null;
+
     @Column()
     productVariantPreview: string;
+
+    @Column('simple-json', { nullable: true })
+    productVariantPreviewFocalPoint?: { x: number; y: number } | null;
+
+    @EntityId({ nullable: true })
+    productAssetId: ID | null;
+
+    @EntityId({ nullable: true })
+    productVariantAssetId: ID | null;
 }

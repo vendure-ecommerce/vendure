@@ -1,4 +1,11 @@
-import { CurrencyCode, PriceRange, SearchResult, SinglePrice } from '@vendure/common/lib/generated-types';
+import {
+    Coordinate,
+    CurrencyCode,
+    PriceRange,
+    SearchResult,
+    SearchResultAsset,
+    SinglePrice,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
@@ -14,6 +21,21 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         raw.minPriceWithTax !== undefined
             ? ({ min: raw.minPriceWithTax, max: raw.maxPriceWithTax } as PriceRange)
             : ({ value: raw.si_priceWithTax } as SinglePrice);
+
+    const productAsset: SearchResultAsset | null = !raw.si_productAssetId
+        ? null
+        : {
+              id: raw.si_productAssetId,
+              preview: raw.si_productPreview,
+              focalPoint: parseFocalPoint(raw.si_productPreviewFocalPoint),
+          };
+    const productVariantAsset: SearchResultAsset | null = !raw.si_productVariantAssetId
+        ? null
+        : {
+              id: raw.si_productVariantAssetId,
+              preview: raw.si_productVariantPreview,
+              focalPoint: parseFocalPoint(raw.si_productVariantPreviewFocalPoint),
+          };
 
     const enabled = raw.productEnabled != null ? !!Number(raw.productEnabled) : raw.si_enabled;
     return {
@@ -32,7 +54,9 @@ export function mapToSearchResult(raw: any, currencyCode: CurrencyCode): SearchR
         facetValueIds: raw.si_facetValueIds.split(',').map((x: string) => x.trim()),
         collectionIds: raw.si_collectionIds.split(',').map((x: string) => x.trim()),
         channelIds: raw.si_channelIds.split(',').map((x: string) => x.trim()),
+        productAsset,
         productPreview: raw.si_productPreview,
+        productVariantAsset,
         productVariantPreview: raw.si_productVariantPreview,
         score: raw.score || 0,
     };
@@ -53,4 +77,15 @@ export function createFacetIdCountMap(facetValuesResult: Array<{ facetValues: st
         }
     }
     return result;
+}
+
+function parseFocalPoint(focalPoint: any): Coordinate | null {
+    if (focalPoint && typeof focalPoint === 'string') {
+        try {
+            return JSON.parse(focalPoint);
+        } catch (e) {
+            // fall though
+        }
+    }
+    return null;
 }

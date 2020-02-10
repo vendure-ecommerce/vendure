@@ -1,6 +1,7 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { Asset } from '../../entity/asset/asset.entity';
 import { WorkerMessage } from '../../worker/types';
 
 export interface ReindexMessageResponse {
@@ -22,6 +23,10 @@ export type UpdateVariantMessageData = {
 export interface UpdateVariantsByIdMessageData {
     ctx: RequestContext;
     ids: ID[];
+}
+export interface UpdateAssetMessageData {
+    ctx: RequestContext;
+    asset: Asset;
 }
 
 export interface ProductChannelMessageData {
@@ -56,4 +61,7 @@ export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelM
 }
 export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
     static readonly pattern = 'RemoveProductFromChannel';
+}
+export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
+    static readonly pattern = 'UpdateAsset';
 }

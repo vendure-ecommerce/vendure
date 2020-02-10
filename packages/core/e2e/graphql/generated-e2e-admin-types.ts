@@ -3005,9 +3005,11 @@ export type SearchResult = {
     productId: Scalars['ID'];
     productName: Scalars['String'];
     productPreview: Scalars['String'];
+    productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
     productVariantPreview: Scalars['String'];
+    productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
     priceWithTax: SearchResultPrice;
     currencyCode: CurrencyCode;
@@ -3018,6 +3020,13 @@ export type SearchResult = {
     collectionIds: Array<Scalars['ID']>;
     /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
+};
+
+export type SearchResultAsset = {
+    __typename?: 'SearchResultAsset';
+    id: Scalars['ID'];
+    preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 /** The price of a search result product, either as a range or as a single price */
@@ -3512,16 +3521,6 @@ export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
-export type UpdateAssetMutationVariables = {
-    input: UpdateAssetInput;
-};
-
-export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
-    updateAsset: { __typename?: 'Asset' } & {
-        focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
-    } & AssetFragment;
-};
-
 export type CanCreateCustomerMutationVariables = {
     input: CreateCustomerInput;
 };
@@ -3843,6 +3842,42 @@ export type SearchFacetValuesQuery = { __typename?: 'Query' } & {
             facetValues: Array<
                 { __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & {
                         facetValue: { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'name'>;
+                    }
+            >;
+        };
+};
+
+export type SearchGetAssetsQueryVariables = {
+    input: SearchInput;
+};
+
+export type SearchGetAssetsQuery = { __typename?: 'Query' } & {
+    search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
+            items: Array<
+                { __typename?: 'SearchResult' } & Pick<
+                    SearchResult,
+                    'productId' | 'productName' | 'productVariantName'
+                > & {
+                        productAsset: Maybe<
+                            { __typename?: 'SearchResultAsset' } & Pick<
+                                SearchResultAsset,
+                                'id' | 'preview'
+                            > & {
+                                    focalPoint: Maybe<
+                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
+                                    >;
+                                }
+                        >;
+                        productVariantAsset: Maybe<
+                            { __typename?: 'SearchResultAsset' } & Pick<
+                                SearchResultAsset,
+                                'id' | 'preview'
+                            > & {
+                                    focalPoint: Maybe<
+                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
+                                    >;
+                                }
+                        >;
                     }
             >;
         };
@@ -4560,6 +4595,16 @@ export type RemoveProductsFromChannelMutationVariables = {
 
 export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
     removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+};
+
+export type UpdateAssetMutationVariables = {
+    input: UpdateAssetInput;
+};
+
+export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
+    updateAsset: { __typename?: 'Asset' } & {
+        focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+    } & AssetFragment;
 };
 
 export type UpdateOptionGroupMutationVariables = {
@@ -5332,13 +5377,6 @@ export namespace CreateAssets {
     >;
 }
 
-export namespace UpdateAsset {
-    export type Variables = UpdateAssetMutationVariables;
-    export type Mutation = UpdateAssetMutation;
-    export type UpdateAsset = AssetFragment;
-    export type FocalPoint = NonNullable<UpdateAssetMutation['updateAsset']['focalPoint']>;
-}
-
 export namespace CanCreateCustomer {
     export type Variables = CanCreateCustomerMutationVariables;
     export type Mutation = CanCreateCustomerMutation;
@@ -5557,6 +5595,27 @@ export namespace SearchFacetValues {
     export type Search = SearchFacetValuesQuery['search'];
     export type FacetValues = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>;
     export type FacetValue = (NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>)['facetValue'];
+}
+
+export namespace SearchGetAssets {
+    export type Variables = SearchGetAssetsQueryVariables;
+    export type Query = SearchGetAssetsQuery;
+    export type Search = SearchGetAssetsQuery['search'];
+    export type Items = NonNullable<SearchGetAssetsQuery['search']['items'][0]>;
+    export type ProductAsset = NonNullable<
+        (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productAsset']
+    >;
+    export type FocalPoint = NonNullable<
+        (NonNullable<(NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productAsset']>)['focalPoint']
+    >;
+    export type ProductVariantAsset = NonNullable<
+        (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productVariantAsset']
+    >;
+    export type _FocalPoint = NonNullable<
+        (NonNullable<
+            (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productVariantAsset']
+        >)['focalPoint']
+    >;
 }
 
 export namespace SearchGetPrices {
@@ -6035,6 +6094,13 @@ export namespace RemoveProductsFromChannel {
     export type Variables = RemoveProductsFromChannelMutationVariables;
     export type Mutation = RemoveProductsFromChannelMutation;
     export type RemoveProductsFromChannel = ProductWithVariantsFragment;
+}
+
+export namespace UpdateAsset {
+    export type Variables = UpdateAssetMutationVariables;
+    export type Mutation = UpdateAssetMutation;
+    export type UpdateAsset = AssetFragment;
+    export type FocalPoint = NonNullable<UpdateAssetMutation['updateAsset']['focalPoint']>;
 }
 
 export namespace UpdateOptionGroup {

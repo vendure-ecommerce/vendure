@@ -1,5 +1,4 @@
 import { omit } from '@vendure/common/lib/omit';
-import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -15,7 +14,7 @@ import {
     SortOrder,
     UpdateAsset,
 } from './graphql/generated-e2e-admin-types';
-import { GET_ASSET_LIST } from './graphql/shared-definitions';
+import { GET_ASSET_LIST, UPDATE_ASSET } from './graphql/shared-definitions';
 
 describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
@@ -204,19 +203,6 @@ export const GET_ASSET = gql`
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
-            ...Asset
-            focalPoint {
-                x
-                y
-            }
-        }
-    }
-    ${ASSET_FRAGMENT}
-`;
-
-export const UPDATE_ASSET = gql`
-    mutation UpdateAsset($input: UpdateAssetInput!) {
-        updateAsset(input: $input) {
             ...Asset
             focalPoint {
                 x

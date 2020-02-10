@@ -17,15 +17,23 @@ type FacetValueResult {
     count: Int!
 }
 
+type SearchResultAsset {
+    id: ID!
+    preview: String!
+    focalPoint: Coordinate
+}
+
 type SearchResult {
     sku: String!
     slug: String!
     productId: ID!
     productName: String!
-    productPreview: String!
+    productPreview: String! @deprecated(reason: "Use `productAsset.preview` instead")
+    productAsset: SearchResultAsset
     productVariantId: ID!
     productVariantName: String!
-    productVariantPreview: String!
+    productVariantPreview: String! @deprecated(reason: "Use `productVariantAsset.preview` instead")
+    productVariantAsset: SearchResultAsset
     price: SearchResultPrice!
     priceWithTax: SearchResultPrice!
     currencyCode: CurrencyCode!

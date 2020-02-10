@@ -3,6 +3,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Logger } from '../../../config/logger/vendure-logger';
+import { Asset } from '../../../entity/asset/asset.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
 import { Job } from '../../../service/helpers/job-manager/job';
@@ -16,6 +17,7 @@ import {
     ReindexMessage,
     ReindexMessageResponse,
     RemoveProductFromChannelMessage,
+    UpdateAssetMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
     UpdateVariantsByIdMessage,
@@ -85,6 +87,13 @@ export class SearchIndexService {
                     .send(new UpdateVariantsByIdMessage({ ctx, ids }))
                     .subscribe(this.createObserver(reporter));
             },
+        });
+    }
+
+    updateAsset(ctx: RequestContext, asset: Asset) {
+        return this.createShortWorkerJob(new UpdateAssetMessage({ ctx, asset }), {
+            entity: 'Asset',
+            id: asset.id,
         });
     }
 

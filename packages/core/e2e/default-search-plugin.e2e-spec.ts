@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
 import { DefaultSearchPlugin, mergeConfig } from '@vendure/core';
 import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
@@ -19,9 +20,11 @@ import {
     LanguageCode,
     RemoveProductsFromChannel,
     SearchFacetValues,
+    SearchGetAssets,
     SearchGetPrices,
     SearchInput,
     SortOrder,
+    UpdateAsset,
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
@@ -36,6 +39,7 @@ import {
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -570,6 +574,41 @@ describe('Default search plugin', () => {
                 ]);
             });
 
+            it('updates index when asset focalPoint is changed', async () => {
+                function doSearch() {
+                    return adminClient.query<SearchGetAssets.Query, SearchGetAssets.Variables>(
+                        SEARCH_GET_ASSETS,
+                        {
+                            input: {
+                                term: 'laptop',
+                                take: 1,
+                            },
+                        },
+                    );
+                }
+                const { search: search1 } = await doSearch();
+
+                expect(search1.items[0].productAsset!.id).toBe('T_1');
+                expect(search1.items[0].productAsset!.focalPoint).toBeNull();
+
+                await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+                    input: {
+                        id: 'T_1',
+                        focalPoint: {
+                            x: 0.42,
+                            y: 0.42,
+                        },
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search: search2 } = await doSearch();
+
+                expect(search2.items[0].productAsset!.id).toBe('T_1');
+                expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
+            });
+
             it('returns enabled field when not grouped', async () => {
                 const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([
@@ -713,6 +752,35 @@ export const SEARCH_GET_FACET_VALUES = gql`
                 facetValue {
                     id
                     name
+                }
+            }
+        }
+    }
+`;
+
+export const SEARCH_GET_ASSETS = gql`
+    query SearchGetAssets($input: SearchInput!) {
+        search(input: $input) {
+            totalItems
+            items {
+                productId
+                productName
+                productVariantName
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                productVariantAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
                 }
             }
         }
