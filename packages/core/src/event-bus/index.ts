@@ -3,6 +3,7 @@ export * from './event-bus.module';
 export * from './vendure-event';
 
 export * from './events/account-registration-event';
+export * from './events/asset-event';
 export * from './events/attempted-login-event';
 export * from './events/collection-modification-event';
 export * from './events/identifier-change-event';
