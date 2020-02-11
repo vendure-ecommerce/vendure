@@ -22,6 +22,7 @@ import {
     SearchFacetValues,
     SearchGetPrices,
     SearchInput,
+    UpdateAsset,
     UpdateCollection,
     UpdateProduct,
     UpdateProductVariants,
@@ -36,6 +37,7 @@ import {
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_ASSET,
     UPDATE_COLLECTION,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
@@ -45,11 +47,17 @@ import { ElasticsearchPlugin } from '../src/plugin';
 
 import { SEARCH_PRODUCTS_SHOP } from './../../core/e2e/graphql/shop-definitions';
 import { awaitRunningJobs } from './../../core/e2e/utils/await-running-jobs';
-import { GetJobInfo, JobState, Reindex } from './graphql/generated-e2e-elasticsearch-plugin-types';
+import {
+    GetJobInfo,
+    JobState,
+    Reindex,
+    SearchProductsAdmin,
+} from './graphql/generated-e2e-elasticsearch-plugin-types';
 
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
@@ -76,7 +84,7 @@ describe('Elasticsearch plugin', () => {
     });
 
     function doAdminSearchQuery(input: SearchInput) {
-        return adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(SEARCH_PRODUCTS, {
+        return adminClient.query<SearchProductsAdmin.Query, SearchProductsAdmin.Variables>(SEARCH_PRODUCTS, {
             input,
         });
     }
@@ -444,12 +452,12 @@ describe('Elasticsearch plugin', () => {
                 });
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
-                expect(result.search.items.map(i => i.productName)).toEqual([
-                    'Gaming PC',
+                expect(result.search.items.map(i => i.productName).sort()).toEqual([
                     'Clacky Keyboard',
-                    'USB Cable',
                     'Curvy Monitor',
+                    'Gaming PC',
                     'Hard Drive',
+                    'USB Cable',
                 ]);
             });
 
@@ -577,6 +585,44 @@ describe('Elasticsearch plugin', () => {
                         priceWithTax: { min: 194850, max: 344850 },
                     },
                 ]);
+            });
+
+            it('updates index when asset focalPoint is changed', async () => {
+                const { search: search1 } = await doAdminSearchQuery({
+                    term: 'laptop',
+                    groupByProduct: true,
+                    take: 1,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                });
+
+                expect(search1.items[0].productAsset!.id).toBe('T_1');
+                expect(search1.items[0].productAsset!.focalPoint).toBeNull();
+
+                await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+                    input: {
+                        id: 'T_1',
+                        focalPoint: {
+                            x: 0.42,
+                            y: 0.42,
+                        },
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search: search2 } = await doAdminSearchQuery({
+                    term: 'laptop',
+                    groupByProduct: true,
+                    take: 1,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                });
+
+                expect(search2.items[0].productAsset!.id).toBe('T_1');
+                expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
             });
 
             it('returns disabled field when not grouped', async () => {
@@ -714,9 +760,25 @@ export const SEARCH_PRODUCTS = gql`
                 enabled
                 productId
                 productName
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 productPreview
                 productVariantId
                 productVariantName
+                productVariantAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 productVariantPreview
                 sku
             }

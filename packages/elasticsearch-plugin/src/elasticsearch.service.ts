@@ -1,6 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { JobInfo, SearchResult } from '@vendure/common/lib/generated-types';
+import { JobInfo, SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     DeepRequired,
     FacetValue,
@@ -255,8 +255,11 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {
         const source = hit._source;
+        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
+            productAsset,
+            productVariantAsset,
             price: {
                 value: source.price,
             },
@@ -272,18 +275,22 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private mapProductToSearchResult(hit: SearchHit<ProductIndexItem>): SearchResult {
         const source = hit._source;
+        const { productAsset, productVariantAsset } = this.getSearchResultAssets(source);
         const result = {
             ...source,
+            productAsset,
+            productVariantAsset,
             productId: source.productId.toString(),
-            productName: source.productName[0],
-            productVariantId: source.productVariantId[0].toString(),
-            productVariantName: source.productVariantName[0],
-            productVariantPreview: source.productVariantPreview[0] || '',
+            productName: source.productName,
+            productPreview: source.productPreview || '', // TODO: deprecated and to be removed
+            productVariantId: source.productVariantId.toString(),
+            productVariantName: source.productVariantName,
+            productVariantPreview: source.productVariantPreview || '', // TODO: deprecated and to be removed
             facetIds: source.facetIds as string[],
             facetValueIds: source.facetValueIds as string[],
             collectionIds: source.collectionIds as string[],
-            sku: source.sku[0],
-            slug: source.slug[0],
+            sku: source.sku,
+            slug: source.slug,
             price: {
                 min: source.priceMin,
                 max: source.priceMax,
@@ -297,6 +304,26 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         };
         this.addCustomMappings(result, source, this.options.customProductMappings);
         return result;
+    }
+
+    private getSearchResultAssets(
+        source: ProductIndexItem | VariantIndexItem,
+    ): { productAsset: SearchResultAsset | null; productVariantAsset: SearchResultAsset | null } {
+        const productAsset: SearchResultAsset | null = source.productAssetId
+            ? {
+                  id: source.productAssetId.toString(),
+                  preview: source.productPreview,
+                  focalPoint: source.productPreviewFocalPoint,
+              }
+            : null;
+        const productVariantAsset: SearchResultAsset | null = source.productVariantAssetId
+            ? {
+                  id: source.productVariantAssetId.toString(),
+                  preview: source.productVariantPreview,
+                  focalPoint: source.productVariantPreviewFocalPoint,
+              }
+            : null;
+        return { productAsset, productVariantAsset };
     }
 
     private addCustomMappings(

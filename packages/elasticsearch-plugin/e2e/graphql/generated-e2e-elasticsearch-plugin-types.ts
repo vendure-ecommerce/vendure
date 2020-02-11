@@ -3480,7 +3480,28 @@ export type SearchProductsAdminQuery = { __typename?: 'Query' } & {
                     | 'productVariantName'
                     | 'productVariantPreview'
                     | 'sku'
-                >
+                > & {
+                        productAsset: Maybe<
+                            { __typename?: 'SearchResultAsset' } & Pick<
+                                SearchResultAsset,
+                                'id' | 'preview'
+                            > & {
+                                    focalPoint: Maybe<
+                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
+                                    >;
+                                }
+                        >;
+                        productVariantAsset: Maybe<
+                            { __typename?: 'SearchResultAsset' } & Pick<
+                                SearchResultAsset,
+                                'id' | 'preview'
+                            > & {
+                                    focalPoint: Maybe<
+                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
+                                    >;
+                                }
+                        >;
+                    }
             >;
         };
 };
@@ -3548,6 +3569,22 @@ export namespace SearchProductsAdmin {
     export type Query = SearchProductsAdminQuery;
     export type Search = SearchProductsAdminQuery['search'];
     export type Items = NonNullable<SearchProductsAdminQuery['search']['items'][0]>;
+    export type ProductAsset = NonNullable<
+        (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productAsset']
+    >;
+    export type FocalPoint = NonNullable<
+        (NonNullable<
+            (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productAsset']
+        >)['focalPoint']
+    >;
+    export type ProductVariantAsset = NonNullable<
+        (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productVariantAsset']
+    >;
+    export type _FocalPoint = NonNullable<
+        (NonNullable<
+            (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productVariantAsset']
+        >)['focalPoint']
+    >;
 }
 
 export namespace SearchFacetValues {
