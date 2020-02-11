@@ -290,7 +290,7 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
-            expect(onSend.mock.calls[0][0].body).toContain('Date: Wed Jan 01 2020 11:00:00');
+            expect(onSend.mock.calls[0][0].body).toContain('Date: Wed Jan 01 2020 10:00:00');
         });
 
         it('formateMoney', async () => {
