@@ -26,6 +26,7 @@ import {
     AssetPickerDialogComponent,
     AssetPreviewComponent,
     AssetPreviewDialogComponent,
+    AssetPreviewPipe,
     ChannelAssignmentControlComponent,
     ChannelBadgeComponent,
     ChannelLabelPipe,
@@ -152,6 +153,7 @@ const DECLARATIONS = [
     ExtensionHostComponent,
     CustomFieldLabelPipe,
     FocalPointControlComponent,
+    AssetPreviewPipe,
 ];
 
 @NgModule({

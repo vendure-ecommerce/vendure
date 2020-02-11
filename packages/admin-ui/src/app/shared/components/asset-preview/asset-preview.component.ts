@@ -95,6 +95,11 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         return parts[parts.length - 1];
     }
 
+    onImageLoad() {
+        this.updateDimensions();
+        this.changeDetector.markForCheck();
+    }
+
     updateDimensions() {
         const img = this.imageElementRef.nativeElement;
         const container = this.previewDivRef.nativeElement;
@@ -142,7 +147,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
             .subscribe(
                 () => {
                     this.notificationService.success(_('asset.update-focal-point-success'));
-                    this.asset.focalPoint = null;
+                    this.asset = { ...this.asset, focalPoint: null };
                     this.changeDetector.markForCheck();
                 },
                 () => this.notificationService.error(_('asset.update-focal-point-error')),
@@ -173,7 +178,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
                 .subscribe(
                     () => {
                         this.notificationService.success(_('asset.update-focal-point-success'));
-                        this.asset.focalPoint = { x, y };
+                        this.asset = { ...this.asset, focalPoint: { x, y } };
                         this.changeDetector.markForCheck();
                     },
                     () => this.notificationService.error(_('asset.update-focal-point-error')),

@@ -7,7 +7,7 @@
     >
         <div class="card-img">
             <div class="selected-checkbox"><clr-icon shape="check-circle" size="32"></clr-icon></div>
-            <img [src]="asset.preview + '?preset=thumb'" />
+            <img [src]="asset | assetPreview:'thumb'" />
         </div>
         <div class="detail">
             <vdr-entity-info

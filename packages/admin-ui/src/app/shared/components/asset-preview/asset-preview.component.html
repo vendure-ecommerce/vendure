@@ -8,7 +8,7 @@
             [editable]="settingFocalPoint"
             (focalPointChange)="onFocalPointChange($event)"
         >
-            <img class="" [src]="asset.preview + '?preset=' + size" #imageElement (load)="getDimensions()" />
+            <img class="asset-image" [src]="asset | assetPreview:size" #imageElement (load)="onImageLoad()" />
         </vdr-focal-point-control>
         <div class="focal-point-info" *ngIf="settingFocalPoint">
             <button class="icon-button" (click)="setFocalPointCancel()">

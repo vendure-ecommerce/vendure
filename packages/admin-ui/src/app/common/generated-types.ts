@@ -3157,9 +3157,11 @@ export type SearchResult = {
   productId: Scalars['ID'],
   productName: Scalars['String'],
   productPreview: Scalars['String'],
+  productAsset?: Maybe<SearchResultAsset>,
   productVariantId: Scalars['ID'],
   productVariantName: Scalars['String'],
   productVariantPreview: Scalars['String'],
+  productVariantAsset?: Maybe<SearchResultAsset>,
   price: SearchResultPrice,
   priceWithTax: SearchResultPrice,
   currencyCode: CurrencyCode,
@@ -3170,6 +3172,13 @@ export type SearchResult = {
   collectionIds: Array<Scalars['ID']>,
   /** A relevence score for the result. Differs between database implementations */
   score: Scalars['Float'],
+};
+
+export type SearchResultAsset = {
+  __typename?: 'SearchResultAsset',
+  id: Scalars['ID'],
+  preview: Scalars['String'],
+  focalPoint?: Maybe<Coordinate>,
 };
 
 /** The price of a search result product, either as a range or as a single price */
@@ -4030,7 +4039,7 @@ export type AddNoteToOrderMutationVariables = {
 
 export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id'>) });
 
-export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>);
+export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> });
 
 export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
 
@@ -4164,7 +4173,7 @@ export type SearchProductsQueryVariables = {
 };
 
 
-export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productPreview' | 'productVariantId' | 'productVariantName' | 'productVariantPreview' | 'sku' | 'channelIds'>)>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
+export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productVariantId' | 'productVariantName' | 'sku' | 'channelIds'> & { productAsset: Maybe<({ __typename?: 'SearchResultAsset' } & Pick<SearchResultAsset, 'id' | 'preview'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> })>, productVariantAsset: Maybe<({ __typename?: 'SearchResultAsset' } & Pick<SearchResultAsset, 'id' | 'preview'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> })> })>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
 
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput
@@ -5028,6 +5037,7 @@ export namespace AddNoteToOrder {
 
 export namespace Asset {
   export type Fragment = AssetFragment;
+  export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
 }
 
 export namespace ProductVariant {
@@ -5177,6 +5187,10 @@ export namespace SearchProducts {
   export type Query = SearchProductsQuery;
   export type Search = SearchProductsQuery['search'];
   export type Items = (NonNullable<SearchProductsQuery['search']['items'][0]>);
+  export type ProductAsset = (NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
+  export type ProductVariantAsset = (NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productVariantAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productVariantAsset']>)['focalPoint']>);
   export type FacetValues = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>);
   export type FacetValue = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue'];
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];

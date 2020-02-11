@@ -51,11 +51,11 @@
                 <img
                     *ngIf="
                         groupByProduct
-                            ? result.productPreview
-                            : result.productVariantPreview || result.productPreview as image;
+                            ? result.productAsset
+                            : result.productVariantAsset || result.productAsset as asset;
                         else imagePlaceholder
                     "
-                    [src]="image + '?preset=tiny'"
+                    [src]="asset | assetPreview:'tiny'"
                 />
                 <ng-template #imagePlaceholder>
                     <div class="placeholder"><clr-icon shape="image" size="48"></clr-icon></div>

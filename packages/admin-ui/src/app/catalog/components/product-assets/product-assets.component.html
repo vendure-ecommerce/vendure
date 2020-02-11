@@ -3,7 +3,7 @@
         <div class="featured-asset">
             <img
                 *ngIf="featuredAsset"
-                [src]="featuredAsset!.preview + '?preset=small'"
+                [src]="featuredAsset | assetPreview:'small'"
                 (click)="previewAsset(featuredAsset)"
             />
             <div class="placeholder" *ngIf="!featuredAsset">
@@ -25,7 +25,7 @@
     <div class="featured-asset compact">
         <img
             *ngIf="featuredAsset"
-            [src]="featuredAsset!.preview + '?preset=thumb'"
+            [src]="featuredAsset | assetPreview:'thumb'"
             (click)="previewAsset(featuredAsset)"
         />
 
@@ -66,7 +66,7 @@
                     [title]=""
                     tabindex="0"
                 >
-                    <img [src]="asset.preview + '?preset=tiny'" />
+                    <img [src]="asset | assetPreview:'tiny'" />
                 </div>
                 <vdr-dropdown-menu vdrPosition="bottom-right">
                     <button type="button" vdrDropdownItem (click)="previewAsset(asset)">

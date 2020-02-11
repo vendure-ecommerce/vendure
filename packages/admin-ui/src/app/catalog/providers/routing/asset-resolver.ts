@@ -23,6 +23,7 @@ export class AssetResolver extends BaseEntityResolver<Asset.Fragment> {
                 height: 0,
                 source: '',
                 preview: '',
+                focalPoint: null,
             },
             id => dataService.product.getAsset(id).mapStream(data => data.asset),
         );

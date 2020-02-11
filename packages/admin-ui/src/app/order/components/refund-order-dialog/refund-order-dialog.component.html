@@ -16,7 +16,7 @@
             </thead>
             <tr *ngFor="let line of order.lines" class="order-line">
                 <td class="align-middle thumb">
-                    <img [src]="line.featuredAsset.preview + '?preset=tiny'" />
+                    <img [src]="line.featuredAsset | assetPreview:'tiny'" />
                 </td>
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>

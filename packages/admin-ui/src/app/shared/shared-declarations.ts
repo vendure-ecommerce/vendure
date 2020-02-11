@@ -11,6 +11,7 @@ export {
     AssetPreviewDialogComponent,
 } from './components/asset-preview-dialog/asset-preview-dialog.component';
 export { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
+export { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 export { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 export {
     ChannelAssignmentControlComponent,

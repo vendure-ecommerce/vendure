@@ -374,10 +374,24 @@ export const SEARCH_PRODUCTS = gql`
                 enabled
                 productId
                 productName
-                productPreview
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 productVariantId
                 productVariantName
-                productVariantPreview
+                productVariantAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 sku
                 channelIds
             }
