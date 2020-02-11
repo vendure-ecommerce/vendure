@@ -22,7 +22,7 @@
     "dateformat": "^3.0.3",
     "express": "^4.16.4",
     "fs-extra": "^8.0.1",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.7.3",
     "mjml": "^4.3.0",
     "nodemailer": "^5.0.0"
   },
