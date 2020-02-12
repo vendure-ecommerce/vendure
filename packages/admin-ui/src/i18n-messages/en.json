@@ -560,6 +560,7 @@
     "channel": "Channel",
     "channel-token": "Channel token",
     "confirm-delete-role": "Delete role?",
+    "confirm-delete-tax-category": "Delete tax category?",
     "confirm-delete-tax-rate": "Delete tax rate?",
     "create": "Create",
     "create-new-channel": "Create new channel",
