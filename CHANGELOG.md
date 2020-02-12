@@ -1,3 +1,18 @@
+## <small>0.8.2 (2020-02-12)</small>
+
+
+#### Features
+
+* **admin-ui** Can delete TaxCategory via list view ([6f6e0a1](https://github.com/vendure-ecommerce/vendure/commit/6f6e0a1)), closes [#262](https://github.com/vendure-ecommerce/vendure/issues/262)
+* **admin-ui** Can delete TaxRate via list view ([ee02aa2](https://github.com/vendure-ecommerce/vendure/commit/ee02aa2)), closes [#262](https://github.com/vendure-ecommerce/vendure/issues/262)
+* **core** Implement deletion of TaxCategory ([b263b8b](https://github.com/vendure-ecommerce/vendure/commit/b263b8b)), closes [#262](https://github.com/vendure-ecommerce/vendure/issues/262)
+* **core** Implement deletion of TaxRate ([8c2db90](https://github.com/vendure-ecommerce/vendure/commit/8c2db90)), closes [#262](https://github.com/vendure-ecommerce/vendure/issues/262)
+
+#### Fixes
+
+* **email-plugin** Correctly filter when using loadData in handler ([66bc98c](https://github.com/vendure-ecommerce/vendure/commit/66bc98c)), closes [#257](https://github.com/vendure-ecommerce/vendure/issues/257)
+* **email-plugin** Fix Handlebars "cannot resolve property" error ([2984a90](https://github.com/vendure-ecommerce/vendure/commit/2984a90)), closes [#259](https://github.com/vendure-ecommerce/vendure/issues/259)
+
 ## <small>0.8.1 (2020-02-05)</small>
 
 
