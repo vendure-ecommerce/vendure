@@ -1809,10 +1809,14 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Deletes a TaxCategory */
+  deleteTaxCategory: DeletionResponse,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
   updateTaxRate: TaxRate,
+  /** Delete a TaxRate */
+  deleteTaxRate: DeletionResponse,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -2169,6 +2173,11 @@ export type MutationUpdateTaxCategoryArgs = {
 };
 
 
+export type MutationDeleteTaxCategoryArgs = {
+  id: Scalars['ID']
+};
+
+
 export type MutationCreateTaxRateArgs = {
   input: CreateTaxRateInput
 };
@@ -2176,6 +2185,11 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput
+};
+
+
+export type MutationDeleteTaxRateArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -4332,6 +4346,13 @@ export type UpdateTaxRateMutationVariables = {
 
 export type UpdateTaxRateMutation = ({ __typename?: 'Mutation' } & { updateTaxRate: ({ __typename?: 'TaxRate' } & TaxRateFragment) });
 
+export type DeleteTaxRateMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteTaxRateMutation = ({ __typename?: 'Mutation' } & { deleteTaxRate: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type ChannelFragment = ({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'> & { defaultShippingZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)>, defaultTaxZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)> });
 
 export type GetChannelsQueryVariables = {};
@@ -5324,6 +5345,12 @@ export namespace UpdateTaxRate {
   export type Variables = UpdateTaxRateMutationVariables;
   export type Mutation = UpdateTaxRateMutation;
   export type UpdateTaxRate = TaxRateFragment;
+}
+
+export namespace DeleteTaxRate {
+  export type Variables = DeleteTaxRateMutationVariables;
+  export type Mutation = DeleteTaxRateMutation;
+  export type DeleteTaxRate = DeleteTaxRateMutation['deleteTaxRate'];
 }
 
 export namespace Channel {

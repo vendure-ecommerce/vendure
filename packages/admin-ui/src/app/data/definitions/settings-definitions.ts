@@ -256,6 +256,15 @@ export const UPDATE_TAX_RATE = gql`
     ${TAX_RATE_FRAGMENT}
 `;
 
+export const DELETE_TAX_RATE = gql`
+    mutation DeleteTaxRate($id: ID!) {
+        deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const CHANNEL_FRAGMENT = gql`
     fragment Channel on Channel {
         id
