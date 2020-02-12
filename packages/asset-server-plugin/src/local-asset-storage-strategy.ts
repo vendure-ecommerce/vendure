@@ -1,4 +1,5 @@
 import { AssetStorageStrategy } from '@vendure/core';
+import { createHash } from 'crypto';
 import { Request } from 'express';
 import { ReadStream } from 'fs';
 import fs from 'fs-extra';
@@ -6,7 +7,10 @@ import path from 'path';
 import { Stream } from 'stream';
 
 /**
+ * @description
  * A persistence strategy which saves files to the local file system.
+ *
+ * @docsCategory AssetServerPlugin
  */
 export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
@@ -15,14 +19,15 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
         private readonly uploadPath: string,
         private readonly toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string,
     ) {
-        this.ensureUploadPathExists(this.uploadPath);
+        fs.ensureDirSync(this.uploadPath);
         if (toAbsoluteUrlFn) {
             this.toAbsoluteUrl = toAbsoluteUrlFn;
         }
     }
 
-    writeFileFromStream(fileName: string, data: ReadStream): Promise<string> {
+    async writeFileFromStream(fileName: string, data: ReadStream): Promise<string> {
         const filePath = path.join(this.uploadPath, fileName);
+        await fs.ensureDir(path.dirname(filePath));
         const writeStream = fs.createWriteStream(filePath, 'binary');
         return new Promise<string>((resolve, reject) => {
             data.pipe(writeStream);
@@ -33,6 +38,7 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
 
     async writeFileFromBuffer(fileName: string, data: Buffer): Promise<string> {
         const filePath = path.join(this.uploadPath, fileName);
+        await fs.ensureDir(path.dirname(filePath));
         await fs.writeFile(filePath, data, 'binary');
         return this.filePathToIdentifier(filePath);
     }
@@ -54,21 +60,14 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
         return Promise.resolve(readStream);
     }
 
-    private ensureUploadPathExists(uploadDir: string): void {
-        if (!fs.existsSync(this.uploadPath)) {
-            fs.mkdirSync(this.uploadPath);
-        }
-        const cachePath = path.join(this.uploadPath, 'cache');
-        if (!fs.existsSync(cachePath)) {
-            fs.mkdirSync(cachePath);
-        }
-    }
-
     private filePathToIdentifier(filePath: string): string {
-        return `${path.basename(filePath)}`;
+        const filePathDirname = path.dirname(filePath);
+        const deltaDirname = filePathDirname.replace(this.uploadPath, '');
+        const identifier = path.join(deltaDirname, path.basename(filePath));
+        return identifier.replace(/^[\\/]+/, '');
     }
 
     private identifierToFilePath(identifier: string): string {
-        return path.join(this.uploadPath, path.basename(identifier));
+        return path.join(this.uploadPath, identifier);
     }
 }

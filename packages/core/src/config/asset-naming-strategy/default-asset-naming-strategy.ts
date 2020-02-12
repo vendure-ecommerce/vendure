@@ -1,12 +1,14 @@
-import path from 'path';
-
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import path from 'path';
 
 import { AssetNamingStrategy } from './asset-naming-strategy';
 
 /**
+ * @description
  * The default strategy normalizes the file names to remove unwanted characters and
  * in the case of conflicts, increments a counter suffix.
+ *
+ * @docsCategory assets
  */
 export class DefaultAssetNamingStrategy implements AssetNamingStrategy {
     private readonly numberingRe = /__(\d+)\.[^.]+$/;

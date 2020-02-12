@@ -192,7 +192,7 @@ export class AssetService {
             type,
             width,
             height,
-            name: sourceFileName,
+            name: path.basename(sourceFileName),
             fileSize: sourceFile.byteLength,
             mimeType: mimetype,
             source: sourceFileIdentifier,

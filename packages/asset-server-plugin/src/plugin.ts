@@ -8,11 +8,15 @@ import {
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
+import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
+import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
+import { loggerCtx } from './constants';
 import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
+import { HashedAssetNamingStrategy } from './hashed-asset-naming-strategy';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
 import { AssetServerOptions, ImageTransformPreset } from './types';
@@ -145,6 +149,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
             maxHeight: this.options.previewMaxHeight || 1600,
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
+        config.assetOptions.assetNamingStrategy = new HashedAssetNamingStrategy();
         config.middleware.push({
             handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
             route: this.options.route,
@@ -164,6 +169,9 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                 }
             }
         }
+
+        const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
+        fs.ensureDirSync(cachePath);
         this.createAssetServer();
     }
 
@@ -205,6 +213,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         return async (err: any, req: Request, res: Response, next: NextFunction) => {
             if (err && err.status === 404) {
                 if (req.query) {
+                    Logger.debug(`Pre-cached Asset not found: ${req.path}`, loggerCtx);
                     let file: Buffer;
                     try {
                         file = await AssetServerPlugin.assetStorage.readFileToBuffer(req.path);
@@ -217,6 +226,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                         const imageBuffer = await image.toBuffer();
                         const cachedFileName = this.getFileNameFromRequest(req);
                         await AssetServerPlugin.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
+                        Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
                         res.send(imageBuffer);
                     } catch (e) {
@@ -232,28 +242,34 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private getFileNameFromRequest(req: Request): string {
         const { w, h, mode, preset, fpx, fpy } = req.query;
         const focalPoint = fpx && fpy ? `_fpx${fpx}_fpy${fpy}` : '';
+        let imageParamHash: string | null = null;
         if (w || h) {
             const width = w || '';
             const height = h || '';
-            // TODO: make sure no bug / attack vector with the naming of files
-            return (
-                this.cacheDir +
-                '/' +
-                this.addSuffix(req.path, `_transform_w${width}_h${height}_m${mode}${focalPoint}`)
-            );
+            imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}`);
         } else if (preset) {
             if (this.presets && !!this.presets.find(p => p.name === preset)) {
-                return (
-                    this.cacheDir + '/' + this.addSuffix(req.path, `_transform_pre_${preset}${focalPoint}`)
-                );
+                imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}`);
             }
         }
-        return req.path;
+
+        if (imageParamHash) {
+            return path.join(this.cacheDir, this.addSuffix(req.path, imageParamHash));
+        } else {
+            return req.path;
+        }
+    }
+
+    private md5(input: string): string {
+        return createHash('md5')
+            .update(input)
+            .digest('hex');
     }
 
     private addSuffix(fileName: string, suffix: string): string {
         const ext = path.extname(fileName);
         const baseName = path.basename(fileName, ext);
-        return `${baseName}${suffix}${ext}`;
+        const dirName = path.dirname(fileName);
+        return path.join(dirName, `${baseName}${suffix}${ext}`);
     }
 }

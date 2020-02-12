@@ -42,7 +42,7 @@ export const devConfig: VendureConfig = {
             { name: 'markup', type: 'float', internal: true },
         ],*/
     },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
