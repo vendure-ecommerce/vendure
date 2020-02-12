@@ -1810,6 +1810,8 @@ export type Mutation = {
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
     updateTaxRate: TaxRate;
+    /** Delete a TaxRate */
+    deleteTaxRate: DeletionResponse;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -2103,6 +2105,10 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
     input: UpdateTaxRateInput;
+};
+
+export type MutationDeleteTaxRateArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateZoneArgs = {

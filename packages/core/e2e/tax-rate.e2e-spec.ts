@@ -8,7 +8,14 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { TAX_RATE_FRAGMENT } from './graphql/fragments';
-import { CreateTaxRate, GetTaxRate, GetTaxRates, UpdateTaxRate } from './graphql/generated-e2e-admin-types';
+import {
+    CreateTaxRate,
+    DeleteTaxRate,
+    DeletionResult,
+    GetTaxRate,
+    GetTaxRates,
+    UpdateTaxRate,
+} from './graphql/generated-e2e-admin-types';
 import { UPDATE_TAX_RATE } from './graphql/shared-definitions';
 
 describe('TaxRate resolver', () => {
@@ -79,6 +86,21 @@ describe('TaxRate resolver', () => {
 
         expect(updateTaxRate.value).toBe(17.5);
     });
+
+    it('deleteTaxRate', async () => {
+        const { deleteTaxRate } = await adminClient.query<DeleteTaxRate.Mutation, DeleteTaxRate.Variables>(
+            DELETE_TAX_RATE,
+            {
+                id: 'T_3',
+            },
+        );
+
+        expect(deleteTaxRate.result).toBe(DeletionResult.DELETED);
+        expect(deleteTaxRate.message).toBeNull();
+
+        const { taxRates } = await adminClient.query<GetTaxRates.Query>(GET_TAX_RATES_LIST);
+        expect(taxRates.items.find(x => x.id === 'T_3')).toBeUndefined();
+    });
 });
 
 export const GET_TAX_RATES_LIST = gql`
@@ -109,4 +131,13 @@ export const CREATE_TAX_RATE = gql`
         }
     }
     ${TAX_RATE_FRAGMENT}
+`;
+
+export const DELETE_TAX_RATE = gql`
+    mutation DeleteTaxRate($id: ID!) {
+        deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
 `;

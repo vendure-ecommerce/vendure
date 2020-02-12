@@ -1810,6 +1810,8 @@ export type Mutation = {
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
     updateTaxRate: TaxRate;
+    /** Delete a TaxRate */
+    deleteTaxRate: DeletionResponse;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -2103,6 +2105,10 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
     input: UpdateTaxRateInput;
+};
+
+export type MutationDeleteTaxRateArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateZoneArgs = {
@@ -5159,6 +5165,14 @@ export type CreateTaxRateMutation = { __typename?: 'Mutation' } & {
     createTaxRate: { __typename?: 'TaxRate' } & TaxRateFragment;
 };
 
+export type DeleteTaxRateMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteTaxRateMutation = { __typename?: 'Mutation' } & {
+    deleteTaxRate: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type DeleteZoneMutationVariables = {
     id: Scalars['ID'];
 };
@@ -6407,6 +6421,12 @@ export namespace CreateTaxRate {
     export type Variables = CreateTaxRateMutationVariables;
     export type Mutation = CreateTaxRateMutation;
     export type CreateTaxRate = TaxRateFragment;
+}
+
+export namespace DeleteTaxRate {
+    export type Variables = DeleteTaxRateMutationVariables;
+    export type Mutation = DeleteTaxRateMutation;
+    export type DeleteTaxRate = DeleteTaxRateMutation['deleteTaxRate'];
 }
 
 export namespace DeleteZone {
