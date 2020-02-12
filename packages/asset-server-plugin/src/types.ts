@@ -1,3 +1,5 @@
+import { AssetStorageStrategy } from '@vendure/core';
+
 /**
  * @description
  * Specifies the way in which an asset preview image will be resized to fit in the
@@ -9,6 +11,7 @@
  *
  * @docsCategory AssetServerPlugin
  */
+
 export type ImageTransformMode = 'crop' | 'resize';
 
 /**
@@ -87,4 +90,14 @@ export interface AssetServerOptions {
      * An array of additional {@link ImageTransformPreset} objects.
      */
     presets?: ImageTransformPreset[];
+    /**
+     * @description
+     * A function which can be used to configure an {@link AssetStorageStrategy}. This is useful e.g. if you wish to store your assets
+     * using a cloud storage provider. By default, the {@link LocalAssetStorageStrategy} is used.
+     *
+     * @default () => LocalAssetStorageStrategy
+     */
+    storageStrategyFactory?: (
+        options: AssetServerOptions,
+    ) => AssetStorageStrategy | Promise<AssetStorageStrategy>;
 }

@@ -2,7 +2,6 @@ import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
     createProxyHandler,
-    LocalAssetStorageStrategy,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
@@ -13,6 +12,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
 import path from 'path';
 
+import { defaultAssetStorageStrategyFactory } from './default-asset-storage-strategy-factory';
 import { SharpAssetPreviewStrategy } from './sharp-asset-preview-strategy';
 import { transformImage } from './transform-image';
 import { AssetServerOptions, ImageTransformPreset } from './types';
@@ -136,8 +136,10 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /** @internal */
-    static configure(config: RuntimeVendureConfig) {
-        this.assetStorage = this.createAssetStorageStrategy(this.options);
+    static async configure(config: RuntimeVendureConfig) {
+        const storageStrategyFactory =
+            this.options.storageStrategyFactory || defaultAssetStorageStrategyFactory;
+        this.assetStorage = await storageStrategyFactory(this.options);
         config.assetOptions.assetPreviewStrategy = new SharpAssetPreviewStrategy({
             maxWidth: this.options.previewMaxWidth || 1600,
             maxHeight: this.options.previewMaxHeight || 1600,
@@ -170,18 +172,6 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         return new Promise(resolve => {
             this.server.close(() => resolve());
         });
-    }
-
-    private static createAssetStorageStrategy(options: AssetServerOptions) {
-        const { assetUrlPrefix, assetUploadDir, route } = options;
-        const toAbsoluteUrlFn = (request: Request, identifier: string): string => {
-            if (!identifier) {
-                return '';
-            }
-            const prefix = assetUrlPrefix || `${request.protocol}://${request.get('host')}/${route}/`;
-            return identifier.startsWith(prefix) ? identifier : `${prefix}${identifier}`;
-        };
-        return new LocalAssetStorageStrategy(assetUploadDir, toAbsoluteUrlFn);
     }
 
     /**

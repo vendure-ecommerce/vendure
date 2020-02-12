@@ -1,10 +1,9 @@
+import { AssetStorageStrategy } from '@vendure/core';
 import { Request } from 'express';
 import { ReadStream } from 'fs';
 import fs from 'fs-extra';
 import path from 'path';
 import { Stream } from 'stream';
-
-import { AssetStorageStrategy } from './asset-storage-strategy';
 
 /**
  * A persistence strategy which saves files to the local file system.
@@ -12,7 +11,10 @@ import { AssetStorageStrategy } from './asset-storage-strategy';
 export class LocalAssetStorageStrategy implements AssetStorageStrategy {
     toAbsoluteUrl: ((reqest: Request, identifier: string) => string) | undefined;
 
-    constructor(private readonly uploadPath: string, private readonly toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string) {
+    constructor(
+        private readonly uploadPath: string,
+        private readonly toAbsoluteUrlFn?: (reqest: Request, identifier: string) => string,
+    ) {
         this.ensureUploadPathExists(this.uploadPath);
         if (toAbsoluteUrlFn) {
             this.toAbsoluteUrl = toAbsoluteUrlFn;
