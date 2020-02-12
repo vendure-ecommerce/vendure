@@ -9,6 +9,9 @@ type Mutation {
 
     "Update an existing TaxCategory"
     updateTaxCategory(input: UpdateTaxCategoryInput!): TaxCategory!
+
+    "Deletes a TaxCategory"
+    deleteTaxCategory(id: ID!): DeletionResponse!
 }
 
 input CreateTaxCategoryInput {

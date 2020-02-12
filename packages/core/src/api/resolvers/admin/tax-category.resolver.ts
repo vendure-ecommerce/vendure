@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationCreateTaxCategoryArgs,
+    MutationDeleteTaxCategoryArgs,
     MutationUpdateTaxCategoryArgs,
     Permission,
     QueryTaxCategoryArgs,
@@ -41,5 +43,14 @@ export class TaxCategoryResolver {
     @Allow(Permission.UpdateSettings)
     async updateTaxCategory(@Args() args: MutationUpdateTaxCategoryArgs): Promise<TaxCategory> {
         return this.taxCategoryService.update(args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    async deleteTaxCategory(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteTaxCategoryArgs,
+    ): Promise<DeletionResponse> {
+        return this.taxCategoryService.delete(ctx, args.id);
     }
 }

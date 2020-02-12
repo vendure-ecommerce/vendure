@@ -1801,6 +1801,8 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Deletes a TaxCategory */
+  deleteTaxCategory: DeletionResponse,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
@@ -2151,6 +2153,11 @@ export type MutationCreateTaxCategoryArgs = {
 
 export type MutationUpdateTaxCategoryArgs = {
   input: UpdateTaxCategoryInput
+};
+
+
+export type MutationDeleteTaxCategoryArgs = {
+  id: Scalars['ID']
 };
 
 
