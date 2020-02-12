@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationCreateTaxRateArgs,
+    MutationDeleteTaxRateArgs,
     MutationUpdateTaxRateArgs,
     Permission,
     QueryTaxRateArgs,
@@ -46,5 +48,14 @@ export class TaxRateResolver {
         @Args() args: MutationUpdateTaxRateArgs,
     ): Promise<TaxRate> {
         return this.taxRateService.update(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    async deleteTaxRate(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteTaxRateArgs,
+    ): Promise<DeletionResponse> {
+        return this.taxRateService.delete(args.id);
     }
 }

@@ -8,6 +8,7 @@
     "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
     "cannot-remove-option-group-due-to-variants": "Cannot remove ProductOptionGroup \"{ code }\" as it is used by {count, plural, one {1 ProductVariant} other {# ProductVariants}}",
+    "cannot-remove-tax-category-due-to-tax-rates": "Cannot remove TaxCategory \"{ name }\" as it is referenced by {count, plural, one {1 TaxRate} other {# TaxRates}}",
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-payment-from-to": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",

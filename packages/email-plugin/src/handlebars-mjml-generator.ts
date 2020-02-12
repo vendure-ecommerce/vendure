@@ -21,9 +21,14 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
         const compiledFrom = Handlebars.compile(from);
         const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
-        const fromResult = compiledFrom(templateVars);
-        const subjectResult = compiledSubject(templateVars);
-        const mjml = compiledTemplate(templateVars);
+        // We enable prototype properties here, aware of the security implications
+        // described here: https://handlebarsjs.com/api-reference/runtime-options.html#options-to-control-prototype-access
+        // This is needed because some Vendure entities use getters on the entity
+        // prototype (e.g. Order.total) which may need to be interpolated.
+        const templateOptions: RuntimeOptions = { allowProtoPropertiesByDefault: true };
+        const fromResult = compiledFrom(templateVars, { allowProtoPropertiesByDefault: true });
+        const subjectResult = compiledSubject(templateVars, { allowProtoPropertiesByDefault: true });
+        const mjml = compiledTemplate(templateVars, { allowProtoPropertiesByDefault: true });
         const body = mjml2html(mjml).html;
         return { from: fromResult, subject: subjectResult, body };
     }
@@ -37,14 +42,20 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
     }
 
     private registerHelpers() {
-        Handlebars.registerHelper('formatDate', (date: Date, format: string | object) => {
+        Handlebars.registerHelper('formatDate', (date: Date | undefined, format: string | object) => {
+            if (!date) {
+                return date;
+            }
             if (typeof format !== 'string') {
                 format = 'default';
             }
             return dateFormat(date, format);
         });
 
-        Handlebars.registerHelper('formatMoney', (amount: number) => {
+        Handlebars.registerHelper('formatMoney', (amount?: number) => {
+            if (amount == null) {
+                return amount;
+            }
             return (amount / 100).toFixed(2);
         });
     }

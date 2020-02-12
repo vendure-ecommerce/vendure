@@ -149,7 +149,15 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     loadData<R>(
         loadDataFn: LoadDataFn<Event, R>,
     ): EmailEventHandlerWithAsyncData<R, T, Event, EventWithAsyncData<Event, R>> {
-        return new EmailEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
+        const asyncHandler = new EmailEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
+        asyncHandler.setRecipientFn = this.setRecipientFn;
+        asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
+        asyncHandler.filterFns = this.filterFns;
+        asyncHandler.configurations = this.configurations;
+        asyncHandler.defaultSubject = this.defaultSubject;
+        asyncHandler.from = this.from;
+        asyncHandler._mockEvent = this._mockEvent as any;
+        return asyncHandler;
     }
 
     /**

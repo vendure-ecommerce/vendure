@@ -1,5 +1,10 @@
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateTaxRateInput, UpdateTaxRateInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateTaxRateInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateTaxRateInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
@@ -101,6 +106,21 @@ export class TaxRateService {
         await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
         return assertFound(this.findOne(taxRate.id));
+    }
+
+    async delete(id: ID): Promise<DeletionResponse> {
+        const taxRate = await getEntityOrThrow(this.connection, TaxRate, id);
+        try {
+            await this.connection.getRepository(TaxRate).remove(taxRate);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        } catch (e) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: e.toString(),
+            };
+        }
     }
 
     getActiveTaxRates(): TaxRate[] {

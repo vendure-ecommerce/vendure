@@ -194,6 +194,15 @@ export const UPDATE_TAX_CATEGORY = gql`
     ${TAX_CATEGORY_FRAGMENT}
 `;
 
+export const DELETE_TAX_CATEGORY = gql`
+    mutation DeleteTaxCategory($id: ID!) {
+        deleteTaxCategory(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const TAX_RATE_FRAGMENT = gql`
     fragment TaxRate on TaxRate {
         id
@@ -254,6 +263,15 @@ export const UPDATE_TAX_RATE = gql`
         }
     }
     ${TAX_RATE_FRAGMENT}
+`;
+
+export const DELETE_TAX_RATE = gql`
+    mutation DeleteTaxRate($id: ID!) {
+        deleteTaxRate(id: $id) {
+            result
+            message
+        }
+    }
 `;
 
 export const CHANNEL_FRAGMENT = gql`

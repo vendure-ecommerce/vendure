@@ -1809,10 +1809,14 @@ export type Mutation = {
   createTaxCategory: TaxCategory,
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory,
+  /** Deletes a TaxCategory */
+  deleteTaxCategory: DeletionResponse,
   /** Create a new TaxRate */
   createTaxRate: TaxRate,
   /** Update an existing TaxRate */
   updateTaxRate: TaxRate,
+  /** Delete a TaxRate */
+  deleteTaxRate: DeletionResponse,
   /** Create a new Zone */
   createZone: Zone,
   /** Update an existing Zone */
@@ -2169,6 +2173,11 @@ export type MutationUpdateTaxCategoryArgs = {
 };
 
 
+export type MutationDeleteTaxCategoryArgs = {
+  id: Scalars['ID']
+};
+
+
 export type MutationCreateTaxRateArgs = {
   input: CreateTaxRateInput
 };
@@ -2176,6 +2185,11 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationUpdateTaxRateArgs = {
   input: UpdateTaxRateInput
+};
+
+
+export type MutationDeleteTaxRateArgs = {
+  id: Scalars['ID']
 };
 
 
@@ -4302,6 +4316,13 @@ export type UpdateTaxCategoryMutationVariables = {
 
 export type UpdateTaxCategoryMutation = ({ __typename?: 'Mutation' } & { updateTaxCategory: ({ __typename?: 'TaxCategory' } & TaxCategoryFragment) });
 
+export type DeleteTaxCategoryMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteTaxCategoryMutation = ({ __typename?: 'Mutation' } & { deleteTaxCategory: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+
 export type TaxRateFragment = ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'> & { category: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), zone: ({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>), customerGroup: Maybe<({ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>)> });
 
 export type GetTaxRateListQueryVariables = {
@@ -4331,6 +4352,13 @@ export type UpdateTaxRateMutationVariables = {
 
 
 export type UpdateTaxRateMutation = ({ __typename?: 'Mutation' } & { updateTaxRate: ({ __typename?: 'TaxRate' } & TaxRateFragment) });
+
+export type DeleteTaxRateMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeleteTaxRateMutation = ({ __typename?: 'Mutation' } & { deleteTaxRate: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
 
 export type ChannelFragment = ({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'> & { defaultShippingZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)>, defaultTaxZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)> });
 
@@ -5294,6 +5322,12 @@ export namespace UpdateTaxCategory {
   export type UpdateTaxCategory = TaxCategoryFragment;
 }
 
+export namespace DeleteTaxCategory {
+  export type Variables = DeleteTaxCategoryMutationVariables;
+  export type Mutation = DeleteTaxCategoryMutation;
+  export type DeleteTaxCategory = DeleteTaxCategoryMutation['deleteTaxCategory'];
+}
+
 export namespace TaxRate {
   export type Fragment = TaxRateFragment;
   export type Category = TaxRateFragment['category'];
@@ -5324,6 +5358,12 @@ export namespace UpdateTaxRate {
   export type Variables = UpdateTaxRateMutationVariables;
   export type Mutation = UpdateTaxRateMutation;
   export type UpdateTaxRate = TaxRateFragment;
+}
+
+export namespace DeleteTaxRate {
+  export type Variables = DeleteTaxRateMutationVariables;
+  export type Mutation = DeleteTaxRateMutation;
+  export type DeleteTaxRate = DeleteTaxRateMutation['deleteTaxRate'];
 }
 
 export namespace Channel {

@@ -1804,10 +1804,14 @@ export type Mutation = {
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
     updateTaxCategory: TaxCategory;
+    /** Deletes a TaxCategory */
+    deleteTaxCategory: DeletionResponse;
     /** Create a new TaxRate */
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
     updateTaxRate: TaxRate;
+    /** Delete a TaxRate */
+    deleteTaxRate: DeletionResponse;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -2091,12 +2095,20 @@ export type MutationUpdateTaxCategoryArgs = {
     input: UpdateTaxCategoryInput;
 };
 
+export type MutationDeleteTaxCategoryArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateTaxRateArgs = {
     input: CreateTaxRateInput;
 };
 
 export type MutationUpdateTaxRateArgs = {
     input: UpdateTaxRateInput;
+};
+
+export type MutationDeleteTaxRateArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateZoneArgs = {

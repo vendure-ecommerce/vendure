@@ -1804,10 +1804,14 @@ export type Mutation = {
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
     updateTaxCategory: TaxCategory;
+    /** Deletes a TaxCategory */
+    deleteTaxCategory: DeletionResponse;
     /** Create a new TaxRate */
     createTaxRate: TaxRate;
     /** Update an existing TaxRate */
     updateTaxRate: TaxRate;
+    /** Delete a TaxRate */
+    deleteTaxRate: DeletionResponse;
     /** Create a new Zone */
     createZone: Zone;
     /** Update an existing Zone */
@@ -2091,12 +2095,20 @@ export type MutationUpdateTaxCategoryArgs = {
     input: UpdateTaxCategoryInput;
 };
 
+export type MutationDeleteTaxCategoryArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateTaxRateArgs = {
     input: CreateTaxRateInput;
 };
 
 export type MutationUpdateTaxRateArgs = {
     input: UpdateTaxRateInput;
+};
+
+export type MutationDeleteTaxRateArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationCreateZoneArgs = {
@@ -5091,6 +5103,44 @@ export type UpdateStockMutation = { __typename?: 'Mutation' } & {
     updateProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>>;
 };
 
+export type GetTaxCategoryListQueryVariables = {};
+
+export type GetTaxCategoryListQuery = { __typename?: 'Query' } & {
+    taxCategories: Array<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
+};
+
+export type GetTaxCategoryQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetTaxCategoryQuery = { __typename?: 'Query' } & {
+    taxCategory: Maybe<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
+};
+
+export type CreateTaxCategoryMutationVariables = {
+    input: CreateTaxCategoryInput;
+};
+
+export type CreateTaxCategoryMutation = { __typename?: 'Mutation' } & {
+    createTaxCategory: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
+};
+
+export type UpdateTaxCategoryMutationVariables = {
+    input: UpdateTaxCategoryInput;
+};
+
+export type UpdateTaxCategoryMutation = { __typename?: 'Mutation' } & {
+    updateTaxCategory: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
+};
+
+export type DeleteTaxCategoryMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteTaxCategoryMutation = { __typename?: 'Mutation' } & {
+    deleteTaxCategory: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type GetTaxRatesQueryVariables = {};
 
 export type GetTaxRatesQuery = { __typename?: 'Query' } & {
@@ -5113,6 +5163,14 @@ export type CreateTaxRateMutationVariables = {
 
 export type CreateTaxRateMutation = { __typename?: 'Mutation' } & {
     createTaxRate: { __typename?: 'TaxRate' } & TaxRateFragment;
+};
+
+export type DeleteTaxRateMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteTaxRateMutation = { __typename?: 'Mutation' } & {
+    deleteTaxRate: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type DeleteZoneMutationVariables = {
@@ -6316,6 +6374,36 @@ export namespace UpdateStock {
     export type UpdateProductVariants = VariantWithStockFragment;
 }
 
+export namespace GetTaxCategoryList {
+    export type Variables = GetTaxCategoryListQueryVariables;
+    export type Query = GetTaxCategoryListQuery;
+    export type TaxCategories = NonNullable<GetTaxCategoryListQuery['taxCategories'][0]>;
+}
+
+export namespace GetTaxCategory {
+    export type Variables = GetTaxCategoryQueryVariables;
+    export type Query = GetTaxCategoryQuery;
+    export type TaxCategory = NonNullable<GetTaxCategoryQuery['taxCategory']>;
+}
+
+export namespace CreateTaxCategory {
+    export type Variables = CreateTaxCategoryMutationVariables;
+    export type Mutation = CreateTaxCategoryMutation;
+    export type CreateTaxCategory = CreateTaxCategoryMutation['createTaxCategory'];
+}
+
+export namespace UpdateTaxCategory {
+    export type Variables = UpdateTaxCategoryMutationVariables;
+    export type Mutation = UpdateTaxCategoryMutation;
+    export type UpdateTaxCategory = UpdateTaxCategoryMutation['updateTaxCategory'];
+}
+
+export namespace DeleteTaxCategory {
+    export type Variables = DeleteTaxCategoryMutationVariables;
+    export type Mutation = DeleteTaxCategoryMutation;
+    export type DeleteTaxCategory = DeleteTaxCategoryMutation['deleteTaxCategory'];
+}
+
 export namespace GetTaxRates {
     export type Variables = GetTaxRatesQueryVariables;
     export type Query = GetTaxRatesQuery;
@@ -6333,6 +6421,12 @@ export namespace CreateTaxRate {
     export type Variables = CreateTaxRateMutationVariables;
     export type Mutation = CreateTaxRateMutation;
     export type CreateTaxRate = TaxRateFragment;
+}
+
+export namespace DeleteTaxRate {
+    export type Variables = DeleteTaxRateMutationVariables;
+    export type Mutation = DeleteTaxRateMutation;
+    export type DeleteTaxRate = DeleteTaxRateMutation['deleteTaxRate'];
 }
 
 export namespace DeleteZone {
