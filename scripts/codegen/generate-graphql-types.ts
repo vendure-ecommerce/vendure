@@ -14,6 +14,7 @@ const E2E_SHOP_QUERY_FILES = [
     path.join(__dirname, '../../packages/core/e2e/graphql/shop-definitions.ts'),
 ];
 const E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES = path.join(__dirname, '../../packages/elasticsearch-plugin/e2e/**/*.ts');
+const E2E_ASSET_SERVER_PLUGIN_QUERY_FILES = path.join(__dirname, '../../packages/asset-server-plugin/e2e/**/*.ts');
 const ADMIN_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-admin.json');
 const SHOP_SCHEMA_OUTPUT_FILE = path.join(__dirname, '../../schema-shop.json');
 
@@ -67,6 +68,12 @@ Promise.all([
                 [path.join(__dirname, '../../packages/elasticsearch-plugin/e2e/graphql/generated-e2e-elasticsearch-plugin-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES,
+                    plugins: clientPlugins,
+                    config,
+                },
+                [path.join(__dirname, '../../packages/asset-server-plugin/e2e/graphql/generated-e2e-asset-server-plugin-types.ts')]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                    documents: E2E_ASSET_SERVER_PLUGIN_QUERY_FILES,
                     plugins: clientPlugins,
                     config,
                 },

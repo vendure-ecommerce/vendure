@@ -149,7 +149,8 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
             maxHeight: this.options.previewMaxHeight || 1600,
         });
         config.assetOptions.assetStorageStrategy = this.assetStorage;
-        config.assetOptions.assetNamingStrategy = new HashedAssetNamingStrategy();
+        config.assetOptions.assetNamingStrategy =
+            this.options.namingStrategy || new HashedAssetNamingStrategy();
         config.middleware.push({
             handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
             route: this.options.route,
@@ -188,7 +189,13 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private createAssetServer() {
         const assetServer = express();
         assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
-        this.server = assetServer.listen(AssetServerPlugin.options.port);
+        this.server = assetServer.listen(AssetServerPlugin.options.port, () => {
+            const addressInfo = this.server.address();
+            if (addressInfo && typeof addressInfo !== 'string') {
+                const { address, port } = addressInfo;
+                Logger.info(`Asset server listening on ${address}:${port}`, loggerCtx);
+            }
+        });
     }
 
     /**

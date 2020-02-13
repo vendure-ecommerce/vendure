@@ -11,7 +11,8 @@
     "watch": "tsc -p ./tsconfig.build.json --watch",
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",
     "lint": "tslint --fix --project ./",
-    "test": "jest --config ./jest.config.js"
+    "test": "jest --config ./jest.config.js",
+    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=asset-server-plugin"
   },
   "publishConfig": {
     "access": "public"
@@ -19,10 +20,12 @@
   "devDependencies": {
     "@types/express": "^4.0.39",
     "@types/fs-extra": "^8.0.1",
+    "@types/node-fetch": "^2.5.4",
     "@types/sharp": "^0.22.2",
     "@vendure/common": "^0.8.2",
     "@vendure/core": "^0.8.2",
     "express": "^4.16.4",
+    "node-fetch": "^2.6.0",
     "rimraf": "^3.0.0",
     "typescript": "~3.5.3"
   },

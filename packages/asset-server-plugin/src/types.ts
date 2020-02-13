@@ -1,4 +1,4 @@
-import { AssetStorageStrategy } from '@vendure/core';
+import { AssetNamingStrategy, AssetStorageStrategy } from '@vendure/core';
 
 /**
  * @description
@@ -90,6 +90,13 @@ export interface AssetServerOptions {
      * An array of additional {@link ImageTransformPreset} objects.
      */
     presets?: ImageTransformPreset[];
+    /**
+     * @description
+     * Defines how asset files and preview images are named before being saved.
+     *
+     * @default HashedAssetNamingStrategy
+     */
+    namingStrategy?: AssetNamingStrategy;
     /**
      * @description
      * A function which can be used to configure an {@link AssetStorageStrategy}. This is useful e.g. if you wish to store your assets
