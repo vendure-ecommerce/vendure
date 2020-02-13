@@ -194,7 +194,7 @@ export const GET_CUSTOMER = gql`
 `;
 
 export const ATTEMPT_LOGIN = gql`
-    mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean!) {
+    mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
             user {
                 ...CurrentUser

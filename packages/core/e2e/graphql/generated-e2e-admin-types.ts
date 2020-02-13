@@ -4475,7 +4475,7 @@ export type GetCustomerQuery = { __typename?: 'Query' } & {
 export type AttemptLoginMutationVariables = {
     username: Scalars['String'];
     password: Scalars['String'];
-    rememberMe: Scalars['Boolean'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
 export type AttemptLoginMutation = { __typename?: 'Mutation' } & {
