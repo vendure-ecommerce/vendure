@@ -120,7 +120,10 @@ export class TestServer {
         const appModule = await import('@vendure/core/dist/app.module');
         try {
             DefaultLogger.hideNestBoostrapLogs();
-            const app = await NestFactory.create(appModule.AppModule, { cors: config.cors, logger: false });
+            const app = await NestFactory.create(appModule.AppModule, {
+                cors: config.cors,
+                logger: new Logger(),
+            });
             let worker: INestMicroservice | undefined;
             await app.listen(config.port);
             if (config.workerOptions.runInMainProcess) {
