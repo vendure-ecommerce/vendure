@@ -13,8 +13,8 @@ export async function transformImage(
     queryParams: Record<string, string>,
     presets: ImageTransformPreset[],
 ): Promise<sharp.Sharp> {
-    let targetWidth = +queryParams.w || undefined;
-    let targetHeight = +queryParams.h || undefined;
+    let targetWidth = Math.round(+queryParams.w) || undefined;
+    let targetHeight = Math.round(+queryParams.h) || undefined;
     let mode = queryParams.mode || 'crop';
     const fpx = +queryParams.fpx || undefined;
     const fpy = +queryParams.fpy || undefined;

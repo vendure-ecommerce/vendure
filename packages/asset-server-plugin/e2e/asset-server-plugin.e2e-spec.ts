@@ -153,6 +153,16 @@ describe('AssetServerPlugin', () => {
             expect(files.length).toBe(2);
         });
     });
+
+    describe('unexpected input', () => {
+        it('does not error on non-integer width', async () => {
+            return fetch(`${asset.preview}?w=10.5`);
+        });
+
+        it('does not error on non-integer height', async () => {
+            return fetch(`${asset.preview}?h=10.5`);
+        });
+    });
 });
 
 export const CREATE_ASSETS = gql`
