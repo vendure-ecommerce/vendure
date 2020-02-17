@@ -112,6 +112,10 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * medium | 500px | 500px | resize
  * large | 800px | 800px | resize
  *
+ * ### Caching
+ * By default, the AssetServerPlugin will cache every transformed image, so that the transformation only needs to be performed a single time for
+ * a given configuration. Caching can be disabled per-request by setting the `?cache=false` query parameter.
+ *
  * @docsCategory AssetServerPlugin
  */
 @VendurePlugin({
@@ -231,9 +235,14 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                     const image = await transformImage(file, req.query, this.presets || []);
                     try {
                         const imageBuffer = await image.toBuffer();
-                        const cachedFileName = this.getFileNameFromRequest(req);
-                        await AssetServerPlugin.assetStorage.writeFileFromBuffer(cachedFileName, imageBuffer);
-                        Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
+                        if (!req.query.cache || req.query.cache === 'true') {
+                            const cachedFileName = this.getFileNameFromRequest(req);
+                            await AssetServerPlugin.assetStorage.writeFileFromBuffer(
+                                cachedFileName,
+                                imageBuffer,
+                            );
+                            Logger.debug(`Saved cached asset: ${cachedFileName}`, loggerCtx);
+                        }
                         res.set('Content-Type', `image/${(await image.metadata()).format}`);
                         res.send(imageBuffer);
                     } catch (e) {

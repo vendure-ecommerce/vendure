@@ -92,6 +92,7 @@ describe('AssetServerPlugin', () => {
 
     describe('caching', () => {
         const cacheDir = path.join(__dirname, TEST_ASSET_DIR, 'cache');
+        const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
 
         it('cache initially empty', async () => {
             const files = await fs.readdir(cacheDir);
@@ -101,8 +102,6 @@ describe('AssetServerPlugin', () => {
         it('creates cached image on first request', async () => {
             const res = await fetch(`${asset.preview}?preset=thumb`);
             const responseBuffer = await res.buffer();
-            const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
-
             expect(fs.existsSync(cacheFileDir)).toBe(true);
 
             const files = await fs.readdir(cacheFileDir);
@@ -117,7 +116,6 @@ describe('AssetServerPlugin', () => {
 
         it('does not create a new cached image on a second request', async () => {
             const res = await fetch(`${asset.preview}?preset=thumb`);
-            const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
             const files = await fs.readdir(cacheFileDir);
 
             expect(files.length).toBe(1);
@@ -125,7 +123,6 @@ describe('AssetServerPlugin', () => {
 
         it('does not create a new cached image for an untransformed image', async () => {
             const res = await fetch(`${asset.preview}`);
-            const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
             const files = await fs.readdir(cacheFileDir);
 
             expect(files.length).toBe(1);
@@ -133,7 +130,6 @@ describe('AssetServerPlugin', () => {
 
         it('does not create a new cached image for an invalid preset', async () => {
             const res = await fetch(`${asset.preview}?preset=invalid`);
-            const cacheFileDir = path.join(__dirname, TEST_ASSET_DIR, 'cache', 'preview', '71');
             const files = await fs.readdir(cacheFileDir);
 
             expect(files.length).toBe(1);
@@ -141,6 +137,20 @@ describe('AssetServerPlugin', () => {
             const previewFile = await fs.readFile(previewFilePath);
             const responseBuffer = await res.buffer();
             expect(Buffer.compare(responseBuffer, previewFile)).toBe(0);
+        });
+
+        it('does not create a new cached image if cache=false', async () => {
+            const res = await fetch(`${asset.preview}?preset=tiny&cache=false`);
+            const files = await fs.readdir(cacheFileDir);
+
+            expect(files.length).toBe(1);
+        });
+
+        it('creates a new cached image if cache=true', async () => {
+            const res = await fetch(`${asset.preview}?preset=tiny&cache=true`);
+            const files = await fs.readdir(cacheFileDir);
+
+            expect(files.length).toBe(2);
         });
     });
 });
