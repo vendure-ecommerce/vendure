@@ -66,7 +66,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         if (files.length) {
             this.dataService.product.createAssets(files).subscribe(res => {
                 super.refresh();
-                this.notificationService.success(_('catalog.notify-create-assets-success'), {
+                this.notificationService.success(_('asset.notify-create-assets-success'), {
                     count: files.length,
                 });
             });

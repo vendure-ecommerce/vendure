@@ -12,6 +12,7 @@ export { SharedModule } from './app/shared/shared.module';
 export { NavBuilderService } from './app/core/providers/nav-builder/nav-builder.service';
 export { BaseListComponent } from './app/common/base-list.component';
 export { BaseDetailComponent } from './app/common/base-detail.component';
+export { BaseEntityResolver } from './app/common/base-entity-resolver';
 export * from './app/core/providers/nav-builder/nav-builder-types';
 export * from './app/core/providers/custom-field-component/custom-field-component.service';
 export * from './app/shared/shared-declarations';

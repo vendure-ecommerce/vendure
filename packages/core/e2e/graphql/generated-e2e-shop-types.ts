@@ -85,6 +85,7 @@ export type Asset = Node & {
     height: Scalars['Int'];
     source: Scalars['String'];
     preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 export type AssetList = PaginatedList & {
@@ -248,6 +249,12 @@ export type ConfigurableOperationDefinition = {
 export type ConfigurableOperationInput = {
     code: Scalars['String'];
     arguments: Array<ConfigArgInput>;
+};
+
+export type Coordinate = {
+    __typename?: 'Coordinate';
+    x: Scalars['Float'];
+    y: Scalars['Float'];
 };
 
 export type Country = Node & {
@@ -2037,9 +2044,11 @@ export type SearchResult = {
     productId: Scalars['ID'];
     productName: Scalars['String'];
     productPreview: Scalars['String'];
+    productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
     productVariantPreview: Scalars['String'];
+    productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
     priceWithTax: SearchResultPrice;
     currencyCode: CurrencyCode;
@@ -2050,6 +2059,13 @@ export type SearchResult = {
     collectionIds: Array<Scalars['ID']>;
     /** A relevence score for the result. Differs between database implementations */
     score: Scalars['Float'];
+};
+
+export type SearchResultAsset = {
+    __typename?: 'SearchResultAsset';
+    id: Scalars['ID'];
+    preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 /** The price of a search result product, either as a range or as a single price */

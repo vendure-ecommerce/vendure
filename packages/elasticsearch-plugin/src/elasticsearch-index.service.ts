@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+    Asset,
     ID,
     Job,
     JobReporter,
@@ -19,6 +20,7 @@ import {
     DeleteVariantMessage,
     ReindexMessage,
     RemoveProductFromChannelMessage,
+    UpdateAssetMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
     UpdateVariantsByIdMessage,
@@ -103,6 +105,14 @@ export class ElasticsearchIndexService {
                     .send(new UpdateVariantsByIdMessage({ ctx, ids }))
                     .subscribe(this.createObserver(reporter));
             },
+        });
+    }
+
+    updateAsset(ctx: RequestContext, asset: Asset) {
+        const data = { ctx, asset };
+        return this.createShortWorkerJob(new UpdateAssetMessage(data), {
+            entity: 'Asset',
+            id: asset.id,
         });
     }
 

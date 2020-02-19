@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { AssetPreviewComponent } from '../../../catalog/components/asset-preview/asset-preview.component';
 import { Asset } from '../../../common/generated-types';
 import { ModalService } from '../../providers/modal/modal.service';
+import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
 
 @Component({
     selector: 'vdr-asset-gallery',
@@ -10,7 +10,7 @@ import { ModalService } from '../../providers/modal/modal.service';
     styleUrls: ['./asset-gallery.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssetGalleryComponent {
+export class AssetGalleryComponent implements OnChanges {
     @Input() assets: Asset[];
     /**
      * If true, allows multiple assets to be selected by ctrl+clicking.
@@ -21,6 +21,18 @@ export class AssetGalleryComponent {
     selection: Asset[] = [];
 
     constructor(private modalService: ModalService) {}
+
+    ngOnChanges() {
+        if (this.assets) {
+            for (const asset of this.selection) {
+                // Update and selected assets with any changes
+                const match = this.assets.find(a => a.id === asset.id);
+                if (match) {
+                    Object.assign(asset, match);
+                }
+            }
+        }
+    }
 
     toggleSelection(event: MouseEvent, asset: Asset) {
         const index = this.selection.findIndex(a => a.id === asset.id);
@@ -52,7 +64,7 @@ export class AssetGalleryComponent {
 
     previewAsset(asset: Asset) {
         this.modalService
-            .fromComponent(AssetPreviewComponent, {
+            .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',
                 closable: true,
                 locals: { asset },

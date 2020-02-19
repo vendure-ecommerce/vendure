@@ -1,0 +1,9 @@
+:host {
+    height: 70vh;
+}
+
+.update-button {
+    &.hidden {
+        visibility: hidden;
+    }
+}

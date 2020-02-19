@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { AssetType, CreateAssetInput } from '@vendure/common/lib/generated-types';
+import { AssetType, CreateAssetInput, UpdateAssetInput } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
@@ -9,7 +9,8 @@ import path from 'path';
 import { Stream } from 'stream';
 import { Connection, Like } from 'typeorm';
 
-import { InternalServerError } from '../../common/error/errors';
+import { RequestContext } from '../../api/common/request-context';
+import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -17,7 +18,11 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
+import { EventBus } from '../../event-bus/event-bus';
+import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { patchEntity } from '../helpers/utils/patch-entity';
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -37,6 +42,7 @@ export class AssetService {
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
+        private eventBus: EventBus,
     ) {}
 
     findOne(id: ID): Promise<Asset | undefined> {
@@ -131,10 +137,25 @@ export class AssetService {
     /**
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
-    async create(input: CreateAssetInput): Promise<Asset> {
+    async create(ctx: RequestContext, input: CreateAssetInput): Promise<Asset> {
         const { createReadStream, filename, mimetype } = await input.file;
         const stream = createReadStream();
-        return this.createAssetInternal(stream, filename, mimetype);
+        const asset = await this.createAssetInternal(stream, filename, mimetype);
+        this.eventBus.publish(new AssetEvent(ctx, asset, 'created'));
+        return asset;
+    }
+
+    async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
+        const asset = await getEntityOrThrow(this.connection, Asset, input.id);
+        if (input.focalPoint) {
+            const to3dp = (x: number) => +x.toFixed(3);
+            input.focalPoint.x = to3dp(input.focalPoint.x);
+            input.focalPoint.y = to3dp(input.focalPoint.y);
+        }
+        patchEntity(asset, input);
+        const updatedAsset = await this.connection.getRepository(Asset).save(asset);
+        this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated'));
+        return updatedAsset;
     }
 
     /**
@@ -171,11 +192,12 @@ export class AssetService {
             type,
             width,
             height,
-            name: sourceFileName,
+            name: path.basename(sourceFileName),
             fileSize: sourceFile.byteLength,
             mimeType: mimetype,
             source: sourceFileIdentifier,
             preview: previewFileIdentifier,
+            focalPoint: null,
         });
         return this.connection.manager.save(asset);
     }

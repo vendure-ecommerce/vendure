@@ -180,8 +180,12 @@ export class PostgresSearchStrategy implements SearchStrategy {
             'facetValueIds',
             'collectionIds',
             'channelIds',
+            'productAssetId',
             'productPreview',
+            'productPreviewFocalPoint',
+            'productVariantAssetId',
             'productVariantPreview',
+            'productVariantPreviewFocalPoint',
         ]
             .map(col => {
                 const qualifiedName = `si.${col}`;

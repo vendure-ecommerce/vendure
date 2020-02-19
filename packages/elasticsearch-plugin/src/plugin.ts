@@ -1,4 +1,5 @@
 import {
+    AssetEvent,
     CollectionModificationEvent,
     DeepRequired,
     EventBus,
@@ -250,6 +251,11 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
                 return this.elasticsearchIndexService.deleteVariant(event.ctx, event.variants).start();
             } else {
                 return this.elasticsearchIndexService.updateVariants(event.ctx, event.variants).start();
+            }
+        });
+        this.eventBus.ofType(AssetEvent).subscribe(event => {
+            if (event.type === 'updated') {
+                return this.elasticsearchIndexService.updateAsset(event.ctx, event.asset).start();
             }
         });
 

@@ -2,7 +2,6 @@ export * from './asset-naming-strategy/asset-naming-strategy';
 export * from './asset-naming-strategy/default-asset-naming-strategy';
 export * from './asset-preview-strategy/asset-preview-strategy';
 export * from './asset-storage-strategy/asset-storage-strategy';
-export * from './asset-storage-strategy/local-asset-storage-strategy';
 export * from './entity-id-strategy/auto-increment-id-strategy';
 export * from './config.service';
 export * from './entity-id-strategy/entity-id-strategy';

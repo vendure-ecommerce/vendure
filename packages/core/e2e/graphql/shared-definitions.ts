@@ -194,7 +194,7 @@ export const GET_CUSTOMER = gql`
 `;
 
 export const ATTEMPT_LOGIN = gql`
-    mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean!) {
+    mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
             user {
                 ...CurrentUser
@@ -336,4 +336,16 @@ export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
         }
     }
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
+`;
+export const UPDATE_ASSET = gql`
+    mutation UpdateAsset($input: UpdateAssetInput!) {
+        updateAsset(input: $input) {
+            ...Asset
+            focalPoint {
+                x
+                y
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
 `;

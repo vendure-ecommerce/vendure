@@ -115,6 +115,7 @@ export type Asset = Node & {
   height: Scalars['Int'],
   source: Scalars['String'],
   preview: Scalars['String'],
+  focalPoint?: Maybe<Coordinate>,
 };
 
 export type AssetFilterParameter = {
@@ -335,6 +336,17 @@ export type ConfigurableOperationDefinition = {
 export type ConfigurableOperationInput = {
   code: Scalars['String'],
   arguments: Array<ConfigArgInput>,
+};
+
+export type Coordinate = {
+  __typename?: 'Coordinate',
+  x: Scalars['Float'],
+  y: Scalars['Float'],
+};
+
+export type CoordinateInput = {
+  x: Scalars['Float'],
+  y: Scalars['Float'],
 };
 
 export type Country = Node & {
@@ -1689,6 +1701,8 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator,
   /** Create a new Asset */
   createAssets: Array<Asset>,
+  /** Update an existing Asset */
+  updateAsset: Asset,
   login: LoginResult,
   logout: Scalars['Boolean'],
   /** Create a new Channel */
@@ -1840,6 +1854,11 @@ export type MutationAssignRoleToAdministratorArgs = {
 
 export type MutationCreateAssetsArgs = {
   input: Array<CreateAssetInput>
+};
+
+
+export type MutationUpdateAssetArgs = {
+  input: UpdateAssetInput
 };
 
 
@@ -2733,7 +2752,9 @@ export type Query = {
   __typename?: 'Query',
   administrators: AdministratorList,
   administrator?: Maybe<Administrator>,
+  /** Get a list of Assets */
   assets: AssetList,
+  /** Get a single Asset by id */
   asset?: Maybe<Asset>,
   me?: Maybe<CurrentUser>,
   channels: Array<Channel>,
@@ -3093,9 +3114,11 @@ export type SearchResult = {
   productId: Scalars['ID'],
   productName: Scalars['String'],
   productPreview: Scalars['String'],
+  productAsset?: Maybe<SearchResultAsset>,
   productVariantId: Scalars['ID'],
   productVariantName: Scalars['String'],
   productVariantPreview: Scalars['String'],
+  productVariantAsset?: Maybe<SearchResultAsset>,
   price: SearchResultPrice,
   priceWithTax: SearchResultPrice,
   currencyCode: CurrencyCode,
@@ -3106,6 +3129,13 @@ export type SearchResult = {
   collectionIds: Array<Scalars['ID']>,
   /** A relevence score for the result. Differs between database implementations */
   score: Scalars['Float'],
+};
+
+export type SearchResultAsset = {
+  __typename?: 'SearchResultAsset',
+  id: Scalars['ID'],
+  preview: Scalars['String'],
+  focalPoint?: Maybe<Coordinate>,
 };
 
 /** The price of a search result product, either as a range or as a single price */
@@ -3354,6 +3384,12 @@ export type UpdateAdministratorInput = {
   emailAddress?: Maybe<Scalars['String']>,
   password?: Maybe<Scalars['String']>,
   roleIds?: Maybe<Array<Scalars['ID']>>,
+};
+
+export type UpdateAssetInput = {
+  id: Scalars['ID'],
+  name?: Maybe<Scalars['String']>,
+  focalPoint?: Maybe<CoordinateInput>,
 };
 
 export type UpdateChannelInput = {

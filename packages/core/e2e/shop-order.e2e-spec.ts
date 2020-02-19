@@ -12,6 +12,7 @@ import {
     testSuccessfulPaymentMethod,
 } from './fixtures/test-payment-methods';
 import {
+    AttemptLogin,
     CreateAddressInput,
     GetCountryList,
     GetCustomer,
@@ -36,6 +37,7 @@ import {
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
 import {
+    ATTEMPT_LOGIN,
     GET_COUNTRY_LIST,
     GET_CUSTOMER,
     GET_CUSTOMER_LIST,
@@ -80,7 +82,7 @@ describe('Shop orders', () => {
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-            customerCount: 2,
+            customerCount: 3,
         });
         await adminClient.asSuperAdmin();
     }, TEST_SETUP_TIMEOUT_MS);
@@ -872,6 +874,95 @@ describe('Shop orders', () => {
                     }, `You are not currently authorized to perform this action`),
                 );
             });
+        });
+    });
+
+    describe('order merging', () => {
+        let customers: GetCustomerList.Items[];
+
+        beforeAll(async () => {
+            const result = await adminClient.query<GetCustomerList.Query>(GET_CUSTOMER_LIST);
+            customers = result.customers.items;
+        });
+
+        it('merges guest order with no existing order', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+
+            expect(addItemToOrder!.lines.length).toBe(1);
+            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_1');
+
+            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
+                username: customers[1].emailAddress,
+                password: 'test',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.lines.length).toBe(1);
+            expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
+        });
+
+        it('merges guest order with existing order', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_2',
+                quantity: 1,
+            });
+
+            expect(addItemToOrder!.lines.length).toBe(1);
+            expect(addItemToOrder!.lines[0].productVariant.id).toBe('T_2');
+
+            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
+                username: customers[1].emailAddress,
+                password: 'test',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.lines.length).toBe(2);
+            expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
+            expect(activeOrder!.lines[1].productVariant.id).toBe('T_2');
+        });
+
+        /**
+         * See https://github.com/vendure-ecommerce/vendure/issues/263
+         */
+        it('does not merge when logging in to a different account (issue #263)', async () => {
+            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
+                username: customers[2].emailAddress,
+                password: 'test',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder).toBeNull();
+        });
+
+        it('does not merge when logging back to other account (issue #263)', async () => {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 1,
+            });
+
+            await shopClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
+                username: customers[1].emailAddress,
+                password: 'test',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder!.lines.length).toBe(2);
+            expect(activeOrder!.lines[0].productVariant.id).toBe('T_1');
+            expect(activeOrder!.lines[1].productVariant.id).toBe('T_2');
         });
     });
 });

@@ -1,6 +1,6 @@
 <ng-template vdrDialogTitle>
     <div class="title-row">
-        {{ 'catalog.select-assets' | translate }}
+        {{ 'asset.select-assets' | translate }}
         <vdr-asset-file-input
             (selectFiles)="createAssets($event)"
             dropZoneTarget=".modal-content"
@@ -11,7 +11,7 @@
     type="text"
     name="searchTerm"
     [formControl]="searchTerm"
-    [placeholder]="'catalog.search-asset-name' | translate"
+    [placeholder]="'asset.search-asset-name' | translate"
     class="clr-input search-input"
 />
 <vdr-asset-gallery
@@ -37,6 +37,6 @@
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button type="submit" (click)="select()" class="btn btn-primary" [disabled]="selection.length === 0">
-        {{ 'catalog.add-asset-with-count' | translate: { count: selection.length } }}
+        {{ 'asset.add-asset-with-count' | translate: { count: selection.length } }}
     </button>
 </ng-template>

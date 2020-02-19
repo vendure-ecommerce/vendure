@@ -4,6 +4,7 @@ import { buffer, debounceTime, filter, map } from 'rxjs/operators';
 
 import { idsAreEqual } from '../../common/utils';
 import { EventBus } from '../../event-bus/event-bus';
+import { AssetEvent } from '../../event-bus/events/asset-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
@@ -78,6 +79,11 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
                 return this.searchIndexService.deleteVariant(event.ctx, event.variants).start();
             } else {
                 return this.searchIndexService.updateVariants(event.ctx, event.variants).start();
+            }
+        });
+        this.eventBus.ofType(AssetEvent).subscribe(event => {
+            if (event.type === 'updated') {
+                return this.searchIndexService.updateAsset(event.ctx, event.asset).start();
             }
         });
         this.eventBus.ofType(ProductChannelEvent).subscribe(event => {

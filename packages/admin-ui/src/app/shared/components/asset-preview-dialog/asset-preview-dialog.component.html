@@ -1,0 +1,11 @@
+<ng-template vdrDialogTitle>
+    <div class="title-row">
+        {{ asset.name }}
+    </div>
+</ng-template>
+
+<vdr-asset-preview
+    [asset]="asset"
+    (assetChange)="assetChanges = $event"
+    (editClick)="resolveWith()"
+></vdr-asset-preview>

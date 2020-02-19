@@ -4,6 +4,7 @@ import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { unique } from '@vendure/common/lib/unique';
 import {
+    Asset,
     asyncObservable,
     AsyncQueue,
     FacetValue,
@@ -40,6 +41,7 @@ import {
     ProductIndexItem,
     ReindexMessage,
     RemoveProductFromChannelMessage,
+    UpdateAssetMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
     UpdateVariantsByIdMessage,
@@ -305,6 +307,61 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         });
     }
 
+    @MessagePattern(UpdateAssetMessage.pattern)
+    updateAsset(data: UpdateAssetMessage['data']): Observable<UpdateAssetMessage['response']> {
+        return asyncObservable(async () => {
+            const result1 = await this.updateAssetForIndex(PRODUCT_INDEX_NAME, data.asset);
+            const result2 = await this.updateAssetForIndex(VARIANT_INDEX_NAME, data.asset);
+            await this.client.indices.refresh({
+                index: [
+                    this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                    this.options.indexPrefix + VARIANT_INDEX_NAME,
+                ],
+            });
+            return result1 && result2;
+        });
+    }
+
+    private async updateAssetForIndex(indexName: string, asset: Asset): Promise<boolean> {
+        const focalPoint = asset.focalPoint || null;
+        const params = { focalPoint };
+        const result1 = await this.client.update_by_query({
+            index: this.options.indexPrefix + indexName,
+            body: {
+                script: {
+                    source: 'ctx._source.productPreviewFocalPoint = params.focalPoint',
+                    params,
+                },
+                query: {
+                    term: {
+                        productAssetId: asset.id,
+                    },
+                },
+            },
+        });
+        for (const failure of result1.body.failures) {
+            Logger.error(`${failure.cause.type}: ${failure.cause.reason}`, loggerCtx);
+        }
+        const result2 = await this.client.update_by_query({
+            index: this.options.indexPrefix + indexName,
+            body: {
+                script: {
+                    source: 'ctx._source.productVariantPreviewFocalPoint = params.focalPoint',
+                    params,
+                },
+                query: {
+                    term: {
+                        productVariantAssetId: asset.id,
+                    },
+                },
+            },
+        });
+        for (const failure of result1.body.failures) {
+            Logger.error(`${failure.cause.type}: ${failure.cause.reason}`, loggerCtx);
+        }
+        return result1.body.failures.length === 0 && result2.body.failures === 0;
+    }
+
     private async processVariantBatch(
         variants: ProductVariant[],
         variantsInProduct: ProductVariant[],
@@ -509,6 +566,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }
 
     private createVariantIndexItem(v: ProductVariant, channelId: ID): VariantIndexItem {
+        const productAsset = v.product.featuredAsset;
+        const variantAsset = v.featuredAsset;
         const item: VariantIndexItem = {
             channelId,
             productVariantId: v.id as string,
@@ -516,9 +575,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             slug: v.product.slug,
             productId: v.product.id as string,
             productName: v.product.name,
-            productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
+            productAssetId: productAsset ? productAsset.id : null,
+            productPreview: productAsset ? productAsset.preview : '',
+            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
             productVariantName: v.name,
-            productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
+            productVariantAssetId: variantAsset ? variantAsset.id : null,
+            productVariantPreview: variantAsset ? variantAsset.preview : '',
+            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
             price: v.price,
             priceWithTax: v.priceWithTax,
             currencyCode: v.currencyCode,
@@ -540,16 +603,24 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const first = variants[0];
         const prices = variants.map(v => v.price);
         const pricesWithTax = variants.map(v => v.priceWithTax);
+        const productAsset = first.product.featuredAsset;
+        const variantAsset = variants.filter(v => v.featuredAsset).length
+            ? variants.filter(v => v.featuredAsset)[0].featuredAsset
+            : null;
         const item: ProductIndexItem = {
             channelId,
-            sku: variants.map(v => v.sku),
-            slug: variants.map(v => v.product.slug),
+            sku: first.sku,
+            slug: first.product.slug,
             productId: first.product.id,
-            productName: variants.map(v => v.product.name),
-            productPreview: first.product.featuredAsset ? first.product.featuredAsset.preview : '',
-            productVariantId: variants.map(v => v.id),
-            productVariantName: variants.map(v => v.name),
-            productVariantPreview: variants.filter(v => v.featuredAsset).map(v => v.featuredAsset.preview),
+            productName: first.product.name,
+            productAssetId: productAsset ? productAsset.id : null,
+            productPreview: productAsset ? productAsset.preview : '',
+            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
+            productVariantId: first.id,
+            productVariantName: first.name,
+            productVariantAssetId: variantAsset ? variantAsset.id : null,
+            productVariantPreview: variantAsset ? variantAsset.preview : '',
+            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
             priceMin: Math.min(...prices),
             priceMax: Math.max(...prices),
             priceWithTaxMin: Math.min(...pricesWithTax),

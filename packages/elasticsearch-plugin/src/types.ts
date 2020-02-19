@@ -1,4 +1,5 @@
 import {
+    Coordinate,
     CurrencyCode,
     PriceRange,
     SearchInput,
@@ -6,7 +7,7 @@ import {
     SearchResult,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { RequestContext, WorkerMessage } from '@vendure/core';
+import { Asset, RequestContext, WorkerMessage } from '@vendure/core';
 
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
@@ -29,22 +30,34 @@ export type PriceRangeBucket = {
     count: number;
 };
 
-export type VariantIndexItem = Omit<SearchResult, 'score' | 'price' | 'priceWithTax'> & {
-    channelId: ID;
-    price: number;
-    priceWithTax: number;
-    [customMapping: string]: any;
+export type IndexItemAssets = {
+    productAssetId: ID | null;
+    productPreview: string;
+    productPreviewFocalPoint: Coordinate | null;
+    productVariantAssetId: ID | null;
+    productVariantPreview: string;
+    productVariantPreviewFocalPoint: Coordinate | null;
 };
-export type ProductIndexItem = {
-    sku: string[];
-    slug: string[];
+
+export type VariantIndexItem = Omit<
+    SearchResult,
+    'score' | 'price' | 'priceWithTax' | 'productAsset' | 'productVariantAsset'
+> &
+    IndexItemAssets & {
+        channelId: ID;
+        price: number;
+        priceWithTax: number;
+        [customMapping: string]: any;
+    };
+
+export type ProductIndexItem = IndexItemAssets & {
+    sku: string;
+    slug: string;
     productId: ID;
     channelId: ID;
-    productName: string[];
-    productPreview: string;
-    productVariantId: ID[];
-    productVariantName: string[];
-    productVariantPreview: string[];
+    productName: string;
+    productVariantId: ID;
+    productVariantName: string;
     currencyCode: CurrencyCode;
     description: string;
     facetIds: ID[];
@@ -121,7 +134,7 @@ export type BulkResponseResult = {
         _seq_no?: number;
         _primary_term?: number;
         error?: any;
-    }
+    };
 };
 export type BulkResponseBody = {
     took: number;
@@ -160,6 +173,10 @@ export interface ProductChannelMessageData {
     productId: ID;
     channelId: ID;
 }
+export interface UpdateAssetMessageData {
+    ctx: RequestContext;
+    asset: Asset;
+}
 
 export class ReindexMessage extends WorkerMessage<ReindexMessageData, ReindexMessageResponse> {
     static readonly pattern = 'Reindex';
@@ -187,6 +204,9 @@ export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelM
 }
 export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
     static readonly pattern = 'RemoveProductFromChannel';
+}
+export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
+    static readonly pattern = 'UpdateAsset';
 }
 
 type Maybe<T> = T | null | undefined;

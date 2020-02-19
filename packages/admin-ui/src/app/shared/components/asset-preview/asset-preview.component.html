@@ -1,0 +1,105 @@
+<div class="preview-image" #previewDiv [class.centered]="centered">
+    <div class="image-wrapper">
+        <vdr-focal-point-control
+            [width]="width"
+            [height]="height"
+            [fpx]="fpx"
+            [fpy]="fpy"
+            [editable]="settingFocalPoint"
+            (focalPointChange)="onFocalPointChange($event)"
+        >
+            <img class="asset-image" [src]="asset | assetPreview:size" #imageElement (load)="onImageLoad()" />
+        </vdr-focal-point-control>
+        <div class="focal-point-info" *ngIf="settingFocalPoint">
+            <button class="icon-button" (click)="setFocalPointCancel()">
+                <clr-icon shape="times"></clr-icon>
+            </button>
+            <button class="btn btn-primary btn-sm" (click)="setFocalPointEnd()" [disabled]="!lastFocalPoint">
+                <clr-icon shape="crosshairs"></clr-icon>
+                {{ 'asset.set-focal-point' | translate }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="controls" [class.fade]="settingFocalPoint">
+    <form [formGroup]="form">
+        <clr-input-container class="name-input" *ngIf="editable">
+            <label>{{ 'common.name' | translate }}</label>
+            <input
+                clrInput
+                type="text"
+                formControlName="name"
+                [readonly]="!('UpdateCatalog' | hasPermission) || settingFocalPoint"
+            />
+        </clr-input-container>
+
+        <vdr-labeled-data [label]="'common.name' | translate" *ngIf="!editable">
+            <span class="elide">
+            {{ asset.name }}
+            </span>
+        </vdr-labeled-data>
+
+        <vdr-labeled-data [label]="'asset.source-file' | translate">
+            <a [href]="asset.source" [title]="asset.source" target="_blank" class="elide source-link">{{
+                getSourceFileName()
+            }}</a>
+        </vdr-labeled-data>
+
+        <vdr-labeled-data [label]="'asset.original-asset-size' | translate">
+            {{ asset.fileSize | filesize }}
+        </vdr-labeled-data>
+
+        <vdr-labeled-data [label]="'asset.dimensions' | translate">
+            {{ asset.width }} x {{ asset.height }}
+        </vdr-labeled-data>
+
+        <vdr-labeled-data [label]="'asset.focal-point' | translate">
+            <span *ngIf="fpx"
+                ><clr-icon shape="crosshairs"></clr-icon> x: {{ fpx | number: '1.2-2' }}, y:
+                {{ fpy | number: '1.2-2' }}</span
+            >
+            <span *ngIf="!fpx">{{ 'common.not-set' | translate }}</span>
+            <br />
+            <button
+                class="btn btn-secondary-outline btn-sm"
+                [disabled]="settingFocalPoint"
+                (click)="setFocalPointStart()"
+            >
+                <ng-container *ngIf="!fpx">{{ 'asset.set-focal-point' | translate }}</ng-container>
+                <ng-container *ngIf="fpx">{{ 'asset.update-focal-point' | translate }}</ng-container>
+            </button>
+            <button
+                class="btn btn-warning-outline btn-sm"
+                [disabled]="settingFocalPoint"
+                *ngIf="!!fpx"
+                (click)="removeFocalPoint()"
+            >
+                {{ 'asset.unset-focal-point' | translate }}
+            </button>
+        </vdr-labeled-data>
+    </form>
+    <div class="flex-spacer"></div>
+    <div class="preview-select">
+        <clr-select-container>
+            <label>{{ 'asset.preview' | translate }}</label>
+            <select clrSelect name="options" [(ngModel)]="size" [disabled]="settingFocalPoint">
+                <option value="tiny">tiny</option>
+                <option value="thumb">thumb</option>
+                <option value="small">small</option>
+                <option value="medium">medium</option>
+                <option value="large">large</option>
+                <option value="">full size</option>
+            </select>
+        </clr-select-container>
+        <div class="asset-detail">{{ width }} x {{ height }}</div>
+    </div>
+    <a
+        *ngIf="!editable"
+        class="btn btn-link btn-sm"
+        [routerLink]="['/catalog', 'assets', asset.id]"
+        (click)="editClick.emit()"
+    >
+        <clr-icon shape="edit"></clr-icon> {{ 'common.edit' | translate }}
+    </a>
+</div>

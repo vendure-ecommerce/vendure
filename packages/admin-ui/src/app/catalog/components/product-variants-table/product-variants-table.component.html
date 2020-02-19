@@ -15,7 +15,7 @@
                     <div class="featured-asset">
                         <img
                             *ngIf="variant.featuredAsset"
-                            [src]="variant.featuredAsset!.preview + '?preset=tiny'"
+                            [src]="variant.featuredAsset | assetPreview:'tiny'"
                         />
                         <div class="placeholder" *ngIf="!variant.featuredAsset">
                             <clr-icon shape="image" size="48"></clr-icon>

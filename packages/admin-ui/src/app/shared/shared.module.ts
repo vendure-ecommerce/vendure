@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
@@ -23,6 +24,9 @@ import {
     AssetFileInputComponent,
     AssetGalleryComponent,
     AssetPickerDialogComponent,
+    AssetPreviewComponent,
+    AssetPreviewDialogComponent,
+    AssetPreviewPipe,
     ChannelAssignmentControlComponent,
     ChannelBadgeComponent,
     ChannelLabelPipe,
@@ -48,6 +52,7 @@ import {
     FacetValueChipComponent,
     FacetValueSelectorComponent,
     FileSizePipe,
+    FocalPointControlComponent,
     FormattedAddressComponent,
     FormFieldComponent,
     FormFieldControlDirective,
@@ -83,12 +88,15 @@ const IMPORTS = [
     NgxPaginationModule,
     TranslateModule,
     OverlayModule,
+    DragDropModule,
 ];
 
 const DECLARATIONS = [
     ActionBarComponent,
     ActionBarLeftComponent,
     ActionBarRightComponent,
+    AssetPreviewComponent,
+    AssetPreviewDialogComponent,
     ConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,
@@ -144,6 +152,8 @@ const DECLARATIONS = [
     IfDefaultChannelActiveDirective,
     ExtensionHostComponent,
     CustomFieldLabelPipe,
+    FocalPointControlComponent,
+    AssetPreviewPipe,
 ];
 
 @NgModule({
@@ -158,7 +168,12 @@ const DECLARATIONS = [
         ModalService,
         CanDeactivateDetailGuard,
     ],
-    entryComponents: [ModalDialogComponent, SimpleDialogComponent, AssetPickerDialogComponent],
+    entryComponents: [
+        ModalDialogComponent,
+        SimpleDialogComponent,
+        AssetPickerDialogComponent,
+        AssetPreviewDialogComponent,
+    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

@@ -11,6 +11,12 @@ export const ASSET_FRAGMENT = gql`
         type
         preview
         source
+        width
+        height
+        focalPoint {
+            x
+            y
+        }
     }
 `;
 
@@ -333,9 +339,27 @@ export const GET_ASSET_LIST = gql`
     ${ASSET_FRAGMENT}
 `;
 
+export const GET_ASSET = gql`
+    query GetAsset($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
+            ...Asset
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const UPDATE_ASSET = gql`
+    mutation UpdateAsset($input: UpdateAssetInput!) {
+        updateAsset(input: $input) {
             ...Asset
         }
     }
@@ -350,10 +374,24 @@ export const SEARCH_PRODUCTS = gql`
                 enabled
                 productId
                 productName
-                productPreview
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 productVariantId
                 productVariantName
-                productVariantPreview
+                productVariantAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 sku
                 channelIds
             }

@@ -31,6 +31,7 @@ export class SqljsInitializer implements TestDbInitializer<SqljsConnectionOption
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).synchronize = true;
             await populateFn();
             (this.connectionOptions as Mutable<SqljsConnectionOptions>).autoSave = false;
+            (this.connectionOptions as Mutable<SqljsConnectionOptions>).synchronize = false;
         }
     }
 

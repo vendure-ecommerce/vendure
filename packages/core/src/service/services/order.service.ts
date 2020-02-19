@@ -717,6 +717,11 @@ export class OrderService {
         guestOrder?: Order,
         existingOrder?: Order,
     ): Promise<Order | undefined> {
+        if (guestOrder && guestOrder.customer) {
+            // In this case the "guest order" is actually an order of an existing Customer,
+            // so we do not want to merge at all. See https://github.com/vendure-ecommerce/vendure/issues/263
+            return existingOrder;
+        }
         const mergeResult = await this.orderMerger.merge(guestOrder, existingOrder);
         const { orderToDelete, linesToInsert } = mergeResult;
         let { order } = mergeResult;

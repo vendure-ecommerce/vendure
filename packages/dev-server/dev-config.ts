@@ -72,8 +72,8 @@ export const devConfig: VendureConfig = {
         UiPlugin,
         AdminUiPlugin.init({
             port: 5001,
-            extensions: UiPlugin.uiExtensions,
-            watch: true,
+            // extensions: UiPlugin.uiExtensions,
+            // watch: true,
         }),
     ],
 };
@@ -111,7 +111,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mysql',
                 host: '192.168.99.100',
                 port: 3306,
