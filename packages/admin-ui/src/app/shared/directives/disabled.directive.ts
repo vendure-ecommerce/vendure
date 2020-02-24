@@ -10,7 +10,7 @@ import { FormControl, FormControlName } from '@angular/forms';
 })
 export class DisabledDirective {
     @Input('vdrDisabled') set disabled(val: boolean) {
-        if (!this.formControlName) {
+        if (!this.formControlName || !this.formControlName.control) {
             return;
         }
         if (val === false) {

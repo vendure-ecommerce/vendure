@@ -44,12 +44,6 @@ import { OrderResolver } from './providers/routing/order-resolver';
         SimpleItemListComponent,
         OrderCustomFieldsCardComponent,
     ],
-    entryComponents: [
-        FulfillOrderDialogComponent,
-        RefundOrderDialogComponent,
-        CancelOrderDialogComponent,
-        SettleRefundDialogComponent,
-    ],
     providers: [OrderResolver],
 })
 export class OrderModule {}

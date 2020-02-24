@@ -26,7 +26,7 @@ export class ExtensionHostComponent implements OnInit, AfterViewInit, OnDestroy 
     extensionWindowIsOpen = false;
     private config: ExtensionHostConfig;
     private extensionWindow?: Window;
-    @ViewChild('extensionFrame', { static: false }) private extensionFrame: ElementRef<HTMLIFrameElement>;
+    @ViewChild('extensionFrame') private extensionFrame: ElementRef<HTMLIFrameElement>;
 
     constructor(
         private route: ActivatedRoute,

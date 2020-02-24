@@ -4,13 +4,13 @@ import { Inject, Injectable, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
-import { TranslateMessageFormatCompiler } from 'ngx-translate-messageformat-compiler';
 
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { getDefaultLanguage } from './common/utilities/get-default-language';
 import { CoreModule } from './core/core.module';
 import { CustomHttpTranslationLoader } from './core/providers/i18n/custom-http-loader';
+import { InjectableTranslateMessageFormatCompiler } from './core/providers/i18n/custom-message-format-compiler';
 import { I18nService } from './core/providers/i18n/i18n.service';
 import { DataService } from './data/providers/data.service';
 import { SharedExtensionsModule } from './extensions/shared-extensions.module';
@@ -37,7 +37,7 @@ export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) 
                 useFactory: HttpLoaderFactory,
                 deps: [HttpClient, PlatformLocation],
             },
-            compiler: { provide: TranslateCompiler, useClass: TranslateMessageFormatCompiler },
+            compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
         CoreModule,
         SharedExtensionsModule,

@@ -68,7 +68,7 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
 
     @ViewChild('dropdownComponent', { static: true }) dropdownComponent: DropdownComponent;
     @ViewChild('datetimeInput', { static: true }) datetimeInput: ElementRef<HTMLInputElement>;
-    @ViewChild('calendarTable', { static: false }) calendarTable: ElementRef<HTMLTableElement>;
+    @ViewChild('calendarTable') calendarTable: ElementRef<HTMLTableElement>;
 
     disabled = false;
     calendarView$: Observable<CalendarView>;

@@ -10,6 +10,7 @@ export class DialogButtonsDirective implements OnInit {
     constructor(private modal: ModalDialogComponent<any>, private templateRef: TemplateRef<any>) {}
 
     ngOnInit() {
-        this.modal.registerButtonsTemplate(this.templateRef);
+        // setTimeout due to https://github.com/angular/angular/issues/15634
+        setTimeout(() => this.modal.registerButtonsTemplate(this.templateRef));
     }
 }

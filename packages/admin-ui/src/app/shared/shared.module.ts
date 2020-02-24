@@ -168,12 +168,6 @@ const DECLARATIONS = [
         ModalService,
         CanDeactivateDetailGuard,
     ],
-    entryComponents: [
-        ModalDialogComponent,
-        SimpleDialogComponent,
-        AssetPickerDialogComponent,
-        AssetPreviewDialogComponent,
-    ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class SharedModule {}

@@ -43,8 +43,8 @@ export class ProductAssetsComponent implements AfterViewInit {
     @Input()
     compact = false;
     @Output() change = new EventEmitter<AssetChange>();
-    @ViewChild(CdkDropListGroup, { static: false }) listGroup: CdkDropListGroup<CdkDropList>;
-    @ViewChild(CdkDropList, { static: false }) placeholder: CdkDropList;
+    @ViewChild('dlg', { static: false, read: CdkDropListGroup }) listGroup: CdkDropListGroup<CdkDropList>;
+    @ViewChild('dl', { static: false, read: CdkDropList }) placeholder: CdkDropList;
 
     public target: CdkDropList | null;
     public targetIndex: number;

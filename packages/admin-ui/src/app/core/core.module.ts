@@ -48,6 +48,5 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
         JobListComponent,
         ChannelSwitcherComponent,
     ],
-    entryComponents: [NotificationComponent],
 })
 export class CoreModule {}

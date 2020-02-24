@@ -60,11 +60,6 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         AssignProductsToChannelDialogComponent,
         AssetDetailComponent,
     ],
-    entryComponents: [
-        ApplyFacetDialogComponent,
-        UpdateProductOptionDialogComponent,
-        AssignProductsToChannelDialogComponent,
-    ],
     providers: [
         ProductResolver,
         FacetResolver,

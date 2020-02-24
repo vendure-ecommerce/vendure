@@ -34,7 +34,7 @@ export class CustomFieldControlComponent implements OnInit, AfterViewInit {
     @Input() showLabel = true;
     @Input() readonly = false;
     hasCustomControl = false;
-    @ViewChild('customComponentPlaceholder', { read: ViewContainerRef, static: false })
+    @ViewChild('customComponentPlaceholder', { read: ViewContainerRef })
     private customComponentPlaceholder: ViewContainerRef;
     private customComponentFactory: ComponentFactory<CustomFieldControl> | undefined;
 

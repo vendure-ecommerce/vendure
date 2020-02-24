@@ -44,9 +44,10 @@
 </ng-template>
 
 <ng-template #assetList>
-    <div class="all-assets" [class.compact]="compact" cdkDropListGroup>
+    <div class="all-assets" [class.compact]="compact" cdkDropListGroup #dlg>
         <div
             cdkDropList
+            #dl
             [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
             [cdkDropListEnterPredicate]="dropListEnterPredicate"
             (cdkDropListDropped)="dropListDropped($event)"

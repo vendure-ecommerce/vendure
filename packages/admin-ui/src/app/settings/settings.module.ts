@@ -64,7 +64,6 @@ import { settingsRoutes } from './settings.routes';
         ShippingMethodTestResultComponent,
         ShippingEligibilityTestResultComponent,
     ],
-    entryComponents: [ZoneSelectorDialogComponent],
     providers: [
         TaxCategoryResolver,
         AdministratorResolver,
