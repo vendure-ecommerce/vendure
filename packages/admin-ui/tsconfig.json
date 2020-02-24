@@ -13,7 +13,7 @@
     "strict": true,
     "noImplicitAny": false,
     "strictPropertyInitialization": false,
-    "target": "es5",
+    "target": "es2015",
     "skipLibCheck": true,
     "typeRoots": [
       "node_modules/@types",

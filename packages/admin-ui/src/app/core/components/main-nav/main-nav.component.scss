@@ -1,14 +1,14 @@
 @import "variables";
 
 :host {
-    flex: 0 0 auto;
+    // flex: 0 0 auto;
     order: -1;
     background-color: $color-grey-200;
 }
 
 nav.sidenav {
     height: 100%;
-    width: auto;
+    width: 10.8rem;
 }
 
 .nav-list clr-icon {
