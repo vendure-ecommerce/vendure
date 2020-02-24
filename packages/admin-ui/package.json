@@ -60,7 +60,8 @@
     "zone.js": "^0.10.0"
   },
   "devDependencies": {
-    "@biesbjerg/ngx-translate-extract": "^2.3.4",
+    "@biesbjerg/ngx-translate-extract": "^4.2.0",
+    "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@types/jasmine": "~3.3.16",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "~12.6.9",

@@ -8,6 +8,7 @@ import {
 } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from 'shared/shared-constants';
@@ -15,7 +16,6 @@ import { AdminUiConfig } from 'shared/shared-types';
 
 import { getAppConfig } from '../../app.config';
 import { AuthService } from '../../core/providers/auth/auth.service';
-import { _ } from '../../core/providers/i18n/mark-for-extraction';
 import { LocalStorageService } from '../../core/providers/local-storage/local-storage.service';
 import { NotificationService } from '../../core/providers/notification/notification.service';
 

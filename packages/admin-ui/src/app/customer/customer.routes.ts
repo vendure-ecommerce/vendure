@@ -1,9 +1,9 @@
 import { Route } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
 import { Customer } from '../common/generated-types';
-import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { combineLatest, from, Observable } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { GetChannels, ProductVariantFragment } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { Dialog } from '../../../shared/providers/modal/modal.service';

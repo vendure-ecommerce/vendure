@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanDeactivate, Router, RouterStateSnapshot } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
 
 import { DeactivateAware } from '../../../common/deactivate-aware';
 import { ModalService } from '../modal/modal.service';

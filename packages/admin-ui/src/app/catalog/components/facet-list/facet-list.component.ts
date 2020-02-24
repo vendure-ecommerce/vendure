@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { EMPTY } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { DeletionResult, GetFacetList } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';

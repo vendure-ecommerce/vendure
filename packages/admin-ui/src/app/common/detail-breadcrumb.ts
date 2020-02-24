@@ -1,8 +1,8 @@
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 
 import { BreadcrumbValue } from '../core/components/breadcrumb/breadcrumb.component';
-import { _ } from '../core/providers/i18n/mark-for-extraction';
 
 /**
  * Creates an observable of breadcrumb links for use in the route config of a detail route.

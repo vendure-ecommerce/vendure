@@ -1,4 +1,4 @@
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { DayOfWeek } from './types';
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
-import { _ } from '../../providers/i18n/mark-for-extraction';
 import { NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../providers/nav-builder/nav-builder.service';
 

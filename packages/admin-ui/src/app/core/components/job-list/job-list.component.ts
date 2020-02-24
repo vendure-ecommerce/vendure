@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 
 import { JobInfoFragment } from '../../../common/generated-types';
-import { _ } from '../../providers/i18n/mark-for-extraction';
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
 
 @Component({

@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
@@ -34,7 +35,6 @@ import {
 } from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';

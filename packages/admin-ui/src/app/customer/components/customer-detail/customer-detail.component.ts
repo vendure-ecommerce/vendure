@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { forkJoin, Observable, Subject } from 'rxjs';
 import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
 import { notNullOrUndefined } from 'shared/shared-utils';
@@ -16,7 +17,6 @@ import {
     GetCustomerQuery,
     UpdateCustomerInput,
 } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';

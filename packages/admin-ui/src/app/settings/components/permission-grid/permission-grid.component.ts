@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { Permission } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 
 /**
  * A table showing and allowing the setting of all possible CRUD permissions.

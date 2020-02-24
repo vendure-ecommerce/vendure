@@ -11,11 +11,11 @@ import {
     ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { Asset, UpdateAssetInput } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { Point } from '../focal-point-control/focal-point-control.component';

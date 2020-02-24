@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { createResolveData } from '../common/base-entity-resolver';
 import { detailBreadcrumb } from '../common/detail-breadcrumb';
@@ -11,7 +12,6 @@ import {
     TaxCategory,
     TaxRate,
 } from '../common/generated-types';
-import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';

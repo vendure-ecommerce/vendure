@@ -9,7 +9,6 @@
     "dimensions": "Dimensions",
     "focal-point": "Focal point",
     "notify-create-assets-success": "Created {count, plural, one {new Asset} other {{count} new Assets}}",
-    "open-asset-source": "Open asset source",
     "original-asset-size": "Source size",
     "preview": "Preview",
     "remove-asset": "Remove asset",

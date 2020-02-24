@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { distinctUntilChanged, map, switchMap, take } from 'rxjs/operators';
 
 import { Collection, GetCollectionList } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';

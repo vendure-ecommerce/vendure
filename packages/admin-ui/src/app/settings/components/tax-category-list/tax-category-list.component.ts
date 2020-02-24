@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
 import { DeletionResult, GetTaxCategories, TaxCategory } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { QueryResult } from '../../../data/query-result';

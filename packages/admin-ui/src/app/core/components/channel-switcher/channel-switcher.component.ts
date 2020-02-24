@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
@@ -6,7 +7,6 @@ import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { CurrentUserChannel } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-import { _ } from '../../providers/i18n/mark-for-extraction';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 
 @Component({

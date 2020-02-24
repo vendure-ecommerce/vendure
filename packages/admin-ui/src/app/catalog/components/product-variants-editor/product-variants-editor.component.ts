@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { normalizeString } from 'shared/normalize-string';
@@ -15,7 +16,6 @@ import {
     ProductOptionGroupFragment,
 } from '../../../common/generated-types';
 import { getDefaultLanguage } from '../../../common/utilities/get-default-language';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';

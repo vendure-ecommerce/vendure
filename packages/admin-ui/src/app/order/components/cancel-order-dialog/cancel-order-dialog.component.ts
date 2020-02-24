@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { _ } from 'src/app/core/providers/i18n/mark-for-extraction';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 import { CancelOrderInput, OrderDetailFragment, OrderLineInput } from '../../../common/generated-types';
 import { I18nService } from '../../../core/providers/i18n/i18n.service';

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
 import { map, mergeMap, startWith, switchMap, take, tap } from 'rxjs/operators';
 
 import { Country, DeletionResult, GetCountryList, GetZones, Zone } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../shared/providers/modal/modal.service';

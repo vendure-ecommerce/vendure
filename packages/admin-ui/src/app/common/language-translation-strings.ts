@@ -1,4 +1,4 @@
-import { _ } from '../core/providers/i18n/mark-for-extraction';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 /**
  * The purpose of this file is to simply mark each available language code (as defined in the

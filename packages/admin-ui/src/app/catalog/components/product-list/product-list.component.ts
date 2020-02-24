@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { EMPTY, Observable, of } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { JobState, SearchInput, SearchProducts } from '../../../common/generated-types';
-import { _ } from '../../../core/providers/i18n/mark-for-extraction';
 import { JobQueueService } from '../../../core/providers/job-queue/job-queue.service';
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

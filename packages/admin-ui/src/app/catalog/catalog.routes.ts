@@ -1,4 +1,5 @@
 import { Route } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -12,7 +13,6 @@ import {
     ProductWithVariants,
 } from '../common/generated-types';
 import { BreadcrumbValue } from '../core/components/breadcrumb/breadcrumb.component';
-import { _ } from '../core/providers/i18n/mark-for-extraction';
 import { CanDeactivateDetailGuard } from '../shared/providers/routing/can-deactivate-detail-guard';
 
 import { AssetDetailComponent } from './components/asset-detail/asset-detail.component';
