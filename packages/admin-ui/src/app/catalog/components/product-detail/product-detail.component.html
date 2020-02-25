@@ -45,7 +45,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product">
+<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product" (keydown.enter)="$event.preventDefault()">
     <clr-tabs>
         <clr-tab>
             <button clrTabLink (click)="navigateToTab('details')">
