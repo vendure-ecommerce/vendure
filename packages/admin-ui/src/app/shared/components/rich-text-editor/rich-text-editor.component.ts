@@ -4,16 +4,14 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    HostBinding,
     Input,
     OnDestroy,
     ViewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export interface Trix {
-    editor: any;
-    toolbarElement: any;
-}
+import { ProsemirrorService } from './prosemirror/prosemirror.service';
 
 /**
  * A rich text (HTML) editor based on Trix (https://github.com/basecamp/trix)
@@ -29,58 +27,42 @@ export interface Trix {
             useExisting: RichTextEditorComponent,
             multi: true,
         },
+        ProsemirrorService,
     ],
 })
 export class RichTextEditorComponent implements ControlValueAccessor, AfterViewInit, OnDestroy {
     @Input() label: string;
     @Input() set readonly(value: any) {
         this._readonly = !!value;
-        if (this._readonly) {
-            this.trix.toolbarElement.classList.add('hidden');
-        } else {
-            this.trix.toolbarElement.classList.remove('hidden');
-        }
+        this.prosemirrorService.setEnabled(!this._readonly);
     }
+    @HostBinding('class.readonly')
     _readonly = false;
 
-    id = Math.random()
-        .toString(36)
-        .substr(3);
     onChange: (val: any) => void;
     onTouch: () => void;
-    disabled = false;
-    private initialized = false;
+    private value: string;
 
-    @ViewChild('trixEditor', { static: true }) private trixEditor: ElementRef;
+    @ViewChild('editor', { static: true }) private editorEl: ElementRef<HTMLDivElement>;
 
-    constructor(private changeDetector: ChangeDetectorRef) {}
-
-    get trix(): HTMLElement & Trix {
-        return this.trixEditor ? this.trixEditor.nativeElement : {};
-    }
-
-    onTrixChangeHandler = () => {
-        if (this.initialized) {
-            this.onChange(this.trix.innerHTML);
-            this.changeDetector.markForCheck();
-        }
-    };
-
-    onTrixFocusHandler = () => {
-        if (this.initialized) {
-            this.onTouch();
-            this.changeDetector.markForCheck();
-        }
-    };
+    constructor(private changeDetector: ChangeDetectorRef, private prosemirrorService: ProsemirrorService) {}
 
     ngAfterViewInit() {
-        this.trix.addEventListener('trix-change', this.onTrixChangeHandler);
-        this.trix.addEventListener('trix-focus', this.onTrixFocusHandler);
+        this.prosemirrorService.createEditorView({
+            element: this.editorEl.nativeElement,
+            onTextInput: content => {
+                this.onChange(content);
+                this.changeDetector.markForCheck();
+            },
+            isEditable: () => !this._readonly,
+        });
+        if (this.value) {
+            this.prosemirrorService.update(this.value);
+        }
     }
 
     ngOnDestroy() {
-        this.trix.removeEventListener('trix-change', this.onTrixChangeHandler);
-        this.trix.removeEventListener('trix-focus', this.onTrixFocusHandler);
+        this.prosemirrorService.destroy();
     }
 
     registerOnChange(fn: any) {
@@ -92,17 +74,13 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
     }
 
     setDisabledState(isDisabled: boolean) {
-        this.disabled = isDisabled;
+        this.prosemirrorService.setEnabled(!isDisabled);
     }
 
     writeValue(value: any) {
-        if (this.trix.innerHTML !== value || value === '') {
-            if (!this.initialized) {
-                setTimeout(() => {
-                    this.trix.editor.loadHTML(value);
-                    this.initialized = true;
-                });
-            }
+        this.value = value;
+        if (this.prosemirrorService) {
+            this.prosemirrorService.update(value);
         }
     }
 }

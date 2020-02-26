@@ -1,0 +1,33 @@
+<div class="flex">
+    <form [formGroup]="form" class="flex-spacer" clrForm clrLayout="vertical">
+        <clr-input-container class="expand">
+            <label>{{ 'editor.image-src' | translate }}</label>
+            <input clrInput type="text" formControlName="src" />
+        </clr-input-container>
+        <clr-input-container class="expand">
+            <label>{{ 'editor.image-title' | translate }}</label>
+            <input clrInput type="text" formControlName="title" />
+        </clr-input-container>
+        <clr-input-container class="expand">
+            <label>{{ 'editor.image-alt' | translate }}</label>
+            <input clrInput type="text" formControlName="alt" />
+        </clr-input-container>
+    </form>
+    <div class="preview">
+        <img
+            [src]="form.get('src')?.value"
+            [class.visible]="previewLoaded"
+            (load)="onImageLoad($event)"
+            (error)="onImageError($event)"
+        />
+        <div class="placeholder" *ngIf="!previewLoaded">
+            <clr-icon shape="image" size="128"></clr-icon>
+        </div>
+    </div>
+</div>
+
+<ng-template vdrDialogButtons>
+    <button type="submit" (click)="select()" class="btn btn-primary" [disabled]="form.invalid || !previewLoaded">
+        {{ 'editor.insert-image' | translate }}
+    </button>
+</ng-template>

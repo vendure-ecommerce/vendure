@@ -59,6 +59,10 @@ export { ObjectTreeComponent } from './components/object-tree/object-tree.compon
 export { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 export { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
 export { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
+export {
+    ExternalImageDialogComponent,
+} from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
+export { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
 export { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 export { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 export { TableRowActionComponent } from './components/table-row-action/table-row-action.component';

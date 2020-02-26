@@ -46,6 +46,17 @@ input, select {
     }
 }
 
+// Add the "expand" class to make the input container full width
+clr-input-container.expand {
+    .clr-control-container {
+        width: 100%;
+
+        input {
+            width: 100%;
+        }
+    }
+}
+
 .clr-input {
     max-height: none !important;
 }

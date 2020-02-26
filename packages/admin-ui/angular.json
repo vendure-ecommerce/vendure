@@ -37,11 +37,7 @@
             ],
             "styles": [
               "../../node_modules/@clr/icons/clr-icons.min.css",
-              "src/styles/styles.scss",
-              "../../node_modules/trix/dist/trix.css"
-            ],
-            "scripts": [
-              "../../node_modules/trix/dist/trix-core.js"
+              "src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -98,11 +94,7 @@
               "buildOptimizer": true,
               "styles": [
                 "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../trix/dist/trix-core.js"
+                "src/styles/styles.scss"
               ]
             },
             "plugin-watch": {
@@ -115,11 +107,7 @@
               "aot": false,
               "styles": [
                 "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../trix/dist/trix-core.js"
+                "src/styles/styles.scss"
               ]
             },
             "plugin-dev": {
@@ -132,11 +120,7 @@
               "aot": false,
               "styles": [
                 "../../node_modules/@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../node_modules/trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../node_modules/trix/dist/trix-core.js"
+                "src/styles/styles.scss"
               ]
             }
           }

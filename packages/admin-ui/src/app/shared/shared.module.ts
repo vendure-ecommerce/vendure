@@ -49,6 +49,7 @@ import {
     DropdownTriggerDirective,
     EntityInfoComponent,
     ExtensionHostComponent,
+    ExternalImageDialogComponent,
     FacetValueChipComponent,
     FacetValueSelectorComponent,
     FileSizePipe,
@@ -63,6 +64,7 @@ import {
     ItemsPerPageControlsComponent,
     LabeledDataComponent,
     LanguageSelectorComponent,
+    LinkDialogComponent,
     ModalDialogComponent,
     ObjectTreeComponent,
     OrderStateLabelComponent,
@@ -154,6 +156,8 @@ const DECLARATIONS = [
     CustomFieldLabelPipe,
     FocalPointControlComponent,
     AssetPreviewPipe,
+    LinkDialogComponent,
+    ExternalImageDialogComponent,
 ];
 
 @NgModule({

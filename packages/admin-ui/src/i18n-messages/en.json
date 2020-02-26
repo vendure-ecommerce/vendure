@@ -239,6 +239,16 @@
     "weekday-tu": "Tu",
     "weekday-we": "We"
   },
+  "editor": {
+    "image-alt": "Description (alt)",
+    "image-src": "Source",
+    "image-title": "Title",
+    "insert-image": "Insert image",
+    "link-href": "Link href",
+    "link-title": "Link title",
+    "remove-link": "Remove",
+    "set-link": "Set link"
+  },
   "error": {
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
