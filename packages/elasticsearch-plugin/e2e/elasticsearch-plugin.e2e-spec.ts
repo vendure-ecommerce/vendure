@@ -441,7 +441,7 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 });
 
-                expect(search2.items.map(i => i.sku)).toEqual([
+                expect(search2.items.map(i => i.sku).sort()).toEqual([
                     'IHD455T2_updated',
                     'IHD455T3_updated',
                     'IHD455T4_updated',
@@ -469,7 +469,13 @@ describe('Elasticsearch plugin', () => {
 
             it('updates index when a Product is deleted', async () => {
                 const { search } = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
-                expect(search.items.map(i => i.productId)).toEqual(['T_3', 'T_5', 'T_6', 'T_2', 'T_4']);
+                expect(search.items.map(i => i.productId).sort()).toEqual([
+                    'T_2',
+                    'T_3',
+                    'T_4',
+                    'T_5',
+                    'T_6',
+                ]);
                 await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
                     id: 'T_5',
                 });
@@ -478,7 +484,7 @@ describe('Elasticsearch plugin', () => {
                     facetValueIds: ['T_2'],
                     groupByProduct: true,
                 });
-                expect(search2.items.map(i => i.productId)).toEqual(['T_3', 'T_6', 'T_2', 'T_4']);
+                expect(search2.items.map(i => i.productId).sort()).toEqual(['T_2', 'T_3', 'T_4', 'T_6']);
             });
 
             it('updates index when a Collection is changed', async () => {
@@ -629,6 +635,31 @@ describe('Elasticsearch plugin', () => {
 
                 expect(search2.items[0].productAsset!.id).toBe('T_1');
                 expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
+            });
+
+            it('does not include deleted ProductVariants in index', async () => {
+                const { search: s1 } = await doAdminSearchQuery({
+                    term: 'hard drive',
+                    groupByProduct: false,
+                });
+
+                const variantToDelete = s1.items.find(i => i.sku === 'IHD455T2_updated')!;
+
+                const { deleteProductVariant } = await adminClient.query<
+                    DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables
+                >(DELETE_PRODUCT_VARIANT, { id: variantToDelete.productVariantId });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search } = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                    SEARCH_GET_PRICES,
+                    { input: { term: 'hard drive', groupByProduct: true } },
+                );
+                expect(search.items[0].price).toEqual({
+                    min: 7896,
+                    max: 13435,
+                });
             });
 
             it('returns disabled field when not grouped', async () => {
