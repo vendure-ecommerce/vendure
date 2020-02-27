@@ -31,6 +31,7 @@
     "@angular/platform-browser": "^9.0.2",
     "@angular/platform-browser-dynamic": "^9.0.2",
     "@angular/router": "^9.0.2",
+    "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@clr/angular": "^3.0.0-rc.1",
     "@clr/core": "^3.0.0-rc.1",
     "@clr/icons": "^3.0.0-rc.1",
@@ -72,7 +73,6 @@
   },
   "devDependencies": {
     "@biesbjerg/ngx-translate-extract": "^4.2.0",
-    "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
     "@types/jasmine": "~3.3.16",
     "@types/jasminewd2": "~2.0.6",
     "@types/node": "^12.11.1",
