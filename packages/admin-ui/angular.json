@@ -91,7 +91,7 @@
               "aot": false,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true,
+              "buildOptimizer": false,
               "styles": [
                 "../../@clr/icons/clr-icons.min.css",
                 "src/styles/styles.scss"
@@ -111,6 +111,27 @@
               ]
             },
             "plugin-dev": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "styles": [
+                "../../node_modules/@clr/icons/clr-icons.min.css",
+                "src/styles/styles.scss"
+              ]
+            },
+            "plugin-dev-watch": {
               "budgets": [
                 {
                   "type": "anyComponentStyle",
@@ -138,7 +159,7 @@
               "browserTarget": "vendure-admin:build:plugin-watch"
             },
             "plugin-dev": {
-              "browserTarget": "vendure-admin:build:plugin-dev"
+              "browserTarget": "vendure-admin:build:plugin-dev-watch"
             }
           }
         },
