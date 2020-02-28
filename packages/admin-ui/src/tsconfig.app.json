@@ -6,7 +6,7 @@
   "files": [
     "main.ts",
     "polyfills.ts",
-    "index.ts"
+    "public-api.ts"
   ],
   "include": [
     "src/**/*.d.ts"

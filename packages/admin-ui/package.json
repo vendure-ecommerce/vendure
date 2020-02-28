@@ -18,13 +18,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "~0.900.3",
     "@angular/animations": "^9.0.2",
     "@angular/cdk": "^9.0.1",
-    "@angular/cli": "^9.0.3",
     "@angular/common": "^9.0.2",
-    "@angular/compiler": "^9.0.2",
-    "@angular/compiler-cli": "^9.0.2",
     "@angular/core": "^9.0.2",
     "@angular/forms": "^9.0.2",
     "@angular/language-service": "^9.0.2",
@@ -72,6 +68,11 @@
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
+    "@angular/cli": "^9.0.3",
+    "@angular/compiler": "^9.0.2",
+    "@angular/compiler-cli": "^9.0.2",
+    "@angular-devkit/build-angular": "~0.900.3",
+    "@angular-devkit/build-ng-packagr": "~0.900.4",
     "@biesbjerg/ngx-translate-extract": "^4.2.0",
     "@types/jasmine": "~3.3.16",
     "@types/jasminewd2": "~2.0.6",
@@ -89,6 +90,7 @@
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.2",
     "karma-mocha-reporter": "^2.2.5",
+    "ng-packagr": "^9.0.0",
     "protractor": "~5.4.2",
     "puppeteer": "^1.19.0",
     "rimraf": "^3.0.0",

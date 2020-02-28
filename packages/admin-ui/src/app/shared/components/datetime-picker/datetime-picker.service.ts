@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
-import * as dayjs from 'dayjs';
+import * as _dayjs from 'dayjs';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { dayOfWeekIndex } from './constants';
 import { CalendarView, DayCell, DayOfWeek } from './types';
 
+const dayjs = _dayjs;
+
 @Injectable()
 export class DatetimePickerService {
     calendarView$: Observable<CalendarView>;
     selected$: Observable<Date | null>;
     viewing$: Observable<Date>;
-    private selectedDatetime$ = new BehaviorSubject<dayjs.Dayjs | null>(null);
-    private viewingDatetime$ = new BehaviorSubject<dayjs.Dayjs>(dayjs());
+    private selectedDatetime$ = new BehaviorSubject<_dayjs.Dayjs | null>(null);
+    private viewingDatetime$ = new BehaviorSubject<_dayjs.Dayjs>(dayjs());
     private weekStartDayIndex: number;
-    private min: dayjs.Dayjs | null = null;
-    private max: dayjs.Dayjs | null = null;
+    private min: _dayjs.Dayjs | null = null;
+    private max: _dayjs.Dayjs | null = null;
     private jumping = false;
 
     constructor() {
@@ -43,9 +45,9 @@ export class DatetimePickerService {
         }
     }
 
-    selectDatetime(date: Date | string | dayjs.Dayjs | null) {
-        let viewingValue: dayjs.Dayjs;
-        let selectedValue: dayjs.Dayjs | null = null;
+    selectDatetime(date: Date | string | _dayjs.Dayjs | null) {
+        let viewingValue: _dayjs.Dayjs;
+        let selectedValue: _dayjs.Dayjs | null = null;
         if (date == null) {
             viewingValue = dayjs();
         } else {
@@ -134,7 +136,7 @@ export class DatetimePickerService {
         this.viewingDatetime$.next(current.year(year));
     }
 
-    private generateCalendarView(viewing: dayjs.Dayjs, selected: dayjs.Dayjs | null): CalendarView {
+    private generateCalendarView(viewing: _dayjs.Dayjs, selected: _dayjs.Dayjs | null): CalendarView {
         if (!viewing.isValid() || (selected && !selected.isValid())) {
             return [];
         }
@@ -219,7 +221,7 @@ export class DatetimePickerService {
         return calendarView;
     }
 
-    private isInBounds(date: dayjs.Dayjs): boolean {
+    private isInBounds(date: _dayjs.Dayjs): boolean {
         if (this.min && this.min.isAfter(date)) {
             return false;
         }
