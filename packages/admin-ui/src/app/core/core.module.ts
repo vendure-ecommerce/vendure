@@ -1,7 +1,13 @@
+import { PlatformLocation } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
+import { getDefaultLanguage } from '../common/utilities/get-default-language';
 import { DataModule } from '../data/data.module';
+import { DataService } from '../data/providers/data.service';
 import { SharedModule } from '../shared/shared.module';
 
 import { AppShellComponent } from './components/app-shell/app-shell.component';
@@ -16,6 +22,8 @@ import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { AuthService } from './providers/auth/auth.service';
 import { CustomFieldComponentService } from './providers/custom-field-component/custom-field-component.service';
 import { AuthGuard } from './providers/guard/auth.guard';
+import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader';
+import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
 import { JobQueueService } from './providers/job-queue/job-queue.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
@@ -24,7 +32,20 @@ import { NotificationService } from './providers/notification/notification.servi
 import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 
 @NgModule({
-    imports: [DataModule, SharedModule, BrowserAnimationsModule],
+    imports: [
+        BrowserModule,
+        DataModule,
+        SharedModule,
+        BrowserAnimationsModule,
+        TranslateModule.forRoot({
+            loader: {
+                provide: TranslateLoader,
+                useFactory: HttpLoaderFactory,
+                deps: [HttpClient, PlatformLocation],
+            },
+            compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
+        }),
+    ],
     exports: [SharedModule, OverlayHostComponent],
     providers: [
         LocalStorageService,
@@ -49,4 +70,15 @@ import { OverlayHostService } from './providers/overlay-host/overlay-host.servic
         ChannelSwitcherComponent,
     ],
 })
-export class CoreModule {}
+export class CoreModule {
+    constructor(private dataService: DataService, private i18nService: I18nService) {
+        this.dataService.client.setUiLanguage(getDefaultLanguage());
+        this.i18nService.setDefaultLanguage(getDefaultLanguage());
+    }
+}
+
+export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) {
+    // Dynamically get the baseHref, which is configured in the angular.json file
+    const baseHref = location.getBaseHrefFromDOM();
+    return new CustomHttpTranslationLoader(http, baseHref + 'i18n-messages/');
+}

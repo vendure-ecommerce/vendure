@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "yarn reset-extensions && ng build --prod && yarn build:compiler",
+    "build:library": "node build-public-api.js && ng build vendure-admin-lib",
     "watch": "ng build --watch=true",
     "build:compiler": "tsc -p tsconfig.compiler.json",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
@@ -17,6 +18,15 @@
   "publishConfig": {
     "access": "public"
   },
+  "main": "library/bundles/vendure-admin-ui.umd.js",
+  "module": "library/fesm5/vendure-admin-ui.js",
+  "es2015": "library/fesm2015/vendure-admin-ui.js",
+  "esm5": "library/esm5/vendure-admin-ui.js",
+  "esm2015": "library/esm2015/vendure-admin-ui.js",
+  "fesm5": "library/fesm5/vendure-admin-ui.js",
+  "fesm2015": "library/fesm2015/vendure-admin-ui.js",
+  "typings": "library/vendure-admin-ui.d.ts",
+  "sideEffects": false,
   "dependencies": {
     "@angular/animations": "^9.0.2",
     "@angular/cdk": "^9.0.1",
