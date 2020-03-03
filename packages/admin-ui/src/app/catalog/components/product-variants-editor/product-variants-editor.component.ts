@@ -60,7 +60,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }>;
     variantFormValues: { [id: string]: VariantInfo } = {};
     product: GetProductVariantOptions.Product;
-    private currencyCode: CurrencyCode;
+    currencyCode: CurrencyCode;
     private languageCode: LanguageCode;
 
     constructor(

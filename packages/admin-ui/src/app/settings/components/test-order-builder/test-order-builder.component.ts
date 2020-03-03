@@ -81,7 +81,7 @@ export class TestOrderBuilderComponent implements OnInit {
         }
     }
 
-    private updateQuantity() {
+    updateQuantity() {
         this.persistToLocalStorage();
         this.orderLinesChange.emit(this.lines);
     }

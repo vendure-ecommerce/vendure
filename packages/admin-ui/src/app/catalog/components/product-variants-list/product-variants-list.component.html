@@ -2,7 +2,7 @@
     <div
         class="variant-container card"
         *ngFor="let variant of variants; let i = index"
-        [class.disabled]="!formArray.get([i, 'enabled']).value"
+        [class.disabled]="!formArray.get([i, 'enabled'])!.value"
     >
         <ng-container [formGroup]="formArray.at(i)">
             <div class="card-block header-row">

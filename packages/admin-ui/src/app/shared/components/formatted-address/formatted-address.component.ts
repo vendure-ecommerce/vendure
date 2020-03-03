@@ -10,4 +10,16 @@ import { AddressFragment, OrderAddress } from '../../../common/generated-types';
 })
 export class FormattedAddressComponent {
     @Input() address: AddressFragment | OrderAddress;
+
+    getCountryName(): string {
+        if (this.isAddressFragment(this.address)) {
+            return this.address.country.name;
+        } else {
+            return this.address.country || '';
+        }
+    }
+
+    private isAddressFragment(input: AddressFragment | OrderAddress): input is AddressFragment {
+        return typeof input.country !== 'string';
+    }
 }

@@ -18,7 +18,7 @@
 </vdr-action-bar>
 
 <vdr-asset-gallery
-    [assets]="items$ | async | paginate: (paginationConfig$ | async) || {}"
+    [assets]="(items$ | async)! | paginate: (paginationConfig$ | async) || {}"
     [multiSelect]="true"
 ></vdr-asset-gallery>
 

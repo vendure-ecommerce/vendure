@@ -50,14 +50,14 @@
             #dl
             [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
             [cdkDropListEnterPredicate]="dropListEnterPredicate"
-            (cdkDropListDropped)="dropListDropped($event)"
+            (cdkDropListDropped)="dropListDropped()"
         ></div>
         <div
             *ngFor="let asset of assets"
             cdkDropList
             [cdkDropListDisabled]="!('UpdateCatalog' | hasPermission)"
             [cdkDropListEnterPredicate]="dropListEnterPredicate"
-            (cdkDropListDropped)="dropListDropped($event)"
+            (cdkDropListDropped)="dropListDropped()"
         >
             <vdr-dropdown cdkDrag (cdkDragMoved)="dragMoved($event)">
                 <div

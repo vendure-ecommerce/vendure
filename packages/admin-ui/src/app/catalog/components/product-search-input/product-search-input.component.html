@@ -12,11 +12,11 @@
     <ng-template ng-header-tmp>
         <div
             class="search-header"
-            *ngIf="selectComponent.filterValue"
+            *ngIf="selectComponent.searchTerm"
             [class.selected]="isSearchHeaderSelected()"
             (click)="selectComponent.selectTag()"
         >
-            {{ 'catalog.search-for-term' | translate }}: {{ selectComponent.filterValue }}
+            {{ 'catalog.search-for-term' | translate }}: {{ selectComponent.searchTerm }}
         </div>
     </ng-template>
     <ng-template ng-label-tmp let-item="item" let-clear="clear">

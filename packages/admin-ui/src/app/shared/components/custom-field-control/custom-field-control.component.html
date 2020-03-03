@@ -24,7 +24,7 @@
         *ngIf="isTextInput"
         type="text"
         [id]="customField.name"
-        [pattern]="customField.pattern"
+        [pattern]="$any(customField).pattern"
         [formControl]="formGroup.get(customField.name)"
         [readonly]="readonly || customField.readonly"
     />

@@ -203,7 +203,7 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
         this.datetimePickerService.selectMinute(parseInt(target.value, 10));
     }
 
-    private closeDatepicker() {
+    closeDatepicker() {
         this.dropdownComponent.toggleOpen();
         this.datetimeInput.nativeElement.focus();
     }

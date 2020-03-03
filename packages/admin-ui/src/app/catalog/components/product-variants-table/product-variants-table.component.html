@@ -10,7 +10,7 @@
     <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
     <ng-template let-variant="item" let-i="index">
         <ng-container [formGroup]="formArray.at(i)">
-            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <div class="card-img">
                     <div class="featured-asset">
                         <img
@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </td>
-            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <clr-input-container>
                     <input
                         clrInput
@@ -34,7 +34,7 @@
                     />
                 </clr-input-container>
             </td>
-            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <clr-input-container>
                     <input
                         clrInput
@@ -48,13 +48,13 @@
             <ng-container *ngFor="let option of variant.options | sort: 'groupId'">
                 <td
                     class="left align-middle"
-                    [class.disabled]="!formArray.get([i, 'enabled']).value"
+                    [class.disabled]="!formArray.get([i, 'enabled'])!.value"
                     [style.color]="optionGroupName(option.groupId) | stringToColor"
                 >
                     {{ option.name }}
                 </td>
             </ng-container>
-            <td class="left align-middle price" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle price" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <clr-input-container>
                     <vdr-currency-input
                         clrInput
@@ -64,7 +64,7 @@
                     ></vdr-currency-input>
                 </clr-input-container>
             </td>
-            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <clr-input-container>
                     <input
                         clrInput
@@ -76,7 +76,7 @@
                     />
                 </clr-input-container>
             </td>
-            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled']).value">
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
                 <clr-toggle-wrapper>
                     <input
                         type="checkbox"

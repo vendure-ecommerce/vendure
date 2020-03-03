@@ -7,7 +7,7 @@
     <li *ngIf="address.postalCode">{{ address.postalCode }}</li>
     <li *ngIf="address.country">
         <clr-icon shape="world" size="12"></clr-icon>
-        {{ address.country.name ? address.country.name : address.country }}
+        {{ getCountryName() }}
     </li>
     <li *ngIf="address.phoneNumber">
         <clr-icon shape="phone-handset" size="12"></clr-icon>

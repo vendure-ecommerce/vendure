@@ -36,9 +36,9 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     detailForm: FormGroup;
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];
-    selectedChecker?: ConfigurableOperation;
+    selectedChecker?: ConfigurableOperation | null;
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
-    selectedCalculator?: ConfigurableOperation;
+    selectedCalculator?: ConfigurableOperation | null;
     selectedCalculatorDefinition?: ConfigurableOperationDefinition;
     activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     testAddress: TestAddress;
