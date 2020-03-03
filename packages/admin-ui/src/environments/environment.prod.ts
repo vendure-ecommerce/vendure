@@ -1,7 +1,7 @@
-import { getVersion } from './get-version';
+import { ADMIN_UI_VERSION } from './version';
 
 declare function require(path: string): any;
 export const environment = {
     production: true,
-    version: getVersion(),
+    version: ADMIN_UI_VERSION,
 };

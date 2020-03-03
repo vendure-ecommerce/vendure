@@ -7,7 +7,7 @@ const path = require('path');
 
 console.log('Generating public api...');
 const SOURCES_DIR = path.join(__dirname, 'src/app');
-const APP_SOURCE_FILE_PATTERN = /\.(pipe|service|component|module|routes|directive|guard)\.ts$/;
+const APP_SOURCE_FILE_PATTERN = /\.(pipe|service|component|module|routes|directive|guard|config)\.ts$/;
 const files = [];
 const publicApiFilePath = path.join(__dirname, 'src');
 forMatchingFiles(SOURCES_DIR, APP_SOURCE_FILE_PATTERN, filename => {

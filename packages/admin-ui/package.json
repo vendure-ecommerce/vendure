@@ -4,16 +4,16 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "yarn reset-extensions && ng build --prod && yarn build:compiler",
-    "build:library": "node build-public-api.js && ng build vendure-admin-lib",
+    "start": "node scripts/set-version.js && ng serve",
+    "build": "yarn reset-extensions && ng build --prod",
+    "build:library": "node scripts/set-version.js && node scripts/build-public-api.js && ng build vendure-admin-lib --prod",
     "watch": "ng build --watch=true",
     "build:compiler": "tsc -p tsconfig.compiler.json",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "lint": "tslint --fix",
     "reset-extensions": "rimraf ./src/app/extensions/modules && rimraf ./src/app/extensions/*.generated && rimraf ./src/app/extensions/*.temp",
     "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _",
-    "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
+    "ngcc": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
   },
   "publishConfig": {
     "access": "public"
@@ -37,10 +37,11 @@
     "@angular/platform-browser": "^9.0.2",
     "@angular/platform-browser-dynamic": "^9.0.2",
     "@angular/router": "^9.0.2",
+    "@vendure/common": "^0.9.0",
     "@biesbjerg/ngx-translate-extract-marker": "^1.0.0",
-    "@clr/angular": "^3.0.0-rc.1",
-    "@clr/core": "^3.0.0-rc.1",
-    "@clr/icons": "^3.0.0-rc.1",
+    "@clr/angular": "^3.0.0",
+    "@clr/core": "^3.0.0",
+    "@clr/icons": "^3.0.0",
     "@clr/ui": "^3.0.0-rc.1",
     "@ng-select/ng-select": "^3.7.2",
     "@ngx-translate/core": "^11.0.1",
