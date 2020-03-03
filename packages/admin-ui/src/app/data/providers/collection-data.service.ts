@@ -1,6 +1,6 @@
+import { pick } from '@vendure/common/lib/pick';
 import { from } from 'rxjs';
 import { bufferCount, concatMap } from 'rxjs/operators';
-import { pick } from 'shared/pick';
 
 import {
     CollectionFilterParameter,

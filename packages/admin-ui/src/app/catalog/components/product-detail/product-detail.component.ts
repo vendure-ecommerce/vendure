@@ -3,6 +3,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { unique } from '@vendure/common/lib/unique';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     distinctUntilChanged,
@@ -13,11 +17,6 @@ import {
     takeUntil,
     withLatestFrom,
 } from 'rxjs/operators';
-import { normalizeString } from 'shared/normalize-string';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
-import { notNullOrUndefined } from 'shared/shared-utils';
-import { unique } from 'shared/unique';
-import { IGNORE_CAN_DEACTIVATE_GUARD } from 'src/app/shared/providers/routing/can-deactivate-detail-guard';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {
@@ -39,6 +38,7 @@ import { NotificationService } from '../../../core/providers/notification/notifi
 import { DataService } from '../../../data/providers/data.service';
 import { ServerConfigService } from '../../../data/server-config';
 import { ModalService } from '../../../shared/providers/modal/modal.service';
+import { IGNORE_CAN_DEACTIVATE_GUARD } from '../../../shared/providers/routing/can-deactivate-detail-guard';
 import { ProductDetailService } from '../../providers/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';

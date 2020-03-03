@@ -6,7 +6,7 @@ import {
     Injector,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Type } from 'shared/shared-types';
+import { Type } from '@vendure/common/lib/shared-types';
 
 import { CustomFields, CustomFieldsFragment } from '../../../common/generated-types';
 export type CustomFieldConfig = CustomFieldsFragment;

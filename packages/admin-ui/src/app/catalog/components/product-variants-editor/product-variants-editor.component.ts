@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
-import { normalizeString } from 'shared/normalize-string';
-import { generateAllCombinations, notNullOrUndefined } from 'shared/shared-utils';
 
 import { DeactivateAware } from '../../../common/deactivate-aware';
 import {

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
 @Component({
     selector: 'vdr-channel-badge',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { unique } from 'shared/unique';
+import { unique } from '@vendure/common/lib/unique';
 
 import { OrderDetail } from '../../../common/generated-types';
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
 import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
-import { normalizeString } from 'shared/normalize-string';
-import { notNullOrUndefined } from 'shared/shared-utils';
 
 import {
     CreateProductInput,

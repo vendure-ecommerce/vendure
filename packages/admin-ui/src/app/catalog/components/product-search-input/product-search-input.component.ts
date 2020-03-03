@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
-import { notNullOrUndefined } from 'shared/shared-utils';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { SearchProducts } from '../../../common/generated-types';
 

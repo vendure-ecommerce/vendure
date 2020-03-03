@@ -1,4 +1,4 @@
-import { AdminUiConfig } from 'shared/shared-types';
+import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 
 import { LanguageCode } from './common/generated-types';
 

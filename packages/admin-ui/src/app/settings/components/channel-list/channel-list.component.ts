@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { EMPTY, Observable, Subject } from 'rxjs';
 import { mergeMap, startWith, switchMap } from 'rxjs/operators';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { Channel } from '../../../common/generated-types';
 import { NotificationService } from '../../../core/providers/notification/notification.service';

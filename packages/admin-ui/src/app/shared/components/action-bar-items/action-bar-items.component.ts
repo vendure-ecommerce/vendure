@@ -8,9 +8,9 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { assertNever } from 'shared/shared-utils';
 
 import { ActionBarItem } from '../../../core/providers/nav-builder/nav-builder-types';
 import { NavBuilderService } from '../../../core/providers/nav-builder/nav-builder.service';

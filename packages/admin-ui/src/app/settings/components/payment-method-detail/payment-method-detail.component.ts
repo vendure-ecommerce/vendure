@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { ConfigArgSubset, ConfigArgType } from '@vendure/common/lib/shared-types';
 import { mergeMap, take } from 'rxjs/operators';
-import { ConfigArgSubset, ConfigArgType } from 'shared/shared-types';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import { ConfigArg, PaymentMethod, UpdatePaymentMethodInput } from '../../../common/generated-types';

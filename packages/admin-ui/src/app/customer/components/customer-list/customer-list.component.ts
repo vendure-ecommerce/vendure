@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { debounceTime, takeUntil } from 'rxjs/operators';
-import { SortOrder } from 'shared/generated-shop-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { GetCustomerList } from '../../../common/generated-types';

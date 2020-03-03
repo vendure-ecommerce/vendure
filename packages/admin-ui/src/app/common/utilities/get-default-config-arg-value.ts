@@ -1,5 +1,5 @@
-import { ConfigArgType } from 'shared/shared-types';
-import { assertNever } from 'shared/shared-utils';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { ConfigArg, ConfigArgDefinition } from '../generated-types';
 

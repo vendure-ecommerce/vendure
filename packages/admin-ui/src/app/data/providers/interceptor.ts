@@ -9,10 +9,10 @@ import {
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
+import { AdminUiConfig } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from 'shared/shared-constants';
-import { AdminUiConfig } from 'shared/shared-types';
 
 import { getAppConfig } from '../../app.config';
 import { AuthService } from '../../core/providers/auth/auth.service';

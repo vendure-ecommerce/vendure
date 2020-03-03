@@ -7,7 +7,7 @@ import {
     OnInit,
     Output,
 } from '@angular/core';
-import { notNullOrUndefined } from 'shared/shared-utils';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 /**
  * A component for selecting files to upload as new Assets.

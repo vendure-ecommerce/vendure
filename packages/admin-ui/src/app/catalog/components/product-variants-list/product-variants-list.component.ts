@@ -11,8 +11,8 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormArray } from '@angular/forms';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Subscription } from 'rxjs';
-import { notNullOrUndefined } from 'shared/shared-utils';
 
 import {
     CustomFieldConfig,

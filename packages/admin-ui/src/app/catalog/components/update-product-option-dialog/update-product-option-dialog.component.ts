@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { normalizeString } from 'shared/normalize-string';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 
 import { ProductVariant, UpdateProductOptionInput } from '../../../common/generated-types';
 import { createUpdatedTranslatable } from '../../../common/utilities/create-updated-translatable';

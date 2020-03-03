@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { omit } from '@vendure/common/lib/omit';
 import { Observable, of, Subject } from 'rxjs';
 import { startWith, switchMap, take } from 'rxjs/operators';
-import { omit } from 'shared/omit';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {

@@ -1,7 +1,7 @@
 import { ComponentFactoryResolver, Injectable, ViewContainerRef } from '@angular/core';
+import { Type } from '@vendure/common/lib/shared-types';
 import { from, Observable, of } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
-import { Type } from 'shared/shared-types';
 
 import { OverlayHostService } from '../../../core/providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../components/modal-dialog/modal-dialog.component';

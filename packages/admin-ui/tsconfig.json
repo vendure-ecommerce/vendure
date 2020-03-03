@@ -25,10 +25,6 @@
       "es2017",
       "dom",
       "esnext.asynciterable"
-    ],
-    "paths": {
-      "shared/*": ["../common/lib/*"],
-      "@vendure/admin-ui/src/*": ["./src/*"]
-    }
+    ]
   }
 }

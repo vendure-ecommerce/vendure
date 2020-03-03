@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable, of } from 'rxjs';
 import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { CurrentUserChannel, CurrentUserFragment, SetAsLoggedIn } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';

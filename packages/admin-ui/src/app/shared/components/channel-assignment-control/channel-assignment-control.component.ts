@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { CurrentUserChannel } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';

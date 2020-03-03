@@ -6,10 +6,10 @@ import {
     Router,
     RouterStateSnapshot,
 } from '@angular/router';
+import { Type } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Observable, of } from 'rxjs';
 import { filter, map, shareReplay, take, takeUntil } from 'rxjs/operators';
-import { Type } from 'shared/shared-types';
-import { notNullOrUndefined } from 'shared/shared-utils';
 
 export interface EntityResolveData<R> extends ResolveData {
     entity: Type<BaseEntityResolver<R>>;

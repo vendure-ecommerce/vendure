@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap, switchMap, take } from 'rxjs/operators';
-import { normalizeString } from 'shared/normalize-string';
-import { notNullOrUndefined } from 'shared/shared-utils';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {

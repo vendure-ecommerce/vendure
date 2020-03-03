@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, map, takeUntil } from 'rxjs/operators';
-import { SortOrder } from 'shared/generated-shop-types';
 
 import { BaseListComponent } from '../../../common/base-list.component';
 import { GetAssetList } from '../../../common/generated-types';

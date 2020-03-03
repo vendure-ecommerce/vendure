@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take } from 'rxjs/operators';
-import { DEFAULT_CHANNEL_CODE } from 'shared/shared-constants';
 
 import { BaseDetailComponent } from '../../../common/base-detail.component';
 import {

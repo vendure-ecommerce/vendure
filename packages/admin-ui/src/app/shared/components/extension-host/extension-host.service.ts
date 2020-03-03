@@ -1,9 +1,9 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { ExtensionMesssage, MessageResponse } from '@vendure/common/lib/extension-host-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { parse } from 'graphql';
 import { merge, Observer, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { assertNever } from 'shared/shared-utils';
 
 import { NotificationService } from '../../../core/providers/notification/notification.service';
 import { DataService } from '../../../data/providers/data.service';

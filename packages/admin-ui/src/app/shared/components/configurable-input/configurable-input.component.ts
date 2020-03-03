@@ -20,10 +20,10 @@ import {
     Validator,
     Validators,
 } from '@angular/forms';
+import { StringFieldOption } from '@vendure/common/lib/generated-types';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subscription } from 'rxjs';
-import { StringFieldOption } from 'shared/generated-types';
-import { ConfigArgType } from 'shared/shared-types';
-import { assertNever } from 'shared/shared-utils';
 
 import {
     ConfigArg,

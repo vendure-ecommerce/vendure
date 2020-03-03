@@ -1,4 +1,4 @@
-import { pick } from 'shared/pick';
+import { pick } from '@vendure/common/lib/pick';
 
 import {
     CreateFacet,

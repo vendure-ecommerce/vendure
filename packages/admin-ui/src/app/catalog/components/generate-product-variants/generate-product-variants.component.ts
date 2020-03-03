@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { generateAllCombinations } from 'shared/shared-utils';
+import { generateAllCombinations } from '@vendure/common/lib/shared-utils';
 
 import { CurrencyCode } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';

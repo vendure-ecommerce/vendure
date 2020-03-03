@@ -1,6 +1,6 @@
 import { CustomFieldConfig } from '@vendure/common/lib/generated-types';
+import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { DocumentNode, getOperationAST, NamedTypeNode, TypeNode } from 'graphql';
-import { simpleDeepClone } from 'shared/simple-deep-clone';
 
 const CREATE_ENTITY_REGEX = /Create([A-Za-z]+)Input/;
 const UPDATE_ENTITY_REGEX = /Update([A-Za-z]+)Input/;

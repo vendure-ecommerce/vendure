@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { CurrencyCode } from 'shared/generated-types';
+import { CurrencyCode } from '@vendure/common/lib/generated-types';
 
 import { OrderDetail } from '../../../common/generated-types';
 

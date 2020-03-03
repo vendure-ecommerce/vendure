@@ -5,8 +5,11 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
+import '@clr/icons';
+import '@clr/icons/shapes/all-shapes';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TranslateModule } from '@ngx-translate/core';
+import '@webcomponents/custom-elements/custom-elements.min.js';
 import { NgxPaginationModule } from 'ngx-pagination';
 
 import { ActionBarItemsComponent } from './components/action-bar-items/action-bar-items.component';
@@ -77,66 +80,6 @@ import { SortPipe } from './pipes/sort.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { ModalService } from './providers/modal/modal.service';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
-/*import {
-    AffixedInputComponent,
-    AssetFileInputComponent,
-    AssetGalleryComponent,
-    AssetPickerDialogComponent,
-    AssetPreviewComponent,
-    AssetPreviewDialogComponent,
-    AssetPreviewPipe,
-    ChannelAssignmentControlComponent,
-    ChannelBadgeComponent,
-    ChannelLabelPipe,
-    ChipComponent,
-    ConfigurableInputComponent,
-    CurrencyInputComponent,
-    CurrencyNamePipe,
-    CustomerLabelComponent,
-    CustomFieldControlComponent,
-    CustomFieldLabelPipe,
-    DataTableColumnComponent,
-    DataTableComponent,
-    DatetimePickerComponent,
-    DialogButtonsDirective,
-    DialogComponentOutletComponent,
-    DialogTitleDirective,
-    DropdownComponent,
-    DropdownItemDirective,
-    DropdownMenuComponent,
-    DropdownTriggerDirective,
-    EntityInfoComponent,
-    ExtensionHostComponent,
-    ExternalImageDialogComponent,
-    FacetValueChipComponent,
-    FacetValueSelectorComponent,
-    FileSizePipe,
-    FocalPointControlComponent,
-    FormattedAddressComponent,
-    FormFieldComponent,
-    FormFieldControlDirective,
-    FormItemComponent,
-    IfDefaultChannelActiveDirective,
-    IfMultichannelDirective,
-    IfPermissionsDirective,
-    ItemsPerPageControlsComponent,
-    LabeledDataComponent,
-    LanguageSelectorComponent,
-    LinkDialogComponent,
-    ModalDialogComponent,
-    ObjectTreeComponent,
-    OrderStateLabelComponent,
-    PaginationControlsComponent,
-    PercentageSuffixInputComponent,
-    RichTextEditorComponent,
-    SelectToggleComponent,
-    SentenceCasePipe,
-    SimpleDialogComponent,
-    SortPipe,
-    StringToColorPipe,
-    TableRowActionComponent,
-    TitleInputComponent,
-} from './shared-declarations';*/
 
 const IMPORTS = [
     ClarityModule,

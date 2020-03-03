@@ -11,7 +11,7 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { unique } from 'shared/unique';
+import { unique } from '@vendure/common/lib/unique';
 
 import { Asset } from '../../../common/generated-types';
 import { AssetPickerDialogComponent } from '../../../shared/components/asset-picker-dialog/asset-picker-dialog.component';

@@ -1,5 +1,5 @@
-import { CustomFieldsObject, CustomFieldType } from 'shared/shared-types';
-import { assertNever } from 'shared/shared-utils';
+import { CustomFieldsObject, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { CustomFieldConfig, LanguageCode } from '../generated-types';
 
