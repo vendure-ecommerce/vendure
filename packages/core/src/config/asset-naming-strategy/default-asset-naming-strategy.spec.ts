@@ -18,6 +18,9 @@ describe('DefaultAssetNamingStrategy', () => {
             expect(strategy.generateSourceFileName('foo.jpg', 'foo__09.jpg')).toBe('foo__10.jpg');
             expect(strategy.generateSourceFileName('foo.jpg', 'foo__99.jpg')).toBe('foo__100.jpg');
             expect(strategy.generateSourceFileName('foo.jpg', 'foo__999.jpg')).toBe('foo__1000.jpg');
+
+            expect(strategy.generateSourceFileName('ext45000000000505', 'ext45000000000505')).toBe('ext45000000000505__02');
+            expect(strategy.generateSourceFileName('ext45000000000505', 'ext45000000000505_002')).toBe('ext45000000000505__03');
         });
     });
 
