@@ -1,11 +1,9 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-
-import { AppShellComponent } from './core/components/app-shell/app-shell.component';
-import { AuthGuard } from './core/providers/guard/auth.guard';
+import { AppShellComponent, AuthGuard } from '@vendure/admin-ui/core';
 
 export const routes: Route[] = [
-    { path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule) },
+    { path: 'login', loadChildren: () => import('@vendure/admin-ui/login').then(m => m.LoginModule) },
     {
         path: '',
         canActivate: [AuthGuard],
@@ -17,27 +15,27 @@ export const routes: Route[] = [
             {
                 path: '',
                 pathMatch: 'full',
-                loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
+                loadChildren: () => import('@vendure/admin-ui/dashboard').then(m => m.DashboardModule),
             },
             {
                 path: 'catalog',
-                loadChildren: () => import('./catalog/catalog.module').then(m => m.CatalogModule),
+                loadChildren: () => import('@vendure/admin-ui/catalog').then(m => m.CatalogModule),
             },
             {
                 path: 'customer',
-                loadChildren: () => import('./customer/customer.module').then(m => m.CustomerModule),
+                loadChildren: () => import('@vendure/admin-ui/customer').then(m => m.CustomerModule),
             },
             {
                 path: 'orders',
-                loadChildren: () => import('./order/order.module').then(m => m.OrderModule),
+                loadChildren: () => import('@vendure/admin-ui/order').then(m => m.OrderModule),
             },
             {
                 path: 'marketing',
-                loadChildren: () => import('./marketing/marketing.module').then(m => m.MarketingModule),
+                loadChildren: () => import('@vendure/admin-ui/marketing').then(m => m.MarketingModule),
             },
             {
                 path: 'settings',
-                loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule),
+                loadChildren: () => import('@vendure/admin-ui/settings').then(m => m.SettingsModule),
             },
         ],
     },

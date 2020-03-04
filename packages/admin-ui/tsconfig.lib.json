@@ -18,6 +18,7 @@
   },
   "exclude": [
     "src/test.ts",
-    "**/*.spec.ts"
+    "src/testing/*.ts",
+    "src/**/*.spec.ts"
   ]
 }

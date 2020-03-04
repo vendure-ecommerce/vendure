@@ -1,21 +1,21 @@
 {
   "name": "@vendure/admin-ui",
-  "version": "0.9.8",
+  "version": "0.9.11",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
     "start": "node scripts/set-version.js && ng serve",
-    "build": "yarn reset-extensions && ng build --prod",
-    "build:library": "node scripts/set-version.js && node scripts/build-public-api.js && ng build vendure-admin-lib --prod",
+    "build:app": "ng build --prod",
+    "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && ng build vendure-admin-lib --prod",
     "watch": "ng build --watch=true",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "lint": "tslint --fix",
-    "reset-extensions": "rimraf ./src/app/extensions/modules && rimraf ./src/app/extensions/*.generated && rimraf ./src/app/extensions/*.temp",
-    "extract-translations": "ngx-translate-extract --input ./src --output ./src/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _",
+    "extract-translations": "ngx-translate-extract --input ./src/lib --output ./src/lib/static/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _",
     "ngcc": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "directory": "dist"
   },
   "main": "./library/bundles/vendure-admin-ui.umd.js",
   "module": "./library/fesm5/vendure-admin-ui.js",

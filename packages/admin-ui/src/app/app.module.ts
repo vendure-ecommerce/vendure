@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AppComponent, AppComponentModule } from '@vendure/admin-ui/core';
 
-import { AppComponent } from './app.component';
-import { AppComponentModule } from './app.component.module';
 import { routes } from './app.routes';
 
 @NgModule({
