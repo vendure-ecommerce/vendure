@@ -2,7 +2,6 @@
   "extends": "./tsconfig.lib.json",
   "angularCompilerOptions": {
     "enableIvy": false,
-    "annotateForClosureCompiler": true,
     "skipTemplateCodegen": true,
     "strictMetadataEmit": true,
     "fullTemplateTypeCheck": true,

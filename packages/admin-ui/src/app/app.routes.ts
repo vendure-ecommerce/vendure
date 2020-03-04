@@ -39,11 +39,6 @@ export const routes: Route[] = [
                 path: 'settings',
                 loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule),
             },
-            {
-                path: 'extensions',
-                loadChildren: () =>
-                    import(`./extensions/lazy-extensions.module`).then(m => m.LazyExtensionsModule),
-            },
         ],
     },
 ];

@@ -5,3 +5,5 @@ dist
 *.spec.ts
 src/app/extensions/modules
 src/app/extensions/*.generated
+scripts
+/src
