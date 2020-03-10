@@ -20,7 +20,6 @@ import { RefundStateLabelComponent } from './components/refund-state-label/refun
 import { SettleRefundDialogComponent } from './components/settle-refund-dialog/settle-refund-dialog.component';
 import { SimpleItemListComponent } from './components/simple-item-list/simple-item-list.component';
 import { orderRoutes } from './order.routes';
-import { OrderResolver } from './providers/routing/order-resolver';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild(orderRoutes)],
@@ -43,6 +42,5 @@ import { OrderResolver } from './providers/routing/order-resolver';
         SimpleItemListComponent,
         OrderCustomFieldsCardComponent,
     ],
-    providers: [OrderResolver],
 })
 export class OrderModule {}

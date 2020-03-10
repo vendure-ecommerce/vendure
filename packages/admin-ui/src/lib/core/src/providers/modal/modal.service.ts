@@ -56,7 +56,9 @@ export interface ModalOptions<T> {
  * This service is responsible for instantiating a ModalDialog component and
  * embedding the specified component within.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ModalService {
     constructor(
         private componentFactoryResolver: ComponentFactoryResolver,

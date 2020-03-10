@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { Role } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class RoleResolver extends BaseEntityResolver<Role.Fragment> {
     constructor(router: Router, dataService: DataService) {
         super(

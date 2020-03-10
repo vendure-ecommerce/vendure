@@ -7,7 +7,9 @@ import { map } from 'rxjs/operators';
 /**
  * This guard prevents loggen-in users from navigating to the login screen.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class LoginGuard implements CanActivate {
     constructor(private router: Router, private authService: AuthService) {}
 

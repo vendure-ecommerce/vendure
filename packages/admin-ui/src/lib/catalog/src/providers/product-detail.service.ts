@@ -1,9 +1,4 @@
 import { Injectable } from '@angular/core';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
-
 import {
     CreateProductInput,
     CreateProductVariantInput,
@@ -18,13 +13,20 @@ import {
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
+import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
+
 import { CreateProductVariantsConfig } from '../components/generate-product-variants/generate-product-variants.component';
 
 /**
  * Handles the logic for making the API calls to perform CRUD operations on a Product and its related
  * entities. This logic was extracted out of the component because it became too large and hard to follow.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class ProductDetailService {
     private facetsSubject = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
 

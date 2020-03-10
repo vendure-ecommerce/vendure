@@ -10,7 +10,9 @@ import { ActionBarItem, NavMenuItem, NavMenuSection, RouterLinkDefinition } from
 /**
  * This service is used to define the contents of configurable menus in the application.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class NavBuilderService {
     navMenuConfig$: Observable<NavMenuSection[]>;
     actionBarConfig$: Observable<ActionBarItem[]>;
@@ -107,9 +109,7 @@ export class NavBuilderService {
                     if (!section) {
                         // tslint:disable-next-line:no-console
                         console.error(
-                            `Could not add menu item "${item.config.id}", section "${
-                                item.sectionId
-                            }" does not exist`,
+                            `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
                         );
                     } else {
                         const index = section.items.findIndex(i => i.id === item.before);

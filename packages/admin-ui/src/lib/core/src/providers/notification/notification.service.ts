@@ -18,7 +18,9 @@ const TOAST_DURATION = 3000;
 /**
  * Provides toast notification functionality.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class NotificationService {
     private get hostView(): Promise<ViewContainerRef> {
         return this.overlayHostService.getHostView();

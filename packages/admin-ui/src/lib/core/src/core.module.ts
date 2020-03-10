@@ -17,17 +17,9 @@ import { UiLanguageSwitcherComponent } from './components/ui-language-switcher/u
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { DataModule } from './data/data.module';
 import { DataService } from './data/providers/data.service';
-import { AuthService } from './providers/auth/auth.service';
-import { CustomFieldComponentService } from './providers/custom-field-component/custom-field-component.service';
-import { AuthGuard } from './providers/guard/auth.guard';
 import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader';
 import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
-import { JobQueueService } from './providers/job-queue/job-queue.service';
-import { LocalStorageService } from './providers/local-storage/local-storage.service';
-import { NavBuilderService } from './providers/nav-builder/nav-builder.service';
-import { NotificationService } from './providers/notification/notification.service';
-import { OverlayHostService } from './providers/overlay-host/overlay-host.service';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
@@ -46,17 +38,6 @@ import { SharedModule } from './shared/shared.module';
         }),
     ],
     exports: [SharedModule, OverlayHostComponent],
-    providers: [
-        LocalStorageService,
-        AuthGuard,
-        AuthService,
-        I18nService,
-        OverlayHostService,
-        NotificationService,
-        JobQueueService,
-        NavBuilderService,
-        CustomFieldComponentService,
-    ],
     declarations: [
         AppShellComponent,
         UserMenuComponent,

@@ -5,7 +5,9 @@ import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/ope
 import { JobInfoFragment, JobState } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class JobQueueService implements OnDestroy {
     activeJobs$: Observable<JobInfoFragment[]>;
 

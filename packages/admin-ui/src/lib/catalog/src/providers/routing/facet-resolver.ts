@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { FacetWithValues } from '@vendure/admin-ui/core';
 import { getDefaultLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> {
     constructor(router: Router, dataService: DataService) {
         super(

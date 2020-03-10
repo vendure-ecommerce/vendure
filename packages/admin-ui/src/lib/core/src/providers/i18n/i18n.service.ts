@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+
 import { LanguageCode } from '../../common/generated-types';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class I18nService {
     constructor(private ngxTranslate: TranslateService) {}
 

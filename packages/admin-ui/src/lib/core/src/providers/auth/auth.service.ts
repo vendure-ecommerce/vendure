@@ -11,7 +11,9 @@ import { LocalStorageService } from '../local-storage/local-storage.service';
 /**
  * This service handles logic relating to authentication of the current user.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AuthService {
     constructor(
         private localStorageService: LocalStorageService,

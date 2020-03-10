@@ -8,7 +8,9 @@ const PREFIX = 'vnd_';
 /**
  * Wrapper around the browser's LocalStorage / SessionStorage object, for persisting data to the browser.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class LocalStorageService {
     constructor(private location: Location) {}
     /**

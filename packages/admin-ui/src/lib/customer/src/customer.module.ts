@@ -7,7 +7,6 @@ import { CustomerDetailComponent } from './components/customer-detail/customer-d
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerStatusLabelComponent } from './components/customer-status-label/customer-status-label.component';
 import { customerRoutes } from './customer.routes';
-import { CustomerResolver } from './providers/routing/customer-resolver';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild(customerRoutes)],
@@ -17,7 +16,6 @@ import { CustomerResolver } from './providers/routing/customer-resolver';
         CustomerStatusLabelComponent,
         AddressCardComponent,
     ],
-    providers: [CustomerResolver],
     exports: [AddressCardComponent],
 })
 export class CustomerModule {}

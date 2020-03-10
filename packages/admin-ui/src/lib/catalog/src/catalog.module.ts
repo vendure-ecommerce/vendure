@@ -25,12 +25,6 @@ import { ProductVariantsListComponent } from './components/product-variants-list
 import { ProductVariantsTableComponent } from './components/product-variants-table/product-variants-table.component';
 import { UpdateProductOptionDialogComponent } from './components/update-product-option-dialog/update-product-option-dialog.component';
 import { VariantPriceDetailComponent } from './components/variant-price-detail/variant-price-detail.component';
-import { ProductDetailService } from './providers/product-detail.service';
-import { AssetResolver } from './providers/routing/asset-resolver';
-import { CollectionResolver } from './providers/routing/collection-resolver';
-import { FacetResolver } from './providers/routing/facet-resolver';
-import { ProductResolver } from './providers/routing/product-resolver';
-import { ProductVariantsResolver } from './providers/routing/product-variants-resolver';
 
 @NgModule({
     imports: [SharedModule, RouterModule.forChild(catalogRoutes)],
@@ -58,14 +52,6 @@ import { ProductVariantsResolver } from './providers/routing/product-variants-re
         ProductVariantsEditorComponent,
         AssignProductsToChannelDialogComponent,
         AssetDetailComponent,
-    ],
-    providers: [
-        ProductResolver,
-        FacetResolver,
-        CollectionResolver,
-        ProductDetailService,
-        ProductVariantsResolver,
-        AssetResolver,
     ],
 })
 export class CatalogModule {}

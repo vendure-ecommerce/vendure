@@ -9,7 +9,9 @@ import { AuthService } from '../auth/auth.service';
  * This guard prevents unauthorized users from accessing any routes which require
  * authorization.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class AuthGuard implements CanActivate {
     constructor(private router: Router, private authService: AuthService) {}
 

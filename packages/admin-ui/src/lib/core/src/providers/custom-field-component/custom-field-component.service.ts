@@ -21,7 +21,9 @@ export type CustomFieldEntityName = Exclude<keyof CustomFields, '__typename'>;
 /**
  * This service allows the registration of custom controls for customFields.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class CustomFieldComponentService {
     private registry: { [K in CustomFieldEntityName]?: { [name: string]: Type<CustomFieldControl> } } = {};
 

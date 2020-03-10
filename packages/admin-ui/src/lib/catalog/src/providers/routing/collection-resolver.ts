@@ -5,7 +5,9 @@ import { Collection, ProductWithVariants } from '@vendure/admin-ui/core';
 import { getDefaultLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> {
     constructor(router: Router, dataService: DataService) {
         super(

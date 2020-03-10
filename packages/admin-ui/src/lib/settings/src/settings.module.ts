@@ -25,15 +25,6 @@ import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.c
 import { TestAddressFormComponent } from './components/test-address-form/test-address-form.component';
 import { TestOrderBuilderComponent } from './components/test-order-builder/test-order-builder.component';
 import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/zone-selector-dialog.component';
-import { AdministratorResolver } from './providers/routing/administrator-resolver';
-import { ChannelResolver } from './providers/routing/channel-resolver';
-import { CountryResolver } from './providers/routing/country-resolver';
-import { GlobalSettingsResolver } from './providers/routing/global-settings-resolver';
-import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
-import { RoleResolver } from './providers/routing/role-resolver';
-import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
-import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
-import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 import { settingsRoutes } from './settings.routes';
 
 @NgModule({
@@ -62,17 +53,6 @@ import { settingsRoutes } from './settings.routes';
         TestAddressFormComponent,
         ShippingMethodTestResultComponent,
         ShippingEligibilityTestResultComponent,
-    ],
-    providers: [
-        TaxCategoryResolver,
-        AdministratorResolver,
-        RoleResolver,
-        CountryResolver,
-        TaxRateResolver,
-        ChannelResolver,
-        ShippingMethodResolver,
-        PaymentMethodResolver,
-        GlobalSettingsResolver,
     ],
 })
 export class SettingsModule {}

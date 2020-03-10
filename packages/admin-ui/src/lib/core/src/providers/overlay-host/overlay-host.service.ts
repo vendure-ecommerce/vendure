@@ -5,7 +5,9 @@ import { Injectable, ViewContainerRef } from '@angular/core';
  * OverlayHost component, so that other components may insert components & elements
  * into the DOM at that point.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class OverlayHostService {
     private hostView: ViewContainerRef;
     private promiseResolveFns: Array<(result: any) => void> = [];
