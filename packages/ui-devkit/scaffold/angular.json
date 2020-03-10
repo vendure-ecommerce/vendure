@@ -28,10 +28,14 @@
               "src/favicon.ico",
               "src/vendure-ui-config.json",
               "src/assets",
-              "src/i18n-messages"
+              "src/i18n-messages",
+              {
+                "glob": "**/*.*",
+                "input": "src/extensions/static-assets",
+                "output": "assets"
+              }
             ],
             "styles": [
-              "../../node_modules/@clr/icons/clr-icons.min.css",
               "src/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
@@ -49,6 +53,12 @@
                   "maximumWarning": "6kb"
                 }
               ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environment.ts",
+                  "with": "src/environment.prod.ts"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": true,
@@ -57,7 +67,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
+              "buildOptimizer": false
             }
           }
         },

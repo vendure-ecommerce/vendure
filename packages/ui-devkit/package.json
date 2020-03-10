@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "0.9.8",
+  "version": "0.9.0",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
@@ -14,18 +14,20 @@
     "lib": "lib"
   },
   "files": [
-    "lib",
+    "client",
+    "compiler",
     "scaffold"
   ],
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "main": "client/index.js",
+  "types": "client/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/vendure-ecommerce/vendure.git"
   },
   "scripts": {
-    "build": "rimraf ./lib && rollup -c rollup.config.js --configProduction",
-    "build:compiler": "tsc -p tsconfig.compiler.json",
+    "build:client": "rimraf ./client && rollup -c rollup.config.js --configProduction",
+    "build:compiler": "rimraf ./compiler && tsc -p tsconfig.compiler.json",
+    "build": "yarn build:client && yarn build:compiler",
     "watch": "rimraf ./lib && rollup -c rollup.config.js -w",
     "lint": "tslint --fix --project ./"
   },

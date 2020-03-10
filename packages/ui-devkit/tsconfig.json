@@ -3,7 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "importHelpers": true,
-    "outDir": "./lib",
+    "outDir": "./client",
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
@@ -19,6 +19,6 @@
     ]
   },
   "files": [
-    "./src/index.ts"
+    "./src/client/index.ts"
   ]
 }

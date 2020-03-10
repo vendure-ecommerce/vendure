@@ -1,6 +1,5 @@
-import { Watcher } from '@vendure/admin-ui/compiler/watch';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
-import { AdminUiConfig, AdminUiExtension, Type } from '@vendure/common/lib/shared-types';
+import { AdminUiApp, AdminUiAppDevMode, AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
 import {
     AuthOptions,
     ConfigService,
@@ -17,8 +16,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { UI_PATH } from './constants';
-import { UiAppCompiler } from './ui-app-compiler.service';
+import { DEFAULT_APP_PATH, loggerCtx } from './constants';
 
 /**
  * @description
@@ -29,6 +27,11 @@ import { UiAppCompiler } from './ui-app-compiler.service';
 export interface AdminUiOptions {
     /**
      * @description
+     * The port on which the server will listen. If not
+     */
+    port: number;
+    /**
+     * @description
      * The hostname of the server serving the static admin ui files.
      *
      * @default 'localhost'
@@ -36,9 +39,11 @@ export interface AdminUiOptions {
     hostname?: string;
     /**
      * @description
-     * The port on which the server will listen.
+     * By default, the AdminUiPlugin comes bundles with a pre-built version of the
+     * Admin UI. This option can be used to override this default build with a different
+     * version, e.g. one pre-compiled with one or more ui extensions.
      */
-    port: number;
+    app?: AdminUiApp | AdminUiAppDevMode;
     /**
      * @description
      * The hostname of the Vendure server which the admin ui will be making API calls
@@ -57,22 +62,6 @@ export interface AdminUiOptions {
      * @default 'auto'
      */
     apiPort?: number | 'auto';
-    /**
-     * @description
-     * An optional array of objects which configure extension Angular modules
-     * to be compiled into and made available by the AdminUi application.
-     */
-    extensions?: AdminUiExtension[];
-    /**
-     * @description
-     * Set to `true` in order to run the Admin UI in development mode (using the Angular CLI
-     * [ng serve](https://angular.io/cli/serve) command). When in watch mode, any changes to
-     * UI extension files will be watched and trigger a rebuild of the Admin UI with live
-     * reloading.
-     *
-     * @default false
-     */
-    watch?: boolean;
 }
 
 /**
@@ -106,15 +95,15 @@ export interface AdminUiOptions {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [UiAppCompiler],
+    providers: [],
     configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
     private server: Server;
-    private watcher: Watcher | undefined;
+    private devServerClose: () => void | Promise<void> | undefined;
 
-    constructor(private configService: ConfigService, private appCompiler: UiAppCompiler) {}
+    constructor(private configService: ConfigService) {}
 
     /**
      * @description
@@ -128,19 +117,29 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     static async configure(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
         const route = 'admin';
+        const { app } = this.options;
+        const appWatchMode = this.isDevModeApp(app);
+        let port: number;
+        if (this.isDevModeApp(app)) {
+            port = app.port;
+        } else {
+            port = this.options.port;
+        }
         config.middleware.push({
             handler: createProxyHandler({
-                ...this.options,
+                hostname: this.options.hostname,
+                port,
                 route: 'admin',
                 label: 'Admin UI',
-                basePath: this.options.watch ? 'admin' : undefined,
+                basePath: appWatchMode ? 'admin' : undefined,
             }),
             route,
         });
-        if (this.options.watch) {
+        if (this.isDevModeApp(app)) {
             config.middleware.push({
                 handler: createProxyHandler({
-                    ...this.options,
+                    hostname: this.options.hostname,
+                    port,
                     route: 'sockjs-node',
                     label: 'Admin UI live reload',
                     basePath: 'sockjs-node',
@@ -154,35 +153,52 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureBootstrap() {
         const { adminApiPath, authOptions } = this.configService;
-        const { apiHost, apiPort, extensions, watch, port } = AdminUiPlugin.options;
-        let adminUiConfigPath: string;
+        const { apiHost, apiPort, port, app } = AdminUiPlugin.options;
+        const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
+            ? app.sourcePath
+            : (app && app.path) || DEFAULT_APP_PATH;
+        const adminUiConfigPath = path.join(adminUiAppPath, 'vendure-ui-config.json');
+        const overwriteConfig = () =>
+            this.overwriteAdminUiConfig({
+                host: apiHost || 'auto',
+                port: apiPort || 'auto',
+                adminApiPath,
+                authOptions,
+                adminUiConfigPath,
+            });
 
-        if (watch) {
-            this.watcher = this.appCompiler.watchAdminUiApp(extensions, port);
-            adminUiConfigPath = path.join(__dirname, '../../../admin-ui/src', 'vendure-ui-config.json');
-        } else {
-            const adminUiPath = await this.appCompiler.compileAdminUiApp(extensions);
+        if (!AdminUiPlugin.isDevModeApp(app)) {
+            // If not in dev mode, start a static server for the compiled app
             const adminUiServer = express();
-            adminUiServer.use(express.static(UI_PATH));
+            adminUiServer.use(express.static(adminUiAppPath));
             adminUiServer.use((req, res) => {
-                res.sendFile(path.join(UI_PATH, 'index.html'));
+                res.sendFile(path.join(adminUiAppPath, 'index.html'));
             });
             this.server = adminUiServer.listen(AdminUiPlugin.options.port);
-            adminUiConfigPath = path.join(UI_PATH, 'vendure-ui-config.json');
+            if (app && typeof app.compile === 'function') {
+                Logger.info(`Compiling Admin UI app in production mode`, loggerCtx);
+                app.compile()
+                    .then(overwriteConfig)
+                    .then(() => {
+                        Logger.info(`Admin UI successfully compiled`);
+                    });
+            } else {
+                await overwriteConfig();
+            }
+        } else {
+            Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
+            app.compile()
+                .then(overwriteConfig)
+                .then(() => {
+                    Logger.info(`Admin UI successfully compiled and watching for changes...`);
+                });
         }
-        await this.overwriteAdminUiConfig({
-            host: apiHost || 'auto',
-            port: apiPort || 'auto',
-            adminApiPath,
-            authOptions,
-            adminUiConfigPath,
-        });
     }
 
     /** @internal */
     async onVendureClose(): Promise<void> {
-        if (this.watcher) {
-            this.watcher.close();
+        if (this.devServerClose) {
+            await this.devServerClose();
         }
         if (this.server) {
             await new Promise(resolve => this.server.close(() => resolve()));
@@ -213,6 +229,14 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         config.adminApiPath = adminApiPath;
         config.tokenMethod = authOptions.tokenMethod || 'cookie';
         config.authTokenHeaderKey = authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY;
+        Logger.verbose(`Applying configuration to vendure-ui-config.json file`, loggerCtx);
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
+    }
+
+    private static isDevModeApp(app?: AdminUiApp | AdminUiAppDevMode): app is AdminUiAppDevMode {
+        if (!app) {
+            return false;
+        }
+        return typeof (app as any).close === 'function' && typeof (app as any).sourcePath === 'string';
     }
 }

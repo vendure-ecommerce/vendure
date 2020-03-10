@@ -92,6 +92,49 @@ export interface AdminUiConfig {
 
 /**
  * @description
+ * Configures the path to a custom-build of the Admin UI app.
+ *
+ * @docsCategory common
+ */
+export interface AdminUiApp {
+    /**
+     * @description
+     * The path to the compiled admin ui app files. If not specified, an internal
+     * default build is used. This path should contain the `vendure-ui-config.json` file,
+     * index.html, the compiled js bundles etc.
+     */
+    path: string;
+    compile?: () => Promise<void>;
+}
+
+/**
+ * @description
+ * Information about the Admin UI app dev server.
+ *
+ * @docsCategory common
+ */
+export interface AdminUiAppDevMode {
+    /**
+     * @description
+     * The path to the uncompiled ui app source files. This path should contain the `vendure-ui-config.json` file.
+     */
+    sourcePath: string;
+    /**
+     * @description
+     * The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
+     */
+    port: number;
+    compile: () => Promise<void>;
+    /**
+     * @description
+     * If this function is specified, it will be invoked when the plugin closes. Intended for
+     * ensuring the dev server is shut down as part of the AdminUiPlugin lifecycle.
+     */
+    onClose?: () => void | Promise<void>;
+}
+
+/**
+ * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -120,7 +163,7 @@ export interface AdminUiExtension {
      * @description
      * One or more Angular modules which extend the default Admin UI.
      */
-    ngModules: AdminUiExtensionModule[];
+    ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
 
     /**
      * @description
@@ -136,17 +179,46 @@ export interface AdminUiExtension {
  *
  * @docsCategory AdminUiPlugin
  */
-export interface AdminUiExtensionModule {
+export interface AdminUiExtensionSharedModule {
     /**
      * @description
-     * Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
-     * modules which define new views for the Admin UI.
-     *
      * Shared modules are directly imported into the main AppModule of the Admin UI
      * and should be used to declare custom form components and define custom
      * navigation items.
      */
-    type: 'shared' | 'lazy';
+    type: 'shared';
+    /**
+     * @description
+     * The name of the file containing the extension module class.
+     */
+    ngModuleFileName: string;
+    /**
+     * @description
+     * The name of the extension module class.
+     */
+    ngModuleName: string;
+}
+
+/**
+ * @description
+ * Configuration defining a single NgModule with which to extend the Admin UI.
+ *
+ * @docsCategory AdminUiPlugin
+ */
+export interface AdminUiExtensionLazyModule {
+    /**
+     * @description
+     * Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
+     * modules which define new views for the Admin UI.
+     */
+    type: 'lazy';
+    /**
+     * @description
+     * The route specifies the route at which the module will be lazy-loaded. E.g. a value
+     * of `'foo'` will cause the module to lazy-load when the `/extensions/foo` route
+     * is activated.
+     */
+    route: string;
     /**
      * @description
      * The name of the file containing the extension module class.

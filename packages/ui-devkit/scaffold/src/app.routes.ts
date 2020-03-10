@@ -1,18 +1,11 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { AppShellComponent, AuthGuard } from '@vendure/admin-ui/core';
 
-// Using TS "import" results in the following error when building with the Angular CLI:
-// "Error: <path>\node_modules\@vendure\admin-ui\library\app\app.module.d.ts is missing from the
-// TypeScript compilation. Please make sure it is in your tsconfig via the 'files' or 'include' property."
-// tslint:disable:no-var-requires
-declare const require: any;
-const { AppShellComponent, AuthGuard } = require('@vendure/admin-ui');
+import { extensionRoutes } from './extension.routes';
 
 export const routes: Route[] = [
-    {
-        path: 'login',
-        loadChildren: () => import('./routing/login-wrapper.module').then(m => m.LoginWrapperModule),
-    },
+    { path: 'login', loadChildren: () => import('@vendure/admin-ui/login').then(m => m.LoginModule) },
     {
         path: '',
         canActivate: [AuthGuard],
@@ -24,33 +17,29 @@ export const routes: Route[] = [
             {
                 path: '',
                 pathMatch: 'full',
-                loadChildren: () =>
-                    import('./routing/dashboard-wrapper.module').then(m => m.DashboardWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/dashboard').then(m => m.DashboardModule),
             },
             {
                 path: 'catalog',
-                loadChildren: () =>
-                    import('./routing/catalog-wrapper.module').then(m => m.CatalogWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/catalog').then(m => m.CatalogModule),
             },
             {
                 path: 'customer',
-                loadChildren: () =>
-                    import('./routing/customer-wrapper.module').then(m => m.CustomerWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/customer').then(m => m.CustomerModule),
             },
             {
                 path: 'orders',
-                loadChildren: () => import('./routing/order-wrapper.module').then(m => m.OrderWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/order').then(m => m.OrderModule),
             },
             {
                 path: 'marketing',
-                loadChildren: () =>
-                    import('./routing/marketing-wrapper.module').then(m => m.MarketingWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/marketing').then(m => m.MarketingModule),
             },
             {
                 path: 'settings',
-                loadChildren: () =>
-                    import('./routing/settings-wrapper.module').then(m => m.SettingsWrapperModule),
+                loadChildren: () => import('@vendure/admin-ui/settings').then(m => m.SettingsModule),
             },
         ],
+        ...extensionRoutes,
     },
 ];

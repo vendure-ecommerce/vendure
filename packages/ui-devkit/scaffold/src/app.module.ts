@@ -1,18 +1,19 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Route, RouterModule } from '@angular/router';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { AppComponent, AppComponentModule, CoreModule } from '@vendure/admin-ui/core';
 
 import { routes } from './app.routes';
-
-// Using TS "import" results in the following error when building with the Angular CLI:
-// "Error: <path>\node_modules\@vendure\admin-ui\library\app\app.module.d.ts is missing from the
-// TypeScript compilation. Please make sure it is in your tsconfig via the 'files' or 'include' property."
-// tslint:disable:no-var-requires
-declare const require: any;
-const { AppComponent, CoreModule } = require('@vendure/admin-ui');
+import { SharedExtensionsModule } from './shared-extensions.module';
 
 @NgModule({
-    declarations: [AppComponent],
-    imports: [RouterModule.forRoot(routes, { useHash: false }), CoreModule],
+    declarations: [],
+    imports: [
+        AppComponentModule,
+        RouterModule.forRoot(routes, { useHash: false }),
+        CoreModule,
+        SharedExtensionsModule,
+    ],
     bootstrap: [AppComponent],
 })
 export class AppModule {}
