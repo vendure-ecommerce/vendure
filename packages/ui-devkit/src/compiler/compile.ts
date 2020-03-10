@@ -1,52 +1,22 @@
-import {
-    AdminUiApp,
-    AdminUiAppDevMode,
-    AdminUiExtension,
-    AdminUiExtensionLazyModule,
-    AdminUiExtensionSharedModule,
-} from '@vendure/common/lib/shared-types';
+/* tslint:disable:no-console */
+import { AdminUiApp, AdminUiAppDevMode } from '@vendure/common/lib/shared-types';
 import { ChildProcess, execSync, spawn } from 'child_process';
 import { FSWatcher, watch as chokidarWatch } from 'chokidar';
 import { createHash } from 'crypto';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import {
+    AdminUiExtension,
+    AdminUiExtensionLazyModule,
+    AdminUiExtensionSharedModule,
+    UiExtensionCompilerOptions,
+} from './types';
+
 const STATIC_ASSETS_OUTPUT_DIR = 'static-assets';
 const MODULES_OUTPUT_DIR = 'src/extensions';
 const EXTENSION_ROUTES_FILE = 'src/extension.routes.ts';
 const SHARED_EXTENSIONS_FILE = 'src/shared-extensions.module.ts';
-
-export interface UiExtensionCompilerOptions {
-    /**
-     * @description
-     * The directory into which the sources for the extended Admin UI will be copied.
-     */
-    outputPath: string;
-    /**
-     * @description
-     * An array of objects which configure extension Angular modules
-     * to be compiled into and made available by the AdminUi application.
-     */
-    extensions: AdminUiExtension[];
-    /**
-     * @description
-     * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
-     * [ng serve](https://angular.io/cli/serve) command). When in watch mode, any changes to
-     * UI extension files will be watched and trigger a rebuild of the Admin UI with live
-     * reloading.
-     *
-     * @default false
-     */
-    watch?: boolean;
-    /**
-     * @description
-     * In watch mode, allows the port of the dev server to be specified. Defaults to the Angular CLI default
-     * of `4200`.
-     *
-     * @default 4200 | undefined
-     */
-    watchPort?: number;
-}
 
 /**
  * Builds the admin-ui app using the Angular CLI `ng build --prod` command.
@@ -69,8 +39,8 @@ function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): Adm
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
-        new Promise<void>((resolve, reject) => {
-            setupScaffold(outputPath, extensions);
+        new Promise<void>(async (resolve, reject) => {
+            await setupScaffold(outputPath, extensions);
             const buildProcess = spawn(cmd, ['run', 'build', `--outputPath=${distPath}`], {
                 cwd: outputPath,
                 shell: true,
@@ -97,14 +67,26 @@ function runWatchMode(outputPath: string, port: number, extensions: AdminUiExten
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
     let watcher: FSWatcher | undefined;
+    let close: () => void = () => {
+        /* */
+    };
     const compile = () =>
-        new Promise<void>((resolve, reject) => {
-            setupScaffold(outputPath, extensions);
+        new Promise<void>(async (resolve, reject) => {
+            await setupScaffold(outputPath, extensions);
             const normalizedExtensions = normalizeExtensions(extensions);
             buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--poll=1000`], {
                 cwd: outputPath,
                 shell: true,
                 stdio: 'inherit',
+            });
+
+            buildProcess.on('close', code => {
+                if (code !== 0) {
+                    reject(code);
+                } else {
+                    resolve();
+                }
+                close();
             });
 
             for (const extension of normalizedExtensions) {
@@ -145,9 +127,10 @@ function runWatchMode(outputPath: string, port: number, extensions: AdminUiExten
                     }
                 });
             }
+            resolve();
         });
 
-    const close = () => {
+    close = () => {
         if (watcher) {
             watcher.close();
         }
@@ -158,11 +141,19 @@ function runWatchMode(outputPath: string, port: number, extensions: AdminUiExten
     return { sourcePath: outputPath, port, onClose: close, compile };
 }
 
-function setupScaffold(outputPath: string, extensions: AdminUiExtension[]) {
+async function setupScaffold(outputPath: string, extensions: AdminUiExtension[]) {
     deleteExistingExtensionModules(outputPath);
     copySourceIfNotExists(outputPath);
     copyExtensionModules(outputPath, normalizeExtensions(extensions));
     copyUiDevkit(outputPath);
+    try {
+        await checkIfNgccWasRun();
+    } catch (e) {
+        const cmd = shouldUseYarn() ? 'yarn ngcc' : 'npx ngcc';
+        console.log(
+            `An error occurred when running ngcc. Try removing node_modules, re-installing, and then manually running "${cmd}" in the project root.`,
+        );
+    }
 }
 
 /**
@@ -310,6 +301,53 @@ function copySourceIfNotExists(outputPath: string) {
     const outputSrc = path.join(outputPath, 'src');
     fs.ensureDirSync(outputSrc);
     fs.copySync(adminUiSrc, outputSrc);
+}
+
+/**
+ * Attempts to find out it the ngcc compiler has been run on the Angular packages, and if not,
+ * attemps to run it. This is done this way because attempting to run ngcc from a sub-directory
+ * where the angular libs are in a higher-level node_modules folder currently results in the error
+ * NG6002, see https://github.com/angular/angular/issues/35747.
+ *
+ * However, when ngcc is run from the root, it works.
+ */
+async function checkIfNgccWasRun(): Promise<void> {
+    const coreUmdFile = require.resolve('@vendure/admin-ui/core');
+    if (!coreUmdFile) {
+        console.log(`Could not resolve the "@vendure/admin-ui/core" package!`);
+        return;
+    }
+    // ngcc creates backup files when it has been run
+    const ivyFile = coreUmdFile + '.__ivy_ngcc_bak';
+    if (fs.existsSync(ivyFile)) {
+        return;
+    }
+    // Looks like ngcc has not been run, so attempt to do so.
+    const rootDir = coreUmdFile.split('node_modules')[0];
+    return new Promise((resolve, reject) => {
+        console.log(
+            'Running the Angular Ivy compatibility compiler (ngcc) on Vendure Admin UI dependencies ' +
+                '(this is only needed on the first run)...',
+        );
+        const cmd = shouldUseYarn() ? 'yarn' : 'npx';
+        const ngccProcess = spawn(
+            cmd,
+            ['ngcc', ' --properties es2015 browser module main', '--first-only', '--create-ivy-entry-points'],
+            {
+                cwd: rootDir,
+                shell: true,
+                stdio: 'inherit',
+            },
+        );
+
+        ngccProcess.on('close', code => {
+            if (code !== 0) {
+                reject(code);
+            } else {
+                resolve();
+            }
+        });
+    });
 }
 
 export function shouldUseYarn(): boolean {
