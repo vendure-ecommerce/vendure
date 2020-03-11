@@ -117,13 +117,13 @@ export interface UiExtensionCompilerOptions {
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
-     * [ng serve](https://angular.io/cli/serve) command). When in watch mode, any changes to
+     * [ng serve](https://angular.io/cli/serve) command). When in dev mode, any changes to
      * UI extension files will be watched and trigger a rebuild of the Admin UI with live
      * reloading.
      *
      * @default false
      */
-    watch?: boolean;
+    devMode?: boolean;
     /**
      * @description
      * In watch mode, allows the port of the dev server to be specified. Defaults to the Angular CLI default

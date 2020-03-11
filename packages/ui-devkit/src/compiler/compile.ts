@@ -1,5 +1,5 @@
 /* tslint:disable:no-console */
-import { AdminUiApp, AdminUiAppDevMode } from '@vendure/common/lib/shared-types';
+import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@vendure/common/lib/shared-types';
 import { ChildProcess, execSync, spawn } from 'child_process';
 import { FSWatcher, watch as chokidarWatch } from 'chokidar';
 import { createHash } from 'crypto';
@@ -23,18 +23,18 @@ const SHARED_EXTENSIONS_FILE = 'src/shared-extensions.module.ts';
  */
 export function compileUiExtensions({
     outputPath,
-    watch,
+    devMode,
     watchPort,
     extensions,
-}: UiExtensionCompilerOptions): AdminUiApp | AdminUiAppDevMode {
-    if (watch) {
+}: UiExtensionCompilerOptions): AdminUiAppConfig | AdminUiAppDevModeConfig {
+    if (devMode) {
         return runWatchMode(outputPath, watchPort || 4200, extensions);
     } else {
         return runCompileMode(outputPath, extensions);
     }
 }
 
-function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): AdminUiApp {
+function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): AdminUiAppConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
@@ -62,7 +62,11 @@ function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): Adm
     };
 }
 
-function runWatchMode(outputPath: string, port: number, extensions: AdminUiExtension[]): AdminUiAppDevMode {
+function runWatchMode(
+    outputPath: string,
+    port: number,
+    extensions: AdminUiExtension[],
+): AdminUiAppDevModeConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
@@ -134,11 +138,13 @@ function runWatchMode(outputPath: string, port: number, extensions: AdminUiExten
         if (watcher) {
             watcher.close();
         }
-        buildProcess.kill();
+        if (buildProcess) {
+            buildProcess.kill();
+        }
     };
 
     process.on('SIGINT', close);
-    return { sourcePath: outputPath, port, onClose: close, compile };
+    return { sourcePath: outputPath, port, compile };
 }
 
 async function setupScaffold(outputPath: string, extensions: AdminUiExtension[]) {
@@ -208,7 +214,7 @@ function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension
         for (const module of extension.ngModules) {
             if (module.type === 'lazy') {
                 routes.push(`  {
-    path: module.route,
+    path: 'extensions/${module.route}',
     loadChildren: () => import('${getModuleFilePath(extension.id, module)}').then(m => m.${
                     module.ngModuleName
                 }),
@@ -222,20 +228,23 @@ function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension
 function generateSharedExtensionModule(extensions: Array<Required<AdminUiExtension>>) {
     return `import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-${extensions.map(e =>
-    e.ngModules
-        .filter(m => m.type === 'shared')
-        .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';`)
-        .join('\n'),
-)}
-
-@NgModule({
-    imports: [CommonModule, ${extensions.map(e =>
+${extensions
+    .map(e =>
         e.ngModules
             .filter(m => m.type === 'shared')
-            .map(m => m.ngModuleName)
-            .join(', '),
-    )}],
+            .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`),
+    )
+    .join('')}
+
+@NgModule({
+    imports: [CommonModule, ${extensions
+        .map(e =>
+            e.ngModules
+                .filter(m => m.type === 'shared')
+                .map(m => m.ngModuleName)
+                .join(', '),
+        )
+        .join(', ')}],
 })
 export class SharedExtensionsModule {}
 `;
@@ -245,7 +254,7 @@ function getModuleFilePath(
     id: string,
     module: AdminUiExtensionLazyModule | AdminUiExtensionSharedModule,
 ): string {
-    return `./extensions/${id}/${path.basename(module.ngModuleFileName, 'ts')}`;
+    return `./extensions/${id}/${path.basename(module.ngModuleFileName, '.ts')}`;
 }
 
 /**
@@ -283,7 +292,7 @@ function copySourceIfNotExists(outputPath: string) {
         return;
     }
     const scaffoldDir = path.join(__dirname, '../scaffold');
-    const adminUiSrc = path.join(__dirname, '../../admin-ui/static');
+    const adminUiSrc = path.join(require.resolve('@vendure/admin-ui'), '../../static');
 
     if (!fs.existsSync(scaffoldDir)) {
         throw new Error(`Could not find the admin ui scaffold files at ${scaffoldDir}`);
@@ -317,9 +326,9 @@ async function checkIfNgccWasRun(): Promise<void> {
         console.log(`Could not resolve the "@vendure/admin-ui/core" package!`);
         return;
     }
-    // ngcc creates backup files when it has been run
-    const ivyFile = coreUmdFile + '.__ivy_ngcc_bak';
-    if (fs.existsSync(ivyFile)) {
+    // ngcc creates a particular folder after it has been run once
+    const ivyDir = path.join(coreUmdFile, '../..', '__ivy_ngcc__');
+    if (fs.existsSync(ivyDir)) {
         return;
     }
     // Looks like ngcc has not been run, so attempt to do so.
@@ -332,7 +341,13 @@ async function checkIfNgccWasRun(): Promise<void> {
         const cmd = shouldUseYarn() ? 'yarn' : 'npx';
         const ngccProcess = spawn(
             cmd,
-            ['ngcc', ' --properties es2015 browser module main', '--first-only', '--create-ivy-entry-points'],
+            [
+                'ngcc',
+                '--properties es2015 browser module main',
+                '--first-only',
+                '--create-ivy-entry-points',
+                '-l=error',
+            ],
             {
                 cwd: rootDir,
                 shell: true,

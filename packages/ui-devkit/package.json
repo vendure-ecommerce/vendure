@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "0.9.0",
+  "version": "0.10.13",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
@@ -10,14 +10,14 @@
   "author": "Michael Bromley <michael@michaelbromley.co.uk>",
   "homepage": "https://github.com/vendure-ecommerce/vendure#readme",
   "license": "MIT",
-  "directories": {
-    "lib": "lib"
-  },
   "files": [
     "client",
     "compiler",
     "scaffold"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "client/index.js",
   "types": "client/index.d.ts",
   "repository": {
@@ -35,13 +35,13 @@
     "url": "https://github.com/vendure-ecommerce/vendure/issues"
   },
   "dependencies": {
-    "@angular/cli": "^9.0.4",
-    "@angular/compiler": "^9.0.4",
-    "@angular/compiler-cli": "^9.0.4",
-    "@angular-devkit/build-angular": "~0.900.4",
-    "@vendure/common": "^0.9.0",
-    "@vendure/admin-ui": "^0.9.0",
-    "rxjs": "^6.5.3"
+    "@angular-devkit/build-angular": "~0.900.5",
+    "@angular/cli": "^9.0.5",
+    "@angular/compiler": "^9.0.6",
+    "@angular/compiler-cli": "^9.0.6",
+    "@vendure/common": "^0.10.15",
+    "chokidar": "^3.0.2",
+    "rxjs": "^6.5.4"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^6.0.0",

@@ -4,7 +4,7 @@
 /dist
 /tmp
 /out-tsc
-/library
+/package
 /src/lib/package.json
 
 # dependencies

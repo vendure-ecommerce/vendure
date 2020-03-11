@@ -1,5 +1,10 @@
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
-import { AdminUiApp, AdminUiAppDevMode, AdminUiConfig, Type } from '@vendure/common/lib/shared-types';
+import {
+    AdminUiAppConfig,
+    AdminUiAppDevModeConfig,
+    AdminUiConfig,
+    Type,
+} from '@vendure/common/lib/shared-types';
 import {
     AuthOptions,
     ConfigService,
@@ -43,7 +48,7 @@ export interface AdminUiOptions {
      * Admin UI. This option can be used to override this default build with a different
      * version, e.g. one pre-compiled with one or more ui extensions.
      */
-    app?: AdminUiApp | AdminUiAppDevMode;
+    app?: AdminUiAppConfig | AdminUiAppDevModeConfig;
     /**
      * @description
      * The hostname of the Vendure server which the admin ui will be making API calls
@@ -101,7 +106,6 @@ export interface AdminUiOptions {
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiOptions;
     private server: Server;
-    private devServerClose: () => void | Promise<void> | undefined;
 
     constructor(private configService: ConfigService) {}
 
@@ -155,7 +159,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         const { adminApiPath, authOptions } = this.configService;
         const { apiHost, apiPort, port, app } = AdminUiPlugin.options;
         const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
-            ? app.sourcePath
+            ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
         const adminUiConfigPath = path.join(adminUiAppPath, 'vendure-ui-config.json');
         const overwriteConfig = () =>
@@ -176,30 +180,36 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             });
             this.server = adminUiServer.listen(AdminUiPlugin.options.port);
             if (app && typeof app.compile === 'function') {
-                Logger.info(`Compiling Admin UI app in production mode`, loggerCtx);
+                Logger.info(`Compiling Admin UI app in production mode...`, loggerCtx);
                 app.compile()
                     .then(overwriteConfig)
-                    .then(() => {
-                        Logger.info(`Admin UI successfully compiled`);
-                    });
+                    .then(
+                        () => {
+                            Logger.info(`Admin UI successfully compiled`, loggerCtx);
+                        },
+                        (err: any) => {
+                            Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                        },
+                    );
             } else {
                 await overwriteConfig();
             }
         } else {
             Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
-            app.compile()
-                .then(overwriteConfig)
-                .then(() => {
-                    Logger.info(`Admin UI successfully compiled and watching for changes...`);
-                });
+            app.compile().then(
+                () => {
+                    Logger.info(`Admin UI compiling and watching for changes...`, loggerCtx);
+                },
+                (err: any) => {
+                    Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                },
+            );
+            await overwriteConfig();
         }
     }
 
     /** @internal */
     async onVendureClose(): Promise<void> {
-        if (this.devServerClose) {
-            await this.devServerClose();
-        }
         if (this.server) {
             await new Promise(resolve => this.server.close(() => resolve()));
         }
@@ -217,10 +227,40 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         adminUiConfigPath: string;
     }) {
         const { host, port, adminApiPath, authOptions, adminUiConfigPath } = options;
-        const adminUiConfig = await fs.readFile(adminUiConfigPath, 'utf-8');
+
+        /**
+         * It might be that the ui-devkit compiler has not yet copied the config
+         * file to the expected location (perticularly when running in watch mode),
+         * so polling is used to check multiple times with a delay.
+         */
+        async function pollForConfigFile() {
+            let configFileContent: string;
+            const maxRetries = 5;
+            const retryDelay = 200;
+            let attempts = 0;
+            return new Promise<string>(async function checkForFile(resolve, reject) {
+                if (attempts >= maxRetries) {
+                    reject();
+                }
+                try {
+                    Logger.verbose(`Checking for config file: ${adminUiConfigPath}`, loggerCtx);
+                    configFileContent = await fs.readFile(adminUiConfigPath, 'utf-8');
+                    resolve(configFileContent);
+                } catch (e) {
+                    attempts++;
+                    Logger.verbose(
+                        `Unable to locate config file: ${adminUiConfigPath} (attempt ${attempts})`,
+                        loggerCtx,
+                    );
+                    setTimeout(pollForConfigFile, retryDelay, resolve, reject);
+                }
+            });
+        }
+
+        const content = await pollForConfigFile();
         let config: AdminUiConfig;
         try {
-            config = JSON.parse(adminUiConfig);
+            config = JSON.parse(content);
         } catch (e) {
             throw new Error('[AdminUiPlugin] Could not parse vendure-ui-config.json file:\n' + e.message);
         }
@@ -229,14 +269,16 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         config.adminApiPath = adminApiPath;
         config.tokenMethod = authOptions.tokenMethod || 'cookie';
         config.authTokenHeaderKey = authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY;
-        Logger.verbose(`Applying configuration to vendure-ui-config.json file`, loggerCtx);
         await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
+        Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
     }
 
-    private static isDevModeApp(app?: AdminUiApp | AdminUiAppDevMode): app is AdminUiAppDevMode {
+    private static isDevModeApp(
+        app?: AdminUiAppConfig | AdminUiAppDevModeConfig,
+    ): app is AdminUiAppDevModeConfig {
         if (!app) {
             return false;
         }
-        return typeof (app as any).close === 'function' && typeof (app as any).sourcePath === 'string';
+        return !!(app as AdminUiAppDevModeConfig).sourcePath;
     }
 }

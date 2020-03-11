@@ -19,6 +19,8 @@ of a set of modules which are accessible from consuming applications as sub-pack
 
 etc. These library packages are located at [./src/lib](./src/lib)
 
+When built with `yarn build`, the output will be located in the `./package` sub directory. This is also the root of the published npm package.
+
 ### Application
 
 In addition to the library, there is also a full application located at [./src/app](./src/app). This application is used both during development of the Admin UI, and also as the "default" Admin UI without any UI extensions, as provided as the default by the [admin-ui-plugin](../admin-ui-plugin).

@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../library",
+  "dest": "../../package",
   "whitelistedNonPeerDependencies": ["."],
   "assets": [
     "./static/favicon.ico",

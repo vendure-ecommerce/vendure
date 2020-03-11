@@ -39,7 +39,7 @@ export const routes: Route[] = [
                 path: 'settings',
                 loadChildren: () => import('@vendure/admin-ui/settings').then(m => m.SettingsModule),
             },
+            ...extensionRoutes,
         ],
-        ...extensionRoutes,
     },
 ];
