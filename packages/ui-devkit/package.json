@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "0.10.13",
+  "version": "0.9.0",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
@@ -39,7 +39,7 @@
     "@angular/cli": "^9.0.5",
     "@angular/compiler": "^9.0.6",
     "@angular/compiler-cli": "^9.0.6",
-    "@vendure/common": "^0.10.15",
+    "@vendure/common": "^0.9.0",
     "chokidar": "^3.0.2",
     "rxjs": "^6.5.4"
   },
