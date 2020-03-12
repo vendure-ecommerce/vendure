@@ -20,28 +20,19 @@
             "aot": true,
             "baseHref": "/admin/",
             "outputPath": "dist",
-            "index": "src/index.html",
+            "index": "src/lib/static/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": "src/lib/static/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/vendure-ui-config.json",
-              "src/assets",
-              "src/i18n-messages",
-              {
-                "glob": "**/*.*",
-                "input": "src/app/extensions/__static-assets__",
-                "output": "assets"
-              }
+              { "glob": "**/*", "input": "src/lib/static/", "output": "/" }
             ],
             "styles": [
-              "../../node_modules/@clr/icons/clr-icons.min.css",
-              "src/styles/styles.scss"
+              "src/lib/static/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/styles"
+                "./src/lib/static/styles"
               ]
             },
             "showCircularDependencies": false
@@ -68,81 +59,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
-            },
-            "plugin": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": true,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false,
-              "styles": [
-                "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss"
-              ]
-            },
-            "plugin-watch": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "aot": false,
-              "styles": [
-                "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss"
-              ]
-            },
-            "plugin-dev": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": true,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "styles": [
-                "../../node_modules/@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss"
-              ]
-            },
-            "plugin-dev-watch": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "aot": false,
-              "styles": [
-                "../../node_modules/@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss"
-              ]
+              "buildOptimizer": false
             }
           }
         },
@@ -173,20 +90,20 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": "src/lib/static/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles/styles.scss"
+              "src/lib/static/styles/styles.scss"
             ],
             "scripts": [],
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/lib/static/favicon.ico",
+              "src/lib/static/assets"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "./src/styles"
+                "./src/lib/static/styles"
               ]
             }
           }
@@ -228,6 +145,26 @@
             "exclude": [
               "**/node_modules/**"
             ]
+          }
+        }
+      }
+    },
+    "vendure-admin-lib": {
+      "projectType": "library",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "vdr",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "./tsconfig.lib.json",
+            "project": "./src/lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "./tsconfig.lib.prod.json"
+            }
           }
         }
       }

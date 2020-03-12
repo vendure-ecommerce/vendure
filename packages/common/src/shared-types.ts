@@ -22,7 +22,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
     ? {
           [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
               ? NonNullable<T[P]>
-              : DeepRequired<NonNullable<T[P]>, U>;
+              : DeepRequired<NonNullable<T[P]>, U>
       }
     : T;
 // tslint:enable:ban-types
@@ -92,69 +92,45 @@ export interface AdminUiConfig {
 
 /**
  * @description
- * Defines extensions to the Admin UI application by specifying additional
- * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
- * into the application.
+ * Configures the path to a custom-build of the Admin UI app.
  *
- * See [Extending the Admin UI](/docs/developer-guide/plugins/extending-the-admin-ui/) for
- * detailed instructions.
- *
- * @docsCategory AdminUiPlugin
+ * @docsCategory common
  */
-export interface AdminUiExtension {
+export interface AdminUiAppConfig {
     /**
      * @description
-     * An optional ID for the extension module. Only used internally for generating
-     * import paths to your module. If not specified, a unique hash will be used as the id.
+     * The path to the compiled admin ui app files. If not specified, an internal
+     * default build is used. This path should contain the `vendure-ui-config.json` file,
+     * index.html, the compiled js bundles etc.
      */
-    id?: string;
-
+    path: string;
     /**
      * @description
-     * The path to the directory containing the extension module(s). The entire contents of this directory
-     * will be copied into the Admin UI app, including all TypeScript source files, html templates,
-     * scss style sheets etc.
+     * The function which will be invoked to start the app compilation process.
      */
-    extensionPath: string;
-    /**
-     * @description
-     * One or more Angular modules which extend the default Admin UI.
-     */
-    ngModules: AdminUiExtensionModule[];
-
-    /**
-     * @description
-     * Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
-     * directory.
-     */
-    staticAssets?: string[];
+    compile?: () => Promise<void>;
 }
 
 /**
  * @description
- * Configuration defining a single NgModule with which to extend the Admin UI.
+ * Information about the Admin UI app dev server.
  *
- * @docsCategory AdminUiPlugin
+ * @docsCategory common
  */
-export interface AdminUiExtensionModule {
+export interface AdminUiAppDevModeConfig {
     /**
      * @description
-     * Lazy modules are lazy-loaded at the `/extensions/` route and should be used for
-     * modules which define new views for the Admin UI.
-     *
-     * Shared modules are directly imported into the main AppModule of the Admin UI
-     * and should be used to declare custom form components and define custom
-     * navigation items.
+     * The path to the uncompiled ui app source files. This path should contain the `vendure-ui-config.json` file.
      */
-    type: 'shared' | 'lazy';
+    sourcePath: string;
     /**
      * @description
-     * The name of the file containing the extension module class.
+     * The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
      */
-    ngModuleFileName: string;
+    port: number;
     /**
      * @description
-     * The name of the extension module class.
+     * The function which will be invoked to start the app compilation process.
      */
-    ngModuleName: string;
+    compile: () => Promise<void>;
 }

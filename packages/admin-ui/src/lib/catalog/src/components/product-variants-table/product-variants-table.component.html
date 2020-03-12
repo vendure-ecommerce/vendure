@@ -1,0 +1,92 @@
+<vdr-data-table [items]="variants">
+    <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.sku' | translate }}</vdr-dt-column>
+    <ng-container *ngFor="let optionGroup of optionGroups | sort: 'id'">
+        <vdr-dt-column>{{ optionGroup.name }}</vdr-dt-column>
+    </ng-container>
+    <vdr-dt-column>{{ 'catalog.price' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'catalog.stock-on-hand' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
+    <ng-template let-variant="item" let-i="index">
+        <ng-container [formGroup]="formArray.at(i)">
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <div class="card-img">
+                    <div class="featured-asset">
+                        <img
+                            *ngIf="variant.featuredAsset"
+                            [src]="variant.featuredAsset | assetPreview:'tiny'"
+                        />
+                        <div class="placeholder" *ngIf="!variant.featuredAsset">
+                            <clr-icon shape="image" size="48"></clr-icon>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="text"
+                        formControlName="name"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [placeholder]="'common.name' | translate"
+                    />
+                </clr-input-container>
+            </td>
+            <td class="left align-middle" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="text"
+                        formControlName="sku"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        [placeholder]="'catalog.sku' | translate"
+                    />
+                </clr-input-container>
+            </td>
+            <ng-container *ngFor="let option of variant.options | sort: 'groupId'">
+                <td
+                    class="left align-middle"
+                    [class.disabled]="!formArray.get([i, 'enabled'])!.value"
+                    [style.color]="optionGroupName(option.groupId) | stringToColor"
+                >
+                    {{ option.name }}
+                </td>
+            </ng-container>
+            <td class="left align-middle price" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <clr-input-container>
+                    <vdr-currency-input
+                        clrInput
+                        [currencyCode]="variant.currencyCode"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                        formControlName="price"
+                    ></vdr-currency-input>
+                </clr-input-container>
+            </td>
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <clr-input-container>
+                    <input
+                        clrInput
+                        type="number"
+                        min="0"
+                        step="1"
+                        formControlName="stockOnHand"
+                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                    />
+                </clr-input-container>
+            </td>
+            <td class="left align-middle stock" [class.disabled]="!formArray.get([i, 'enabled'])!.value">
+                <clr-toggle-wrapper>
+                    <input
+                        type="checkbox"
+                        clrToggle
+                        name="enabled"
+                        formControlName="enabled"
+                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
+                    />
+                </clr-toggle-wrapper>
+            </td>
+        </ng-container>
+    </ng-template>
+</vdr-data-table>

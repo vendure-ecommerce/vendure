@@ -1,0 +1,92 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+    </vdr-ab-left>
+    <vdr-ab-right>
+        <vdr-action-bar-items locationId="administrator-detail"></vdr-action-bar-items>
+        <button
+            class="btn btn-primary"
+            *ngIf="isNew$ | async; else updateButton"
+            (click)="create()"
+            [disabled]="detailForm.invalid || detailForm.pristine"
+        >
+            {{ 'common.create' | translate }}
+        </button>
+        <ng-template #updateButton>
+            <button
+                class="btn btn-primary"
+                (click)="save()"
+                *vdrIfPermissions="'UpdateAdministrator'"
+                [disabled]="(detailForm.invalid || detailForm.pristine)"
+            >
+                {{ 'common.update' | translate }}
+            </button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="detailForm">
+    <vdr-form-field [label]="'settings.email-address' | translate" for="emailAddress">
+        <input
+            id="emailAddress"
+            type="text"
+            formControlName="emailAddress"
+            [readonly]="!('UpdateAdministrator' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'settings.first-name' | translate" for="firstName">
+        <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            [readonly]="!('UpdateAdministrator' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'settings.last-name' | translate" for="lastName">
+        <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            [readonly]="!('UpdateAdministrator' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field *ngIf="isNew$ | async" [label]="'settings.password' | translate" for="password">
+        <input id="password" type="password" formControlName="password" />
+    </vdr-form-field>
+    <vdr-form-field
+        *ngIf="!(isNew$ | async) && ('UpdateAdministrator' | hasPermission)"
+        [label]="'settings.password' | translate"
+        for="password"
+        [readOnlyToggle]="true"
+    >
+        <input id="password" type="password" formControlName="password" />
+    </vdr-form-field>
+    <label class="clr-control-label">{{ 'settings.roles' | translate }}</label>
+    <ng-select
+        [items]="allRoles$ | async"
+        [multiple]="true"
+        [hideSelected]="true"
+        formControlName="roles"
+        (change)="rolesChanged($event)"
+        bindLabel="description"
+    ></ng-select>
+
+    <ul class="nav" role="tablist">
+        <li role="presentation" class="nav-item" *ngFor="let channel of getAvailableChannels()">
+            <button
+                [id]="channel.channelId"
+                (click)="selectedChannelId = channel.channelId"
+                class="btn btn-link nav-link"
+                [class.active]="selectedChannelId === channel.channelId"
+                [attr.aria-selected]="selectedChannelId === channel.channelId"
+                type="button"
+            >
+                {{ channel.channelCode | channelCodeToLabel | translate }}
+            </button>
+        </li>
+    </ul>
+    <vdr-permission-grid
+        [permissions]="getPermissionsForSelectedChannel()"
+        [readonly]="true"
+    ></vdr-permission-grid>
+</form>

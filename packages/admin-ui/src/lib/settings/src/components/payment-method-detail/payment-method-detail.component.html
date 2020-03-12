@@ -1,0 +1,81 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <vdr-action-bar-items locationId="payment-method-detail"></vdr-action-bar-items>
+        <button
+            class="btn btn-primary"
+            *ngIf="isNew$ | async; else updateButton"
+            [disabled]="detailForm.pristine || detailForm.invalid"
+        >
+            {{ 'common.create' | translate }}
+        </button>
+        <ng-template #updateButton>
+            <button
+                *vdrIfPermissions="'UpdateSettings'"
+                class="btn btn-primary"
+                (click)="save()"
+                [disabled]="detailForm.pristine || detailForm.invalid"
+            >
+                {{ 'common.update' | translate }}
+            </button>
+        </ng-template>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<form class="form" [formGroup]="detailForm">
+    <vdr-form-field [label]="'common.code' | translate" for="code">
+        <input
+            id="code"
+            type="text"
+            formControlName="code"
+            [readonly]="!('UpdateSettings' | hasPermission)"
+        />
+    </vdr-form-field>
+    <vdr-form-field [label]="'common.enabled' | translate" for="description">
+        <clr-toggle-wrapper>
+            <input
+                type="checkbox"
+                clrToggle
+                id="enabled"
+                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                formControlName="enabled"
+            />
+        </clr-toggle-wrapper>
+    </vdr-form-field>
+
+    <div class="clr-row" formGroupName="configArgs" *ngIf="(entity$ | async)?.configArgs?.length">
+        <div class="clr-col">
+            <label>{{ 'settings.payment-method-config-options' | translate }}</label>
+            <section class="form-block" *ngFor="let arg of (entity$ | async)?.configArgs">
+                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'string'">
+                    <input
+                        [id]="arg.name"
+                        type="text"
+                        [readonly]="!('UpdateSettings' | hasPermission)"
+                        [formControlName]="arg.name"
+                    />
+                </vdr-form-field>
+                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'int'">
+                    <input
+                        [id]="arg.name"
+                        type="number"
+                        [readonly]="!('UpdateSettings' | hasPermission)"
+                        [formControlName]="arg.name"
+                    />
+                </vdr-form-field>
+                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'boolean'">
+                    <input
+                        type="checkbox"
+                        [id]="arg.name"
+                        [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                        [formControlName]="arg.name"
+                        clrCheckbox
+                    />
+                </vdr-form-field>
+            </section>
+        </div>
+    </div>
+</form>

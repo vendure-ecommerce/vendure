@@ -1,0 +1,9 @@
+{
+  "name": "vendure-admin-ui",
+  "dependencies": {},
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod"
+  }
+}
