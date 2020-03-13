@@ -54,7 +54,20 @@ export type ID = string | number;
 
 /**
  * @description
- * A data type for a custom field.
+ * A data type for a custom field. The CustomFieldType determines the data types used in the generated
+ * database columns and GraphQL fields as follows (key: m = MySQL, p = Postgres, s = SQLite):
+ *
+ * Type         | DB type                               | GraphQL type
+ * -----        |---------                              |---------------
+ * string       | varchar                               | String
+ * localeString | varchar                               | String
+ * int          | int                                   | Int
+ * float        | double precision                      | Float
+ * boolean      | tinyint (m), bool (p), boolean (s)    | Boolean
+ * datetime     | datetime (m,s), timestamp (p)         | DateTime
+ *
+ * Additionally, the CustomFieldType also dictates which [configuration options](/docs/typescript-api/custom-fields/#configuration-options)
+ * are available for that custom field.
  *
  * @docsCategory custom-fields
  */

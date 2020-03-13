@@ -1,6 +1,6 @@
 ---
 title: "Writing a Vendure Plugin"
-weight: 0
+weight: 2
 ---
 
 # Writing a Vendure Plugin
@@ -115,7 +115,7 @@ Some explanations of this code are in order:
 * The `@Resolver()` decorator tells Nest that this class contains GraphQL resolvers.
 * We are able to use Nest's dependency injection to inject an instance of our `CatFetcher` class into the constructor of the resolver. We are also injecting an instance of the built-in `ProductService` class, which is responsible for operations on Products.
 * We use the `@Mutation()` decorator to mark this method as a resolver for a mutation with the corresponding name.
-* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "../../graphql-api/admin/enums" >}}#permission).
+* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "/docs/graphql-api/admin/enums" >}}#permission).
 * The `@Ctx()` decorator injects the current `RequestContext` into the resolver. This provides information about the current request such as the current Session, User and Channel. It is required by most of the internal service methods.
 * The `@Args()` decorator injects the arguments passed to the mutation as an object.
 

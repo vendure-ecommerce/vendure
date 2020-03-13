@@ -1,10 +1,10 @@
 ---
-title: "GraphQL API Guide"
-weight: 0
+title: "Shop API Guide"
+weight: 2
 showtoc: true
 ---
 
-# GraphQL API Guide
+# GraphQL Shop API Guide
 
 This is an overview of the GraphQL Shop API, which is used when implementing a storefront application with Vendure. 
 

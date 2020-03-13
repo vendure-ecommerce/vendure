@@ -19,14 +19,15 @@ const EXTENSION_ROUTES_FILE = 'src/extension.routes.ts';
 const SHARED_EXTENSIONS_FILE = 'src/shared-extensions.module.ts';
 
 /**
- * Builds the admin-ui app using the Angular CLI `ng build --prod` command.
+ * @description
+ * Compiles the Admin UI app with the specified extensions.
+ *
+ * @docsCategory UiDevkit
  */
-export function compileUiExtensions({
-    outputPath,
-    devMode,
-    watchPort,
-    extensions,
-}: UiExtensionCompilerOptions): AdminUiAppConfig | AdminUiAppDevModeConfig {
+export function compileUiExtensions(
+    options: UiExtensionCompilerOptions,
+): AdminUiAppConfig | AdminUiAppDevModeConfig {
+    const { outputPath, devMode, watchPort, extensions } = options;
     if (devMode) {
         return runWatchMode(outputPath, watchPort || 4200, extensions);
     } else {
