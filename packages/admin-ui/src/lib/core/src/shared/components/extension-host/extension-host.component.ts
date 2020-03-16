@@ -13,6 +13,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ExtensionHostConfig } from './extension-host-config';
 import { ExtensionHostService } from './extension-host.service';
 
+/**
+ * This component uses an iframe to embed an external url into the Admin UI, and uses the PostMessage
+ * protocol to allow cross-frame communication between the two frames.
+ */
 @Component({
     selector: 'vdr-extension-host',
     templateUrl: './extension-host.component.html',

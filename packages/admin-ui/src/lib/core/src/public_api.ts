@@ -108,6 +108,7 @@ export * from './shared/components/entity-info/entity-info.component';
 export * from './shared/components/extension-host/extension-host-config';
 export * from './shared/components/extension-host/extension-host.component';
 export * from './shared/components/extension-host/extension-host.service';
+export * from './shared/components/extension-host/host-external-frame';
 export * from './shared/components/facet-value-chip/facet-value-chip.component';
 export * from './shared/components/facet-value-selector/facet-value-selector.component';
 export * from './shared/components/focal-point-control/focal-point-control.component';
