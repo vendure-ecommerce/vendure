@@ -10,6 +10,7 @@ import {
     AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
+    StaticAssetDefinition,
     UiExtensionCompilerOptions,
 } from './types';
 
@@ -79,7 +80,7 @@ function runWatchMode(
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
             const normalizedExtensions = normalizeExtensions(extensions);
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--poll=1000`], {
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`], {
                 cwd: outputPath,
                 shell: true,
                 stdio: 'inherit',
@@ -103,6 +104,12 @@ function runWatchMode(
                 } else {
                     watcher.add(extension.extensionPath);
                 }
+                if (extension.staticAssets) {
+                    for (const staticAssetDef of extension.staticAssets) {
+                        const assetPath = getStaticAssetPath(staticAssetDef);
+                        watcher.add(assetPath);
+                    }
+                }
             }
 
             if (watcher) {
@@ -111,24 +118,27 @@ function runWatchMode(
             }
 
             if (watcher) {
-                watcher.on('change', filePath => {
+                const allStaticAssetDefs = extensions.reduce(
+                    (defs, e) => [...defs, ...(e.staticAssets || [])],
+                    [] as StaticAssetDefinition[],
+                );
+                watcher.on('change', async filePath => {
                     const extension = normalizedExtensions.find(e => filePath.includes(e.extensionPath));
                     if (extension) {
-                        if (extension.staticAssets) {
-                            for (const assetPath of extension.staticAssets) {
-                                if (filePath.includes(assetPath)) {
-                                    copyStaticAsset(outputPath, assetPath);
-                                    return;
-                                }
-                            }
-                        }
                         const outputDir = path.join(outputPath, MODULES_OUTPUT_DIR, extension.id);
                         const filePart = path.relative(extension.extensionPath, filePath);
                         const dest = path.join(outputDir, filePart);
-                        fs.copyFile(filePath, dest);
+                        await fs.copyFile(filePath, dest);
                     }
                     if (filePath.includes(devkitPath)) {
                         copyUiDevkit(outputPath);
+                    }
+                    for (const staticAssetDef of allStaticAssetDefs) {
+                        const assetPath = getStaticAssetPath(staticAssetDef);
+                        if (filePath.includes(assetPath)) {
+                            await copyStaticAsset(outputPath, staticAssetDef);
+                            return;
+                        }
                     }
                 });
             }
@@ -151,7 +161,7 @@ function runWatchMode(
 async function setupScaffold(outputPath: string, extensions: AdminUiExtension[]) {
     deleteExistingExtensionModules(outputPath);
     copySourceIfNotExists(outputPath);
-    copyExtensionModules(outputPath, normalizeExtensions(extensions));
+    await copyExtensionModules(outputPath, normalizeExtensions(extensions));
     copyUiDevkit(outputPath);
     try {
         await checkIfNgccWasRun();
@@ -191,7 +201,10 @@ function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Required<Ad
  * Copies all files from the extensionPaths of the configured extensions into the
  * admin-ui source tree.
  */
-export function copyExtensionModules(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
+export async function copyExtensionModules(
+    outputPath: string,
+    extensions: Array<Required<AdminUiExtension>>,
+) {
     const extensionRoutesSource = generateLazyExtensionRoutes(extensions);
     fs.writeFileSync(path.join(outputPath, EXTENSION_ROUTES_FILE), extensionRoutesSource, 'utf8');
     const sharedExtensionModulesSource = generateSharedExtensionModule(extensions);
@@ -203,7 +216,7 @@ export function copyExtensionModules(outputPath: string, extensions: Array<Requi
         fs.copySync(extension.extensionPath, dest);
         if (Array.isArray(extension.staticAssets)) {
             for (const asset of extension.staticAssets) {
-                copyStaticAsset(outputPath, asset);
+                await copyStaticAsset(outputPath, asset);
             }
         }
     }
@@ -263,13 +276,28 @@ function getModuleFilePath(
  * static assets directory. When the app is built by the ng cli, this assets directory is
  * the copied over to the final static assets location (i.e. http://domain/admin/assets/)
  */
-export function copyStaticAsset(outputPath: string, staticAssetPath: string) {
+export async function copyStaticAsset(outputPath: string, staticAssetDef: StaticAssetDefinition) {
+    const staticAssetPath = getStaticAssetPath(staticAssetDef);
     const stats = fs.statSync(staticAssetPath);
+    let assetOutputPath: string;
     if (stats.isDirectory()) {
         const assetDirname = path.basename(staticAssetPath);
-        fs.copySync(staticAssetPath, path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetDirname));
+        assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetDirname);
     } else {
-        fs.copySync(staticAssetPath, path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR));
+        assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR);
+    }
+    fs.copySync(staticAssetPath, assetOutputPath);
+    if (typeof staticAssetDef !== 'string') {
+        // The asset is being renamed
+        const newName = path.join(path.dirname(assetOutputPath), staticAssetDef.rename);
+        try {
+            // We use copy, remove rather than rename due to problems with the
+            // EPERM error in Windows.
+            await fs.copy(assetOutputPath, newName);
+            await fs.remove(assetOutputPath);
+        } catch (e) {
+            console.log(e);
+        }
     }
 }
 
@@ -373,4 +401,8 @@ export function shouldUseYarn(): boolean {
     } catch (e) {
         return false;
     }
+}
+
+function getStaticAssetPath(staticAssetDef: StaticAssetDefinition): string {
+    return typeof staticAssetDef === 'string' ? staticAssetDef : staticAssetDef.path;
 }

@@ -27,11 +27,12 @@
             "assets": [
               "src/favicon.ico",
               "src/vendure-ui-config.json",
+              "src/theme.min.css",
               "src/assets",
               "src/i18n-messages",
               {
                 "glob": "**/*.*",
-                "input": "src/extensions/static-assets",
+                "input": "static-assets",
                 "output": "assets"
               }
             ],

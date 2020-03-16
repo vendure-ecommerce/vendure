@@ -35,8 +35,17 @@ export interface AdminUiExtension {
      * Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
      * directory.
      */
-    staticAssets?: string[];
+    staticAssets?: StaticAssetDefinition[];
 }
+
+/**
+ * @description
+ * A static asset can be provided as a path to the asset, or as an object containing a path and a new
+ * name, which will cause the compiler to copy and then rename the asset.
+ *
+ * @docsCategory UiDevkit
+ */
+export type StaticAssetDefinition = string | { path: string; rename: string };
 
 /**
  * @description

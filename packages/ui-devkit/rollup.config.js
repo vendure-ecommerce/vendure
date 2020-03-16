@@ -10,7 +10,7 @@ export default commandLineArgs => {
         output: {
             dir: 'client',
             format: 'umd',
-            name: 'VendureUiDevkit',
+            name: 'VendureUiClient',
         },
         plugins: [resolve(), typescript(), ...(isProd ? [terser({
             output: {
