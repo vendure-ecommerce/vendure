@@ -36,12 +36,13 @@ $block-border-radius: 4px;
     }
 
     h2 {
-        margin-top: 48px;
+        margin-top: 60px;
         margin-bottom: 6px;
         font-size: 1.8em;
     }
 
     h3 {
+        margin-top: 48px;
         font-size: 1.4em;
     }
 
@@ -92,12 +93,11 @@ $block-border-radius: 4px;
     code:not([data-lang]) {
         font-family: 'Source Code Pro', monospace;
         padding: 0 $padding-4;
-        background: $color-code-bg;
-        color: $color-code-text;
+        background: $gray-200;
+        color: $gray-700;
+        font-size: 0.9em;
         border-radius: $block-border-radius;
-        border: 1px solid $color-code-border;
-
-
+        border: 1px solid $gray-300;
     }
 
     a > code:not([data-lang]) {

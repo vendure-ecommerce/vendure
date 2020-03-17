@@ -1,0 +1,16 @@
+@import "variables";
+
+.branding {
+    min-width: 0;
+}
+.logo {
+    width: 60px;
+}
+vdr-breadcrumb {
+    @media screen and (min-width: $breakpoint-small){
+        margin-left: 10.8rem;
+    }
+}
+.content-area {
+    position: relative;
+}

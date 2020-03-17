@@ -1,2 +1,3 @@
-lib
+/client
+/compiler
 node_modules

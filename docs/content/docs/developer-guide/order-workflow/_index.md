@@ -25,5 +25,5 @@ So if the customer adds 2 *Widgets* to the Order, there will be **one OrderLine*
 
 ## Shop client order workflow
 
-The [GraphQL API Guide]({{< relref "/docs/developer-guide/graphql-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
+The [GraphQL Shop API Guide]({{< relref "/docs/storefront/shop-api-guide" >}}#order-flow) lists the GraphQL operations you will need to implement this workflow in your storefront client application.
 

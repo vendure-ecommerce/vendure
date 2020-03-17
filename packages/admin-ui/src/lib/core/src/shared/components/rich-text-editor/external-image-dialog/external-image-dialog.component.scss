@@ -1,0 +1,19 @@
+@import "variables";
+
+.preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 150px;
+    margin-left: 12px;
+    img {
+        max-width: 100%;
+        display: none;
+        &.visible {
+            display: block;
+        }
+    }
+    .placeholder {
+        color: $color-grey-300;
+    }
+}

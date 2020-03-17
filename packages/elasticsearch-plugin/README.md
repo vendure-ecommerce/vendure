@@ -1,6 +1,8 @@
 # Vendure Elasticsearch Plugin
 
-The `ElasticsearchPlugin` uses Elasticsearch to power the the Vendure product search.
+The `ElasticsearchPlugin` uses Elasticsearch to power the the Vendure product search. 
+
+**Requires Elasticsearch v7.0 or higher.** 
 
 `npm install @vendure/elasticsearch-plugin`
 

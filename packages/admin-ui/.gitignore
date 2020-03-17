@@ -4,18 +4,11 @@
 /dist
 /tmp
 /out-tsc
+/package
+/src/lib/package.json
 
 # dependencies
 /node_modules
-
-# generated extension files
-/src/app/extensions/__static-assets__
-/src/app/extensions/modules
-/src/app/extensions/extensions.module.ts.generated
-/src/app/extensions/extensions.module.ts.temp
-
-# compiled compiler files
-/compiler
 
 # IDEs and editors
 /.idea

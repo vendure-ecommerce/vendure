@@ -1,0 +1,95 @@
+{
+  "$schema": "../node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "vendure-admin": {
+      "root": "",
+      "sourceRoot": "src",
+      "projectType": "application",
+      "prefix": "vdr",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "aot": true,
+            "baseHref": "/admin/",
+            "outputPath": "dist",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": "src/polyfills.ts",
+            "tsConfig": "src/tsconfig.app.json",
+            "assets": [
+              "src/favicon.ico",
+              "src/vendure-ui-config.json",
+              "src/theme.min.css",
+              "src/assets",
+              "src/i18n-messages",
+              {
+                "glob": "**/*.*",
+                "input": "static-assets",
+                "output": "assets"
+              }
+            ],
+            "styles": [
+              "src/styles/styles.scss"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "./src/styles"
+              ]
+            },
+            "showCircularDependencies": false
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environment.ts",
+                  "with": "src/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": true,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "vendure-admin:build"
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "vendure-admin",
+  "schematics": {
+    "@schematics/angular:component": {
+      "skipTests": true,
+      "changeDetection": "OnPush"
+    }
+  },
+  "cli": {
+    "packageManager": "yarn",
+    "analytics": false
+  }
+}

@@ -1,11 +1,9 @@
 import { Route } from '@angular/router';
-
-import { AppShellComponent } from './core/components/app-shell/app-shell.component';
-import { AuthGuard } from './core/providers/guard/auth.guard';
-import { _ } from './core/providers/i18n/mark-for-extraction';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { AppShellComponent, AuthGuard } from '@vendure/admin-ui/core';
 
 export const routes: Route[] = [
-    { path: 'login', loadChildren: './login/login.module#LoginModule' },
+    { path: 'login', loadChildren: () => import('@vendure/admin-ui/login').then(m => m.LoginModule) },
     {
         path: '',
         canActivate: [AuthGuard],
@@ -17,31 +15,27 @@ export const routes: Route[] = [
             {
                 path: '',
                 pathMatch: 'full',
-                loadChildren: './dashboard/dashboard.module#DashboardModule',
+                loadChildren: () => import('@vendure/admin-ui/dashboard').then(m => m.DashboardModule),
             },
             {
                 path: 'catalog',
-                loadChildren: './catalog/catalog.module#CatalogModule',
+                loadChildren: () => import('@vendure/admin-ui/catalog').then(m => m.CatalogModule),
             },
             {
                 path: 'customer',
-                loadChildren: './customer/customer.module#CustomerModule',
+                loadChildren: () => import('@vendure/admin-ui/customer').then(m => m.CustomerModule),
             },
             {
                 path: 'orders',
-                loadChildren: './order/order.module#OrderModule',
+                loadChildren: () => import('@vendure/admin-ui/order').then(m => m.OrderModule),
             },
             {
                 path: 'marketing',
-                loadChildren: './marketing/marketing.module#MarketingModule',
+                loadChildren: () => import('@vendure/admin-ui/marketing').then(m => m.MarketingModule),
             },
             {
                 path: 'settings',
-                loadChildren: './settings/settings.module#SettingsModule',
-            },
-            {
-                path: 'extensions',
-                loadChildren: `./extensions/lazy-extensions.module#LazyExtensionsModule`,
+                loadChildren: () => import('@vendure/admin-ui/settings').then(m => m.SettingsModule),
             },
         ],
     },

@@ -609,6 +609,29 @@ describe('Default search plugin', () => {
                 expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
             });
 
+            it('does not include deleted ProductVariants in index', async () => {
+                const { search: s1 } = await doAdminSearchQuery({
+                    term: 'hard drive',
+                    groupByProduct: false,
+                });
+
+                const { deleteProductVariant } = await adminClient.query<
+                    DeleteProductVariant.Mutation,
+                    DeleteProductVariant.Variables
+                >(DELETE_PRODUCT_VARIANT, { id: s1.items[0].productVariantId });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search } = await adminClient.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
+                    SEARCH_GET_PRICES,
+                    { input: { term: 'hard drive', groupByProduct: true } },
+                );
+                expect(search.items[0].price).toEqual({
+                    min: 7896,
+                    max: 13435,
+                });
+            });
+
             it('returns enabled field when not grouped', async () => {
                 const result = await doAdminSearchQuery({ groupByProduct: false, take: 3 });
                 expect(result.search.items.map(pick(['productVariantId', 'enabled']))).toEqual([

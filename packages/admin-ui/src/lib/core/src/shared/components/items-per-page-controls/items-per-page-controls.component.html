@@ -1,0 +1,8 @@
+<div class="select">
+    <select [ngModel]="itemsPerPage" (change)="itemsPerPageChange.emit($event.target.value)">
+        <option [value]="10">{{ 'common.items-per-page-option' | translate: { count: 10 } }}</option>
+        <option [value]="25">{{ 'common.items-per-page-option' | translate: { count: 25 } }}</option>
+        <option [value]="50">{{ 'common.items-per-page-option' | translate: { count: 50 } }}</option>
+        <option [value]="100">{{ 'common.items-per-page-option' | translate: { count: 100 } }}</option>
+    </select>
+</div>

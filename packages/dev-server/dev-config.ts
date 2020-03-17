@@ -13,8 +13,6 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
-import { UiPlugin } from './ui-plugin/ui-plugin';
-
 /**
  * Config settings used during development
  */
@@ -69,11 +67,8 @@ export const devConfig: VendureConfig = {
                 changeEmailAddressUrl: 'http://localhost:4201/change-email-address',
             },
         }),
-        UiPlugin,
         AdminUiPlugin.init({
             port: 5001,
-            // extensions: UiPlugin.uiExtensions,
-            // watch: true,
         }),
     ],
 };

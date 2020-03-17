@@ -1,12 +1,18 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/app",
-    "module": "es2015"
+    "outDir": "../out-tsc/app"
   },
-  "exclude": [
-    "src/test.ts",
-    "**/*.spec.ts",
-    "testing/*.ts"
-  ]
+  "files": [
+    "main.ts",
+    "./lib/static/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts"
+  ],
+  "angularCompilerOptions": {
+    "strictMetadataEmit": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
+  }
 }

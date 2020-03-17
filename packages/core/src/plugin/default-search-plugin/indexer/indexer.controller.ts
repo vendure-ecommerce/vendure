@@ -115,6 +115,7 @@ export class IndexerController {
                     const batchIds = ids.slice(begin, end);
                     const batch = await this.connection.getRepository(ProductVariant).findByIds(batchIds, {
                         relations: variantRelations,
+                        where: { deletedAt: null },
                     });
                     const variants = this.hydrateVariants(ctx, batch);
                     await this.saveVariants(ctx.languageCode, ctx.channelId, variants);
@@ -221,6 +222,7 @@ export class IndexerController {
                 .getRepository(ProductVariant)
                 .findByIds(product.variants.map(v => v.id), {
                     relations: variantRelations,
+                    where: { deletedAt: null },
                 });
             if (product.enabled === false) {
                 updatedVariants.forEach(v => (v.enabled = false));
@@ -241,6 +243,7 @@ export class IndexerController {
     ): Promise<boolean> {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
             relations: variantRelations,
+            where: { deletedAt: null },
         });
         if (variants) {
             const updatedVariants = this.hydrateVariants(ctx, variants);
@@ -276,7 +279,8 @@ export class IndexerController {
         qb.leftJoin('variants.product', 'product')
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId })
-            .andWhere('variants__product.deletedAt IS NULL');
+            .andWhere('variants__product.deletedAt IS NULL')
+            .andWhere('variants.deletedAt IS NULL');
         return qb;
     }
 

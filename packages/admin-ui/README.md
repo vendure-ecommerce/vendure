@@ -6,9 +6,24 @@ It is an Angular application built with the Angular CLI.
 
 The UI is powered by the [Clarity Design System](https://vmware.github.io/clarity/).
 
-## Compiler
+## Structure
 
-The `/src/compiler` directory contains the code which is used to dynamically compile the Admin UI app with UI extensions. This code is used by the `@vendure/admin-ui-plugin`.
+### Library
+
+The Admin UI is structured as an Angular library conforming to the [ng-packagr format](https://github.com/ng-packagr/ng-packagr). This library is what is published to npm as `@vendure/admin-ui`. The libary consists
+of a set of modules which are accessible from consuming applications as sub-packages:
+
+* `@vendure/admin-ui/core`
+* `@vendure/admin-ui/catalog`
+* `@vendure/admin-ui/orders`
+
+etc. These library packages are located at [./src/lib](./src/lib)
+
+When built with `yarn build`, the output will be located in the `./package` sub directory. This is also the root of the published npm package.
+
+### Application
+
+In addition to the library, there is also a full application located at [./src/app](./src/app). This application is used both during development of the Admin UI, and also as the "default" Admin UI without any UI extensions, as provided as the default by the [admin-ui-plugin](../admin-ui-plugin).
 
 ## Localization
 

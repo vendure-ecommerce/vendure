@@ -1,0 +1,70 @@
+<div class="clr-form-control" *ngIf="compact">
+    <label for="basic" class="clr-control-label">{{ customField | customFieldLabel }}</label>
+    <div class="clr-control-container">
+        <div class="clr-input-wrapper">
+            <ng-container *ngIf="hasCustomControl; else standardControls">
+                <div #customComponentPlaceholder></div>
+            </ng-container>
+            <ng-template #standardControls>
+                <ng-container *ngTemplateOutlet="inputs"></ng-container>
+            </ng-template>
+        </div>
+    </div>
+</div>
+<vdr-form-field [label]="customField | customFieldLabel" [for]="customField.name" *ngIf="!compact">
+    <ng-container *ngIf="hasCustomControl; else standardControls">
+        <div #customComponentPlaceholder></div>
+    </ng-container>
+    <ng-template #standardControls>
+        <ng-container *ngTemplateOutlet="inputs"></ng-container>
+    </ng-template>
+</vdr-form-field>
+<ng-template #inputs>
+    <input
+        *ngIf="isTextInput"
+        type="text"
+        [id]="customField.name"
+        [pattern]="$any(customField).pattern"
+        [formControl]="formGroup.get(customField.name)"
+        [readonly]="readonly || customField.readonly"
+    />
+    <select
+        *ngIf="isSelectInput"
+        clrSelect
+        [formControl]="formGroup.get(customField.name)"
+        [disabled]="readonly || customField.readonly"
+    >
+        <option *ngFor="let option of stringOptions" [value]="option.value">
+            {{ option | customFieldLabel }}
+        </option>
+    </select>
+    <input
+        *ngIf="customField.type === 'int' || customField.type === 'float'"
+        type="number"
+        [id]="customField.name"
+        [min]="min"
+        [max]="max"
+        [step]="step"
+        [formControl]="formGroup.get(customField.name)"
+        [readonly]="readonly || customField.readonly"
+    />
+    <clr-toggle-wrapper *ngIf="customField.type === 'boolean'">
+        <input
+            type="checkbox"
+            clrToggle
+            [id]="customField.name"
+            [formControl]="formGroup.get(customField.name)"
+            [readonly]="readonly || customField.readonly"
+        />
+    </clr-toggle-wrapper>
+    <vdr-datetime-picker
+        *ngIf="customField.type === 'datetime'"
+        [id]="customField.name"
+        [formControl]="formGroup.get(customField.name)"
+        [min]="min"
+        [max]="max"
+        [readonly]="readonly || customField.readonly"
+    >
+
+    </vdr-datetime-picker>
+</ng-template>

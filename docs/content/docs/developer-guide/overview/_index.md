@@ -36,4 +36,4 @@ Vendure supports multiple databases. Currently it is tested with MySQL/MariaDB, 
 
 ## Custom Business Logic (Plugins)
 
-Not shown on the diagram (for the sake of simplicity) are plugins. Plugins are the mechanism by which you extend Vendure with your own business logic and functionality. See [the Plugins docs]({{< relref "/docs/developer-guide/plugins" >}})
+Not shown on the diagram (for the sake of simplicity) are plugins. Plugins are the mechanism by which you extend Vendure with your own business logic and functionality. See [the Plugins docs]({{< relref "/docs/plugins" >}})

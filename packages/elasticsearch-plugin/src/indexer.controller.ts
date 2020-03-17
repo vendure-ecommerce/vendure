@@ -182,6 +182,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
         const ctx = RequestContext.fromObject(rawContext);
         return asyncObservable(async () => {
+            const variants = await this.connection
+                .getRepository(ProductVariant)
+                .findByIds(variantIds, { relations: ['product'] });
+            const productIds = unique(variants.map(v => v.product.id));
+            for (const productId of productIds) {
+                await this.updateProductInternal(ctx, productId, ctx.channelId);
+            }
             await this.deleteVariantsInternal(variantIds, ctx.channelId);
             return true;
         });
@@ -262,7 +269,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 }
 
                 const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
-                const count = await qb.andWhere('variants__product.deletedAt IS NULL').getCount();
+                const count = await qb.getCount();
                 Logger.verbose(`Reindexing ${count} ProductVariants`, loggerCtx);
 
                 const batches = Math.ceil(count / batchSize);
@@ -403,6 +410,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         const productVariants = await this.connection.getRepository(ProductVariant).findByIds(variantIds, {
             relations: variantRelations,
+            where: {
+                deletedAt: null,
+            },
             order: {
                 id: 'ASC',
             },
@@ -441,6 +451,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 .getRepository(ProductVariant)
                 .findByIds(product.variants.map(v => v.id), {
                     relations: variantRelations,
+                    where: {
+                        deletedAt: null,
+                    },
                 });
             if (product.enabled === false) {
                 updatedProductVariants.forEach(v => (v.enabled = false));
@@ -526,7 +539,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
         qb.leftJoin('variants.product', '__product')
             .leftJoin('__product.channels', '__channel')
-            .where('__channel.id = :channelId', { channelId });
+            .where('__channel.id = :channelId', { channelId })
+            .andWhere('variants__product.deletedAt IS NULL')
+            .andWhere('variants.deletedAt IS NULL');
         return qb;
     }
 
@@ -538,7 +553,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const { batchSize } = this.options;
         const i = Number.parseInt(batchNumber.toString(), 10);
         const variants = await qb
-            .andWhere('variants__product.deletedAt IS NULL')
             .take(batchSize)
             .skip(i * batchSize)
             .addOrderBy('variants.id', 'ASC')
@@ -550,6 +564,9 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private async getVariantsByIds(ctx: RequestContext, ids: ID[]) {
         const variants = await this.connection.getRepository(ProductVariant).findByIds(ids, {
             relations: variantRelations,
+            where: {
+                deletedAt: null,
+            },
             order: {
                 id: 'ASC',
             },

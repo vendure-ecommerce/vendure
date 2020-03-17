@@ -72,6 +72,14 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
                             value.productVariantAsset.preview,
                         );
                     }
+                    // TODO: This path is deprecated and should be removed in a future version
+                    // once the fields are removed from the GraphQL API
+                    if (value.productPreview) {
+                        value.productPreview = toAbsoluteUrl(request, value.productPreview);
+                    }
+                    if (value.productVariantPreview) {
+                        value.productVariantPreview = toAbsoluteUrl(request, value.productVariantPreview);
+                    }
                 }
             }
             return value;

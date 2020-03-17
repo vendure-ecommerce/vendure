@@ -6,11 +6,11 @@ import resolve from '@rollup/plugin-node-resolve';
 export default commandLineArgs => {
     const isProd = commandLineArgs.configProduction === true;
     return {
-        input: 'src/index.ts',
+        input: 'src/client/index.ts',
         output: {
-            dir: 'lib',
+            dir: 'client',
             format: 'umd',
-            name: 'VendureUiDevkit',
+            name: 'VendureUiClient',
         },
         plugins: [resolve(), typescript(), ...(isProd ? [terser({
             output: {

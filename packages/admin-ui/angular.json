@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -10,45 +10,41 @@
       "prefix": "vdr",
       "schematics": {
         "@schematics/angular:component": {
-          "styleext": "scss"
+          "style": "scss"
         }
       },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "baseHref": "/admin/",
             "outputPath": "dist",
-            "index": "src/index.html",
+            "index": "src/lib/static/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": "src/lib/static/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
-              "src/favicon.ico",
-              "src/vendure-ui-config.json",
-              "src/assets",
-              "src/i18n-messages",
-              {
-                "glob": "**/*.*",
-                "input": "src/app/extensions/__static-assets__",
-                "output": "assets"
-              }
+              { "glob": "**/*", "input": "src/lib/static/", "output": "/" }
             ],
             "styles": [
-              "../../node_modules/@clr/icons/clr-icons.min.css",
-              "src/styles/styles.scss",
-              "../../node_modules/trix/dist/trix.css"
-            ],
-            "scripts": [
-              "../../node_modules/trix/dist/trix-core.js"
+              "src/lib/static/styles/styles.scss"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/styles"]
+              "includePaths": [
+                "./src/lib/static/styles"
+              ]
             },
             "showCircularDependencies": false
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -63,52 +59,7 @@
               "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
-              "buildOptimizer": true
-            },
-            "plugin": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": true,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "styles": [
-                "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../trix/dist/trix-core.js"
-              ]
-            },
-            "plugin-watch": {
-              "styles": [
-                "../../@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../trix/dist/trix-core.js"
-              ]
-            },
-            "plugin-dev": {
-              "styles": [
-                "../../node_modules/@clr/icons/clr-icons.min.css",
-                "src/styles/styles.scss",
-                "../../node_modules/trix/dist/trix.css"
-              ],
-              "scripts": [
-                "../../node_modules/trix/dist/trix-core.js"
-              ]
+              "buildOptimizer": false
             }
           }
         },
@@ -125,7 +76,7 @@
               "browserTarget": "vendure-admin:build:plugin-watch"
             },
             "plugin-dev": {
-              "browserTarget": "vendure-admin:build:plugin-dev"
+              "browserTarget": "vendure-admin:build:plugin-dev-watch"
             }
           }
         },
@@ -139,19 +90,21 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": "src/lib/static/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles/styles.scss"
+              "src/lib/static/styles/styles.scss"
             ],
             "scripts": [],
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/lib/static/favicon.ico",
+              "src/lib/static/assets"
             ],
             "stylePreprocessorOptions": {
-              "includePaths": ["./src/styles"]
+              "includePaths": [
+                "./src/lib/static/styles"
+              ]
             }
           }
         },
@@ -195,16 +148,37 @@
           }
         }
       }
+    },
+    "vendure-admin-lib": {
+      "projectType": "library",
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "vdr",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "./tsconfig.lib.json",
+            "project": "./src/lib/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "./tsconfig.lib.prod.json"
+            }
+          }
+        }
+      }
     }
   },
   "defaultProject": "vendure-admin",
   "schematics": {
     "@schematics/angular:component": {
-      "spec": false,
+      "skipTests": true,
       "changeDetection": "OnPush"
     }
   },
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "analytics": "61fa89f7-706a-46c0-bcdb-b1d3664195ce"
   }
 }

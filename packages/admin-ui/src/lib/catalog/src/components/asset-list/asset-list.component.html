@@ -1,0 +1,37 @@
+<vdr-action-bar>
+    <vdr-ab-left>
+        <input
+            type="text"
+            name="searchTerm"
+            [formControl]="searchTerm"
+            [placeholder]="'asset.search-asset-name' | translate"
+            class="clr-input search-input"
+        />
+    </vdr-ab-left>
+    <vdr-ab-right>
+        <vdr-action-bar-items locationId="asset-list"></vdr-action-bar-items>
+        <vdr-asset-file-input
+            (selectFiles)="filesSelected($event)"
+            dropZoneTarget=".content-area"
+        ></vdr-asset-file-input>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<vdr-asset-gallery
+    [assets]="(items$ | async)! | paginate: (paginationConfig$ | async) || {}"
+    [multiSelect]="true"
+></vdr-asset-gallery>
+
+<div class="paging-controls">
+    <vdr-items-per-page-controls
+        [itemsPerPage]="itemsPerPage$ | async"
+        (itemsPerPageChange)="setItemsPerPage($event)"
+    ></vdr-items-per-page-controls>
+
+    <vdr-pagination-controls
+        [currentPage]="currentPage$ | async"
+        [itemsPerPage]="itemsPerPage$ | async"
+        [totalItems]="totalItems$ | async"
+        (pageChange)="setPageNumber($event)"
+    ></vdr-pagination-controls>
+</div>

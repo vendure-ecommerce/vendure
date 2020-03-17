@@ -33,6 +33,8 @@ import { ElasticsearchOptions, mergeWithDefaults } from './options';
  *
  * ## Installation
  *
+ * **Requires Elasticsearch v7.0 or higher.**
+ *
  * `yarn add \@vendure/elasticsearch-plugin`
  *
  * or
