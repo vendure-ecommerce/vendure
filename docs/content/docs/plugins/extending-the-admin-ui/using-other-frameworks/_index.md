@@ -7,6 +7,10 @@ weight: 1
 
 Although the Admin UI is an Angular app, it is possible to create UI extensions using any web technology - React, Vue, plain JavaScript, etc.
 
+{{% alert "primary" %}}
+For working examples of a UI extensions built with **Vue** and **React**, see the [real-world-vendure ui extensions](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/ui-extensions)
+{{% /alert %}}
+
 There is still a small amount of Angular "glue code" needed to let the compiler know how to integrate your extension, so let's take a look at how this is done.
 
 ## 1. Install `@vendure/ui-devkit`
