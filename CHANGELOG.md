@@ -1,3 +1,108 @@
+## 0.10.0 (2020-03-17)
+
+
+#### Features
+
+* **admin-ui** Export helper for hosting external ui extensions ([3d08460](https://github.com/vendure-ecommerce/vendure/commit/3d08460))
+* **admin-ui** Export minified theme css for ui extensions dev ([99073c9](https://github.com/vendure-ecommerce/vendure/commit/99073c9))
+* **admin-ui** Improved ui extension development API & architecture ([fe72c41](https://github.com/vendure-ecommerce/vendure/commit/fe72c41))
+* **admin-ui** Simplify API for adding menu items, custom controls ([2b9e4c4](https://github.com/vendure-ecommerce/vendure/commit/2b9e4c4))
+* **admin-ui** Update Angular to v9 ([bc35c25](https://github.com/vendure-ecommerce/vendure/commit/bc35c25))
+* **admin-ui** Update Clarity to v3.rc ([f8b94b2](https://github.com/vendure-ecommerce/vendure/commit/f8b94b2))
+* **admin-ui** Use ProseMirror as rich text editor ([e309111](https://github.com/vendure-ecommerce/vendure/commit/e309111))
+* **ui-devkit** Allow static assets to be renamed ([08e23d0](https://github.com/vendure-ecommerce/vendure/commit/08e23d0))
+* **ui-devkit** Run detect and run ngcc on first compilation ([b5a57a8](https://github.com/vendure-ecommerce/vendure/commit/b5a57a8))
+
+#### Fixes
+
+* **admin-ui** Enable full template type checks and fix issues ([db36111](https://github.com/vendure-ecommerce/vendure/commit/db36111))
+* **admin-ui** Prevent removal of FacetValue on ProductDetail form enter ([1db6c3d](https://github.com/vendure-ecommerce/vendure/commit/1db6c3d)), closes [#267](https://github.com/vendure-ecommerce/vendure/issues/267)
+* **core** Correctly resolve deprecated asset fields in search query ([e9a517b](https://github.com/vendure-ecommerce/vendure/commit/e9a517b))
+* **core** Correctly update search index on ProductVariant deletion ([401c236](https://github.com/vendure-ecommerce/vendure/commit/401c236)), closes [#266](https://github.com/vendure-ecommerce/vendure/issues/266)
+* **elasticsearch-plugin** Correctly update index on variant deletion ([8b91a59](https://github.com/vendure-ecommerce/vendure/commit/8b91a59)), closes [#266](https://github.com/vendure-ecommerce/vendure/issues/266)
+
+
+### BREAKING CHANGE
+
+* This release introduces a re-architected solution for handling extensions to the Admin UI. *If you do not use the ui extensions feature, you will not need to change anything*. For those already using ui extensions, these are the changes:
+
+* The `@vendure/admin-ui-plugin` now contains only the default admin ui app.
+* To create extensions, you will need to install `@vendure/ui-devkit`, which exposes a `compileUiExtensions()` function.
+* Here is an example of how the config differs:
+  ```ts
+    // before
+    AdminUiPlugin.init({
+        port: 3002,
+        extensions: [
+            ReviewsPlugin.uiExtensions,
+            RewardsPlugin.uiExtensions,
+        ],
+        watch: true,
+    }),
+  ```
+  ```ts
+    // after
+  import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+
+  // ...
+
+    AdminUiPlugin.init({
+        port: 3002,
+        app: compileUiExtensions({
+            // The source files of the admin ui, extended with your extensions,
+            // will be output and compiled from this location
+            outputPath: path.join(__dirname, '../admin-ui'),
+            extensions: [
+                ReviewsPlugin.uiExtensions,
+                RewardsPlugin.uiExtensions,
+            ],
+            watch: true,
+        }),
+    }),
+  ```
+* For lazy-loaded extension modules, you must now specify a `route` property. This allows us to lazy-load each extension individually, whereas previously _all_ extensions were bundled into a single lazy-loaded chunk.
+  ```diff
+  export class ReviewsPlugin {
+      static uiExtensions: AdminUiExtension = {
+          extensionPath: path.join(__dirname, 'ui'),
+          id: 'reviews-plugin',
+          ngModules: [{
+              type: 'lazy',
+  +           route: 'product-reviews',
+              ngModuleFileName: 'reviews-ui-lazy.module.ts',
+              ngModuleName: 'ReviewsUiLazyModule',
+          }],
+      };
+  }
+
+  // in the route config of the lazy-loaded module
+  {
+  -   path: 'product-reviews',
+  +   path: '',
+  +   pathMatch: 'full',
+      component: AllProductReviewsListComponent,
+  },
+  ```
+* The `CustomFieldControl` interface changed slightly:
+  ```diff
+  import {
+  - CustomFieldConfig,
+  + CustomFieldConfigType,
+    CustomFieldControl,
+  } from '@vendure/admin-ui/core';
+
+  @Component({
+      // ...
+  })
+  export class ReviewCountComponent implements CustomFieldControl  {
+  -   customFieldConfig: CustomFieldConfig;
+  +   customFieldConfig: CustomFieldConfigType;
+      formControl: FormControl;
+      // ...
+  }
+  ```
+* **NOTE:** if you run into errors with Angular dependencies in the wrong place (e.g. nested inside the `node_modules` of another dependency), try running `yarn upgrade --check-files`, or failing that, remove the node_modules directory, delete the lockfile, and re-install.
+
 ## 0.9.0 (2020-02-19)
 
 
