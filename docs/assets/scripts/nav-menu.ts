@@ -1,6 +1,11 @@
 export function initNavMenu() {
     const sections = document.querySelectorAll('nav li.section');
     sections.forEach(makeExpandable);
+
+    const activeLink = document.querySelector('nav a.active');
+    if (activeLink) {
+        activeLink.scrollIntoView({ block: 'center' });
+    }
 }
 
 function makeExpandable(section: Element) {
