@@ -18,6 +18,7 @@ let targetOrigin = 'http://localhost:3000';
  * app. The `targetOrigin` is a security feature intended to provide control over where messages are sent.
  *
  * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
  */
 export function setTargetOrigin(value: string) {
     targetOrigin = value;
@@ -28,6 +29,7 @@ export function setTargetOrigin(value: string) {
  * Perform a GraphQL query and returns either an Observable or a Promise of the result.
  *
  * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
  */
 export function graphQlQuery<T, V extends { [key: string]: any }>(
     document: string,
@@ -53,6 +55,7 @@ export function graphQlQuery<T, V extends { [key: string]: any }>(
  * Perform a GraphQL mutation and returns either an Observable or a Promise of the result.
  *
  * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
  */
 export function graphQlMutation<T, V extends { [key: string]: any }>(
     document: string,
@@ -77,6 +80,7 @@ export function graphQlMutation<T, V extends { [key: string]: any }>(
  * Display a toast notification.
  *
  * @docsCategory ui-devkit
+ * @docsPage UiDevkitClient
  */
 export function notify(options: NotificationMessage['data']) {
     sendMessage('notification', options).toPromise();

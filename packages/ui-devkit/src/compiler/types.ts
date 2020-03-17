@@ -8,6 +8,7 @@
  * detailed instructions.
  *
  * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
  */
 export interface AdminUiExtension {
     /**
@@ -44,6 +45,7 @@ export interface AdminUiExtension {
  * name, which will cause the compiler to copy and then rename the asset.
  *
  * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
  */
 export type StaticAssetDefinition = string | { path: string; rename: string };
 
@@ -52,6 +54,7 @@ export type StaticAssetDefinition = string | { path: string; rename: string };
  * Configuration defining a single NgModule with which to extend the Admin UI.
  *
  * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
  */
 export interface AdminUiExtensionSharedModule {
     /**
@@ -78,6 +81,7 @@ export interface AdminUiExtensionSharedModule {
  * Configuration defining a single NgModule with which to extend the Admin UI.
  *
  * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
  */
 export interface AdminUiExtensionLazyModule {
     /**
