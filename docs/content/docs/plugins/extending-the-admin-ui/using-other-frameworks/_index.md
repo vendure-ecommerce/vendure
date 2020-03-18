@@ -159,7 +159,7 @@ If your extension does not have a build step, you can still include the theme st
 
 ### UiDevkitClient
 
-The `@vendure/ui-devkit` package provides a number of helper methods which allow your extension to seamlessly interact with the underlying Admin UI infrastructure, collectively known as the [UiDevkitClient]({{< relref "ui-devkit-client" >}}). The client allow your extension to:
+The `@vendure/ui-devkit` package provides a number of helper methods which allow your extension to seamlessly interact with the underlying Admin UI infrastructure, collectively known as the [UiDevkitClient]({{< relref "ui-devkit-client" >}}). The client allows your extension to:
 
 * Make GraphQL queries & mutations, without the need for your own HTTP or GraphQL client, with full integration with the Admin UI client-side GraphQL cache.
 * Display toast notifications.
