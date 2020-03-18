@@ -3,10 +3,11 @@ import { VendureConfig } from '@vendure/core';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import { print } from 'graphql/language/printer';
-import fetch, { Response } from 'node-fetch';
+import fetch, { RequestInit, Response } from 'node-fetch';
 import { Curl } from 'node-libcurl';
 import { stringify } from 'querystring';
 
+import { QueryParams } from './types';
 import { createUploadPostData } from './utils/create-upload-post-data';
 
 const LOGIN = gql`
@@ -22,8 +23,6 @@ const LOGIN = gql`
         }
     }
 `;
-
-export type QueryParams = { [key: string]: string | number };
 
 // tslint:disable:no-console
 /**
@@ -74,7 +73,7 @@ export class SimpleGraphQLClient {
         variables?: V,
         queryParams?: QueryParams,
     ): Promise<T> {
-        const response = await this.request(query, variables, queryParams);
+        const response = await this.makeGraphQlRequest(query, variables, queryParams);
         const result = await this.getResult(response);
 
         if (response.ok && !result.errors && result.data) {
@@ -90,10 +89,30 @@ export class SimpleGraphQLClient {
 
     /**
      * @description
+     * Performs a raw HTTP request to the given URL, but also includes the authToken & channelToken
+     * headers if they have been set. Useful for testing non-GraphQL endpoints, e.g. for plugins
+     * which make use of REST controllers.
+     */
+    async fetch(url: string, options: RequestInit = {}): Promise<Response> {
+        const headers = { 'Content-Type': 'application/json', ...this.headers, ...options.headers };
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
+        });
+        const authToken = response.headers.get(this.vendureConfig.authOptions.authTokenHeaderKey || '');
+        if (authToken != null) {
+            this.setAuthToken(authToken);
+        }
+        return response;
+    }
+
+    /**
+     * @description
      * Performs a query or mutation and returns the resulting status code.
      */
     async queryStatus<T = any, V = Record<string, any>>(query: DocumentNode, variables?: V): Promise<number> {
-        const response = await this.request(query, variables);
+        const response = await this.makeGraphQlRequest(query, variables);
         return response.status;
     }
 
@@ -141,7 +160,7 @@ export class SimpleGraphQLClient {
         );
     }
 
-    private async request(
+    private async makeGraphQlRequest(
         query: DocumentNode,
         variables?: { [key: string]: any },
         queryParams?: QueryParams,
@@ -154,16 +173,10 @@ export class SimpleGraphQLClient {
 
         const url = queryParams ? this.apiUrl + `?${stringify(queryParams)}` : this.apiUrl;
 
-        const response = await fetch(url, {
+        return this.fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...this.headers },
             body,
         });
-        const authToken = response.headers.get(this.vendureConfig.authOptions.authTokenHeaderKey || '');
-        if (authToken != null) {
-            this.setAuthToken(authToken);
-        }
-        return response;
     }
 
     private async getResult(response: Response): Promise<any> {
