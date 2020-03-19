@@ -33,7 +33,8 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: ElasticSearchInput },
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
-        return this.elasticsearchService.facetValues(ctx, parent.input, true);
+        const facetValues = await this.elasticsearchService.facetValues(ctx, parent.input, true);
+        return facetValues.filter(i => !i.facetValue.facet.isPrivate);
     }
 
     @ResolveProperty()

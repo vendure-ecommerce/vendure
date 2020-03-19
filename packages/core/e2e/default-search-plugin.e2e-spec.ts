@@ -282,6 +282,8 @@ describe('Default search plugin', () => {
                 },
             });
 
+            await awaitRunningJobs(adminClient);
+
             const result = await shopClient.query<SearchFacetValues.Query, SearchFacetValues.Variables>(
                 SEARCH_GET_FACET_VALUES,
                 {
