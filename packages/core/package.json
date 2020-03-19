@@ -31,10 +31,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "vendure": "dist/cli/vendure-cli.js"
+    "vendure": "cli/vendure-cli.js"
   },
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "cli/**/*"
   ],
   "dependencies": {
     "@nestjs/common": "6.8.5",

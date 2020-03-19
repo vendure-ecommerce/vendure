@@ -10,8 +10,8 @@ try {
     Populator = require('@vendure/core').Populator;
     Importer = require('@vendure/core').Importer;
 } catch (e) {
-    Populator = require('../src/data-import/providers/populator/populator').Populator;
-    Importer = require('../src/data-import/providers/importer/importer').Importer;
+    Populator = require('../data-import/providers/populator/populator').Populator;
+    Importer = require('../data-import/providers/importer/importer').Importer;
 }
 
 // tslint:disable:no-console
@@ -128,13 +128,13 @@ export async function populateCollections(app: INestApplication, initialData: { 
     }
 }
 
-async function importProductsFromFile(app: INestApplication, csvPath: string, languageCode: string) {
+async function importProductsFromFile(app: INestApplication, productsCsvPath: string, languageCode: string) {
     // import the csv of same product data
     const importer = app.get(Importer);
-    const productData = await fs.readFile(csvPath, 'utf-8');
+    const productData = await fs.readFile(productsCsvPath, 'utf-8');
 
     const importResult = await importer.parseAndImport(productData, languageCode, true).toPromise();
-    if (importResult.errors.length) {
+    if (importResult.errors && importResult.errors.length) {
         const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
         console.log(
             `${importResult.errors.length} errors encountered when importing product data. See: ${errorFile}`,

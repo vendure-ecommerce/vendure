@@ -187,7 +187,7 @@ async function createApp(
                         require(path.join(root, 'node_modules/ts-node')).register();
                     }
                     const { populate } = await import(
-                        path.join(root, 'node_modules/@vendure/core/dist/cli/populate')
+                        path.join(root, 'node_modules/@vendure/core/cli/populate')
                     );
                     const { bootstrap, DefaultLogger, LogLevel } = await import(
                         path.join(root, 'node_modules/@vendure/core/dist/index')
