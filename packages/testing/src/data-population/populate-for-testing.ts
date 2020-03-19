@@ -1,8 +1,8 @@
 /* tslint:disable:no-console */
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { InitialData, VendureConfig } from '@vendure/core';
-import fs from 'fs-extra';
+import { VendureConfig } from '@vendure/core';
+import { importProductsFromCsv, populateCollections, populateInitialData } from '@vendure/core/cli';
 
 import { TestServerOptions } from '../types';
 
@@ -24,50 +24,19 @@ export async function populateForTesting(
 
     const [app, worker] = await bootstrapFn(config);
 
-    await populateInitialData(app, options.initialData, logging);
+    const logFn = (message: string) => (logging ? console.log(message) : null);
+
+    await populateInitialData(app, options.initialData, logFn);
     await populateProducts(app, options.productsCsvPath, logging);
-    await populateCollections(app, options.initialData, logging);
+    await populateCollections(app, options.initialData, logFn);
     await populateCustomers(options.customerCount || 10, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
     return [app, worker];
 }
 
-async function populateInitialData(app: INestApplication, initialData: InitialData, logging: boolean) {
-    const { Populator } = await import('@vendure/core');
-    const populator = app.get(Populator);
-    try {
-        await populator.populateInitialData(initialData);
-        if (logging) {
-            console.log(`\nPopulated initial data`);
-        }
-    } catch (err) {
-        console.error(err.message);
-    }
-}
-
-async function populateCollections(app: INestApplication, initialData: InitialData, logging: boolean) {
-    const { Populator } = await import('@vendure/core');
-    if (!initialData.collections.length) {
-        return;
-    }
-    const populator = app.get(Populator);
-    try {
-        await populator.populateCollections(initialData);
-        if (logging) {
-            console.log(`\nCreated ${initialData.collections.length} Collections`);
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
 async function populateProducts(app: INestApplication, productsCsvPath: string, logging: boolean) {
-    const { Importer } = await import('@vendure/core');
-    const importer = app.get(Importer);
-    const productData = await fs.readFile(productsCsvPath, 'utf-8');
-
-    const importResult = await importer.parseAndImport(productData, LanguageCode.en, false).toPromise();
+    const importResult = await importProductsFromCsv(app, productsCsvPath, LanguageCode.en);
     if (importResult.errors && importResult.errors.length) {
         console.log(`${importResult.errors.length} errors encountered when importing product data:`);
         await console.log(importResult.errors.join('\n'));
