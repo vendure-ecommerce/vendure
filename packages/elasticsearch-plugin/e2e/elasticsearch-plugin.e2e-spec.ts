@@ -1,8 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
-import { facetValueCollectionFilter } from '@vendure/core/dist/config/collection/default-collection-filters';
+import { DefaultLogger, facetValueCollectionFilter, LogLevel, mergeConfig } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';

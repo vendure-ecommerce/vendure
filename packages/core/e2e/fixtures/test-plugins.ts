@@ -4,6 +4,7 @@ import { Permission } from '@vendure/common/lib/generated-shop-types';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
     Allow,
+    ConfigModule,
     ConfigService,
     InternalServerError,
     OnVendureBootstrap,
@@ -12,7 +13,6 @@ import {
     OnVendureWorkerClose,
     VendurePlugin,
 } from '@vendure/core';
-import { ConfigModule } from '@vendure/core/dist/config/config.module';
 import gql from 'graphql-tag';
 
 export class TestPluginWithAllLifecycleHooks

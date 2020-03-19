@@ -1,6 +1,7 @@
 /* tslint:disable:no-console */
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import {
+    defaultConfig,
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
@@ -8,7 +9,6 @@ import {
     mergeConfig,
     VendureConfig,
 } from '@vendure/core';
-import { defaultConfig } from '@vendure/core/dist/config/default-config';
 import path from 'path';
 
 export function getMysqlConnectionOptions(count: number) {
