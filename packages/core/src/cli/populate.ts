@@ -3,21 +3,14 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { logColored } from './cli-utils';
-// tslint:disable:no-var-requires
-let Populator: any;
-let Importer: any;
-try {
-    Populator = require('@vendure/core').Populator;
-    Importer = require('@vendure/core').Importer;
-} catch (e) {
-    Populator = require('../data-import/providers/populator/populator').Populator;
-    Importer = require('../data-import/providers/importer/importer').Importer;
-}
 
 // tslint:disable:no-console
 /**
+ * @description
  * Populates the Vendure server with some initial data and (optionally) product data from
  * a supplied CSV file.
+ *
+ * @docsCategory import-export
  */
 export async function populate(
     bootstrapFn: () => Promise<INestApplication | undefined>,
@@ -28,28 +21,45 @@ export async function populate(
     if (!app) {
         throw new Error('Could not bootstrap the Vendure app');
     }
-    const initialData =
+    const initialData: import('@vendure/core').InitialData =
         typeof initialDataPathOrObject === 'string'
             ? require(initialDataPathOrObject)
             : initialDataPathOrObject;
-    await populateInitialData(app, initialData);
+    await populateInitialData(app, initialData, logColored);
     if (productsCsvPath) {
-        await importProductsFromFile(app, productsCsvPath, initialData.defaultLanguage);
-        await populateCollections(app, initialData);
+        await importProductsWithLogging(app, productsCsvPath, initialData.defaultLanguage);
+        await populateCollections(app, initialData, logColored);
     }
     logColored('\nDone!');
     return app;
 }
 
-export async function importProducts(csvPath: string, languageCode: string) {
+export async function importProducts(csvPath: string, languageCode: import('@vendure/core').LanguageCode) {
     logColored(`\nImporting from "${csvPath}"...\n`);
     const app = await getApplicationRef();
     if (app) {
-        await importProductsFromFile(app, csvPath, languageCode);
+        await importProductsFromCsv(app, csvPath, languageCode);
         logColored('\nDone!');
         await app.close();
         process.exit(0);
     }
+}
+
+async function importProductsWithLogging(
+    app: INestApplication,
+    productsCsvPath: string,
+    languageCode: import('@vendure/core').LanguageCode,
+) {
+    const importResult = await importProductsFromCsv(app, productsCsvPath, languageCode);
+    if (importResult.errors && importResult.errors.length) {
+        const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
+        console.log(
+            `${importResult.errors.length} errors encountered when importing product data. See: ${errorFile}`,
+        );
+        await fs.writeFile(errorFile, importResult.errors.join('\n'));
+    }
+
+    logColored(`\nImported ${importResult.imported} products`);
 }
 
 export async function getApplicationRef(): Promise<INestApplication | undefined> {
@@ -99,7 +109,7 @@ export async function getApplicationRef(): Promise<INestApplication | undefined>
 
     // Force the sync mode on, so that all the tables are created
     // on this initial run.
-    config.dbConnectionOptions.synchronize = true;
+    (config.dbConnectionOptions as any).synchronize = true;
 
     const { bootstrap } = require('@vendure/core');
     console.log('Bootstrapping Vendure server...');
@@ -107,40 +117,50 @@ export async function getApplicationRef(): Promise<INestApplication | undefined>
     return app;
 }
 
-export async function populateInitialData(app: INestApplication, initialData: object) {
+export async function populateInitialData(
+    app: INestApplication,
+    initialData: import('@vendure/core').InitialData,
+    loggingFn?: (message: string) => void,
+) {
+    const { Populator } = await import('@vendure/core');
     const populator = app.get(Populator);
     try {
         await populator.populateInitialData(initialData);
-    } catch (err) {
-        console.error(err.message);
-    }
-}
-
-export async function populateCollections(app: INestApplication, initialData: { collections: any[] }) {
-    const populator = app.get(Populator);
-    try {
-        if (initialData.collections.length) {
-            logColored(`Populating ${initialData.collections.length} Collections...`);
-            await populator.populateCollections(initialData);
+        if (typeof loggingFn === 'function') {
+            loggingFn(`Populated initial data`);
         }
     } catch (err) {
         console.error(err.message);
     }
 }
 
-async function importProductsFromFile(app: INestApplication, productsCsvPath: string, languageCode: string) {
-    // import the csv of same product data
+export async function populateCollections(
+    app: INestApplication,
+    initialData: import('@vendure/core').InitialData,
+    loggingFn?: (message: string) => void,
+) {
+    const { Populator } = await import('@vendure/core');
+    const populator = app.get(Populator);
+    try {
+        if (initialData.collections.length) {
+            await populator.populateCollections(initialData);
+            if (typeof loggingFn === 'function') {
+                loggingFn(`Created ${initialData.collections.length} Collections`);
+            }
+        }
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+export async function importProductsFromCsv(
+    app: INestApplication,
+    productsCsvPath: string,
+    languageCode: import('@vendure/core').LanguageCode,
+) {
+    const { Importer } = await import('@vendure/core');
     const importer = app.get(Importer);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');
 
-    const importResult = await importer.parseAndImport(productData, languageCode, true).toPromise();
-    if (importResult.errors && importResult.errors.length) {
-        const errorFile = path.join(process.cwd(), 'vendure-import-error.log');
-        console.log(
-            `${importResult.errors.length} errors encountered when importing product data. See: ${errorFile}`,
-        );
-        await fs.writeFile(errorFile, importResult.errors.join('\n'));
-    }
-
-    logColored(`\nImported ${importResult.imported} products`);
+    return importer.parseAndImport(productData, languageCode, true).toPromise();
 }
