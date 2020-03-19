@@ -29,6 +29,12 @@ export interface CollectionDefinition {
     assetPaths?: string[];
 }
 
+/**
+ * @description
+ * An object defining initial settings for a new Vendure installation.
+ *
+ * @docsCategory import-export
+ */
 export interface InitialData {
     defaultLanguage: LanguageCode;
     defaultZone: string;
