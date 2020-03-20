@@ -1,3 +1,5 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
 /**
  * @description
  * Defines extensions to the Admin UI application by specifying additional
@@ -37,6 +39,22 @@ export interface AdminUiExtension {
      * directory.
      */
     staticAssets?: StaticAssetDefinition[];
+
+    /**
+     * @description
+     * Optional object defining any translation files for the Admin UI. The value should be an object with
+     * the key as a 2-character ISO 639-1 language code, and the value being a [glob](https://github.com/isaacs/node-glob) for any relevant
+     * translation files in JSON format.
+     *
+     * @example
+     * ```TypeScript
+     * translations: {
+     *   en: path.join(__dirname, 'translations/*.en.json'),
+     *   de: path.join(__dirname, 'translations/*.de.json'),
+     * }
+     * ```
+     */
+    translations?: { [languageCode in LanguageCode]?: string };
 }
 
 /**
@@ -146,3 +164,9 @@ export interface UiExtensionCompilerOptions {
      */
     watchPort?: number;
 }
+
+export type Translations = {
+    [section: string]: {
+        [token: string]: string;
+    };
+};

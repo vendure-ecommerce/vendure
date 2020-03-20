@@ -41,13 +41,16 @@
     "@angular/compiler-cli": "^9.0.6",
     "@vendure/admin-ui": "^0.10.0",
     "@vendure/common": "^0.10.0",
+    "chalk": "^3.0.0",
     "chokidar": "^3.0.2",
     "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
     "rxjs": "^6.5.4"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^6.0.0",
     "@types/fs-extra": "^8.1.0",
+    "@types/glob": "^7.1.1",
     "@vendure/core": "^0.10.0",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.9",
