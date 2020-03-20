@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+import { LanguageCode } from '../../common/generated-types';
 
 @Component({
     selector: 'vdr-user-menu',
@@ -7,6 +9,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 })
 export class UserMenuComponent {
     @Input() userName = '';
-
+    @Input() availableLanguages: LanguageCode[] = [];
+    @Input() uiLanguage: LanguageCode;
     @Output() logOut = new EventEmitter<void>();
+    @Output() selectUiLanguage = new EventEmitter<void>();
 }

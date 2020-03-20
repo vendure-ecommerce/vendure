@@ -1,3 +1,5 @@
+import { TranslateService } from '@ngx-translate/core';
+
 import { MockOf } from '../../../../../testing/testing-types';
 import { LanguageCode } from '../../common/generated-types';
 
@@ -15,4 +17,9 @@ export class MockI18nService implements MockOf<I18nService> {
     translate(key: string | string[], params?: any) {
         return key as string;
     }
+
+    availableLanguages: LanguageCode[];
+    setAvailableLanguages: (languages: LanguageCode[]) => void;
+    _availableLanguages: LanguageCode[];
+    ngxTranslate: TranslateService;
 }

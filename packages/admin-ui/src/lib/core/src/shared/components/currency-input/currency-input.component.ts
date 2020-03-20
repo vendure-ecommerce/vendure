@@ -1,7 +1,5 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-import { getDefaultCurrency } from '../../../common/utilities/get-default-currency';
 
 /**
  * A form input control which displays currency in decimal format, whilst working
@@ -27,7 +25,6 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnChanges {
     onChange: (val: any) => void;
     onTouch: () => void;
     _decimalValue: string;
-    readonly currencySymbol = getDefaultCurrency();
 
     ngOnChanges(changes: SimpleChanges) {
         if ('value' in changes) {

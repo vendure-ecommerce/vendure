@@ -178,6 +178,7 @@
     "remove": "Remove",
     "results-count": "{ count } {count, plural, one {result} other {results}}",
     "select": "Select...",
+    "select-display-language": "Select display language",
     "select-today": "Select today",
     "there-are-unsaved-changes": "There are unsaved changes. Navigating away will cause these changes to be lost.",
     "update": "Update",

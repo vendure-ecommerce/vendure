@@ -5,9 +5,12 @@
         </div>
         <div class="header-nav"></div>
         <div class="header-actions">
-            <!-- <vdr-ui-language-switcher></vdr-ui-language-switcher> -->
             <vdr-channel-switcher *vdrIfMultichannel></vdr-channel-switcher>
-            <vdr-user-menu [userName]="userName$ | async" (logOut)="logOut()"></vdr-user-menu>
+            <vdr-user-menu [userName]="userName$ | async"
+                           [uiLanguage]="uiLanguage$ | async"
+                           [availableLanguages]="availableLanguages"
+                           (selectUiLanguage)="selectUiLanguage()"
+                           (logOut)="logOut()"></vdr-user-menu>
         </div>
     </clr-header>
     <nav class="subnav"><vdr-breadcrumb></vdr-breadcrumb></nav>

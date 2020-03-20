@@ -3,5 +3,7 @@
   "apiPort": "3000",
   "adminApiPath": "admin-api",
   "tokenMethod": "cookie",
-  "authTokenHeaderKey": "vendure-auth-token"
+  "authTokenHeaderKey": "vendure-auth-token",
+  "defaultLanguage": "en",
+  "availableLanguages": ["en", "es"]
 }

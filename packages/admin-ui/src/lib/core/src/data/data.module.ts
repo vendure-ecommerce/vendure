@@ -12,7 +12,7 @@ import { introspectionResult } from '../common/introspection-result-wrapper';
 import { LocalStorageService } from '../providers/local-storage/local-storage.service';
 
 import { CheckJobsLink } from './check-jobs-link';
-import { clientDefaults } from './client-state/client-defaults';
+import { getClientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
 import { OmitTypenameLink } from './omit-typename-link';
 import { BaseDataService } from './providers/base-data.service';
@@ -41,10 +41,11 @@ export function createApollo(
         }),
     });
     apolloCache.writeData({
-        data: clientDefaults,
+        data: getClientDefaults(localStorageService),
     });
 
-    if (!false) { // TODO: enable only for dev mode
+    if (!false) {
+        // TODO: enable only for dev mode
         // make the Apollo Cache inspectable in the console for debug purposes
         (window as any)['apolloCache'] = apolloCache;
     }
