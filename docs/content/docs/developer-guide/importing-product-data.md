@@ -47,6 +47,13 @@ Here's an explanation of each column:
 * `variantAssets`: Same as `assets` but applied to the product variant.
 * `variantFacets`: Same as `facets` but applied to the product variant.
 
+### Importing Custom Field Data
+
+If you have [CustomFields]({{< relref "customizing-models" >}}) defined on your Product or ProductVariant entities, this data can also be encoded in the import csv:
+
+* `product:<customFieldName>`: The value of this column will populate `Product.customFields[customFieldName]`. 
+* `variant:<customFieldName>`: The value of this column will populate `ProductVariant.customFields[customFieldName]`. 
+
 {{% alert "primary" %}}
   For a real example, see the [products.csv file used to populate the Vendure demo data](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/mock-data/data-sources/products.csv)
 {{% /alert %}}
