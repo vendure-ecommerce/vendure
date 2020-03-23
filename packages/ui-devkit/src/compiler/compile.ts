@@ -1,4 +1,5 @@
 /* tslint:disable:no-console */
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { AdminUiAppConfig, AdminUiAppDevModeConfig } from '@vendure/common/lib/shared-types';
 import { ChildProcess, spawn } from 'child_process';
 import { FSWatcher, watch as chokidarWatch } from 'chokidar';
@@ -7,11 +8,13 @@ import * as path from 'path';
 
 import { MODULES_OUTPUT_DIR } from './constants';
 import { setupScaffold } from './scaffold';
-import { AdminUiExtension, StaticAssetDefinition, UiExtensionCompilerOptions } from './types';
+import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
+import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions } from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
     getStaticAssetPath,
+    isAdminUiExtension,
     normalizeExtensions,
     shouldUseYarn,
 } from './utils';
@@ -33,7 +36,7 @@ export function compileUiExtensions(
     }
 }
 
-function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): AdminUiAppConfig {
+function runCompileMode(outputPath: string, extensions: Extension[]): AdminUiAppConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
@@ -61,11 +64,7 @@ function runCompileMode(outputPath: string, extensions: AdminUiExtension[]): Adm
     };
 }
 
-function runWatchMode(
-    outputPath: string,
-    port: number,
-    extensions: AdminUiExtension[],
-): AdminUiAppDevModeConfig {
+function runWatchMode(outputPath: string, port: number, extensions: Extension[]): AdminUiAppDevModeConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
@@ -76,7 +75,9 @@ function runWatchMode(
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const normalizedExtensions = normalizeExtensions(extensions);
+            const adminUiExtensions = extensions.filter(isAdminUiExtension);
+            const normalizedExtensions = normalizeExtensions(adminUiExtensions);
+            const allTranslationFiles = getAllTranslationFiles(extensions);
             buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`], {
                 cwd: outputPath,
                 shell: true,
@@ -108,6 +109,18 @@ function runWatchMode(
                     }
                 }
             }
+            for (const translationFiles of Object.values(allTranslationFiles)) {
+                if (!translationFiles) {
+                    continue;
+                }
+                for (const file of translationFiles) {
+                    if (!watcher) {
+                        watcher = chokidarWatch(file);
+                    } else {
+                        watcher.add(file);
+                    }
+                }
+            }
 
             if (watcher) {
                 // watch the ui-devkit package files too
@@ -115,10 +128,11 @@ function runWatchMode(
             }
 
             if (watcher) {
-                const allStaticAssetDefs = extensions.reduce(
+                const allStaticAssetDefs = adminUiExtensions.reduce(
                     (defs, e) => [...defs, ...(e.staticAssets || [])],
                     [] as StaticAssetDefinition[],
                 );
+
                 watcher.on('change', async filePath => {
                     const extension = normalizedExtensions.find(e => filePath.includes(e.extensionPath));
                     if (extension) {
@@ -135,6 +149,17 @@ function runWatchMode(
                         if (filePath.includes(assetPath)) {
                             await copyStaticAsset(outputPath, staticAssetDef);
                             return;
+                        }
+                    }
+                    for (const languageCode of Object.keys(allTranslationFiles)) {
+                        // tslint:disable-next-line:no-non-null-assertion
+                        const translationFiles = allTranslationFiles[languageCode as LanguageCode]!;
+                        for (const file of translationFiles) {
+                            if (filePath.includes(path.normalize(file))) {
+                                await mergeExtensionTranslations(outputPath, {
+                                    [languageCode]: translationFiles,
+                                });
+                            }
                         }
                     }
                 });

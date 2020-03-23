@@ -1,12 +1,14 @@
 /* tslint:disable:no-console */
-import * as chalk from 'chalk';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 import * as fs from 'fs-extra';
+import glob from 'glob';
 import * as path from 'path';
 
 import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
-import { AdminUiExtension, StaticAssetDefinition } from './types';
+import { AdminUiExtension, Extension, StaticAssetDefinition, Translations } from './types';
 
 export const logger = {
     log: (message: string) => console.log(chalk.green(message)),
@@ -87,4 +89,8 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Requ
 
         return { staticAssets: [], translations: {}, ...e, id };
     });
+}
+
+export function isAdminUiExtension(input: Extension): input is AdminUiExtension {
+    return input.hasOwnProperty('extensionPath');
 }

@@ -1,25 +1,33 @@
 /* tslint:disable:no-console */
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
-import glob from 'glob';
 import * as path from 'path';
 
 import { EXTENSION_ROUTES_FILE, MODULES_OUTPUT_DIR, SHARED_EXTENSIONS_FILE } from './constants';
+import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
     AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
-    Translations,
+    Extension,
 } from './types';
-import { copyStaticAsset, copyUiDevkit, logger, normalizeExtensions, shouldUseYarn } from './utils';
+import {
+    copyStaticAsset,
+    copyUiDevkit,
+    isAdminUiExtension,
+    logger,
+    normalizeExtensions,
+    shouldUseYarn,
+} from './utils';
 
-export async function setupScaffold(outputPath: string, extensions: AdminUiExtension[]) {
+export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
     copySourceIfNotExists(outputPath);
-    const normalizedExtensions = normalizeExtensions(extensions);
+    const adminUiExtensions = extensions.filter(isAdminUiExtension);
+    const normalizedExtensions = normalizeExtensions(adminUiExtensions);
     await copyExtensionModules(outputPath, normalizedExtensions);
-    await mergeExtensionTranslations(outputPath, normalizedExtensions);
+    const allTranslationFiles = getAllTranslationFiles(extensions);
+    await mergeExtensionTranslations(outputPath, allTranslationFiles);
     copyUiDevkit(outputPath);
     try {
         await checkIfNgccWasRun();
@@ -108,93 +116,6 @@ function getModuleFilePath(
     module: AdminUiExtensionLazyModule | AdminUiExtensionSharedModule,
 ): string {
     return `./extensions/${id}/${path.basename(module.ngModuleFileName, '.ts')}`;
-}
-
-async function mergeExtensionTranslations(outputPath: string, extensions: Array<Required<AdminUiExtension>>) {
-    // First collect all globs by language
-    const allTranslations: { [languageCode in LanguageCode]?: string[] } = {};
-    for (const extension of extensions) {
-        for (const [languageCode, globPattern] of Object.entries(extension.translations)) {
-            const code = languageCode as LanguageCode;
-            if (globPattern) {
-                if (!allTranslations[code]) {
-                    allTranslations[code] = [globPattern];
-                } else {
-                    // tslint:disable-next-line:no-non-null-assertion
-                    allTranslations[code]!.push(globPattern);
-                }
-            }
-        }
-    }
-    // Now merge them into the final language-speicific json files
-    const i18nMessagesDir = path.join(outputPath, 'src/i18n-messages');
-    for (const [languageCode, globs] of Object.entries(allTranslations)) {
-        if (!globs) {
-            continue;
-        }
-        const translationFile = path.join(i18nMessagesDir, `${languageCode}.json`);
-        const translationBackupFile = path.join(i18nMessagesDir, `${languageCode}.json.bak`);
-
-        if (fs.existsSync(translationBackupFile)) {
-            // restore the original translations from the backup
-            await fs.copy(translationBackupFile, translationFile);
-        }
-        let translations: any = {};
-        if (fs.existsSync(translationFile)) {
-            // create a backup of the original (unextended) translations
-            await fs.copy(translationFile, translationBackupFile);
-            try {
-                translations = require(translationFile);
-            } catch (e) {
-                logger.error(`Could not load translation file: ${translationFile}`);
-                logger.error(e);
-            }
-        }
-
-        for (const pattern of globs) {
-            const files = glob.sync(pattern);
-            for (const file of files) {
-                try {
-                    const contents = require(file);
-                    translations = mergeTranslations(translations, contents);
-                } catch (e) {
-                    logger.error(`Could not load translation file: ${translationFile}`);
-                    logger.error(e);
-                }
-            }
-        }
-
-        // write the final translation files to disk
-        const sortedTranslations = sortTranslationKeys(translations);
-        await fs.writeFile(translationFile, JSON.stringify(sortedTranslations, null, 2), 'utf8');
-    }
-}
-
-/**
- * Merges the second set of translations into the first, returning a new translations
- * object.
- */
-function mergeTranslations(t1: Translations, t2: Translations): Translations {
-    const result = { ...t1 };
-    for (const [section, translations] of Object.entries(t2)) {
-        result[section] = {
-            ...t1[section],
-            ...translations,
-        };
-    }
-    return result;
-}
-
-function sortTranslationKeys(translations: Translations): Translations {
-    const result: Translations = {};
-    const sections = Object.keys(translations).sort();
-    for (const section of sections) {
-        const sortedTokens = Object.entries(translations[section])
-            .sort(([keyA], [keyB]) => (keyA < keyB ? -1 : 1))
-            .reduce((output, [key, val]) => ({ ...output, [key]: val }), {});
-        result[section] = sortedTokens;
-    }
-    return result;
 }
 
 /**
