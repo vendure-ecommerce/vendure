@@ -11,7 +11,7 @@ import { AssetNamingStrategy } from './asset-naming-strategy';
  * @docsCategory assets
  */
 export class DefaultAssetNamingStrategy implements AssetNamingStrategy {
-    private readonly numberingRe = /__(\d+)\.[^.]+$/;
+    private readonly numberingRe = /__(\d+)(\.[^.]+)?$/;
 
     generateSourceFileName(originalFileName: string, conflictFileName?: string): string {
         const normalized = normalizeString(originalFileName, '-');
