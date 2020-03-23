@@ -6,9 +6,9 @@ import {
     Type,
 } from '@vendure/common/lib/shared-types';
 import {
-    AuthOptions,
     ConfigService,
     createProxyHandler,
+    LanguageCode,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
@@ -29,7 +29,7 @@ import { DEFAULT_APP_PATH, loggerCtx } from './constants';
  *
  * @docsCategory AdminUiPlugin
  */
-export interface AdminUiOptions {
+export interface AdminUiPluginOptions {
     /**
      * @description
      * The port on which the server will listen. If not
@@ -55,6 +55,7 @@ export interface AdminUiOptions {
      * to. If set to "auto", the admin ui app will determine the hostname from the
      * current location (i.e. `window.location.hostname`).
      *
+     * @deprecated Use the adminUiConfig property instead
      * @default 'auto'
      */
     apiHost?: string | 'auto';
@@ -64,9 +65,16 @@ export interface AdminUiOptions {
      * to. If set to "auto", the admin ui app will determine the port from the
      * current location (i.e. `window.location.port`).
      *
+     * @deprecated Use the adminUiConfig property instead
      * @default 'auto'
      */
     apiPort?: number | 'auto';
+    /**
+     * @description
+     * Allows the contents of the `vendure-ui-config.json` file to be set, e.g.
+     * for specifying the Vendure GraphQL API host, available UI languages, etc.
+     */
+    adminUiConfig?: Partial<AdminUiConfig>;
 }
 
 /**
@@ -104,7 +112,7 @@ export interface AdminUiOptions {
     configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
-    private static options: AdminUiOptions;
+    private static options: AdminUiPluginOptions;
     private server: Server;
 
     constructor(private configService: ConfigService) {}
@@ -113,7 +121,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
      * @description
      * Set the plugin options
      */
-    static init(options: AdminUiOptions): Type<AdminUiPlugin> {
+    static init(options: AdminUiPluginOptions): Type<AdminUiPlugin> {
         this.options = options;
         return AdminUiPlugin;
     }
@@ -156,20 +164,27 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
 
     /** @internal */
     async onVendureBootstrap() {
-        const { adminApiPath, authOptions } = this.configService;
-        const { apiHost, apiPort, port, app } = AdminUiPlugin.options;
+        const { apiHost, apiPort, port, app, adminUiConfig } = AdminUiPlugin.options;
+        // TODO: Remove in next minor version (0.11.0)
+        if (apiHost || apiPort) {
+            Logger.warn(
+                `The "apiHost" and "apiPort" options are deprecated and will be removed in a future version.`,
+                loggerCtx,
+            );
+            Logger.warn(
+                `Use the "adminUiConfig.apiHost", "adminUiConfig.apiPort" properties instead.`,
+                loggerCtx,
+            );
+        }
         const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
             ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
         const adminUiConfigPath = path.join(adminUiAppPath, 'vendure-ui-config.json');
-        const overwriteConfig = () =>
-            this.overwriteAdminUiConfig({
-                host: apiHost || 'auto',
-                port: apiPort || 'auto',
-                adminApiPath,
-                authOptions,
-                adminUiConfigPath,
-            });
+
+        const overwriteConfig = () => {
+            const uiConfig = this.getAdminUiConfig(adminUiConfig);
+            return this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
+        };
 
         if (!AdminUiPlugin.isDevModeApp(app)) {
             // If not in dev mode, start a static server for the compiled app
@@ -216,18 +231,37 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /**
+     * Takes an optional AdminUiConfig provided in the plugin options, and returns a complete
+     * config object for writing to disk.
+     */
+    private getAdminUiConfig(partialConfig?: Partial<AdminUiConfig>): AdminUiConfig {
+        const { authOptions } = this.configService;
+
+        const propOrDefault = <Prop extends keyof AdminUiConfig>(
+            prop: Prop,
+            defaultVal: AdminUiConfig[Prop],
+        ): AdminUiConfig[Prop] => {
+            return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
+        };
+        return {
+            adminApiPath: propOrDefault('adminApiPath', this.configService.adminApiPath),
+            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'http://localhost'),
+            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || this.configService.port),
+            tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
+            authTokenHeaderKey: propOrDefault(
+                'authTokenHeaderKey',
+                authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
+            ),
+            defaultLanguage: propOrDefault('defaultLanguage', LanguageCode.en),
+            availableLanguages: propOrDefault('availableLanguages', [LanguageCode.en, LanguageCode.es]),
+        };
+    }
+
+    /**
      * Overwrites the parts of the admin-ui app's `vendure-ui-config.json` file relating to connecting to
      * the server admin API.
      */
-    private async overwriteAdminUiConfig(options: {
-        host: string | 'auto';
-        port: number | 'auto';
-        adminApiPath: string;
-        authOptions: AuthOptions;
-        adminUiConfigPath: string;
-    }) {
-        const { host, port, adminApiPath, authOptions, adminUiConfigPath } = options;
-
+    private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
         /**
          * It might be that the ui-devkit compiler has not yet copied the config
          * file to the expected location (perticularly when running in watch mode),
@@ -258,18 +292,11 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         }
 
         const content = await pollForConfigFile();
-        let config: AdminUiConfig;
         try {
-            config = JSON.parse(content);
+            await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
         } catch (e) {
-            throw new Error('[AdminUiPlugin] Could not parse vendure-ui-config.json file:\n' + e.message);
+            throw new Error('[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + e.message);
         }
-        config.apiHost = host || 'http://localhost';
-        config.apiPort = port;
-        config.adminApiPath = adminApiPath;
-        config.tokenMethod = authOptions.tokenMethod || 'cookie';
-        config.authTokenHeaderKey = authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY;
-        await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
         Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
     }
 

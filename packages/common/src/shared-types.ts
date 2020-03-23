@@ -97,15 +97,71 @@ export type ConfigArgSubset<T extends ConfigArgType> = T;
 export type CustomFieldsObject = { [key: string]: any };
 
 /**
- * This interface describes the shape of the JSON config file used by the Admin UI.
+ * @description
+ * This interface describes JSON config file (vendure-ui-config.json) used by the Admin UI.
+ * The values are loaded at run-time by the Admin UI app, and allow core configuration to be
+ * managed without the need to re-build the application.
+ *
+ * @docsCategory AdminUiPlugin
  */
 export interface AdminUiConfig {
+    /**
+     * @description
+     * The hostname of the Vendure server which the admin ui will be making API calls
+     * to. If set to "auto", the Admin UI app will determine the hostname from the
+     * current location (i.e. `window.location.hostname`).
+     *
+     * @default 'http://localhost'
+     */
     apiHost: string | 'auto';
+    /**
+     * @description
+     * The port of the Vendure server which the admin ui will be making API calls
+     * to. If set to "auto", the Admin UI app will determine the port from the
+     * current location (i.e. `window.location.port`).
+     *
+     * @default 3000
+     */
     apiPort: number | 'auto';
+    /**
+     * @description
+     * The path to the GraphQL Admin API.
+     *
+     * @default 'admin-api'
+     */
     adminApiPath: string;
+    /**
+     * @description
+     * Whether to use cookies or bearer tokens to track sessions.
+     * Should match the setting of in the server's `tokenMethod` config
+     * option.
+     *
+     * @default 'cookie'
+     */
     tokenMethod: 'cookie' | 'bearer';
+    /**
+     * @description
+     * The header used when using the 'bearer' auth method. Should match the
+     * setting of the server's `authOptions.authTokenHeaderKey` config
+     * option.
+     *
+     * @default 'vendure-auth-token'
+     */
     authTokenHeaderKey: string;
+    /**
+     * @description
+     * The default language for the Admin UI. Must be one of the
+     * items specified in the `availableLanguages` property.
+     *
+     * @default LanguageCode.en
+     */
     defaultLanguage: LanguageCode;
+    /**
+     * @description
+     * An array of languages for which translations exist for the Admin UI.
+     *
+     * @default [LanguageCode.en, LanguageCode.es]
+     */
     availableLanguages: LanguageCode[];
 }
 
