@@ -1,3 +1,24 @@
+## <small>0.10.1 (2020-03-24)</small>
+
+
+#### Features
+
+* **admin-ui-plugin** Allow ui languages to be set in the AdminUiPlugin ([db3bce3](https://github.com/vendure-ecommerce/vendure/commit/db3bce3)), closes [#264](https://github.com/vendure-ecommerce/vendure/issues/264)
+* **admin-ui** Added Chinese i18n messages (#280) ([749ee3d](https://github.com/vendure-ecommerce/vendure/commit/749ee3d)), closes [#280](https://github.com/vendure-ecommerce/vendure/issues/280)
+* **admin-ui** Enable ui language config & selection ([aa4452e](https://github.com/vendure-ecommerce/vendure/commit/aa4452e)), closes [#264](https://github.com/vendure-ecommerce/vendure/issues/264)
+* **core** Export some missing symbols from Core ([f16bd7b](https://github.com/vendure-ecommerce/vendure/commit/f16bd7b))
+* **testing** Expose raw http fetch method in SimpleGraphQLClient ([d715d30](https://github.com/vendure-ecommerce/vendure/commit/d715d30))
+* **ui-devkit** Allow custom i18n files to compiled into the Admin UI ([df88d58](https://github.com/vendure-ecommerce/vendure/commit/df88d58)), closes [#264](https://github.com/vendure-ecommerce/vendure/issues/264)
+* **ui-devkit** Allow stand-alone translation extensions ([7a70642](https://github.com/vendure-ecommerce/vendure/commit/7a70642)), closes [#264](https://github.com/vendure-ecommerce/vendure/issues/264)
+
+#### Fixes
+
+* **core** Correctly handle error responses for REST controllers ([72be58d](https://github.com/vendure-ecommerce/vendure/commit/72be58d)), closes [#187](https://github.com/vendure-ecommerce/vendure/issues/187)
+* **core** Fix DefaultAssetNamingStrategy with files without extensions ([dee3258](https://github.com/vendure-ecommerce/vendure/commit/dee3258)), closes [#271](https://github.com/vendure-ecommerce/vendure/issues/271) [#272](https://github.com/vendure-ecommerce/vendure/issues/272)
+* **core** Fix error when using non-TCP transport in workerOptions ([b37ea05](https://github.com/vendure-ecommerce/vendure/commit/b37ea05)), closes [#270](https://github.com/vendure-ecommerce/vendure/issues/270)
+* **core** Prevent data leakage of guest Customer data ([ea51000](https://github.com/vendure-ecommerce/vendure/commit/ea51000)), closes [#98](https://github.com/vendure-ecommerce/vendure/issues/98)
+* **elasticsearch-plugin** Do not expose private facets in search result ([60bb5b9](https://github.com/vendure-ecommerce/vendure/commit/60bb5b9))
+
 ## 0.10.0 (2020-03-17)
 
 
