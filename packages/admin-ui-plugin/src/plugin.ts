@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { DEFAULT_APP_PATH, loggerCtx } from './constants';
+import { DEFAULT_APP_PATH, defaultAvailableLanguages, defaultLanguage, loggerCtx } from './constants';
 
 /**
  * @description
@@ -252,8 +252,8 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
                 'authTokenHeaderKey',
                 authOptions.authTokenHeaderKey || DEFAULT_AUTH_TOKEN_HEADER_KEY,
             ),
-            defaultLanguage: propOrDefault('defaultLanguage', LanguageCode.en),
-            availableLanguages: propOrDefault('availableLanguages', [LanguageCode.en, LanguageCode.es]),
+            defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
+            availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
         };
     }
 
