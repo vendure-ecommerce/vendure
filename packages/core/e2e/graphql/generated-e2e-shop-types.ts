@@ -2608,7 +2608,23 @@ export type GetCustomerAddressesQuery = { __typename?: 'Query' } & {
         { __typename?: 'Order' } & {
             customer: Maybe<
                 { __typename?: 'Customer' } & {
-                    addresses: Maybe<Array<{ __typename?: 'Address' } & Pick<Address, 'id'>>>;
+                    addresses: Maybe<Array<{ __typename?: 'Address' } & Pick<Address, 'id' | 'streetLine1'>>>;
+                }
+            >;
+        }
+    >;
+};
+
+export type GetCustomerOrdersQueryVariables = {};
+
+export type GetCustomerOrdersQuery = { __typename?: 'Query' } & {
+    activeOrder: Maybe<
+        { __typename?: 'Order' } & {
+            customer: Maybe<
+                { __typename?: 'Customer' } & {
+                    orders: { __typename?: 'OrderList' } & {
+                        items: Array<{ __typename?: 'Order' } & Pick<Order, 'id'>>;
+                    };
                 }
             >;
         }
@@ -2847,6 +2863,19 @@ export namespace GetCustomerAddresses {
         (NonNullable<
             (NonNullable<(NonNullable<GetCustomerAddressesQuery['activeOrder']>)['customer']>)['addresses']
         >)[0]
+    >;
+}
+
+export namespace GetCustomerOrders {
+    export type Variables = GetCustomerOrdersQueryVariables;
+    export type Query = GetCustomerOrdersQuery;
+    export type ActiveOrder = NonNullable<GetCustomerOrdersQuery['activeOrder']>;
+    export type Customer = NonNullable<(NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']>;
+    export type Orders = (NonNullable<
+        (NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']
+    >)['orders'];
+    export type Items = NonNullable<
+        (NonNullable<(NonNullable<GetCustomerOrdersQuery['activeOrder']>)['customer']>)['orders']['items'][0]
     >;
 }
 

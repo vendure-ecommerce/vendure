@@ -37,3 +37,5 @@ export interface TestServerOptions {
      */
     logging?: boolean;
 }
+
+export type QueryParams = { [key: string]: string | number };

@@ -14,6 +14,7 @@
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-to-shipping-when-order-is-empty": "Cannot transition Order to the \"ArrangingShipping\" state when it is empty",
     "cannot-transition-to-payment-without-customer": "Cannot transition Order to the \"ArrangingPayment\" state without Customer details",
+    "cannot-use-registered-email-address-for-guest-order":  "Cannot use a registered email address for a guest order. Please log in first",
     "channel-not-found":  "No channel with the token \"{ token }\" exists",
     "country-code-not-valid":  "The countryCode \"{ countryCode }\" was not recognized",
     "coupon-code-expired":  "Coupon code \"{ couponCode }\" has expired",

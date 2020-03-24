@@ -293,7 +293,7 @@ export class ShopOrderResolver {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
-                const customer = await this.customerService.createOrUpdate(args.input);
+                const customer = await this.customerService.createOrUpdate(args.input, true);
                 return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
             }
         }

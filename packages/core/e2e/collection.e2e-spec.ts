@@ -1,9 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '@vendure/core/dist/config/collection/default-collection-filters';
+import { facetValueCollectionFilter, variantNameCollectionFilter } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';

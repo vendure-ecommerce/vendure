@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 
-export type LocalStorageKey = 'activeChannelToken' | 'authToken';
+export type LocalStorageKey = 'activeChannelToken' | 'authToken' | 'uiLanguageCode';
 export type LocalStorageLocationBasedKey = 'shippingTestOrder' | 'shippingTestAddress';
 const PREFIX = 'vnd_';
 

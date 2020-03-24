@@ -1,9 +1,12 @@
 import { Transport } from '@nestjs/microservices';
 import { ADMIN_API_PATH, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
-import { DefaultAssetNamingStrategy, NoopLogger, VendureConfig } from '@vendure/core';
-import { defaultConfig } from '@vendure/core/dist/config/default-config';
-import { mergeConfig } from '@vendure/core/dist/config/merge-config';
-import path from 'path';
+import {
+    DefaultAssetNamingStrategy,
+    defaultConfig,
+    mergeConfig,
+    NoopLogger,
+    VendureConfig,
+} from '@vendure/core';
 
 import { TestingAssetPreviewStrategy } from './testing-asset-preview-strategy';
 import { TestingAssetStorageStrategy } from './testing-asset-storage-strategy';

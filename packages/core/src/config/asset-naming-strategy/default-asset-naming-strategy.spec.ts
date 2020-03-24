@@ -19,6 +19,20 @@ describe('DefaultAssetNamingStrategy', () => {
             expect(strategy.generateSourceFileName('foo.jpg', 'foo__99.jpg')).toBe('foo__100.jpg');
             expect(strategy.generateSourceFileName('foo.jpg', 'foo__999.jpg')).toBe('foo__1000.jpg');
         });
+
+        it('increments conflicting file names with no extension', () => {
+            const strategy = new DefaultAssetNamingStrategy();
+
+            expect(strategy.generateSourceFileName('ext45000000000505', 'ext45000000000505')).toBe(
+                'ext45000000000505__02',
+            );
+            expect(strategy.generateSourceFileName('ext45000000000505', 'ext45000000000505__02')).toBe(
+                'ext45000000000505__03',
+            );
+            expect(strategy.generateSourceFileName('ext45000000000505', 'ext45000000000505__09')).toBe(
+                'ext45000000000505__10',
+            );
+        });
     });
 
     describe('generatePreviewFileName()', () => {

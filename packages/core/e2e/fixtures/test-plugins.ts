@@ -1,16 +1,18 @@
-import { Injectable, OnApplicationBootstrap, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Controller, Get, Injectable } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
+import { Permission } from '@vendure/common/lib/generated-shop-types';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
+    Allow,
+    ConfigModule,
     ConfigService,
+    InternalServerError,
     OnVendureBootstrap,
     OnVendureClose,
     OnVendureWorkerBootstrap,
     OnVendureWorkerClose,
-    VendureConfig,
     VendurePlugin,
 } from '@vendure/core';
-import { ConfigModule } from '@vendure/core/dist/config/config.module';
 import gql from 'graphql-tag';
 
 export class TestPluginWithAllLifecycleHooks
@@ -194,3 +196,27 @@ export class TestPluginWithConfigAndBootstrap implements OnVendureBootstrap, OnV
         TestPluginWithConfigAndBootstrap.boostrapWasCalled.mockClear();
     }
 }
+
+@Controller('test')
+export class TestController {
+    @Get('public')
+    publicRoute() {
+        return 'success';
+    }
+
+    @Allow(Permission.Authenticated)
+    @Get('restricted')
+    restrictedRoute() {
+        return 'success';
+    }
+
+    @Get('bad')
+    badRoute() {
+        throw new InternalServerError('uh oh!');
+    }
+}
+
+@VendurePlugin({
+    controllers: [TestController],
+})
+export class TestRestPlugin {}

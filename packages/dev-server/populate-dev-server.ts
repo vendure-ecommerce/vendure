@@ -1,8 +1,7 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../core/typings.d.ts" />
-import { bootstrap, mergeConfig, VendureConfig } from '@vendure/core';
-import { populate } from '@vendure/core/cli/populate';
-import { defaultConfig } from '@vendure/core/dist/config/default-config';
+import { bootstrap, defaultConfig, mergeConfig } from '@vendure/core';
+import { populate } from '@vendure/core/cli';
 import { clearAllTables, populateCustomers } from '@vendure/testing';
 import path from 'path';
 

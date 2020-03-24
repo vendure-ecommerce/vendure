@@ -1,6 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { mergeConfig } from '@vendure/core';
-import { CustomFields } from '@vendure/core/dist/config/custom-field/custom-field-types';
+import { CustomFields, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';

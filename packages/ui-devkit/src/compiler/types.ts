@@ -1,3 +1,34 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+
+export type Extension = AdminUiExtension | TranslationExtension;
+
+/**
+ * @description
+ * Defines extensions to the Admin UI translations. Can be used as a stand-alone extension definition which only adds translations
+ * without adding new UI functionality, or as part of a full {@link AdminUiExtension}.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface TranslationExtension {
+    /**
+     * @description
+     * Optional object defining any translation files for the Admin UI. The value should be an object with
+     * the key as a 2-character [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes),
+     * and the value being a [glob](https://github.com/isaacs/node-glob) for any relevant
+     * translation files in JSON format.
+     *
+     * @example
+     * ```TypeScript
+     * translations: {
+     *   en: path.join(__dirname, 'translations/*.en.json'),
+     *   de: path.join(__dirname, 'translations/*.de.json'),
+     * }
+     * ```
+     */
+    translations: { [languageCode in LanguageCode]?: string };
+}
+
 /**
  * @description
  * Defines extensions to the Admin UI application by specifying additional
@@ -10,7 +41,7 @@
  * @docsCategory UiDevkit
  * @docsPage AdminUiExtension
  */
-export interface AdminUiExtension {
+export interface AdminUiExtension extends Partial<TranslationExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -123,10 +154,10 @@ export interface UiExtensionCompilerOptions {
     outputPath: string;
     /**
      * @description
-     * An array of objects which configure extension Angular modules
-     * to be compiled into and made available by the AdminUi application.
+     * An array of objects which configure Angular modules and/or
+     * translations with which to extend the Admin UI.
      */
-    extensions: AdminUiExtension[];
+    extensions: Array<AdminUiExtension | TranslationExtension>;
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
@@ -146,3 +177,9 @@ export interface UiExtensionCompilerOptions {
      */
     watchPort?: number;
 }
+
+export type Translations = {
+    [section: string]: {
+        [token: string]: string;
+    };
+};

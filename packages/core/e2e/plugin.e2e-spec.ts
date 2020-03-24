@@ -13,6 +13,7 @@ import {
     TestPluginWithAllLifecycleHooks,
     TestPluginWithConfigAndBootstrap,
     TestPluginWithProvider,
+    TestRestPlugin,
 } from './fixtures/test-plugins';
 
 describe('Plugins', () => {
@@ -37,6 +38,7 @@ describe('Plugins', () => {
             TestAPIExtensionPlugin,
             TestPluginWithProvider,
             TestLazyExtensionPlugin,
+            TestRestPlugin,
         ],
     });
 
@@ -124,6 +126,39 @@ describe('Plugins', () => {
             }
         `);
         expect(result.names).toEqual(['seon', 'linda', 'hong']);
+    });
+
+    describe('REST plugins', () => {
+        const restControllerUrl = `http://localhost:${testConfig.port}/test`;
+
+        it('public route', async () => {
+            const response = await shopClient.fetch(restControllerUrl + '/public');
+            const body = await response.text();
+
+            expect(body).toBe('success');
+        });
+
+        it('permission-restricted route forbidden', async () => {
+            const response = await shopClient.fetch(restControllerUrl + '/restricted');
+            expect(response.status).toBe(403);
+            const result = await response.json();
+            expect(result.message).toContain('FORBIDDEN');
+        });
+
+        it('permission-restricted route forbidden allowed', async () => {
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+            const response = await shopClient.fetch(restControllerUrl + '/restricted');
+            expect(response.status).toBe(200);
+            const result = await response.text();
+            expect(result).toBe('success');
+        });
+
+        it('handling I18nErrors', async () => {
+            const response = await shopClient.fetch(restControllerUrl + '/bad');
+            expect(response.status).toBe(500);
+            const result = await response.json();
+            expect(result.message).toContain('uh oh!');
+        });
     });
 
     describe('on app close', () => {

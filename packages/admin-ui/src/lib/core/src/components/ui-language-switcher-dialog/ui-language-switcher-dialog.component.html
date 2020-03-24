@@ -1,0 +1,6 @@
+<ng-template vdrDialogTitle>{{ 'common.select-display-language' | translate }}</ng-template>
+
+<button *ngFor="let code of availableLanguages" class="btn btn-link btn-sm" (click)="setLanguage(code)">
+    <clr-icon [attr.shape]="code === currentLanguage ? 'dot-circle' : 'circle'"></clr-icon>
+    {{ code | uppercase }} ({{ 'lang.' + code | translate }})
+</button>

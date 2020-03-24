@@ -13,7 +13,12 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    IllegalOperationError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -234,7 +239,10 @@ export class CustomerService {
     /**
      * For guest checkouts, we assume that a matching email address is the same customer.
      */
-    async createOrUpdate(input: Partial<CreateCustomerInput> & { emailAddress: string }): Promise<Customer> {
+    async createOrUpdate(
+        input: Partial<CreateCustomerInput> & { emailAddress: string },
+        throwOnExistingUser: boolean = false,
+    ): Promise<Customer> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         let customer: Customer;
         const existing = await this.connection.getRepository(Customer).findOne({
@@ -243,6 +251,10 @@ export class CustomerService {
             },
         });
         if (existing) {
+            if (existing.user && throwOnExistingUser) {
+                // It is not permitted to modify an existing *registered* Customer
+                throw new IllegalOperationError('error.cannot-use-registered-email-address-for-guest-order');
+            }
             customer = patchEntity(existing, input);
         } else {
             customer = new Customer(input);

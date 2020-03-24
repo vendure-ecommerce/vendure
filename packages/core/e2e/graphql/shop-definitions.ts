@@ -349,6 +349,21 @@ export const GET_ACTIVE_ORDER_ADDRESSES = gql`
             customer {
                 addresses {
                     id
+                    streetLine1
+                }
+            }
+        }
+    }
+`;
+
+export const GET_ACTIVE_ORDER_ORDERS = gql`
+    query GetCustomerOrders {
+        activeOrder {
+            customer {
+                orders {
+                    items {
+                        id
+                    }
                 }
             }
         }

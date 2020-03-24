@@ -125,9 +125,12 @@ async function bootstrapWorkerInternal(
     // See https://github.com/nestjs/nest/issues/2777
     // TODO: Remove if & when the above issue is resolved.
     await new Promise((resolve, reject) => {
-        (workerApp as any).server.server.on('error', (e: any) => {
-            reject(e);
-        });
+        const tcpServer = (workerApp as any).server.server;
+        if (tcpServer) {
+            tcpServer.on('error', (e: any) => {
+                reject(e);
+            });
+        }
         workerApp.listenAsync().then(resolve);
     });
     workerWelcomeMessage(config);

@@ -1,7 +1,5 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
-import { getDefaultCurrency } from '../../../common/utilities/get-default-currency';
 
 /**
  * A form input control which displays a number input with a percentage sign suffix.

@@ -7,6 +7,12 @@ import { LanguageCode } from '../../common/generated-types';
     providedIn: 'root',
 })
 export class I18nService {
+    _availableLanguages: LanguageCode[] = [];
+
+    get availableLanguages(): LanguageCode[] {
+        return [...this._availableLanguages];
+    }
+
     constructor(private ngxTranslate: TranslateService) {}
 
     /**
@@ -21,6 +27,13 @@ export class I18nService {
      */
     setLanguage(language: LanguageCode): void {
         this.ngxTranslate.use(language);
+    }
+
+    /**
+     * Set the available UI languages
+     */
+    setAvailableLanguages(languages: LanguageCode[]) {
+        this._availableLanguages = languages;
     }
 
     /**

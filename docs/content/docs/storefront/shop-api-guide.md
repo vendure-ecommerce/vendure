@@ -12,6 +12,17 @@ This is an overview of the GraphQL Shop API, which is used when implementing a s
 This guide only lists some of the more common operations you'll need for your storefront. Please consult [the Shop API reference]({{< relref "/docs/graphql-api/shop" >}}) for a complete guide.
 {{% /alert %}}
 
+## Universal Parameters
+
+There are a couple of query parameters which are valid for all GraphQL operations:
+
+* `languageCode`: This sets the current langauge for the request. Any translatable types (e.g. Products, Facets, Collections) will be returned in that language, if a translation is defined for that language. If not, they will fall back to the default language. The value should be one of the ISO 639-1 codes defined by the [`LanguageCode` enum]({{< relref "language-code" >}}).
+
+  ```text
+  POST http://localhost:3000/shop-api?languageCode=de
+  ```
+* `vendure-token`: If your Vendure instance features more than a single [Channel]({{< relref "channels" >}}), the token of the active Channel can be specified by token as either a query parameter _or_ as a header. The name of the key can be configured by the [`channelTokenKey` config option]({{< relref "vendure-config" >}}#channeltokenkey).
+
 ## Browsing the catalogue
 
 * {{< shop-api-operation operation="collections" type="query" >}}: List available Collections. Useful for creating navigation menus.
