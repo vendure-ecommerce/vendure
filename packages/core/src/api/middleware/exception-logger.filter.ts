@@ -40,7 +40,7 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
             message = exception.message;
             let stack = exception.stack;
             if (statusCode === 404) {
-                message = exception.message.message;
+                message = exception.message;
                 stack = undefined;
             }
             Logger.error(message, undefined, stack);

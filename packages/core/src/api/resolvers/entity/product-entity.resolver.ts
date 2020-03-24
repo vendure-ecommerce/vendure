@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
@@ -27,7 +27,7 @@ export class ProductEntityResolver {
         private assetService: AssetService,
     ) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async variants(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
@@ -37,7 +37,7 @@ export class ProductEntityResolver {
         return variants.filter(v => (apiType === 'admin' ? true : v.enabled));
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async collections(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
@@ -46,7 +46,7 @@ export class ProductEntityResolver {
         return this.collectionService.getCollectionsByProductId(ctx, product.id, apiType === 'shop');
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async optionGroups(
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
@@ -54,7 +54,7 @@ export class ProductEntityResolver {
         return this.productOptionGroupService.getOptionGroupsByProductId(ctx, product.id);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async featuredAsset(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset | undefined> {
         if (product.featuredAsset) {
             return product.featuredAsset;
@@ -62,7 +62,7 @@ export class ProductEntityResolver {
         return this.assetService.getFeaturedAsset(product);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async assets(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset[] | undefined> {
         return this.assetService.getEntityAssets(product);
     }
@@ -72,7 +72,7 @@ export class ProductEntityResolver {
 export class ProductAdminEntityResolver {
     constructor(private productService: ProductService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Channel[]> {
         if (product.channels) {
             return product.channels;

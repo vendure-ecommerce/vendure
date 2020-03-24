@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { MutationUpdateGlobalSettingsArgs, Permission } from '@vendure/common/lib/generated-types';
 
 import { VendureConfig } from '../../../config';
@@ -20,7 +20,7 @@ export class GlobalSettingsResolver {
     /**
      * Exposes a subset of the VendureConfig which may be of use to clients.
      */
-    @ResolveProperty()
+    @ResolveField()
     serverConfig() {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};

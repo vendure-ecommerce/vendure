@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Translated } from '../../../common/types/locale-types';
 import { assertFound } from '../../../common/utils';
@@ -11,7 +11,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class OrderLineEntityResolver {
     constructor(private productVariantService: ProductVariantService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async productVariant(
         @Ctx() ctx: RequestContext,
         @Parent() orderLine: OrderLine,
