@@ -1,4 +1,4 @@
-import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
 import { Order } from '../../../entity/order/order.entity';
@@ -18,7 +18,7 @@ export class OrderEntityResolver {
         private historyService: HistoryService,
     ) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async payments(@Parent() order: Order) {
         if (order.payments) {
             return order.payments;
@@ -26,7 +26,7 @@ export class OrderEntityResolver {
         return this.orderService.getOrderPayments(order.id);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async shippingMethod(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.shippingMethodId) {
             // Does not need to be decoded because it is an internal property
@@ -38,12 +38,12 @@ export class OrderEntityResolver {
         }
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async fulfillments(@Parent() order: Order) {
         return this.orderService.getOrderFulfillments(order);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: OrderHistoryArgs) {
         const publicOnly = apiType === 'shop';
         const options: HistoryEntryListOptions = { ...args.options };
@@ -53,7 +53,7 @@ export class OrderEntityResolver {
         return this.historyService.getHistoryForOrder(order.id, publicOnly, options);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async promotions(@Parent() order: Order) {
         if (order.promotions) {
             return order.promotions;

@@ -80,6 +80,14 @@ export class DefaultLogger implements VendureLogger {
     }
 
     error(message: string, context?: string, trace?: string | undefined): void {
+        if (context === 'ExceptionsHandler' && this.level < LogLevel.Verbose) {
+            // In Nest v7, there is an ExternalExceptionFilter which catches *all*
+            // errors and logs them, no matter the LogLevel attached to the error.
+            // This results in overly-noisy logger output (e.g. a failed login attempt
+            // will log a full stack trace). This check means we only let it log if
+            // we are in Verbose or Debug mode.
+            return;
+        }
         if (this.level >= LogLevel.Error) {
             this.logMessage(
                 chalk.red(`error`),

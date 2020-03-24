@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { METADATA } from '@nestjs/common/constants';
+import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { pick } from '@vendure/common/lib/pick';
 import { Type } from '@vendure/common/lib/shared-types';
@@ -134,7 +134,7 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
                 Reflect.defineMetadata(property, pluginMetadata[property], target);
             }
         }
-        const nestModuleMetadata = pick(pluginMetadata, Object.values(METADATA) as any);
+        const nestModuleMetadata = pick(pluginMetadata, Object.values(MODULE_METADATA) as any);
         Module(nestModuleMetadata)(target);
     };
 }

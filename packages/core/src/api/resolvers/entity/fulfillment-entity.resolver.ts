@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { OrderService } from '../../../service/services/order.service';
@@ -7,7 +7,7 @@ import { OrderService } from '../../../service/services/order.service';
 export class FulfillmentEntityResolver {
     constructor(private orderService: OrderService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async orderItems(@Parent() fulfillment: Fulfillment) {
         return this.orderService.getFulfillmentOrderItems(fulfillment.id);
     }

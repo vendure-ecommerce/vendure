@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 import { Translated } from '../../../common/types/locale-types';
@@ -13,9 +13,12 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class ProductOptionGroupEntityResolver {
     constructor(private productOptionGroupService: ProductOptionGroupService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     @Allow(Permission.ReadCatalog, Permission.Public)
-    async options(@Ctx() ctx: RequestContext, @Parent() optionGroup: Translated<ProductOptionGroup>): Promise<Array<Translated<ProductOption>>> {
+    async options(
+        @Ctx() ctx: RequestContext,
+        @Parent() optionGroup: Translated<ProductOptionGroup>,
+    ): Promise<Array<Translated<ProductOption>>> {
         if (optionGroup.options) {
             return Promise.resolve(optionGroup.options);
         }
