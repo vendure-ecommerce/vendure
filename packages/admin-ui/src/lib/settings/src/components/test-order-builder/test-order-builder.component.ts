@@ -42,7 +42,7 @@ export class TestOrderBuilderComponent implements OnInit {
             this.orderLinesChange.emit(this.lines);
         }
         this.initSearchResults();
-        this.dataService.settings.getActiveChannel('cache-first').single$.subscribe(result => {
+        this.dataService.settings.getActiveChannel('cache-first').single$.subscribe((result) => {
             this.currencyCode = result.activeChannel.currencyCode;
         });
     }
@@ -56,14 +56,15 @@ export class TestOrderBuilderComponent implements OnInit {
     }
 
     private addToLines(result: SearchForTestOrder.Items) {
-        if (!this.lines.find(l => l.id === result.productVariantId)) {
+        if (!this.lines.find((l) => l.id === result.productVariantId)) {
             this.lines.push({
                 id: result.productVariantId,
                 name: result.productVariantName,
                 preview: result.productPreview,
                 quantity: 1,
                 sku: result.sku,
-                unitPriceWithTax: result.priceWithTax.value,
+                unitPriceWithTax:
+                    (result.priceWithTax.__typename === 'SinglePrice' && result.priceWithTax.value) || 0,
             });
             this.persistToLocalStorage();
             this.orderLinesChange.emit(this.lines);
@@ -76,7 +77,7 @@ export class TestOrderBuilderComponent implements OnInit {
     }
 
     removeLine(line: TestOrderLine) {
-        this.lines = this.lines.filter(l => l.id !== line.id);
+        this.lines = this.lines.filter((l) => l.id !== line.id);
         this.persistToLocalStorage();
         this.orderLinesChange.emit(this.lines);
     }
@@ -86,13 +87,13 @@ export class TestOrderBuilderComponent implements OnInit {
             debounceTime(200),
             distinctUntilChanged(),
             tap(() => (this.searchLoading = true)),
-            switchMap(term => {
+            switchMap((term) => {
                 if (!term) {
                     return of([]);
                 }
                 return this.dataService.settings
                     .searchForTestOrder(term, 10)
-                    .mapSingle(result => result.search.items);
+                    .mapSingle((result) => result.search.items);
             }),
             tap(() => (this.searchLoading = false)),
         );
