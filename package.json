@@ -52,7 +52,7 @@
     "ts-jest": "^24.1.0",
     "ts-node": "^8.4.1",
     "tslint": "^5.11.0",
-    "typescript": "^3.2.4"
+    "typescript": "3.7.5"
   },
   "workspaces": {
     "packages": [

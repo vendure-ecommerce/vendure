@@ -20,7 +20,7 @@
     "@vendure/core": "^0.10.1",
     "@vendure/elasticsearch-plugin": "^0.10.1",
     "@vendure/email-plugin": "^0.10.1",
-    "typescript": "^3.3.4000"
+    "typescript": "3.7.5"
   },
   "devDependencies": {
     "@types/csv-stringify": "^3.1.0",

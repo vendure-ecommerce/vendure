@@ -98,6 +98,6 @@
     "rimraf": "^3.0.0",
     "sql.js": "1.1.0",
     "sqlite3": "^4.0.6",
-    "typescript": "~3.6.2"
+    "typescript": "3.7.5"
   }
 }
