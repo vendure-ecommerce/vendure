@@ -180,7 +180,13 @@ export class AssetService {
 
         const sourceFileIdentifier = await assetStorageStrategy.writeFileFromStream(sourceFileName, stream);
         const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileIdentifier);
-        const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+        let preview: Buffer;
+        try {
+            preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+        } catch (e) {
+            Logger.error(`Could not create Asset preview image: ${e.message}`);
+            throw e;
+        }
         const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
             previewFileName,
             preview,
