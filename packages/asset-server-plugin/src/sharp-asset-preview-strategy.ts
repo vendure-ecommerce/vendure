@@ -28,9 +28,12 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
         } else {
             return sharp(path.join(__dirname, 'file-icon.png'))
                 .resize(800, 800, { fit: 'outside' })
-                .overlayWith(this.generateMimeTypeOverlay(mimeType), {
-                    gravity: sharp.gravity.center,
-                })
+                .composite([
+                    {
+                        input: this.generateMimeTypeOverlay(mimeType),
+                        gravity: sharp.gravity.center,
+                    },
+                ])
                 .toBuffer();
         }
     }
