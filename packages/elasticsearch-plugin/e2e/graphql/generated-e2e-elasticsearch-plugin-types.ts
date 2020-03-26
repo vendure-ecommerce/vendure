@@ -1,5 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -7,14 +8,8 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-     * `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-     * 8601 standard for representation of dates and times using the Gregorian calendar.
-     */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Upload` scalar type represents a file upload. */
     Upload: any;
 };
 
@@ -584,7 +579,8 @@ export type CreateZoneInput = {
     memberIds?: Maybe<Array<Scalars['ID']>>;
 };
 
-/** @description
+/**
+ * @description
  * ISO 4217 currency code
  *
  * @docsCategory common
@@ -984,7 +980,6 @@ export type CustomerSortParameter = {
 };
 
 export type CustomField = {
-    __typename?: 'CustomField';
     name: Scalars['String'];
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
@@ -1030,7 +1025,8 @@ export type DateRange = {
     end: Scalars['DateTime'];
 };
 
-/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+/**
+ * Expects the same validation formats as the <input type="datetime-local"> HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
@@ -1132,7 +1128,8 @@ export type FacetValue = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-/** Which FacetValues are present in the products returned
+/**
+ * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
@@ -1290,7 +1287,8 @@ export enum JobState {
     FAILED = 'FAILED',
 }
 
-/** @description
+/**
+ * @description
  * ISO 639-1 language code
  *
  * @docsCategory common
@@ -2152,7 +2150,6 @@ export type MutationRemoveMembersFromZoneArgs = {
 };
 
 export type Node = {
-    __typename?: 'Node';
     id: Scalars['ID'];
 };
 
@@ -2301,7 +2298,6 @@ export type OrderSortParameter = {
 };
 
 export type PaginatedList = {
-    __typename?: 'PaginatedList';
     items: Array<Node>;
     totalItems: Scalars['Int'];
 };
@@ -2357,7 +2353,8 @@ export type PaymentMethodSortParameter = {
     code?: Maybe<SortOrder>;
 };
 
-/** "
+/**
+ * "
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
@@ -3004,10 +3001,12 @@ export type SearchResult = {
     slug: Scalars['String'];
     productId: Scalars['ID'];
     productName: Scalars['String'];
+    /** @deprecated Use `productAsset.preview` instead */
     productPreview: Scalars['String'];
     productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
+    /** @deprecated Use `productVariantAsset.preview` instead */
     productVariantPreview: Scalars['String'];
     productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
@@ -3118,7 +3117,6 @@ export type StockAdjustment = Node &
     };
 
 export type StockMovement = {
-    __typename?: 'StockMovement';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3463,6 +3461,7 @@ export type Zone = Node & {
     name: Scalars['String'];
     members: Array<Country>;
 };
+
 export type SearchProductsAdminQueryVariables = {
     input: SearchInput;
 };
@@ -3481,22 +3480,22 @@ export type SearchProductsAdminQuery = { __typename?: 'Query' } & {
                     | 'productVariantPreview'
                     | 'sku'
                 > & {
-                        productAsset: Maybe<
+                        productAsset?: Maybe<
                             { __typename?: 'SearchResultAsset' } & Pick<
                                 SearchResultAsset,
                                 'id' | 'preview'
                             > & {
-                                    focalPoint: Maybe<
+                                    focalPoint?: Maybe<
                                         { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
                                     >;
                                 }
                         >;
-                        productVariantAsset: Maybe<
+                        productVariantAsset?: Maybe<
                             { __typename?: 'SearchResultAsset' } & Pick<
                                 SearchResultAsset,
                                 'id' | 'preview'
                             > & {
-                                    focalPoint: Maybe<
+                                    focalPoint?: Maybe<
                                         { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
                                     >;
                                 }
@@ -3553,13 +3552,14 @@ export type GetJobInfoQueryVariables = {
 };
 
 export type GetJobInfoQuery = { __typename?: 'Query' } & {
-    job: Maybe<
+    job?: Maybe<
         { __typename?: 'JobInfo' } & Pick<
             JobInfo,
             'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'
         >
     >;
 };
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -3570,20 +3570,18 @@ export namespace SearchProductsAdmin {
     export type Search = SearchProductsAdminQuery['search'];
     export type Items = NonNullable<SearchProductsAdminQuery['search']['items'][0]>;
     export type ProductAsset = NonNullable<
-        (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productAsset']
+        NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productAsset']
     >;
     export type FocalPoint = NonNullable<
-        (NonNullable<
-            (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productAsset']
-        >)['focalPoint']
+        NonNullable<NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productAsset']>['focalPoint']
     >;
     export type ProductVariantAsset = NonNullable<
-        (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productVariantAsset']
+        NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productVariantAsset']
     >;
     export type _FocalPoint = NonNullable<
-        (NonNullable<
-            (NonNullable<SearchProductsAdminQuery['search']['items'][0]>)['productVariantAsset']
-        >)['focalPoint']
+        NonNullable<
+            NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productVariantAsset']
+        >['focalPoint']
     >;
 }
 
@@ -3592,7 +3590,7 @@ export namespace SearchFacetValues {
     export type Query = SearchFacetValuesQuery;
     export type Search = SearchFacetValuesQuery['search'];
     export type FacetValues = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>;
-    export type FacetValue = (NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>)['facetValue'];
+    export type FacetValue = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>['facetValue'];
 }
 
 export namespace SearchGetPrices {
@@ -3600,22 +3598,22 @@ export namespace SearchGetPrices {
     export type Query = SearchGetPricesQuery;
     export type Search = SearchGetPricesQuery['search'];
     export type Items = NonNullable<SearchGetPricesQuery['search']['items'][0]>;
-    export type Price = (NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'];
+    export type Price = NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'];
     export type PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
         { __typename: 'PriceRange' }
     >;
     export type SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
         { __typename: 'SinglePrice' }
     >;
-    export type PriceWithTax = (NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'];
+    export type PriceWithTax = NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'];
     export type _PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
         { __typename: 'PriceRange' }
     >;
     export type _SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
         { __typename: 'SinglePrice' }
     >;
 }
