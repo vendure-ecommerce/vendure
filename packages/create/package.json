@@ -30,7 +30,7 @@
     "@vendure/core": "^0.10.1",
     "rimraf": "^3.0.0",
     "ts-node": "^8.4.1",
-    "typescript": "~3.5.3"
+    "typescript": "3.7.5"
   },
   "dependencies": {
     "chalk": "^2.4.2",
