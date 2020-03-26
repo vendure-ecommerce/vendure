@@ -26,6 +26,6 @@
     "typescript": "3.7.5"
   },
   "dependencies": {
-    "fs-extra": "^8.0.1"
+    "fs-extra": "^9.0.0"
   }
 }

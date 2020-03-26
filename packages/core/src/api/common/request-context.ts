@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import i18next from 'i18next';
+import i18next, { TFunction } from 'i18next';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -24,7 +24,7 @@ export class RequestContext {
     private readonly _session?: Session;
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
-    private readonly _translationFn: i18next.TFunction;
+    private readonly _translationFn: TFunction;
     private readonly _apiType: ApiType;
 
     /**
@@ -37,7 +37,7 @@ export class RequestContext {
         languageCode?: LanguageCode;
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
-        translationFn?: i18next.TFunction;
+        translationFn?: TFunction;
     }) {
         const { apiType, channel, session, languageCode, translationFn } = options;
         this._apiType = apiType;

@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Handler, Request } from 'express';
 import { GraphQLError } from 'graphql';
-import i18next from 'i18next';
+import i18next, { TFunction } from 'i18next';
 import i18nextMiddleware from 'i18next-express-middleware';
 import ICU from 'i18next-icu';
 import Backend from 'i18next-node-fs-backend';
@@ -12,7 +12,7 @@ import { ConfigService } from '../config/config.service';
 import { I18nError } from './i18n-error';
 
 export interface I18nRequest extends Request {
-    t: i18next.TFunction;
+    t: TFunction;
 }
 
 /**
@@ -52,7 +52,7 @@ export class I18nService implements OnModuleInit {
      */
     translateError(req: I18nRequest, error: GraphQLError) {
         const originalError = error.originalError;
-        const t: i18next.TFunction = req.t;
+        const t: TFunction = req.t;
 
         if (t && originalError instanceof I18nError) {
             let translation = originalError.message;
