@@ -48,7 +48,7 @@
     "jest": "^25.2.1",
     "klaw-sync": "^6.0.0",
     "lerna": "^3.16.4",
-    "lint-staged": "^9.2.0",
+    "lint-staged": "^10.0.9",
     "prettier": "^2.0.2",
     "ts-jest": "^25.2.1",
     "ts-node": "^8.4.1",
