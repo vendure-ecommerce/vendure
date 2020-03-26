@@ -10,7 +10,7 @@ The Vendure Worker is a process which is responsible for running computationally
 The worker is started by calling the [`bootstrapWorker()`]({{< relref "bootstrap-worker" >}}) function with the same configuration as is passed to the main server `bootstrap()`:
 
 ```TypeScript
-import { Transport } from '@nest/microservices';
+import { Transport } from '@nestjs/microservices';
 import { bootstrapWorker, VendureConfig } from '@vendure/core';
 
 const config: VendureConfig = {
