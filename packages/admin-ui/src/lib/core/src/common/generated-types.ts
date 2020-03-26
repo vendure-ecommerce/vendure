@@ -1,55 +1,50 @@
 // tslint:disable
 export type Maybe<T> = T | null;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string,
-  String: string,
-  Boolean: boolean,
-  Int: number,
-  Float: number,
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-   * `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-   * 8601 standard for representation of dates and times using the Gregorian calendar.
- */
-  DateTime: any,
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSON: any,
-  /** The `Upload` scalar type represents a file upload. */
-  Upload: any,
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
+  JSON: any;
+  Upload: any;
 };
 
 
 export type AddNoteToOrderInput = {
-  id: Scalars['ID'],
-  note: Scalars['String'],
-  isPublic: Scalars['Boolean'],
+  id: Scalars['ID'];
+  note: Scalars['String'];
+  isPublic: Scalars['Boolean'];
 };
 
 export type Address = Node & {
-  __typename?: 'Address',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  fullName?: Maybe<Scalars['String']>,
-  company?: Maybe<Scalars['String']>,
-  streetLine1: Scalars['String'],
-  streetLine2?: Maybe<Scalars['String']>,
-  city?: Maybe<Scalars['String']>,
-  province?: Maybe<Scalars['String']>,
-  postalCode?: Maybe<Scalars['String']>,
-  country: Country,
-  phoneNumber?: Maybe<Scalars['String']>,
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>,
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'Address';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1: Scalars['String'];
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  country: Country;
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Adjustment = {
-  __typename?: 'Adjustment',
-  adjustmentSource: Scalars['String'],
-  type: AdjustmentType,
-  description: Scalars['String'],
-  amount: Scalars['Int'],
+   __typename?: 'Adjustment';
+  adjustmentSource: Scalars['String'];
+  type: AdjustmentType;
+  description: Scalars['String'];
+  amount: Scalars['Int'];
 };
 
 export enum AdjustmentType {
@@ -63,99 +58,99 @@ export enum AdjustmentType {
 }
 
 export type Administrator = Node & {
-  __typename?: 'Administrator',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  firstName: Scalars['String'],
-  lastName: Scalars['String'],
-  emailAddress: Scalars['String'],
-  user: User,
+   __typename?: 'Administrator';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  emailAddress: Scalars['String'];
+  user: User;
 };
 
 export type AdministratorFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  firstName?: Maybe<StringOperators>,
-  lastName?: Maybe<StringOperators>,
-  emailAddress?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  firstName?: Maybe<StringOperators>;
+  lastName?: Maybe<StringOperators>;
+  emailAddress?: Maybe<StringOperators>;
 };
 
 export type AdministratorList = PaginatedList & {
-  __typename?: 'AdministratorList',
-  items: Array<Administrator>,
-  totalItems: Scalars['Int'],
+   __typename?: 'AdministratorList';
+  items: Array<Administrator>;
+  totalItems: Scalars['Int'];
 };
 
 export type AdministratorListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<AdministratorSortParameter>,
-  filter?: Maybe<AdministratorFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AdministratorSortParameter>;
+  filter?: Maybe<AdministratorFilterParameter>;
 };
 
 export type AdministratorSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  firstName?: Maybe<SortOrder>,
-  lastName?: Maybe<SortOrder>,
-  emailAddress?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  firstName?: Maybe<SortOrder>;
+  lastName?: Maybe<SortOrder>;
+  emailAddress?: Maybe<SortOrder>;
 };
 
 export type Asset = Node & {
-  __typename?: 'Asset',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  name: Scalars['String'],
-  type: AssetType,
-  fileSize: Scalars['Int'],
-  mimeType: Scalars['String'],
-  width: Scalars['Int'],
-  height: Scalars['Int'],
-  source: Scalars['String'],
-  preview: Scalars['String'],
-  focalPoint?: Maybe<Coordinate>,
+   __typename?: 'Asset';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  type: AssetType;
+  fileSize: Scalars['Int'];
+  mimeType: Scalars['String'];
+  width: Scalars['Int'];
+  height: Scalars['Int'];
+  source: Scalars['String'];
+  preview: Scalars['String'];
+  focalPoint?: Maybe<Coordinate>;
 };
 
 export type AssetFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  name?: Maybe<StringOperators>,
-  type?: Maybe<StringOperators>,
-  fileSize?: Maybe<NumberOperators>,
-  mimeType?: Maybe<StringOperators>,
-  width?: Maybe<NumberOperators>,
-  height?: Maybe<NumberOperators>,
-  source?: Maybe<StringOperators>,
-  preview?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+  type?: Maybe<StringOperators>;
+  fileSize?: Maybe<NumberOperators>;
+  mimeType?: Maybe<StringOperators>;
+  width?: Maybe<NumberOperators>;
+  height?: Maybe<NumberOperators>;
+  source?: Maybe<StringOperators>;
+  preview?: Maybe<StringOperators>;
 };
 
 export type AssetList = PaginatedList & {
-  __typename?: 'AssetList',
-  items: Array<Asset>,
-  totalItems: Scalars['Int'],
+   __typename?: 'AssetList';
+  items: Array<Asset>;
+  totalItems: Scalars['Int'];
 };
 
 export type AssetListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<AssetSortParameter>,
-  filter?: Maybe<AssetFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AssetSortParameter>;
+  filter?: Maybe<AssetFilterParameter>;
 };
 
 export type AssetSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  fileSize?: Maybe<SortOrder>,
-  mimeType?: Maybe<SortOrder>,
-  width?: Maybe<SortOrder>,
-  height?: Maybe<SortOrder>,
-  source?: Maybe<SortOrder>,
-  preview?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  fileSize?: Maybe<SortOrder>;
+  mimeType?: Maybe<SortOrder>;
+  width?: Maybe<SortOrder>;
+  height?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  preview?: Maybe<SortOrder>;
 };
 
 export enum AssetType {
@@ -165,427 +160,428 @@ export enum AssetType {
 }
 
 export type AssignProductsToChannelInput = {
-  productIds: Array<Scalars['ID']>,
-  channelId: Scalars['ID'],
-  priceFactor?: Maybe<Scalars['Float']>,
+  productIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+  priceFactor?: Maybe<Scalars['Float']>;
 };
 
 export type BooleanCustomFieldConfig = CustomField & {
-  __typename?: 'BooleanCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
+   __typename?: 'BooleanCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
 };
 
 export type BooleanOperators = {
-  eq?: Maybe<Scalars['Boolean']>,
+  eq?: Maybe<Scalars['Boolean']>;
 };
 
 export type Cancellation = Node & StockMovement & {
-  __typename?: 'Cancellation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  type: StockMovementType,
-  quantity: Scalars['Int'],
-  orderLine: OrderLine,
+   __typename?: 'Cancellation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+  orderLine: OrderLine;
 };
 
 export type CancelOrderInput = {
   /** The id of the order to be cancelled */
-  orderId: Scalars['ID'],
+  orderId: Scalars['ID'];
   /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
-  lines?: Maybe<Array<OrderLineInput>>,
-  reason?: Maybe<Scalars['String']>,
+  lines?: Maybe<Array<OrderLineInput>>;
+  reason?: Maybe<Scalars['String']>;
 };
 
 export type Channel = Node & {
-  __typename?: 'Channel',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  code: Scalars['String'],
-  token: Scalars['String'],
-  defaultTaxZone?: Maybe<Zone>,
-  defaultShippingZone?: Maybe<Zone>,
-  defaultLanguageCode: LanguageCode,
-  currencyCode: CurrencyCode,
-  pricesIncludeTax: Scalars['Boolean'],
+   __typename?: 'Channel';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  token: Scalars['String'];
+  defaultTaxZone?: Maybe<Zone>;
+  defaultShippingZone?: Maybe<Zone>;
+  defaultLanguageCode: LanguageCode;
+  currencyCode: CurrencyCode;
+  pricesIncludeTax: Scalars['Boolean'];
 };
 
 export type Collection = Node & {
-  __typename?: 'Collection',
-  isPrivate: Scalars['Boolean'],
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode?: Maybe<LanguageCode>,
-  name: Scalars['String'],
-  breadcrumbs: Array<CollectionBreadcrumb>,
-  position: Scalars['Int'],
-  description: Scalars['String'],
-  featuredAsset?: Maybe<Asset>,
-  assets: Array<Asset>,
-  parent?: Maybe<Collection>,
-  children?: Maybe<Array<Collection>>,
-  filters: Array<ConfigurableOperation>,
-  translations: Array<CollectionTranslation>,
-  productVariants: ProductVariantList,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'Collection';
+  isPrivate: Scalars['Boolean'];
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode?: Maybe<LanguageCode>;
+  name: Scalars['String'];
+  breadcrumbs: Array<CollectionBreadcrumb>;
+  position: Scalars['Int'];
+  description: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  parent?: Maybe<Collection>;
+  children?: Maybe<Array<Collection>>;
+  filters: Array<ConfigurableOperation>;
+  translations: Array<CollectionTranslation>;
+  productVariants: ProductVariantList;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
 export type CollectionProductVariantsArgs = {
-  options?: Maybe<ProductVariantListOptions>
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 export type CollectionBreadcrumb = {
-  __typename?: 'CollectionBreadcrumb',
-  id: Scalars['ID'],
-  name: Scalars['String'],
+   __typename?: 'CollectionBreadcrumb';
+  id: Scalars['ID'];
+  name: Scalars['String'];
 };
 
 export type CollectionFilterParameter = {
-  isPrivate?: Maybe<BooleanOperators>,
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  languageCode?: Maybe<StringOperators>,
-  name?: Maybe<StringOperators>,
-  position?: Maybe<NumberOperators>,
-  description?: Maybe<StringOperators>,
+  isPrivate?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  position?: Maybe<NumberOperators>;
+  description?: Maybe<StringOperators>;
 };
 
 export type CollectionList = PaginatedList & {
-  __typename?: 'CollectionList',
-  items: Array<Collection>,
-  totalItems: Scalars['Int'],
+   __typename?: 'CollectionList';
+  items: Array<Collection>;
+  totalItems: Scalars['Int'];
 };
 
 export type CollectionListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<CollectionSortParameter>,
-  filter?: Maybe<CollectionFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CollectionSortParameter>;
+  filter?: Maybe<CollectionFilterParameter>;
 };
 
 export type CollectionSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  position?: Maybe<SortOrder>,
-  description?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  position?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type CollectionTranslation = {
-  __typename?: 'CollectionTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
-  description: Scalars['String'],
+   __typename?: 'CollectionTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  description: Scalars['String'];
 };
 
 export type CollectionTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArg = {
-  __typename?: 'ConfigArg',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  value: Scalars['String'],
+   __typename?: 'ConfigArg';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export type ConfigArgDefinition = {
-  __typename?: 'ConfigArgDefinition',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-  config?: Maybe<Scalars['JSON']>,
+   __typename?: 'ConfigArgDefinition';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  config?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
-  name: Scalars['String'],
-  type: Scalars['String'],
-  value: Scalars['String'],
+  name: Scalars['String'];
+  type: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export type ConfigurableOperation = {
-  __typename?: 'ConfigurableOperation',
-  code: Scalars['String'],
-  args: Array<ConfigArg>,
+   __typename?: 'ConfigurableOperation';
+  code: Scalars['String'];
+  args: Array<ConfigArg>;
 };
 
 export type ConfigurableOperationDefinition = {
-  __typename?: 'ConfigurableOperationDefinition',
-  code: Scalars['String'],
-  args: Array<ConfigArgDefinition>,
-  description: Scalars['String'],
+   __typename?: 'ConfigurableOperationDefinition';
+  code: Scalars['String'];
+  args: Array<ConfigArgDefinition>;
+  description: Scalars['String'];
 };
 
 export type ConfigurableOperationInput = {
-  code: Scalars['String'],
-  arguments: Array<ConfigArgInput>,
+  code: Scalars['String'];
+  arguments: Array<ConfigArgInput>;
 };
 
 export type Coordinate = {
-  __typename?: 'Coordinate',
-  x: Scalars['Float'],
-  y: Scalars['Float'],
+   __typename?: 'Coordinate';
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type CoordinateInput = {
-  x: Scalars['Float'],
-  y: Scalars['Float'],
+  x: Scalars['Float'];
+  y: Scalars['Float'];
 };
 
 export type Country = Node & {
-  __typename?: 'Country',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  code: Scalars['String'],
-  name: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  translations: Array<CountryTranslation>,
+   __typename?: 'Country';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  code: Scalars['String'];
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  translations: Array<CountryTranslation>;
 };
 
 export type CountryFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  languageCode?: Maybe<StringOperators>,
-  code?: Maybe<StringOperators>,
-  name?: Maybe<StringOperators>,
-  enabled?: Maybe<BooleanOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
 };
 
 export type CountryList = PaginatedList & {
-  __typename?: 'CountryList',
-  items: Array<Country>,
-  totalItems: Scalars['Int'],
+   __typename?: 'CountryList';
+  items: Array<Country>;
+  totalItems: Scalars['Int'];
 };
 
 export type CountryListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<CountrySortParameter>,
-  filter?: Maybe<CountryFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CountrySortParameter>;
+  filter?: Maybe<CountryFilterParameter>;
 };
 
 export type CountrySortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
 };
 
 export type CountryTranslation = {
-  __typename?: 'CountryTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'CountryTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type CountryTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
 };
 
 export type CreateAddressInput = {
-  fullName?: Maybe<Scalars['String']>,
-  company?: Maybe<Scalars['String']>,
-  streetLine1: Scalars['String'],
-  streetLine2?: Maybe<Scalars['String']>,
-  city?: Maybe<Scalars['String']>,
-  province?: Maybe<Scalars['String']>,
-  postalCode?: Maybe<Scalars['String']>,
-  countryCode: Scalars['String'],
-  phoneNumber?: Maybe<Scalars['String']>,
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>,
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1: Scalars['String'];
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  countryCode: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateAdministratorInput = {
-  firstName: Scalars['String'],
-  lastName: Scalars['String'],
-  emailAddress: Scalars['String'],
-  password: Scalars['String'],
-  roleIds: Array<Scalars['ID']>,
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  emailAddress: Scalars['String'];
+  password: Scalars['String'];
+  roleIds: Array<Scalars['ID']>;
 };
 
 export type CreateAssetInput = {
-  file: Scalars['Upload'],
+  file: Scalars['Upload'];
 };
 
 export type CreateChannelInput = {
-  code: Scalars['String'],
-  token: Scalars['String'],
-  defaultLanguageCode: LanguageCode,
-  pricesIncludeTax: Scalars['Boolean'],
-  currencyCode: CurrencyCode,
-  defaultTaxZoneId: Scalars['ID'],
-  defaultShippingZoneId: Scalars['ID'],
+  code: Scalars['String'];
+  token: Scalars['String'];
+  defaultLanguageCode: LanguageCode;
+  pricesIncludeTax: Scalars['Boolean'];
+  currencyCode: CurrencyCode;
+  defaultTaxZoneId: Scalars['ID'];
+  defaultShippingZoneId: Scalars['ID'];
 };
 
 export type CreateCollectionInput = {
-  isPrivate?: Maybe<Scalars['Boolean']>,
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  parentId?: Maybe<Scalars['ID']>,
-  filters: Array<ConfigurableOperationInput>,
-  translations: Array<CollectionTranslationInput>,
-  customFields?: Maybe<Scalars['JSON']>,
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  parentId?: Maybe<Scalars['ID']>;
+  filters: Array<ConfigurableOperationInput>;
+  translations: Array<CollectionTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateCountryInput = {
-  code: Scalars['String'],
-  translations: Array<CountryTranslationInput>,
-  enabled: Scalars['Boolean'],
+  code: Scalars['String'];
+  translations: Array<CountryTranslationInput>;
+  enabled: Scalars['Boolean'];
 };
 
 export type CreateCustomerGroupInput = {
-  name: Scalars['String'],
-  customerIds?: Maybe<Array<Scalars['ID']>>,
+  name: Scalars['String'];
+  customerIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type CreateCustomerInput = {
-  title?: Maybe<Scalars['String']>,
-  firstName: Scalars['String'],
-  lastName: Scalars['String'],
-  phoneNumber?: Maybe<Scalars['String']>,
-  emailAddress: Scalars['String'],
-  customFields?: Maybe<Scalars['JSON']>,
+  title?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress: Scalars['String'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateFacetInput = {
-  code: Scalars['String'],
-  isPrivate: Scalars['Boolean'],
-  translations: Array<FacetTranslationInput>,
-  values?: Maybe<Array<CreateFacetValueWithFacetInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  code: Scalars['String'];
+  isPrivate: Scalars['Boolean'];
+  translations: Array<FacetTranslationInput>;
+  values?: Maybe<Array<CreateFacetValueWithFacetInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateFacetValueInput = {
-  facetId: Scalars['ID'],
-  code: Scalars['String'],
-  translations: Array<FacetValueTranslationInput>,
-  customFields?: Maybe<Scalars['JSON']>,
+  facetId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateFacetValueWithFacetInput = {
-  code: Scalars['String'],
-  translations: Array<FacetValueTranslationInput>,
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslationInput>;
 };
 
 export type CreateGroupOptionInput = {
-  code: Scalars['String'],
-  translations: Array<ProductOptionGroupTranslationInput>,
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
 };
 
 export type CreateProductInput = {
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  facetValueIds?: Maybe<Array<Scalars['ID']>>,
-  translations: Array<ProductTranslationInput>,
-  customFields?: Maybe<Scalars['JSON']>,
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  translations: Array<ProductTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductOptionGroupInput = {
-  code: Scalars['String'],
-  translations: Array<ProductOptionGroupTranslationInput>,
-  options: Array<CreateGroupOptionInput>,
-  customFields?: Maybe<Scalars['JSON']>,
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
+  options: Array<CreateGroupOptionInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductOptionInput = {
-  productOptionGroupId: Scalars['ID'],
-  code: Scalars['String'],
-  translations: Array<ProductOptionGroupTranslationInput>,
-  customFields?: Maybe<Scalars['JSON']>,
+  productOptionGroupId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductVariantInput = {
-  productId: Scalars['ID'],
-  translations: Array<ProductVariantTranslationInput>,
-  facetValueIds?: Maybe<Array<Scalars['ID']>>,
-  sku: Scalars['String'],
-  price?: Maybe<Scalars['Int']>,
-  taxCategoryId?: Maybe<Scalars['ID']>,
-  optionIds?: Maybe<Array<Scalars['ID']>>,
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  stockOnHand?: Maybe<Scalars['Int']>,
-  trackInventory?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  productId: Scalars['ID'];
+  translations: Array<ProductVariantTranslationInput>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  sku: Scalars['String'];
+  price?: Maybe<Scalars['Int']>;
+  taxCategoryId?: Maybe<Scalars['ID']>;
+  optionIds?: Maybe<Array<Scalars['ID']>>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  stockOnHand?: Maybe<Scalars['Int']>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductVariantOptionInput = {
-  optionGroupId: Scalars['ID'],
-  code: Scalars['String'],
-  translations: Array<ProductOptionTranslationInput>,
+  optionGroupId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<ProductOptionTranslationInput>;
 };
 
 export type CreatePromotionInput = {
-  name: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  startsAt?: Maybe<Scalars['DateTime']>,
-  endsAt?: Maybe<Scalars['DateTime']>,
-  couponCode?: Maybe<Scalars['String']>,
-  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
-  conditions: Array<ConfigurableOperationInput>,
-  actions: Array<ConfigurableOperationInput>,
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  startsAt?: Maybe<Scalars['DateTime']>;
+  endsAt?: Maybe<Scalars['DateTime']>;
+  couponCode?: Maybe<Scalars['String']>;
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
+  conditions: Array<ConfigurableOperationInput>;
+  actions: Array<ConfigurableOperationInput>;
 };
 
 export type CreateRoleInput = {
-  code: Scalars['String'],
-  description: Scalars['String'],
-  permissions: Array<Permission>,
-  channelIds?: Maybe<Array<Scalars['ID']>>,
+  code: Scalars['String'];
+  description: Scalars['String'];
+  permissions: Array<Permission>;
+  channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type CreateShippingMethodInput = {
-  code: Scalars['String'],
-  description: Scalars['String'],
-  checker: ConfigurableOperationInput,
-  calculator: ConfigurableOperationInput,
+  code: Scalars['String'];
+  description: Scalars['String'];
+  checker: ConfigurableOperationInput;
+  calculator: ConfigurableOperationInput;
 };
 
 export type CreateTaxCategoryInput = {
-  name: Scalars['String'],
+  name: Scalars['String'];
 };
 
 export type CreateTaxRateInput = {
-  name: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  value: Scalars['Float'],
-  categoryId: Scalars['ID'],
-  zoneId: Scalars['ID'],
-  customerGroupId?: Maybe<Scalars['ID']>,
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  value: Scalars['Float'];
+  categoryId: Scalars['ID'];
+  zoneId: Scalars['ID'];
+  customerGroupId?: Maybe<Scalars['ID']>;
 };
 
 export type CreateZoneInput = {
-  name: Scalars['String'],
-  memberIds?: Maybe<Array<Scalars['ID']>>,
+  name: Scalars['String'];
+  memberIds?: Maybe<Array<Scalars['ID']>>;
 };
 
-/** @description
+/**
+ * @description
  * ISO 4217 currency code
  * 
  * @docsCategory common
@@ -908,152 +904,152 @@ export enum CurrencyCode {
 }
 
 export type CurrentUser = {
-  __typename?: 'CurrentUser',
-  id: Scalars['ID'],
-  identifier: Scalars['String'],
-  channels: Array<CurrentUserChannel>,
+   __typename?: 'CurrentUser';
+  channels: Array<CurrentUserChannel>;
+  id: Scalars['ID'];
+  identifier: Scalars['String'];
 };
 
 export type CurrentUserChannel = {
-  __typename?: 'CurrentUserChannel',
-  id: Scalars['ID'],
-  token: Scalars['String'],
-  code: Scalars['String'],
-  permissions: Array<Permission>,
+   __typename?: 'CurrentUserChannel';
+  code: Scalars['String'];
+  id: Scalars['ID'];
+  permissions: Array<Permission>;
+  token: Scalars['String'];
 };
 
 export type CurrentUserChannelInput = {
-  id: Scalars['ID'],
-  token: Scalars['String'],
-  code: Scalars['String'],
-  permissions: Array<Permission>,
+  id: Scalars['ID'];
+  token: Scalars['String'];
+  code: Scalars['String'];
+  permissions: Array<Permission>;
 };
 
 export type Customer = Node & {
-  __typename?: 'Customer',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  title?: Maybe<Scalars['String']>,
-  firstName: Scalars['String'],
-  lastName: Scalars['String'],
-  phoneNumber?: Maybe<Scalars['String']>,
-  emailAddress: Scalars['String'],
-  addresses?: Maybe<Array<Address>>,
-  orders: OrderList,
-  user?: Maybe<User>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'Customer';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  title?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress: Scalars['String'];
+  addresses?: Maybe<Array<Address>>;
+  orders: OrderList;
+  user?: Maybe<User>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
 export type CustomerOrdersArgs = {
-  options?: Maybe<OrderListOptions>
+  options?: Maybe<OrderListOptions>;
 };
 
 export type CustomerFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  title?: Maybe<StringOperators>,
-  firstName?: Maybe<StringOperators>,
-  lastName?: Maybe<StringOperators>,
-  phoneNumber?: Maybe<StringOperators>,
-  emailAddress?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  title?: Maybe<StringOperators>;
+  firstName?: Maybe<StringOperators>;
+  lastName?: Maybe<StringOperators>;
+  phoneNumber?: Maybe<StringOperators>;
+  emailAddress?: Maybe<StringOperators>;
 };
 
 export type CustomerGroup = Node & {
-  __typename?: 'CustomerGroup',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  name: Scalars['String'],
+   __typename?: 'CustomerGroup';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
 };
 
 export type CustomerList = PaginatedList & {
-  __typename?: 'CustomerList',
-  items: Array<Customer>,
-  totalItems: Scalars['Int'],
+   __typename?: 'CustomerList';
+  items: Array<Customer>;
+  totalItems: Scalars['Int'];
 };
 
 export type CustomerListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<CustomerSortParameter>,
-  filter?: Maybe<CustomerFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerSortParameter>;
+  filter?: Maybe<CustomerFilterParameter>;
 };
 
 export type CustomerSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  title?: Maybe<SortOrder>,
-  firstName?: Maybe<SortOrder>,
-  lastName?: Maybe<SortOrder>,
-  phoneNumber?: Maybe<SortOrder>,
-  emailAddress?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  title?: Maybe<SortOrder>;
+  firstName?: Maybe<SortOrder>;
+  lastName?: Maybe<SortOrder>;
+  phoneNumber?: Maybe<SortOrder>;
+  emailAddress?: Maybe<SortOrder>;
 };
 
 export type CustomField = {
-  __typename?: 'CustomField',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
 };
 
 export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
-  __typename?: 'CustomFields',
-  Address: Array<CustomFieldConfig>,
-  Collection: Array<CustomFieldConfig>,
-  Customer: Array<CustomFieldConfig>,
-  Facet: Array<CustomFieldConfig>,
-  FacetValue: Array<CustomFieldConfig>,
-  GlobalSettings: Array<CustomFieldConfig>,
-  Order: Array<CustomFieldConfig>,
-  OrderLine: Array<CustomFieldConfig>,
-  Product: Array<CustomFieldConfig>,
-  ProductOption: Array<CustomFieldConfig>,
-  ProductOptionGroup: Array<CustomFieldConfig>,
-  ProductVariant: Array<CustomFieldConfig>,
-  User: Array<CustomFieldConfig>,
+   __typename?: 'CustomFields';
+  Address: Array<CustomFieldConfig>;
+  Collection: Array<CustomFieldConfig>;
+  Customer: Array<CustomFieldConfig>;
+  Facet: Array<CustomFieldConfig>;
+  FacetValue: Array<CustomFieldConfig>;
+  GlobalSettings: Array<CustomFieldConfig>;
+  Order: Array<CustomFieldConfig>;
+  OrderLine: Array<CustomFieldConfig>;
+  Product: Array<CustomFieldConfig>;
+  ProductOption: Array<CustomFieldConfig>;
+  ProductOptionGroup: Array<CustomFieldConfig>;
+  ProductVariant: Array<CustomFieldConfig>;
+  User: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
-  eq?: Maybe<Scalars['DateTime']>,
-  before?: Maybe<Scalars['DateTime']>,
-  after?: Maybe<Scalars['DateTime']>,
-  between?: Maybe<DateRange>,
+  eq?: Maybe<Scalars['DateTime']>;
+  before?: Maybe<Scalars['DateTime']>;
+  after?: Maybe<Scalars['DateTime']>;
+  between?: Maybe<DateRange>;
 };
 
 export type DateRange = {
-  start: Scalars['DateTime'],
-  end: Scalars['DateTime'],
+  start: Scalars['DateTime'];
+  end: Scalars['DateTime'];
 };
 
 
-/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+/**
+ * Expects the same validation formats as the <input type="datetime-local"> HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
-  __typename?: 'DateTimeCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
-  min?: Maybe<Scalars['String']>,
-  max?: Maybe<Scalars['String']>,
-  step?: Maybe<Scalars['Int']>,
+   __typename?: 'DateTimeCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['String']>;
+  max?: Maybe<Scalars['String']>;
+  step?: Maybe<Scalars['Int']>;
 };
 
 export type DeletionResponse = {
-  __typename?: 'DeletionResponse',
-  result: DeletionResult,
-  message?: Maybe<Scalars['String']>,
+   __typename?: 'DeletionResponse';
+  result: DeletionResult;
+  message?: Maybe<Scalars['String']>;
 };
 
 export enum DeletionResult {
@@ -1064,178 +1060,179 @@ export enum DeletionResult {
 }
 
 export type Facet = Node & {
-  __typename?: 'Facet',
-  isPrivate: Scalars['Boolean'],
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
-  code: Scalars['String'],
-  values: Array<FacetValue>,
-  translations: Array<FacetTranslation>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'Facet';
+  isPrivate: Scalars['Boolean'];
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  values: Array<FacetValue>;
+  translations: Array<FacetTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type FacetFilterParameter = {
-  isPrivate?: Maybe<BooleanOperators>,
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  languageCode?: Maybe<StringOperators>,
-  name?: Maybe<StringOperators>,
-  code?: Maybe<StringOperators>,
+  isPrivate?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
 };
 
 export type FacetList = PaginatedList & {
-  __typename?: 'FacetList',
-  items: Array<Facet>,
-  totalItems: Scalars['Int'],
+   __typename?: 'FacetList';
+  items: Array<Facet>;
+  totalItems: Scalars['Int'];
 };
 
 export type FacetListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<FacetSortParameter>,
-  filter?: Maybe<FacetFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<FacetSortParameter>;
+  filter?: Maybe<FacetFilterParameter>;
 };
 
 export type FacetSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
 };
 
 export type FacetTranslation = {
-  __typename?: 'FacetTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'FacetTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type FacetTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type FacetValue = Node & {
-  __typename?: 'FacetValue',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  facet: Facet,
-  name: Scalars['String'],
-  code: Scalars['String'],
-  translations: Array<FacetValueTranslation>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'FacetValue';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  facet: Facet;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
-/** Which FacetValues are present in the products returned
+/**
+ * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
-  __typename?: 'FacetValueResult',
-  facetValue: FacetValue,
-  count: Scalars['Int'],
+   __typename?: 'FacetValueResult';
+  facetValue: FacetValue;
+  count: Scalars['Int'];
 };
 
 export type FacetValueTranslation = {
-  __typename?: 'FacetValueTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'FacetValueTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type FacetValueTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type FloatCustomFieldConfig = CustomField & {
-  __typename?: 'FloatCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
-  min?: Maybe<Scalars['Float']>,
-  max?: Maybe<Scalars['Float']>,
-  step?: Maybe<Scalars['Float']>,
+   __typename?: 'FloatCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['Float']>;
+  max?: Maybe<Scalars['Float']>;
+  step?: Maybe<Scalars['Float']>;
 };
 
 export type Fulfillment = Node & {
-  __typename?: 'Fulfillment',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  orderItems: Array<OrderItem>,
-  method: Scalars['String'],
-  trackingCode?: Maybe<Scalars['String']>,
+   __typename?: 'Fulfillment';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
 };
 
 export type FulfillOrderInput = {
-  lines: Array<OrderLineInput>,
-  method: Scalars['String'],
-  trackingCode?: Maybe<Scalars['String']>,
+  lines: Array<OrderLineInput>;
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
 };
 
 export type GlobalSettings = {
-  __typename?: 'GlobalSettings',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  availableLanguages: Array<LanguageCode>,
-  trackInventory: Scalars['Boolean'],
-  serverConfig: ServerConfig,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'GlobalSettings';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  availableLanguages: Array<LanguageCode>;
+  trackInventory: Scalars['Boolean'];
+  serverConfig: ServerConfig;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type HistoryEntry = Node & {
-  __typename?: 'HistoryEntry',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  isPublic: Scalars['Boolean'],
-  type: HistoryEntryType,
-  administrator?: Maybe<Administrator>,
-  data: Scalars['JSON'],
+   __typename?: 'HistoryEntry';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  isPublic: Scalars['Boolean'];
+  type: HistoryEntryType;
+  administrator?: Maybe<Administrator>;
+  data: Scalars['JSON'];
 };
 
 export type HistoryEntryFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  isPublic?: Maybe<BooleanOperators>,
-  type?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  isPublic?: Maybe<BooleanOperators>;
+  type?: Maybe<StringOperators>;
 };
 
 export type HistoryEntryList = PaginatedList & {
-  __typename?: 'HistoryEntryList',
-  items: Array<HistoryEntry>,
-  totalItems: Scalars['Int'],
+   __typename?: 'HistoryEntryList';
+  items: Array<HistoryEntry>;
+  totalItems: Scalars['Int'];
 };
 
 export type HistoryEntryListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<HistoryEntrySortParameter>,
-  filter?: Maybe<HistoryEntryFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<HistoryEntrySortParameter>;
+  filter?: Maybe<HistoryEntryFilterParameter>;
 };
 
 export type HistoryEntrySortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
 };
 
 export enum HistoryEntryType {
@@ -1250,41 +1247,41 @@ export enum HistoryEntryType {
 }
 
 export type ImportInfo = {
-  __typename?: 'ImportInfo',
-  errors?: Maybe<Array<Scalars['String']>>,
-  processed: Scalars['Int'],
-  imported: Scalars['Int'],
+   __typename?: 'ImportInfo';
+  errors?: Maybe<Array<Scalars['String']>>;
+  processed: Scalars['Int'];
+  imported: Scalars['Int'];
 };
 
 export type IntCustomFieldConfig = CustomField & {
-  __typename?: 'IntCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
-  min?: Maybe<Scalars['Int']>,
-  max?: Maybe<Scalars['Int']>,
-  step?: Maybe<Scalars['Int']>,
+   __typename?: 'IntCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['Int']>;
+  max?: Maybe<Scalars['Int']>;
+  step?: Maybe<Scalars['Int']>;
 };
 
 export type JobInfo = {
-  __typename?: 'JobInfo',
-  id: Scalars['String'],
-  name: Scalars['String'],
-  state: JobState,
-  progress: Scalars['Float'],
-  metadata?: Maybe<Scalars['JSON']>,
-  result?: Maybe<Scalars['JSON']>,
-  started?: Maybe<Scalars['DateTime']>,
-  ended?: Maybe<Scalars['DateTime']>,
-  duration?: Maybe<Scalars['Int']>,
+   __typename?: 'JobInfo';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  state: JobState;
+  progress: Scalars['Float'];
+  metadata?: Maybe<Scalars['JSON']>;
+  result?: Maybe<Scalars['JSON']>;
+  started?: Maybe<Scalars['DateTime']>;
+  ended?: Maybe<Scalars['DateTime']>;
+  duration?: Maybe<Scalars['Int']>;
 };
 
 export type JobListInput = {
-  state?: Maybe<JobState>,
-  ids?: Maybe<Array<Scalars['String']>>,
+  state?: Maybe<JobState>;
+  ids?: Maybe<Array<Scalars['String']>>;
 };
 
 export enum JobState {
@@ -1295,7 +1292,8 @@ export enum JobState {
 }
 
 
-/** @description
+/**
+ * @description
  * ISO 639-1 language code
  * 
  * @docsCategory common
@@ -1305,340 +1303,340 @@ export enum LanguageCode {
   aa = 'aa',
   /** Abkhazian */
   ab = 'ab',
+  /** Avestan */
+  ae = 'ae',
   /** Afrikaans */
   af = 'af',
   /** Akan */
   ak = 'ak',
-  /** Albanian */
-  sq = 'sq',
   /** Amharic */
   am = 'am',
-  /** Arabic */
-  ar = 'ar',
   /** Aragonese */
   an = 'an',
-  /** Armenian */
-  hy = 'hy',
+  /** Arabic */
+  ar = 'ar',
   /** Assamese */
   as = 'as',
   /** Avaric */
   av = 'av',
-  /** Avestan */
-  ae = 'ae',
   /** Aymara */
   ay = 'ay',
   /** Azerbaijani */
   az = 'az',
   /** Bashkir */
   ba = 'ba',
-  /** Bambara */
-  bm = 'bm',
-  /** Basque */
-  eu = 'eu',
   /** Belarusian */
   be = 'be',
-  /** Bengali */
-  bn = 'bn',
+  /** Bulgarian */
+  bg = 'bg',
   /** Bihari languages */
   bh = 'bh',
   /** Bislama */
   bi = 'bi',
-  /** Bosnian */
-  bs = 'bs',
+  /** Bambara */
+  bm = 'bm',
+  /** Bengali */
+  bn = 'bn',
+  /** Tibetan */
+  bo = 'bo',
   /** Breton */
   br = 'br',
-  /** Bulgarian */
-  bg = 'bg',
-  /** Burmese */
-  my = 'my',
+  /** Bosnian */
+  bs = 'bs',
   /** Catalan; Valencian */
   ca = 'ca',
-  /** Chamorro */
-  ch = 'ch',
   /** Chechen */
   ce = 'ce',
-  /** Chinese */
-  zh = 'zh',
-  /** Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic */
-  cu = 'cu',
-  /** Chuvash */
-  cv = 'cv',
-  /** Cornish */
-  kw = 'kw',
+  /** Chamorro */
+  ch = 'ch',
   /** Corsican */
   co = 'co',
   /** Cree */
   cr = 'cr',
   /** Czech */
   cs = 'cs',
+  /** Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic */
+  cu = 'cu',
+  /** Chuvash */
+  cv = 'cv',
+  /** Welsh */
+  cy = 'cy',
   /** Danish */
   da = 'da',
+  /** German */
+  de = 'de',
   /** Divehi; Dhivehi; Maldivian */
   dv = 'dv',
-  /** Dutch; Flemish */
-  nl = 'nl',
   /** Dzongkha */
   dz = 'dz',
+  /** Ewe */
+  ee = 'ee',
+  /** Greek, Modern (1453-) */
+  el = 'el',
   /** English */
   en = 'en',
   /** Esperanto */
   eo = 'eo',
+  /** Spanish; Castilian */
+  es = 'es',
   /** Estonian */
   et = 'et',
-  /** Ewe */
-  ee = 'ee',
-  /** Faroese */
-  fo = 'fo',
-  /** Fijian */
-  fj = 'fj',
+  /** Basque */
+  eu = 'eu',
+  /** Persian */
+  fa = 'fa',
+  /** Fulah */
+  ff = 'ff',
   /** Finnish */
   fi = 'fi',
+  /** Fijian */
+  fj = 'fj',
+  /** Faroese */
+  fo = 'fo',
   /** French */
   fr = 'fr',
   /** Western Frisian */
   fy = 'fy',
-  /** Fulah */
-  ff = 'ff',
-  /** Georgian */
-  ka = 'ka',
-  /** German */
-  de = 'de',
-  /** Gaelic; Scottish Gaelic */
-  gd = 'gd',
   /** Irish */
   ga = 'ga',
+  /** Gaelic; Scottish Gaelic */
+  gd = 'gd',
   /** Galician */
   gl = 'gl',
-  /** Manx */
-  gv = 'gv',
-  /** Greek, Modern (1453-) */
-  el = 'el',
   /** Guarani */
   gn = 'gn',
   /** Gujarati */
   gu = 'gu',
-  /** Haitian; Haitian Creole */
-  ht = 'ht',
+  /** Manx */
+  gv = 'gv',
   /** Hausa */
   ha = 'ha',
   /** Hebrew */
   he = 'he',
-  /** Herero */
-  hz = 'hz',
   /** Hindi */
   hi = 'hi',
   /** Hiri Motu */
   ho = 'ho',
   /** Croatian */
   hr = 'hr',
+  /** Haitian; Haitian Creole */
+  ht = 'ht',
   /** Hungarian */
   hu = 'hu',
-  /** Igbo */
-  ig = 'ig',
-  /** Icelandic */
-  is = 'is',
-  /** Ido */
-  io = 'io',
-  /** Sichuan Yi; Nuosu */
-  ii = 'ii',
-  /** Inuktitut */
-  iu = 'iu',
-  /** Interlingue; Occidental */
-  ie = 'ie',
+  /** Armenian */
+  hy = 'hy',
+  /** Herero */
+  hz = 'hz',
   /** Interlingua (International Auxiliary Language Association) */
   ia = 'ia',
   /** Indonesian */
   id = 'id',
+  /** Interlingue; Occidental */
+  ie = 'ie',
+  /** Igbo */
+  ig = 'ig',
+  /** Sichuan Yi; Nuosu */
+  ii = 'ii',
   /** Inupiaq */
   ik = 'ik',
+  /** Ido */
+  io = 'io',
+  /** Icelandic */
+  is = 'is',
   /** Italian */
   it = 'it',
-  /** Javanese */
-  jv = 'jv',
+  /** Inuktitut */
+  iu = 'iu',
   /** Japanese */
   ja = 'ja',
-  /** Kalaallisut; Greenlandic */
-  kl = 'kl',
-  /** Kannada */
-  kn = 'kn',
-  /** Kashmiri */
-  ks = 'ks',
-  /** Kanuri */
-  kr = 'kr',
-  /** Kazakh */
-  kk = 'kk',
-  /** Central Khmer */
-  km = 'km',
-  /** Kikuyu; Gikuyu */
-  ki = 'ki',
-  /** Kinyarwanda */
-  rw = 'rw',
-  /** Kirghiz; Kyrgyz */
-  ky = 'ky',
-  /** Komi */
-  kv = 'kv',
+  /** Javanese */
+  jv = 'jv',
+  /** Georgian */
+  ka = 'ka',
   /** Kongo */
   kg = 'kg',
-  /** Korean */
-  ko = 'ko',
+  /** Kikuyu; Gikuyu */
+  ki = 'ki',
   /** Kuanyama; Kwanyama */
   kj = 'kj',
+  /** Kazakh */
+  kk = 'kk',
+  /** Kalaallisut; Greenlandic */
+  kl = 'kl',
+  /** Central Khmer */
+  km = 'km',
+  /** Kannada */
+  kn = 'kn',
+  /** Korean */
+  ko = 'ko',
+  /** Kanuri */
+  kr = 'kr',
+  /** Kashmiri */
+  ks = 'ks',
   /** Kurdish */
   ku = 'ku',
-  /** Lao */
-  lo = 'lo',
+  /** Komi */
+  kv = 'kv',
+  /** Cornish */
+  kw = 'kw',
+  /** Kirghiz; Kyrgyz */
+  ky = 'ky',
   /** Latin */
   la = 'la',
-  /** Latvian */
-  lv = 'lv',
+  /** Luxembourgish; Letzeburgesch */
+  lb = 'lb',
+  /** Ganda */
+  lg = 'lg',
   /** Limburgan; Limburger; Limburgish */
   li = 'li',
   /** Lingala */
   ln = 'ln',
+  /** Lao */
+  lo = 'lo',
   /** Lithuanian */
   lt = 'lt',
-  /** Luxembourgish; Letzeburgesch */
-  lb = 'lb',
   /** Luba-Katanga */
   lu = 'lu',
-  /** Ganda */
-  lg = 'lg',
-  /** Macedonian */
-  mk = 'mk',
+  /** Latvian */
+  lv = 'lv',
+  /** Malagasy */
+  mg = 'mg',
   /** Marshallese */
   mh = 'mh',
-  /** Malayalam */
-  ml = 'ml',
   /** Maori */
   mi = 'mi',
+  /** Macedonian */
+  mk = 'mk',
+  /** Malayalam */
+  ml = 'ml',
+  /** Mongolian */
+  mn = 'mn',
   /** Marathi */
   mr = 'mr',
   /** Malay */
   ms = 'ms',
-  /** Malagasy */
-  mg = 'mg',
   /** Maltese */
   mt = 'mt',
-  /** Mongolian */
-  mn = 'mn',
+  /** Burmese */
+  my = 'my',
   /** Nauru */
   na = 'na',
-  /** Navajo; Navaho */
-  nv = 'nv',
-  /** Ndebele, South; South Ndebele */
-  nr = 'nr',
-  /** Ndebele, North; North Ndebele */
-  nd = 'nd',
-  /** Ndonga */
-  ng = 'ng',
-  /** Nepali */
-  ne = 'ne',
-  /** Norwegian Nynorsk; Nynorsk, Norwegian */
-  nn = 'nn',
   /** Bokmål, Norwegian; Norwegian Bokmål */
   nb = 'nb',
+  /** Ndebele, North; North Ndebele */
+  nd = 'nd',
+  /** Nepali */
+  ne = 'ne',
+  /** Ndonga */
+  ng = 'ng',
+  /** Dutch; Flemish */
+  nl = 'nl',
+  /** Norwegian Nynorsk; Nynorsk, Norwegian */
+  nn = 'nn',
   /** Norwegian */
   no = 'no',
+  /** Ndebele, South; South Ndebele */
+  nr = 'nr',
+  /** Navajo; Navaho */
+  nv = 'nv',
   /** Chichewa; Chewa; Nyanja */
   ny = 'ny',
   /** Occitan (post 1500); Provençal */
   oc = 'oc',
   /** Ojibwa */
   oj = 'oj',
-  /** Oriya */
-  or = 'or',
   /** Oromo */
   om = 'om',
+  /** Oriya */
+  or = 'or',
   /** Ossetian; Ossetic */
   os = 'os',
   /** Panjabi; Punjabi */
   pa = 'pa',
-  /** Persian */
-  fa = 'fa',
   /** Pali */
   pi = 'pi',
   /** Polish */
   pl = 'pl',
-  /** Portuguese */
-  pt = 'pt',
   /** Pushto; Pashto */
   ps = 'ps',
+  /** Portuguese */
+  pt = 'pt',
   /** Quechua */
   qu = 'qu',
   /** Romansh */
   rm = 'rm',
-  /** Romanian; Moldavian; Moldovan */
-  ro = 'ro',
   /** Rundi */
   rn = 'rn',
+  /** Romanian; Moldavian; Moldovan */
+  ro = 'ro',
   /** Russian */
   ru = 'ru',
-  /** Sango */
-  sg = 'sg',
+  /** Kinyarwanda */
+  rw = 'rw',
   /** Sanskrit */
   sa = 'sa',
+  /** Sardinian */
+  sc = 'sc',
+  /** Sindhi */
+  sd = 'sd',
+  /** Northern Sami */
+  se = 'se',
+  /** Sango */
+  sg = 'sg',
   /** Sinhala; Sinhalese */
   si = 'si',
   /** Slovak */
   sk = 'sk',
   /** Slovenian */
   sl = 'sl',
-  /** Northern Sami */
-  se = 'se',
   /** Samoan */
   sm = 'sm',
   /** Shona */
   sn = 'sn',
-  /** Sindhi */
-  sd = 'sd',
   /** Somali */
   so = 'so',
-  /** Sotho, Southern */
-  st = 'st',
-  /** Spanish; Castilian */
-  es = 'es',
-  /** Sardinian */
-  sc = 'sc',
+  /** Albanian */
+  sq = 'sq',
   /** Serbian */
   sr = 'sr',
   /** Swati */
   ss = 'ss',
+  /** Sotho, Southern */
+  st = 'st',
   /** Sundanese */
   su = 'su',
-  /** Swahili */
-  sw = 'sw',
   /** Swedish */
   sv = 'sv',
-  /** Tahitian */
-  ty = 'ty',
+  /** Swahili */
+  sw = 'sw',
   /** Tamil */
   ta = 'ta',
-  /** Tatar */
-  tt = 'tt',
   /** Telugu */
   te = 'te',
   /** Tajik */
   tg = 'tg',
-  /** Tagalog */
-  tl = 'tl',
   /** Thai */
   th = 'th',
-  /** Tibetan */
-  bo = 'bo',
   /** Tigrinya */
   ti = 'ti',
-  /** Tonga (Tonga Islands) */
-  to = 'to',
-  /** Tswana */
-  tn = 'tn',
-  /** Tsonga */
-  ts = 'ts',
   /** Turkmen */
   tk = 'tk',
+  /** Tagalog */
+  tl = 'tl',
+  /** Tswana */
+  tn = 'tn',
+  /** Tonga (Tonga Islands) */
+  to = 'to',
   /** Turkish */
   tr = 'tr',
+  /** Tsonga */
+  ts = 'ts',
+  /** Tatar */
+  tt = 'tt',
   /** Twi */
   tw = 'tw',
+  /** Tahitian */
+  ty = 'ty',
   /** Uighur; Uyghur */
   ug = 'ug',
   /** Ukrainian */
@@ -1653,8 +1651,6 @@ export enum LanguageCode {
   vi = 'vi',
   /** Volapük */
   vo = 'vo',
-  /** Welsh */
-  cy = 'cy',
   /** Walloon */
   wa = 'wa',
   /** Wolof */
@@ -1667,810 +1663,811 @@ export enum LanguageCode {
   yo = 'yo',
   /** Zhuang; Chuang */
   za = 'za',
+  /** Chinese */
+  zh = 'zh',
   /** Zulu */
   zu = 'zu'
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
-  __typename?: 'LocaleStringCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
-  pattern?: Maybe<Scalars['String']>,
+   __typename?: 'LocaleStringCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  pattern?: Maybe<Scalars['String']>;
 };
 
 export type LocalizedString = {
-  __typename?: 'LocalizedString',
-  languageCode: LanguageCode,
-  value: Scalars['String'],
+   __typename?: 'LocalizedString';
+  languageCode: LanguageCode;
+  value: Scalars['String'];
 };
 
 export type LoginResult = {
-  __typename?: 'LoginResult',
-  user: CurrentUser,
+   __typename?: 'LoginResult';
+  user: CurrentUser;
 };
 
 export type MoveCollectionInput = {
-  collectionId: Scalars['ID'],
-  parentId: Scalars['ID'],
-  index: Scalars['Int'],
+  collectionId: Scalars['ID'];
+  parentId: Scalars['ID'];
+  index: Scalars['Int'];
 };
 
 export type Mutation = {
-  __typename?: 'Mutation',
-  /** Create a new Administrator */
-  createAdministrator: Administrator,
-  /** Update an existing Administrator */
-  updateAdministrator: Administrator,
-  /** Assign a Role to an Administrator */
-  assignRoleToAdministrator: Administrator,
-  /** Create a new Asset */
-  createAssets: Array<Asset>,
-  /** Update an existing Asset */
-  updateAsset: Asset,
-  login: LoginResult,
-  logout: Scalars['Boolean'],
-  /** Create a new Channel */
-  createChannel: Channel,
-  /** Update an existing Channel */
-  updateChannel: Channel,
-  /** Delete a Channel */
-  deleteChannel: DeletionResponse,
-  /** Create a new Collection */
-  createCollection: Collection,
-  /** Update an existing Collection */
-  updateCollection: Collection,
-  /** Delete a Collection and all of its descendants */
-  deleteCollection: DeletionResponse,
-  /** Move a Collection to a different parent or index */
-  moveCollection: Collection,
-  /** Create a new Country */
-  createCountry: Country,
-  /** Update an existing Country */
-  updateCountry: Country,
-  /** Delete a Country */
-  deleteCountry: DeletionResponse,
-  /** Create a new CustomerGroup */
-  createCustomerGroup: CustomerGroup,
-  /** Update an existing CustomerGroup */
-  updateCustomerGroup: CustomerGroup,
+   __typename?: 'Mutation';
   /** Add Customers to a CustomerGroup */
-  addCustomersToGroup: CustomerGroup,
-  /** Remove Customers from a CustomerGroup */
-  removeCustomersFromGroup: CustomerGroup,
-  /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
-  createCustomer: Customer,
-  /** Update an existing Customer */
-  updateCustomer: Customer,
-  /** Delete a Customer */
-  deleteCustomer: DeletionResponse,
-  /** Create a new Address and associate it with the Customer specified by customerId */
-  createCustomerAddress: Address,
-  /** Update an existing Address */
-  updateCustomerAddress: Address,
-  /** Update an existing Address */
-  deleteCustomerAddress: Scalars['Boolean'],
-  /** Create a new Facet */
-  createFacet: Facet,
-  /** Update an existing Facet */
-  updateFacet: Facet,
-  /** Delete an existing Facet */
-  deleteFacet: DeletionResponse,
-  /** Create one or more FacetValues */
-  createFacetValues: Array<FacetValue>,
-  /** Update one or more FacetValues */
-  updateFacetValues: Array<FacetValue>,
-  /** Delete one or more FacetValues */
-  deleteFacetValues: Array<DeletionResponse>,
-  updateGlobalSettings: GlobalSettings,
-  importProducts?: Maybe<ImportInfo>,
-  settlePayment: Payment,
-  fulfillOrder: Fulfillment,
-  cancelOrder: Order,
-  refundOrder: Refund,
-  settleRefund: Refund,
-  addNoteToOrder: Order,
-  /** Update an existing PaymentMethod */
-  updatePaymentMethod: PaymentMethod,
-  /** Create a new ProductOptionGroup */
-  createProductOptionGroup: ProductOptionGroup,
-  /** Update an existing ProductOptionGroup */
-  updateProductOptionGroup: ProductOptionGroup,
-  /** Create a new ProductOption within a ProductOptionGroup */
-  createProductOption: ProductOption,
-  /** Create a new ProductOption within a ProductOptionGroup */
-  updateProductOption: ProductOption,
-  reindex: JobInfo,
-  /** Create a new Product */
-  createProduct: Product,
-  /** Update an existing Product */
-  updateProduct: Product,
-  /** Delete a Product */
-  deleteProduct: DeletionResponse,
-  /** Add an OptionGroup to a Product */
-  addOptionGroupToProduct: Product,
-  /** Remove an OptionGroup from a Product */
-  removeOptionGroupFromProduct: Product,
-  /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
-  createProductVariants: Array<Maybe<ProductVariant>>,
-  /** Update existing ProductVariants */
-  updateProductVariants: Array<Maybe<ProductVariant>>,
-  /** Delete a ProductVariant */
-  deleteProductVariant: DeletionResponse,
-  /** Assigns Products to the specified Channel */
-  assignProductsToChannel: Array<Product>,
-  /** Removes Products from the specified Channel */
-  removeProductsFromChannel: Array<Product>,
-  createPromotion: Promotion,
-  updatePromotion: Promotion,
-  deletePromotion: DeletionResponse,
-  /** Create a new Role */
-  createRole: Role,
-  /** Update an existing Role */
-  updateRole: Role,
-  /** Delete an existing Role */
-  deleteRole: DeletionResponse,
-  /** Create a new ShippingMethod */
-  createShippingMethod: ShippingMethod,
-  /** Update an existing ShippingMethod */
-  updateShippingMethod: ShippingMethod,
-  /** Delete a ShippingMethod */
-  deleteShippingMethod: DeletionResponse,
-  /** Create a new TaxCategory */
-  createTaxCategory: TaxCategory,
-  /** Update an existing TaxCategory */
-  updateTaxCategory: TaxCategory,
-  /** Deletes a TaxCategory */
-  deleteTaxCategory: DeletionResponse,
-  /** Create a new TaxRate */
-  createTaxRate: TaxRate,
-  /** Update an existing TaxRate */
-  updateTaxRate: TaxRate,
-  /** Delete a TaxRate */
-  deleteTaxRate: DeletionResponse,
-  /** Create a new Zone */
-  createZone: Zone,
-  /** Update an existing Zone */
-  updateZone: Zone,
-  /** Delete a Zone */
-  deleteZone: DeletionResponse,
+  addCustomersToGroup: CustomerGroup;
   /** Add members to a Zone */
-  addMembersToZone: Zone,
+  addMembersToZone: Zone;
+  addNoteToOrder: Order;
+  /** Add an OptionGroup to a Product */
+  addOptionGroupToProduct: Product;
+  /** Assigns Products to the specified Channel */
+  assignProductsToChannel: Array<Product>;
+  /** Assign a Role to an Administrator */
+  assignRoleToAdministrator: Administrator;
+  cancelOrder: Order;
+  /** Create a new Administrator */
+  createAdministrator: Administrator;
+  /** Create a new Asset */
+  createAssets: Array<Asset>;
+  /** Create a new Channel */
+  createChannel: Channel;
+  /** Create a new Collection */
+  createCollection: Collection;
+  /** Create a new Country */
+  createCountry: Country;
+  /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
+  createCustomer: Customer;
+  /** Create a new Address and associate it with the Customer specified by customerId */
+  createCustomerAddress: Address;
+  /** Create a new CustomerGroup */
+  createCustomerGroup: CustomerGroup;
+  /** Create a new Facet */
+  createFacet: Facet;
+  /** Create one or more FacetValues */
+  createFacetValues: Array<FacetValue>;
+  /** Create a new Product */
+  createProduct: Product;
+  /** Create a new ProductOption within a ProductOptionGroup */
+  createProductOption: ProductOption;
+  /** Create a new ProductOptionGroup */
+  createProductOptionGroup: ProductOptionGroup;
+  /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
+  createProductVariants: Array<Maybe<ProductVariant>>;
+  createPromotion: Promotion;
+  /** Create a new Role */
+  createRole: Role;
+  /** Create a new ShippingMethod */
+  createShippingMethod: ShippingMethod;
+  /** Create a new TaxCategory */
+  createTaxCategory: TaxCategory;
+  /** Create a new TaxRate */
+  createTaxRate: TaxRate;
+  /** Create a new Zone */
+  createZone: Zone;
+  /** Delete a Channel */
+  deleteChannel: DeletionResponse;
+  /** Delete a Collection and all of its descendants */
+  deleteCollection: DeletionResponse;
+  /** Delete a Country */
+  deleteCountry: DeletionResponse;
+  /** Delete a Customer */
+  deleteCustomer: DeletionResponse;
+  /** Update an existing Address */
+  deleteCustomerAddress: Scalars['Boolean'];
+  /** Delete an existing Facet */
+  deleteFacet: DeletionResponse;
+  /** Delete one or more FacetValues */
+  deleteFacetValues: Array<DeletionResponse>;
+  /** Delete a Product */
+  deleteProduct: DeletionResponse;
+  /** Delete a ProductVariant */
+  deleteProductVariant: DeletionResponse;
+  deletePromotion: DeletionResponse;
+  /** Delete an existing Role */
+  deleteRole: DeletionResponse;
+  /** Delete a ShippingMethod */
+  deleteShippingMethod: DeletionResponse;
+  /** Deletes a TaxCategory */
+  deleteTaxCategory: DeletionResponse;
+  /** Delete a TaxRate */
+  deleteTaxRate: DeletionResponse;
+  /** Delete a Zone */
+  deleteZone: DeletionResponse;
+  fulfillOrder: Fulfillment;
+  importProducts?: Maybe<ImportInfo>;
+  login: LoginResult;
+  logout: Scalars['Boolean'];
+  /** Move a Collection to a different parent or index */
+  moveCollection: Collection;
+  refundOrder: Refund;
+  reindex: JobInfo;
+  /** Remove Customers from a CustomerGroup */
+  removeCustomersFromGroup: CustomerGroup;
   /** Remove members from a Zone */
-  removeMembersFromZone: Zone,
-  requestStarted: Scalars['Int'],
-  requestCompleted: Scalars['Int'],
-  setAsLoggedIn: UserStatus,
-  setAsLoggedOut: UserStatus,
-  setUiLanguage?: Maybe<LanguageCode>,
-  setActiveChannel: UserStatus,
-  updateUserChannels: UserStatus,
-};
-
-
-export type MutationCreateAdministratorArgs = {
-  input: CreateAdministratorInput
-};
-
-
-export type MutationUpdateAdministratorArgs = {
-  input: UpdateAdministratorInput
-};
-
-
-export type MutationAssignRoleToAdministratorArgs = {
-  administratorId: Scalars['ID'],
-  roleId: Scalars['ID']
-};
-
-
-export type MutationCreateAssetsArgs = {
-  input: Array<CreateAssetInput>
-};
-
-
-export type MutationUpdateAssetArgs = {
-  input: UpdateAssetInput
-};
-
-
-export type MutationLoginArgs = {
-  username: Scalars['String'],
-  password: Scalars['String'],
-  rememberMe?: Maybe<Scalars['Boolean']>
-};
-
-
-export type MutationCreateChannelArgs = {
-  input: CreateChannelInput
-};
-
-
-export type MutationUpdateChannelArgs = {
-  input: UpdateChannelInput
-};
-
-
-export type MutationDeleteChannelArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateCollectionArgs = {
-  input: CreateCollectionInput
-};
-
-
-export type MutationUpdateCollectionArgs = {
-  input: UpdateCollectionInput
-};
-
-
-export type MutationDeleteCollectionArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationMoveCollectionArgs = {
-  input: MoveCollectionInput
-};
-
-
-export type MutationCreateCountryArgs = {
-  input: CreateCountryInput
-};
-
-
-export type MutationUpdateCountryArgs = {
-  input: UpdateCountryInput
-};
-
-
-export type MutationDeleteCountryArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateCustomerGroupArgs = {
-  input: CreateCustomerGroupInput
-};
-
-
-export type MutationUpdateCustomerGroupArgs = {
-  input: UpdateCustomerGroupInput
+  removeMembersFromZone: Zone;
+  /** Remove an OptionGroup from a Product */
+  removeOptionGroupFromProduct: Product;
+  /** Removes Products from the specified Channel */
+  removeProductsFromChannel: Array<Product>;
+  requestCompleted: Scalars['Int'];
+  requestStarted: Scalars['Int'];
+  setActiveChannel: UserStatus;
+  setAsLoggedIn: UserStatus;
+  setAsLoggedOut: UserStatus;
+  setUiLanguage?: Maybe<LanguageCode>;
+  settlePayment: Payment;
+  settleRefund: Refund;
+  /** Update an existing Administrator */
+  updateAdministrator: Administrator;
+  /** Update an existing Asset */
+  updateAsset: Asset;
+  /** Update an existing Channel */
+  updateChannel: Channel;
+  /** Update an existing Collection */
+  updateCollection: Collection;
+  /** Update an existing Country */
+  updateCountry: Country;
+  /** Update an existing Customer */
+  updateCustomer: Customer;
+  /** Update an existing Address */
+  updateCustomerAddress: Address;
+  /** Update an existing CustomerGroup */
+  updateCustomerGroup: CustomerGroup;
+  /** Update an existing Facet */
+  updateFacet: Facet;
+  /** Update one or more FacetValues */
+  updateFacetValues: Array<FacetValue>;
+  updateGlobalSettings: GlobalSettings;
+  /** Update an existing PaymentMethod */
+  updatePaymentMethod: PaymentMethod;
+  /** Update an existing Product */
+  updateProduct: Product;
+  /** Create a new ProductOption within a ProductOptionGroup */
+  updateProductOption: ProductOption;
+  /** Update an existing ProductOptionGroup */
+  updateProductOptionGroup: ProductOptionGroup;
+  /** Update existing ProductVariants */
+  updateProductVariants: Array<Maybe<ProductVariant>>;
+  updatePromotion: Promotion;
+  /** Update an existing Role */
+  updateRole: Role;
+  /** Update an existing ShippingMethod */
+  updateShippingMethod: ShippingMethod;
+  /** Update an existing TaxCategory */
+  updateTaxCategory: TaxCategory;
+  /** Update an existing TaxRate */
+  updateTaxRate: TaxRate;
+  updateUserChannels: UserStatus;
+  /** Update an existing Zone */
+  updateZone: Zone;
 };
 
 
 export type MutationAddCustomersToGroupArgs = {
-  customerGroupId: Scalars['ID'],
-  customerIds: Array<Scalars['ID']>
-};
-
-
-export type MutationRemoveCustomersFromGroupArgs = {
-  customerGroupId: Scalars['ID'],
-  customerIds: Array<Scalars['ID']>
-};
-
-
-export type MutationCreateCustomerArgs = {
-  input: CreateCustomerInput,
-  password?: Maybe<Scalars['String']>
-};
-
-
-export type MutationUpdateCustomerArgs = {
-  input: UpdateCustomerInput
-};
-
-
-export type MutationDeleteCustomerArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateCustomerAddressArgs = {
-  customerId: Scalars['ID'],
-  input: CreateAddressInput
-};
-
-
-export type MutationUpdateCustomerAddressArgs = {
-  input: UpdateAddressInput
-};
-
-
-export type MutationDeleteCustomerAddressArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateFacetArgs = {
-  input: CreateFacetInput
-};
-
-
-export type MutationUpdateFacetArgs = {
-  input: UpdateFacetInput
-};
-
-
-export type MutationDeleteFacetArgs = {
-  id: Scalars['ID'],
-  force?: Maybe<Scalars['Boolean']>
-};
-
-
-export type MutationCreateFacetValuesArgs = {
-  input: Array<CreateFacetValueInput>
-};
-
-
-export type MutationUpdateFacetValuesArgs = {
-  input: Array<UpdateFacetValueInput>
-};
-
-
-export type MutationDeleteFacetValuesArgs = {
-  ids: Array<Scalars['ID']>,
-  force?: Maybe<Scalars['Boolean']>
-};
-
-
-export type MutationUpdateGlobalSettingsArgs = {
-  input: UpdateGlobalSettingsInput
-};
-
-
-export type MutationImportProductsArgs = {
-  csvFile: Scalars['Upload']
-};
-
-
-export type MutationSettlePaymentArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationFulfillOrderArgs = {
-  input: FulfillOrderInput
-};
-
-
-export type MutationCancelOrderArgs = {
-  input: CancelOrderInput
-};
-
-
-export type MutationRefundOrderArgs = {
-  input: RefundOrderInput
-};
-
-
-export type MutationSettleRefundArgs = {
-  input: SettleRefundInput
-};
-
-
-export type MutationAddNoteToOrderArgs = {
-  input: AddNoteToOrderInput
-};
-
-
-export type MutationUpdatePaymentMethodArgs = {
-  input: UpdatePaymentMethodInput
-};
-
-
-export type MutationCreateProductOptionGroupArgs = {
-  input: CreateProductOptionGroupInput
-};
-
-
-export type MutationUpdateProductOptionGroupArgs = {
-  input: UpdateProductOptionGroupInput
-};
-
-
-export type MutationCreateProductOptionArgs = {
-  input: CreateProductOptionInput
-};
-
-
-export type MutationUpdateProductOptionArgs = {
-  input: UpdateProductOptionInput
-};
-
-
-export type MutationCreateProductArgs = {
-  input: CreateProductInput
-};
-
-
-export type MutationUpdateProductArgs = {
-  input: UpdateProductInput
-};
-
-
-export type MutationDeleteProductArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationAddOptionGroupToProductArgs = {
-  productId: Scalars['ID'],
-  optionGroupId: Scalars['ID']
-};
-
-
-export type MutationRemoveOptionGroupFromProductArgs = {
-  productId: Scalars['ID'],
-  optionGroupId: Scalars['ID']
-};
-
-
-export type MutationCreateProductVariantsArgs = {
-  input: Array<CreateProductVariantInput>
-};
-
-
-export type MutationUpdateProductVariantsArgs = {
-  input: Array<UpdateProductVariantInput>
-};
-
-
-export type MutationDeleteProductVariantArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationAssignProductsToChannelArgs = {
-  input: AssignProductsToChannelInput
-};
-
-
-export type MutationRemoveProductsFromChannelArgs = {
-  input: RemoveProductsFromChannelInput
-};
-
-
-export type MutationCreatePromotionArgs = {
-  input: CreatePromotionInput
-};
-
-
-export type MutationUpdatePromotionArgs = {
-  input: UpdatePromotionInput
-};
-
-
-export type MutationDeletePromotionArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateRoleArgs = {
-  input: CreateRoleInput
-};
-
-
-export type MutationUpdateRoleArgs = {
-  input: UpdateRoleInput
-};
-
-
-export type MutationDeleteRoleArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateShippingMethodArgs = {
-  input: CreateShippingMethodInput
-};
-
-
-export type MutationUpdateShippingMethodArgs = {
-  input: UpdateShippingMethodInput
-};
-
-
-export type MutationDeleteShippingMethodArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateTaxCategoryArgs = {
-  input: CreateTaxCategoryInput
-};
-
-
-export type MutationUpdateTaxCategoryArgs = {
-  input: UpdateTaxCategoryInput
-};
-
-
-export type MutationDeleteTaxCategoryArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateTaxRateArgs = {
-  input: CreateTaxRateInput
-};
-
-
-export type MutationUpdateTaxRateArgs = {
-  input: UpdateTaxRateInput
-};
-
-
-export type MutationDeleteTaxRateArgs = {
-  id: Scalars['ID']
-};
-
-
-export type MutationCreateZoneArgs = {
-  input: CreateZoneInput
-};
-
-
-export type MutationUpdateZoneArgs = {
-  input: UpdateZoneInput
-};
-
-
-export type MutationDeleteZoneArgs = {
-  id: Scalars['ID']
+  customerGroupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
 };
 
 
 export type MutationAddMembersToZoneArgs = {
-  zoneId: Scalars['ID'],
-  memberIds: Array<Scalars['ID']>
+  zoneId: Scalars['ID'];
+  memberIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationAddNoteToOrderArgs = {
+  input: AddNoteToOrderInput;
+};
+
+
+export type MutationAddOptionGroupToProductArgs = {
+  productId: Scalars['ID'];
+  optionGroupId: Scalars['ID'];
+};
+
+
+export type MutationAssignProductsToChannelArgs = {
+  input: AssignProductsToChannelInput;
+};
+
+
+export type MutationAssignRoleToAdministratorArgs = {
+  administratorId: Scalars['ID'];
+  roleId: Scalars['ID'];
+};
+
+
+export type MutationCancelOrderArgs = {
+  input: CancelOrderInput;
+};
+
+
+export type MutationCreateAdministratorArgs = {
+  input: CreateAdministratorInput;
+};
+
+
+export type MutationCreateAssetsArgs = {
+  input: Array<CreateAssetInput>;
+};
+
+
+export type MutationCreateChannelArgs = {
+  input: CreateChannelInput;
+};
+
+
+export type MutationCreateCollectionArgs = {
+  input: CreateCollectionInput;
+};
+
+
+export type MutationCreateCountryArgs = {
+  input: CreateCountryInput;
+};
+
+
+export type MutationCreateCustomerArgs = {
+  input: CreateCustomerInput;
+  password?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationCreateCustomerAddressArgs = {
+  customerId: Scalars['ID'];
+  input: CreateAddressInput;
+};
+
+
+export type MutationCreateCustomerGroupArgs = {
+  input: CreateCustomerGroupInput;
+};
+
+
+export type MutationCreateFacetArgs = {
+  input: CreateFacetInput;
+};
+
+
+export type MutationCreateFacetValuesArgs = {
+  input: Array<CreateFacetValueInput>;
+};
+
+
+export type MutationCreateProductArgs = {
+  input: CreateProductInput;
+};
+
+
+export type MutationCreateProductOptionArgs = {
+  input: CreateProductOptionInput;
+};
+
+
+export type MutationCreateProductOptionGroupArgs = {
+  input: CreateProductOptionGroupInput;
+};
+
+
+export type MutationCreateProductVariantsArgs = {
+  input: Array<CreateProductVariantInput>;
+};
+
+
+export type MutationCreatePromotionArgs = {
+  input: CreatePromotionInput;
+};
+
+
+export type MutationCreateRoleArgs = {
+  input: CreateRoleInput;
+};
+
+
+export type MutationCreateShippingMethodArgs = {
+  input: CreateShippingMethodInput;
+};
+
+
+export type MutationCreateTaxCategoryArgs = {
+  input: CreateTaxCategoryInput;
+};
+
+
+export type MutationCreateTaxRateArgs = {
+  input: CreateTaxRateInput;
+};
+
+
+export type MutationCreateZoneArgs = {
+  input: CreateZoneInput;
+};
+
+
+export type MutationDeleteChannelArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCollectionArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCountryArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCustomerArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCustomerAddressArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteFacetArgs = {
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteFacetValuesArgs = {
+  ids: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteProductArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteProductVariantArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeletePromotionArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteRoleArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteTaxCategoryArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteTaxRateArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteZoneArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationFulfillOrderArgs = {
+  input: FulfillOrderInput;
+};
+
+
+export type MutationImportProductsArgs = {
+  csvFile: Scalars['Upload'];
+};
+
+
+export type MutationLoginArgs = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+  rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationMoveCollectionArgs = {
+  input: MoveCollectionInput;
+};
+
+
+export type MutationRefundOrderArgs = {
+  input: RefundOrderInput;
+};
+
+
+export type MutationRemoveCustomersFromGroupArgs = {
+  customerGroupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
 };
 
 
 export type MutationRemoveMembersFromZoneArgs = {
-  zoneId: Scalars['ID'],
-  memberIds: Array<Scalars['ID']>
+  zoneId: Scalars['ID'];
+  memberIds: Array<Scalars['ID']>;
 };
 
 
-export type MutationSetAsLoggedInArgs = {
-  input: UserStatusInput
+export type MutationRemoveOptionGroupFromProductArgs = {
+  productId: Scalars['ID'];
+  optionGroupId: Scalars['ID'];
 };
 
 
-export type MutationSetUiLanguageArgs = {
-  languageCode?: Maybe<LanguageCode>
+export type MutationRemoveProductsFromChannelArgs = {
+  input: RemoveProductsFromChannelInput;
 };
 
 
 export type MutationSetActiveChannelArgs = {
-  channelId: Scalars['ID']
+  channelId: Scalars['ID'];
+};
+
+
+export type MutationSetAsLoggedInArgs = {
+  input: UserStatusInput;
+};
+
+
+export type MutationSetUiLanguageArgs = {
+  languageCode?: Maybe<LanguageCode>;
+};
+
+
+export type MutationSettlePaymentArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationSettleRefundArgs = {
+  input: SettleRefundInput;
+};
+
+
+export type MutationUpdateAdministratorArgs = {
+  input: UpdateAdministratorInput;
+};
+
+
+export type MutationUpdateAssetArgs = {
+  input: UpdateAssetInput;
+};
+
+
+export type MutationUpdateChannelArgs = {
+  input: UpdateChannelInput;
+};
+
+
+export type MutationUpdateCollectionArgs = {
+  input: UpdateCollectionInput;
+};
+
+
+export type MutationUpdateCountryArgs = {
+  input: UpdateCountryInput;
+};
+
+
+export type MutationUpdateCustomerArgs = {
+  input: UpdateCustomerInput;
+};
+
+
+export type MutationUpdateCustomerAddressArgs = {
+  input: UpdateAddressInput;
+};
+
+
+export type MutationUpdateCustomerGroupArgs = {
+  input: UpdateCustomerGroupInput;
+};
+
+
+export type MutationUpdateFacetArgs = {
+  input: UpdateFacetInput;
+};
+
+
+export type MutationUpdateFacetValuesArgs = {
+  input: Array<UpdateFacetValueInput>;
+};
+
+
+export type MutationUpdateGlobalSettingsArgs = {
+  input: UpdateGlobalSettingsInput;
+};
+
+
+export type MutationUpdatePaymentMethodArgs = {
+  input: UpdatePaymentMethodInput;
+};
+
+
+export type MutationUpdateProductArgs = {
+  input: UpdateProductInput;
+};
+
+
+export type MutationUpdateProductOptionArgs = {
+  input: UpdateProductOptionInput;
+};
+
+
+export type MutationUpdateProductOptionGroupArgs = {
+  input: UpdateProductOptionGroupInput;
+};
+
+
+export type MutationUpdateProductVariantsArgs = {
+  input: Array<UpdateProductVariantInput>;
+};
+
+
+export type MutationUpdatePromotionArgs = {
+  input: UpdatePromotionInput;
+};
+
+
+export type MutationUpdateRoleArgs = {
+  input: UpdateRoleInput;
+};
+
+
+export type MutationUpdateShippingMethodArgs = {
+  input: UpdateShippingMethodInput;
+};
+
+
+export type MutationUpdateTaxCategoryArgs = {
+  input: UpdateTaxCategoryInput;
+};
+
+
+export type MutationUpdateTaxRateArgs = {
+  input: UpdateTaxRateInput;
 };
 
 
 export type MutationUpdateUserChannelsArgs = {
-  channels: Array<CurrentUserChannelInput>
+  channels: Array<CurrentUserChannelInput>;
+};
+
+
+export type MutationUpdateZoneArgs = {
+  input: UpdateZoneInput;
 };
 
 export type NetworkStatus = {
-  __typename?: 'NetworkStatus',
-  inFlightRequests: Scalars['Int'],
+   __typename?: 'NetworkStatus';
+  inFlightRequests: Scalars['Int'];
 };
 
 export type Node = {
-  __typename?: 'Node',
-  id: Scalars['ID'],
+  id: Scalars['ID'];
 };
 
 export type NumberOperators = {
-  eq?: Maybe<Scalars['Float']>,
-  lt?: Maybe<Scalars['Float']>,
-  lte?: Maybe<Scalars['Float']>,
-  gt?: Maybe<Scalars['Float']>,
-  gte?: Maybe<Scalars['Float']>,
-  between?: Maybe<NumberRange>,
+  eq?: Maybe<Scalars['Float']>;
+  lt?: Maybe<Scalars['Float']>;
+  lte?: Maybe<Scalars['Float']>;
+  gt?: Maybe<Scalars['Float']>;
+  gte?: Maybe<Scalars['Float']>;
+  between?: Maybe<NumberRange>;
 };
 
 export type NumberRange = {
-  start: Scalars['Float'],
-  end: Scalars['Float'],
+  start: Scalars['Float'];
+  end: Scalars['Float'];
 };
 
 export type Order = Node & {
-  __typename?: 'Order',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
+   __typename?: 'Order';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   /** A unique code for the Order */
-  code: Scalars['String'],
-  state: Scalars['String'],
+  code: Scalars['String'];
+  state: Scalars['String'];
   /** An order is active as long as the payment process has not been completed */
-  active: Scalars['Boolean'],
-  customer?: Maybe<Customer>,
-  shippingAddress?: Maybe<OrderAddress>,
-  billingAddress?: Maybe<OrderAddress>,
-  lines: Array<OrderLine>,
+  active: Scalars['Boolean'];
+  customer?: Maybe<Customer>;
+  shippingAddress?: Maybe<OrderAddress>;
+  billingAddress?: Maybe<OrderAddress>;
+  lines: Array<OrderLine>;
   /** Order-level adjustments to the order total, such as discounts from promotions */
-  adjustments: Array<Adjustment>,
-  couponCodes: Array<Scalars['String']>,
-  promotions: Array<Promotion>,
-  payments?: Maybe<Array<Payment>>,
-  fulfillments?: Maybe<Array<Fulfillment>>,
-  subTotalBeforeTax: Scalars['Int'],
+  adjustments: Array<Adjustment>;
+  couponCodes: Array<Scalars['String']>;
+  promotions: Array<Promotion>;
+  payments?: Maybe<Array<Payment>>;
+  fulfillments?: Maybe<Array<Fulfillment>>;
+  subTotalBeforeTax: Scalars['Int'];
   /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
-  subTotal: Scalars['Int'],
-  currencyCode: CurrencyCode,
-  shipping: Scalars['Int'],
-  shippingWithTax: Scalars['Int'],
-  shippingMethod?: Maybe<ShippingMethod>,
-  totalBeforeTax: Scalars['Int'],
-  total: Scalars['Int'],
-  history: HistoryEntryList,
-  customFields?: Maybe<Scalars['JSON']>,
+  subTotal: Scalars['Int'];
+  currencyCode: CurrencyCode;
+  shipping: Scalars['Int'];
+  shippingWithTax: Scalars['Int'];
+  shippingMethod?: Maybe<ShippingMethod>;
+  totalBeforeTax: Scalars['Int'];
+  total: Scalars['Int'];
+  history: HistoryEntryList;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
 export type OrderHistoryArgs = {
-  options?: Maybe<HistoryEntryListOptions>
+  options?: Maybe<HistoryEntryListOptions>;
 };
 
 export type OrderAddress = {
-  __typename?: 'OrderAddress',
-  fullName?: Maybe<Scalars['String']>,
-  company?: Maybe<Scalars['String']>,
-  streetLine1?: Maybe<Scalars['String']>,
-  streetLine2?: Maybe<Scalars['String']>,
-  city?: Maybe<Scalars['String']>,
-  province?: Maybe<Scalars['String']>,
-  postalCode?: Maybe<Scalars['String']>,
-  country?: Maybe<Scalars['String']>,
-  countryCode?: Maybe<Scalars['String']>,
-  phoneNumber?: Maybe<Scalars['String']>,
+   __typename?: 'OrderAddress';
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1?: Maybe<Scalars['String']>;
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
 };
 
 export type OrderFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  code?: Maybe<StringOperators>,
-  state?: Maybe<StringOperators>,
-  active?: Maybe<BooleanOperators>,
-  subTotalBeforeTax?: Maybe<NumberOperators>,
-  subTotal?: Maybe<NumberOperators>,
-  currencyCode?: Maybe<StringOperators>,
-  shipping?: Maybe<NumberOperators>,
-  shippingWithTax?: Maybe<NumberOperators>,
-  totalBeforeTax?: Maybe<NumberOperators>,
-  total?: Maybe<NumberOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  state?: Maybe<StringOperators>;
+  active?: Maybe<BooleanOperators>;
+  subTotalBeforeTax?: Maybe<NumberOperators>;
+  subTotal?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  shipping?: Maybe<NumberOperators>;
+  shippingWithTax?: Maybe<NumberOperators>;
+  totalBeforeTax?: Maybe<NumberOperators>;
+  total?: Maybe<NumberOperators>;
 };
 
 export type OrderItem = Node & {
-  __typename?: 'OrderItem',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  cancelled: Scalars['Boolean'],
-  unitPrice: Scalars['Int'],
-  unitPriceWithTax: Scalars['Int'],
-  unitPriceIncludesTax: Scalars['Boolean'],
-  taxRate: Scalars['Float'],
-  adjustments: Array<Adjustment>,
-  fulfillment?: Maybe<Fulfillment>,
-  refundId?: Maybe<Scalars['ID']>,
+   __typename?: 'OrderItem';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  cancelled: Scalars['Boolean'];
+  unitPrice: Scalars['Int'];
+  unitPriceWithTax: Scalars['Int'];
+  unitPriceIncludesTax: Scalars['Boolean'];
+  taxRate: Scalars['Float'];
+  adjustments: Array<Adjustment>;
+  fulfillment?: Maybe<Fulfillment>;
+  refundId?: Maybe<Scalars['ID']>;
 };
 
 export type OrderLine = Node & {
-  __typename?: 'OrderLine',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  featuredAsset?: Maybe<Asset>,
-  unitPrice: Scalars['Int'],
-  unitPriceWithTax: Scalars['Int'],
-  quantity: Scalars['Int'],
-  items: Array<OrderItem>,
-  totalPrice: Scalars['Int'],
-  adjustments: Array<Adjustment>,
-  order: Order,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'OrderLine';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  featuredAsset?: Maybe<Asset>;
+  unitPrice: Scalars['Int'];
+  unitPriceWithTax: Scalars['Int'];
+  quantity: Scalars['Int'];
+  items: Array<OrderItem>;
+  totalPrice: Scalars['Int'];
+  adjustments: Array<Adjustment>;
+  order: Order;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderLineInput = {
-  orderLineId: Scalars['ID'],
-  quantity: Scalars['Int'],
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
 };
 
 export type OrderList = PaginatedList & {
-  __typename?: 'OrderList',
-  items: Array<Order>,
-  totalItems: Scalars['Int'],
+   __typename?: 'OrderList';
+  items: Array<Order>;
+  totalItems: Scalars['Int'];
 };
 
 export type OrderListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<OrderSortParameter>,
-  filter?: Maybe<OrderFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<OrderSortParameter>;
+  filter?: Maybe<OrderFilterParameter>;
 };
 
 export type OrderSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
-  state?: Maybe<SortOrder>,
-  subTotalBeforeTax?: Maybe<SortOrder>,
-  subTotal?: Maybe<SortOrder>,
-  shipping?: Maybe<SortOrder>,
-  shippingWithTax?: Maybe<SortOrder>,
-  totalBeforeTax?: Maybe<SortOrder>,
-  total?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  state?: Maybe<SortOrder>;
+  subTotalBeforeTax?: Maybe<SortOrder>;
+  subTotal?: Maybe<SortOrder>;
+  shipping?: Maybe<SortOrder>;
+  shippingWithTax?: Maybe<SortOrder>;
+  totalBeforeTax?: Maybe<SortOrder>;
+  total?: Maybe<SortOrder>;
 };
 
 export type PaginatedList = {
-  __typename?: 'PaginatedList',
-  items: Array<Node>,
-  totalItems: Scalars['Int'],
+  items: Array<Node>;
+  totalItems: Scalars['Int'];
 };
 
 export type Payment = Node & {
-  __typename?: 'Payment',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  method: Scalars['String'],
-  amount: Scalars['Int'],
-  state: Scalars['String'],
-  transactionId?: Maybe<Scalars['String']>,
-  errorMessage?: Maybe<Scalars['String']>,
-  refunds: Array<Refund>,
-  metadata?: Maybe<Scalars['JSON']>,
+   __typename?: 'Payment';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type PaymentMethod = Node & {
-  __typename?: 'PaymentMethod',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  code: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  configArgs: Array<ConfigArg>,
+   __typename?: 'PaymentMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  configArgs: Array<ConfigArg>;
 };
 
 export type PaymentMethodFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  code?: Maybe<StringOperators>,
-  enabled?: Maybe<BooleanOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
 };
 
 export type PaymentMethodList = PaginatedList & {
-  __typename?: 'PaymentMethodList',
-  items: Array<PaymentMethod>,
-  totalItems: Scalars['Int'],
+   __typename?: 'PaymentMethodList';
+  items: Array<PaymentMethod>;
+  totalItems: Scalars['Int'];
 };
 
 export type PaymentMethodListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<PaymentMethodSortParameter>,
-  filter?: Maybe<PaymentMethodFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<PaymentMethodSortParameter>;
+  filter?: Maybe<PaymentMethodFilterParameter>;
 };
 
 export type PaymentMethodSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
 };
 
-/** "
+/**
+ * "
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
@@ -2480,777 +2477,779 @@ export type PaymentMethodSortParameter = {
 export enum Permission {
   /**  The Authenticated role means simply that the user is logged in  */
   Authenticated = 'Authenticated',
-  /**  SuperAdmin can perform the most sensitive tasks */
-  SuperAdmin = 'SuperAdmin',
+  CreateAdministrator = 'CreateAdministrator',
+  CreateCatalog = 'CreateCatalog',
+  CreateCustomer = 'CreateCustomer',
+  CreateOrder = 'CreateOrder',
+  CreatePromotion = 'CreatePromotion',
+  CreateSettings = 'CreateSettings',
+  DeleteAdministrator = 'DeleteAdministrator',
+  DeleteCatalog = 'DeleteCatalog',
+  DeleteCustomer = 'DeleteCustomer',
+  DeleteOrder = 'DeleteOrder',
+  DeletePromotion = 'DeletePromotion',
+  DeleteSettings = 'DeleteSettings',
   /**  Owner means the user owns this entity, e.g. a Customer's own Order */
   Owner = 'Owner',
   /**  Public means any unauthenticated user may perform the operation  */
   Public = 'Public',
-  CreateCatalog = 'CreateCatalog',
-  ReadCatalog = 'ReadCatalog',
-  UpdateCatalog = 'UpdateCatalog',
-  DeleteCatalog = 'DeleteCatalog',
-  CreateCustomer = 'CreateCustomer',
-  ReadCustomer = 'ReadCustomer',
-  UpdateCustomer = 'UpdateCustomer',
-  DeleteCustomer = 'DeleteCustomer',
-  CreateAdministrator = 'CreateAdministrator',
   ReadAdministrator = 'ReadAdministrator',
-  UpdateAdministrator = 'UpdateAdministrator',
-  DeleteAdministrator = 'DeleteAdministrator',
-  CreateOrder = 'CreateOrder',
+  ReadCatalog = 'ReadCatalog',
+  ReadCustomer = 'ReadCustomer',
   ReadOrder = 'ReadOrder',
-  UpdateOrder = 'UpdateOrder',
-  DeleteOrder = 'DeleteOrder',
-  CreatePromotion = 'CreatePromotion',
   ReadPromotion = 'ReadPromotion',
-  UpdatePromotion = 'UpdatePromotion',
-  DeletePromotion = 'DeletePromotion',
-  CreateSettings = 'CreateSettings',
   ReadSettings = 'ReadSettings',
-  UpdateSettings = 'UpdateSettings',
-  DeleteSettings = 'DeleteSettings'
+  /**  SuperAdmin can perform the most sensitive tasks */
+  SuperAdmin = 'SuperAdmin',
+  UpdateAdministrator = 'UpdateAdministrator',
+  UpdateCatalog = 'UpdateCatalog',
+  UpdateCustomer = 'UpdateCustomer',
+  UpdateOrder = 'UpdateOrder',
+  UpdatePromotion = 'UpdatePromotion',
+  UpdateSettings = 'UpdateSettings'
 }
 
 /** The price range where the result has more than one price */
 export type PriceRange = {
-  __typename?: 'PriceRange',
-  min: Scalars['Int'],
-  max: Scalars['Int'],
+   __typename?: 'PriceRange';
+  min: Scalars['Int'];
+  max: Scalars['Int'];
 };
 
 export type Product = Node & {
-  __typename?: 'Product',
-  enabled: Scalars['Boolean'],
-  channels: Array<Channel>,
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
-  slug: Scalars['String'],
-  description: Scalars['String'],
-  featuredAsset?: Maybe<Asset>,
-  assets: Array<Asset>,
-  variants: Array<ProductVariant>,
-  optionGroups: Array<ProductOptionGroup>,
-  facetValues: Array<FacetValue>,
-  translations: Array<ProductTranslation>,
-  collections: Array<Collection>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'Product';
+  enabled: Scalars['Boolean'];
+  channels: Array<Channel>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  description: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  variants: Array<ProductVariant>;
+  optionGroups: Array<ProductOptionGroup>;
+  facetValues: Array<FacetValue>;
+  translations: Array<ProductTranslation>;
+  collections: Array<Collection>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductFilterParameter = {
-  enabled?: Maybe<BooleanOperators>,
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  languageCode?: Maybe<StringOperators>,
-  name?: Maybe<StringOperators>,
-  slug?: Maybe<StringOperators>,
-  description?: Maybe<StringOperators>,
+  enabled?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
 };
 
 export type ProductList = PaginatedList & {
-  __typename?: 'ProductList',
-  items: Array<Product>,
-  totalItems: Scalars['Int'],
+   __typename?: 'ProductList';
+  items: Array<Product>;
+  totalItems: Scalars['Int'];
 };
 
 export type ProductListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<ProductSortParameter>,
-  filter?: Maybe<ProductFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductSortParameter>;
+  filter?: Maybe<ProductFilterParameter>;
 };
 
 export type ProductOption = Node & {
-  __typename?: 'ProductOption',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  code: Scalars['String'],
-  name: Scalars['String'],
-  groupId: Scalars['ID'],
-  translations: Array<ProductOptionTranslation>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'ProductOption';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  code: Scalars['String'];
+  name: Scalars['String'];
+  groupId: Scalars['ID'];
+  translations: Array<ProductOptionTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroup = Node & {
-  __typename?: 'ProductOptionGroup',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  code: Scalars['String'],
-  name: Scalars['String'],
-  options: Array<ProductOption>,
-  translations: Array<ProductOptionGroupTranslation>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'ProductOptionGroup';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  code: Scalars['String'];
+  name: Scalars['String'];
+  options: Array<ProductOption>;
+  translations: Array<ProductOptionGroupTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroupTranslation = {
-  __typename?: 'ProductOptionGroupTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'ProductOptionGroupTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type ProductOptionGroupTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionTranslation = {
-  __typename?: 'ProductOptionTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'ProductOptionTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type ProductOptionTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  slug?: Maybe<SortOrder>,
-  description?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ProductTranslation = {
-  __typename?: 'ProductTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
-  slug: Scalars['String'],
-  description: Scalars['String'],
+   __typename?: 'ProductTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  description: Scalars['String'];
 };
 
 export type ProductTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  slug?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductVariant = Node & {
-  __typename?: 'ProductVariant',
-  enabled: Scalars['Boolean'],
-  stockOnHand: Scalars['Int'],
-  trackInventory: Scalars['Boolean'],
-  stockMovements: StockMovementList,
-  id: Scalars['ID'],
-  productId: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  sku: Scalars['String'],
-  name: Scalars['String'],
-  featuredAsset?: Maybe<Asset>,
-  assets: Array<Asset>,
-  price: Scalars['Int'],
-  currencyCode: CurrencyCode,
-  priceIncludesTax: Scalars['Boolean'],
-  priceWithTax: Scalars['Int'],
-  taxRateApplied: TaxRate,
-  taxCategory: TaxCategory,
-  options: Array<ProductOption>,
-  facetValues: Array<FacetValue>,
-  translations: Array<ProductVariantTranslation>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'ProductVariant';
+  enabled: Scalars['Boolean'];
+  stockOnHand: Scalars['Int'];
+  trackInventory: Scalars['Boolean'];
+  stockMovements: StockMovementList;
+  id: Scalars['ID'];
+  productId: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  sku: Scalars['String'];
+  name: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  price: Scalars['Int'];
+  currencyCode: CurrencyCode;
+  priceIncludesTax: Scalars['Boolean'];
+  priceWithTax: Scalars['Int'];
+  taxRateApplied: TaxRate;
+  taxCategory: TaxCategory;
+  options: Array<ProductOption>;
+  facetValues: Array<FacetValue>;
+  translations: Array<ProductVariantTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
 export type ProductVariantStockMovementsArgs = {
-  options?: Maybe<StockMovementListOptions>
+  options?: Maybe<StockMovementListOptions>;
 };
 
 export type ProductVariantFilterParameter = {
-  enabled?: Maybe<BooleanOperators>,
-  stockOnHand?: Maybe<NumberOperators>,
-  trackInventory?: Maybe<BooleanOperators>,
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  languageCode?: Maybe<StringOperators>,
-  sku?: Maybe<StringOperators>,
-  name?: Maybe<StringOperators>,
-  price?: Maybe<NumberOperators>,
-  currencyCode?: Maybe<StringOperators>,
-  priceIncludesTax?: Maybe<BooleanOperators>,
-  priceWithTax?: Maybe<NumberOperators>,
+  enabled?: Maybe<BooleanOperators>;
+  stockOnHand?: Maybe<NumberOperators>;
+  trackInventory?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  sku?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  price?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  priceWithTax?: Maybe<NumberOperators>;
 };
 
 export type ProductVariantList = PaginatedList & {
-  __typename?: 'ProductVariantList',
-  items: Array<ProductVariant>,
-  totalItems: Scalars['Int'],
+   __typename?: 'ProductVariantList';
+  items: Array<ProductVariant>;
+  totalItems: Scalars['Int'];
 };
 
 export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<ProductVariantSortParameter>,
-  filter?: Maybe<ProductVariantFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
 };
 
 export type ProductVariantSortParameter = {
-  stockOnHand?: Maybe<SortOrder>,
-  id?: Maybe<SortOrder>,
-  productId?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  sku?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  price?: Maybe<SortOrder>,
-  priceWithTax?: Maybe<SortOrder>,
+  stockOnHand?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  sku?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type ProductVariantTranslation = {
-  __typename?: 'ProductVariantTranslation',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  languageCode: LanguageCode,
-  name: Scalars['String'],
+   __typename?: 'ProductVariantTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
 };
 
 export type ProductVariantTranslationInput = {
-  id?: Maybe<Scalars['ID']>,
-  languageCode: LanguageCode,
-  name?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Promotion = Node & {
-  __typename?: 'Promotion',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  startsAt?: Maybe<Scalars['DateTime']>,
-  endsAt?: Maybe<Scalars['DateTime']>,
-  couponCode?: Maybe<Scalars['String']>,
-  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
-  name: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  conditions: Array<ConfigurableOperation>,
-  actions: Array<ConfigurableOperation>,
+   __typename?: 'Promotion';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  startsAt?: Maybe<Scalars['DateTime']>;
+  endsAt?: Maybe<Scalars['DateTime']>;
+  couponCode?: Maybe<Scalars['String']>;
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  conditions: Array<ConfigurableOperation>;
+  actions: Array<ConfigurableOperation>;
 };
 
 export type PromotionFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  startsAt?: Maybe<DateOperators>,
-  endsAt?: Maybe<DateOperators>,
-  couponCode?: Maybe<StringOperators>,
-  perCustomerUsageLimit?: Maybe<NumberOperators>,
-  name?: Maybe<StringOperators>,
-  enabled?: Maybe<BooleanOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  startsAt?: Maybe<DateOperators>;
+  endsAt?: Maybe<DateOperators>;
+  couponCode?: Maybe<StringOperators>;
+  perCustomerUsageLimit?: Maybe<NumberOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
 };
 
 export type PromotionList = PaginatedList & {
-  __typename?: 'PromotionList',
-  items: Array<Promotion>,
-  totalItems: Scalars['Int'],
+   __typename?: 'PromotionList';
+  items: Array<Promotion>;
+  totalItems: Scalars['Int'];
 };
 
 export type PromotionListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<PromotionSortParameter>,
-  filter?: Maybe<PromotionFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<PromotionSortParameter>;
+  filter?: Maybe<PromotionFilterParameter>;
 };
 
 export type PromotionSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  startsAt?: Maybe<SortOrder>,
-  endsAt?: Maybe<SortOrder>,
-  couponCode?: Maybe<SortOrder>,
-  perCustomerUsageLimit?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  startsAt?: Maybe<SortOrder>;
+  endsAt?: Maybe<SortOrder>;
+  couponCode?: Maybe<SortOrder>;
+  perCustomerUsageLimit?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
 };
 
 export type Query = {
-  __typename?: 'Query',
-  administrators: AdministratorList,
-  administrator?: Maybe<Administrator>,
-  /** Get a list of Assets */
-  assets: AssetList,
+   __typename?: 'Query';
+  activeChannel: Channel;
+  administrator?: Maybe<Administrator>;
+  administrators: AdministratorList;
   /** Get a single Asset by id */
-  asset?: Maybe<Asset>,
-  me?: Maybe<CurrentUser>,
-  channels: Array<Channel>,
-  channel?: Maybe<Channel>,
-  activeChannel: Channel,
-  collections: CollectionList,
-  collection?: Maybe<Collection>,
-  collectionFilters: Array<ConfigurableOperationDefinition>,
-  countries: CountryList,
-  country?: Maybe<Country>,
-  customerGroups: Array<CustomerGroup>,
-  customerGroup?: Maybe<CustomerGroup>,
-  customers: CustomerList,
-  customer?: Maybe<Customer>,
-  facets: FacetList,
-  facet?: Maybe<Facet>,
-  globalSettings: GlobalSettings,
-  job?: Maybe<JobInfo>,
-  jobs: Array<JobInfo>,
-  order?: Maybe<Order>,
-  orders: OrderList,
-  paymentMethods: PaymentMethodList,
-  paymentMethod?: Maybe<PaymentMethod>,
-  productOptionGroups: Array<ProductOptionGroup>,
-  productOptionGroup?: Maybe<ProductOptionGroup>,
-  search: SearchResponse,
-  products: ProductList,
+  asset?: Maybe<Asset>;
+  /** Get a list of Assets */
+  assets: AssetList;
+  channel?: Maybe<Channel>;
+  channels: Array<Channel>;
+  collection?: Maybe<Collection>;
+  collectionFilters: Array<ConfigurableOperationDefinition>;
+  collections: CollectionList;
+  countries: CountryList;
+  country?: Maybe<Country>;
+  customer?: Maybe<Customer>;
+  customerGroup?: Maybe<CustomerGroup>;
+  customerGroups: Array<CustomerGroup>;
+  customers: CustomerList;
+  facet?: Maybe<Facet>;
+  facets: FacetList;
+  globalSettings: GlobalSettings;
+  job?: Maybe<JobInfo>;
+  jobs: Array<JobInfo>;
+  me?: Maybe<CurrentUser>;
+  networkStatus: NetworkStatus;
+  order?: Maybe<Order>;
+  orders: OrderList;
+  paymentMethod?: Maybe<PaymentMethod>;
+  paymentMethods: PaymentMethodList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
-  product?: Maybe<Product>,
-  promotion?: Maybe<Promotion>,
-  promotions: PromotionList,
-  promotionConditions: Array<ConfigurableOperationDefinition>,
-  promotionActions: Array<ConfigurableOperationDefinition>,
-  roles: RoleList,
-  role?: Maybe<Role>,
-  shippingMethods: ShippingMethodList,
-  shippingMethod?: Maybe<ShippingMethod>,
-  shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>,
-  shippingCalculators: Array<ConfigurableOperationDefinition>,
-  testShippingMethod: TestShippingMethodResult,
-  testEligibleShippingMethods: Array<ShippingMethodQuote>,
-  taxCategories: Array<TaxCategory>,
-  taxCategory?: Maybe<TaxCategory>,
-  taxRates: TaxRateList,
-  taxRate?: Maybe<TaxRate>,
-  zones: Array<Zone>,
-  zone?: Maybe<Zone>,
-  networkStatus: NetworkStatus,
-  userStatus: UserStatus,
-  uiState: UiState,
-};
-
-
-export type QueryAdministratorsArgs = {
-  options?: Maybe<AdministratorListOptions>
+  product?: Maybe<Product>;
+  productOptionGroup?: Maybe<ProductOptionGroup>;
+  productOptionGroups: Array<ProductOptionGroup>;
+  products: ProductList;
+  promotion?: Maybe<Promotion>;
+  promotionActions: Array<ConfigurableOperationDefinition>;
+  promotionConditions: Array<ConfigurableOperationDefinition>;
+  promotions: PromotionList;
+  role?: Maybe<Role>;
+  roles: RoleList;
+  search: SearchResponse;
+  shippingCalculators: Array<ConfigurableOperationDefinition>;
+  shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+  shippingMethod?: Maybe<ShippingMethod>;
+  shippingMethods: ShippingMethodList;
+  taxCategories: Array<TaxCategory>;
+  taxCategory?: Maybe<TaxCategory>;
+  taxRate?: Maybe<TaxRate>;
+  taxRates: TaxRateList;
+  testEligibleShippingMethods: Array<ShippingMethodQuote>;
+  testShippingMethod: TestShippingMethodResult;
+  uiState: UiState;
+  userStatus: UserStatus;
+  zone?: Maybe<Zone>;
+  zones: Array<Zone>;
 };
 
 
 export type QueryAdministratorArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type QueryAssetsArgs = {
-  options?: Maybe<AssetListOptions>
+export type QueryAdministratorsArgs = {
+  options?: Maybe<AdministratorListOptions>;
 };
 
 
 export type QueryAssetArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
+};
+
+
+export type QueryAssetsArgs = {
+  options?: Maybe<AssetListOptions>;
 };
 
 
 export type QueryChannelArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryCollectionsArgs = {
-  options?: Maybe<CollectionListOptions>
+  id: Scalars['ID'];
 };
 
 
 export type QueryCollectionArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
+};
+
+
+export type QueryCollectionsArgs = {
+  options?: Maybe<CollectionListOptions>;
 };
 
 
 export type QueryCountriesArgs = {
-  options?: Maybe<CountryListOptions>
+  options?: Maybe<CountryListOptions>;
 };
 
 
 export type QueryCountryArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryCustomerGroupArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryCustomersArgs = {
-  options?: Maybe<CustomerListOptions>
+  id: Scalars['ID'];
 };
 
 
 export type QueryCustomerArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type QueryFacetsArgs = {
-  options?: Maybe<FacetListOptions>
+export type QueryCustomerGroupArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCustomersArgs = {
+  options?: Maybe<CustomerListOptions>;
 };
 
 
 export type QueryFacetArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
+};
+
+
+export type QueryFacetsArgs = {
+  options?: Maybe<FacetListOptions>;
 };
 
 
 export type QueryJobArgs = {
-  jobId: Scalars['String']
+  jobId: Scalars['String'];
 };
 
 
 export type QueryJobsArgs = {
-  input?: Maybe<JobListInput>
+  input?: Maybe<JobListInput>;
 };
 
 
 export type QueryOrderArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
 export type QueryOrdersArgs = {
-  options?: Maybe<OrderListOptions>
-};
-
-
-export type QueryPaymentMethodsArgs = {
-  options?: Maybe<PaymentMethodListOptions>
+  options?: Maybe<OrderListOptions>;
 };
 
 
 export type QueryPaymentMethodArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type QueryProductOptionGroupsArgs = {
-  filterTerm?: Maybe<Scalars['String']>
-};
-
-
-export type QueryProductOptionGroupArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput
-};
-
-
-export type QueryProductsArgs = {
-  options?: Maybe<ProductListOptions>
+export type QueryPaymentMethodsArgs = {
+  options?: Maybe<PaymentMethodListOptions>;
 };
 
 
 export type QueryProductArgs = {
-  id?: Maybe<Scalars['ID']>,
-  slug?: Maybe<Scalars['String']>
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductOptionGroupArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryProductOptionGroupsArgs = {
+  filterTerm?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductsArgs = {
+  options?: Maybe<ProductListOptions>;
 };
 
 
 export type QueryPromotionArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
 export type QueryPromotionsArgs = {
-  options?: Maybe<PromotionListOptions>
-};
-
-
-export type QueryRolesArgs = {
-  options?: Maybe<RoleListOptions>
+  options?: Maybe<PromotionListOptions>;
 };
 
 
 export type QueryRoleArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type QueryShippingMethodsArgs = {
-  options?: Maybe<ShippingMethodListOptions>
+export type QueryRolesArgs = {
+  options?: Maybe<RoleListOptions>;
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput;
 };
 
 
 export type QueryShippingMethodArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type QueryTestShippingMethodArgs = {
-  input: TestShippingMethodInput
-};
-
-
-export type QueryTestEligibleShippingMethodsArgs = {
-  input: TestEligibleShippingMethodsInput
+export type QueryShippingMethodsArgs = {
+  options?: Maybe<ShippingMethodListOptions>;
 };
 
 
 export type QueryTaxCategoryArgs = {
-  id: Scalars['ID']
-};
-
-
-export type QueryTaxRatesArgs = {
-  options?: Maybe<TaxRateListOptions>
+  id: Scalars['ID'];
 };
 
 
 export type QueryTaxRateArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
+};
+
+
+export type QueryTaxRatesArgs = {
+  options?: Maybe<TaxRateListOptions>;
+};
+
+
+export type QueryTestEligibleShippingMethodsArgs = {
+  input: TestEligibleShippingMethodsInput;
+};
+
+
+export type QueryTestShippingMethodArgs = {
+  input: TestShippingMethodInput;
 };
 
 
 export type QueryZoneArgs = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 export type Refund = Node & {
-  __typename?: 'Refund',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  items: Scalars['Int'],
-  shipping: Scalars['Int'],
-  adjustment: Scalars['Int'],
-  total: Scalars['Int'],
-  method?: Maybe<Scalars['String']>,
-  state: Scalars['String'],
-  transactionId?: Maybe<Scalars['String']>,
-  reason?: Maybe<Scalars['String']>,
-  orderItems: Array<OrderItem>,
-  paymentId: Scalars['ID'],
-  metadata?: Maybe<Scalars['JSON']>,
+   __typename?: 'Refund';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  items: Scalars['Int'];
+  shipping: Scalars['Int'];
+  adjustment: Scalars['Int'];
+  total: Scalars['Int'];
+  method?: Maybe<Scalars['String']>;
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  reason?: Maybe<Scalars['String']>;
+  orderItems: Array<OrderItem>;
+  paymentId: Scalars['ID'];
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type RefundOrderInput = {
-  lines: Array<OrderLineInput>,
-  shipping: Scalars['Int'],
-  adjustment: Scalars['Int'],
-  paymentId: Scalars['ID'],
-  reason?: Maybe<Scalars['String']>,
+  lines: Array<OrderLineInput>;
+  shipping: Scalars['Int'];
+  adjustment: Scalars['Int'];
+  paymentId: Scalars['ID'];
+  reason?: Maybe<Scalars['String']>;
 };
 
 export type RemoveProductsFromChannelInput = {
-  productIds: Array<Scalars['ID']>,
-  channelId: Scalars['ID'],
+  productIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
 };
 
 export type Return = Node & StockMovement & {
-  __typename?: 'Return',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  type: StockMovementType,
-  quantity: Scalars['Int'],
-  orderItem: OrderItem,
+   __typename?: 'Return';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+  orderItem: OrderItem;
 };
 
 export type Role = Node & {
-  __typename?: 'Role',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  code: Scalars['String'],
-  description: Scalars['String'],
-  permissions: Array<Permission>,
-  channels: Array<Channel>,
+   __typename?: 'Role';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  description: Scalars['String'];
+  permissions: Array<Permission>;
+  channels: Array<Channel>;
 };
 
 export type RoleFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  code?: Maybe<StringOperators>,
-  description?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
 };
 
 export type RoleList = PaginatedList & {
-  __typename?: 'RoleList',
-  items: Array<Role>,
-  totalItems: Scalars['Int'],
+   __typename?: 'RoleList';
+  items: Array<Role>;
+  totalItems: Scalars['Int'];
 };
 
 export type RoleListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<RoleSortParameter>,
-  filter?: Maybe<RoleFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<RoleSortParameter>;
+  filter?: Maybe<RoleFilterParameter>;
 };
 
 export type RoleSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
-  description?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type Sale = Node & StockMovement & {
-  __typename?: 'Sale',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  type: StockMovementType,
-  quantity: Scalars['Int'],
-  orderLine: OrderLine,
+   __typename?: 'Sale';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+  orderLine: OrderLine;
 };
 
 export type SearchInput = {
-  term?: Maybe<Scalars['String']>,
-  facetValueIds?: Maybe<Array<Scalars['ID']>>,
-  collectionId?: Maybe<Scalars['ID']>,
-  groupByProduct?: Maybe<Scalars['Boolean']>,
-  take?: Maybe<Scalars['Int']>,
-  skip?: Maybe<Scalars['Int']>,
-  sort?: Maybe<SearchResultSortParameter>,
+  term?: Maybe<Scalars['String']>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  collectionId?: Maybe<Scalars['ID']>;
+  groupByProduct?: Maybe<Scalars['Boolean']>;
+  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  sort?: Maybe<SearchResultSortParameter>;
 };
 
 export type SearchReindexResponse = {
-  __typename?: 'SearchReindexResponse',
-  success: Scalars['Boolean'],
+   __typename?: 'SearchReindexResponse';
+  success: Scalars['Boolean'];
 };
 
 export type SearchResponse = {
-  __typename?: 'SearchResponse',
-  items: Array<SearchResult>,
-  totalItems: Scalars['Int'],
-  facetValues: Array<FacetValueResult>,
+   __typename?: 'SearchResponse';
+  items: Array<SearchResult>;
+  totalItems: Scalars['Int'];
+  facetValues: Array<FacetValueResult>;
 };
 
 export type SearchResult = {
-  __typename?: 'SearchResult',
-  enabled: Scalars['Boolean'],
+   __typename?: 'SearchResult';
+  enabled: Scalars['Boolean'];
   /** An array of ids of the Collections in which this result appears */
-  channelIds: Array<Scalars['ID']>,
-  sku: Scalars['String'],
-  slug: Scalars['String'],
-  productId: Scalars['ID'],
-  productName: Scalars['String'],
-  productPreview: Scalars['String'],
-  productAsset?: Maybe<SearchResultAsset>,
-  productVariantId: Scalars['ID'],
-  productVariantName: Scalars['String'],
-  productVariantPreview: Scalars['String'],
-  productVariantAsset?: Maybe<SearchResultAsset>,
-  price: SearchResultPrice,
-  priceWithTax: SearchResultPrice,
-  currencyCode: CurrencyCode,
-  description: Scalars['String'],
-  facetIds: Array<Scalars['ID']>,
-  facetValueIds: Array<Scalars['ID']>,
+  channelIds: Array<Scalars['ID']>;
+  sku: Scalars['String'];
+  slug: Scalars['String'];
+  productId: Scalars['ID'];
+  productName: Scalars['String'];
+  /** @deprecated Use `productAsset.preview` instead */
+  productPreview: Scalars['String'];
+  productAsset?: Maybe<SearchResultAsset>;
+  productVariantId: Scalars['ID'];
+  productVariantName: Scalars['String'];
+  /** @deprecated Use `productVariantAsset.preview` instead */
+  productVariantPreview: Scalars['String'];
+  productVariantAsset?: Maybe<SearchResultAsset>;
+  price: SearchResultPrice;
+  priceWithTax: SearchResultPrice;
+  currencyCode: CurrencyCode;
+  description: Scalars['String'];
+  facetIds: Array<Scalars['ID']>;
+  facetValueIds: Array<Scalars['ID']>;
   /** An array of ids of the Collections in which this result appears */
-  collectionIds: Array<Scalars['ID']>,
+  collectionIds: Array<Scalars['ID']>;
   /** A relevence score for the result. Differs between database implementations */
-  score: Scalars['Float'],
+  score: Scalars['Float'];
 };
 
 export type SearchResultAsset = {
-  __typename?: 'SearchResultAsset',
-  id: Scalars['ID'],
-  preview: Scalars['String'],
-  focalPoint?: Maybe<Coordinate>,
+   __typename?: 'SearchResultAsset';
+  id: Scalars['ID'];
+  preview: Scalars['String'];
+  focalPoint?: Maybe<Coordinate>;
 };
 
 /** The price of a search result product, either as a range or as a single price */
 export type SearchResultPrice = PriceRange | SinglePrice;
 
 export type SearchResultSortParameter = {
-  name?: Maybe<SortOrder>,
-  price?: Maybe<SortOrder>,
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
 };
 
 export type ServerConfig = {
-  __typename?: 'ServerConfig',
-  customFieldConfig: CustomFields,
+   __typename?: 'ServerConfig';
+  customFieldConfig: CustomFields;
 };
 
 export type SettleRefundInput = {
-  id: Scalars['ID'],
-  transactionId: Scalars['String'],
+  id: Scalars['ID'];
+  transactionId: Scalars['String'];
 };
 
 export type ShippingMethod = Node & {
-  __typename?: 'ShippingMethod',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  code: Scalars['String'],
-  description: Scalars['String'],
-  checker: ConfigurableOperation,
-  calculator: ConfigurableOperation,
+   __typename?: 'ShippingMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  description: Scalars['String'];
+  checker: ConfigurableOperation;
+  calculator: ConfigurableOperation;
 };
 
 export type ShippingMethodFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  code?: Maybe<StringOperators>,
-  description?: Maybe<StringOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
 };
 
 export type ShippingMethodList = PaginatedList & {
-  __typename?: 'ShippingMethodList',
-  items: Array<ShippingMethod>,
-  totalItems: Scalars['Int'],
+   __typename?: 'ShippingMethodList';
+  items: Array<ShippingMethod>;
+  totalItems: Scalars['Int'];
 };
 
 export type ShippingMethodListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<ShippingMethodSortParameter>,
-  filter?: Maybe<ShippingMethodFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ShippingMethodSortParameter>;
+  filter?: Maybe<ShippingMethodFilterParameter>;
 };
 
 export type ShippingMethodQuote = {
-  __typename?: 'ShippingMethodQuote',
-  id: Scalars['ID'],
-  price: Scalars['Int'],
-  priceWithTax: Scalars['Int'],
-  description: Scalars['String'],
-  metadata?: Maybe<Scalars['JSON']>,
+   __typename?: 'ShippingMethodQuote';
+  id: Scalars['ID'];
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  description: Scalars['String'];
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  code?: Maybe<SortOrder>,
-  description?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 /** The price value where the result has a single price */
 export type SinglePrice = {
-  __typename?: 'SinglePrice',
-  value: Scalars['Int'],
+   __typename?: 'SinglePrice';
+  value: Scalars['Int'];
 };
 
 export enum SortOrder {
@@ -3259,37 +3258,36 @@ export enum SortOrder {
 }
 
 export type StockAdjustment = Node & StockMovement & {
-  __typename?: 'StockAdjustment',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  type: StockMovementType,
-  quantity: Scalars['Int'],
+   __typename?: 'StockAdjustment';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
 };
 
 export type StockMovement = {
-  __typename?: 'StockMovement',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  productVariant: ProductVariant,
-  type: StockMovementType,
-  quantity: Scalars['Int'],
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
 };
 
 export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
 
 export type StockMovementList = {
-  __typename?: 'StockMovementList',
-  items: Array<StockMovementItem>,
-  totalItems: Scalars['Int'],
+   __typename?: 'StockMovementList';
+  items: Array<StockMovementItem>;
+  totalItems: Scalars['Int'];
 };
 
 export type StockMovementListOptions = {
-  type?: Maybe<StockMovementType>,
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
+  type?: Maybe<StockMovementType>;
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
 };
 
 export enum StockMovementType {
@@ -3300,1302 +3298,2973 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
-  __typename?: 'StringCustomFieldConfig',
-  name: Scalars['String'],
-  type: Scalars['String'],
-  length?: Maybe<Scalars['Int']>,
-  label?: Maybe<Array<LocalizedString>>,
-  description?: Maybe<Array<LocalizedString>>,
-  readonly?: Maybe<Scalars['Boolean']>,
-  internal?: Maybe<Scalars['Boolean']>,
-  pattern?: Maybe<Scalars['String']>,
-  options?: Maybe<Array<StringFieldOption>>,
+   __typename?: 'StringCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  length?: Maybe<Scalars['Int']>;
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  pattern?: Maybe<Scalars['String']>;
+  options?: Maybe<Array<StringFieldOption>>;
 };
 
 export type StringFieldOption = {
-  __typename?: 'StringFieldOption',
-  value: Scalars['String'],
-  label?: Maybe<Array<LocalizedString>>,
+   __typename?: 'StringFieldOption';
+  value: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
 };
 
 export type StringOperators = {
-  eq?: Maybe<Scalars['String']>,
-  contains?: Maybe<Scalars['String']>,
+  eq?: Maybe<Scalars['String']>;
+  contains?: Maybe<Scalars['String']>;
 };
 
 export type TaxCategory = Node & {
-  __typename?: 'TaxCategory',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  name: Scalars['String'],
+   __typename?: 'TaxCategory';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
 };
 
 export type TaxRate = Node & {
-  __typename?: 'TaxRate',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  name: Scalars['String'],
-  enabled: Scalars['Boolean'],
-  value: Scalars['Float'],
-  category: TaxCategory,
-  zone: Zone,
-  customerGroup?: Maybe<CustomerGroup>,
+   __typename?: 'TaxRate';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  value: Scalars['Float'];
+  category: TaxCategory;
+  zone: Zone;
+  customerGroup?: Maybe<CustomerGroup>;
 };
 
 export type TaxRateFilterParameter = {
-  createdAt?: Maybe<DateOperators>,
-  updatedAt?: Maybe<DateOperators>,
-  name?: Maybe<StringOperators>,
-  enabled?: Maybe<BooleanOperators>,
-  value?: Maybe<NumberOperators>,
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
+  value?: Maybe<NumberOperators>;
 };
 
 export type TaxRateList = PaginatedList & {
-  __typename?: 'TaxRateList',
-  items: Array<TaxRate>,
-  totalItems: Scalars['Int'],
+   __typename?: 'TaxRateList';
+  items: Array<TaxRate>;
+  totalItems: Scalars['Int'];
 };
 
 export type TaxRateListOptions = {
-  skip?: Maybe<Scalars['Int']>,
-  take?: Maybe<Scalars['Int']>,
-  sort?: Maybe<TaxRateSortParameter>,
-  filter?: Maybe<TaxRateFilterParameter>,
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TaxRateSortParameter>;
+  filter?: Maybe<TaxRateFilterParameter>;
 };
 
 export type TaxRateSortParameter = {
-  id?: Maybe<SortOrder>,
-  createdAt?: Maybe<SortOrder>,
-  updatedAt?: Maybe<SortOrder>,
-  name?: Maybe<SortOrder>,
-  value?: Maybe<SortOrder>,
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
 };
 
 export type TestEligibleShippingMethodsInput = {
-  shippingAddress: CreateAddressInput,
-  lines: Array<TestShippingMethodOrderLineInput>,
+  shippingAddress: CreateAddressInput;
+  lines: Array<TestShippingMethodOrderLineInput>;
 };
 
 export type TestShippingMethodInput = {
-  checker: ConfigurableOperationInput,
-  calculator: ConfigurableOperationInput,
-  shippingAddress: CreateAddressInput,
-  lines: Array<TestShippingMethodOrderLineInput>,
+  checker: ConfigurableOperationInput;
+  calculator: ConfigurableOperationInput;
+  shippingAddress: CreateAddressInput;
+  lines: Array<TestShippingMethodOrderLineInput>;
 };
 
 export type TestShippingMethodOrderLineInput = {
-  productVariantId: Scalars['ID'],
-  quantity: Scalars['Int'],
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
 };
 
 export type TestShippingMethodQuote = {
-  __typename?: 'TestShippingMethodQuote',
-  price: Scalars['Int'],
-  priceWithTax: Scalars['Int'],
-  description: Scalars['String'],
-  metadata?: Maybe<Scalars['JSON']>,
+   __typename?: 'TestShippingMethodQuote';
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  description: Scalars['String'];
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type TestShippingMethodResult = {
-  __typename?: 'TestShippingMethodResult',
-  eligible: Scalars['Boolean'],
-  quote?: Maybe<TestShippingMethodQuote>,
+   __typename?: 'TestShippingMethodResult';
+  eligible: Scalars['Boolean'];
+  quote?: Maybe<TestShippingMethodQuote>;
 };
 
 export type UiState = {
-  __typename?: 'UiState',
-  language: LanguageCode,
+   __typename?: 'UiState';
+  language: LanguageCode;
 };
 
 export type UpdateAddressInput = {
-  id: Scalars['ID'],
-  fullName?: Maybe<Scalars['String']>,
-  company?: Maybe<Scalars['String']>,
-  streetLine1?: Maybe<Scalars['String']>,
-  streetLine2?: Maybe<Scalars['String']>,
-  city?: Maybe<Scalars['String']>,
-  province?: Maybe<Scalars['String']>,
-  postalCode?: Maybe<Scalars['String']>,
-  countryCode?: Maybe<Scalars['String']>,
-  phoneNumber?: Maybe<Scalars['String']>,
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>,
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1?: Maybe<Scalars['String']>;
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
-  id: Scalars['ID'],
-  firstName?: Maybe<Scalars['String']>,
-  lastName?: Maybe<Scalars['String']>,
-  emailAddress?: Maybe<Scalars['String']>,
-  password?: Maybe<Scalars['String']>,
-  roleIds?: Maybe<Array<Scalars['ID']>>,
+  id: Scalars['ID'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
+  roleIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type UpdateAssetInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
-  focalPoint?: Maybe<CoordinateInput>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  focalPoint?: Maybe<CoordinateInput>;
 };
 
 export type UpdateChannelInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  token?: Maybe<Scalars['String']>,
-  defaultLanguageCode?: Maybe<LanguageCode>,
-  pricesIncludeTax?: Maybe<Scalars['Boolean']>,
-  currencyCode?: Maybe<CurrencyCode>,
-  defaultTaxZoneId?: Maybe<Scalars['ID']>,
-  defaultShippingZoneId?: Maybe<Scalars['ID']>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  token?: Maybe<Scalars['String']>;
+  defaultLanguageCode?: Maybe<LanguageCode>;
+  pricesIncludeTax?: Maybe<Scalars['Boolean']>;
+  currencyCode?: Maybe<CurrencyCode>;
+  defaultTaxZoneId?: Maybe<Scalars['ID']>;
+  defaultShippingZoneId?: Maybe<Scalars['ID']>;
 };
 
 export type UpdateCollectionInput = {
-  id: Scalars['ID'],
-  isPrivate?: Maybe<Scalars['Boolean']>,
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  parentId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  filters?: Maybe<Array<ConfigurableOperationInput>>,
-  translations?: Maybe<Array<CollectionTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  parentId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  filters?: Maybe<Array<ConfigurableOperationInput>>;
+  translations?: Maybe<Array<CollectionTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCountryInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  translations?: Maybe<Array<CountryTranslationInput>>,
-  enabled?: Maybe<Scalars['Boolean']>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<CountryTranslationInput>>;
+  enabled?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateCustomerGroupInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
 };
 
 export type UpdateCustomerInput = {
-  id: Scalars['ID'],
-  title?: Maybe<Scalars['String']>,
-  firstName?: Maybe<Scalars['String']>,
-  lastName?: Maybe<Scalars['String']>,
-  phoneNumber?: Maybe<Scalars['String']>,
-  emailAddress?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  title?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateFacetInput = {
-  id: Scalars['ID'],
-  isPrivate?: Maybe<Scalars['Boolean']>,
-  code?: Maybe<Scalars['String']>,
-  translations?: Maybe<Array<FacetTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<FacetTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateFacetValueInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  translations?: Maybe<Array<FacetValueTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<FacetValueTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateGlobalSettingsInput = {
-  availableLanguages?: Maybe<Array<LanguageCode>>,
-  trackInventory?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  availableLanguages?: Maybe<Array<LanguageCode>>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdatePaymentMethodInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  enabled?: Maybe<Scalars['Boolean']>,
-  configArgs?: Maybe<Array<ConfigArgInput>>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  configArgs?: Maybe<Array<ConfigArgInput>>;
 };
 
 export type UpdateProductInput = {
-  id: Scalars['ID'],
-  enabled?: Maybe<Scalars['Boolean']>,
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  facetValueIds?: Maybe<Array<Scalars['ID']>>,
-  translations?: Maybe<Array<ProductTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  translations?: Maybe<Array<ProductTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductOptionGroupInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductOptionInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductVariantInput = {
-  id: Scalars['ID'],
-  enabled?: Maybe<Scalars['Boolean']>,
-  translations?: Maybe<Array<ProductVariantTranslationInput>>,
-  facetValueIds?: Maybe<Array<Scalars['ID']>>,
-  sku?: Maybe<Scalars['String']>,
-  taxCategoryId?: Maybe<Scalars['ID']>,
-  price?: Maybe<Scalars['Int']>,
-  featuredAssetId?: Maybe<Scalars['ID']>,
-  assetIds?: Maybe<Array<Scalars['ID']>>,
-  stockOnHand?: Maybe<Scalars['Int']>,
-  trackInventory?: Maybe<Scalars['Boolean']>,
-  customFields?: Maybe<Scalars['JSON']>,
+  id: Scalars['ID'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  translations?: Maybe<Array<ProductVariantTranslationInput>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  sku?: Maybe<Scalars['String']>;
+  taxCategoryId?: Maybe<Scalars['ID']>;
+  price?: Maybe<Scalars['Int']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  stockOnHand?: Maybe<Scalars['Int']>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdatePromotionInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
-  enabled?: Maybe<Scalars['Boolean']>,
-  startsAt?: Maybe<Scalars['DateTime']>,
-  endsAt?: Maybe<Scalars['DateTime']>,
-  couponCode?: Maybe<Scalars['String']>,
-  perCustomerUsageLimit?: Maybe<Scalars['Int']>,
-  conditions?: Maybe<Array<ConfigurableOperationInput>>,
-  actions?: Maybe<Array<ConfigurableOperationInput>>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  startsAt?: Maybe<Scalars['DateTime']>;
+  endsAt?: Maybe<Scalars['DateTime']>;
+  couponCode?: Maybe<Scalars['String']>;
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
+  conditions?: Maybe<Array<ConfigurableOperationInput>>;
+  actions?: Maybe<Array<ConfigurableOperationInput>>;
 };
 
 export type UpdateRoleInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-  permissions?: Maybe<Array<Permission>>,
-  channelIds?: Maybe<Array<Scalars['ID']>>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  permissions?: Maybe<Array<Permission>>;
+  channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type UpdateShippingMethodInput = {
-  id: Scalars['ID'],
-  code?: Maybe<Scalars['String']>,
-  description?: Maybe<Scalars['String']>,
-  checker?: Maybe<ConfigurableOperationInput>,
-  calculator?: Maybe<ConfigurableOperationInput>,
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  checker?: Maybe<ConfigurableOperationInput>;
+  calculator?: Maybe<ConfigurableOperationInput>;
 };
 
 export type UpdateTaxCategoryInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
 };
 
 export type UpdateTaxRateInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
-  value?: Maybe<Scalars['Float']>,
-  enabled?: Maybe<Scalars['Boolean']>,
-  categoryId?: Maybe<Scalars['ID']>,
-  zoneId?: Maybe<Scalars['ID']>,
-  customerGroupId?: Maybe<Scalars['ID']>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['Float']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  categoryId?: Maybe<Scalars['ID']>;
+  zoneId?: Maybe<Scalars['ID']>;
+  customerGroupId?: Maybe<Scalars['ID']>;
 };
 
 export type UpdateZoneInput = {
-  id: Scalars['ID'],
-  name?: Maybe<Scalars['String']>,
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
 };
 
 
 export type User = Node & {
-  __typename?: 'User',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  identifier: Scalars['String'],
-  verified: Scalars['Boolean'],
-  roles: Array<Role>,
-  lastLogin?: Maybe<Scalars['String']>,
-  customFields?: Maybe<Scalars['JSON']>,
+   __typename?: 'User';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  identifier: Scalars['String'];
+  verified: Scalars['Boolean'];
+  roles: Array<Role>;
+  lastLogin?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UserStatus = {
-  __typename?: 'UserStatus',
-  username: Scalars['String'],
-  isLoggedIn: Scalars['Boolean'],
-  loginTime: Scalars['String'],
-  permissions: Array<Permission>,
-  activeChannelId?: Maybe<Scalars['ID']>,
-  channels: Array<CurrentUserChannel>,
+   __typename?: 'UserStatus';
+  username: Scalars['String'];
+  isLoggedIn: Scalars['Boolean'];
+  loginTime: Scalars['String'];
+  permissions: Array<Permission>;
+  activeChannelId?: Maybe<Scalars['ID']>;
+  channels: Array<CurrentUserChannel>;
 };
 
 export type UserStatusInput = {
-  username: Scalars['String'],
-  loginTime: Scalars['String'],
-  activeChannelId: Scalars['ID'],
-  channels: Array<CurrentUserChannelInput>,
+  username: Scalars['String'];
+  loginTime: Scalars['String'];
+  activeChannelId: Scalars['ID'];
+  channels: Array<CurrentUserChannelInput>;
 };
 
 export type Zone = Node & {
-  __typename?: 'Zone',
-  id: Scalars['ID'],
-  createdAt: Scalars['DateTime'],
-  updatedAt: Scalars['DateTime'],
-  name: Scalars['String'],
-  members: Array<Country>,
+   __typename?: 'Zone';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  members: Array<Country>;
 };
-export type RoleFragment = ({ __typename?: 'Role' } & Pick<Role, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description' | 'permissions'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>)> });
 
-export type AdministratorFragment = ({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'> & { user: ({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & { roles: Array<({ __typename?: 'Role' } & RoleFragment)> }) });
+export type RoleFragment = (
+  { __typename?: 'Role' }
+  & Pick<Role, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description' | 'permissions'>
+  & { channels: Array<(
+    { __typename?: 'Channel' }
+    & Pick<Channel, 'id' | 'code' | 'token'>
+  )> }
+);
+
+export type AdministratorFragment = (
+  { __typename?: 'Administrator' }
+  & Pick<Administrator, 'id' | 'createdAt' | 'updatedAt' | 'firstName' | 'lastName' | 'emailAddress'>
+  & { user: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'identifier' | 'lastLogin'>
+    & { roles: Array<(
+      { __typename?: 'Role' }
+      & RoleFragment
+    )> }
+  ) }
+);
 
 export type GetAdministratorsQueryVariables = {
-  options?: Maybe<AdministratorListOptions>
+  options?: Maybe<AdministratorListOptions>;
 };
 
 
-export type GetAdministratorsQuery = ({ __typename?: 'Query' } & { administrators: ({ __typename?: 'AdministratorList' } & Pick<AdministratorList, 'totalItems'> & { items: Array<({ __typename?: 'Administrator' } & AdministratorFragment)> }) });
+export type GetAdministratorsQuery = (
+  { __typename?: 'Query' }
+  & { administrators: (
+    { __typename?: 'AdministratorList' }
+    & Pick<AdministratorList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Administrator' }
+      & AdministratorFragment
+    )> }
+  ) }
+);
 
 export type GetAdministratorQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetAdministratorQuery = ({ __typename?: 'Query' } & { administrator: Maybe<({ __typename?: 'Administrator' } & AdministratorFragment)> });
+export type GetAdministratorQuery = (
+  { __typename?: 'Query' }
+  & { administrator?: Maybe<(
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  )> }
+);
 
 export type CreateAdministratorMutationVariables = {
-  input: CreateAdministratorInput
+  input: CreateAdministratorInput;
 };
 
 
-export type CreateAdministratorMutation = ({ __typename?: 'Mutation' } & { createAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
+export type CreateAdministratorMutation = (
+  { __typename?: 'Mutation' }
+  & { createAdministrator: (
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  ) }
+);
 
 export type UpdateAdministratorMutationVariables = {
-  input: UpdateAdministratorInput
+  input: UpdateAdministratorInput;
 };
 
 
-export type UpdateAdministratorMutation = ({ __typename?: 'Mutation' } & { updateAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
+export type UpdateAdministratorMutation = (
+  { __typename?: 'Mutation' }
+  & { updateAdministrator: (
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  ) }
+);
 
 export type GetRolesQueryVariables = {
-  options?: Maybe<RoleListOptions>
+  options?: Maybe<RoleListOptions>;
 };
 
 
-export type GetRolesQuery = ({ __typename?: 'Query' } & { roles: ({ __typename?: 'RoleList' } & Pick<RoleList, 'totalItems'> & { items: Array<({ __typename?: 'Role' } & RoleFragment)> }) });
+export type GetRolesQuery = (
+  { __typename?: 'Query' }
+  & { roles: (
+    { __typename?: 'RoleList' }
+    & Pick<RoleList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Role' }
+      & RoleFragment
+    )> }
+  ) }
+);
 
 export type GetRoleQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetRoleQuery = ({ __typename?: 'Query' } & { role: Maybe<({ __typename?: 'Role' } & RoleFragment)> });
+export type GetRoleQuery = (
+  { __typename?: 'Query' }
+  & { role?: Maybe<(
+    { __typename?: 'Role' }
+    & RoleFragment
+  )> }
+);
 
 export type CreateRoleMutationVariables = {
-  input: CreateRoleInput
+  input: CreateRoleInput;
 };
 
 
-export type CreateRoleMutation = ({ __typename?: 'Mutation' } & { createRole: ({ __typename?: 'Role' } & RoleFragment) });
+export type CreateRoleMutation = (
+  { __typename?: 'Mutation' }
+  & { createRole: (
+    { __typename?: 'Role' }
+    & RoleFragment
+  ) }
+);
 
 export type UpdateRoleMutationVariables = {
-  input: UpdateRoleInput
+  input: UpdateRoleInput;
 };
 
 
-export type UpdateRoleMutation = ({ __typename?: 'Mutation' } & { updateRole: ({ __typename?: 'Role' } & RoleFragment) });
+export type UpdateRoleMutation = (
+  { __typename?: 'Mutation' }
+  & { updateRole: (
+    { __typename?: 'Role' }
+    & RoleFragment
+  ) }
+);
 
 export type DeleteRoleMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteRoleMutation = ({ __typename?: 'Mutation' } & { deleteRole: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteRoleMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteRole: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type AssignRoleToAdministratorMutationVariables = {
-  administratorId: Scalars['ID'],
-  roleId: Scalars['ID']
+  administratorId: Scalars['ID'];
+  roleId: Scalars['ID'];
 };
 
 
-export type AssignRoleToAdministratorMutation = ({ __typename?: 'Mutation' } & { assignRoleToAdministrator: ({ __typename?: 'Administrator' } & AdministratorFragment) });
+export type AssignRoleToAdministratorMutation = (
+  { __typename?: 'Mutation' }
+  & { assignRoleToAdministrator: (
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  ) }
+);
 
-export type CurrentUserFragment = ({ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
+export type CurrentUserFragment = (
+  { __typename?: 'CurrentUser' }
+  & Pick<CurrentUser, 'id' | 'identifier'>
+  & { channels: Array<(
+    { __typename?: 'CurrentUserChannel' }
+    & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>
+  )> }
+);
 
 export type AttemptLoginMutationVariables = {
-  username: Scalars['String'],
-  password: Scalars['String'],
-  rememberMe: Scalars['Boolean']
+  username: Scalars['String'];
+  password: Scalars['String'];
+  rememberMe: Scalars['Boolean'];
 };
 
 
-export type AttemptLoginMutation = ({ __typename?: 'Mutation' } & { login: ({ __typename?: 'LoginResult' } & { user: ({ __typename?: 'CurrentUser' } & CurrentUserFragment) }) });
+export type AttemptLoginMutation = (
+  { __typename?: 'Mutation' }
+  & { login: (
+    { __typename?: 'LoginResult' }
+    & { user: (
+      { __typename?: 'CurrentUser' }
+      & CurrentUserFragment
+    ) }
+  ) }
+);
 
 export type LogOutMutationVariables = {};
 
 
-export type LogOutMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'logout'>);
+export type LogOutMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'logout'>
+);
 
 export type GetCurrentUserQueryVariables = {};
 
 
-export type GetCurrentUserQuery = ({ __typename?: 'Query' } & { me: Maybe<({ __typename?: 'CurrentUser' } & CurrentUserFragment)> });
+export type GetCurrentUserQuery = (
+  { __typename?: 'Query' }
+  & { me?: Maybe<(
+    { __typename?: 'CurrentUser' }
+    & CurrentUserFragment
+  )> }
+);
 
 export type RequestStartedMutationVariables = {};
 
 
-export type RequestStartedMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'requestStarted'>);
+export type RequestStartedMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'requestStarted'>
+);
 
 export type RequestCompletedMutationVariables = {};
 
 
-export type RequestCompletedMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'requestCompleted'>);
+export type RequestCompletedMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'requestCompleted'>
+);
 
-export type UserStatusFragment = ({ __typename?: 'UserStatus' } & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'activeChannelId' | 'permissions'> & { channels: Array<({ __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>)> });
+export type UserStatusFragment = (
+  { __typename?: 'UserStatus' }
+  & Pick<UserStatus, 'username' | 'isLoggedIn' | 'loginTime' | 'activeChannelId' | 'permissions'>
+  & { channels: Array<(
+    { __typename?: 'CurrentUserChannel' }
+    & Pick<CurrentUserChannel, 'id' | 'code' | 'token' | 'permissions'>
+  )> }
+);
 
 export type SetAsLoggedInMutationVariables = {
-  input: UserStatusInput
+  input: UserStatusInput;
 };
 
 
-export type SetAsLoggedInMutation = ({ __typename?: 'Mutation' } & { setAsLoggedIn: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+export type SetAsLoggedInMutation = (
+  { __typename?: 'Mutation' }
+  & { setAsLoggedIn: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ) }
+);
 
 export type SetAsLoggedOutMutationVariables = {};
 
 
-export type SetAsLoggedOutMutation = ({ __typename?: 'Mutation' } & { setAsLoggedOut: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+export type SetAsLoggedOutMutation = (
+  { __typename?: 'Mutation' }
+  & { setAsLoggedOut: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ) }
+);
 
 export type SetUiLanguageMutationVariables = {
-  languageCode: LanguageCode
+  languageCode: LanguageCode;
 };
 
 
-export type SetUiLanguageMutation = ({ __typename?: 'Mutation' } & Pick<Mutation, 'setUiLanguage'>);
+export type SetUiLanguageMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'setUiLanguage'>
+);
 
 export type GetNetworkStatusQueryVariables = {};
 
 
-export type GetNetworkStatusQuery = ({ __typename?: 'Query' } & { networkStatus: ({ __typename?: 'NetworkStatus' } & Pick<NetworkStatus, 'inFlightRequests'>) });
+export type GetNetworkStatusQuery = (
+  { __typename?: 'Query' }
+  & { networkStatus: (
+    { __typename?: 'NetworkStatus' }
+    & Pick<NetworkStatus, 'inFlightRequests'>
+  ) }
+);
 
 export type GetUserStatusQueryVariables = {};
 
 
-export type GetUserStatusQuery = ({ __typename?: 'Query' } & { userStatus: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+export type GetUserStatusQuery = (
+  { __typename?: 'Query' }
+  & { userStatus: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ) }
+);
 
 export type GetUiStateQueryVariables = {};
 
 
-export type GetUiStateQuery = ({ __typename?: 'Query' } & { uiState: ({ __typename?: 'UiState' } & Pick<UiState, 'language'>) });
+export type GetUiStateQuery = (
+  { __typename?: 'Query' }
+  & { uiState: (
+    { __typename?: 'UiState' }
+    & Pick<UiState, 'language'>
+  ) }
+);
 
 export type SetActiveChannelMutationVariables = {
-  channelId: Scalars['ID']
+  channelId: Scalars['ID'];
 };
 
 
-export type SetActiveChannelMutation = ({ __typename?: 'Mutation' } & { setActiveChannel: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+export type SetActiveChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { setActiveChannel: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ) }
+);
 
 export type UpdateUserChannelsMutationVariables = {
-  channels: Array<CurrentUserChannelInput>
+  channels: Array<CurrentUserChannelInput>;
 };
 
 
-export type UpdateUserChannelsMutation = ({ __typename?: 'Mutation' } & { updateUserChannels: ({ __typename?: 'UserStatus' } & UserStatusFragment) });
+export type UpdateUserChannelsMutation = (
+  { __typename?: 'Mutation' }
+  & { updateUserChannels: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ) }
+);
 
 export type GetCollectionFiltersQueryVariables = {};
 
 
-export type GetCollectionFiltersQuery = ({ __typename?: 'Query' } & { collectionFilters: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
+export type GetCollectionFiltersQuery = (
+  { __typename?: 'Query' }
+  & { collectionFilters: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )> }
+);
 
-export type CollectionFragment = ({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'description' | 'isPrivate' | 'languageCode'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, filters: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, translations: Array<({ __typename?: 'CollectionTranslation' } & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>)>, parent: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>, children: Maybe<Array<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>)>> });
+export type CollectionFragment = (
+  { __typename?: 'Collection' }
+  & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'description' | 'isPrivate' | 'languageCode'>
+  & { featuredAsset?: Maybe<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, assets: Array<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, filters: Array<(
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  )>, translations: Array<(
+    { __typename?: 'CollectionTranslation' }
+    & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>
+  )>, parent?: Maybe<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )>, children?: Maybe<Array<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+  )>> }
+);
 
 export type GetCollectionListQueryVariables = {
-  options?: Maybe<CollectionListOptions>
+  options?: Maybe<CollectionListOptions>;
 };
 
 
-export type GetCollectionListQuery = ({ __typename?: 'Query' } & { collections: ({ __typename?: 'CollectionList' } & Pick<CollectionList, 'totalItems'> & { items: Array<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, parent: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id'>)> })> }) });
+export type GetCollectionListQuery = (
+  { __typename?: 'Query' }
+  & { collections: (
+    { __typename?: 'CollectionList' }
+    & Pick<CollectionList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Collection' }
+      & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & AssetFragment
+      )>, parent?: Maybe<(
+        { __typename?: 'Collection' }
+        & Pick<Collection, 'id'>
+      )> }
+    )> }
+  ) }
+);
 
 export type GetCollectionQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetCollectionQuery = ({ __typename?: 'Query' } & { collection: Maybe<({ __typename?: 'Collection' } & CollectionFragment)> });
+export type GetCollectionQuery = (
+  { __typename?: 'Query' }
+  & { collection?: Maybe<(
+    { __typename?: 'Collection' }
+    & CollectionFragment
+  )> }
+);
 
 export type CreateCollectionMutationVariables = {
-  input: CreateCollectionInput
+  input: CreateCollectionInput;
 };
 
 
-export type CreateCollectionMutation = ({ __typename?: 'Mutation' } & { createCollection: ({ __typename?: 'Collection' } & CollectionFragment) });
+export type CreateCollectionMutation = (
+  { __typename?: 'Mutation' }
+  & { createCollection: (
+    { __typename?: 'Collection' }
+    & CollectionFragment
+  ) }
+);
 
 export type UpdateCollectionMutationVariables = {
-  input: UpdateCollectionInput
+  input: UpdateCollectionInput;
 };
 
 
-export type UpdateCollectionMutation = ({ __typename?: 'Mutation' } & { updateCollection: ({ __typename?: 'Collection' } & CollectionFragment) });
+export type UpdateCollectionMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCollection: (
+    { __typename?: 'Collection' }
+    & CollectionFragment
+  ) }
+);
 
 export type MoveCollectionMutationVariables = {
-  input: MoveCollectionInput
+  input: MoveCollectionInput;
 };
 
 
-export type MoveCollectionMutation = ({ __typename?: 'Mutation' } & { moveCollection: ({ __typename?: 'Collection' } & CollectionFragment) });
+export type MoveCollectionMutation = (
+  { __typename?: 'Mutation' }
+  & { moveCollection: (
+    { __typename?: 'Collection' }
+    & CollectionFragment
+  ) }
+);
 
 export type DeleteCollectionMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteCollectionMutation = ({ __typename?: 'Mutation' } & { deleteCollection: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteCollectionMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCollection: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type GetCollectionContentsQueryVariables = {
-  id: Scalars['ID'],
-  options?: Maybe<ProductVariantListOptions>
+  id: Scalars['ID'];
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 
-export type GetCollectionContentsQuery = ({ __typename?: 'Query' } & { collection: Maybe<({ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'> & { productVariants: ({ __typename?: 'ProductVariantList' } & Pick<ProductVariantList, 'totalItems'> & { items: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'productId' | 'name'>)> }) })> });
+export type GetCollectionContentsQuery = (
+  { __typename?: 'Query' }
+  & { collection?: Maybe<(
+    { __typename?: 'Collection' }
+    & Pick<Collection, 'id' | 'name'>
+    & { productVariants: (
+      { __typename?: 'ProductVariantList' }
+      & Pick<ProductVariantList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'ProductVariant' }
+        & Pick<ProductVariant, 'id' | 'productId' | 'name'>
+      )> }
+    ) }
+  )> }
+);
 
-export type AddressFragment = ({ __typename?: 'Address' } & Pick<Address, 'id' | 'createdAt' | 'updatedAt' | 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'phoneNumber' | 'defaultShippingAddress' | 'defaultBillingAddress'> & { country: ({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name'>) });
+export type AddressFragment = (
+  { __typename?: 'Address' }
+  & Pick<Address, 'id' | 'createdAt' | 'updatedAt' | 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'phoneNumber' | 'defaultShippingAddress' | 'defaultBillingAddress'>
+  & { country: (
+    { __typename?: 'Country' }
+    & Pick<Country, 'id' | 'code' | 'name'>
+  ) }
+);
 
-export type CustomerFragment = ({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'> & { user: Maybe<({ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>)>, addresses: Maybe<Array<({ __typename?: 'Address' } & AddressFragment)>> });
+export type CustomerFragment = (
+  { __typename?: 'Customer' }
+  & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'>
+  & { user?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>
+  )>, addresses?: Maybe<Array<(
+    { __typename?: 'Address' }
+    & AddressFragment
+  )>> }
+);
 
 export type GetCustomerListQueryVariables = {
-  options?: Maybe<CustomerListOptions>
+  options?: Maybe<CustomerListOptions>;
 };
 
 
-export type GetCustomerListQuery = ({ __typename?: 'Query' } & { customers: ({ __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & { items: Array<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'> & { user: Maybe<({ __typename?: 'User' } & Pick<User, 'id' | 'verified'>)> })> }) });
+export type GetCustomerListQuery = (
+  { __typename?: 'Query' }
+  & { customers: (
+    { __typename?: 'CustomerList' }
+    & Pick<CustomerList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Customer' }
+      & Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
+      & { user?: Maybe<(
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'verified'>
+      )> }
+    )> }
+  ) }
+);
 
 export type GetCustomerQueryVariables = {
-  id: Scalars['ID'],
-  orderListOptions?: Maybe<OrderListOptions>
+  id: Scalars['ID'];
+  orderListOptions?: Maybe<OrderListOptions>;
 };
 
 
-export type GetCustomerQuery = ({ __typename?: 'Query' } & { customer: Maybe<({ __typename?: 'Customer' } & { orders: ({ __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & { items: Array<({ __typename?: 'Order' } & Pick<Order, 'id' | 'code' | 'state' | 'total' | 'currencyCode' | 'updatedAt'>)> }) } & CustomerFragment)> });
+export type GetCustomerQuery = (
+  { __typename?: 'Query' }
+  & { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & { orders: (
+      { __typename?: 'OrderList' }
+      & Pick<OrderList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'Order' }
+        & Pick<Order, 'id' | 'code' | 'state' | 'total' | 'currencyCode' | 'updatedAt'>
+      )> }
+    ) }
+    & CustomerFragment
+  )> }
+);
 
 export type CreateCustomerMutationVariables = {
-  input: CreateCustomerInput,
-  password?: Maybe<Scalars['String']>
+  input: CreateCustomerInput;
+  password?: Maybe<Scalars['String']>;
 };
 
 
-export type CreateCustomerMutation = ({ __typename?: 'Mutation' } & { createCustomer: ({ __typename?: 'Customer' } & CustomerFragment) });
+export type CreateCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { createCustomer: (
+    { __typename?: 'Customer' }
+    & CustomerFragment
+  ) }
+);
 
 export type UpdateCustomerMutationVariables = {
-  input: UpdateCustomerInput
+  input: UpdateCustomerInput;
 };
 
 
-export type UpdateCustomerMutation = ({ __typename?: 'Mutation' } & { updateCustomer: ({ __typename?: 'Customer' } & CustomerFragment) });
+export type UpdateCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomer: (
+    { __typename?: 'Customer' }
+    & CustomerFragment
+  ) }
+);
 
 export type CreateCustomerAddressMutationVariables = {
-  customerId: Scalars['ID'],
-  input: CreateAddressInput
+  customerId: Scalars['ID'];
+  input: CreateAddressInput;
 };
 
 
-export type CreateCustomerAddressMutation = ({ __typename?: 'Mutation' } & { createCustomerAddress: ({ __typename?: 'Address' } & AddressFragment) });
+export type CreateCustomerAddressMutation = (
+  { __typename?: 'Mutation' }
+  & { createCustomerAddress: (
+    { __typename?: 'Address' }
+    & AddressFragment
+  ) }
+);
 
 export type UpdateCustomerAddressMutationVariables = {
-  input: UpdateAddressInput
+  input: UpdateAddressInput;
 };
 
 
-export type UpdateCustomerAddressMutation = ({ __typename?: 'Mutation' } & { updateCustomerAddress: ({ __typename?: 'Address' } & AddressFragment) });
+export type UpdateCustomerAddressMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomerAddress: (
+    { __typename?: 'Address' }
+    & AddressFragment
+  ) }
+);
 
-export type FacetValueFragment = ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetValueTranslation' } & Pick<FacetValueTranslation, 'id' | 'languageCode' | 'name'>)>, facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) });
+export type FacetValueFragment = (
+  { __typename?: 'FacetValue' }
+  & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
+  & { translations: Array<(
+    { __typename?: 'FacetValueTranslation' }
+    & Pick<FacetValueTranslation, 'id' | 'languageCode' | 'name'>
+  )>, facet: (
+    { __typename?: 'Facet' }
+    & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
 
-export type FacetWithValuesFragment = ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'isPrivate' | 'code' | 'name'> & { translations: Array<({ __typename?: 'FacetTranslation' } & Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>)>, values: Array<({ __typename?: 'FacetValue' } & FacetValueFragment)> });
+export type FacetWithValuesFragment = (
+  { __typename?: 'Facet' }
+  & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'isPrivate' | 'code' | 'name'>
+  & { translations: Array<(
+    { __typename?: 'FacetTranslation' }
+    & Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>
+  )>, values: Array<(
+    { __typename?: 'FacetValue' }
+    & FacetValueFragment
+  )> }
+);
 
 export type CreateFacetMutationVariables = {
-  input: CreateFacetInput
+  input: CreateFacetInput;
 };
 
 
-export type CreateFacetMutation = ({ __typename?: 'Mutation' } & { createFacet: ({ __typename?: 'Facet' } & FacetWithValuesFragment) });
+export type CreateFacetMutation = (
+  { __typename?: 'Mutation' }
+  & { createFacet: (
+    { __typename?: 'Facet' }
+    & FacetWithValuesFragment
+  ) }
+);
 
 export type UpdateFacetMutationVariables = {
-  input: UpdateFacetInput
+  input: UpdateFacetInput;
 };
 
 
-export type UpdateFacetMutation = ({ __typename?: 'Mutation' } & { updateFacet: ({ __typename?: 'Facet' } & FacetWithValuesFragment) });
+export type UpdateFacetMutation = (
+  { __typename?: 'Mutation' }
+  & { updateFacet: (
+    { __typename?: 'Facet' }
+    & FacetWithValuesFragment
+  ) }
+);
 
 export type DeleteFacetMutationVariables = {
-  id: Scalars['ID'],
-  force?: Maybe<Scalars['Boolean']>
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 
-export type DeleteFacetMutation = ({ __typename?: 'Mutation' } & { deleteFacet: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteFacetMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteFacet: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type CreateFacetValuesMutationVariables = {
-  input: Array<CreateFacetValueInput>
+  input: Array<CreateFacetValueInput>;
 };
 
 
-export type CreateFacetValuesMutation = ({ __typename?: 'Mutation' } & { createFacetValues: Array<({ __typename?: 'FacetValue' } & FacetValueFragment)> });
+export type CreateFacetValuesMutation = (
+  { __typename?: 'Mutation' }
+  & { createFacetValues: Array<(
+    { __typename?: 'FacetValue' }
+    & FacetValueFragment
+  )> }
+);
 
 export type UpdateFacetValuesMutationVariables = {
-  input: Array<UpdateFacetValueInput>
+  input: Array<UpdateFacetValueInput>;
 };
 
 
-export type UpdateFacetValuesMutation = ({ __typename?: 'Mutation' } & { updateFacetValues: Array<({ __typename?: 'FacetValue' } & FacetValueFragment)> });
+export type UpdateFacetValuesMutation = (
+  { __typename?: 'Mutation' }
+  & { updateFacetValues: Array<(
+    { __typename?: 'FacetValue' }
+    & FacetValueFragment
+  )> }
+);
 
 export type DeleteFacetValuesMutationVariables = {
-  ids: Array<Scalars['ID']>,
-  force?: Maybe<Scalars['Boolean']>
+  ids: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
 };
 
 
-export type DeleteFacetValuesMutation = ({ __typename?: 'Mutation' } & { deleteFacetValues: Array<({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>)> });
+export type DeleteFacetValuesMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteFacetValues: Array<(
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  )> }
+);
 
 export type GetFacetListQueryVariables = {
-  options?: Maybe<FacetListOptions>
+  options?: Maybe<FacetListOptions>;
 };
 
 
-export type GetFacetListQuery = ({ __typename?: 'Query' } & { facets: ({ __typename?: 'FacetList' } & Pick<FacetList, 'totalItems'> & { items: Array<({ __typename?: 'Facet' } & FacetWithValuesFragment)> }) });
+export type GetFacetListQuery = (
+  { __typename?: 'Query' }
+  & { facets: (
+    { __typename?: 'FacetList' }
+    & Pick<FacetList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Facet' }
+      & FacetWithValuesFragment
+    )> }
+  ) }
+);
 
 export type GetFacetWithValuesQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetFacetWithValuesQuery = ({ __typename?: 'Query' } & { facet: Maybe<({ __typename?: 'Facet' } & FacetWithValuesFragment)> });
+export type GetFacetWithValuesQuery = (
+  { __typename?: 'Query' }
+  & { facet?: Maybe<(
+    { __typename?: 'Facet' }
+    & FacetWithValuesFragment
+  )> }
+);
 
-export type AdjustmentFragment = ({ __typename?: 'Adjustment' } & Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>);
+export type AdjustmentFragment = (
+  { __typename?: 'Adjustment' }
+  & Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>
+);
 
-export type RefundFragment = ({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'state' | 'items' | 'shipping' | 'adjustment' | 'transactionId' | 'paymentId'>);
+export type RefundFragment = (
+  { __typename?: 'Refund' }
+  & Pick<Refund, 'id' | 'state' | 'items' | 'shipping' | 'adjustment' | 'transactionId' | 'paymentId'>
+);
 
-export type ShippingAddressFragment = ({ __typename?: 'OrderAddress' } & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'phoneNumber'>);
+export type ShippingAddressFragment = (
+  { __typename?: 'OrderAddress' }
+  & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'phoneNumber'>
+);
 
-export type OrderFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)> });
+export type OrderFragment = (
+  { __typename?: 'Order' }
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'>
+  & { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id' | 'firstName' | 'lastName'>
+  )> }
+);
 
-export type FulfillmentFragment = ({ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>);
+export type FulfillmentFragment = (
+  { __typename?: 'Fulfillment' }
+  & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>
+);
 
-export type OrderLineFragment = ({ __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'preview'>)>, productVariant: ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'sku'>), adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, items: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'> & { fulfillment: Maybe<({ __typename?: 'Fulfillment' } & FulfillmentFragment)> })> });
+export type OrderLineFragment = (
+  { __typename?: 'OrderLine' }
+  & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'>
+  & { featuredAsset?: Maybe<(
+    { __typename?: 'Asset' }
+    & Pick<Asset, 'preview'>
+  )>, productVariant: (
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+  ), adjustments: Array<(
+    { __typename?: 'Adjustment' }
+    & AdjustmentFragment
+  )>, items: Array<(
+    { __typename?: 'OrderItem' }
+    & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'>
+    & { fulfillment?: Maybe<(
+      { __typename?: 'Fulfillment' }
+      & FulfillmentFragment
+    )> }
+  )> }
+);
 
-export type OrderDetailFragment = ({ __typename?: 'Order' } & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'> & { customer: Maybe<({ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>)>, lines: Array<({ __typename?: 'OrderLine' } & OrderLineFragment)>, adjustments: Array<({ __typename?: 'Adjustment' } & AdjustmentFragment)>, promotions: Array<({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'couponCode'>)>, shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>)>, shippingAddress: Maybe<({ __typename?: 'OrderAddress' } & ShippingAddressFragment)>, payments: Maybe<Array<({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & { refunds: Array<({ __typename?: 'Refund' } & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'> & { orderItems: Array<({ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>)> })> })>>, fulfillments: Maybe<Array<({ __typename?: 'Fulfillment' } & FulfillmentFragment)>> });
+export type OrderDetailFragment = (
+  { __typename?: 'Order' }
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
+  & { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id' | 'firstName' | 'lastName'>
+  )>, lines: Array<(
+    { __typename?: 'OrderLine' }
+    & OrderLineFragment
+  )>, adjustments: Array<(
+    { __typename?: 'Adjustment' }
+    & AdjustmentFragment
+  )>, promotions: Array<(
+    { __typename?: 'Promotion' }
+    & Pick<Promotion, 'id' | 'couponCode'>
+  )>, shippingMethod?: Maybe<(
+    { __typename?: 'ShippingMethod' }
+    & Pick<ShippingMethod, 'id' | 'code' | 'description'>
+  )>, shippingAddress?: Maybe<(
+    { __typename?: 'OrderAddress' }
+    & ShippingAddressFragment
+  )>, payments?: Maybe<Array<(
+    { __typename?: 'Payment' }
+    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+    & { refunds: Array<(
+      { __typename?: 'Refund' }
+      & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'>
+      & { orderItems: Array<(
+        { __typename?: 'OrderItem' }
+        & Pick<OrderItem, 'id'>
+      )> }
+    )> }
+  )>>, fulfillments?: Maybe<Array<(
+    { __typename?: 'Fulfillment' }
+    & FulfillmentFragment
+  )>> }
+);
 
 export type GetOrderListQueryVariables = {
-  options?: Maybe<OrderListOptions>
+  options?: Maybe<OrderListOptions>;
 };
 
 
-export type GetOrderListQuery = ({ __typename?: 'Query' } & { orders: ({ __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & { items: Array<({ __typename?: 'Order' } & OrderFragment)> }) });
+export type GetOrderListQuery = (
+  { __typename?: 'Query' }
+  & { orders: (
+    { __typename?: 'OrderList' }
+    & Pick<OrderList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Order' }
+      & OrderFragment
+    )> }
+  ) }
+);
 
 export type GetOrderQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetOrderQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & OrderDetailFragment)> });
+export type GetOrderQuery = (
+  { __typename?: 'Query' }
+  & { order?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  )> }
+);
 
 export type SettlePaymentMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type SettlePaymentMutation = ({ __typename?: 'Mutation' } & { settlePayment: ({ __typename?: 'Payment' } & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>) });
+export type SettlePaymentMutation = (
+  { __typename?: 'Mutation' }
+  & { settlePayment: (
+    { __typename?: 'Payment' }
+    & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+  ) }
+);
 
 export type CreateFulfillmentMutationVariables = {
-  input: FulfillOrderInput
+  input: FulfillOrderInput;
 };
 
 
-export type CreateFulfillmentMutation = ({ __typename?: 'Mutation' } & { fulfillOrder: ({ __typename?: 'Fulfillment' } & FulfillmentFragment) });
+export type CreateFulfillmentMutation = (
+  { __typename?: 'Mutation' }
+  & { fulfillOrder: (
+    { __typename?: 'Fulfillment' }
+    & FulfillmentFragment
+  ) }
+);
 
 export type CancelOrderMutationVariables = {
-  input: CancelOrderInput
+  input: CancelOrderInput;
 };
 
 
-export type CancelOrderMutation = ({ __typename?: 'Mutation' } & { cancelOrder: ({ __typename?: 'Order' } & OrderDetailFragment) });
+export type CancelOrderMutation = (
+  { __typename?: 'Mutation' }
+  & { cancelOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) }
+);
 
 export type RefundOrderMutationVariables = {
-  input: RefundOrderInput
+  input: RefundOrderInput;
 };
 
 
-export type RefundOrderMutation = ({ __typename?: 'Mutation' } & { refundOrder: ({ __typename?: 'Refund' } & RefundFragment) });
+export type RefundOrderMutation = (
+  { __typename?: 'Mutation' }
+  & { refundOrder: (
+    { __typename?: 'Refund' }
+    & RefundFragment
+  ) }
+);
 
 export type SettleRefundMutationVariables = {
-  input: SettleRefundInput
+  input: SettleRefundInput;
 };
 
 
-export type SettleRefundMutation = ({ __typename?: 'Mutation' } & { settleRefund: ({ __typename?: 'Refund' } & RefundFragment) });
+export type SettleRefundMutation = (
+  { __typename?: 'Mutation' }
+  & { settleRefund: (
+    { __typename?: 'Refund' }
+    & RefundFragment
+  ) }
+);
 
 export type GetOrderHistoryQueryVariables = {
-  id: Scalars['ID'],
-  options?: Maybe<HistoryEntryListOptions>
+  id: Scalars['ID'];
+  options?: Maybe<HistoryEntryListOptions>;
 };
 
 
-export type GetOrderHistoryQuery = ({ __typename?: 'Query' } & { order: Maybe<({ __typename?: 'Order' } & Pick<Order, 'id'> & { history: ({ __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & { items: Array<({ __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'isPublic' | 'data'> & { administrator: Maybe<({ __typename?: 'Administrator' } & Pick<Administrator, 'id' | 'firstName' | 'lastName'>)> })> }) })> });
+export type GetOrderHistoryQuery = (
+  { __typename?: 'Query' }
+  & { order?: Maybe<(
+    { __typename?: 'Order' }
+    & Pick<Order, 'id'>
+    & { history: (
+      { __typename?: 'HistoryEntryList' }
+      & Pick<HistoryEntryList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'HistoryEntry' }
+        & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'isPublic' | 'data'>
+        & { administrator?: Maybe<(
+          { __typename?: 'Administrator' }
+          & Pick<Administrator, 'id' | 'firstName' | 'lastName'>
+        )> }
+      )> }
+    ) }
+  )> }
+);
 
 export type AddNoteToOrderMutationVariables = {
-  input: AddNoteToOrderInput
+  input: AddNoteToOrderInput;
 };
 
 
-export type AddNoteToOrderMutation = ({ __typename?: 'Mutation' } & { addNoteToOrder: ({ __typename?: 'Order' } & Pick<Order, 'id'>) });
+export type AddNoteToOrderMutation = (
+  { __typename?: 'Mutation' }
+  & { addNoteToOrder: (
+    { __typename?: 'Order' }
+    & Pick<Order, 'id'>
+  ) }
+);
 
-export type AssetFragment = ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> });
+export type AssetFragment = (
+  { __typename?: 'Asset' }
+  & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>
+  & { focalPoint?: Maybe<(
+    { __typename?: 'Coordinate' }
+    & Pick<Coordinate, 'x' | 'y'>
+  )> }
+);
 
-export type ProductVariantFragment = ({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'> & { taxRateApplied: ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>), taxCategory: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>)> })>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductVariantTranslation' } & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>)> });
+export type ProductVariantFragment = (
+  { __typename?: 'ProductVariant' }
+  & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'>
+  & { taxRateApplied: (
+    { __typename?: 'TaxRate' }
+    & Pick<TaxRate, 'id' | 'name' | 'value'>
+  ), taxCategory: (
+    { __typename?: 'TaxCategory' }
+    & Pick<TaxCategory, 'id' | 'name'>
+  ), options: Array<(
+    { __typename?: 'ProductOption' }
+    & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'>
+    & { translations: Array<(
+      { __typename?: 'ProductOptionTranslation' }
+      & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>
+    )> }
+  )>, facetValues: Array<(
+    { __typename?: 'FacetValue' }
+    & Pick<FacetValue, 'id' | 'code' | 'name'>
+    & { facet: (
+      { __typename?: 'Facet' }
+      & Pick<Facet, 'id' | 'name'>
+    ) }
+  )>, featuredAsset?: Maybe<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, assets: Array<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, translations: Array<(
+    { __typename?: 'ProductVariantTranslation' }
+    & Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>
+  )> }
+);
 
-export type ProductWithVariantsFragment = ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & AssetFragment)>, assets: Array<({ __typename?: 'Asset' } & AssetFragment)>, translations: Array<({ __typename?: 'ProductTranslation' } & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>)>, optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>)>, variants: Array<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>, facetValues: Array<({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>) })>, channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> });
+export type ProductWithVariantsFragment = (
+  { __typename?: 'Product' }
+  & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'>
+  & { featuredAsset?: Maybe<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, assets: Array<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )>, translations: Array<(
+    { __typename?: 'ProductTranslation' }
+    & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>
+  )>, optionGroups: Array<(
+    { __typename?: 'ProductOptionGroup' }
+    & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>
+  )>, variants: Array<(
+    { __typename?: 'ProductVariant' }
+    & ProductVariantFragment
+  )>, facetValues: Array<(
+    { __typename?: 'FacetValue' }
+    & Pick<FacetValue, 'id' | 'code' | 'name'>
+    & { facet: (
+      { __typename?: 'Facet' }
+      & Pick<Facet, 'id' | 'name'>
+    ) }
+  )>, channels: Array<(
+    { __typename?: 'Channel' }
+    & Pick<Channel, 'id' | 'code'>
+  )> }
+);
 
-export type ProductOptionGroupFragment = ({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { translations: Array<({ __typename?: 'ProductOptionGroupTranslation' } & Pick<ProductOptionGroupTranslation, 'id' | 'name'>)>, options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'> & { translations: Array<({ __typename?: 'ProductOptionTranslation' } & Pick<ProductOptionTranslation, 'name'>)> })> });
+export type ProductOptionGroupFragment = (
+  { __typename?: 'ProductOptionGroup' }
+  & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
+  & { translations: Array<(
+    { __typename?: 'ProductOptionGroupTranslation' }
+    & Pick<ProductOptionGroupTranslation, 'id' | 'name'>
+  )>, options: Array<(
+    { __typename?: 'ProductOption' }
+    & Pick<ProductOption, 'id' | 'languageCode' | 'name' | 'code'>
+    & { translations: Array<(
+      { __typename?: 'ProductOptionTranslation' }
+      & Pick<ProductOptionTranslation, 'name'>
+    )> }
+  )> }
+);
 
 export type UpdateProductMutationVariables = {
-  input: UpdateProductInput
+  input: UpdateProductInput;
 };
 
 
-export type UpdateProductMutation = ({ __typename?: 'Mutation' } & { updateProduct: ({ __typename?: 'Product' } & ProductWithVariantsFragment) });
+export type UpdateProductMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProduct: (
+    { __typename?: 'Product' }
+    & ProductWithVariantsFragment
+  ) }
+);
 
 export type CreateProductMutationVariables = {
-  input: CreateProductInput
+  input: CreateProductInput;
 };
 
 
-export type CreateProductMutation = ({ __typename?: 'Mutation' } & { createProduct: ({ __typename?: 'Product' } & ProductWithVariantsFragment) });
+export type CreateProductMutation = (
+  { __typename?: 'Mutation' }
+  & { createProduct: (
+    { __typename?: 'Product' }
+    & ProductWithVariantsFragment
+  ) }
+);
 
 export type DeleteProductMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteProductMutation = ({ __typename?: 'Mutation' } & { deleteProduct: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteProductMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProduct: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type CreateProductVariantsMutationVariables = {
-  input: Array<CreateProductVariantInput>
+  input: Array<CreateProductVariantInput>;
 };
 
 
-export type CreateProductVariantsMutation = ({ __typename?: 'Mutation' } & { createProductVariants: Array<Maybe<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>> });
+export type CreateProductVariantsMutation = (
+  { __typename?: 'Mutation' }
+  & { createProductVariants: Array<Maybe<(
+    { __typename?: 'ProductVariant' }
+    & ProductVariantFragment
+  )>> }
+);
 
 export type UpdateProductVariantsMutationVariables = {
-  input: Array<UpdateProductVariantInput>
+  input: Array<UpdateProductVariantInput>;
 };
 
 
-export type UpdateProductVariantsMutation = ({ __typename?: 'Mutation' } & { updateProductVariants: Array<Maybe<({ __typename?: 'ProductVariant' } & ProductVariantFragment)>> });
+export type UpdateProductVariantsMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProductVariants: Array<Maybe<(
+    { __typename?: 'ProductVariant' }
+    & ProductVariantFragment
+  )>> }
+);
 
 export type CreateProductOptionGroupMutationVariables = {
-  input: CreateProductOptionGroupInput
+  input: CreateProductOptionGroupInput;
 };
 
 
-export type CreateProductOptionGroupMutation = ({ __typename?: 'Mutation' } & { createProductOptionGroup: ({ __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment) });
+export type CreateProductOptionGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { createProductOptionGroup: (
+    { __typename?: 'ProductOptionGroup' }
+    & ProductOptionGroupFragment
+  ) }
+);
 
 export type GetProductOptionGroupQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetProductOptionGroupQuery = ({ __typename?: 'Query' } & { productOptionGroup: Maybe<({ __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment)> });
+export type GetProductOptionGroupQuery = (
+  { __typename?: 'Query' }
+  & { productOptionGroup?: Maybe<(
+    { __typename?: 'ProductOptionGroup' }
+    & ProductOptionGroupFragment
+  )> }
+);
 
 export type AddOptionToGroupMutationVariables = {
-  input: CreateProductOptionInput
+  input: CreateProductOptionInput;
 };
 
 
-export type AddOptionToGroupMutation = ({ __typename?: 'Mutation' } & { createProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>) });
+export type AddOptionToGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { createProductOption: (
+    { __typename?: 'ProductOption' }
+    & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>
+  ) }
+);
 
 export type AddOptionGroupToProductMutationVariables = {
-  productId: Scalars['ID'],
-  optionGroupId: Scalars['ID']
+  productId: Scalars['ID'];
+  optionGroupId: Scalars['ID'];
 };
 
 
-export type AddOptionGroupToProductMutation = ({ __typename?: 'Mutation' } & { addOptionGroupToProduct: ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>)> })> }) });
+export type AddOptionGroupToProductMutation = (
+  { __typename?: 'Mutation' }
+  & { addOptionGroupToProduct: (
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'createdAt' | 'updatedAt'>
+    & { optionGroups: Array<(
+      { __typename?: 'ProductOptionGroup' }
+      & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'>
+      & { options: Array<(
+        { __typename?: 'ProductOption' }
+        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>
+      )> }
+    )> }
+  ) }
+);
 
 export type RemoveOptionGroupFromProductMutationVariables = {
-  productId: Scalars['ID'],
-  optionGroupId: Scalars['ID']
+  productId: Scalars['ID'];
+  optionGroupId: Scalars['ID'];
 };
 
 
-export type RemoveOptionGroupFromProductMutation = ({ __typename?: 'Mutation' } & { removeOptionGroupFromProduct: ({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>)> })> }) });
+export type RemoveOptionGroupFromProductMutation = (
+  { __typename?: 'Mutation' }
+  & { removeOptionGroupFromProduct: (
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'createdAt' | 'updatedAt'>
+    & { optionGroups: Array<(
+      { __typename?: 'ProductOptionGroup' }
+      & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'code'>
+      & { options: Array<(
+        { __typename?: 'ProductOption' }
+        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code'>
+      )> }
+    )> }
+  ) }
+);
 
 export type GetProductWithVariantsQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetProductWithVariantsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & ProductWithVariantsFragment)> });
+export type GetProductWithVariantsQuery = (
+  { __typename?: 'Query' }
+  & { product?: Maybe<(
+    { __typename?: 'Product' }
+    & ProductWithVariantsFragment
+  )> }
+);
 
 export type GetProductListQueryVariables = {
-  options?: Maybe<ProductListOptions>
+  options?: Maybe<ProductListOptions>;
 };
 
 
-export type GetProductListQuery = ({ __typename?: 'Query' } & { products: ({ __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & { items: Array<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug'> & { featuredAsset: Maybe<({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'preview'>)> })> }) });
+export type GetProductListQuery = (
+  { __typename?: 'Query' }
+  & { products: (
+    { __typename?: 'ProductList' }
+    & Pick<ProductList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Product' }
+      & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'slug'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'preview'>
+      )> }
+    )> }
+  ) }
+);
 
 export type GetProductOptionGroupsQueryVariables = {
-  filterTerm?: Maybe<Scalars['String']>
+  filterTerm?: Maybe<Scalars['String']>;
 };
 
 
-export type GetProductOptionGroupsQuery = ({ __typename?: 'Query' } & { productOptionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>)> })> });
+export type GetProductOptionGroupsQuery = (
+  { __typename?: 'Query' }
+  & { productOptionGroups: Array<(
+    { __typename?: 'ProductOptionGroup' }
+    & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
+    & { options: Array<(
+      { __typename?: 'ProductOption' }
+      & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
+    )> }
+  )> }
+);
 
 export type GetAssetListQueryVariables = {
-  options?: Maybe<AssetListOptions>
+  options?: Maybe<AssetListOptions>;
 };
 
 
-export type GetAssetListQuery = ({ __typename?: 'Query' } & { assets: ({ __typename?: 'AssetList' } & Pick<AssetList, 'totalItems'> & { items: Array<({ __typename?: 'Asset' } & AssetFragment)> }) });
+export type GetAssetListQuery = (
+  { __typename?: 'Query' }
+  & { assets: (
+    { __typename?: 'AssetList' }
+    & Pick<AssetList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Asset' }
+      & AssetFragment
+    )> }
+  ) }
+);
 
 export type GetAssetQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetAssetQuery = ({ __typename?: 'Query' } & { asset: Maybe<({ __typename?: 'Asset' } & AssetFragment)> });
+export type GetAssetQuery = (
+  { __typename?: 'Query' }
+  & { asset?: Maybe<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )> }
+);
 
 export type CreateAssetsMutationVariables = {
-  input: Array<CreateAssetInput>
+  input: Array<CreateAssetInput>;
 };
 
 
-export type CreateAssetsMutation = ({ __typename?: 'Mutation' } & { createAssets: Array<({ __typename?: 'Asset' } & AssetFragment)> });
+export type CreateAssetsMutation = (
+  { __typename?: 'Mutation' }
+  & { createAssets: Array<(
+    { __typename?: 'Asset' }
+    & AssetFragment
+  )> }
+);
 
 export type UpdateAssetMutationVariables = {
-  input: UpdateAssetInput
+  input: UpdateAssetInput;
 };
 
 
-export type UpdateAssetMutation = ({ __typename?: 'Mutation' } & { updateAsset: ({ __typename?: 'Asset' } & AssetFragment) });
+export type UpdateAssetMutation = (
+  { __typename?: 'Mutation' }
+  & { updateAsset: (
+    { __typename?: 'Asset' }
+    & AssetFragment
+  ) }
+);
 
 export type SearchProductsQueryVariables = {
-  input: SearchInput
+  input: SearchInput;
 };
 
 
-export type SearchProductsQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productVariantId' | 'productVariantName' | 'sku' | 'channelIds'> & { productAsset: Maybe<({ __typename?: 'SearchResultAsset' } & Pick<SearchResultAsset, 'id' | 'preview'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> })>, productVariantAsset: Maybe<({ __typename?: 'SearchResultAsset' } & Pick<SearchResultAsset, 'id' | 'preview'> & { focalPoint: Maybe<({ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>)> })> })>, facetValues: Array<({ __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & { facetValue: ({ __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { facet: ({ __typename?: 'Facet' } & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>) }) })> }) });
+export type SearchProductsQuery = (
+  { __typename?: 'Query' }
+  & { search: (
+    { __typename?: 'SearchResponse' }
+    & Pick<SearchResponse, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'SearchResult' }
+      & Pick<SearchResult, 'enabled' | 'productId' | 'productName' | 'productVariantId' | 'productVariantName' | 'sku' | 'channelIds'>
+      & { productAsset?: Maybe<(
+        { __typename?: 'SearchResultAsset' }
+        & Pick<SearchResultAsset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, productVariantAsset?: Maybe<(
+        { __typename?: 'SearchResultAsset' }
+        & Pick<SearchResultAsset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )> }
+    )>, facetValues: Array<(
+      { __typename?: 'FacetValueResult' }
+      & Pick<FacetValueResult, 'count'>
+      & { facetValue: (
+        { __typename?: 'FacetValue' }
+        & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+        & { facet: (
+          { __typename?: 'Facet' }
+          & Pick<Facet, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+        ) }
+      ) }
+    )> }
+  ) }
+);
 
 export type UpdateProductOptionMutationVariables = {
-  input: UpdateProductOptionInput
+  input: UpdateProductOptionInput;
 };
 
 
-export type UpdateProductOptionMutation = ({ __typename?: 'Mutation' } & { updateProductOption: ({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name'>) });
+export type UpdateProductOptionMutation = (
+  { __typename?: 'Mutation' }
+  & { updateProductOption: (
+    { __typename?: 'ProductOption' }
+    & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name'>
+  ) }
+);
 
 export type DeleteProductVariantMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteProductVariantMutation = ({ __typename?: 'Mutation' } & { deleteProductVariant: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteProductVariantMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteProductVariant: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type GetProductVariantOptionsQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetProductVariantOptionsQuery = ({ __typename?: 'Query' } & { product: Maybe<({ __typename?: 'Product' } & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'> & { optionGroups: Array<({ __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'name' | 'code'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>)> })>, variants: Array<({ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand' | 'enabled'> & { options: Array<({ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>)> })> })> });
+export type GetProductVariantOptionsQuery = (
+  { __typename?: 'Query' }
+  & { product?: Maybe<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & { optionGroups: Array<(
+      { __typename?: 'ProductOptionGroup' }
+      & Pick<ProductOptionGroup, 'id' | 'name' | 'code'>
+      & { options: Array<(
+        { __typename?: 'ProductOption' }
+        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>
+      )> }
+    )>, variants: Array<(
+      { __typename?: 'ProductVariant' }
+      & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'name' | 'sku' | 'price' | 'stockOnHand'>
+      & { options: Array<(
+        { __typename?: 'ProductOption' }
+        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'groupId'>
+      )> }
+    )> }
+  )> }
+);
 
 export type AssignProductsToChannelMutationVariables = {
-  input: AssignProductsToChannelInput
+  input: AssignProductsToChannelInput;
 };
 
 
-export type AssignProductsToChannelMutation = ({ __typename?: 'Mutation' } & { assignProductsToChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
+export type AssignProductsToChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { assignProductsToChannel: Array<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id'>
+    & { channels: Array<(
+      { __typename?: 'Channel' }
+      & Pick<Channel, 'id' | 'code'>
+    )> }
+  )> }
+);
 
 export type RemoveProductsFromChannelMutationVariables = {
-  input: RemoveProductsFromChannelInput
+  input: RemoveProductsFromChannelInput;
 };
 
 
-export type RemoveProductsFromChannelMutation = ({ __typename?: 'Mutation' } & { removeProductsFromChannel: Array<({ __typename?: 'Product' } & Pick<Product, 'id'> & { channels: Array<({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>)> })> });
+export type RemoveProductsFromChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { removeProductsFromChannel: Array<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id'>
+    & { channels: Array<(
+      { __typename?: 'Channel' }
+      & Pick<Channel, 'id' | 'code'>
+    )> }
+  )> }
+);
 
-export type PromotionFragment = ({ __typename?: 'Promotion' } & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'> & { conditions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)>, actions: Array<({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment)> });
+export type PromotionFragment = (
+  { __typename?: 'Promotion' }
+  & Pick<Promotion, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'couponCode' | 'perCustomerUsageLimit' | 'startsAt' | 'endsAt'>
+  & { conditions: Array<(
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  )>, actions: Array<(
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  )> }
+);
 
 export type GetPromotionListQueryVariables = {
-  options?: Maybe<PromotionListOptions>
+  options?: Maybe<PromotionListOptions>;
 };
 
 
-export type GetPromotionListQuery = ({ __typename?: 'Query' } & { promotions: ({ __typename?: 'PromotionList' } & Pick<PromotionList, 'totalItems'> & { items: Array<({ __typename?: 'Promotion' } & PromotionFragment)> }) });
+export type GetPromotionListQuery = (
+  { __typename?: 'Query' }
+  & { promotions: (
+    { __typename?: 'PromotionList' }
+    & Pick<PromotionList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Promotion' }
+      & PromotionFragment
+    )> }
+  ) }
+);
 
 export type GetPromotionQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetPromotionQuery = ({ __typename?: 'Query' } & { promotion: Maybe<({ __typename?: 'Promotion' } & PromotionFragment)> });
+export type GetPromotionQuery = (
+  { __typename?: 'Query' }
+  & { promotion?: Maybe<(
+    { __typename?: 'Promotion' }
+    & PromotionFragment
+  )> }
+);
 
 export type GetAdjustmentOperationsQueryVariables = {};
 
 
-export type GetAdjustmentOperationsQuery = ({ __typename?: 'Query' } & { promotionConditions: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)>, promotionActions: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
+export type GetAdjustmentOperationsQuery = (
+  { __typename?: 'Query' }
+  & { promotionConditions: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )>, promotionActions: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )> }
+);
 
 export type CreatePromotionMutationVariables = {
-  input: CreatePromotionInput
+  input: CreatePromotionInput;
 };
 
 
-export type CreatePromotionMutation = ({ __typename?: 'Mutation' } & { createPromotion: ({ __typename?: 'Promotion' } & PromotionFragment) });
+export type CreatePromotionMutation = (
+  { __typename?: 'Mutation' }
+  & { createPromotion: (
+    { __typename?: 'Promotion' }
+    & PromotionFragment
+  ) }
+);
 
 export type UpdatePromotionMutationVariables = {
-  input: UpdatePromotionInput
+  input: UpdatePromotionInput;
 };
 
 
-export type UpdatePromotionMutation = ({ __typename?: 'Mutation' } & { updatePromotion: ({ __typename?: 'Promotion' } & PromotionFragment) });
+export type UpdatePromotionMutation = (
+  { __typename?: 'Mutation' }
+  & { updatePromotion: (
+    { __typename?: 'Promotion' }
+    & PromotionFragment
+  ) }
+);
 
 export type DeletePromotionMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeletePromotionMutation = ({ __typename?: 'Mutation' } & { deletePromotion: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeletePromotionMutation = (
+  { __typename?: 'Mutation' }
+  & { deletePromotion: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
-export type CountryFragment = ({ __typename?: 'Country' } & Pick<Country, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'enabled'> & { translations: Array<({ __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>)> });
+export type CountryFragment = (
+  { __typename?: 'Country' }
+  & Pick<Country, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'enabled'>
+  & { translations: Array<(
+    { __typename?: 'CountryTranslation' }
+    & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>
+  )> }
+);
 
 export type GetCountryListQueryVariables = {
-  options?: Maybe<CountryListOptions>
+  options?: Maybe<CountryListOptions>;
 };
 
 
-export type GetCountryListQuery = ({ __typename?: 'Query' } & { countries: ({ __typename?: 'CountryList' } & Pick<CountryList, 'totalItems'> & { items: Array<({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'>)> }) });
+export type GetCountryListQuery = (
+  { __typename?: 'Query' }
+  & { countries: (
+    { __typename?: 'CountryList' }
+    & Pick<CountryList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Country' }
+      & Pick<Country, 'id' | 'code' | 'name' | 'enabled'>
+    )> }
+  ) }
+);
 
 export type GetAvailableCountriesQueryVariables = {};
 
 
-export type GetAvailableCountriesQuery = ({ __typename?: 'Query' } & { countries: ({ __typename?: 'CountryList' } & { items: Array<({ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'>)> }) });
+export type GetAvailableCountriesQuery = (
+  { __typename?: 'Query' }
+  & { countries: (
+    { __typename?: 'CountryList' }
+    & { items: Array<(
+      { __typename?: 'Country' }
+      & Pick<Country, 'id' | 'code' | 'name' | 'enabled'>
+    )> }
+  ) }
+);
 
 export type GetCountryQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetCountryQuery = ({ __typename?: 'Query' } & { country: Maybe<({ __typename?: 'Country' } & CountryFragment)> });
+export type GetCountryQuery = (
+  { __typename?: 'Query' }
+  & { country?: Maybe<(
+    { __typename?: 'Country' }
+    & CountryFragment
+  )> }
+);
 
 export type CreateCountryMutationVariables = {
-  input: CreateCountryInput
+  input: CreateCountryInput;
 };
 
 
-export type CreateCountryMutation = ({ __typename?: 'Mutation' } & { createCountry: ({ __typename?: 'Country' } & CountryFragment) });
+export type CreateCountryMutation = (
+  { __typename?: 'Mutation' }
+  & { createCountry: (
+    { __typename?: 'Country' }
+    & CountryFragment
+  ) }
+);
 
 export type UpdateCountryMutationVariables = {
-  input: UpdateCountryInput
+  input: UpdateCountryInput;
 };
 
 
-export type UpdateCountryMutation = ({ __typename?: 'Mutation' } & { updateCountry: ({ __typename?: 'Country' } & CountryFragment) });
+export type UpdateCountryMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCountry: (
+    { __typename?: 'Country' }
+    & CountryFragment
+  ) }
+);
 
 export type DeleteCountryMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteCountryMutation = ({ __typename?: 'Mutation' } & { deleteCountry: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteCountryMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCountry: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
-export type ZoneFragment = ({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'> & { members: Array<({ __typename?: 'Country' } & CountryFragment)> });
+export type ZoneFragment = (
+  { __typename?: 'Zone' }
+  & Pick<Zone, 'id' | 'name'>
+  & { members: Array<(
+    { __typename?: 'Country' }
+    & CountryFragment
+  )> }
+);
 
 export type GetZonesQueryVariables = {};
 
 
-export type GetZonesQuery = ({ __typename?: 'Query' } & { zones: Array<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'> & { members: Array<({ __typename?: 'Country' } & Pick<Country, 'id' | 'name' | 'code'>)> })> });
+export type GetZonesQuery = (
+  { __typename?: 'Query' }
+  & { zones: Array<(
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id' | 'name'>
+    & { members: Array<(
+      { __typename?: 'Country' }
+      & Pick<Country, 'id' | 'name' | 'code'>
+    )> }
+  )> }
+);
 
 export type GetZoneQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetZoneQuery = ({ __typename?: 'Query' } & { zone: Maybe<({ __typename?: 'Zone' } & ZoneFragment)> });
+export type GetZoneQuery = (
+  { __typename?: 'Query' }
+  & { zone?: Maybe<(
+    { __typename?: 'Zone' }
+    & ZoneFragment
+  )> }
+);
 
 export type CreateZoneMutationVariables = {
-  input: CreateZoneInput
+  input: CreateZoneInput;
 };
 
 
-export type CreateZoneMutation = ({ __typename?: 'Mutation' } & { createZone: ({ __typename?: 'Zone' } & ZoneFragment) });
+export type CreateZoneMutation = (
+  { __typename?: 'Mutation' }
+  & { createZone: (
+    { __typename?: 'Zone' }
+    & ZoneFragment
+  ) }
+);
 
 export type UpdateZoneMutationVariables = {
-  input: UpdateZoneInput
+  input: UpdateZoneInput;
 };
 
 
-export type UpdateZoneMutation = ({ __typename?: 'Mutation' } & { updateZone: ({ __typename?: 'Zone' } & ZoneFragment) });
+export type UpdateZoneMutation = (
+  { __typename?: 'Mutation' }
+  & { updateZone: (
+    { __typename?: 'Zone' }
+    & ZoneFragment
+  ) }
+);
 
 export type AddMembersToZoneMutationVariables = {
-  zoneId: Scalars['ID'],
-  memberIds: Array<Scalars['ID']>
+  zoneId: Scalars['ID'];
+  memberIds: Array<Scalars['ID']>;
 };
 
 
-export type AddMembersToZoneMutation = ({ __typename?: 'Mutation' } & { addMembersToZone: ({ __typename?: 'Zone' } & ZoneFragment) });
+export type AddMembersToZoneMutation = (
+  { __typename?: 'Mutation' }
+  & { addMembersToZone: (
+    { __typename?: 'Zone' }
+    & ZoneFragment
+  ) }
+);
 
 export type RemoveMembersFromZoneMutationVariables = {
-  zoneId: Scalars['ID'],
-  memberIds: Array<Scalars['ID']>
+  zoneId: Scalars['ID'];
+  memberIds: Array<Scalars['ID']>;
 };
 
 
-export type RemoveMembersFromZoneMutation = ({ __typename?: 'Mutation' } & { removeMembersFromZone: ({ __typename?: 'Zone' } & ZoneFragment) });
+export type RemoveMembersFromZoneMutation = (
+  { __typename?: 'Mutation' }
+  & { removeMembersFromZone: (
+    { __typename?: 'Zone' }
+    & ZoneFragment
+  ) }
+);
 
-export type TaxCategoryFragment = ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>);
+export type TaxCategoryFragment = (
+  { __typename?: 'TaxCategory' }
+  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+);
 
 export type GetTaxCategoriesQueryVariables = {};
 
 
-export type GetTaxCategoriesQuery = ({ __typename?: 'Query' } & { taxCategories: Array<({ __typename?: 'TaxCategory' } & TaxCategoryFragment)> });
+export type GetTaxCategoriesQuery = (
+  { __typename?: 'Query' }
+  & { taxCategories: Array<(
+    { __typename?: 'TaxCategory' }
+    & TaxCategoryFragment
+  )> }
+);
 
 export type GetTaxCategoryQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetTaxCategoryQuery = ({ __typename?: 'Query' } & { taxCategory: Maybe<({ __typename?: 'TaxCategory' } & TaxCategoryFragment)> });
+export type GetTaxCategoryQuery = (
+  { __typename?: 'Query' }
+  & { taxCategory?: Maybe<(
+    { __typename?: 'TaxCategory' }
+    & TaxCategoryFragment
+  )> }
+);
 
 export type CreateTaxCategoryMutationVariables = {
-  input: CreateTaxCategoryInput
+  input: CreateTaxCategoryInput;
 };
 
 
-export type CreateTaxCategoryMutation = ({ __typename?: 'Mutation' } & { createTaxCategory: ({ __typename?: 'TaxCategory' } & TaxCategoryFragment) });
+export type CreateTaxCategoryMutation = (
+  { __typename?: 'Mutation' }
+  & { createTaxCategory: (
+    { __typename?: 'TaxCategory' }
+    & TaxCategoryFragment
+  ) }
+);
 
 export type UpdateTaxCategoryMutationVariables = {
-  input: UpdateTaxCategoryInput
+  input: UpdateTaxCategoryInput;
 };
 
 
-export type UpdateTaxCategoryMutation = ({ __typename?: 'Mutation' } & { updateTaxCategory: ({ __typename?: 'TaxCategory' } & TaxCategoryFragment) });
+export type UpdateTaxCategoryMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTaxCategory: (
+    { __typename?: 'TaxCategory' }
+    & TaxCategoryFragment
+  ) }
+);
 
 export type DeleteTaxCategoryMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteTaxCategoryMutation = ({ __typename?: 'Mutation' } & { deleteTaxCategory: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteTaxCategoryMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteTaxCategory: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
-export type TaxRateFragment = ({ __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'> & { category: ({ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>), zone: ({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>), customerGroup: Maybe<({ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>)> });
+export type TaxRateFragment = (
+  { __typename?: 'TaxRate' }
+  & Pick<TaxRate, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'enabled' | 'value'>
+  & { category: (
+    { __typename?: 'TaxCategory' }
+    & Pick<TaxCategory, 'id' | 'name'>
+  ), zone: (
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id' | 'name'>
+  ), customerGroup?: Maybe<(
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'name'>
+  )> }
+);
 
 export type GetTaxRateListQueryVariables = {
-  options?: Maybe<TaxRateListOptions>
+  options?: Maybe<TaxRateListOptions>;
 };
 
 
-export type GetTaxRateListQuery = ({ __typename?: 'Query' } & { taxRates: ({ __typename?: 'TaxRateList' } & Pick<TaxRateList, 'totalItems'> & { items: Array<({ __typename?: 'TaxRate' } & TaxRateFragment)> }) });
+export type GetTaxRateListQuery = (
+  { __typename?: 'Query' }
+  & { taxRates: (
+    { __typename?: 'TaxRateList' }
+    & Pick<TaxRateList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'TaxRate' }
+      & TaxRateFragment
+    )> }
+  ) }
+);
 
 export type GetTaxRateQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetTaxRateQuery = ({ __typename?: 'Query' } & { taxRate: Maybe<({ __typename?: 'TaxRate' } & TaxRateFragment)> });
+export type GetTaxRateQuery = (
+  { __typename?: 'Query' }
+  & { taxRate?: Maybe<(
+    { __typename?: 'TaxRate' }
+    & TaxRateFragment
+  )> }
+);
 
 export type CreateTaxRateMutationVariables = {
-  input: CreateTaxRateInput
+  input: CreateTaxRateInput;
 };
 
 
-export type CreateTaxRateMutation = ({ __typename?: 'Mutation' } & { createTaxRate: ({ __typename?: 'TaxRate' } & TaxRateFragment) });
+export type CreateTaxRateMutation = (
+  { __typename?: 'Mutation' }
+  & { createTaxRate: (
+    { __typename?: 'TaxRate' }
+    & TaxRateFragment
+  ) }
+);
 
 export type UpdateTaxRateMutationVariables = {
-  input: UpdateTaxRateInput
+  input: UpdateTaxRateInput;
 };
 
 
-export type UpdateTaxRateMutation = ({ __typename?: 'Mutation' } & { updateTaxRate: ({ __typename?: 'TaxRate' } & TaxRateFragment) });
+export type UpdateTaxRateMutation = (
+  { __typename?: 'Mutation' }
+  & { updateTaxRate: (
+    { __typename?: 'TaxRate' }
+    & TaxRateFragment
+  ) }
+);
 
 export type DeleteTaxRateMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteTaxRateMutation = ({ __typename?: 'Mutation' } & { deleteTaxRate: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteTaxRateMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteTaxRate: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
-export type ChannelFragment = ({ __typename?: 'Channel' } & Pick<Channel, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'> & { defaultShippingZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)>, defaultTaxZone: Maybe<({ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>)> });
+export type ChannelFragment = (
+  { __typename?: 'Channel' }
+  & Pick<Channel, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'token' | 'pricesIncludeTax' | 'currencyCode' | 'defaultLanguageCode'>
+  & { defaultShippingZone?: Maybe<(
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id' | 'name'>
+  )>, defaultTaxZone?: Maybe<(
+    { __typename?: 'Zone' }
+    & Pick<Zone, 'id' | 'name'>
+  )> }
+);
 
 export type GetChannelsQueryVariables = {};
 
 
-export type GetChannelsQuery = ({ __typename?: 'Query' } & { channels: Array<({ __typename?: 'Channel' } & ChannelFragment)> });
+export type GetChannelsQuery = (
+  { __typename?: 'Query' }
+  & { channels: Array<(
+    { __typename?: 'Channel' }
+    & ChannelFragment
+  )> }
+);
 
 export type GetChannelQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetChannelQuery = ({ __typename?: 'Query' } & { channel: Maybe<({ __typename?: 'Channel' } & ChannelFragment)> });
+export type GetChannelQuery = (
+  { __typename?: 'Query' }
+  & { channel?: Maybe<(
+    { __typename?: 'Channel' }
+    & ChannelFragment
+  )> }
+);
 
 export type GetActiveChannelQueryVariables = {};
 
 
-export type GetActiveChannelQuery = ({ __typename?: 'Query' } & { activeChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
+export type GetActiveChannelQuery = (
+  { __typename?: 'Query' }
+  & { activeChannel: (
+    { __typename?: 'Channel' }
+    & ChannelFragment
+  ) }
+);
 
 export type CreateChannelMutationVariables = {
-  input: CreateChannelInput
+  input: CreateChannelInput;
 };
 
 
-export type CreateChannelMutation = ({ __typename?: 'Mutation' } & { createChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
+export type CreateChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { createChannel: (
+    { __typename?: 'Channel' }
+    & ChannelFragment
+  ) }
+);
 
 export type UpdateChannelMutationVariables = {
-  input: UpdateChannelInput
+  input: UpdateChannelInput;
 };
 
 
-export type UpdateChannelMutation = ({ __typename?: 'Mutation' } & { updateChannel: ({ __typename?: 'Channel' } & ChannelFragment) });
+export type UpdateChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { updateChannel: (
+    { __typename?: 'Channel' }
+    & ChannelFragment
+  ) }
+);
 
 export type DeleteChannelMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteChannelMutation = ({ __typename?: 'Mutation' } & { deleteChannel: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteChannelMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteChannel: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
-export type PaymentMethodFragment = ({ __typename?: 'PaymentMethod' } & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'> & { configArgs: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
+export type PaymentMethodFragment = (
+  { __typename?: 'PaymentMethod' }
+  & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'>
+  & { configArgs: Array<(
+    { __typename?: 'ConfigArg' }
+    & Pick<ConfigArg, 'name' | 'type' | 'value'>
+  )> }
+);
 
 export type GetPaymentMethodListQueryVariables = {
-  options: PaymentMethodListOptions
+  options: PaymentMethodListOptions;
 };
 
 
-export type GetPaymentMethodListQuery = ({ __typename?: 'Query' } & { paymentMethods: ({ __typename?: 'PaymentMethodList' } & Pick<PaymentMethodList, 'totalItems'> & { items: Array<({ __typename?: 'PaymentMethod' } & PaymentMethodFragment)> }) });
+export type GetPaymentMethodListQuery = (
+  { __typename?: 'Query' }
+  & { paymentMethods: (
+    { __typename?: 'PaymentMethodList' }
+    & Pick<PaymentMethodList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'PaymentMethod' }
+      & PaymentMethodFragment
+    )> }
+  ) }
+);
 
 export type GetPaymentMethodQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetPaymentMethodQuery = ({ __typename?: 'Query' } & { paymentMethod: Maybe<({ __typename?: 'PaymentMethod' } & PaymentMethodFragment)> });
+export type GetPaymentMethodQuery = (
+  { __typename?: 'Query' }
+  & { paymentMethod?: Maybe<(
+    { __typename?: 'PaymentMethod' }
+    & PaymentMethodFragment
+  )> }
+);
 
 export type UpdatePaymentMethodMutationVariables = {
-  input: UpdatePaymentMethodInput
+  input: UpdatePaymentMethodInput;
 };
 
 
-export type UpdatePaymentMethodMutation = ({ __typename?: 'Mutation' } & { updatePaymentMethod: ({ __typename?: 'PaymentMethod' } & PaymentMethodFragment) });
+export type UpdatePaymentMethodMutation = (
+  { __typename?: 'Mutation' }
+  & { updatePaymentMethod: (
+    { __typename?: 'PaymentMethod' }
+    & PaymentMethodFragment
+  ) }
+);
 
-export type GlobalSettingsFragment = ({ __typename?: 'GlobalSettings' } & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>);
+export type GlobalSettingsFragment = (
+  { __typename?: 'GlobalSettings' }
+  & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>
+);
 
 export type GetGlobalSettingsQueryVariables = {};
 
 
-export type GetGlobalSettingsQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & GlobalSettingsFragment) });
+export type GetGlobalSettingsQuery = (
+  { __typename?: 'Query' }
+  & { globalSettings: (
+    { __typename?: 'GlobalSettings' }
+    & GlobalSettingsFragment
+  ) }
+);
 
 export type UpdateGlobalSettingsMutationVariables = {
-  input: UpdateGlobalSettingsInput
+  input: UpdateGlobalSettingsInput;
 };
 
 
-export type UpdateGlobalSettingsMutation = ({ __typename?: 'Mutation' } & { updateGlobalSettings: ({ __typename?: 'GlobalSettings' } & GlobalSettingsFragment) });
+export type UpdateGlobalSettingsMutation = (
+  { __typename?: 'Mutation' }
+  & { updateGlobalSettings: (
+    { __typename?: 'GlobalSettings' }
+    & GlobalSettingsFragment
+  ) }
+);
 
-export type CustomFieldConfigFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & Pick<CustomField, 'name' | 'type' | 'readonly'> & { description: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>>, label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> });
+type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
+  { __typename?: 'StringCustomFieldConfig' }
+  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type StringCustomFieldFragment = ({ __typename?: 'StringCustomFieldConfig' } & Pick<StringCustomFieldConfig, 'pattern'> & { options: Maybe<Array<({ __typename?: 'StringFieldOption' } & Pick<StringFieldOption, 'value'> & { label: Maybe<Array<({ __typename?: 'LocalizedString' } & Pick<LocalizedString, 'languageCode' | 'value'>)>> })>> } & CustomFieldConfigFragment);
+type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
+  { __typename?: 'LocaleStringCustomFieldConfig' }
+  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type LocaleStringCustomFieldFragment = ({ __typename?: 'LocaleStringCustomFieldConfig' } & Pick<LocaleStringCustomFieldConfig, 'pattern'> & CustomFieldConfigFragment);
+type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
+  { __typename?: 'IntCustomFieldConfig' }
+  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type BooleanCustomFieldFragment = ({ __typename?: 'BooleanCustomFieldConfig' } & CustomFieldConfigFragment);
+type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
+  { __typename?: 'FloatCustomFieldConfig' }
+  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type IntCustomFieldFragment = ({ __typename?: 'IntCustomFieldConfig' } & { intMin: IntCustomFieldConfig['min'], intMax: IntCustomFieldConfig['max'], intStep: IntCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
+  { __typename?: 'BooleanCustomFieldConfig' }
+  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type FloatCustomFieldFragment = ({ __typename?: 'FloatCustomFieldConfig' } & { floatMin: FloatCustomFieldConfig['min'], floatMax: FloatCustomFieldConfig['max'], floatStep: FloatCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
+  { __typename?: 'DateTimeCustomFieldConfig' }
+  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
 
-export type DateTimeCustomFieldFragment = ({ __typename?: 'DateTimeCustomFieldConfig' } & { datetimeMin: DateTimeCustomFieldConfig['min'], datetimeMax: DateTimeCustomFieldConfig['max'], datetimeStep: DateTimeCustomFieldConfig['step'] } & CustomFieldConfigFragment);
+export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment;
 
-export type CustomFieldsFragment = ({ __typename?: 'StringCustomFieldConfig' | 'LocaleStringCustomFieldConfig' | 'IntCustomFieldConfig' | 'FloatCustomFieldConfig' | 'BooleanCustomFieldConfig' | 'DateTimeCustomFieldConfig' } & (({ __typename?: 'StringCustomFieldConfig' } & StringCustomFieldFragment) | ({ __typename?: 'LocaleStringCustomFieldConfig' } & LocaleStringCustomFieldFragment) | ({ __typename?: 'BooleanCustomFieldConfig' } & BooleanCustomFieldFragment) | ({ __typename?: 'IntCustomFieldConfig' } & IntCustomFieldFragment) | ({ __typename?: 'FloatCustomFieldConfig' } & FloatCustomFieldFragment) | ({ __typename?: 'DateTimeCustomFieldConfig' } & DateTimeCustomFieldFragment)));
+export type StringCustomFieldFragment = (
+  { __typename?: 'StringCustomFieldConfig' }
+  & Pick<StringCustomFieldConfig, 'pattern'>
+  & { options?: Maybe<Array<(
+    { __typename?: 'StringFieldOption' }
+    & Pick<StringFieldOption, 'value'>
+    & { label?: Maybe<Array<(
+      { __typename?: 'LocalizedString' }
+      & Pick<LocalizedString, 'languageCode' | 'value'>
+    )>> }
+  )>> }
+  & CustomFieldConfig_StringCustomFieldConfig_Fragment
+);
+
+export type LocaleStringCustomFieldFragment = (
+  { __typename?: 'LocaleStringCustomFieldConfig' }
+  & Pick<LocaleStringCustomFieldConfig, 'pattern'>
+  & CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment
+);
+
+export type BooleanCustomFieldFragment = (
+  { __typename?: 'BooleanCustomFieldConfig' }
+  & CustomFieldConfig_BooleanCustomFieldConfig_Fragment
+);
+
+export type IntCustomFieldFragment = (
+  { __typename?: 'IntCustomFieldConfig' }
+  & { intMin: IntCustomFieldConfig['min'], intMax: IntCustomFieldConfig['max'], intStep: IntCustomFieldConfig['step'] }
+  & CustomFieldConfig_IntCustomFieldConfig_Fragment
+);
+
+export type FloatCustomFieldFragment = (
+  { __typename?: 'FloatCustomFieldConfig' }
+  & { floatMin: FloatCustomFieldConfig['min'], floatMax: FloatCustomFieldConfig['max'], floatStep: FloatCustomFieldConfig['step'] }
+  & CustomFieldConfig_FloatCustomFieldConfig_Fragment
+);
+
+export type DateTimeCustomFieldFragment = (
+  { __typename?: 'DateTimeCustomFieldConfig' }
+  & { datetimeMin: DateTimeCustomFieldConfig['min'], datetimeMax: DateTimeCustomFieldConfig['max'], datetimeStep: DateTimeCustomFieldConfig['step'] }
+  & CustomFieldConfig_DateTimeCustomFieldConfig_Fragment
+);
+
+type CustomFields_StringCustomFieldConfig_Fragment = (
+  { __typename?: 'StringCustomFieldConfig' }
+  & StringCustomFieldFragment
+);
+
+type CustomFields_LocaleStringCustomFieldConfig_Fragment = (
+  { __typename?: 'LocaleStringCustomFieldConfig' }
+  & LocaleStringCustomFieldFragment
+);
+
+type CustomFields_IntCustomFieldConfig_Fragment = (
+  { __typename?: 'IntCustomFieldConfig' }
+  & IntCustomFieldFragment
+);
+
+type CustomFields_FloatCustomFieldConfig_Fragment = (
+  { __typename?: 'FloatCustomFieldConfig' }
+  & FloatCustomFieldFragment
+);
+
+type CustomFields_BooleanCustomFieldConfig_Fragment = (
+  { __typename?: 'BooleanCustomFieldConfig' }
+  & BooleanCustomFieldFragment
+);
+
+type CustomFields_DateTimeCustomFieldConfig_Fragment = (
+  { __typename?: 'DateTimeCustomFieldConfig' }
+  & DateTimeCustomFieldFragment
+);
+
+export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment;
 
 export type GetServerConfigQueryVariables = {};
 
 
-export type GetServerConfigQuery = ({ __typename?: 'Query' } & { globalSettings: ({ __typename?: 'GlobalSettings' } & { serverConfig: ({ __typename?: 'ServerConfig' } & { customFieldConfig: ({ __typename?: 'CustomFields' } & { Address: Array<CustomFieldsFragment>, Collection: Array<CustomFieldsFragment>, Customer: Array<CustomFieldsFragment>, Facet: Array<CustomFieldsFragment>, FacetValue: Array<CustomFieldsFragment>, GlobalSettings: Array<CustomFieldsFragment>, Order: Array<CustomFieldsFragment>, OrderLine: Array<CustomFieldsFragment>, Product: Array<CustomFieldsFragment>, ProductOption: Array<CustomFieldsFragment>, ProductOptionGroup: Array<CustomFieldsFragment>, ProductVariant: Array<CustomFieldsFragment>, User: Array<CustomFieldsFragment> }) }) }) });
+export type GetServerConfigQuery = (
+  { __typename?: 'Query' }
+  & { globalSettings: (
+    { __typename?: 'GlobalSettings' }
+    & { serverConfig: (
+      { __typename?: 'ServerConfig' }
+      & { customFieldConfig: (
+        { __typename?: 'CustomFields' }
+        & { Address: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, Collection: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, Customer: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, Facet: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, FacetValue: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, GlobalSettings: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, Order: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, OrderLine: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, Product: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, ProductOption: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, ProductOptionGroup: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, ProductVariant: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, User: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )> }
+      ) }
+    ) }
+  ) }
+);
 
-export type JobInfoFragment = ({ __typename?: 'JobInfo' } & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>);
+export type JobInfoFragment = (
+  { __typename?: 'JobInfo' }
+  & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>
+);
 
 export type GetJobInfoQueryVariables = {
-  id: Scalars['String']
+  id: Scalars['String'];
 };
 
 
-export type GetJobInfoQuery = ({ __typename?: 'Query' } & { job: Maybe<({ __typename?: 'JobInfo' } & JobInfoFragment)> });
+export type GetJobInfoQuery = (
+  { __typename?: 'Query' }
+  & { job?: Maybe<(
+    { __typename?: 'JobInfo' }
+    & JobInfoFragment
+  )> }
+);
 
 export type GetAllJobsQueryVariables = {
-  input?: Maybe<JobListInput>
+  input?: Maybe<JobListInput>;
 };
 
 
-export type GetAllJobsQuery = ({ __typename?: 'Query' } & { jobs: Array<({ __typename?: 'JobInfo' } & JobInfoFragment)> });
+export type GetAllJobsQuery = (
+  { __typename?: 'Query' }
+  & { jobs: Array<(
+    { __typename?: 'JobInfo' }
+    & JobInfoFragment
+  )> }
+);
 
 export type ReindexMutationVariables = {};
 
 
-export type ReindexMutation = ({ __typename?: 'Mutation' } & { reindex: ({ __typename?: 'JobInfo' } & JobInfoFragment) });
+export type ReindexMutation = (
+  { __typename?: 'Mutation' }
+  & { reindex: (
+    { __typename?: 'JobInfo' }
+    & JobInfoFragment
+  ) }
+);
 
 export type SearchForTestOrderQueryVariables = {
-  term: Scalars['String'],
-  take: Scalars['Int']
+  term: Scalars['String'];
+  take: Scalars['Int'];
 };
 
 
-export type SearchForTestOrderQuery = ({ __typename?: 'Query' } & { search: ({ __typename?: 'SearchResponse' } & { items: Array<({ __typename?: 'SearchResult' } & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'> & { price: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>), priceWithTax: ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>) })> }) });
+export type SearchForTestOrderQuery = (
+  { __typename?: 'Query' }
+  & { search: (
+    { __typename?: 'SearchResponse' }
+    & { items: Array<(
+      { __typename?: 'SearchResult' }
+      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
+      & { price: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ), priceWithTax: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ) }
+    )> }
+  ) }
+);
 
-export type ConfigurableOperationFragment = ({ __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'> & { args: Array<({ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>)> });
+export type ConfigurableOperationFragment = (
+  { __typename?: 'ConfigurableOperation' }
+  & Pick<ConfigurableOperation, 'code'>
+  & { args: Array<(
+    { __typename?: 'ConfigArg' }
+    & Pick<ConfigArg, 'name' | 'type' | 'value'>
+  )> }
+);
 
-export type ConfigurableOperationDefFragment = ({ __typename?: 'ConfigurableOperationDefinition' } & Pick<ConfigurableOperationDefinition, 'code' | 'description'> & { args: Array<({ __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>)> });
+export type ConfigurableOperationDefFragment = (
+  { __typename?: 'ConfigurableOperationDefinition' }
+  & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
+  & { args: Array<(
+    { __typename?: 'ConfigArgDefinition' }
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+  )> }
+);
 
-export type ShippingMethodFragment = ({ __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'> & { checker: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment), calculator: ({ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment) });
+export type ShippingMethodFragment = (
+  { __typename?: 'ShippingMethod' }
+  & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'>
+  & { checker: (
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  ), calculator: (
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  ) }
+);
 
 export type GetShippingMethodListQueryVariables = {
-  options?: Maybe<ShippingMethodListOptions>
+  options?: Maybe<ShippingMethodListOptions>;
 };
 
 
-export type GetShippingMethodListQuery = ({ __typename?: 'Query' } & { shippingMethods: ({ __typename?: 'ShippingMethodList' } & Pick<ShippingMethodList, 'totalItems'> & { items: Array<({ __typename?: 'ShippingMethod' } & ShippingMethodFragment)> }) });
+export type GetShippingMethodListQuery = (
+  { __typename?: 'Query' }
+  & { shippingMethods: (
+    { __typename?: 'ShippingMethodList' }
+    & Pick<ShippingMethodList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'ShippingMethod' }
+      & ShippingMethodFragment
+    )> }
+  ) }
+);
 
 export type GetShippingMethodQueryVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type GetShippingMethodQuery = ({ __typename?: 'Query' } & { shippingMethod: Maybe<({ __typename?: 'ShippingMethod' } & ShippingMethodFragment)> });
+export type GetShippingMethodQuery = (
+  { __typename?: 'Query' }
+  & { shippingMethod?: Maybe<(
+    { __typename?: 'ShippingMethod' }
+    & ShippingMethodFragment
+  )> }
+);
 
 export type GetShippingMethodOperationsQueryVariables = {};
 
 
-export type GetShippingMethodOperationsQuery = ({ __typename?: 'Query' } & { shippingEligibilityCheckers: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)>, shippingCalculators: Array<({ __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment)> });
+export type GetShippingMethodOperationsQuery = (
+  { __typename?: 'Query' }
+  & { shippingEligibilityCheckers: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )>, shippingCalculators: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )> }
+);
 
 export type CreateShippingMethodMutationVariables = {
-  input: CreateShippingMethodInput
+  input: CreateShippingMethodInput;
 };
 
 
-export type CreateShippingMethodMutation = ({ __typename?: 'Mutation' } & { createShippingMethod: ({ __typename?: 'ShippingMethod' } & ShippingMethodFragment) });
+export type CreateShippingMethodMutation = (
+  { __typename?: 'Mutation' }
+  & { createShippingMethod: (
+    { __typename?: 'ShippingMethod' }
+    & ShippingMethodFragment
+  ) }
+);
 
 export type UpdateShippingMethodMutationVariables = {
-  input: UpdateShippingMethodInput
+  input: UpdateShippingMethodInput;
 };
 
 
-export type UpdateShippingMethodMutation = ({ __typename?: 'Mutation' } & { updateShippingMethod: ({ __typename?: 'ShippingMethod' } & ShippingMethodFragment) });
+export type UpdateShippingMethodMutation = (
+  { __typename?: 'Mutation' }
+  & { updateShippingMethod: (
+    { __typename?: 'ShippingMethod' }
+    & ShippingMethodFragment
+  ) }
+);
 
 export type DeleteShippingMethodMutationVariables = {
-  id: Scalars['ID']
+  id: Scalars['ID'];
 };
 
 
-export type DeleteShippingMethodMutation = ({ __typename?: 'Mutation' } & { deleteShippingMethod: ({ __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>) });
+export type DeleteShippingMethodMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteShippingMethod: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
 
 export type TestShippingMethodQueryVariables = {
-  input: TestShippingMethodInput
+  input: TestShippingMethodInput;
 };
 
 
-export type TestShippingMethodQuery = ({ __typename?: 'Query' } & { testShippingMethod: ({ __typename?: 'TestShippingMethodResult' } & Pick<TestShippingMethodResult, 'eligible'> & { quote: Maybe<({ __typename?: 'TestShippingMethodQuote' } & Pick<TestShippingMethodQuote, 'price' | 'priceWithTax' | 'metadata'>)> }) });
+export type TestShippingMethodQuery = (
+  { __typename?: 'Query' }
+  & { testShippingMethod: (
+    { __typename?: 'TestShippingMethodResult' }
+    & Pick<TestShippingMethodResult, 'eligible'>
+    & { quote?: Maybe<(
+      { __typename?: 'TestShippingMethodQuote' }
+      & Pick<TestShippingMethodQuote, 'price' | 'priceWithTax' | 'metadata'>
+    )> }
+  ) }
+);
 
 export type TestEligibleShippingMethodsQueryVariables = {
-  input: TestEligibleShippingMethodsInput
+  input: TestEligibleShippingMethodsInput;
 };
 
 
-export type TestEligibleShippingMethodsQuery = ({ __typename?: 'Query' } & { testEligibleShippingMethods: Array<({ __typename?: 'ShippingMethodQuote' } & Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'>)> });
+export type TestEligibleShippingMethodsQuery = (
+  { __typename?: 'Query' }
+  & { testEligibleShippingMethods: Array<(
+    { __typename?: 'ShippingMethodQuote' }
+    & Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+  )> }
+);
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
