@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "watch": "tsc -p ./tsconfig.build.json --watch",
-    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+    "build": "rimraf lib && tsc -p ./tsconfig.build.json && node build.js",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
     "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=asset-server-plugin"
