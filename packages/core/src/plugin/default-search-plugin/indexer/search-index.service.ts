@@ -34,15 +34,17 @@ export class SearchIndexService {
         return this.jobService.createJob({
             name: 'reindex',
             singleInstance: true,
-            work: async reporter => {
+            work: async (reporter) => {
                 Logger.verbose(`sending ReindexMessage`);
-                this.workerService.send(new ReindexMessage({ ctx })).subscribe(this.createObserver(reporter));
+                this.workerService
+                    .send(new ReindexMessage({ ctx: ctx.serialize() }))
+                    .subscribe(this.createObserver(reporter));
             },
         });
     }
 
     updateProduct(ctx: RequestContext, product: Product) {
-        const data = { ctx, productId: product.id };
+        const data = { ctx: ctx.serialize(), productId: product.id };
         return this.createShortWorkerJob(new UpdateProductMessage(data), {
             entity: 'Product',
             id: product.id,
@@ -50,8 +52,8 @@ export class SearchIndexService {
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
-        const variantIds = variants.map(v => v.id);
-        const data = { ctx, variantIds };
+        const variantIds = variants.map((v) => v.id);
+        const data = { ctx: ctx.serialize(), variantIds };
         return this.createShortWorkerJob(new UpdateVariantMessage(data), {
             entity: 'ProductVariant',
             ids: variantIds,
@@ -59,7 +61,7 @@ export class SearchIndexService {
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
-        const data = { ctx, productId: product.id };
+        const data = { ctx: ctx.serialize(), productId: product.id };
         return this.createShortWorkerJob(new DeleteProductMessage(data), {
             entity: 'Product',
             id: product.id,
@@ -67,8 +69,8 @@ export class SearchIndexService {
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
-        const variantIds = variants.map(v => v.id);
-        const data = { ctx, variantIds };
+        const variantIds = variants.map((v) => v.id);
+        const data = { ctx: ctx.serialize(), variantIds };
         return this.createShortWorkerJob(new DeleteVariantMessage(data), {
             entity: 'ProductVariant',
             id: variantIds,
@@ -81,24 +83,24 @@ export class SearchIndexService {
             metadata: {
                 variantIds: ids,
             },
-            work: reporter => {
+            work: (reporter) => {
                 Logger.verbose(`sending UpdateVariantsByIdMessage`);
                 this.workerService
-                    .send(new UpdateVariantsByIdMessage({ ctx, ids }))
+                    .send(new UpdateVariantsByIdMessage({ ctx: ctx.serialize(), ids }))
                     .subscribe(this.createObserver(reporter));
             },
         });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        return this.createShortWorkerJob(new UpdateAssetMessage({ ctx, asset }), {
+        return this.createShortWorkerJob(new UpdateAssetMessage({ ctx: ctx.serialize(), asset }), {
             entity: 'Asset',
             id: asset.id,
         });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        const data = { ctx, productId, channelId };
+        const data = { ctx: ctx.serialize(), productId, channelId };
         return this.createShortWorkerJob(new AssignProductToChannelMessage(data), {
             entity: 'Product',
             id: productId,
@@ -106,7 +108,7 @@ export class SearchIndexService {
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        const data = { ctx, productId, channelId };
+        const data = { ctx: ctx.serialize(), productId, channelId };
         return this.createShortWorkerJob(new RemoveProductFromChannelMessage(data), {
             entity: 'Product',
             id: productId,
@@ -120,10 +122,10 @@ export class SearchIndexService {
         return this.jobService.createJob({
             name: 'update-index',
             metadata,
-            work: reporter => {
+            work: (reporter) => {
                 this.workerService.send(message).subscribe({
                     complete: () => reporter.complete(true),
-                    error: err => {
+                    error: (err) => {
                         Logger.error(err);
                         reporter.complete(false);
                     },

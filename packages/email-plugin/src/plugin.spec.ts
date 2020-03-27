@@ -63,16 +63,16 @@ describe('EmailPlugin', () => {
     });
 
     it('setting from, recipient, subject', async () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
         const handler = new EmailEventListener('test')
             .on(MockEvent)
             .setFrom('"test from" <noreply@test.com>')
             .setRecipient(() => 'test@test.com')
             .setSubject('Hello')
-            .setTemplateVars(event => ({ subjectVar: 'foo' }));
+            .setTemplateVars((event) => ({ subjectVar: 'foo' }));
 
         await initPluginWithHandlers([handler]);
 
@@ -84,15 +84,15 @@ describe('EmailPlugin', () => {
     });
 
     describe('event filtering', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('single filter', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter(event => event.shouldSend === true)
+                .filter((event) => event.shouldSend === true)
                 .setRecipient(() => 'test@test.com')
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('test subject');
@@ -111,8 +111,8 @@ describe('EmailPlugin', () => {
         it('multiple filters', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter(event => event.shouldSend === true)
-                .filter(event => !!event.ctx.activeUserId)
+                .filter((event) => event.shouldSend === true)
+                .filter((event) => !!event.ctx.activeUserId)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('test subject');
@@ -123,7 +123,7 @@ describe('EmailPlugin', () => {
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            const ctxWithUser = RequestContext.fromObject({ ...ctx, _session: { user: { id: 42 } } });
+            const ctxWithUser = RequestContext.deserialize({ ...ctx, _session: { user: { id: 42 } } } as any);
 
             eventBus.publish(new MockEvent(ctxWithUser, true));
             await pause();
@@ -133,8 +133,8 @@ describe('EmailPlugin', () => {
         it('with .loadData() after .filter()', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter(event => event.shouldSend === true)
-                .loadData(context => Promise.resolve('loaded data'))
+                .filter((event) => event.shouldSend === true)
+                .loadData((context) => Promise.resolve('loaded data'))
                 .setRecipient(() => 'test@test.com')
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('test subject');
@@ -152,10 +152,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('templateVars', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('interpolates subject', async () => {
             const handler = new EmailEventListener('test')
@@ -163,7 +163,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ subjectVar }}')
-                .setTemplateVars(event => ({ subjectVar: 'foo' }));
+                .setTemplateVars((event) => ({ subjectVar: 'foo' }));
 
             await initPluginWithHandlers([handler]);
 
@@ -178,7 +178,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars(event => ({ testVar: 'this is the test var' }));
+                .setTemplateVars((event) => ({ testVar: 'this is the test var' }));
 
             await initPluginWithHandlers([handler]);
 
@@ -198,7 +198,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars(event => ({ order: new Order({ subTotal: 123 }) }));
+                .setTemplateVars((event) => ({ order: new Order({ subTotal: 123 }) }));
 
             await initPluginWithHandlers([handler]);
 
@@ -273,10 +273,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('handlebars helpers', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('formateDate', async () => {
             const handler = new EmailEventListener('test-helpers')
@@ -284,7 +284,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars(event => ({ myDate: new Date('2020-01-01T10:00:00.000Z'), myPrice: 0 }));
+                .setTemplateVars((event) => ({ myDate: new Date('2020-01-01T10:00:00.000Z'), myPrice: 0 }));
 
             await initPluginWithHandlers([handler]);
 
@@ -299,7 +299,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars(event => ({ myDate: new Date(), myPrice: 123 }));
+                .setTemplateVars((event) => ({ myDate: new Date(), myPrice: 123 }));
 
             await initPluginWithHandlers([handler]);
 
@@ -310,10 +310,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('multiple configs', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('additional LanguageCode', async () => {
             const handler = new EmailEventListener('test')
@@ -331,13 +331,13 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            const ctxTa = RequestContext.fromObject({ ...ctx, _languageCode: LanguageCode.ta });
+            const ctxTa = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.ta } as any);
             eventBus.publish(new MockEvent(ctxTa, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello, Test!');
             expect(onSend.mock.calls[0][0].body).toContain('Default body.');
 
-            const ctxDe = RequestContext.fromObject({ ...ctx, _languageCode: LanguageCode.de });
+            const ctxDe = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.de } as any);
             eventBus.publish(new MockEvent(ctxDe, true));
             await pause();
             expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
@@ -356,16 +356,16 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ testData }}!')
                 .setRecipient(() => 'test@test.com')
-                .setTemplateVars(event => ({ testData: event.data }));
+                .setTemplateVars((event) => ({ testData: event.data }));
 
             await initPluginWithHandlers([handler]);
 
             eventBus.publish(
                 new MockEvent(
-                    RequestContext.fromObject({
+                    RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
                         _languageCode: LanguageCode.en,
-                    }),
+                    } as any),
                     true,
                 ),
             );
@@ -384,16 +384,16 @@ describe('EmailPlugin', () => {
                     const service = inject(MockService);
                     return service.someAsyncMethod();
                 })
-                .setTemplateVars(event => ({ testData: event.data }));
+                .setTemplateVars((event) => ({ testData: event.data }));
 
             await initPluginWithHandlers([handler]);
 
             eventBus.publish(
                 new MockEvent(
-                    RequestContext.fromObject({
+                    RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
                         _languageCode: LanguageCode.en,
-                    }),
+                    } as any),
                     true,
                 ),
             );
@@ -412,10 +412,10 @@ describe('EmailPlugin', () => {
             });
         });
 
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         const order = ({
             code: 'ABCDE',
@@ -458,7 +458,7 @@ describe('EmailPlugin', () => {
     });
 });
 
-const pause = () => new Promise(resolve => setTimeout(resolve, 100));
+const pause = () => new Promise((resolve) => setTimeout(resolve, 100));
 
 class MockEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public shouldSend: boolean) {
