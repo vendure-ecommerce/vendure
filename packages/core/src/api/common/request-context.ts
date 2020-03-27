@@ -1,5 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, Type } from '@vendure/common/lib/shared-types';
 import i18next, { TFunction } from 'i18next';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
@@ -10,6 +10,19 @@ import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
 import { ApiType } from './get-api-type';
+
+export type ObjectOf<T> = { [K in keyof T]: T[K] };
+
+export interface SerializedRequestContext {
+    _session?: ObjectOf<Session> & {
+        user?: ObjectOf<User>;
+    };
+    _apiType: ApiType;
+    _channel: ObjectOf<Channel>;
+    _languageCode: LanguageCode;
+    _isAuthorized: boolean;
+    _authorizedAsOwnerOnly: boolean;
+}
 
 /**
  * @description
@@ -55,7 +68,7 @@ export class RequestContext {
      * Creates a new RequestContext object from a plain object which is the result of
      * a JSON serialization - deserialization operation.
      */
-    static fromObject(ctxObject: any): RequestContext {
+    static deserialize(ctxObject: SerializedRequestContext): RequestContext {
         let session: Session | undefined;
         if (ctxObject._session) {
             if (ctxObject._session.user) {
@@ -76,6 +89,10 @@ export class RequestContext {
             isAuthorized: ctxObject._isAuthorized,
             authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
         });
+    }
+
+    serialize(): SerializedRequestContext {
+        return JSON.parse(JSON.stringify(this));
     }
 
     get apiType(): ApiType {

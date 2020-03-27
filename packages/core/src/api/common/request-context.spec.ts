@@ -7,14 +7,12 @@ import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 
-import { RequestContext } from './request-context';
+import { RequestContext, SerializedRequestContext } from './request-context';
 
 describe('RequestContext', () => {
-
     describe('fromObject()', () => {
-
         let original: RequestContext;
-        let ctxObject: object;
+        let ctxObject: SerializedRequestContext;
         let session: Session;
         let user: User;
         let channel: Channel;
@@ -60,54 +58,52 @@ describe('RequestContext', () => {
                 authorizedAsOwnerOnly: false,
             });
 
-            ctxObject = JSON.parse(JSON.stringify(original));
+            ctxObject = original.serialize();
         });
 
         it('apiType', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.apiType).toBe(original.apiType);
         });
 
         it('channelId', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.channelId).toBe(original.channelId);
         });
 
         it('languageCode', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.languageCode).toBe(original.languageCode);
         });
 
         it('activeUserId', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.activeUserId).toBe(original.activeUserId);
         });
 
         it('isAuthorized', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.isAuthorized).toBe(original.isAuthorized);
         });
 
         it('authorizedAsOwnerOnly', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.authorizedAsOwnerOnly).toBe(original.authorizedAsOwnerOnly);
         });
 
         it('channel', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.channel).toEqual(original.channel);
         });
 
         it('session', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.session).toEqual(original.session);
         });
 
         it('activeUser', () => {
-            const result = RequestContext.fromObject(ctxObject);
+            const result = RequestContext.deserialize(ctxObject);
             expect(result.activeUser).toEqual(original.activeUser);
         });
-
     });
-
 });

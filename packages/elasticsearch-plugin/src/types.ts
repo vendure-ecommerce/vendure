@@ -7,7 +7,7 @@ import {
     SearchResult,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Asset, RequestContext, WorkerMessage } from '@vendure/core';
+import { Asset, SerializedRequestContext, WorkerMessage } from '@vendure/core';
 
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
@@ -149,32 +149,32 @@ export interface ReindexMessageResponse {
 }
 
 export type ReindexMessageData = {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     dropIndices: boolean;
 };
 
 export type UpdateProductMessageData = {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     productId: ID;
 };
 
 export type UpdateVariantMessageData = {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     variantIds: ID[];
 };
 
 export interface UpdateVariantsByIdMessageData {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     ids: ID[];
 }
 
 export interface ProductChannelMessageData {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     productId: ID;
     channelId: ID;
 }
 export interface UpdateAssetMessageData {
-    ctx: RequestContext;
+    ctx: SerializedRequestContext;
     asset: Asset;
 }
 
