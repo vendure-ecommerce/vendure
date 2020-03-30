@@ -8,7 +8,7 @@ import os from 'os';
 import path from 'path';
 import { Observable } from 'rxjs';
 
-import { REQUIRED_NODE_VERSION } from './constants';
+import { REQUIRED_NODE_VERSION, SERVER_PORT } from './constants';
 import { gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
 import {
     checkDbConnection,
@@ -17,6 +17,7 @@ import {
     getDependencies,
     installPackages,
     isSafeToCreateProjectIn,
+    isServerPortInUse,
     shouldUseYarn,
 } from './helpers';
 import { CliLogLevel } from './types';
@@ -60,6 +61,10 @@ async function createApp(
 ) {
     if (!runPreChecks(name, useNpm)) {
         return;
+    }
+    if (await isServerPortInUse()) {
+        console.log(chalk.red(`Port ${SERVER_PORT} is in use. Please make it available and then re-try.`));
+        process.exit(1);
     }
 
     console.log(`Welcome to @vendure/create v${packageJson.version}!`);

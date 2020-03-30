@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
 
-import { TYPESCRIPT_VERSION } from './constants';
+import { SERVER_PORT, TYPESCRIPT_VERSION } from './constants';
 import { CliLogLevel, DbType } from './types';
 
 /**
@@ -347,4 +347,14 @@ function throwConnectionError(err: any) {
 
 function throwDatabaseDoesNotExist(name: string) {
     throw new Error(`Database "${name}" does not exist. Please create the database and then try again.`);
+}
+
+export async function isServerPortInUse(): Promise<boolean> {
+    const tcpPortUsed = require('tcp-port-used');
+    try {
+        return tcpPortUsed.check(SERVER_PORT);
+    } catch (e) {
+        console.log(chalk.yellow(`Warning: could not determine whether port ${SERVER_PORT} is available`));
+        return false;
+    }
 }
