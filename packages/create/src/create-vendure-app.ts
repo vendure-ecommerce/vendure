@@ -8,6 +8,7 @@ import os from 'os';
 import path from 'path';
 import { Observable } from 'rxjs';
 
+import { REQUIRED_NODE_VERSION } from './constants';
 import { gatherCiUserResponses, gatherUserResponses } from './gather-user-responses';
 import {
     checkDbConnection,
@@ -22,7 +23,6 @@ import { CliLogLevel } from './types';
 
 // tslint:disable-next-line:no-var-requires
 const packageJson = require('../package.json');
-const REQUIRED_NODE_VERSION = '>=8.9.0';
 checkNodeVersion(REQUIRED_NODE_VERSION);
 
 let projectName: string | undefined;
@@ -128,7 +128,7 @@ async function createApp(
                         .then(() => {
                             if (devDependencies.length) {
                                 subscriber.next(`Installing ${devDependencies.join(', ')}`);
-                                return installPackages(root, useYarn, devDependencies, true, logLevel);
+                                return installPackages(root, useYarn, devDependencies, true, logLevel, isCi);
                             }
                         })
                         .then(() => subscriber.complete())

@@ -6,6 +6,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import semver from 'semver';
 
+import { TYPESCRIPT_VERSION } from './constants';
 import { CliLogLevel, DbType } from './types';
 
 /**
@@ -235,6 +236,7 @@ export function getDependencies(
     const devDependencies = ['concurrently'];
     if (usingTs) {
         devDependencies.push('ts-node');
+        dependencies.push(`typescript@${TYPESCRIPT_VERSION}`);
     }
 
     return { dependencies, devDependencies };
