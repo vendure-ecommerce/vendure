@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '../config/config.module';
 import { DataImportModule } from '../data-import/data-import.module';
+import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
 import { ServiceModule } from '../service/service.module';
 
@@ -119,6 +120,7 @@ export class ApiSharedModule {}
 @Module({
     imports: [
         ApiSharedModule,
+        JobQueueModule,
         ServiceModule.forRoot(),
         DataImportModule,
         ...createDynamicGraphQlModulesForPlugins('admin'),

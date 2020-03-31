@@ -6,8 +6,9 @@ import { Logger } from '../../../config/logger/vendure-logger';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { Job } from '../../../service/helpers/job-manager/job';
-import { JobReporter, JobService } from '../../../service/services/job.service';
+import { Job } from '../../../job-queue/job';
+import { JobQueue } from '../../../job-queue/job-queue';
+import { JobQueueService } from '../../../job-queue/job-queue.service';
 import { WorkerMessage } from '../../../worker/types';
 import { WorkerService } from '../../../worker/worker.service';
 import {
@@ -18,127 +19,130 @@ import {
     ReindexMessageResponse,
     RemoveProductFromChannelMessage,
     UpdateAssetMessage,
+    UpdateIndexQueueJobData,
     UpdateProductMessage,
     UpdateVariantMessage,
     UpdateVariantsByIdMessage,
 } from '../types';
+
+let updateIndexQueue: JobQueue<UpdateIndexQueueJobData> | undefined;
 
 /**
  * This service is responsible for messaging the {@link IndexerController} with search index updates.
  */
 @Injectable()
 export class SearchIndexService {
-    constructor(private workerService: WorkerService, private jobService: JobService) {}
+    constructor(private workerService: WorkerService, private jobService: JobQueueService) {}
 
-    reindex(ctx: RequestContext): Job {
-        return this.jobService.createJob({
-            name: 'reindex',
-            singleInstance: true,
-            work: async (reporter) => {
-                Logger.verbose(`sending ReindexMessage`);
-                this.workerService
-                    .send(new ReindexMessage({ ctx: ctx.serialize() }))
-                    .subscribe(this.createObserver(reporter));
+    initJobQueue() {
+        updateIndexQueue = this.jobService.createQueue({
+            name: 'update-search-index',
+            concurrency: 1,
+            process: (job) => {
+                const data = job.data;
+                switch (data.type) {
+                    case 'reindex':
+                        Logger.verbose(`sending ReindexMessage`);
+                        this.sendMessageWithProgress(job, new ReindexMessage(data));
+                        break;
+                    case 'update-product':
+                        this.sendMessage(job, new UpdateProductMessage(data));
+                        break;
+                    case 'update-variants':
+                        this.sendMessage(job, new UpdateVariantMessage(data));
+                        break;
+                    case 'delete-product':
+                        this.sendMessage(job, new DeleteProductMessage(data));
+                        break;
+                    case 'delete-variant':
+                        this.sendMessage(job, new DeleteVariantMessage(data));
+                        break;
+                    case 'update-variants-by-id':
+                        this.sendMessageWithProgress(job, new UpdateVariantsByIdMessage(data));
+                        break;
+                    case 'update-asset':
+                        this.sendMessage(job, new UpdateAssetMessage(data));
+                        break;
+                    case 'assign-product-to-channel':
+                        this.sendMessage(job, new AssignProductToChannelMessage(data));
+                        break;
+                    case 'remove-product-from-channel':
+                        this.sendMessage(job, new RemoveProductFromChannelMessage(data));
+                        break;
+                }
             },
         });
     }
 
+    reindex(ctx: RequestContext) {
+        return this.addJobToQueue({ type: 'reindex', ctx: ctx.serialize() });
+    }
+
     updateProduct(ctx: RequestContext, product: Product) {
-        const data = { ctx: ctx.serialize(), productId: product.id };
-        return this.createShortWorkerJob(new UpdateProductMessage(data), {
-            entity: 'Product',
-            id: product.id,
-        });
+        this.addJobToQueue({ type: 'update-product', ctx: ctx.serialize(), productId: product.id });
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map((v) => v.id);
-        const data = { ctx: ctx.serialize(), variantIds };
-        return this.createShortWorkerJob(new UpdateVariantMessage(data), {
-            entity: 'ProductVariant',
-            ids: variantIds,
-        });
+        this.addJobToQueue({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
     }
 
     deleteProduct(ctx: RequestContext, product: Product) {
-        const data = { ctx: ctx.serialize(), productId: product.id };
-        return this.createShortWorkerJob(new DeleteProductMessage(data), {
-            entity: 'Product',
-            id: product.id,
-        });
+        this.addJobToQueue({ type: 'delete-product', ctx: ctx.serialize(), productId: product.id });
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
         const variantIds = variants.map((v) => v.id);
-        const data = { ctx: ctx.serialize(), variantIds };
-        return this.createShortWorkerJob(new DeleteVariantMessage(data), {
-            entity: 'ProductVariant',
-            id: variantIds,
-        });
+        this.addJobToQueue({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
     }
 
     updateVariantsById(ctx: RequestContext, ids: ID[]) {
-        return this.jobService.createJob({
-            name: 'update-variants',
-            metadata: {
-                variantIds: ids,
-            },
-            work: (reporter) => {
-                Logger.verbose(`sending UpdateVariantsByIdMessage`);
-                this.workerService
-                    .send(new UpdateVariantsByIdMessage({ ctx: ctx.serialize(), ids }))
-                    .subscribe(this.createObserver(reporter));
-            },
-        });
+        this.addJobToQueue({ type: 'update-variants-by-id', ctx: ctx.serialize(), ids });
     }
 
     updateAsset(ctx: RequestContext, asset: Asset) {
-        return this.createShortWorkerJob(new UpdateAssetMessage({ ctx: ctx.serialize(), asset }), {
-            entity: 'Asset',
-            id: asset.id,
-        });
+        this.addJobToQueue({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        const data = { ctx: ctx.serialize(), productId, channelId };
-        return this.createShortWorkerJob(new AssignProductToChannelMessage(data), {
-            entity: 'Product',
-            id: productId,
+        this.addJobToQueue({
+            type: 'assign-product-to-channel',
+            ctx: ctx.serialize(),
+            productId,
+            channelId,
         });
     }
 
     removeProductFromChannel(ctx: RequestContext, productId: ID, channelId: ID) {
-        const data = { ctx: ctx.serialize(), productId, channelId };
-        return this.createShortWorkerJob(new RemoveProductFromChannelMessage(data), {
-            entity: 'Product',
-            id: productId,
+        this.addJobToQueue({
+            type: 'remove-product-from-channel',
+            ctx: ctx.serialize(),
+            productId,
+            channelId,
         });
     }
 
-    /**
-     * Creates a short-running job that does not expect progress updates.
-     */
-    private createShortWorkerJob<T extends WorkerMessage<any, any>>(message: T, metadata: any) {
-        return this.jobService.createJob({
-            name: 'update-index',
-            metadata,
-            work: (reporter) => {
-                this.workerService.send(message).subscribe({
-                    complete: () => reporter.complete(true),
-                    error: (err) => {
-                        Logger.error(err);
-                        reporter.complete(false);
-                    },
-                });
+    private addJobToQueue(data: UpdateIndexQueueJobData) {
+        if (updateIndexQueue) {
+            return updateIndexQueue.add(data);
+        }
+    }
+
+    private sendMessage(job: Job<any>, message: WorkerMessage<any, any>) {
+        this.workerService.send(message).subscribe({
+            complete: () => job.complete(true),
+            error: (err) => {
+                Logger.error(err);
+                job.fail(err);
             },
         });
     }
 
-    private createObserver(reporter: JobReporter) {
+    private sendMessageWithProgress(job: Job<any>, message: ReindexMessage | UpdateVariantsByIdMessage) {
         let total: number | undefined;
         let duration = 0;
         let completed = 0;
-        return {
+        this.workerService.send(message).subscribe({
             next: (response: ReindexMessageResponse) => {
                 if (!total) {
                     total = response.total;
@@ -146,10 +150,10 @@ export class SearchIndexService {
                 duration = response.duration;
                 completed = response.completed;
                 const progress = Math.ceil((completed / total) * 100);
-                reporter.setProgress(progress);
+                job.setProgress(progress);
             },
             complete: () => {
-                reporter.complete({
+                job.complete({
                     success: true,
                     indexedItemCount: total,
                     timeTaken: duration,
@@ -157,12 +161,8 @@ export class SearchIndexService {
             },
             error: (err: any) => {
                 Logger.error(JSON.stringify(err));
-                reporter.complete({
-                    success: false,
-                    indexedItemCount: 0,
-                    timeTaken: 0,
-                });
+                job.fail();
             },
-        };
+        });
     }
 }

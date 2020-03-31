@@ -1,22 +1,33 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { Permission, QueryJobArgs, QueryJobsArgs } from '@vendure/common/lib/generated-types';
+import {
+    Permission,
+    QueryJobArgs,
+    QueryJobsArgs,
+    QueryJobsByIdArgs,
+} from '@vendure/common/lib/generated-types';
 
-import { JobService } from '../../../service/services/job.service';
+import { JobQueueService } from '../../../job-queue/job-queue.service';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
 export class JobResolver {
-    constructor(private jobService: JobService) {}
+    constructor(private jobService: JobQueueService) {}
 
     @Query()
     @Allow(Permission.Authenticated)
     job(@Args() args: QueryJobArgs) {
-        return this.jobService.getOne(args.jobId);
+        return this.jobService.getJob(args.jobId);
     }
 
     @Query()
     @Allow(Permission.Authenticated)
     jobs(@Args() args: QueryJobsArgs) {
-        return this.jobService.getAll(args.input || undefined);
+        return this.jobService.getJobs(args.input || undefined);
+    }
+
+    @Query()
+    @Allow(Permission.Authenticated)
+    jobsById(@Args() args: QueryJobsByIdArgs) {
+        return this.jobService.getJobsById(args.jobIds || undefined);
     }
 }

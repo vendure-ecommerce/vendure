@@ -571,7 +571,7 @@ export const GET_SERVER_CONFIG = gql`
 `;
 
 export const JOB_INFO_FRAGMENT = gql`
-    fragment JobInfo on JobInfo {
+    fragment JobInfo on Job {
         id
         name
         state
@@ -582,7 +582,7 @@ export const JOB_INFO_FRAGMENT = gql`
 `;
 
 export const GET_JOB_INFO = gql`
-    query GetJobInfo($id: String!) {
+    query GetJobInfo($id: ID!) {
         job(jobId: $id) {
             ...JobInfo
         }
@@ -591,9 +591,11 @@ export const GET_JOB_INFO = gql`
 `;
 
 export const GET_ALL_JOBS = gql`
-    query GetAllJobs($input: JobListInput) {
+    query GetAllJobs($input: JobListOptions) {
         jobs(input: $input) {
-            ...JobInfo
+            items {
+                ...JobInfo
+            }
         }
     }
     ${JOB_INFO_FRAGMENT}

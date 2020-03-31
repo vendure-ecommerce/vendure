@@ -3,6 +3,8 @@ import { MysqlInitializer, PostgresInitializer, registerInitializer, SqljsInitia
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
+import { TestingJobQueueStrategy } from '../packages/core/src/job-queue/testing-job-queue-strategy';
+
 import { getPackageDir } from './get-package-dir';
 
 /**
@@ -31,6 +33,10 @@ if (process.env.E2E_DEBUG) {
 export const testConfig = mergeConfig(defaultTestConfig, {
     importExportOptions: {
         importAssetsDir: path.join(packageDir, 'fixtures/assets'),
+    },
+    jobQueueOptions: {
+        jobQueueStrategy: new TestingJobQueueStrategy(),
+        pollInterval: 10,
     },
     dbConnectionOptions: getDbConfig(),
 });

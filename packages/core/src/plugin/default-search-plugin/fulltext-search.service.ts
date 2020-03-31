@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { JobInfo, SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
+import { SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 import { Connection } from 'typeorm';
 
@@ -8,8 +8,8 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { FacetValue } from '../../entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { Job } from '../../job-queue/job';
 import { FacetValueService } from '../../service/services/facet-value.service';
-import { JobService } from '../../service/services/job.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
 
@@ -30,7 +30,6 @@ export class FulltextSearchService {
 
     constructor(
         @InjectConnection() private connection: Connection,
-        private jobService: JobService,
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
         private productVariantService: ProductVariantService,
@@ -81,10 +80,9 @@ export class FulltextSearchService {
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext): Promise<JobInfo> {
-        const job = this.searchIndexService.reindex(ctx);
-        job.start();
-        return job;
+    async reindex(ctx: RequestContext): Promise<Job> {
+        const job = await this.searchIndexService.reindex(ctx);
+        return job as any;
     }
 
     /**

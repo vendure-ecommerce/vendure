@@ -17,6 +17,7 @@ import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-str
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { OrderMergeStrategy } from './order-merge-strategy/order-merge-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
@@ -382,6 +383,26 @@ export interface WorkerOptions {
 
 /**
  * @description
+ * Options related to the built-in job queue.
+ */
+export interface JobQueueOptions {
+    /**
+     * @description
+     * Defines how the jobs in the queue are persisted and accessed.
+     */
+    jobQueueStrategy?: JobQueueStrategy;
+    /**
+     * @description
+     * Defines the interval in ms used by the JobService to poll for new
+     * jobs in the queue to process.
+     *
+     * @default 100
+     */
+    pollInterval?: number;
+}
+
+/**
+ * @description
  * All possible configuration options are defined by the
  * [`VendureConfig`](https://github.com/vendure-ecommerce/vendure/blob/master/server/src/config/vendure-config.ts) interface.
  *
@@ -546,6 +567,11 @@ export interface VendureConfig {
      * Configures the Vendure Worker, which is used for long-running background tasks.
      */
     workerOptions?: WorkerOptions;
+    /**
+     * @description
+     * Configures how the job queue is persisted and processed.
+     */
+    jobQueueOptions?: JobQueueOptions;
 }
 
 /**
@@ -562,6 +588,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     importExportOptions: Required<ImportExportOptions>;
     orderOptions: Required<OrderOptions>;
     workerOptions: Required<WorkerOptions>;
+    jobQueueOptions: Required<JobQueueOptions>;
 }
 
 type DeepPartialSimple<T> = {

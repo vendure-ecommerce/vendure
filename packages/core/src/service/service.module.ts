@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { EventBusModule } from '../event-bus/event-bus.module';
+import { JobQueueModule } from '../job-queue/job-queue.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
@@ -32,7 +33,6 @@ import { FacetValueService } from './services/facet-value.service';
 import { FacetService } from './services/facet.service';
 import { GlobalSettingsService } from './services/global-settings.service';
 import { HistoryService } from './services/history.service';
-import { JobService } from './services/job.service';
 import { OrderTestingService } from './services/order-testing.service';
 import { OrderService } from './services/order.service';
 import { PaymentMethodService } from './services/payment-method.service';
@@ -63,7 +63,6 @@ const services = [
     FacetValueService,
     GlobalSettingsService,
     HistoryService,
-    JobService,
     OrderService,
     OrderTestingService,
     PaymentMethodService,
@@ -108,7 +107,7 @@ let workerTypeOrmModule: DynamicModule;
  * only run a single time.
  */
 @Module({
-    imports: [ConfigModule, EventBusModule, WorkerServiceModule],
+    imports: [ConfigModule, EventBusModule, WorkerServiceModule, JobQueueModule],
     providers: [...services, ...helpers],
     exports: [...services, ...helpers],
 })

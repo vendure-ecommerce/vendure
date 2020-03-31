@@ -1266,28 +1266,58 @@ export type IntCustomFieldConfig = CustomField & {
   step?: Maybe<Scalars['Int']>;
 };
 
-export type JobInfo = {
-   __typename?: 'JobInfo';
-  id: Scalars['String'];
+export type Job = Node & {
+   __typename?: 'Job';
+  id: Scalars['ID'];
   name: Scalars['String'];
   state: JobState;
   progress: Scalars['Float'];
   metadata?: Maybe<Scalars['JSON']>;
   result?: Maybe<Scalars['JSON']>;
-  started?: Maybe<Scalars['DateTime']>;
-  ended?: Maybe<Scalars['DateTime']>;
-  duration?: Maybe<Scalars['Int']>;
+  error?: Maybe<Scalars['JSON']>;
+  started: Scalars['DateTime'];
+  settled?: Maybe<Scalars['DateTime']>;
+  isSettled: Scalars['Boolean'];
+  duration: Scalars['Int'];
 };
 
-export type JobListInput = {
-  state?: Maybe<JobState>;
-  ids?: Maybe<Array<Scalars['String']>>;
+export type JobFilterParameter = {
+  name?: Maybe<StringOperators>;
+  state?: Maybe<StringOperators>;
+  progress?: Maybe<NumberOperators>;
+  started?: Maybe<DateOperators>;
+  settled?: Maybe<DateOperators>;
+  isSettled?: Maybe<BooleanOperators>;
+  duration?: Maybe<NumberOperators>;
+};
+
+export type JobList = PaginatedList & {
+   __typename?: 'JobList';
+  items: Array<Job>;
+  totalItems: Scalars['Int'];
+};
+
+export type JobListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<JobSortParameter>;
+  filter?: Maybe<JobFilterParameter>;
+};
+
+export type JobSortParameter = {
+  id?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  progress?: Maybe<SortOrder>;
+  started?: Maybe<SortOrder>;
+  settled?: Maybe<SortOrder>;
+  duration?: Maybe<SortOrder>;
 };
 
 export enum JobState {
   PENDING = 'PENDING',
   RUNNING = 'RUNNING',
   COMPLETED = 'COMPLETED',
+  RETRYING = 'RETRYING',
   FAILED = 'FAILED'
 }
 
@@ -1786,7 +1816,7 @@ export type Mutation = {
   /** Move a Collection to a different parent or index */
   moveCollection: Collection;
   refundOrder: Refund;
-  reindex: JobInfo;
+  reindex: Job;
   /** Remove Customers from a CustomerGroup */
   removeCustomersFromGroup: CustomerGroup;
   /** Remove members from a Zone */
@@ -2808,8 +2838,9 @@ export type Query = {
   facet?: Maybe<Facet>;
   facets: FacetList;
   globalSettings: GlobalSettings;
-  job?: Maybe<JobInfo>;
-  jobs: Array<JobInfo>;
+  job?: Maybe<Job>;
+  jobs: JobList;
+  jobsById: Array<Job>;
   me?: Maybe<CurrentUser>;
   networkStatus: NetworkStatus;
   order?: Maybe<Order>;
@@ -2916,12 +2947,17 @@ export type QueryFacetsArgs = {
 
 
 export type QueryJobArgs = {
-  jobId: Scalars['String'];
+  jobId: Scalars['ID'];
 };
 
 
 export type QueryJobsArgs = {
-  input?: Maybe<JobListInput>;
+  input?: Maybe<JobListOptions>;
+};
+
+
+export type QueryJobsByIdArgs = {
+  jobIds: Array<Scalars['ID']>;
 };
 
 
@@ -6057,34 +6093,37 @@ export type GetServerConfigQuery = (
 );
 
 export type JobInfoFragment = (
-  { __typename?: 'JobInfo' }
-  & Pick<JobInfo, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>
+  { __typename?: 'Job' }
+  & Pick<Job, 'id' | 'name' | 'state' | 'progress' | 'duration' | 'result'>
 );
 
 export type GetJobInfoQueryVariables = {
-  id: Scalars['String'];
+  id: Scalars['ID'];
 };
 
 
 export type GetJobInfoQuery = (
   { __typename?: 'Query' }
   & { job?: Maybe<(
-    { __typename?: 'JobInfo' }
+    { __typename?: 'Job' }
     & JobInfoFragment
   )> }
 );
 
 export type GetAllJobsQueryVariables = {
-  input?: Maybe<JobListInput>;
+  input?: Maybe<JobListOptions>;
 };
 
 
 export type GetAllJobsQuery = (
   { __typename?: 'Query' }
-  & { jobs: Array<(
-    { __typename?: 'JobInfo' }
-    & JobInfoFragment
-  )> }
+  & { jobs: (
+    { __typename?: 'JobList' }
+    & { items: Array<(
+      { __typename?: 'Job' }
+      & JobInfoFragment
+    )> }
+  ) }
 );
 
 export type ReindexMutationVariables = {};
@@ -6093,7 +6132,7 @@ export type ReindexMutationVariables = {};
 export type ReindexMutation = (
   { __typename?: 'Mutation' }
   & { reindex: (
-    { __typename?: 'JobInfo' }
+    { __typename?: 'Job' }
     & JobInfoFragment
   ) }
 );
@@ -7260,7 +7299,8 @@ export namespace GetJobInfo {
 export namespace GetAllJobs {
   export type Variables = GetAllJobsQueryVariables;
   export type Query = GetAllJobsQuery;
-  export type Jobs = JobInfoFragment;
+  export type Jobs = GetAllJobsQuery['jobs'];
+  export type Items = JobInfoFragment;
 }
 
 export namespace Reindex {

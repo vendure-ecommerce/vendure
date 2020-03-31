@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '../config/config.module';
 import { EventBusModule } from '../event-bus/event-bus.module';
+import { JobQueueModule } from '../job-queue/job-queue.module';
 import { ServiceModule } from '../service/service.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
@@ -21,10 +22,10 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
  * @docsCategory plugin
  */
 @Module({
-    imports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule],
+    imports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule, JobQueueModule],
     providers: [
         // TODO: Provide an injectable which defines whether in main or worker context
     ],
-    exports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule],
+    exports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule, JobQueueModule],
 })
 export class PluginCommonModule {}

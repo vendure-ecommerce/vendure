@@ -270,8 +270,13 @@ export const GET_STOCK_MOVEMENT = gql`
 export const GET_RUNNING_JOBS = gql`
     query GetRunningJobs {
         jobs {
-            name
-            state
+            items {
+                id
+                name
+                state
+                isSettled
+                duration
+            }
         }
     }
 `;

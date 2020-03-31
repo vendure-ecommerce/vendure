@@ -224,7 +224,7 @@ describe('Collection resolver', () => {
                 },
             });
 
-            expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
+            expect(updateCollection.assets.map((a) => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
 
         it('removes all assets', async () => {
@@ -342,7 +342,7 @@ describe('Collection resolver', () => {
             expect(result.moveCollection.parent!.id).toBe(electronicsCollection.id);
 
             const positions = await getChildrenOf(electronicsCollection.id);
-            expect(positions.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(positions.map((i) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('re-evaluates Collection contents on move', async () => {
@@ -350,7 +350,7 @@ describe('Collection resolver', () => {
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables
             >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+            expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -369,7 +369,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map((i) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it('alters the position in the current parent 2', async () => {
@@ -382,7 +382,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(afterResult.map((i) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds negative index value', async () => {
@@ -395,7 +395,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([pearCollection.id, computersCollection.id]);
+            expect(afterResult.map((i) => i.id)).toEqual([pearCollection.id, computersCollection.id]);
         });
 
         it('corrects an out-of-bounds positive index value', async () => {
@@ -408,7 +408,7 @@ describe('Collection resolver', () => {
             });
 
             const afterResult = await getChildrenOf(electronicsCollection.id);
-            expect(afterResult.map(i => i.id)).toEqual([computersCollection.id, pearCollection.id]);
+            expect(afterResult.map((i) => i.id)).toEqual([computersCollection.id, pearCollection.id]);
         });
 
         it(
@@ -443,7 +443,7 @@ describe('Collection resolver', () => {
 
         async function getChildrenOf(parentId: string): Promise<Array<{ name: string; id: string }>> {
             const result = await adminClient.query<GetCollections.Query>(GET_COLLECTIONS);
-            return result.collections.items.filter(i => i.parent!.id === parentId);
+            return result.collections.items.filter((i) => i.parent!.id === parentId);
         }
     });
 
@@ -495,6 +495,7 @@ describe('Collection resolver', () => {
                 },
             );
             collectionToDeleteChild = result2.createCollection;
+            await awaitRunningJobs(adminClient);
         });
 
         it(
@@ -610,7 +611,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: electronicsCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -642,7 +643,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: computersCollection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -702,7 +703,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual(['Instant Camera']);
+                expect(collection!.productVariants.items.map((i) => i.name)).toEqual(['Instant Camera']);
             });
 
             it('photo OR pear', async () => {
@@ -744,7 +745,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -799,7 +800,7 @@ describe('Collection resolver', () => {
                     },
                 );
 
-                expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -855,7 +856,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Instant Camera',
                     'Camera Lens',
                     'SLR Camera',
@@ -871,7 +872,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual(['Camera Lens']);
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual(['Camera Lens']);
             });
 
             it('endsWith operator', async () => {
@@ -883,7 +884,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Instant Camera',
                     'SLR Camera',
                 ]);
@@ -898,7 +899,7 @@ describe('Collection resolver', () => {
                 >(GET_COLLECTION_PRODUCT_VARIANTS, {
                     id: collection.id,
                 });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -961,7 +962,7 @@ describe('Collection resolver', () => {
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -974,8 +975,8 @@ describe('Collection resolver', () => {
 
             it('updates contents when ProductVariant is updated', async () => {
                 const gamingPc240GB = products
-                    .find(p => p.name === 'Gaming PC')!
-                    .variants.find(v => v.name.includes('240GB'))!;
+                    .find((p) => p.name === 'Gaming PC')!
+                    .variants.find((v) => v.name.includes('240GB'))!;
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
@@ -994,7 +995,7 @@ describe('Collection resolver', () => {
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1008,8 +1009,8 @@ describe('Collection resolver', () => {
 
             it('correctly filters when ProductVariant and Product both have matching FacetValue', async () => {
                 const gamingPc240GB = products
-                    .find(p => p.name === 'Gaming PC')!
-                    .variants.find(v => v.name.includes('240GB'))!;
+                    .find((p) => p.name === 'Gaming PC')!
+                    .variants.find((v) => v.name.includes('240GB'))!;
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
@@ -1028,7 +1029,7 @@ describe('Collection resolver', () => {
                     GetCollectionProducts.Query,
                     GetCollectionProducts.Variables
                 >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearCollection.id });
-                expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+                expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                     'Laptop 13 inch 8GB',
                     'Laptop 15 inch 8GB',
                     'Laptop 13 inch 16GB',
@@ -1078,7 +1079,7 @@ describe('Collection resolver', () => {
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables
             >(GET_COLLECTION_PRODUCT_VARIANTS, { id: pearElectronics.id });
-            expect(result.collection!.productVariants.items.map(i => i.name)).toEqual([
+            expect(result.collection!.productVariants.items.map((i) => i.name)).toEqual([
                 'Laptop 13 inch 8GB',
                 'Laptop 15 inch 8GB',
                 'Laptop 13 inch 16GB',
@@ -1120,7 +1121,7 @@ describe('Collection resolver', () => {
         >(GET_COLLECTION_PRODUCT_VARIANTS, {
             id: pearCollection.id,
         });
-        expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+        expect(collection!.productVariants.items.map((i) => i.name)).toEqual([
             'Laptop 13 inch 8GB',
             'Laptop 15 inch 8GB',
             'Laptop 13 inch 16GB',
@@ -1131,7 +1132,7 @@ describe('Collection resolver', () => {
     });
 
     function getFacetValueId(code: string): string {
-        const match = facetValues.find(fv => fv.code === code);
+        const match = facetValues.find((fv) => fv.code === code);
         if (!match) {
             throw new Error(`Could not find a FacetValue with the code "${code}"`);
         }

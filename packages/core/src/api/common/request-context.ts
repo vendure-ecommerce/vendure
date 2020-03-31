@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ID, Type } from '@vendure/common/lib/shared-types';
-import i18next, { TFunction } from 'i18next';
+import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
+import { TFunction } from 'i18next';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -8,21 +8,20 @@ import { AnonymousSession } from '../../entity/session/anonymous-session.entity'
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
+import { JobData } from '../../job-queue/types';
 
 import { ApiType } from './get-api-type';
 
-export type ObjectOf<T> = { [K in keyof T]: T[K] };
-
-export interface SerializedRequestContext {
-    _session?: ObjectOf<Session> & {
-        user?: ObjectOf<User>;
+export type SerializedRequestContext = {
+    _session: JsonCompatible<Session> & {
+        user: JsonCompatible<User>;
     };
     _apiType: ApiType;
-    _channel: ObjectOf<Channel>;
+    _channel: JsonCompatible<Channel>;
     _languageCode: LanguageCode;
     _isAuthorized: boolean;
     _authorizedAsOwnerOnly: boolean;
-}
+};
 
 /**
  * @description

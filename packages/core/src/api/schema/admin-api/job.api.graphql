@@ -1,28 +1,34 @@
 type Query {
-    job(jobId: String!): JobInfo
-    jobs(input: JobListInput): [JobInfo!]!
+    job(jobId: ID!): Job
+    jobs(input: JobListOptions): JobList!
+    jobsById(jobIds: [ID!]!): [Job!]!
 }
 
 enum JobState {
     PENDING
     RUNNING
     COMPLETED
+    RETRYING
     FAILED
 }
 
-input JobListInput {
-    state: JobState
-    ids: [String!]
+input JobListOptions
+
+type JobList implements PaginatedList {
+    items: [Job!]!
+    totalItems: Int!
 }
 
-type JobInfo {
-    id: String!
+type Job implements Node {
+    id: ID!
     name: String!
     state: JobState!
     progress: Float!
     metadata: JSON
     result: JSON
-    started: DateTime
-    ended: DateTime
-    duration: Int
+    error: JSON
+    started: DateTime!
+    settled: DateTime
+    isSettled: Boolean!
+    duration: Int!
 }

@@ -1262,28 +1262,58 @@ export type IntCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
-export type JobInfo = {
-    __typename?: 'JobInfo';
-    id: Scalars['String'];
+export type Job = Node & {
+    __typename?: 'Job';
+    id: Scalars['ID'];
     name: Scalars['String'];
     state: JobState;
     progress: Scalars['Float'];
     metadata?: Maybe<Scalars['JSON']>;
     result?: Maybe<Scalars['JSON']>;
-    started?: Maybe<Scalars['DateTime']>;
-    ended?: Maybe<Scalars['DateTime']>;
-    duration?: Maybe<Scalars['Int']>;
+    error?: Maybe<Scalars['JSON']>;
+    started: Scalars['DateTime'];
+    settled?: Maybe<Scalars['DateTime']>;
+    isSettled: Scalars['Boolean'];
+    duration: Scalars['Int'];
 };
 
-export type JobListInput = {
-    state?: Maybe<JobState>;
-    ids?: Maybe<Array<Scalars['String']>>;
+export type JobFilterParameter = {
+    name?: Maybe<StringOperators>;
+    state?: Maybe<StringOperators>;
+    progress?: Maybe<NumberOperators>;
+    started?: Maybe<DateOperators>;
+    settled?: Maybe<DateOperators>;
+    isSettled?: Maybe<BooleanOperators>;
+    duration?: Maybe<NumberOperators>;
+};
+
+export type JobList = PaginatedList & {
+    __typename?: 'JobList';
+    items: Array<Job>;
+    totalItems: Scalars['Int'];
+};
+
+export type JobListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<JobSortParameter>;
+    filter?: Maybe<JobFilterParameter>;
+};
+
+export type JobSortParameter = {
+    id?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
+    progress?: Maybe<SortOrder>;
+    started?: Maybe<SortOrder>;
+    settled?: Maybe<SortOrder>;
+    duration?: Maybe<SortOrder>;
 };
 
 export enum JobState {
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',
     COMPLETED = 'COMPLETED',
+    RETRYING = 'RETRYING',
     FAILED = 'FAILED',
 }
 
@@ -1776,7 +1806,7 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
-    reindex: JobInfo;
+    reindex: Job;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -2695,8 +2725,9 @@ export type Query = {
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
-    job?: Maybe<JobInfo>;
-    jobs: Array<JobInfo>;
+    job?: Maybe<Job>;
+    jobs: JobList;
+    jobsById: Array<Job>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -2784,11 +2815,15 @@ export type QueryFacetArgs = {
 };
 
 export type QueryJobArgs = {
-    jobId: Scalars['String'];
+    jobId: Scalars['ID'];
 };
 
 export type QueryJobsArgs = {
-    input?: Maybe<JobListInput>;
+    input?: Maybe<JobListOptions>;
+};
+
+export type QueryJobsByIdArgs = {
+    jobIds: Array<Scalars['ID']>;
 };
 
 export type QueryOrderArgs = {

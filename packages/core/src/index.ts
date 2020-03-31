@@ -4,6 +4,7 @@ export * from './api/index';
 export * from './common/index';
 export * from './config/index';
 export * from './event-bus/index';
+export * from './job-queue/index';
 export * from './plugin/index';
 export * from './entity/index';
 export * from './data-import/index';

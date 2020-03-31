@@ -109,6 +109,9 @@ const result: IntrospectionResultData = {
                         name: 'Facet',
                     },
                     {
+                        name: 'Job',
+                    },
+                    {
                         name: 'PaymentMethod',
                     },
                     {
@@ -149,6 +152,9 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'FacetList',
+                    },
+                    {
+                        name: 'JobList',
                     },
                     {
                         name: 'PaymentMethodList',

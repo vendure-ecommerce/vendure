@@ -1,5 +1,6 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { SerializedRequestContext } from '../../api/common/request-context';
 import { WorkerMessage } from '../../worker/types';
 
 export interface ProcessCollectionsResponse {
@@ -16,3 +17,5 @@ export class ApplyCollectionFiltersMessage extends WorkerMessage<
 > {
     static readonly pattern = 'ApplyCollectionFilters';
 }
+
+export type ApplyCollectionFiletersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };

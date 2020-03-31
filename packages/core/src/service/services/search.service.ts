@@ -1,19 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { JobInfo, JobState } from '@vendure/common/lib/generated-types';
+import { JobState } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Logger } from '../../config/logger/vendure-logger';
+import { Job } from '../../job-queue/job';
 
 /**
- * This service should be overridden by a VendurePlugin which implements search.
- *
- * ```
- * defineProviders(): Provider[] {
- *     return [
- *         { provide: SearchService, useClass: MySearchService },
- *     ];
- * }
- * ```
+ * This service allows a concrete search service to override its behaviour
+ * by passing itself to the `adopt()` method.
  */
 @Injectable()
 export class SearchService {
@@ -27,18 +21,19 @@ export class SearchService {
         this.override = override;
     }
 
-    async reindex(ctx: RequestContext): Promise<JobInfo> {
+    async reindex(ctx: RequestContext): Promise<Job> {
         if (this.override) {
             return this.override.reindex(ctx);
         }
         if (!process.env.CI) {
             Logger.warn(`The SearchService should be overridden by an appropriate search plugin.`);
         }
-        return {
+        return new Job({
+            queueName: 'error',
+            data: {},
             id: 'error',
-            name: '',
             state: JobState.FAILED,
             progress: 0,
-        };
+        });
     }
 }

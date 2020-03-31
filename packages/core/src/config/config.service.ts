@@ -13,6 +13,7 @@ import {
     AssetOptions,
     AuthOptions,
     ImportExportOptions,
+    JobQueueOptions,
     OrderOptions,
     PaymentOptions,
     PromotionOptions,
@@ -125,5 +126,9 @@ export class ConfigService implements VendureConfig {
 
     get workerOptions(): WorkerOptions {
         return this.activeConfig.workerOptions;
+    }
+
+    get jobQueueOptions(): Required<JobQueueOptions> {
+        return this.activeConfig.jobQueueOptions;
     }
 }

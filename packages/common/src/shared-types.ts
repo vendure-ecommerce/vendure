@@ -13,7 +13,7 @@ export type DeepPartial<T> = {
               ? Array<DeepPartial<U>>
               : T[P] extends ReadonlyArray<infer U>
               ? ReadonlyArray<DeepPartial<U>>
-              : DeepPartial<T[P]>)
+              : DeepPartial<T[P]>);
 };
 // tslint:enable:no-shadowed-variable
 
@@ -26,7 +26,7 @@ export type DeepRequired<T, U extends object | undefined = undefined> = T extend
     ? {
           [P in keyof T]-?: NonNullable<T[P]> extends NonNullable<U | Function | Type<any>>
               ? NonNullable<T[P]>
-              : DeepRequired<NonNullable<T[P]>, U>
+              : DeepRequired<NonNullable<T[P]>, U>;
       }
     : T;
 // tslint:enable:ban-types
@@ -38,6 +38,23 @@ export interface Type<T> extends Function {
     // tslint:disable-next-line:callable-types
     new (...args: any[]): T;
 }
+
+export type Json = null | boolean | number | string | Json[] | { [prop: string]: Json };
+
+/**
+ * @description
+ * A type representing JSON-compatible values.
+ * From https://github.com/microsoft/TypeScript/issues/1897#issuecomment-580962081
+ *
+ * @docsCategory common
+ */
+export type JsonCompatible<T> = {
+    [P in keyof T]: T[P] extends Json
+        ? T[P]
+        : Pick<T, P> extends Required<Pick<T, P>>
+        ? never
+        : JsonCompatible<T[P]>;
+};
 
 /**
  * A type describing the shape of a paginated list response
