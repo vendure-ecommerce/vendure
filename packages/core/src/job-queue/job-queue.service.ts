@@ -1,10 +1,11 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { Injectable, OnApplicationBootstrap, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JobListOptions } from '@vendure/common/lib/generated-types';
+import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { PaginatedList } from '../../../common/src/shared-types';
 import { ConfigService } from '../config/config.service';
 import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
+import { Logger } from '../config/logger/vendure-logger';
+import { ProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueue } from './job-queue';
@@ -18,29 +19,38 @@ import { CreateQueueOptions, JobData } from './types';
  * @docsCateogory JobQueue
  */
 @Injectable()
-export class JobQueueService implements OnModuleInit, OnModuleDestroy {
+export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy {
     private cleanJobsTimer: NodeJS.Timeout;
     private queues: Array<JobQueue<any>> = [];
+    private hasInitialized = false;
 
     private get jobQueueStrategy(): JobQueueStrategy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {}
+    constructor(private configService: ConfigService, private processContext: ProcessContext) {}
 
-    /** @internal */
-    async onModuleInit() {
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        if (typeof jobQueueStrategy.init === 'function') {
-            await jobQueueStrategy.init(this.moduleRef);
+    async onApplicationBootstrap() {
+        if (this.processContext.isServer) {
+            const { pollInterval } = this.configService.jobQueueOptions;
+            if (pollInterval < 100) {
+                Logger.warn(
+                    `jobQueueOptions.pollInterval is set to ${pollInterval}ms. It is not receommended to set this lower than 100ms`,
+                );
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            this.hasInitialized = true;
+            for (const queue of this.queues) {
+                if (!queue.started) {
+                    queue.start();
+                }
+            }
         }
     }
 
     /** @internal */
     onModuleDestroy() {
-        for (const queue of this.queues) {
-            queue.destroy();
-        }
+        return Promise.all(this.queues.map((q) => q.destroy()));
     }
 
     /**
@@ -50,7 +60,9 @@ export class JobQueueService implements OnModuleInit, OnModuleDestroy {
     createQueue<Data extends JobData<Data>>(options: CreateQueueOptions<Data>): JobQueue<Data> {
         const { jobQueueStrategy, pollInterval } = this.configService.jobQueueOptions;
         const queue = new JobQueue(options, jobQueueStrategy, pollInterval);
-        queue.start();
+        if (this.processContext.isServer && this.hasInitialized) {
+            queue.start();
+        }
         this.queues.push(queue);
         return queue;
     }

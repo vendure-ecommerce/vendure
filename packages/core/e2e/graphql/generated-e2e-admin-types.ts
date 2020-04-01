@@ -1265,10 +1265,11 @@ export type IntCustomFieldConfig = CustomField & {
 export type Job = Node & {
     __typename?: 'Job';
     id: Scalars['ID'];
-    name: Scalars['String'];
+    createdAt: Scalars['DateTime'];
+    queueName: Scalars['String'];
     state: JobState;
     progress: Scalars['Float'];
-    metadata?: Maybe<Scalars['JSON']>;
+    data?: Maybe<Scalars['JSON']>;
     result?: Maybe<Scalars['JSON']>;
     error?: Maybe<Scalars['JSON']>;
     started: Scalars['DateTime'];
@@ -1278,7 +1279,8 @@ export type Job = Node & {
 };
 
 export type JobFilterParameter = {
-    name?: Maybe<StringOperators>;
+    createdAt?: Maybe<DateOperators>;
+    queueName?: Maybe<StringOperators>;
     state?: Maybe<StringOperators>;
     progress?: Maybe<NumberOperators>;
     started?: Maybe<DateOperators>;
@@ -1302,7 +1304,8 @@ export type JobListOptions = {
 
 export type JobSortParameter = {
     id?: Maybe<SortOrder>;
-    name?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    queueName?: Maybe<SortOrder>;
     progress?: Maybe<SortOrder>;
     started?: Maybe<SortOrder>;
     settled?: Maybe<SortOrder>;
@@ -2819,7 +2822,7 @@ export type QueryJobArgs = {
 };
 
 export type QueryJobsArgs = {
-    input?: Maybe<JobListOptions>;
+    options?: Maybe<JobListOptions>;
 };
 
 export type QueryJobsByIdArgs = {
@@ -4573,12 +4576,16 @@ export type GetStockMovementQuery = { __typename?: 'Query' } & {
     >;
 };
 
-export type GetRunningJobsQueryVariables = {};
+export type GetRunningJobsQueryVariables = {
+    options?: Maybe<JobListOptions>;
+};
 
 export type GetRunningJobsQuery = { __typename?: 'Query' } & {
-    jobs: { __typename?: 'JobList' } & {
-        items: Array<{ __typename?: 'Job' } & Pick<Job, 'id' | 'name' | 'state' | 'isSettled' | 'duration'>>;
-    };
+    jobs: { __typename?: 'JobList' } & Pick<JobList, 'totalItems'> & {
+            items: Array<
+                { __typename?: 'Job' } & Pick<Job, 'id' | 'queueName' | 'state' | 'isSettled' | 'duration'>
+            >;
+        };
 };
 
 export type CreatePromotionMutationVariables = {

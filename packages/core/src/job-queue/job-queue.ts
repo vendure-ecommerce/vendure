@@ -17,12 +17,18 @@ export class JobQueue<Data extends JobData<Data> = {}> {
     private activeJobs: Array<Job<Data>> = [];
     private timer: any;
     private fooId: number;
+    private running = false;
+
     get concurrency(): number {
         return this.options.concurrency;
     }
 
     get name(): string {
         return this.options.name;
+    }
+
+    get started(): boolean {
+        return this.running;
     }
 
     constructor(
@@ -33,8 +39,12 @@ export class JobQueue<Data extends JobData<Data> = {}> {
 
     /** @internal */
     start() {
+        if (this.running) {
+            return;
+        }
+        this.running = true;
+        const concurrency = this.options.concurrency;
         const runNextJobs = async () => {
-            const concurrency = this.options.concurrency;
             const runningJobsCount = this.activeJobs.length;
             for (let i = runningJobsCount; i < concurrency; i++) {
                 const nextJob: Job<Data> | undefined = await this.jobQueueStrategy.next(this.options.name);
@@ -61,17 +71,27 @@ export class JobQueue<Data extends JobData<Data> = {}> {
 
     /** @internal */
     pause() {
+        this.running = false;
         clearTimeout(this.timer);
     }
 
     /** @internal */
-    destroy() {
+    async destroy(): Promise<void> {
+        this.running = false;
         clearTimeout(this.timer);
-    }
-
-    /** @internal */
-    _process(job: Job<Data>) {
-        this.options.process(job);
+        const start = +new Date();
+        const maxTimeout = 5000;
+        return new Promise((resolve) => {
+            const pollActiveJobs = () => {
+                const timedOut = +new Date() - start > maxTimeout;
+                if (this.activeJobs.length === 0 || timedOut) {
+                    resolve();
+                } else {
+                    setTimeout(pollActiveJobs, 50);
+                }
+            };
+            pollActiveJobs();
+        });
     }
 
     /**

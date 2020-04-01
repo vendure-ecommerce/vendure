@@ -268,15 +268,16 @@ export const GET_STOCK_MOVEMENT = gql`
     ${VARIANT_WITH_STOCK_FRAGMENT}
 `;
 export const GET_RUNNING_JOBS = gql`
-    query GetRunningJobs {
-        jobs {
+    query GetRunningJobs($options: JobListOptions) {
+        jobs(options: $options) {
             items {
                 id
-                name
+                queueName
                 state
                 isSettled
                 duration
             }
+            totalItems
         }
     }
 `;

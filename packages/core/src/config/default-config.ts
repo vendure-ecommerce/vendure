@@ -4,7 +4,6 @@ import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-consta
 
 import { generatePublicId } from '../common/generate-public-id';
 import { SqlJobQueueStrategy } from '../job-queue/sql-job-queue-strategy';
-import { TestingJobQueueStrategy } from '../job-queue/testing-job-queue-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -95,8 +94,8 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
     },
     jobQueueOptions: {
-        jobQueueStrategy: new TestingJobQueueStrategy(),
-        pollInterval: 100,
+        jobQueueStrategy: new SqlJobQueueStrategy(),
+        pollInterval: 200,
     },
     customFields: {
         Address: [],

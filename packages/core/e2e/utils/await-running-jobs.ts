@@ -15,8 +15,19 @@ export async function awaitRunningJobs(adminClient: SimpleGraphQLClient, timeout
     // e.g. event debouncing is used before triggering the job.
     await new Promise((resolve) => setTimeout(resolve, 100));
     do {
-        const { jobs } = await adminClient.query<GetRunningJobs.Query>(GET_RUNNING_JOBS);
-        runningJobs = jobs.items.filter((job) => !job.isSettled).length;
+        const { jobs } = await adminClient.query<GetRunningJobs.Query, GetRunningJobs.Variables>(
+            GET_RUNNING_JOBS,
+            {
+                options: {
+                    filter: {
+                        isSettled: {
+                            eq: false,
+                        },
+                    },
+                },
+            },
+        );
+        runningJobs = jobs.totalItems;
         timedOut = timeout < +new Date() - startTime;
     } while (runningJobs > 0 && !timedOut);
 }

@@ -35,9 +35,9 @@ export type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void;
 export class Job<T extends JobData<T> = any> {
     readonly id: string;
     readonly queueName: string;
+    readonly retries: number;
     private readonly _data: T;
     private readonly created: Date;
-    private readonly retries: number;
     private _state: JobState;
     private _progress: number;
     private _result?: any;
@@ -90,6 +90,10 @@ export class Job<T extends JobData<T> = any> {
     get duration(): number {
         const end = this._settled || new Date();
         return +end - +(this._started || end);
+    }
+
+    get attempts(): number {
+        return this._attempts;
     }
 
     constructor(config: JobConfig<T>) {
@@ -146,7 +150,7 @@ export class Job<T extends JobData<T> = any> {
      * Calling this method signifies that the job failed.
      */
     fail(err?: any) {
-        this._error = String(err);
+        this._error = err?.message ? err.message : String(err);
         this._progress = 0;
         if (this.retries >= this._attempts) {
             this._state = JobState.RETRYING;

@@ -23,9 +23,6 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
  */
 @Module({
     imports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule, JobQueueModule],
-    providers: [
-        // TODO: Provide an injectable which defines whether in main or worker context
-    ],
     exports: [EventBusModule, ConfigModule, ServiceModule.forPlugin(), WorkerServiceModule, JobQueueModule],
 })
 export class PluginCommonModule {}

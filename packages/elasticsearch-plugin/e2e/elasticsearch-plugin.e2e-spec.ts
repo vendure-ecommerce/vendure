@@ -873,7 +873,7 @@ const REINDEX = gql`
     mutation Reindex {
         reindex {
             id
-            name
+            queueName
             state
             progress
             duration
@@ -886,7 +886,7 @@ const GET_JOB_INFO = gql`
     query GetJobInfo($id: ID!) {
         job(jobId: $id) {
             id
-            name
+            queueName
             state
             progress
             duration

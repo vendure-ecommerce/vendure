@@ -573,7 +573,7 @@ export const GET_SERVER_CONFIG = gql`
 export const JOB_INFO_FRAGMENT = gql`
     fragment JobInfo on Job {
         id
-        name
+        queueName
         state
         progress
         duration
@@ -592,7 +592,7 @@ export const GET_JOB_INFO = gql`
 
 export const GET_ALL_JOBS = gql`
     query GetAllJobs($input: JobListOptions) {
-        jobs(input: $input) {
+        jobs(options: $input) {
             items {
                 ...JobInfo
             }

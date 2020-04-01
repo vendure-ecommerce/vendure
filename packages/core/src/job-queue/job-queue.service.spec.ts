@@ -3,6 +3,7 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 
 import { ConfigService } from '../config/config.service';
+import { ProcessContext, ServerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
@@ -16,7 +17,11 @@ describe('JobQueueService', () => {
 
     beforeEach(async () => {
         module = await Test.createTestingModule({
-            providers: [{ provide: ConfigService, useClass: MockConfigService }, JobQueueService],
+            providers: [
+                { provide: ConfigService, useClass: MockConfigService },
+                { provide: ProcessContext, useClass: ServerProcessContext },
+                JobQueueService,
+            ],
         }).compile();
 
         jobQueueService = module.get(JobQueueService);
@@ -107,7 +112,7 @@ describe('JobQueueService', () => {
 
         await tick(queuePollInterval);
         expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.error).toBe(err.toString());
+        expect(testJob.error).toBe(err.message);
 
         subject.complete();
     });
@@ -128,7 +133,7 @@ describe('JobQueueService', () => {
 
         await tick(queuePollInterval);
         expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.error).toBe(err.toString());
+        expect(testJob.error).toBe(err.message);
 
         subject.complete();
     });

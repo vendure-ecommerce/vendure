@@ -22,7 +22,7 @@ export class JobResolver {
     @Query()
     @Allow(Permission.Authenticated)
     jobs(@Args() args: QueryJobsArgs) {
-        return this.jobService.getJobs(args.input || undefined);
+        return this.jobService.getJobs(args.options || undefined);
     }
 
     @Query()

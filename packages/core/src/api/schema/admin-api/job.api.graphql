@@ -1,6 +1,6 @@
 type Query {
     job(jobId: ID!): Job
-    jobs(input: JobListOptions): JobList!
+    jobs(options: JobListOptions): JobList!
     jobsById(jobIds: [ID!]!): [Job!]!
 }
 
@@ -21,10 +21,11 @@ type JobList implements PaginatedList {
 
 type Job implements Node {
     id: ID!
-    name: String!
+    createdAt: DateTime!
+    queueName: String!
     state: JobState!
     progress: Float!
-    metadata: JSON
+    data: JSON
     result: JSON
     error: JSON
     started: DateTime!

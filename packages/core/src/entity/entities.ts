@@ -17,6 +17,7 @@ import { Fulfillment } from './fulfillment/fulfillment.entity';
 import { GlobalSettings } from './global-settings/global-settings.entity';
 import { HistoryEntry } from './history-entry/history-entry.entity';
 import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
+import { JobRecord } from './job-record/job-record.entity';
 import { OrderItem } from './order-item/order-item.entity';
 import { OrderLine } from './order-line/order-line.entity';
 import { Order } from './order/order.entity';
@@ -74,6 +75,7 @@ export const coreEntitiesMap = {
     Fulfillment,
     GlobalSettings,
     HistoryEntry,
+    JobRecord,
     Order,
     OrderHistoryEntry,
     OrderItem,

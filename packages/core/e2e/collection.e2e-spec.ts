@@ -346,6 +346,8 @@ describe('Collection resolver', () => {
         });
 
         it('re-evaluates Collection contents on move', async () => {
+            await awaitRunningJobs(adminClient);
+
             const result = await adminClient.query<
                 GetCollectionProducts.Query,
                 GetCollectionProducts.Variables

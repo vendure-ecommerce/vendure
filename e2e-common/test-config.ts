@@ -1,9 +1,13 @@
 import { mergeConfig } from '@vendure/core';
-import { MysqlInitializer, PostgresInitializer, registerInitializer, SqljsInitializer, testConfig as defaultTestConfig } from '@vendure/testing';
+import {
+    MysqlInitializer,
+    PostgresInitializer,
+    registerInitializer,
+    SqljsInitializer,
+    testConfig as defaultTestConfig,
+} from '@vendure/testing';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-import { TestingJobQueueStrategy } from '../packages/core/src/job-queue/testing-job-queue-strategy';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -35,8 +39,7 @@ export const testConfig = mergeConfig(defaultTestConfig, {
         importAssetsDir: path.join(packageDir, 'fixtures/assets'),
     },
     jobQueueOptions: {
-        jobQueueStrategy: new TestingJobQueueStrategy(),
-        pollInterval: 10,
+        pollInterval: 100,
     },
     dbConnectionOptions: getDbConfig(),
 });
