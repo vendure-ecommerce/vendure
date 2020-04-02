@@ -54,7 +54,7 @@ export class RichTextEditorComponent implements ControlValueAccessor, AfterViewI
                 this.onChange(content);
                 this.changeDetector.markForCheck();
             },
-            isEditable: () => !this._readonly,
+            isReadOnly: () => !this._readonly,
         });
         if (this.value) {
             this.prosemirrorService.update(this.value);
