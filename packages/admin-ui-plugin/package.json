@@ -1,6 +1,6 @@
 {
   "name": "@vendure/admin-ui-plugin",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [

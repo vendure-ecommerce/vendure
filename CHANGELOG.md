@@ -1,3 +1,19 @@
+## <small>0.10.2 (2020-04-02)</small>
+
+
+#### Fixes
+
+* **admin-ui-plugin** Add Chinese to the default available languages ([46ff932](https://github.com/vendure-ecommerce/vendure/commit/46ff932))
+* **admin-ui** Fix prosemirror error when changing product detail tabs ([8a7cf9a](https://github.com/vendure-ecommerce/vendure/commit/8a7cf9a))
+* **admin-ui** Make rich text editor editable when creating products etc ([d268276](https://github.com/vendure-ecommerce/vendure/commit/d268276))
+* **asset-server-plugin** Fix build to export non-image file icon ([63166a2](https://github.com/vendure-ecommerce/vendure/commit/63166a2))
+
+#### Features
+
+* **admin-ui** Better error reporting for invalid translation files ([a64f7ac](https://github.com/vendure-ecommerce/vendure/commit/a64f7ac)), closes [#292](https://github.com/vendure-ecommerce/vendure/issues/292)
+* **create** Check server port is free before install ([202f68d](https://github.com/vendure-ecommerce/vendure/commit/202f68d))
+* **create** Pin TypeScript version ([a2fba13](https://github.com/vendure-ecommerce/vendure/commit/a2fba13)), closes [#268](https://github.com/vendure-ecommerce/vendure/issues/268)
+
 ## <small>0.10.1 (2020-03-24)</small>
 
 
