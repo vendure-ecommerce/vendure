@@ -1298,6 +1298,12 @@ export type JobListOptions = {
   filter?: Maybe<JobFilterParameter>;
 };
 
+export type JobQueue = {
+   __typename?: 'JobQueue';
+  name: Scalars['String'];
+  running: Scalars['Boolean'];
+};
+
 export type JobSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
@@ -2805,6 +2811,7 @@ export type Query = {
   job?: Maybe<Job>;
   jobs: JobList;
   jobsById: Array<Job>;
+  jobQueues: Array<JobQueue>;
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethods: PaymentMethodList;

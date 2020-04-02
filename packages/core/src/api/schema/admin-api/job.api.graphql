@@ -2,6 +2,7 @@ type Query {
     job(jobId: ID!): Job
     jobs(options: JobListOptions): JobList!
     jobsById(jobIds: [ID!]!): [Job!]!
+    jobQueues: [JobQueue!]!
 }
 
 enum JobState {
@@ -32,4 +33,9 @@ type Job implements Node {
     settled: DateTime
     isSettled: Boolean!
     duration: Int!
+}
+
+type JobQueue {
+    name: String!
+    running: Boolean!
 }

@@ -30,4 +30,10 @@ export class JobResolver {
     jobsById(@Args() args: QueryJobsByIdArgs) {
         return this.jobService.getJobsById(args.jobIds || undefined);
     }
+
+    @Query()
+    @Allow(Permission.Authenticated)
+    jobQueues() {
+        return this.jobService.getJobQueues();
+    }
 }
