@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { MESSAGE_FORMAT_CONFIG, MessageFormatConfig } from 'ngx-translate-messageformat-compiler';
 
 import { getAppConfig } from './app.config';
 import { getDefaultLanguage } from './common/utilities/get-default-language';
@@ -38,6 +39,7 @@ import { SharedModule } from './shared/shared.module';
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
+    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,
@@ -80,4 +82,21 @@ export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) 
     // Dynamically get the baseHref, which is configured in the angular.json file
     const baseHref = location.getBaseHrefFromDOM();
     return new CustomHttpTranslationLoader(http, baseHref + 'i18n-messages/');
+}
+
+/**
+ * Returns the locales defined in the vendure-ui-config.json, ensuring that the
+ * default language is the first item in the array as per the messageformat
+ * documentation:
+ *
+ * > The default locale will be the first entry of the array
+ * https://messageformat.github.io/messageformat/MessageFormat
+ */
+export function getLocales(): MessageFormatConfig {
+    const locales = getAppConfig().availableLanguages;
+    const defaultLanguage = getDefaultLanguage();
+    const localesWithoutDefault = locales.filter(l => l !== defaultLanguage);
+    return {
+        locales: [defaultLanguage, ...localesWithoutDefault],
+    };
 }
