@@ -59,7 +59,9 @@ export class ProsemirrorService {
     update(text: string) {
         if (this.editorView) {
             const state = this.getStateFromText(text);
-            this.editorView.updateState(state);
+            if (document.body.contains(this.editorView.dom)) {
+                this.editorView.updateState(state);
+            }
         }
     }
 
