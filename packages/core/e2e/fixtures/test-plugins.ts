@@ -1,5 +1,6 @@
 import { Controller, Get, Injectable } from '@nestjs/common';
 import { Query, Resolver } from '@nestjs/graphql';
+import { MessagePattern } from '@nestjs/microservices';
 import { Permission } from '@vendure/common/lib/generated-shop-types';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
@@ -7,13 +8,19 @@ import {
     ConfigModule,
     ConfigService,
     InternalServerError,
+    Logger,
     OnVendureBootstrap,
     OnVendureClose,
     OnVendureWorkerBootstrap,
     OnVendureWorkerClose,
+    PluginCommonModule,
+    ProcessContext,
     VendurePlugin,
+    WorkerMessage,
+    WorkerService,
 } from '@vendure/core';
 import gql from 'graphql-tag';
+import { of } from 'rxjs';
 
 export class TestPluginWithAllLifecycleHooks
     implements OnVendureBootstrap, OnVendureWorkerBootstrap, OnVendureClose, OnVendureWorkerClose {
@@ -174,7 +181,7 @@ export class TestPluginWithProvider {}
 
 @VendurePlugin({
     imports: [ConfigModule],
-    configuration: config => {
+    configuration: (config) => {
         // tslint:disable-next-line:no-non-null-assertion
         config.defaultLanguageCode = LanguageCode.zh;
         return config;
@@ -220,3 +227,37 @@ export class TestController {
     controllers: [TestController],
 })
 export class TestRestPlugin {}
+
+class TestWorkerMessage extends WorkerMessage<string, boolean> {
+    static readonly pattern = 'TestWorkerMessage';
+}
+
+@Controller('process-context')
+export class TestProcessContextController {
+    constructor(private processContext: ProcessContext, private workerService: WorkerService) {}
+
+    @Get('server')
+    isServer() {
+        return this.processContext.isServer;
+    }
+
+    @Get('worker')
+    isWorker() {
+        return this.workerService.send(new TestWorkerMessage('hello'));
+    }
+}
+@Controller()
+export class TestProcessContextWorkerController {
+    constructor(private processContext: ProcessContext) {}
+
+    @MessagePattern(TestWorkerMessage.pattern)
+    isWorker() {
+        return of(this.processContext.isWorker);
+    }
+}
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    controllers: [TestProcessContextController],
+    workers: [TestProcessContextWorkerController],
+})
+export class TestProcessContextPlugin {}

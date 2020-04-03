@@ -13,6 +13,7 @@ import {
     TestPluginWithAllLifecycleHooks,
     TestPluginWithConfigAndBootstrap,
     TestPluginWithProvider,
+    TestProcessContextPlugin,
     TestRestPlugin,
 } from './fixtures/test-plugins';
 
@@ -39,6 +40,7 @@ describe('Plugins', () => {
             TestPluginWithProvider,
             TestLazyExtensionPlugin,
             TestRestPlugin,
+            TestProcessContextPlugin,
         ],
     });
 
@@ -158,6 +160,25 @@ describe('Plugins', () => {
             expect(response.status).toBe(500);
             const result = await response.json();
             expect(result.message).toContain('uh oh!');
+        });
+    });
+
+    describe('processContext', () => {
+        it('server context', async () => {
+            const response = await shopClient.fetch(
+                `http://localhost:${testConfig.port}/process-context/server`,
+            );
+            const body = await response.text();
+
+            expect(body).toBe('true');
+        });
+        it('worker context', async () => {
+            const response = await shopClient.fetch(
+                `http://localhost:${testConfig.port}/process-context/worker`,
+            );
+            const body = await response.text();
+
+            expect(body).toBe('true');
         });
     });
 
