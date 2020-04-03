@@ -1270,25 +1270,25 @@ export type Job = Node & {
    __typename?: 'Job';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
+  startedAt?: Maybe<Scalars['DateTime']>;
+  settledAt?: Maybe<Scalars['DateTime']>;
   queueName: Scalars['String'];
   state: JobState;
   progress: Scalars['Float'];
   data?: Maybe<Scalars['JSON']>;
   result?: Maybe<Scalars['JSON']>;
   error?: Maybe<Scalars['JSON']>;
-  started: Scalars['DateTime'];
-  settled?: Maybe<Scalars['DateTime']>;
   isSettled: Scalars['Boolean'];
   duration: Scalars['Int'];
 };
 
 export type JobFilterParameter = {
   createdAt?: Maybe<DateOperators>;
+  startedAt?: Maybe<DateOperators>;
+  settledAt?: Maybe<DateOperators>;
   queueName?: Maybe<StringOperators>;
   state?: Maybe<StringOperators>;
   progress?: Maybe<NumberOperators>;
-  started?: Maybe<DateOperators>;
-  settled?: Maybe<DateOperators>;
   isSettled?: Maybe<BooleanOperators>;
   duration?: Maybe<NumberOperators>;
 };
@@ -1306,13 +1306,19 @@ export type JobListOptions = {
   filter?: Maybe<JobFilterParameter>;
 };
 
+export type JobQueue = {
+   __typename?: 'JobQueue';
+  name: Scalars['String'];
+  running: Scalars['Boolean'];
+};
+
 export type JobSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
+  startedAt?: Maybe<SortOrder>;
+  settledAt?: Maybe<SortOrder>;
   queueName?: Maybe<SortOrder>;
   progress?: Maybe<SortOrder>;
-  started?: Maybe<SortOrder>;
-  settled?: Maybe<SortOrder>;
   duration?: Maybe<SortOrder>;
 };
 
@@ -2842,6 +2848,7 @@ export type Query = {
   facets: FacetList;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
+  jobQueues: Array<JobQueue>;
   jobs: JobList;
   jobsById: Array<Job>;
   me?: Maybe<CurrentUser>;
@@ -6097,7 +6104,7 @@ export type GetServerConfigQuery = (
 
 export type JobInfoFragment = (
   { __typename?: 'Job' }
-  & Pick<Job, 'id' | 'queueName' | 'state' | 'progress' | 'duration' | 'result'>
+  & Pick<Job, 'id' | 'createdAt' | 'startedAt' | 'settledAt' | 'queueName' | 'state' | 'isSettled' | 'progress' | 'duration' | 'data' | 'result' | 'error'>
 );
 
 export type GetJobInfoQueryVariables = {
@@ -6114,7 +6121,7 @@ export type GetJobInfoQuery = (
 );
 
 export type GetAllJobsQueryVariables = {
-  input?: Maybe<JobListOptions>;
+  options?: Maybe<JobListOptions>;
 };
 
 
@@ -6122,11 +6129,36 @@ export type GetAllJobsQuery = (
   { __typename?: 'Query' }
   & { jobs: (
     { __typename?: 'JobList' }
+    & Pick<JobList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Job' }
       & JobInfoFragment
     )> }
   ) }
+);
+
+export type GetJobsByIdQueryVariables = {
+  ids: Array<Scalars['ID']>;
+};
+
+
+export type GetJobsByIdQuery = (
+  { __typename?: 'Query' }
+  & { jobsById: Array<(
+    { __typename?: 'Job' }
+    & JobInfoFragment
+  )> }
+);
+
+export type GetJobQueueListQueryVariables = {};
+
+
+export type GetJobQueueListQuery = (
+  { __typename?: 'Query' }
+  & { jobQueues: Array<(
+    { __typename?: 'JobQueue' }
+    & Pick<JobQueue, 'name' | 'running'>
+  )> }
 );
 
 export type ReindexMutationVariables = {};
@@ -7304,6 +7336,18 @@ export namespace GetAllJobs {
   export type Query = GetAllJobsQuery;
   export type Jobs = GetAllJobsQuery['jobs'];
   export type Items = JobInfoFragment;
+}
+
+export namespace GetJobsById {
+  export type Variables = GetJobsByIdQueryVariables;
+  export type Query = GetJobsByIdQuery;
+  export type JobsById = JobInfoFragment;
+}
+
+export namespace GetJobQueueList {
+  export type Variables = GetJobQueueListQueryVariables;
+  export type Query = GetJobQueueListQuery;
+  export type JobQueues = (NonNullable<GetJobQueueListQuery['jobQueues'][0]>);
 }
 
 export namespace Reindex {

@@ -2,8 +2,9 @@
 
 :host {
     position: fixed;
-    bottom: 12px;
-    left: 12px;
+    display: block;
+    bottom: 0;
+    left: 0;
     z-index: 5;
 }
 

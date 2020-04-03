@@ -20,6 +20,7 @@ import { ChannelListComponent } from './components/channel-list/channel-list.com
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { JobListComponent } from './components/job-list/job-list.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
@@ -172,6 +173,13 @@ export const settingsRoutes: Route[] = [
             breadcrumb: _('breadcrumb.global-settings'),
         },
     },
+    {
+        path: 'jobs',
+        component: JobListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.job-queue'),
+        },
+    },
 ];
 
 export function administratorBreadcrumb(data: any, params: any) {
@@ -179,7 +187,7 @@ export function administratorBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.administrators',
-        getName: admin => `${admin.firstName} ${admin.lastName}`,
+        getName: (admin) => `${admin.firstName} ${admin.lastName}`,
         route: 'administrators',
     });
 }
@@ -189,7 +197,7 @@ export function channelBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.channels',
-        getName: channel => channel.code,
+        getName: (channel) => channel.code,
         route: 'channels',
     });
 }
@@ -199,7 +207,7 @@ export function roleBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.roles',
-        getName: role => role.description,
+        getName: (role) => role.description,
         route: 'roles',
     });
 }
@@ -209,7 +217,7 @@ export function taxCategoryBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-categories',
-        getName: category => category.name,
+        getName: (category) => category.name,
         route: 'tax-categories',
     });
 }
@@ -219,7 +227,7 @@ export function taxRateBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.tax-rates',
-        getName: category => category.name,
+        getName: (category) => category.name,
         route: 'tax-rates',
     });
 }
@@ -229,7 +237,7 @@ export function countryBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.countries',
-        getName: promotion => promotion.name,
+        getName: (promotion) => promotion.name,
         route: 'countries',
     });
 }
@@ -239,7 +247,7 @@ export function shippingMethodBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.shipping-methods',
-        getName: method => method.description,
+        getName: (method) => method.description,
         route: 'shipping-methods',
     });
 }
@@ -249,7 +257,7 @@ export function paymentMethodBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.payment-methods',
-        getName: method => method.code,
+        getName: (method) => method.code,
         route: 'payment-methods',
     });
 }

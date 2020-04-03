@@ -9,6 +9,8 @@ import { ChannelListComponent } from './components/channel-list/channel-list.com
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { JobListComponent } from './components/job-list/job-list.component';
+import { JobStateLabelComponent } from './components/job-state-label/job-state-label.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
@@ -53,6 +55,8 @@ import { settingsRoutes } from './settings.routes';
         TestAddressFormComponent,
         ShippingMethodTestResultComponent,
         ShippingEligibilityTestResultComponent,
+        JobListComponent,
+        JobStateLabelComponent,
     ],
 })
 export class SettingsModule {}
