@@ -6,6 +6,8 @@ export * from './components/channel-list/channel-list.component';
 export * from './components/country-detail/country-detail.component';
 export * from './components/country-list/country-list.component';
 export * from './components/global-settings/global-settings.component';
+export * from './components/job-list/job-list.component';
+export * from './components/job-state-label/job-state-label.component';
 export * from './components/payment-method-detail/payment-method-detail.component';
 export * from './components/payment-method-list/payment-method-list.component';
 export * from './components/permission-grid/permission-grid.component';
