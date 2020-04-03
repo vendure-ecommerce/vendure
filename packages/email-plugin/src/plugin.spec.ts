@@ -8,6 +8,7 @@ import {
     Order,
     OrderStateTransitionEvent,
     PluginCommonModule,
+    ProcessContextModule,
     RequestContext,
     VendureEvent,
 } from '@vendure/core';
@@ -36,6 +37,7 @@ describe('EmailPlugin', () => {
                     type: 'sqljs',
                     retryAttempts: 0,
                 }),
+                ProcessContextModule.forRoot(),
                 PluginCommonModule,
                 EmailPlugin.init({
                     templatePath: path.join(__dirname, '../test-templates'),
