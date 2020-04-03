@@ -1,7 +1,13 @@
 /* tslint:disable:no-non-null-assertion */
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { DefaultLogger, facetValueCollectionFilter, LogLevel, mergeConfig } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    DefaultLogger,
+    facetValueCollectionFilter,
+    LogLevel,
+    mergeConfig,
+} from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -69,6 +75,7 @@ describe('Elasticsearch plugin', () => {
                     port: process.env.CI ? +(process.env.E2E_ELASTIC_PORT || 9200) : 9200,
                     host: process.env.CI ? 'http://127.0.0.1' : 'http://192.168.99.100',
                 }),
+                DefaultJobQueuePlugin,
             ],
         }),
     );

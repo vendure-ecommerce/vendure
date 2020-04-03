@@ -41,7 +41,9 @@ export class InMemoryJobQueueStrategy implements JobQueueStrategy {
 
     async add(job: Job): Promise<Job> {
         if (!job.id) {
-            (job as any).id = generatePublicId();
+            (job as any).id = Math.floor(Math.random() * 1000000000)
+                .toString()
+                .padEnd(10, '0');
         }
         // tslint:disable-next-line:no-non-null-assertion
         this.jobs.set(job.id!, job);

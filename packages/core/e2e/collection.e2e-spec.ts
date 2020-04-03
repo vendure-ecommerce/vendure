@@ -1,6 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
 import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
-import { facetValueCollectionFilter, variantNameCollectionFilter } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    facetValueCollectionFilter,
+    variantNameCollectionFilter,
+} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -48,7 +52,10 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Collection resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment({
+        ...testConfig,
+        plugins: [DefaultJobQueuePlugin],
+    });
 
     let assets: GetAssetList.Items[];
     let facetValues: FacetValueFragment[];

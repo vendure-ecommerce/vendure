@@ -1,6 +1,11 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { DefaultSearchPlugin, facetValueCollectionFilter, mergeConfig } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    DefaultSearchPlugin,
+    facetValueCollectionFilter,
+    mergeConfig,
+} from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -49,7 +54,7 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin] }),
+        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin] }),
     );
 
     beforeAll(async () => {
