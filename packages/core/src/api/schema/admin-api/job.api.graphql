@@ -23,14 +23,14 @@ type JobList implements PaginatedList {
 type Job implements Node {
     id: ID!
     createdAt: DateTime!
+    startedAt: DateTime
+    settledAt: DateTime
     queueName: String!
     state: JobState!
     progress: Float!
     data: JSON
     result: JSON
     error: JSON
-    started: DateTime!
-    settled: DateTime
     isSettled: Boolean!
     duration: Int!
 }

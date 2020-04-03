@@ -1,5 +1,5 @@
 import { JobState } from '@vendure/common/lib/generated-types';
-import { JsonCompatible } from '@vendure/common/lib/shared-types';
+import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 
 import { Job } from './job';
 
@@ -52,12 +52,12 @@ export interface JobConfig<T extends JobData<T>> {
     data: T;
     retries?: number;
     attempts?: number;
-    id?: string;
+    id?: ID;
     state?: JobState;
     progress?: number;
     result?: any;
     error?: any;
-    created?: Date;
-    started?: Date;
-    settled?: Date;
+    createdAt?: Date;
+    startedAt?: Date;
+    settledAt?: Date;
 }

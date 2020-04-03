@@ -1,6 +1,5 @@
 import { JobState } from '@vendure/common/lib/generated-types';
-
-import { generatePublicId } from '../common/generate-public-id';
+import { ID } from '@vendure/common/lib/shared-types';
 
 import { JobConfig, JobData } from './types';
 
@@ -33,18 +32,18 @@ export type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void;
  * @docsPage Job
  */
 export class Job<T extends JobData<T> = any> {
-    readonly id: string;
+    readonly id: ID | null;
     readonly queueName: string;
     readonly retries: number;
+    readonly createdAt: Date;
     private readonly _data: T;
-    private readonly created: Date;
     private _state: JobState;
     private _progress: number;
     private _result?: any;
     private _error?: any;
     private _attempts: number;
-    private _started?: Date;
-    private _settled?: Date;
+    private _startedAt?: Date;
+    private _settledAt?: Date;
     private readonly eventListeners: { [type in JobEventType]: Array<JobEventListener<T>> } = {
         start: [],
         complete: [],
@@ -76,20 +75,20 @@ export class Job<T extends JobData<T> = any> {
     }
 
     get isSettled(): boolean {
-        return !!this._settled;
+        return !!this._settledAt;
     }
 
-    get started(): Date | undefined {
-        return this._started;
+    get startedAt(): Date | undefined {
+        return this._startedAt;
     }
 
-    get settled(): Date | undefined {
-        return this._settled;
+    get settledAt(): Date | undefined {
+        return this._settledAt;
     }
 
     get duration(): number {
-        const end = this._settled || new Date();
-        return +end - +(this._started || end);
+        const end = this._settledAt || new Date();
+        return +end - +(this._startedAt || end);
     }
 
     get attempts(): number {
@@ -99,15 +98,16 @@ export class Job<T extends JobData<T> = any> {
     constructor(config: JobConfig<T>) {
         this.queueName = config.queueName;
         this._data = config.data;
-        this.id = config.id || generatePublicId();
+        this.id = config.id || null;
         this._state = config.state || JobState.PENDING;
         this.retries = config.retries || 0;
         this._attempts = config.attempts || 0;
         this._progress = config.progress || 0;
-        this.created = config.created || new Date();
+        this.createdAt = config.createdAt || new Date();
         this._result = config.result;
-        this._started = config.started;
-        this._settled = config.settled;
+        this._error = config.error;
+        this._startedAt = config.startedAt;
+        this._settledAt = config.settledAt;
     }
 
     /**
@@ -118,7 +118,7 @@ export class Job<T extends JobData<T> = any> {
     start() {
         if (this._state === JobState.PENDING || this._state === JobState.RETRYING) {
             this._state = JobState.RUNNING;
-            this._started = new Date();
+            this._startedAt = new Date();
             this._attempts++;
             this.fireEvent('start');
         }
@@ -141,7 +141,7 @@ export class Job<T extends JobData<T> = any> {
         this._result = result;
         this._progress = 100;
         this._state = JobState.COMPLETED;
-        this._settled = new Date();
+        this._settledAt = new Date();
         this.fireEvent('complete');
     }
 
@@ -156,7 +156,7 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.RETRYING;
         } else {
             this._state = JobState.FAILED;
-            this._settled = new Date();
+            this._settledAt = new Date();
         }
         this.fireEvent('fail');
     }

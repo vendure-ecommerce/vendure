@@ -1,7 +1,7 @@
 import { ModuleRef } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Brackets, Connection } from 'typeorm';
 
 import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
@@ -56,7 +56,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
         }
     }
 
-    async update(job: Job<{}>): Promise<void> {
+    async update(job: Job<any>): Promise<void> {
         if (!this.connectionAvailable(this.connection)) {
             return;
         }
@@ -79,7 +79,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
             }));
     }
 
-    async findOne(id: string): Promise<Job | undefined> {
+    async findOne(id: ID): Promise<Job | undefined> {
         if (!this.connectionAvailable(this.connection)) {
             return;
         }
@@ -89,7 +89,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
         }
     }
 
-    async findManyById(ids: string[]): Promise<Job[]> {
+    async findManyById(ids: ID[]): Promise<Job[]> {
         if (!this.connectionAvailable(this.connection)) {
             return [];
         }
@@ -112,8 +112,8 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
             progress: job.progress,
             result: job.result,
             error: job.error,
-            started: job.started,
-            settled: job.settled,
+            startedAt: job.startedAt,
+            settledAt: job.settledAt,
             isSettled: job.isSettled,
             retries: job.retries,
             attempts: job.attempts,
@@ -121,9 +121,6 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
     }
 
     private fromRecord(jobRecord: JobRecord): Job<any> {
-        return new Job<any>({
-            ...jobRecord,
-            created: jobRecord.createdAt,
-        });
+        return new Job<any>(jobRecord);
     }
 }

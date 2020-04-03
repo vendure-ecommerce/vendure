@@ -1,6 +1,6 @@
 import { ModuleRef } from '@nestjs/core';
 import { JobListOptions } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Job } from '../../job-queue/job';
 
@@ -60,7 +60,7 @@ export interface JobQueueStrategy {
      * @description
      * Returns a job by its id.
      */
-    findOne(id: string): Promise<Job | undefined>;
+    findOne(id: ID): Promise<Job | undefined>;
 
     /**
      * @description
@@ -72,5 +72,5 @@ export interface JobQueueStrategy {
      * @description
      * Returns an array of jobs for the given ids.
      */
-    findManyById(ids: string[]): Promise<Job[]>;
+    findManyById(ids: ID[]): Promise<Job[]>;
 }

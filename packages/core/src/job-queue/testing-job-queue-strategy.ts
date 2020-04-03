@@ -1,6 +1,7 @@
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { generatePublicId } from '../common/generate-public-id';
 import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
 
 import { Job } from './job';
@@ -18,11 +19,12 @@ export class TestingJobQueueStrategy implements JobQueueStrategy {
     }
 
     async add(job: Job): Promise<Job> {
+        (job as any).id = generatePublicId();
         this.jobs.push(job);
         return job;
     }
 
-    async findOne(id: string): Promise<Job | undefined> {
+    async findOne(id: ID): Promise<Job | undefined> {
         return this.jobs.find((j) => j.id === id);
     }
 
@@ -36,8 +38,8 @@ export class TestingJobQueueStrategy implements JobQueueStrategy {
         };
     }
 
-    async findManyById(ids: string[]): Promise<Job[]> {
-        return this.jobs.filter((job) => ids.includes(job.id));
+    async findManyById(ids: ID[]): Promise<Job[]> {
+        return this.jobs.filter((job) => job.id && ids.includes(job.id));
     }
 
     async next(queueName: string): Promise<Job | undefined> {

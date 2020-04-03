@@ -1,23 +1,14 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
+
+import { VendureEntity } from '../base/base.entity';
 
 @Entity()
-export class JobRecord {
+export class JobRecord extends VendureEntity {
     constructor(input: DeepPartial<JobRecord>) {
-        if (input) {
-            for (const [key, value] of Object.entries(input)) {
-                (this as any)[key] = value;
-            }
-        }
+        super(input);
     }
-
-    @PrimaryColumn()
-    id: string;
-
-    @CreateDateColumn() createdAt: Date;
-
-    @UpdateDateColumn() updatedAt: Date;
 
     @Column()
     queueName: string;
@@ -37,11 +28,11 @@ export class JobRecord {
     @Column({ nullable: true })
     error: string;
 
-    @Column({ nullable: true })
-    started?: Date;
+    @Column({ nullable: true, precision: 6 })
+    startedAt?: Date;
 
-    @Column({ nullable: true })
-    settled?: Date;
+    @Column({ nullable: true, precision: 6 })
+    settledAt?: Date;
 
     @Column()
     isSettled: boolean;

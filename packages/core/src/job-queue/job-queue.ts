@@ -50,6 +50,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
                 const nextJob: Job<Data> | undefined = await this.jobQueueStrategy.next(this.options.name);
                 if (nextJob) {
                     this.activeJobs.push(nextJob);
+                    await this.jobQueueStrategy.update(nextJob);
                     nextJob.on('complete', (job) => this.onFailOrComplete(job));
                     nextJob.on('fail', (job) => this.onFailOrComplete(job));
                     try {
@@ -60,7 +61,6 @@ export class JobQueue<Data extends JobData<Data> = {}> {
                     } catch (err) {
                         nextJob.fail(err);
                     }
-                    await this.jobQueueStrategy.update(nextJob);
                 }
             }
             this.timer = setTimeout(runNextJobs, this.pollInterval);

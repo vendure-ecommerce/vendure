@@ -1262,25 +1262,25 @@ export type Job = Node & {
    __typename?: 'Job';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
+  startedAt?: Maybe<Scalars['DateTime']>;
+  settledAt?: Maybe<Scalars['DateTime']>;
   queueName: Scalars['String'];
   state: JobState;
   progress: Scalars['Float'];
   data?: Maybe<Scalars['JSON']>;
   result?: Maybe<Scalars['JSON']>;
   error?: Maybe<Scalars['JSON']>;
-  started: Scalars['DateTime'];
-  settled?: Maybe<Scalars['DateTime']>;
   isSettled: Scalars['Boolean'];
   duration: Scalars['Int'];
 };
 
 export type JobFilterParameter = {
   createdAt?: Maybe<DateOperators>;
+  startedAt?: Maybe<DateOperators>;
+  settledAt?: Maybe<DateOperators>;
   queueName?: Maybe<StringOperators>;
   state?: Maybe<StringOperators>;
   progress?: Maybe<NumberOperators>;
-  started?: Maybe<DateOperators>;
-  settled?: Maybe<DateOperators>;
   isSettled?: Maybe<BooleanOperators>;
   duration?: Maybe<NumberOperators>;
 };
@@ -1307,10 +1307,10 @@ export type JobQueue = {
 export type JobSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
+  startedAt?: Maybe<SortOrder>;
+  settledAt?: Maybe<SortOrder>;
   queueName?: Maybe<SortOrder>;
   progress?: Maybe<SortOrder>;
-  started?: Maybe<SortOrder>;
-  settled?: Maybe<SortOrder>;
   duration?: Maybe<SortOrder>;
 };
 
