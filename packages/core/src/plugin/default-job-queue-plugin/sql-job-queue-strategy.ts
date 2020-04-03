@@ -4,12 +4,12 @@ import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Brackets, Connection } from 'typeorm';
 
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
-import { JobRecord } from '../entity/job-record/job-record.entity';
-import { ProcessContext } from '../process-context/process-context';
-import { ListQueryBuilder } from '../service/helpers/list-query-builder/list-query-builder';
+import { JobQueueStrategy } from '../../config/job-queue/job-queue-strategy';
+import { Job } from '../../job-queue/job';
+import { ProcessContext } from '../../process-context/process-context';
+import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 
-import { Job } from './job';
+import { JobRecord } from './job-record.entity';
 
 export class SqlJobQueueStrategy implements JobQueueStrategy {
     private connection: Connection | undefined;

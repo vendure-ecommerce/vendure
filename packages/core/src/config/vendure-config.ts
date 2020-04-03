@@ -389,6 +389,8 @@ export interface JobQueueOptions {
     /**
      * @description
      * Defines how the jobs in the queue are persisted and accessed.
+     *
+     * @default InMemoryJobQueueStrategy
      */
     jobQueueStrategy?: JobQueueStrategy;
     /**

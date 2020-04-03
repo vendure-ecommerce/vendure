@@ -6,6 +6,7 @@ import { ConfigService } from '../config/config.service';
 import { ProcessContext, ServerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
+import { JobQueue } from './job-queue';
 import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 

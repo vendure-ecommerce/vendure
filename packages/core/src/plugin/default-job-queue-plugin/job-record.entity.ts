@@ -2,7 +2,7 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity } from 'typeorm';
 
-import { VendureEntity } from '../base/base.entity';
+import { VendureEntity } from '../../entity/base/base.entity';
 
 @Entity()
 export class JobRecord extends VendureEntity {

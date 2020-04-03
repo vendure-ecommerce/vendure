@@ -1,64 +1,14 @@
-import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-
-import { generatePublicId } from '../common/generate-public-id';
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
-
+import { InMemoryJobQueueStrategy } from './in-memory-job-queue-strategy';
 import { Job } from './job';
 
 /**
  * @description
- * An in-memory {@link JobQueueStrategy} design for testing purposes. Not to be used in production
- * since all jobs are lost when the server stops.
+ * An in-memory {@link JobQueueStrategy} design for testing purposes.
  */
-export class TestingJobQueueStrategy implements JobQueueStrategy {
-    private jobs: Job[] = [];
-
+export class TestingJobQueueStrategy extends InMemoryJobQueueStrategy {
     prePopulate(jobs: Job[]) {
-        this.jobs.push(...jobs);
-    }
-
-    async add(job: Job): Promise<Job> {
-        (job as any).id = generatePublicId();
-        this.jobs.push(job);
-        return job;
-    }
-
-    async findOne(id: ID): Promise<Job | undefined> {
-        return this.jobs.find((j) => j.id === id);
-    }
-
-    async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
-        // The sort, filter, paginate logic is not implemented because
-        // it is not needed for testing purposes.
-        const items = this.jobs;
-        return {
-            items,
-            totalItems: items.length,
-        };
-    }
-
-    async findManyById(ids: ID[]): Promise<Job[]> {
-        return this.jobs.filter((job) => job.id && ids.includes(job.id));
-    }
-
-    async next(queueName: string): Promise<Job | undefined> {
-        const next = this.jobs.find((job) => {
-            return (
-                (job.state === JobState.PENDING || job.state === JobState.RETRYING) &&
-                job.queueName === queueName
-            );
-        });
-        if (next) {
-            next.start();
-            return next;
-        }
-    }
-
-    async update(job: Job): Promise<void> {
-        const index = this.jobs.findIndex((j) => j.id === job.id);
-        if (-1 < index) {
-            this.jobs.splice(index, 1, job);
+        for (const job of jobs) {
+            this.add(job);
         }
     }
 }

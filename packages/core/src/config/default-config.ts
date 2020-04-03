@@ -3,7 +3,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 
 import { generatePublicId } from '../common/generate-public-id';
-import { SqlJobQueueStrategy } from '../job-queue/sql-job-queue-strategy';
+import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
@@ -94,7 +94,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
     },
     jobQueueOptions: {
-        jobQueueStrategy: new SqlJobQueueStrategy(),
+        jobQueueStrategy: new InMemoryJobQueueStrategy(),
         pollInterval: 200,
     },
     customFields: {
