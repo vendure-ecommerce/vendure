@@ -515,6 +515,8 @@ describe('Elasticsearch plugin', () => {
                     },
                 );
                 await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters to update
+                await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
 
                 expect(result.search.items.map((i) => i.productName)).toEqual([
@@ -560,6 +562,8 @@ describe('Elasticsearch plugin', () => {
                         ],
                     },
                 });
+                await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({
                     collectionId: createCollection.id,

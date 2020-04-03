@@ -9,7 +9,6 @@ import {
     AsyncQueue,
     FacetValue,
     ID,
-    JobService,
     Logger,
     Product,
     ProductVariant,
@@ -76,7 +75,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         @InjectConnection() private connection: Connection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
         private productVariantService: ProductVariantService,
-        private jobService: JobService,
     ) {}
 
     onModuleInit(): any {

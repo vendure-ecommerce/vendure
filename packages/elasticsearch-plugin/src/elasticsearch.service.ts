@@ -1,11 +1,12 @@
 import { Client } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { JobInfo, SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
+import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
     DeepRequired,
     FacetValue,
     FacetValueService,
     InternalServerError,
+    Job,
     Logger,
     RequestContext,
     SearchService,
@@ -104,7 +105,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
+                items: body.hits.hits.map((hit) => this.mapProductToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         } else {
@@ -114,7 +115,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
+                items: body.hits.hits.map((hit) => this.mapVariantToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         }
@@ -153,9 +154,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
-        const facetValues = await this.facetValueService.findByIds(buckets.map(b => b.key), ctx.languageCode);
+        const facetValues = await this.facetValueService.findByIds(
+            buckets.map((b) => b.key),
+            ctx.languageCode,
+        );
         return facetValues.map((facetValue, index) => {
-            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
+            const bucket = buckets.find((b) => b.key.toString() === facetValue.id.toString());
             return {
                 facetValue,
                 count: bucket ? bucket.doc_count : 0,
@@ -229,28 +233,28 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 min: aggregations.minPriceWithTax.value || 0,
                 max: aggregations.maxPriceWithTax.value || 0,
             },
-            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
-            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
+            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
         };
     }
 
     /**
      * Rebuilds the full search index.
      */
-    async reindex(ctx: RequestContext, dropIndices = true): Promise<JobInfo> {
+    async reindex(ctx: RequestContext, dropIndices = true): Promise<Job> {
         const { indexPrefix } = this.options;
-        const job = this.elasticsearchIndexService.reindex(ctx, dropIndices);
-        job.start();
-        return job;
+        const job = await this.elasticsearchIndexService.reindex(ctx, dropIndices);
+        // tslint:disable-next-line:no-non-null-assertion
+        return job!;
     }
 
     /**
      * Reindexes all in current Channel without dropping indices.
      */
-    async updateAll(ctx: RequestContext): Promise<JobInfo> {
-        const job = this.elasticsearchIndexService.reindex(ctx, false);
-        job.start();
-        return job;
+    async updateAll(ctx: RequestContext): Promise<Job> {
+        const job = await this.elasticsearchIndexService.reindex(ctx, false);
+        // tslint:disable-next-line:no-non-null-assertion
+        return job!;
     }
 
     private mapVariantToSearchResult(hit: SearchHit<VariantIndexItem>): SearchResult {

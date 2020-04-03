@@ -9,6 +9,8 @@ import {
 import { ID } from '@vendure/common/lib/shared-types';
 import { Asset, SerializedRequestContext, WorkerMessage } from '@vendure/core';
 
+import { JsonCompatible } from '../../common/src/shared-types';
+
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
     priceRangeWithTax?: PriceRange;
@@ -175,7 +177,7 @@ export interface ProductChannelMessageData {
 }
 export interface UpdateAssetMessageData {
     ctx: SerializedRequestContext;
-    asset: Asset;
+    asset: JsonCompatible<Required<Asset>>;
 }
 
 export class ReindexMessage extends WorkerMessage<ReindexMessageData, ReindexMessageResponse> {
@@ -214,6 +216,28 @@ type CustomMappingDefinition<Args extends any[], T extends string, R> = {
     graphQlType: T;
     valueFn: (...args: Args) => R;
 };
+
+type NamedJobData<Type extends string, MessageData> = { type: Type } & MessageData;
+
+export type ReindexJobData = NamedJobData<'reindex', ReindexMessageData>;
+type UpdateProductJobData = NamedJobData<'update-product', UpdateProductMessageData>;
+type UpdateVariantsJobData = NamedJobData<'update-variants', UpdateVariantMessageData>;
+type DeleteProductJobData = NamedJobData<'delete-product', UpdateProductMessageData>;
+type DeleteVariantJobData = NamedJobData<'delete-variant', UpdateVariantMessageData>;
+type UpdateVariantsByIdJobData = NamedJobData<'update-variants-by-id', UpdateVariantsByIdMessageData>;
+type UpdateAssetJobData = NamedJobData<'update-asset', UpdateAssetMessageData>;
+type AssignProductToChannelJobData = NamedJobData<'assign-product-to-channel', ProductChannelMessageData>;
+type RemoveProductFromChannelJobData = NamedJobData<'remove-product-from-channel', ProductChannelMessageData>;
+export type UpdateIndexQueueJobData =
+    | ReindexJobData
+    | UpdateProductJobData
+    | UpdateVariantsJobData
+    | DeleteProductJobData
+    | DeleteVariantJobData
+    | UpdateVariantsByIdJobData
+    | UpdateAssetJobData
+    | AssignProductToChannelJobData
+    | RemoveProductFromChannelJobData;
 
 type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
 type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;
