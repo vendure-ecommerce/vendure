@@ -7,15 +7,13 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import {
-    TestAPIExtensionPlugin,
-    TestLazyExtensionPlugin,
-    TestPluginWithAllLifecycleHooks,
-    TestPluginWithConfigAndBootstrap,
-    TestPluginWithProvider,
-    TestProcessContextPlugin,
-    TestRestPlugin,
-} from './fixtures/test-plugins';
+import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
+import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
+import { TestPluginWithConfigAndBootstrap } from './fixtures/test-plugins/with-config-and-bootstrap';
+import { TestLazyExtensionPlugin } from './fixtures/test-plugins/with-lazy-api-extensions';
+import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
+import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
+import { TestProcessContextPlugin } from './fixtures/test-plugins/with-worker-controller';
 
 describe('Plugins', () => {
     const bootstrapMockFn = jest.fn();
