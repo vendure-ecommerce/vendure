@@ -1,5 +1,6 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
     examplePaymentHandler,
+    DefaultJobQueuePlugin,
     DefaultSearchPlugin,{{#if isTs}}
     VendureConfig,{{/if}}
 } {{#if isTs}}from '@vendure/core'; {{ else }}= require('@vendure/core');{{/if}}
@@ -62,6 +63,7 @@ const path = require('path');
             assetUploadDir: path.join(__dirname, '../static/assets'),
             port: 3001,
         }),
+        DefaultJobQueuePlugin,
         DefaultSearchPlugin,
         EmailPlugin.init({
             devMode: true,
