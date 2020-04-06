@@ -22,6 +22,7 @@ import {
     DeleteProduct,
     DeleteProductVariant,
     LanguageCode,
+    Reindex,
     RemoveProductsFromChannel,
     SearchFacetValues,
     SearchGetAssets,
@@ -701,6 +702,19 @@ describe('Default search plugin', () => {
                     { productId: 'T_3', enabled: false },
                 ]);
             });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/295
+            it('enabled status survives reindex', async () => {
+                await adminClient.query<Reindex.Mutation>(REINDEX);
+
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                    { productId: 'T_1', enabled: false },
+                    { productId: 'T_2', enabled: true },
+                    { productId: 'T_3', enabled: false },
+                ]);
+            });
         });
 
         describe('channel handling', () => {
@@ -760,6 +774,14 @@ describe('Default search plugin', () => {
         });
     });
 });
+
+export const REINDEX = gql`
+    mutation Reindex {
+        reindex {
+            id
+        }
+    }
+`;
 
 export const SEARCH_PRODUCTS = gql`
     query SearchProductsAdmin($input: SearchInput!) {

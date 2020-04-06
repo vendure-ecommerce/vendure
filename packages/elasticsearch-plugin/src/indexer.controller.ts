@@ -657,7 +657,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 [] as ID[],
             ),
             channelIds: first.product.channels.map((c) => c.id as string),
-            enabled: variants.some((v) => v.enabled),
+            enabled: variants.some((v) => v.enabled) && first.product.enabled,
         };
 
         const customMappings = Object.entries(this.options.customProductMappings);

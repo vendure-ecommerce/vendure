@@ -3855,6 +3855,12 @@ export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
     deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
 };
 
+export type ReindexMutationVariables = {};
+
+export type ReindexMutation = { __typename?: 'Mutation' } & {
+    reindex: { __typename?: 'Job' } & Pick<Job, 'id'>;
+};
+
 export type SearchProductsAdminQueryVariables = {
     input: SearchInput;
 };
@@ -5633,6 +5639,12 @@ export namespace DeleteCustomer {
     export type Variables = DeleteCustomerMutationVariables;
     export type Mutation = DeleteCustomerMutation;
     export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
+}
+
+export namespace Reindex {
+    export type Variables = ReindexMutationVariables;
+    export type Mutation = ReindexMutation;
+    export type Reindex = ReindexMutation['reindex'];
 }
 
 export namespace SearchProductsAdmin {

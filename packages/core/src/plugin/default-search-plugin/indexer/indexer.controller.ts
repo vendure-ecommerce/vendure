@@ -306,7 +306,7 @@ export class IndexerController {
                     channelId,
                     languageCode,
                     sku: v.sku,
-                    enabled: v.enabled,
+                    enabled: v.product.enabled === false ? false : v.enabled,
                     slug: v.product.slug,
                     price: v.price,
                     priceWithTax: v.priceWithTax,
