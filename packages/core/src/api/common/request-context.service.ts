@@ -66,7 +66,7 @@ export class RequestContextService {
     }
 
     private getLanguageCode(req: Request): LanguageCode | undefined {
-        return req.query && req.query.languageCode;
+        return (req.query && req.query.languageCode) || this.configService.defaultLanguageCode;
     }
 
     private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
@@ -82,7 +82,7 @@ export class RequestContextService {
             return false;
         }
         const permissionsOnChannel = user.roles
-            .filter(role => role.channels.find(c => idsAreEqual(c.id, channel.id)))
+            .filter((role) => role.channels.find((c) => idsAreEqual(c.id, channel.id)))
             .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
         return this.arraysIntersect(permissions, permissionsOnChannel);
     }
@@ -91,11 +91,8 @@ export class RequestContextService {
      * Returns true if any element of arr1 appears in arr2.
      */
     private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
-        return arr1.reduce(
-            (intersects, role) => {
-                return intersects || arr2.includes(role);
-            },
-            false as boolean,
-        );
+        return arr1.reduce((intersects, role) => {
+            return intersects || arr2.includes(role);
+        }, false as boolean);
     }
 }

@@ -18,7 +18,6 @@ import { Connection } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -28,6 +27,7 @@ import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
 } from '../../config/collection/default-collection-filters';
+import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
@@ -70,6 +70,7 @@ export class CollectionService implements OnModuleInit {
         private eventBus: EventBus,
         private workerService: WorkerService,
         private jobQueueService: JobQueueService,
+        private configService: ConfigService,
     ) {}
 
     onModuleInit() {
@@ -483,7 +484,7 @@ export class CollectionService implements OnModuleInit {
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
             new CollectionTranslation({
-                languageCode: DEFAULT_LANGUAGE_CODE,
+                languageCode: this.configService.defaultLanguageCode,
                 name: ROOT_COLLECTION_NAME,
                 description: 'The root of the Collection tree.',
             }),

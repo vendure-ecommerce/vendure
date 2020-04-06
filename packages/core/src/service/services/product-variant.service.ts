@@ -10,11 +10,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound, idsAreEqual } from '../../common/utils';
+import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -62,7 +61,7 @@ export class ProductVariantService {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(productVariantId, { relations })
-            .then(result => {
+            .then((result) => {
                 if (result) {
                     return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
                 }
@@ -82,8 +81,8 @@ export class ProductVariantService {
                     'featuredAsset',
                 ],
             })
-            .then(variants => {
-                return variants.map(variant =>
+            .then((variants) => {
+                return variants.map((variant) =>
                     translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
                         'options',
                         'facetValues',
@@ -113,8 +112,8 @@ export class ProductVariantService {
                     id: 'ASC',
                 },
             })
-            .then(variants =>
-                variants.map(variant => {
+            .then((variants) =>
+                variants.map((variant) => {
                     const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
                     return translateDeep(variantWithPrices, ctx.languageCode, [
                         'options',
@@ -145,7 +144,7 @@ export class ProductVariantService {
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
-            const items = variants.map(variant => {
+            const items = variants.map((variant) => {
                 const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
                 return translateDeep(variantWithPrices, ctx.languageCode);
             });
@@ -160,15 +159,17 @@ export class ProductVariantService {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(variantId, { relations: ['options'] })
-            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+            .then((variant) =>
+                !variant ? [] : variant.options.map((o) => translateDeep(o, ctx.languageCode)),
+            );
     }
 
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(variantId, { relations: ['facetValues', 'facetValues.facet'] })
-            .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+            .then((variant) =>
+                !variant ? [] : variant.facetValues.map((o) => translateDeep(o, ctx.languageCode, ['facet'])),
             );
     }
 
@@ -193,7 +194,10 @@ export class ProductVariantService {
         for (const productInput of input) {
             await this.updateSingle(ctx, productInput);
         }
-        const updatedVariants = await this.findByIds(ctx, input.map(i => i.id));
+        const updatedVariants = await this.findByIds(
+            ctx,
+            input.map((i) => i.id),
+        );
         this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated'));
         return updatedVariants;
     }
@@ -212,7 +216,7 @@ export class ProductVariantService {
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
-            beforeSave: async variant => {
+            beforeSave: async (variant) => {
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
                     const selectedOptions = await this.connection
@@ -257,7 +261,7 @@ export class ProductVariantService {
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
-            beforeSave: async updatedVariant => {
+            beforeSave: async (updatedVariant) => {
                 if (input.taxCategoryId) {
                     const taxCategory = await this.taxCategoryService.findOne(input.taxCategoryId);
                     if (taxCategory) {
@@ -329,7 +333,9 @@ export class ProductVariantService {
      * Populates the `price` field with the price for the specified channel.
      */
     applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
+        const channelPrice = variant.productVariantPrices.find((p) =>
+            idsAreEqual(p.channelId, ctx.channelId),
+        );
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`);
         }
@@ -365,10 +371,15 @@ export class ProductVariantService {
         if (optionIds.length !== product.optionGroups.length) {
             this.throwIncompatibleOptionsError(product.optionGroups);
         }
-        if (!samplesEach(optionIds, product.optionGroups.map(g => g.options.map(o => o.id)))) {
+        if (
+            !samplesEach(
+                optionIds,
+                product.optionGroups.map((g) => g.options.map((o) => o.id)),
+            )
+        ) {
             this.throwIncompatibleOptionsError(product.optionGroups);
         }
-        product.variants.forEach(variant => {
+        product.variants.forEach((variant) => {
             const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
             const inputOptionIds = this.sortJoin(input.optionIds || [], ',');
             if (variantOptionIds === inputOptionIds) {
@@ -387,7 +398,7 @@ export class ProductVariantService {
 
     private sortJoin<T>(arr: T[], glue: string, prop?: keyof T): string {
         return arr
-            .map(x => (prop ? x[prop] : x))
+            .map((x) => (prop ? x[prop] : x))
             .sort()
             .join(glue);
     }
@@ -407,18 +418,5 @@ export class ProductVariantService {
             taxCategory = await this.taxCategoryService.create({ name: 'Standard Tax' });
         }
         return taxCategory;
-    }
-
-    private createVariantName(productName: string, options: ProductOption[]): string {
-        const optionsSuffix = options
-            .map(option => {
-                const defaultTranslation = option.translations.find(
-                    t => t.languageCode === DEFAULT_LANGUAGE_CODE,
-                );
-                return defaultTranslation ? defaultTranslation.name : option.code;
-            })
-            .join(' ');
-
-        return options.length ? `${productName} ${optionsSuffix}` : productName;
     }
 }

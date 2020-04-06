@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateGroupOptionInput, CreateProductOptionInput, LanguageCode, UpdateProductOptionInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateGroupOptionInput,
+    CreateProductOptionInput,
+    UpdateProductOptionInput,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
@@ -27,7 +30,7 @@ export class ProductOptionService {
             .find(ProductOption, {
                 relations: ['group'],
             })
-            .then(options => options.map(option => translateDeep(option, ctx.languageCode)));
+            .then((options) => options.map((option) => translateDeep(option, ctx.languageCode)));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
@@ -35,7 +38,7 @@ export class ProductOptionService {
             .findOne(ProductOption, id, {
                 relations: ['group'],
             })
-            .then(option => option && translateDeep(option, ctx.languageCode));
+            .then((option) => option && translateDeep(option, ctx.languageCode));
     }
 
     async create(
@@ -51,7 +54,7 @@ export class ProductOptionService {
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: po => (po.group = productOptionGroup),
+            beforeSave: (po) => (po.group = productOptionGroup),
         });
         return assertFound(this.findOne(ctx, option.id));
     }

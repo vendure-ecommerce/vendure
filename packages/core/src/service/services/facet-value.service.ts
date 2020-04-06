@@ -12,9 +12,9 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Product, ProductVariant } from '../../entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -28,6 +28,7 @@ export class FacetValueService {
     constructor(
         @InjectConnection() private connection: Connection,
         private translatableSaver: TranslatableSaver,
+        private configService: ConfigService,
     ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
@@ -35,7 +36,9 @@ export class FacetValueService {
             .find(FacetValue, {
                 relations: ['facet'],
             })
-            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang, ['facet'])));
+            .then((facetValues) =>
+                facetValues.map((facetValue) => translateDeep(facetValue, lang, ['facet'])),
+            );
     }
 
     findOne(id: ID, lang: LanguageCode): Promise<Translated<FacetValue> | undefined> {
@@ -43,7 +46,7 @@ export class FacetValueService {
             .findOne(FacetValue, id, {
                 relations: ['facet'],
             })
-            .then(facetValue => facetValue && translateDeep(facetValue, lang, ['facet']));
+            .then((facetValue) => facetValue && translateDeep(facetValue, lang, ['facet']));
     }
 
     findByIds(ids: ID[]): Promise<FacetValue[]>;
@@ -53,8 +56,8 @@ export class FacetValueService {
             .getRepository(FacetValue)
             .findByIds(ids, { relations: ['facet'] });
         if (lang) {
-            return facetValues.then(values =>
-                values.map(facetValue => translateDeep(facetValue, lang, ['facet'])),
+            return facetValues.then((values) =>
+                values.map((facetValue) => translateDeep(facetValue, lang, ['facet'])),
             );
         } else {
             return facetValues;
@@ -69,9 +72,9 @@ export class FacetValueService {
             input,
             entityType: FacetValue,
             translationType: FacetValueTranslation,
-            beforeSave: fv => (fv.facet = facet),
+            beforeSave: (fv) => (fv.facet = facet),
         });
-        return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(facetValue.id, this.configService.defaultLanguageCode));
     }
 
     async update(input: UpdateFacetValueInput): Promise<Translated<FacetValue>> {
@@ -80,7 +83,7 @@ export class FacetValueService {
             entityType: FacetValue,
             translationType: FacetValueTranslation,
         });
-        return assertFound(this.findOne(facetValue.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(facetValue.id, this.configService.defaultLanguageCode));
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {

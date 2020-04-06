@@ -2,13 +2,11 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { TFunction } from 'i18next';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
-import { JobData } from '../../job-queue/types';
 
 import { ApiType } from './get-api-type';
 
@@ -55,8 +53,7 @@ export class RequestContext {
         this._apiType = apiType;
         this._channel = channel;
         this._session = session;
-        this._languageCode =
-            languageCode || (channel && channel.defaultLanguageCode) || DEFAULT_LANGUAGE_CODE;
+        this._languageCode = languageCode || (channel && channel.defaultLanguageCode);
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);

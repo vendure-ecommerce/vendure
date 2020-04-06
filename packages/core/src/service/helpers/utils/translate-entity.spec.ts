@@ -1,6 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
