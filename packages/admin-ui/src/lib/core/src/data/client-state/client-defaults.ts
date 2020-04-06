@@ -1,9 +1,9 @@
 import { GetNetworkStatus, GetUiState, GetUserStatus } from '../../common/generated-types';
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
+import { getDefaultUiLanguage } from '../../common/utilities/get-default-ui-language';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 
 export function getClientDefaults(localStorageService: LocalStorageService) {
-    const currentLanguage = localStorageService.get('uiLanguageCode') || getDefaultLanguage();
+    const currentLanguage = localStorageService.get('uiLanguageCode') || getDefaultUiLanguage();
     return {
         networkStatus: {
             inFlightRequests: 0,

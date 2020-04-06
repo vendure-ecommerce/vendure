@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
@@ -47,12 +54,12 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
@@ -69,15 +76,15 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.init();
         this.facets$ = this.dataService.facet
             .getFacets(9999999, 0)
-            .mapSingle(data => data.facets.items)
+            .mapSingle((data) => data.facets.items)
             .pipe(shareReplay(1));
 
-        this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
+        this.dataService.collection.getCollectionFilters().single$.subscribe((res) => {
             this.allFilters = res.collectionFilters;
         });
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
-            .mapStream(data => data.activeChannel);
+            .mapStream((data) => data.activeChannel);
     }
 
     ngOnDestroy() {
@@ -85,7 +92,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     }
 
     getFilterDefinition(filter: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
-        return this.allFilters.find(f => f.code === filter.code);
+        return this.allFilters.find((f) => f.code === filter.code);
     }
 
     customFieldIsSet(name: string): boolean {
@@ -98,7 +105,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     addFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
+        const index = filtersArray.value.findIndex((o) => o.code === collectionFilter.code);
         if (index === -1) {
             const argsHash = collectionFilter.args.reduce(
                 (output, arg) => ({
@@ -119,7 +126,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     removeFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
+        const index = filtersArray.value.findIndex((o) => o.code === collectionFilter.code);
         if (index !== -1) {
             filtersArray.removeAt(index);
             this.filters.splice(index, 1);
@@ -147,7 +154,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Collection',
                     });
@@ -156,7 +163,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Collection',
                     });
@@ -187,7 +194,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     });
                     this.contentsComponent.refresh();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Collection',
                     });
@@ -203,7 +210,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
      * Sets the values of the form on changes to the category or current language.
      */
     protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = entity.translations.find((t) => t.languageCode === languageCode);
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
@@ -211,7 +218,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             visible: !entity.isPrivate,
         });
 
-        entity.filters.forEach(f => this.addFilter(f));
+        entity.filters.forEach((f) => this.addFilter(f));
 
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;

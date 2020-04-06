@@ -2,22 +2,21 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
-
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
+    BaseDetailComponent,
     CreateTaxRateInput,
     CustomerGroup,
+    DataService,
     GetZones,
     LanguageCode,
+    NotificationService,
+    ServerConfigService,
     TaxCategory,
     TaxRate,
     UpdateTaxRateInput,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
+import { Observable } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-tax-rate-detail',
@@ -37,11 +36,11 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             enabled: [true],
@@ -56,8 +55,8 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
         this.init();
         this.taxCategories$ = this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories);
-        this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+            .mapSingle((data) => data.taxCategories);
+        this.zones$ = this.dataService.settings.getZones().mapSingle((data) => data.zones);
     }
 
     ngOnDestroy() {
@@ -82,7 +81,7 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
             customerGroupId: formValue.customerGroupId,
         } as CreateTaxRateInput;
         this.dataService.settings.createTaxRate(input).subscribe(
-            data => {
+            (data) => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxRate',
                 });
@@ -90,7 +89,7 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createTaxRate.id], { relativeTo: this.route });
             },
-            err => {
+            (err) => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'TaxRate',
                 });
@@ -106,7 +105,7 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
         this.entity$
             .pipe(
                 take(1),
-                mergeMap(taxRate => {
+                mergeMap((taxRate) => {
                     const input = {
                         id: taxRate.id,
                         name: formValue.name,
@@ -120,14 +119,14 @@ export class TaxRateDetailComponent extends BaseDetailComponent<TaxRate.Fragment
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'TaxRate',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'TaxRate',
                     });

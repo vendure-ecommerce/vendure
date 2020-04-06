@@ -2,9 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     ConfigurableOperation,
@@ -16,6 +13,8 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { Observable } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-tax-detail',
@@ -36,11 +35,11 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
             taxRate: [0, Validators.required],
@@ -67,7 +66,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         const formValue = this.detailForm.value;
         const input = { name: formValue.name } as CreateTaxCategoryInput;
         this.dataService.settings.createTaxCategory(input).subscribe(
-            data => {
+            (data) => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'TaxCategory',
                 });
@@ -75,7 +74,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createTaxCategory.id], { relativeTo: this.route });
             },
-            err => {
+            (err) => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'TaxCategory',
                 });
@@ -91,7 +90,7 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
         this.taxCategory$
             .pipe(
                 take(1),
-                mergeMap(taxCategory => {
+                mergeMap((taxCategory) => {
                     const input = {
                         id: taxCategory.id,
                         name: formValue.name,
@@ -100,14 +99,14 @@ export class TaxCategoryDetailComponent extends BaseDetailComponent<TaxCategory.
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'TaxCategory',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'TaxCategory',
                     });

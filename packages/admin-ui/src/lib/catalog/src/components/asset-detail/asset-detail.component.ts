@@ -19,10 +19,10 @@ export class AssetDetailComponent extends BaseDetailComponent<Asset.Fragment> im
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private notificationService: NotificationService,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
     }
 
     ngOnInit() {
@@ -53,7 +53,7 @@ export class AssetDetailComponent extends BaseDetailComponent<Asset.Fragment> im
                 () => {
                     this.notificationService.success(_('common.notify-update-success'), { entity: 'Asset' });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Asset',
                     });

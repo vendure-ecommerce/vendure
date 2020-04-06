@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { Channel, CurrencyCode } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
 /**
@@ -24,11 +24,11 @@ export class ChannelResolver extends BaseEntityResolver<Channel.Fragment> {
                 token: '',
                 pricesIncludeTax: false,
                 currencyCode: CurrencyCode.USD,
-                defaultLanguageCode: getDefaultLanguage(),
+                defaultLanguageCode: getDefaultUiLanguage(),
                 defaultShippingZone: {} as any,
                 defaultTaxZone: {} as any,
             },
-            id => dataService.settings.getChannel(id).mapStream(data => data.channel),
+            (id) => dataService.settings.getChannel(id).mapStream((data) => data.channel),
         );
     }
 }

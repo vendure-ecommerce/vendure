@@ -2,13 +2,12 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { switchMap } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import { CustomFieldConfig, GlobalSettings, LanguageCode, Permission } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-global-settings',
@@ -26,11 +25,11 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('GlobalSettings');
         this.detailForm = this.formBuilder.group({
             availableLanguages: [''],
@@ -73,7 +72,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
                         entity: 'Settings',
                     });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Settings',
                     });

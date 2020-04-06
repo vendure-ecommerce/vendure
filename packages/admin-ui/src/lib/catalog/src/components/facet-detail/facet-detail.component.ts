@@ -41,12 +41,12 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Facet');
         this.customValueFields = this.getCustomFieldConfig('FacetValue');
         this.detailForm = this.formBuilder.group({
@@ -132,13 +132,13 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-create-success'), { entity: 'Facet' });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createFacet.id], { relativeTo: this.route });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Facet',
                     });
@@ -167,8 +167,8 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     const valuesArray = this.detailForm.get('values');
                     if (valuesArray && valuesArray.dirty) {
                         const newValues: CreateFacetValueInput[] = (valuesArray as FormArray).controls
-                            .filter(c => !c.value.id)
-                            .map(c => ({
+                            .filter((c) => !c.value.id)
+                            .map((c) => ({
                                 facetId: facet.id,
                                 code: c.value.code,
                                 translations: [{ name: c.value.name, languageCode }],
@@ -199,7 +199,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     this.changeDetector.markForCheck();
                     this.notificationService.success(_('common.notify-update-success'), { entity: 'Facet' });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Facet',
                     });
@@ -219,16 +219,16 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         }
         this.showModalAndDelete(facetValueId)
             .pipe(
-                switchMap(response => {
+                switchMap((response) => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(facetValueId, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
+                            map((r) => r.result === DeletionResult.DELETED),
                         );
                     }
                 }),
-                switchMap(deleted => (deleted ? this.dataService.facet.getFacet(this.id).single$ : [])),
+                switchMap((deleted) => (deleted ? this.dataService.facet.getFacet(this.id).single$ : [])),
             )
             .subscribe(
                 () => {
@@ -236,7 +236,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                         entity: 'FacetValue',
                     });
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'FacetValue',
                     });
@@ -255,10 +255,10 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                 ],
             })
             .pipe(
-                switchMap(result =>
+                switchMap((result) =>
                     result ? this.dataService.facet.deleteFacetValues([facetValueId], !!message) : EMPTY,
                 ),
-                map(result => result.deleteFacetValues[0]),
+                map((result) => result.deleteFacetValues[0]),
             );
     }
 
@@ -266,7 +266,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
      * Sets the values of the form on changes to the facet or current language.
      */
     protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = facet.translations.find((t) => t.languageCode === languageCode);
 
         this.detailForm.patchValue({
             facet: {
@@ -297,7 +297,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         this.values = facet.values;
         facet.values.forEach((value, i) => {
             const valueTranslation =
-                value.translations && value.translations.find(t => t.languageCode === languageCode);
+                value.translations && value.translations.find((t) => t.languageCode === languageCode);
             const group = {
                 id: value.id,
                 code: value.code,
@@ -370,8 +370,8 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
             return formRow && formRow.dirty && formRow.value.id;
         });
         const dirtyValueValues = valuesFormArray.controls
-            .filter(c => c.dirty && c.value.id)
-            .map(c => c.value);
+            .filter((c) => c.dirty && c.value.id)
+            .map((c) => c.value);
 
         if (dirtyValues.length !== dirtyValueValues.length) {
             throw new Error(_(`error.facet-value-form-values-do-not-match`));

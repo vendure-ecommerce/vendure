@@ -52,11 +52,11 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],
@@ -75,16 +75,16 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             this.calculators = data.shippingCalculators;
             this.changeDetector.markForCheck();
             this.selectedCheckerDefinition = data.shippingEligibilityCheckers.find(
-                c => c.code === (entity.checker && entity.checker.code),
+                (c) => c.code === (entity.checker && entity.checker.code),
             );
             this.selectedCalculatorDefinition = data.shippingCalculators.find(
-                c => c.code === (entity.calculator && entity.calculator.code),
+                (c) => c.code === (entity.calculator && entity.calculator.code),
             );
         });
 
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
-            .mapStream(data => data.activeChannel);
+            .mapStream((data) => data.activeChannel);
 
         this.testResult$ = this.fetchTestResult$.pipe(
             switchMap(([address, lines]) => {
@@ -94,7 +94,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                 const formValue = this.detailForm.value;
                 const input: TestShippingMethodInput = {
                     shippingAddress: { ...address, streetLine1: 'test' },
-                    lines: lines.map(l => ({ productVariantId: l.id, quantity: l.quantity })),
+                    lines: lines.map((l) => ({ productVariantId: l.id, quantity: l.quantity })),
                     checker: this.toAdjustmentOperationInput(this.selectedChecker, formValue.checker),
                     calculator: this.toAdjustmentOperationInput(
                         this.selectedCalculator,
@@ -103,7 +103,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                 };
                 return this.dataService.shippingMethod
                     .testShippingMethod(input)
-                    .mapSingle(result => result.testShippingMethod);
+                    .mapSingle((result) => result.testShippingMethod);
             }),
         );
 
@@ -153,7 +153,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     private configurableDefinitionToInstance(def: ConfigurableOperationDefinition): ConfigurableOperation {
         return {
             ...def,
-            args: def.args.map(arg => {
+            args: def.args.map((arg) => {
                 return {
                     ...arg,
                     value: getDefaultConfigArgValue(arg),
@@ -174,7 +174,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             calculator: this.toAdjustmentOperationInput(this.selectedCalculator, formValue.calculator),
         };
         this.dataService.shippingMethod.createShippingMethod(input).subscribe(
-            data => {
+            (data) => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'ShippingMethod',
                 });
@@ -182,7 +182,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
             },
-            err => {
+            (err) => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'ShippingMethod',
                 });
@@ -212,14 +212,14 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'ShippingMethod',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'ShippingMethod',
                     });

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { FacetWithValues } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
@@ -18,13 +18,13 @@ export class FacetResolver extends BaseEntityResolver<FacetWithValues.Fragment> 
                 createdAt: '',
                 updatedAt: '',
                 isPrivate: false,
-                languageCode: getDefaultLanguage(),
+                languageCode: getDefaultUiLanguage(),
                 name: '',
                 code: '',
                 translations: [],
                 values: [],
             },
-            id => dataService.facet.getFacet(id).mapStream(data => data.facet),
+            (id) => dataService.facet.getFacet(id).mapStream((data) => data.facet),
         );
     }
 }

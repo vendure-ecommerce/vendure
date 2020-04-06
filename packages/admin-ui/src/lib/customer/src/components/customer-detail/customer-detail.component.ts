@@ -2,10 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     CreateAddressInput,
@@ -20,6 +16,9 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { forkJoin, Observable, Subject } from 'rxjs';
+import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
 
 type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
 
@@ -49,10 +48,10 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         private formBuilder: FormBuilder,
-        private dataService: DataService,
+        protected dataService: DataService,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
 
         this.customFields = this.getCustomFieldConfig('Customer');
         this.detailForm = this.formBuilder.group({
@@ -75,12 +74,12 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         this.init();
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
-            .mapSingle(result => result.countries.items)
+            .mapSingle((result) => result.countries.items)
             .pipe(shareReplay(1));
 
         const customerWithUpdates$ = this.entity$.pipe(merge(this.orderListUpdates$));
-        this.orders$ = customerWithUpdates$.pipe(map(customer => customer.orders.items));
-        this.ordersCount$ = this.entity$.pipe(map(customer => customer.orders.totalItems));
+        this.orders$ = customerWithUpdates$.pipe(map((customer) => customer.orders.items));
+        this.ordersCount$ = this.entity$.pipe(map((customer) => customer.orders.totalItems));
     }
 
     ngOnDestroy() {
@@ -148,7 +147,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             lastName: formValue.lastName,
         };
         this.dataService.customer.createCustomer(customer, formValue.password).subscribe(
-            data => {
+            (data) => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Customer',
                 });
@@ -165,7 +164,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createCustomer.id], { relativeTo: this.route });
             },
-            err => {
+            (err) => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Customer',
                 });
@@ -228,7 +227,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 }),
             )
             .subscribe(
-                data => {
+                (data) => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Customer',
                     });
@@ -236,7 +235,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     this.addressDefaultsUpdated = false;
                     this.changeDetector.markForCheck();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Customer',
                     });
@@ -296,9 +295,9 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
             })
             .single$.pipe(
-                map(data => data.customer),
+                map((data) => data.customer),
                 filter(notNullOrUndefined),
             )
-            .subscribe(result => this.orderListUpdates$.next(result));
+            .subscribe((result) => this.orderListUpdates$.next(result));
     }
 }

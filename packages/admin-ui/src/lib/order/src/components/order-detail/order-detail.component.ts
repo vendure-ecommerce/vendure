@@ -43,11 +43,11 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
     }
 
     get visibileOrderLineCustomFields(): CustomFieldConfig[] {

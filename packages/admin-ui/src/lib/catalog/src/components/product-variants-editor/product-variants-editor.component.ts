@@ -4,7 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DeactivateAware } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import {
     CreateProductOptionGroup,
     CreateProductOptionInput,
@@ -74,8 +74,8 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     ngOnInit() {
         this.initOptionsAndVariants();
         this.languageCode =
-            (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultLanguage();
-        this.dataService.settings.getActiveChannel().single$.subscribe(data => {
+            (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultUiLanguage();
+        this.dataService.settings.getActiveChannel().single$.subscribe((data) => {
             this.currencyCode = data.activeChannel.currencyCode;
         });
     }
@@ -90,13 +90,13 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     getVariantsToAdd() {
-        return Object.values(this.variantFormValues).filter(v => !v.existing && v.enabled);
+        return Object.values(this.variantFormValues).filter((v) => !v.existing && v.enabled);
     }
 
     getVariantName(variant: GeneratedVariant) {
         return variant.options.length === 0
             ? _('catalog.default-variant')
-            : variant.options.map(o => o.name).join(' ');
+            : variant.options.map((o) => o.name).join(' ');
     }
 
     addOption() {
@@ -108,23 +108,23 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     }
 
     generateVariants() {
-        const groups = this.optionGroups.map(g => g.values);
+        const groups = this.optionGroups.map((g) => g.values);
         const previousVariants = this.variants;
         this.variants = groups.length
             ? generateAllCombinations(groups).map((options, i) => ({
                   isDefault: this.product.variants.length === 1 && i === 0,
-                  id: options.map(o => o.name).join('|'),
+                  id: options.map((o) => o.name).join('|'),
                   options,
               }))
             : [{ isDefault: true, id: DEFAULT_VARIANT_CODE, options: [] }];
 
-        this.variants.forEach(variant => {
+        this.variants.forEach((variant) => {
             if (!this.variantFormValues[variant.id]) {
                 const prototype = this.getVariantPrototype(variant, previousVariants);
                 this.variantFormValues[variant.id] = {
                     enabled: false,
                     existing: false,
-                    options: variant.options.map(o => o.name),
+                    options: variant.options.map((o) => o.name),
                     price: prototype.price,
                     sku: prototype.sku,
                     stock: prototype.stock,
@@ -144,11 +144,11 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         if (variant.isDefault) {
             return this.variantFormValues[DEFAULT_VARIANT_CODE];
         }
-        const variantsWithSimilarOptions = previousVariants.filter(v =>
-            variant.options.map(o => o.name).filter(name => v.options.map(o => o.name).includes(name)),
+        const variantsWithSimilarOptions = previousVariants.filter((v) =>
+            variant.options.map((o) => o.name).filter((name) => v.options.map((o) => o.name).includes(name)),
         );
         if (variantsWithSimilarOptions.length) {
-            return this.variantFormValues[variantsWithSimilarOptions[0].options.map(o => o.name).join('|')];
+            return this.variantFormValues[variantsWithSimilarOptions[0].options.map((o) => o.name).join('|')];
         }
         return {
             sku: '',
@@ -167,7 +167,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 ],
             })
             .pipe(
-                switchMap(response =>
+                switchMap((response) =>
                     response ? this.productDetailService.deleteProductVariant(id, this.product.id) : EMPTY,
                 ),
                 switchMap(() => this.reFetchProduct(null)),
@@ -179,7 +179,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     });
                     this.initOptionsAndVariants();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'ProductVariant',
                     });
@@ -189,8 +189,8 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
 
     save() {
         const newOptionGroups = this.optionGroups
-            .filter(og => og.isNew)
-            .map(og => ({
+            .filter((og) => og.isNew)
+            .map((og) => ({
                 name: og.name,
                 values: [],
             }));
@@ -200,15 +200,15 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                 mergeMap(() =>
                     this.productDetailService.createProductOptionGroups(newOptionGroups, this.languageCode),
                 ),
-                mergeMap(createdOptionGroups => this.addOptionGroupsToProduct(createdOptionGroups)),
-                mergeMap(createdOptionGroups => this.addNewOptionsToGroups(createdOptionGroups)),
-                mergeMap(groupsIds => this.fetchOptionGroups(groupsIds)),
-                mergeMap(groups => this.createNewProductVariants(groups)),
-                mergeMap(res => this.deleteDefaultVariant(res.createProductVariants)),
-                mergeMap(variants => this.reFetchProduct(variants)),
+                mergeMap((createdOptionGroups) => this.addOptionGroupsToProduct(createdOptionGroups)),
+                mergeMap((createdOptionGroups) => this.addNewOptionsToGroups(createdOptionGroups)),
+                mergeMap((groupsIds) => this.fetchOptionGroups(groupsIds)),
+                mergeMap((groups) => this.createNewProductVariants(groups)),
+                mergeMap((res) => this.deleteDefaultVariant(res.createProductVariants)),
+                mergeMap((variants) => this.reFetchProduct(variants)),
             )
             .subscribe({
-                next: variants => {
+                next: (variants) => {
                     this.formValueChanged = false;
                     this.notificationService.success(_('catalog.created-new-variants-success'), {
                         count: variants.length,
@@ -230,7 +230,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
                     ],
                 })
                 .pipe(
-                    mergeMap(res => {
+                    mergeMap((res) => {
                         return res === true ? of(true) : EMPTY;
                     }),
                 );
@@ -244,7 +244,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     ): Observable<CreateProductOptionGroup.CreateProductOptionGroup[]> {
         if (createdOptionGroups.length) {
             return forkJoin(
-                createdOptionGroups.map(optionGroup => {
+                createdOptionGroups.map((optionGroup) => {
                     return this.dataService.product.addOptionGroupToProduct({
                         productId: this.product.id,
                         optionGroupId: optionGroup.id,
@@ -260,15 +260,15 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         createdOptionGroups: CreateProductOptionGroup.CreateProductOptionGroup[],
     ): Observable<string[]> {
         const newOptions: CreateProductOptionInput[] = this.optionGroups
-            .map(og => {
-                const createdGroup = createdOptionGroups.find(cog => cog.name === og.name);
+            .map((og) => {
+                const createdGroup = createdOptionGroups.find((cog) => cog.name === og.name);
                 const productOptionGroupId = createdGroup ? createdGroup.id : og.id;
                 if (!productOptionGroupId) {
                     throw new Error('Could not get a productOptionGroupId');
                 }
                 return og.values
-                    .filter(v => !v.locked)
-                    .map(v => ({
+                    .filter((v) => !v.locked)
+                    .map((v) => ({
                         productOptionGroupId,
                         code: normalizeString(v.name, '-'),
                         translations: [{ name: v.name, languageCode: this.languageCode }],
@@ -277,12 +277,12 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
             .reduce((flat, options) => [...flat, ...options], []);
 
         const allGroupIds = [
-            ...createdOptionGroups.map(g => g.id),
-            ...this.optionGroups.map(g => g.id).filter(notNullOrUndefined),
+            ...createdOptionGroups.map((g) => g.id),
+            ...this.optionGroups.map((g) => g.id).filter(notNullOrUndefined),
         ];
 
         if (newOptions.length) {
-            return forkJoin(newOptions.map(input => this.dataService.product.addOptionToGroup(input))).pipe(
+            return forkJoin(newOptions.map((input) => this.dataService.product.addOptionToGroup(input))).pipe(
                 map(() => allGroupIds),
             );
         } else {
@@ -292,10 +292,10 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
 
     private fetchOptionGroups(groupsIds: string[]): Observable<ProductOptionGroupFragment[]> {
         return forkJoin(
-            groupsIds.map(id =>
+            groupsIds.map((id) =>
                 this.dataService.product
                     .getProductOptionGroup(id)
-                    .mapSingle(data => data.productOptionGroup)
+                    .mapSingle((data) => data.productOptionGroup)
                     .pipe(filter(notNullOrUndefined)),
             ),
         );
@@ -304,18 +304,18 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     private createNewProductVariants(groups: ProductOptionGroupFragment[]) {
         const options = groups
             .filter(notNullOrUndefined)
-            .map(og => og.options)
+            .map((og) => og.options)
             .reduce((flat, o) => [...flat, ...o], []);
         const variants = Object.values(this.variantFormValues)
-            .filter(v => v.enabled && !v.existing)
-            .map(v => ({
+            .filter((v) => v.enabled && !v.existing)
+            .map((v) => ({
                 price: v.price,
                 sku: v.sku,
                 stock: v.stock,
                 optionIds: v.options
-                    .map(name => options.find(o => o.name === name))
+                    .map((name) => options.find((o) => o.name === name))
                     .filter(notNullOrUndefined)
-                    .map(o => o.id),
+                    .map((o) => o.id),
             }));
         return this.productDetailService.createProductVariants(
             this.product,
@@ -350,17 +350,17 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     private initOptionsAndVariants() {
         this.route.data
             .pipe(
-                switchMap(data => data.entity as Observable<GetProductVariantOptions.Product>),
+                switchMap((data) => data.entity as Observable<GetProductVariantOptions.Product>),
                 take(1),
             )
-            .subscribe(product => {
+            .subscribe((product) => {
                 this.product = product;
-                this.optionGroups = product.optionGroups.map(og => {
+                this.optionGroups = product.optionGroups.map((og) => {
                     return {
                         id: og.id,
                         isNew: false,
                         name: og.name,
-                        values: og.options.map(o => ({
+                        values: og.options.map((o) => ({
                             id: o.id,
                             name: o.name,
                             locked: true,
@@ -376,14 +376,14 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         variants: GetProductVariantOptions.Variants[],
     ): { [id: string]: VariantInfo } {
         return variants.reduce((all, v) => {
-            const id = v.options.length ? v.options.map(o => o.name).join('|') : DEFAULT_VARIANT_CODE;
+            const id = v.options.length ? v.options.map((o) => o.name).join('|') : DEFAULT_VARIANT_CODE;
             return {
                 ...all,
                 [id]: {
                     productVariantId: v.id,
                     enabled: true,
                     existing: true,
-                    options: v.options.map(o => o.name),
+                    options: v.options.map((o) => o.name),
                     sku: v.sku,
                     price: v.price,
                     stock: v.stockOnHand,

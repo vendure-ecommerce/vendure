@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { Collection, ProductWithVariants } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
@@ -17,7 +17,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 id: '',
                 createdAt: '',
                 updatedAt: '',
-                languageCode: getDefaultLanguage(),
+                languageCode: getDefaultUiLanguage(),
                 name: '',
                 isPrivate: false,
                 description: '',
@@ -28,7 +28,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 parent: {} as any,
                 children: null,
             },
-            id => dataService.collection.getCollection(id).mapStream(data => data.collection),
+            (id) => dataService.collection.getCollection(id).mapStream((data) => data.collection),
         );
     }
 }

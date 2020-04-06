@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BaseEntityResolver } from '@vendure/admin-ui/core';
 import { ProductWithVariants } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Frag
                 createdAt: '',
                 updatedAt: '',
                 enabled: true,
-                languageCode: getDefaultLanguage(),
+                languageCode: getDefaultUiLanguage(),
                 name: '',
                 slug: '',
                 featuredAsset: null,
@@ -30,11 +30,11 @@ export class ProductResolver extends BaseEntityResolver<ProductWithVariants.Frag
                 variants: [],
                 channels: [],
             },
-            id =>
+            (id) =>
                 dataService.product
                     .getProduct(id)
                     .refetchOnChannelChange()
-                    .mapStream(data => data.product),
+                    .mapStream((data) => data.product),
         );
     }
 }
