@@ -1,6 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, ID } from '@vendure/common/lib/shared-types';
 
+import { VendureEntity } from '../../entity/base/base.entity';
 import { TranslatableRelationsKeys } from '../../service/helpers/utils/translate-entity';
 
 import { UnwrappedArray } from './common-types';
@@ -19,7 +20,7 @@ export type NonTranslateableKeys<T> = { [K in keyof T]: T[K] extends LocaleStrin
 /**
  * Entities which have localizable string properties should implement this type.
  */
-export interface Translatable { translations: Array<Translation<any>>; }
+export interface Translatable { translations: Array<Translation<VendureEntity>>; }
 
 export type TranslationCustomFields<T> = { [K in keyof T]: K extends 'customFields' ? K : never }[keyof T];
 

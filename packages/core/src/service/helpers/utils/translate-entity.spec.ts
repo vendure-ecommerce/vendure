@@ -2,6 +2,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 
 import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { Translatable, Translation } from '../../../common/types/locale-types';
+import { VendureEntity } from '../../../entity/base/base.entity';
 import { CollectionTranslation } from '../../../entity/collection/collection-translation.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { ProductOptionTranslation } from '../../../entity/product-option/product-option-translation.entity';
@@ -130,23 +131,29 @@ describe('translateEntity()', () => {
 });
 
 describe('translateDeep()', () => {
-    interface TestProduct {
+    interface TestProduct extends VendureEntity {
         singleTestVariant: TestVariant;
         singleRealVariant: ProductVariant;
     }
 
-    class TestProductEntity implements Translatable {
+    class TestProductEntity extends VendureEntity implements Translatable {
+        constructor() {
+            super();
+        }
         id: string;
         singleTestVariant: TestVariantEntity;
         singleRealVariant: ProductVariant;
         translations: Array<Translation<TestProduct>>;
     }
 
-    interface TestVariant {
+    interface TestVariant extends VendureEntity {
         singleOption: ProductOption;
     }
 
-    class TestVariantEntity implements Translatable {
+    class TestVariantEntity extends VendureEntity implements Translatable {
+        constructor() {
+            super();
+        }
         id: string;
         singleOption: ProductOption;
         translations: Array<Translation<TestVariant>>;
