@@ -39,6 +39,7 @@
     "identifier-change-token-not-recognized": "Identifier change token not recognized",
     "identifier-change-token-has-expired": "Identifier change token has expired",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
+    "language-not-available-in-global-settings": "Language \"{code}\" is not available. First enable it via GlobalSettings and try again.",
     "missing-password-on-registration": "A password must be provided when `authOptions.requireVerification` is set to \"false\"",
     "no-search-plugin-configured": "No search plugin has been configured",
     "no-valid-channel-specified": "No valid channel was specified (ensure the 'vendure-token' header was specified in the request)",

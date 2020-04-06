@@ -3585,12 +3585,34 @@ export type GetChannelsQuery = { __typename?: 'Query' } & {
     channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
 };
 
+export type UpdateChannelMutationVariables = {
+    input: UpdateChannelInput;
+};
+
+export type UpdateChannelMutation = { __typename?: 'Mutation' } & {
+    updateChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'
+    >;
+};
+
 export type DeleteChannelMutationVariables = {
     id: Scalars['ID'];
 };
 
 export type DeleteChannelMutation = { __typename?: 'Mutation' } & {
     deleteChannel: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
+};
+
+export type UpdateGlobalSettingsMutationVariables = {
+    input: UpdateGlobalSettingsInput;
+};
+
+export type UpdateGlobalSettingsMutation = { __typename?: 'Mutation' } & {
+    updateGlobalSettings: { __typename?: 'GlobalSettings' } & Pick<
+        GlobalSettings,
+        'id' | 'availableLanguages'
+    >;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -5454,10 +5476,22 @@ export namespace GetChannels {
     export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
 }
 
+export namespace UpdateChannel {
+    export type Variables = UpdateChannelMutationVariables;
+    export type Mutation = UpdateChannelMutation;
+    export type UpdateChannel = UpdateChannelMutation['updateChannel'];
+}
+
 export namespace DeleteChannel {
     export type Variables = DeleteChannelMutationVariables;
     export type Mutation = DeleteChannelMutation;
     export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
+}
+
+export namespace UpdateGlobalSettings {
+    export type Variables = UpdateGlobalSettingsMutationVariables;
+    export type Mutation = UpdateGlobalSettingsMutation;
+    export type UpdateGlobalSettings = UpdateGlobalSettingsMutation['updateGlobalSettings'];
 }
 
 export namespace GetCollectionsWithAssets {
