@@ -45,6 +45,11 @@ export function translateEntity<T extends Translatable & VendureEntity>(
         if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
             translation = translatable.translations.find((t) => t.languageCode === DEFAULT_LANGUAGE_CODE);
         }
+        if (!translation) {
+            // If we cannot find any suitable translation, just return the first one to at least
+            // prevent graphql errors when returning the entity.
+            translation = translatable.translations[0];
+        }
     }
 
     if (!translation) {
