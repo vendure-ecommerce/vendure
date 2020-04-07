@@ -19,7 +19,8 @@ import { Connection } from 'typeorm';
 import { isDevModeOptions } from './common';
 import { EMAIL_PLUGIN_OPTIONS } from './constants';
 import { DevMailbox } from './dev-mailbox';
-import { EmailWorkerController } from './email-worker.controller';
+import { EmailProcessor } from './email-processor';
+import { EmailProcessorController } from './email-processor.controller';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
 import {
     EmailPluginDevModeOptions,
@@ -141,13 +142,14 @@ import {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }],
-    workers: [EmailWorkerController],
+    workers: [EmailProcessorController],
     configuration: (config) => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
     private devMailbox: DevMailbox | undefined;
-    private jobQueue: JobQueue<IntermediateEmailDetails>;
+    private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
+    private testingProcessor: EmailProcessor | undefined;
 
     /** @internal */
     constructor(
@@ -190,16 +192,23 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
 
         await this.setupEventSubscribers();
 
-        this.jobQueue = this.jobQueueService.createQueue({
-            name: 'send-email',
-            concurrency: 5,
-            process: (job) => {
-                this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
-                    complete: () => job.complete(),
-                    error: (err) => job.fail(err),
-                });
-            },
-        });
+        if (!isDevModeOptions(options) && options.transport.type === 'testing') {
+            // When running tests, we don't want to go through the JobQueue system,
+            // so we just call the email sending logic directly.
+            this.testingProcessor = new EmailProcessor(options);
+            await this.testingProcessor.init();
+        } else {
+            this.jobQueue = this.jobQueueService.createQueue({
+                name: 'send-email',
+                concurrency: 5,
+                process: (job) => {
+                    this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
+                        complete: () => job.complete(),
+                        error: (err) => job.fail(err),
+                    });
+                },
+            });
+        }
     }
 
     /** @internal */
@@ -235,7 +244,11 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
             if (!result) {
                 return;
             }
-            await this.jobQueue.add(result);
+            if (this.jobQueue) {
+                await this.jobQueue.add(result);
+            } else if (this.testingProcessor) {
+                await this.testingProcessor.process(result);
+            }
         } catch (e) {
             Logger.error(e.message, 'EmailPlugin', e.stack);
         }

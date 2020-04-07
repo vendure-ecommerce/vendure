@@ -21,7 +21,6 @@ import { EmailPlugin } from './plugin';
 import { EmailPluginOptions } from './types';
 
 describe('EmailPlugin', () => {
-    let plugin: EmailPlugin;
     let eventBus: EventBus;
     let onSend: jest.Mock;
     let module: TestingModule;
@@ -52,7 +51,7 @@ describe('EmailPlugin', () => {
             providers: [MockService],
         }).compile();
 
-        plugin = module.get(EmailPlugin);
+        const plugin = module.get(EmailPlugin);
         eventBus = module.get(EventBus);
         await plugin.onVendureBootstrap();
         return module;
@@ -409,7 +408,7 @@ describe('EmailPlugin', () => {
 
     describe('orderConfirmationHandler', () => {
         beforeEach(async () => {
-            module = await initPluginWithHandlers([orderConfirmationHandler], {
+            await initPluginWithHandlers([orderConfirmationHandler], {
                 templatePath: path.join(__dirname, '../templates'),
             });
         });
