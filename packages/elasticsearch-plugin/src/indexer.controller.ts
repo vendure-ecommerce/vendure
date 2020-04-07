@@ -35,6 +35,7 @@ import {
     BulkOperation,
     BulkOperationDoc,
     BulkResponseBody,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ProductIndexItem,
@@ -325,8 +326,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     @MessagePattern(UpdateAssetMessage.pattern)
     updateAsset(data: UpdateAssetMessage['data']): Observable<UpdateAssetMessage['response']> {
         return asyncObservable(async () => {
-            const result1 = await this.updateAssetForIndex(PRODUCT_INDEX_NAME, data.asset);
-            const result2 = await this.updateAssetForIndex(VARIANT_INDEX_NAME, data.asset);
+            const result1 = await this.updateAssetFocalPointForIndex(PRODUCT_INDEX_NAME, data.asset);
+            const result2 = await this.updateAssetFocalPointForIndex(VARIANT_INDEX_NAME, data.asset);
             await this.client.indices.refresh({
                 index: [
                     this.options.indexPrefix + PRODUCT_INDEX_NAME,
@@ -337,16 +338,57 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         });
     }
 
-    private async updateAssetForIndex(indexName: string, asset: Asset): Promise<boolean> {
+    @MessagePattern(DeleteAssetMessage.pattern)
+    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
+        return asyncObservable(async () => {
+            const result1 = await this.deleteAssetForIndex(PRODUCT_INDEX_NAME, data.asset);
+            const result2 = await this.deleteAssetForIndex(VARIANT_INDEX_NAME, data.asset);
+            await this.client.indices.refresh({
+                index: [
+                    this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                    this.options.indexPrefix + VARIANT_INDEX_NAME,
+                ],
+            });
+            return result1 && result2;
+        });
+    }
+
+    private async updateAssetFocalPointForIndex(indexName: string, asset: Asset): Promise<boolean> {
         const focalPoint = asset.focalPoint || null;
         const params = { focalPoint };
+        return this.updateAssetForIndex(
+            indexName,
+            asset,
+            {
+                source: 'ctx._source.productPreviewFocalPoint = params.focalPoint',
+                params,
+            },
+            {
+                source: 'ctx._source.productVariantPreviewFocalPoint = params.focalPoint',
+                params,
+            },
+        );
+    }
+
+    private async deleteAssetForIndex(indexName: string, asset: Asset): Promise<boolean> {
+        return this.updateAssetForIndex(
+            indexName,
+            asset,
+            { source: 'ctx._source.productAssetId = null' },
+            { source: 'ctx._source.productVariantAssetId = null' },
+        );
+    }
+
+    private async updateAssetForIndex(
+        indexName: string,
+        asset: Asset,
+        updateProductScript: { source: string; params?: any },
+        updateVariantScript: { source: string; params?: any },
+    ): Promise<boolean> {
         const result1 = await this.client.update_by_query({
             index: this.options.indexPrefix + indexName,
             body: {
-                script: {
-                    source: 'ctx._source.productPreviewFocalPoint = params.focalPoint',
-                    params,
-                },
+                script: updateProductScript,
                 query: {
                     term: {
                         productAssetId: asset.id,
@@ -360,10 +402,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const result2 = await this.client.update_by_query({
             index: this.options.indexPrefix + indexName,
             body: {
-                script: {
-                    source: 'ctx._source.productVariantPreviewFocalPoint = params.focalPoint',
-                    params,
-                },
+                script: updateVariantScript,
                 query: {
                     term: {
                         productVariantAssetId: asset.id,

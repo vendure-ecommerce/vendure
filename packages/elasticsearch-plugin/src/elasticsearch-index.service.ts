@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import {
     Asset,
     ID,
@@ -16,6 +17,7 @@ import {
 import { ReindexMessageResponse } from './indexer.controller';
 import {
     AssignProductToChannelMessage,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
@@ -62,12 +64,17 @@ export class ElasticsearchIndexService {
                     case 'update-asset':
                         this.sendMessage(job, new UpdateAssetMessage(data));
                         break;
+                    case 'delete-asset':
+                        this.sendMessage(job, new DeleteAssetMessage(data));
+                        break;
                     case 'assign-product-to-channel':
                         this.sendMessage(job, new AssignProductToChannelMessage(data));
                         break;
                     case 'remove-product-from-channel':
                         this.sendMessage(job, new RemoveProductFromChannelMessage(data));
                         break;
+                    default:
+                        assertNever(data);
                 }
             },
         });
@@ -119,6 +126,10 @@ export class ElasticsearchIndexService {
 
     updateAsset(ctx: RequestContext, asset: Asset) {
         this.addJobToQueue({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+    }
+
+    deleteAsset(ctx: RequestContext, asset: Asset) {
+        this.addJobToQueue({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     private addJobToQueue(data: UpdateIndexQueueJobData) {

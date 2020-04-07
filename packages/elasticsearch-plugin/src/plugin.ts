@@ -260,6 +260,9 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
             if (event.type === 'updated') {
                 return this.elasticsearchIndexService.updateAsset(event.ctx, event.asset);
             }
+            if (event.type === 'deleted') {
+                return this.elasticsearchIndexService.deleteAsset(event.ctx, event.asset);
+            }
         });
 
         this.eventBus.ofType(ProductChannelEvent).subscribe((event) => {

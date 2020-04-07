@@ -210,6 +210,9 @@ export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChanne
 export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
     static readonly pattern = 'UpdateAsset';
 }
+export class DeleteAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
+    static readonly pattern = 'DeleteAsset';
+}
 
 type Maybe<T> = T | null | undefined;
 type CustomMappingDefinition<Args extends any[], T extends string, R> = {
@@ -226,6 +229,7 @@ type DeleteProductJobData = NamedJobData<'delete-product', UpdateProductMessageD
 type DeleteVariantJobData = NamedJobData<'delete-variant', UpdateVariantMessageData>;
 type UpdateVariantsByIdJobData = NamedJobData<'update-variants-by-id', UpdateVariantsByIdMessageData>;
 type UpdateAssetJobData = NamedJobData<'update-asset', UpdateAssetMessageData>;
+type DeleteAssetJobData = NamedJobData<'delete-asset', UpdateAssetMessageData>;
 type AssignProductToChannelJobData = NamedJobData<'assign-product-to-channel', ProductChannelMessageData>;
 type RemoveProductFromChannelJobData = NamedJobData<'remove-product-from-channel', ProductChannelMessageData>;
 export type UpdateIndexQueueJobData =
@@ -236,6 +240,7 @@ export type UpdateIndexQueueJobData =
     | DeleteVariantJobData
     | UpdateVariantsByIdJobData
     | UpdateAssetJobData
+    | DeleteAssetJobData
     | AssignProductToChannelJobData
     | RemoveProductFromChannelJobData;
 

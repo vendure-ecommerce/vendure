@@ -20,6 +20,7 @@ import {
     CreateCollection,
     CreateFacet,
     CurrencyCode,
+    DeleteAsset,
     DeleteProduct,
     DeleteProductVariant,
     LanguageCode,
@@ -39,6 +40,7 @@ import {
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
+    DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     REMOVE_PRODUCT_FROM_CHANNEL,
@@ -611,42 +613,59 @@ describe('Elasticsearch plugin', () => {
                 ]);
             });
 
-            it('updates index when asset focalPoint is changed', async () => {
-                const { search: search1 } = await doAdminSearchQuery({
-                    term: 'laptop',
-                    groupByProduct: true,
-                    take: 1,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                });
-
-                expect(search1.items[0].productAsset!.id).toBe('T_1');
-                expect(search1.items[0].productAsset!.focalPoint).toBeNull();
-
-                await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
-                    input: {
-                        id: 'T_1',
-                        focalPoint: {
-                            x: 0.42,
-                            y: 0.42,
+            describe('asset changes', () => {
+                function searchForLaptop() {
+                    return doAdminSearchQuery({
+                        term: 'laptop',
+                        groupByProduct: true,
+                        take: 1,
+                        sort: {
+                            name: SortOrder.ASC,
                         },
-                    },
+                    });
+                }
+
+                it('updates index when asset focalPoint is changed', async () => {
+                    const { search: search1 } = await searchForLaptop();
+
+                    expect(search1.items[0].productAsset!.id).toBe('T_1');
+                    expect(search1.items[0].productAsset!.focalPoint).toBeNull();
+
+                    await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+                        input: {
+                            id: 'T_1',
+                            focalPoint: {
+                                x: 0.42,
+                                y: 0.42,
+                            },
+                        },
+                    });
+
+                    await awaitRunningJobs(adminClient);
+
+                    const { search: search2 } = await searchForLaptop();
+
+                    expect(search2.items[0].productAsset!.id).toBe('T_1');
+                    expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
                 });
 
-                await awaitRunningJobs(adminClient);
+                it('updates index when asset deleted', async () => {
+                    const { search: search1 } = await searchForLaptop();
 
-                const { search: search2 } = await doAdminSearchQuery({
-                    term: 'laptop',
-                    groupByProduct: true,
-                    take: 1,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
+                    const assetId = search1.items[0].productAsset?.id;
+                    expect(assetId).toBeTruthy();
+
+                    await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
+                        id: assetId!,
+                        force: true,
+                    });
+
+                    await awaitRunningJobs(adminClient);
+
+                    const { search: search2 } = await searchForLaptop();
+
+                    expect(search2.items[0].productAsset).toBeNull();
                 });
-
-                expect(search2.items[0].productAsset!.id).toBe('T_1');
-                expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
             });
 
             it('does not include deleted ProductVariants in index', async () => {
