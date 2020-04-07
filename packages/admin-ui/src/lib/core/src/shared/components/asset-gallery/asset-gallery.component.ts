@@ -16,7 +16,9 @@ export class AssetGalleryComponent implements OnChanges {
      * If true, allows multiple assets to be selected by ctrl+clicking.
      */
     @Input() multiSelect = false;
+    @Input() canDelete = false;
     @Output() selectionChange = new EventEmitter<Asset[]>();
+    @Output() deleteAsset = new EventEmitter<Asset>();
 
     selection: Asset[] = [];
 
@@ -26,7 +28,7 @@ export class AssetGalleryComponent implements OnChanges {
         if (this.assets) {
             for (const asset of this.selection) {
                 // Update and selected assets with any changes
-                const match = this.assets.find(a => a.id === asset.id);
+                const match = this.assets.find((a) => a.id === asset.id);
                 if (match) {
                     Object.assign(asset, match);
                 }
@@ -35,7 +37,7 @@ export class AssetGalleryComponent implements OnChanges {
     }
 
     toggleSelection(event: MouseEvent, asset: Asset) {
-        const index = this.selection.findIndex(a => a.id === asset.id);
+        const index = this.selection.findIndex((a) => a.id === asset.id);
         if (index === -1) {
             if (this.multiSelect && event.ctrlKey) {
                 this.selection.push(asset);
@@ -55,7 +57,7 @@ export class AssetGalleryComponent implements OnChanges {
     }
 
     isSelected(asset: Asset): boolean {
-        return !!this.selection.find(a => a.id === asset.id);
+        return !!this.selection.find((a) => a.id === asset.id);
     }
 
     lastSelected(): Asset {

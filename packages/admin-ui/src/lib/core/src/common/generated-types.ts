@@ -4982,6 +4982,20 @@ export type UpdateAssetMutation = (
   ) }
 );
 
+export type DeleteAssetMutationVariables = {
+  id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type DeleteAssetMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteAsset: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
 export type SearchProductsQueryVariables = {
   input: SearchInput;
 };
@@ -6931,6 +6945,12 @@ export namespace UpdateAsset {
   export type Variables = UpdateAssetMutationVariables;
   export type Mutation = UpdateAssetMutation;
   export type UpdateAsset = AssetFragment;
+}
+
+export namespace DeleteAsset {
+  export type Variables = DeleteAssetMutationVariables;
+  export type Mutation = DeleteAssetMutation;
+  export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
 }
 
 export namespace SearchProducts {

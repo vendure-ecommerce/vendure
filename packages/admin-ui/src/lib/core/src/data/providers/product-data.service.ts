@@ -13,6 +13,7 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
     CreateProductVariants,
+    DeleteAsset,
     DeleteProduct,
     DeleteProductVariant,
     GetAsset,
@@ -45,6 +46,7 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
+    DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     GET_ASSET,
@@ -272,13 +274,20 @@ export class ProductDataService {
 
     createAssets(files: File[]) {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
-            input: files.map(file => ({ file })),
+            input: files.map((file) => ({ file })),
         });
     }
 
     updateAsset(input: UpdateAssetInput) {
         return this.baseDataService.mutate<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
             input,
+        });
+    }
+
+    deleteAsset(id: string, force: boolean) {
+        return this.baseDataService.mutate<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
+            id,
+            force,
         });
     }
 
