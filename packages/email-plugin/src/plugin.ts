@@ -3,7 +3,8 @@ import { InjectConnection } from '@nestjs/typeorm';
 import {
     createProxyHandler,
     EventBus,
-    InternalServerError,
+    JobQueue,
+    JobQueueService,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
@@ -11,21 +12,22 @@ import {
     RuntimeVendureConfig,
     Type,
     VendurePlugin,
+    WorkerService,
 } from '@vendure/core';
-import fs from 'fs-extra';
 import { Connection } from 'typeorm';
 
+import { isDevModeOptions } from './common';
+import { EMAIL_PLUGIN_OPTIONS } from './constants';
 import { DevMailbox } from './dev-mailbox';
-import { EmailSender } from './email-sender';
+import { EmailWorkerController } from './email-worker.controller';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
-import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
-import { TemplateLoader } from './template-loader';
 import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
-    EmailTransportOptions,
+    EmailWorkerMessage,
     EventWithAsyncData,
     EventWithContext,
+    IntermediateEmailDetails,
 } from './types';
 
 /**
@@ -138,21 +140,22 @@ import {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    configuration: config => EmailPlugin.configure(config),
+    providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }],
+    workers: [EmailWorkerController],
+    configuration: (config) => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
-    private transport: EmailTransportOptions;
-    private templateLoader: TemplateLoader;
-    private emailSender: EmailSender;
-    private generator: HandlebarsMjmlGenerator;
     private devMailbox: DevMailbox | undefined;
+    private jobQueue: JobQueue<IntermediateEmailDetails>;
 
     /** @internal */
     constructor(
         private eventBus: EventBus,
         @InjectConnection() private connection: Connection,
         private moduleRef: ModuleRef,
+        private workerService: WorkerService,
+        private jobQueueService: JobQueueService,
     ) {}
 
     /**
@@ -178,24 +181,6 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureBootstrap(): Promise<void> {
         const options = EmailPlugin.options;
-        if (isDevModeOptions(options)) {
-            this.transport = {
-                type: 'file',
-                raw: false,
-                outputPath: options.outputPath,
-            };
-        } else {
-            if (!options.transport) {
-                throw new InternalServerError(
-                    `When devMode is not set to true, the 'transport' property must be set.`,
-                );
-            }
-            this.transport = options.transport;
-        }
-
-        this.templateLoader = new TemplateLoader(options.templatePath);
-        this.emailSender = new EmailSender();
-        this.generator = new HandlebarsMjmlGenerator();
 
         if (isDevModeOptions(options) && options.mailboxPort !== undefined) {
             this.devMailbox = new DevMailbox();
@@ -204,9 +189,17 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
         }
 
         await this.setupEventSubscribers();
-        if (this.generator.onInit) {
-            await this.generator.onInit.call(this.generator, options);
-        }
+
+        this.jobQueue = this.jobQueueService.createQueue({
+            name: 'send-email',
+            concurrency: 5,
+            process: (job) => {
+                this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
+                    complete: () => job.complete(),
+                    error: (err) => job.fail(err),
+                });
+            },
+        });
     }
 
     /** @internal */
@@ -218,15 +211,9 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
 
     private async setupEventSubscribers() {
         for (const handler of EmailPlugin.options.handlers) {
-            this.eventBus.ofType(handler.event).subscribe(event => {
+            this.eventBus.ofType(handler.event).subscribe((event) => {
                 return this.handleEvent(handler, event);
             });
-        }
-        if (this.transport.type === 'file') {
-            // ensure the configured directory exists before
-            // we attempt to write files to it
-            const emailPath = this.transport.outputPath;
-            await fs.ensureDir(emailPath);
         }
     }
 
@@ -241,30 +228,16 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
                 (event as EventWithAsyncData<EventWithContext, any>).data = await handler._loadDataFn({
                     event,
                     connection: this.connection,
-                    inject: t => this.moduleRef.get(t, { strict: false }),
+                    inject: (t) => this.moduleRef.get(t, { strict: false }),
                 });
             }
             const result = await handler.handle(event as any, EmailPlugin.options.globalTemplateVars);
             if (!result) {
                 return;
             }
-            const bodySource = await this.templateLoader.loadTemplate(type, result.templateFile);
-            const generated = await this.generator.generate(
-                result.from,
-                result.subject,
-                bodySource,
-                result.templateVars,
-            );
-            const emailDetails = { ...generated, recipient: result.recipient };
-            await this.emailSender.send(emailDetails, this.transport);
+            await this.jobQueue.add(result);
         } catch (e) {
             Logger.error(e.message, 'EmailPlugin', e.stack);
         }
     }
-}
-
-function isDevModeOptions(
-    input: EmailPluginOptions | EmailPluginDevModeOptions,
-): input is EmailPluginDevModeOptions {
-    return (input as EmailPluginDevModeOptions).devMode === true;
 }
