@@ -389,6 +389,20 @@ describe('Channels', () => {
 
             expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.zh);
         });
+
+        it(
+            'attempting to remove availableLanguage when used by a Channel throws',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+                    UPDATE_GLOBAL_SETTINGS,
+                    {
+                        input: {
+                            availableLanguages: [LanguageCode.en],
+                        },
+                    },
+                );
+            }, 'Cannot remove make language "zh" unavailable as it is used as the defaultLanguage by the channel "__default_channel__"'),
+        );
     });
 
     it('deleteChannel', async () => {
