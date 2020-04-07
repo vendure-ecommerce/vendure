@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationCreateAssetsArgs,
+    MutationDeleteAssetArgs,
     MutationUpdateAssetArgs,
     Permission,
     QueryAssetArgs,
@@ -47,5 +48,11 @@ export class AssetResolver {
     @Allow(Permission.UpdateCatalog)
     async updateAsset(@Ctx() ctx: RequestContext, @Args() { input }: MutationUpdateAssetArgs) {
         return this.assetService.update(ctx, input);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteCatalog)
+    async deleteAsset(@Ctx() ctx: RequestContext, @Args() { id, force }: MutationDeleteAssetArgs) {
+        return this.assetService.delete(ctx, id, force || undefined);
     }
 }

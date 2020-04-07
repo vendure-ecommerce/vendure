@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { AssetType, CreateAssetInput, UpdateAssetInput } from '@vendure/common/lib/generated-types';
+import {
+    AssetType,
+    CreateAssetInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateAssetInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
@@ -10,7 +16,7 @@ import { Stream } from 'stream';
 import { Connection, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, UserInputError } from '../../common/error/errors';
+import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -18,6 +24,9 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
+import { Collection } from '../../entity/collection/collection.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -94,7 +103,7 @@ export class AssetService {
                 });
             assets = (entityWithAssets && entityWithAssets.assets) || [];
         }
-        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
+        return assets.sort((a, b) => a.position - b.position).map((a) => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
@@ -124,7 +133,7 @@ export class AssetService {
         if (assetIds && assetIds.length) {
             const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
             const sortedAssets = assetIds
-                .map(id => assets.find(a => idsAreEqual(a.id, id)))
+                .map((id) => assets.find((a) => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
             await this.removeExistingOrderableAssets(entity);
             entity.assets = await this.createOrderableAssets(entity, sortedAssets);
@@ -156,6 +165,30 @@ export class AssetService {
         const updatedAsset = await this.connection.getRepository(Asset).save(asset);
         this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated'));
         return updatedAsset;
+    }
+
+    async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const asset = await getEntityOrThrow(this.connection, Asset, id);
+        const usages = await this.findAssetUsages(asset);
+        const hasUsages = !!(usages.products.length || usages.variants.length || usages.collections.length);
+        if (hasUsages && !force) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.asset-to-be-deleted-is-featured', {
+                    products: usages.products.length,
+                    variants: usages.variants.length,
+                    collections: usages.collections.length,
+                }),
+            };
+        }
+        // Create a new asset so that the id is still available
+        // after deletion (the .remove() method sets it to undefined)
+        const deletedAsset = new Asset(asset);
+        await this.connection.getRepository(Asset).remove(asset);
+        this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     /**
@@ -270,7 +303,7 @@ export class AssetService {
     private getOrderableAssetType(entity: EntityWithAssets): Type<OrderableAsset> {
         const assetRelation = this.connection
             .getRepository(entity.constructor)
-            .metadata.relations.find(r => r.propertyName === 'assets');
+            .metadata.relations.find((r) => r.propertyName === 'assets');
         if (!assetRelation || typeof assetRelation.type === 'string') {
             throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
@@ -289,5 +322,31 @@ export class AssetService {
             default:
                 throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
+    }
+
+    /**
+     * Find the entities which reference the given Asset as a featuredAsset.
+     */
+    private async findAssetUsages(
+        asset: Asset,
+    ): Promise<{ products: Product[]; variants: ProductVariant[]; collections: Collection[] }> {
+        const products = await this.connection.getRepository(Product).find({
+            where: {
+                featuredAsset: asset,
+                deletedAt: null,
+            },
+        });
+        const variants = await this.connection.getRepository(ProductVariant).find({
+            where: {
+                featuredAsset: asset,
+                deletedAt: null,
+            },
+        });
+        const collections = await this.connection.getRepository(Collection).find({
+            where: {
+                featuredAsset: asset,
+            },
+        });
+        return { products, variants, collections };
     }
 }

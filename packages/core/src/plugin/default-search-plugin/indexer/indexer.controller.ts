@@ -4,7 +4,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { defer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
@@ -20,6 +20,7 @@ import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     AssignProductToChannelMessage,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
@@ -209,6 +210,20 @@ export class IndexerController {
             await this.connection
                 .getRepository(SearchIndexItem)
                 .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
+            return true;
+        });
+    }
+
+    @MessagePattern(DeleteAssetMessage.pattern)
+    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
+        return asyncObservable(async () => {
+            const id = data.asset.id;
+            await this.connection
+                .getRepository(SearchIndexItem)
+                .update({ productAssetId: id }, { productAssetId: null });
+            await this.connection
+                .getRepository(SearchIndexItem)
+                .update({ productVariantAssetId: id }, { productVariantAssetId: null });
             return true;
         });
     }

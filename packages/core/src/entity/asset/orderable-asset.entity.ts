@@ -20,7 +20,7 @@ export abstract class OrderableAsset extends VendureEntity implements Orderable 
     @Column()
     assetId: ID;
 
-    @ManyToOne(type => Asset, { eager: true })
+    @ManyToOne((type) => Asset, { eager: true, onDelete: 'CASCADE' })
     asset: Asset;
 
     @Column()

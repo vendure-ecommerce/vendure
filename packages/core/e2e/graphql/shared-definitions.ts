@@ -355,3 +355,12 @@ export const UPDATE_ASSET = gql`
     }
     ${ASSET_FRAGMENT}
 `;
+
+export const DELETE_ASSET = gql`
+    mutation DeleteAsset($id: ID!, $force: Boolean) {
+        deleteAsset(id: $id, force: $force) {
+            result
+            message
+        }
+    }
+`;

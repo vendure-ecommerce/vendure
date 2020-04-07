@@ -1743,6 +1743,8 @@ export type Mutation = {
     createAssets: Array<Asset>;
     /** Update an existing Asset */
     updateAsset: Asset;
+    /** Delete an Asset */
+    deleteAsset: DeletionResponse;
     login: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -1894,6 +1896,11 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationUpdateAssetArgs = {
     input: UpdateAssetInput;
+};
+
+export type MutationDeleteAssetArgs = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationLoginArgs = {
@@ -3563,6 +3570,15 @@ export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
             focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
         } & AssetFragment
     >;
+};
+
+export type DeleteAssetMutationVariables = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
+    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type CanCreateCustomerMutationVariables = {
@@ -5456,6 +5472,12 @@ export namespace CreateAssets {
     export type Mutation = CreateAssetsMutation;
     export type CreateAssets = AssetFragment;
     export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
+}
+
+export namespace DeleteAsset {
+    export type Variables = DeleteAssetMutationVariables;
+    export type Mutation = DeleteAssetMutation;
+    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
 }
 
 export namespace CanCreateCustomer {

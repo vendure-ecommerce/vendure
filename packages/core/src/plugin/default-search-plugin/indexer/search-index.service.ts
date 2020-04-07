@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -13,6 +14,7 @@ import { WorkerMessage } from '../../../worker/types';
 import { WorkerService } from '../../../worker/worker.service';
 import {
     AssignProductToChannelMessage,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
@@ -63,12 +65,17 @@ export class SearchIndexService {
                     case 'update-asset':
                         this.sendMessage(job, new UpdateAssetMessage(data));
                         break;
+                    case 'delete-asset':
+                        this.sendMessage(job, new DeleteAssetMessage(data));
+                        break;
                     case 'assign-product-to-channel':
                         this.sendMessage(job, new AssignProductToChannelMessage(data));
                         break;
                     case 'remove-product-from-channel':
                         this.sendMessage(job, new RemoveProductFromChannelMessage(data));
                         break;
+                    default:
+                        assertNever(data);
                 }
             },
         });
@@ -102,6 +109,10 @@ export class SearchIndexService {
 
     updateAsset(ctx: RequestContext, asset: Asset) {
         this.addJobToQueue({ type: 'update-asset', ctx: ctx.serialize(), asset: asset as any });
+    }
+
+    deleteAsset(ctx: RequestContext, asset: Asset) {
+        this.addJobToQueue({ type: 'delete-asset', ctx: ctx.serialize(), asset: asset as any });
     }
 
     assignProductToChannel(ctx: RequestContext, productId: ID, channelId: ID) {

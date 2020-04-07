@@ -1743,6 +1743,8 @@ export type Mutation = {
     createAssets: Array<Asset>;
     /** Update an existing Asset */
     updateAsset: Asset;
+    /** Delete an Asset */
+    deleteAsset: DeletionResponse;
     login: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -1894,6 +1896,11 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationUpdateAssetArgs = {
     input: UpdateAssetInput;
+};
+
+export type MutationDeleteAssetArgs = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationLoginArgs = {

@@ -87,6 +87,9 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
             if (event.type === 'updated') {
                 return this.searchIndexService.updateAsset(event.ctx, event.asset);
             }
+            if (event.type === 'deleted') {
+                return this.searchIndexService.deleteAsset(event.ctx, event.asset);
+            }
         });
         this.eventBus.ofType(ProductChannelEvent).subscribe((event) => {
             if (event.type === 'assigned') {
