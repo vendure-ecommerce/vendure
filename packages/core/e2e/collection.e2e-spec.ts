@@ -486,6 +486,7 @@ describe('Collection resolver', () => {
                         translations: [
                             { languageCode: LanguageCode.en, name: 'Delete Me Parent', description: '' },
                         ],
+                        assetIds: ['T_1'],
                     },
                 },
             );
@@ -500,6 +501,7 @@ describe('Collection resolver', () => {
                             { languageCode: LanguageCode.en, name: 'Delete Me Child', description: '' },
                         ],
                         parentId: collectionToDeleteParent.id,
+                        assetIds: ['T_2'],
                     },
                 },
             );
