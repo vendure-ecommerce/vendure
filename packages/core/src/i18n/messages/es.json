@@ -7,6 +7,7 @@
     "cannot-transition-to-payment-without-customer": "No se puede cambiar el estado del pago a \"ArrangingPayment\"sin detalles del Cliente",
     "channel-not-found":  "Ningún canal con el token \"{ token }\" existe",
     "country-code-not-valid":  "El código de país  \"{ countryCode }\" no fue reconocido",
+    "default-channel-not-found":  "Canal predeterminado no encontrado",
     "email-address-not-verified": "Por favor verifica este email, antes de iniciar sesión",
     "entity-has-no-translation-in-language": "Entidad traducible '{ entityName }' no ha sido traducida al idioma seleccionando ({ languageCode })",
     "entity-with-id-not-found": "No { entityName } con el id '{ id }' se ha encontrado",
