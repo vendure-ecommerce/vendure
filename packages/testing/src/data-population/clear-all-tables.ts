@@ -8,6 +8,9 @@ import { createConnection } from 'typeorm';
  * Clears all tables in the detabase sepcified by the connectionOptions
  */
 export async function clearAllTables(config: VendureConfig, logging = true) {
+    if (logging) {
+        console.log('Clearing all tables...');
+    }
     config = await preBootstrapConfig(config);
     const entityIdStrategy = config.entityIdStrategy;
     const connection = await createConnection({ ...config.dbConnectionOptions });
