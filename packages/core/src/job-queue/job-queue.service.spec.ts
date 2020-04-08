@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { Test, TestingModule } from '@nestjs/testing';
 import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
@@ -6,7 +7,6 @@ import { ConfigService } from '../config/config.service';
 import { ProcessContext, ServerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
-import { JobQueue } from './job-queue';
 import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
 
@@ -277,6 +277,27 @@ describe('JobQueueService', () => {
         expect(testJob.state).toBe(JobState.FAILED);
         expect(testJob.isSettled).toBe(true);
     });
+
+    it('sets long-running jobs to pending on destroy', async () => {
+        const subject = new Subject<boolean>();
+        const testQueue = jobQueueService.createQueue<string>({
+            name: 'test',
+            concurrency: 1,
+            process: (job) => {
+                subject.subscribe((success) => (success ? job.complete() : job.fail()));
+            },
+        });
+
+        const testJob = await testQueue.add('hello');
+
+        await tick(queuePollInterval);
+
+        expect((await jobQueueService.getJob(testJob.id!))?.state).toBe(JobState.RUNNING);
+
+        await testQueue.destroy();
+
+        expect((await jobQueueService.getJob(testJob.id!))?.state).toBe(JobState.PENDING);
+    }, 10000);
 });
 
 function tick(ms: number): Promise<void> {

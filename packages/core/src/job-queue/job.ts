@@ -163,6 +163,18 @@ export class Job<T extends JobData<T> = any> {
 
     /**
      * @description
+     * Sets a RUNNING job back to PENDING. Should be used when the JobQueue is being
+     * destroyed before the job has been completed.
+     */
+    defer() {
+        if (this._state === JobState.RUNNING) {
+            this._state = JobState.PENDING;
+            this._attempts = 0;
+        }
+    }
+
+    /**
+     * @description
      * Used to register event handlers for job events
      */
     on(eventType: JobEventType, listener: JobEventListener<T>) {

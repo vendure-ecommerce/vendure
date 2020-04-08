@@ -1,6 +1,6 @@
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { JobListOptions, JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
-import { PaginatedList } from '@vendure/common/lib/shared-types';
+import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { ConfigService } from '../config/config.service';
 import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
@@ -72,7 +72,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
      * Gets a job by id. The implementation is handled by the configured
      * {@link JobQueueStrategy}.
      */
-    getJob(id: string): Promise<Job | undefined> {
+    getJob(id: ID): Promise<Job | undefined> {
         return this.jobQueueStrategy.findOne(id);
     }
 

@@ -80,11 +80,19 @@ export class JobQueue<Data extends JobData<Data> = {}> {
         this.running = false;
         clearTimeout(this.timer);
         const start = +new Date();
-        const maxTimeout = 5000;
+        // Wait for 2 seconds to allow running jobs to complete
+        const maxTimeout = 2000;
         return new Promise((resolve) => {
-            const pollActiveJobs = () => {
+            const pollActiveJobs = async () => {
                 const timedOut = +new Date() - start > maxTimeout;
                 if (this.activeJobs.length === 0 || timedOut) {
+                    // if there are any incomplete jobs after the 2 second
+                    // wait period, set them back to "pending" so they can
+                    // be re-run on next bootstrap.
+                    for (const job of this.activeJobs) {
+                        job.defer();
+                        await this.jobQueueStrategy.update(job);
+                    }
                     resolve();
                 } else {
                     setTimeout(pollActiveJobs, 50);
