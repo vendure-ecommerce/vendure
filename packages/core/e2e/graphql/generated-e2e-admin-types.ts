@@ -3572,15 +3572,6 @@ export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
-export type DeleteAssetMutationVariables = {
-    id: Scalars['ID'];
-    force?: Maybe<Scalars['Boolean']>;
-};
-
-export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
-    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
-
 export type CanCreateCustomerMutationVariables = {
     input: CreateCustomerInput;
 };
@@ -3685,7 +3676,9 @@ export type GetFacetValuesQuery = { __typename?: 'Query' } & {
     };
 };
 
-export type GetCollectionsQueryVariables = {};
+export type GetCollectionsQueryVariables = {
+    options?: Maybe<CollectionListOptions>;
+};
 
 export type GetCollectionsQuery = { __typename?: 'Query' } & {
     collections: { __typename?: 'CollectionList' } & {
@@ -4701,6 +4694,15 @@ export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
     } & AssetFragment;
 };
 
+export type DeleteAssetMutationVariables = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
+    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5474,12 +5476,6 @@ export namespace CreateAssets {
     export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
 }
 
-export namespace DeleteAsset {
-    export type Variables = DeleteAssetMutationVariables;
-    export type Mutation = DeleteAssetMutation;
-    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
-}
-
 export namespace CanCreateCustomer {
     export type Variables = CanCreateCustomerMutationVariables;
     export type Mutation = CanCreateCustomerMutation;
@@ -6221,6 +6217,12 @@ export namespace UpdateAsset {
     export type Mutation = UpdateAssetMutation;
     export type UpdateAsset = AssetFragment;
     export type FocalPoint = NonNullable<UpdateAssetMutation['updateAsset']['focalPoint']>;
+}
+
+export namespace DeleteAsset {
+    export type Variables = DeleteAssetMutationVariables;
+    export type Mutation = DeleteAssetMutation;
+    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
 }
 
 export namespace UpdateOptionGroup {

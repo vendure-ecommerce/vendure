@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
@@ -32,7 +33,7 @@ export class CollectionController {
     applyCollectionFilters({
         collectionIds,
     }: ApplyCollectionFiltersMessage['data']): Observable<ApplyCollectionFiltersMessage['response']> {
-        return asyncObservable(async (observer) => {
+        return asyncObservable(async observer => {
             Logger.verbose(`Processing ${collectionIds.length} Collections`);
             const timeStart = Date.now();
             const collections = await this.connection.getRepository(Collection).findByIds(collectionIds, {
@@ -59,7 +60,7 @@ export class CollectionController {
     private async applyCollectionFiltersInternal(collection: Collection): Promise<ID[]> {
         const ancestorFilters = await this.collectionService
             .getAncestors(collection.id)
-            .then((ancestors) =>
+            .then(ancestors =>
                 ancestors.reduce(
                     (filters, c) => [...filters, ...(c.filters || [])],
                     [] as ConfigurableOperation[],
@@ -70,11 +71,18 @@ export class CollectionController {
             ...ancestorFilters,
             ...(collection.filters || []),
         ]);
-        const postIds = collection.productVariants.map((v) => v.id);
+        const postIds = collection.productVariants.map(v => v.id);
         try {
             await this.connection
                 .getRepository(Collection)
-                .save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
+                // Only update the exact changed properties, to avoid VERY hard-to-debug
+                // non-deterministic race conditions e.g. when the "position" is changed
+                // by moving a Collection and then this save operation clobbers it back
+                // to the old value.
+                .save(pick(collection, ['id', 'productVariants']), {
+                    chunk: Math.ceil(collection.productVariants.length / 500),
+                    reload: false,
+                });
         } catch (e) {
             Logger.error(e);
         }
@@ -82,8 +90,8 @@ export class CollectionController {
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
         const difference = [
-            ...preIds.filter((id) => !postIdsSet.has(id)),
-            ...postIds.filter((id) => !preIdsSet.has(id)),
+            ...preIds.filter(id => !postIdsSet.has(id)),
+            ...postIds.filter(id => !preIdsSet.has(id)),
         ];
         return difference;
     }
@@ -95,8 +103,8 @@ export class CollectionController {
         if (filters.length === 0) {
             return [];
         }
-        const facetFilters = filters.filter((f) => f.code === facetValueCollectionFilter.code);
-        const variantNameFilters = filters.filter((f) => f.code === variantNameCollectionFilter.code);
+        const facetFilters = filters.filter(f => f.code === facetValueCollectionFilter.code);
+        const variantNameFilters = filters.filter(f => f.code === variantNameCollectionFilter.code);
         let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
 
         // Apply any facetValue-based filters
