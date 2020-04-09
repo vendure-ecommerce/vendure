@@ -583,7 +583,7 @@ export type CreateZoneInput = {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -1334,7 +1334,7 @@ export enum JobState {
 /**
  * @description
  * ISO 639-1 language code
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -1836,6 +1836,8 @@ export type Mutation = {
   removeOptionGroupFromProduct: Product;
   /** Removes Products from the specified Channel */
   removeProductsFromChannel: Array<Product>;
+  /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+  removeSettledJobs: Scalars['Int'];
   requestCompleted: Scalars['Int'];
   requestStarted: Scalars['Int'];
   setActiveChannel: UserStatus;
@@ -2161,6 +2163,12 @@ export type MutationRemoveOptionGroupFromProductArgs = {
 
 export type MutationRemoveProductsFromChannelArgs = {
   input: RemoveProductsFromChannelInput;
+};
+
+
+export type MutationRemoveSettledJobsArgs = {
+  queueNames?: Maybe<Array<Scalars['String']>>;
+  olderThan?: Maybe<Scalars['DateTime']>;
 };
 
 
@@ -2518,7 +2526,7 @@ export type PaymentMethodSortParameter = {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
