@@ -1,7 +1,7 @@
 <vdr-chip [colorType]="colorType">
     <clr-icon [attr.shape]="iconShape"></clr-icon>
     {{ job.state | titlecase }}
-    <span *ngIf="job.state === 'RUNNING'">
-        {{ job.progress | percent }}
+    <span *ngIf="job.state === 'RUNNING'" class="progress">
+        {{ (job.progress / 100) | percent }}
     </span>
 </vdr-chip>
