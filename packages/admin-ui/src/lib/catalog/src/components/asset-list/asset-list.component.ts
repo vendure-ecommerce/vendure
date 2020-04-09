@@ -36,7 +36,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.product.getAssetList(...args),
-            (data) => data.assets,
+            data => data.assets,
             (skip, take) => ({
                 options: {
                     skip,
@@ -66,7 +66,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
 
     filesSelected(files: File[]) {
         if (files.length) {
-            this.dataService.product.createAssets(files).subscribe((res) => {
+            this.dataService.product.createAssets(files).subscribe(res => {
                 super.refresh();
                 this.notificationService.success(_('asset.notify-create-assets-success'), {
                     count: files.length,
@@ -78,12 +78,12 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
     deleteAsset(asset: Asset) {
         this.showModalAndDelete(asset.id)
             .pipe(
-                switchMap((response) => {
+                switchMap(response => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(asset.id, response.message || '').pipe(
-                            map((r) => r.result === DeletionResult.DELETED),
+                            map(r => r.result === DeletionResult.DELETED),
                         );
                     }
                 }),
@@ -95,7 +95,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Asset',
                     });
@@ -106,7 +106,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
     private showModalAndDelete(assetId: string, message?: string) {
         return this.modalService
             .dialog({
-                title: _('catalog.confirm-delete-facet'),
+                title: _('catalog.confirm-delete-asset'),
                 body: message,
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
@@ -114,8 +114,8 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap((res) => (res ? this.dataService.product.deleteAsset(assetId, !!message) : EMPTY)),
-                map((res) => res.deleteAsset),
+                switchMap(res => (res ? this.dataService.product.deleteAsset(assetId, !!message) : EMPTY)),
+                map(res => res.deleteAsset),
             );
     }
 }

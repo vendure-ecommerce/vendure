@@ -56,6 +56,7 @@
     "collection-contents": "Collection contents",
     "confirm-adding-options-delete-default-body": "Adding options to this product will cause the existing default variant to be deleted. Do you wish to proceed?",
     "confirm-adding-options-delete-default-title": "Delete default variant?",
+    "confirm-delete-asset": "Delete asset?",
     "confirm-delete-channel": "Delete channel?",
     "confirm-delete-collection": "Delete collection?",
     "confirm-delete-collection-and-children-body": "Deleting this collection will also delete all child collections",
