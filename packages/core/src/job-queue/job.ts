@@ -10,7 +10,7 @@ import { JobConfig, JobData } from './types';
  * @docsCategory JobQueue
  * @docsPage Job
  */
-export type JobEventType = 'start' | 'complete' | 'fail';
+export type JobEventType = 'start' | 'progress' | 'complete' | 'fail';
 
 /**
  * @description
@@ -46,6 +46,7 @@ export class Job<T extends JobData<T> = any> {
     private _settledAt?: Date;
     private readonly eventListeners: { [type in JobEventType]: Array<JobEventListener<T>> } = {
         start: [],
+        progress: [],
         complete: [],
         fail: [],
     };
@@ -130,6 +131,7 @@ export class Job<T extends JobData<T> = any> {
      */
     setProgress(percent: number) {
         this._progress = Math.min(percent, 100);
+        this.fireEvent('progress');
     }
 
     /**

@@ -51,19 +51,22 @@ export class JobQueue<Data extends JobData<Data> = {}> {
                 if (nextJob) {
                     this.activeJobs.push(nextJob);
                     await this.jobQueueStrategy.update(nextJob);
-                    nextJob.on('complete', (job) => this.onFailOrComplete(job));
-                    nextJob.on('fail', (job) => this.onFailOrComplete(job));
+                    nextJob.on('complete', job => this.onFailOrComplete(job));
+                    nextJob.on('progress', job => this.jobQueueStrategy.update(job));
+                    nextJob.on('fail', job => this.onFailOrComplete(job));
                     try {
                         const returnVal = this.options.process(nextJob);
                         if (returnVal instanceof Promise) {
-                            returnVal.catch((err) => nextJob.fail(err));
+                            returnVal.catch(err => nextJob.fail(err));
                         }
                     } catch (err) {
                         nextJob.fail(err);
                     }
                 }
             }
-            this.timer = setTimeout(runNextJobs, this.pollInterval);
+            if (this.running) {
+                this.timer = setTimeout(runNextJobs, this.pollInterval);
+            }
         };
 
         runNextJobs();
@@ -82,7 +85,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
         const start = +new Date();
         // Wait for 2 seconds to allow running jobs to complete
         const maxTimeout = 2000;
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             const pollActiveJobs = async () => {
                 const timedOut = +new Date() - start > maxTimeout;
                 if (this.activeJobs.length === 0 || timedOut) {

@@ -78,7 +78,7 @@ export class InMemoryJobQueueStrategy implements JobQueueStrategy {
     }
 
     async findManyById(ids: ID[]): Promise<Job[]> {
-        return ids.map((id) => this.jobs.get(id)).filter(notNullOrUndefined);
+        return ids.map(id => this.jobs.get(id)).filter(notNullOrUndefined);
     }
 
     async next(queueName: string): Promise<Job | undefined> {
@@ -97,6 +97,29 @@ export class InMemoryJobQueueStrategy implements JobQueueStrategy {
         this.jobs.set(job.id!, job);
     }
 
+    async removeSettledJobs(queueNames: string[] = [], olderThan?: Date): Promise<number> {
+        let removed = 0;
+        for (const job of this.jobs.values()) {
+            if (0 < queueNames.length && !queueNames.includes(job.queueName)) {
+                continue;
+            }
+            if (job.isSettled) {
+                if (olderThan) {
+                    if (job.settledAt && job.settledAt < olderThan) {
+                        // tslint:disable-next-line:no-non-null-assertion
+                        this.jobs.delete(job.id!);
+                        removed++;
+                    }
+                } else {
+                    // tslint:disable-next-line:no-non-null-assertion
+                    this.jobs.delete(job.id!);
+                    removed++;
+                }
+            }
+        }
+        return removed;
+    }
+
     private applySort(items: Job[], sort: JobSortParameter): Job[] {
         for (const [prop, direction] of Object.entries(sort)) {
             const key = prop as keyof Required<JobSortParameter>;
@@ -110,40 +133,40 @@ export class InMemoryJobQueueStrategy implements JobQueueStrategy {
         for (const [prop, operator] of Object.entries(filters)) {
             const key = prop as keyof Required<JobFilterParameter>;
             if (operator?.eq !== undefined) {
-                items = items.filter((i) => i[key] === operator.eq);
+                items = items.filter(i => i[key] === operator.eq);
             }
 
             const contains = (operator as StringOperators)?.contains;
             if (contains) {
-                items = items.filter((i) => (i[key] as string).includes(contains));
+                items = items.filter(i => (i[key] as string).includes(contains));
             }
             const gt = (operator as NumberOperators)?.gt;
             if (gt) {
-                items = items.filter((i) => (i[key] as number) > gt);
+                items = items.filter(i => (i[key] as number) > gt);
             }
             const gte = (operator as NumberOperators)?.gte;
             if (gte) {
-                items = items.filter((i) => (i[key] as number) >= gte);
+                items = items.filter(i => (i[key] as number) >= gte);
             }
             const lt = (operator as NumberOperators)?.lt;
             if (lt) {
-                items = items.filter((i) => (i[key] as number) < lt);
+                items = items.filter(i => (i[key] as number) < lt);
             }
             const lte = (operator as NumberOperators)?.lte;
             if (lte) {
-                items = items.filter((i) => (i[key] as number) <= lte);
+                items = items.filter(i => (i[key] as number) <= lte);
             }
             const before = (operator as DateOperators)?.before;
             if (before) {
-                items = items.filter((i) => (i[key] as Date) <= before);
+                items = items.filter(i => (i[key] as Date) <= before);
             }
             const after = (operator as DateOperators)?.after;
             if (after) {
-                items = items.filter((i) => (i[key] as Date) >= after);
+                items = items.filter(i => (i[key] as Date) >= after);
             }
             const between = (operator as NumberOperators)?.between;
             if (between) {
-                items = items.filter((i) => {
+                items = items.filter(i => {
                     const num = i[key] as number;
                     return num > between.start && num < between.end;
                 });
@@ -164,16 +187,9 @@ export class InMemoryJobQueueStrategy implements JobQueueStrategy {
      * grows indefinitely.
      */
     private evictSettledJobs = () => {
-        for (const job of this.jobs.values()) {
-            if (job.isSettled) {
-                const settledAtMs = job.settledAt ? +job.settledAt : 0;
-                const nowMs = +new Date();
-                if (nowMs - settledAtMs > this.evictJobsAfterMs) {
-                    // tslint:disable-next-line:no-non-null-assertion
-                    this.jobs.delete(job.id!);
-                }
-            }
-        }
+        const nowMs = +new Date();
+        const olderThanMs = nowMs - this.evictJobsAfterMs;
+        this.removeSettledJobs([], new Date(olderThanMs));
         this.timer = setTimeout(this.evictSettledJobs, this.evictJobsAfterMs);
     };
 }

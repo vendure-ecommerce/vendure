@@ -2,7 +2,7 @@ import { ModuleRef } from '@nestjs/core';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, Connection } from 'typeorm';
+import { Brackets, Connection, FindConditions, In, LessThan, Not } from 'typeorm';
 
 import { JobQueueStrategy } from '../../config/job-queue/job-queue-strategy';
 import { Job } from '../../job-queue/job';
@@ -41,7 +41,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
             .createQueryBuilder('record')
             .where('record.queueName = :queueName', { queueName })
             .andWhere(
-                new Brackets((qb) => {
+                new Brackets(qb => {
                     qb.where('record.state = :pending', {
                         pending: JobState.PENDING,
                     }).orWhere('record.state = :retrying', { retrying: JobState.RETRYING });
@@ -96,7 +96,22 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
         return this.connection
             .getRepository(JobRecord)
             .findByIds(ids)
-            .then((records) => records.map(this.fromRecord));
+            .then(records => records.map(this.fromRecord));
+    }
+
+    async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) {
+        if (!this.connectionAvailable(this.connection)) {
+            return 0;
+        }
+        const findOptions: FindConditions<JobRecord> = {
+            ...(0 < queueNames.length ? { queueName: In(queueNames) } : {}),
+            isSettled: true,
+            settledAt: LessThan(olderThan || new Date()),
+        };
+        const toDelete = await this.connection.getRepository(JobRecord).find({ where: findOptions });
+        const deleteCount = await this.connection.getRepository(JobRecord).count({ where: findOptions });
+        await this.connection.getRepository(JobRecord).delete(findOptions);
+        return deleteCount;
     }
 
     private connectionAvailable(connection: Connection | undefined): connection is Connection {

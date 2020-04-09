@@ -73,4 +73,14 @@ export interface JobQueueStrategy {
      * Returns an array of jobs for the given ids.
      */
     findManyById(ids: ID[]): Promise<Job[]>;
+
+    /**
+     * @description
+     * Remove all settled jobs in the specified queues older than the given date.
+     * If no queueName is passed, all queues will be considered. If no olderThan
+     * date is passed, all jobs older than the current time will be removed.
+     *
+     * Returns a promise of the number of jobs removed.
+     */
+    removeSettledJobs(queueNames?: string[], olderThan?: Date): Promise<number>;
 }

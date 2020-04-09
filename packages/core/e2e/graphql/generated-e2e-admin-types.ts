@@ -1801,6 +1801,8 @@ export type Mutation = {
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
+    /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+    removeSettledJobs: Scalars['Int'];
     settlePayment: Payment;
     fulfillOrder: Fulfillment;
     cancelOrder: Order;
@@ -2025,6 +2027,11 @@ export type MutationUpdateGlobalSettingsArgs = {
 
 export type MutationImportProductsArgs = {
     csvFile: Scalars['Upload'];
+};
+
+export type MutationRemoveSettledJobsArgs = {
+    queueNames?: Maybe<Array<Scalars['String']>>;
+    olderThan?: Maybe<Scalars['DateTime']>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -3676,9 +3683,7 @@ export type GetFacetValuesQuery = { __typename?: 'Query' } & {
     };
 };
 
-export type GetCollectionsQueryVariables = {
-    options?: Maybe<CollectionListOptions>;
-};
+export type GetCollectionsQueryVariables = {};
 
 export type GetCollectionsQuery = { __typename?: 'Query' } & {
     collections: { __typename?: 'CollectionList' } & {
