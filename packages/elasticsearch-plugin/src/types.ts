@@ -6,10 +6,8 @@ import {
     SearchResponse,
     SearchResult,
 } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
+import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Asset, SerializedRequestContext, WorkerMessage } from '@vendure/core';
-
-import { JsonCompatible } from '../../common/src/shared-types';
 
 export type ElasticSearchInput = SearchInput & {
     priceRange?: PriceRange;
