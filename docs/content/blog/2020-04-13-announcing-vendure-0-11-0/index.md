@@ -25,11 +25,19 @@ The job queue is backed by a [configurble storage strategy]({{< relref "job-queu
 
 One side-benefit of this new job queue system is that, assuming a shared storage strategy is used (e.g. the [SqlJobQueueStrategy]({{< relref "sql-job-queue-strategy" >}})), this will allow multiple instances of Vendure to share a single job queue. This is a key part of an on-going effort to adapt Vendure for cloud / multi-instance deployments by making the server as stateless as possible.
 
+{{% alert "warning" %}}
+**Note:** If you are upgrading an existing Vendure project, by default the built-in [InMemoryJobQueueStrategy]({{< relref "in-memory-job-queue-strategy" >}}) will be used. You'll probably want to replace this with a persistent storage strategy by adding the [DefaultJobQueuePlugin]({{< relref "default-job-queue-plugin" >}}) to your VendureConfig.
+{{% /alert %}}
+
 ### 📖 See our new documentation: [The Vendure Job Queue]({{< relref "/docs/developer-guide/job-queue" >}})
 
 ## Nestjs v7
 
 Vendure is built on top of the [Nest framework](https://nestjs.com/), which recently [released a new major version 7](https://trilon.io/blog/announcing-nestjs-7-whats-new). This Vendure release updates the underlying Nest dependency to v7, allowing Vendure developers to take advantage of the latest Nest features and bugfixes.
+
+{{% alert "warning" %}}
+**Note:** If your Vendure project makes use of Nest APIs as part of your plugins (e.g. if you have custom GraphQL resolvers), you'll need to consult the [Nest migration guide](https://docs.nestjs.com/migration-guide) as part of the update process as there are a few small changes.
+{{% /alert %}}
 
 ## Other notable improvements
 
