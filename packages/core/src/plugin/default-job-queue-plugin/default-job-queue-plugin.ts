@@ -10,6 +10,18 @@ import { SqlJobQueueStrategy } from './sql-job-queue-strategy';
  * plugin to an existing Vendure installation, you'll need to run a [database migration](/docs/developer-guide/migrations), since this
  * plugin will add a new "job_record" table to the database.
  *
+ * @example
+ * ```TypeScript
+ * import { DefaultJobQueuePlugin, VendureConfig } from '\@vendure/core';
+ *
+ * export const config: VendureConfig = {
+ *   // Add an instance of the plugin to the plugins array
+ *   plugins: [
+ *     DefaultJobQueuePlugin,
+ *   ],
+ * };
+ * ```
+ *
  * @docsCategory JobQueue
  */
 @VendurePlugin({

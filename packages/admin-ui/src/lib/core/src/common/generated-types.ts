@@ -583,7 +583,7 @@ export type CreateZoneInput = {
 /**
  * @description
  * ISO 4217 currency code
- *
+ * 
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -1322,6 +1322,12 @@ export type JobSortParameter = {
   duration?: Maybe<SortOrder>;
 };
 
+/**
+ * @description
+ * The state of a Job in the JobQueue
+ * 
+ * @docsCategory common
+ */
 export enum JobState {
   PENDING = 'PENDING',
   RUNNING = 'RUNNING',
@@ -1334,7 +1340,7 @@ export enum JobState {
 /**
  * @description
  * ISO 639-1 language code
- *
+ * 
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -2526,7 +2532,7 @@ export type PaymentMethodSortParameter = {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- *
+ * 
  * @docsCategory common
  */
 export enum Permission {

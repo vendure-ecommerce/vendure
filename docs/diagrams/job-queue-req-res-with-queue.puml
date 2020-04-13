@@ -1,0 +1,12 @@
+@startuml
+!include theme.puml
+hide footbox
+title Request-response with job queue
+Client -> "Vendure API": mutation `reindex`
+"Vendure API" -> JobQueue: add "reindex" job to queue
+JobQueue --> "Vendure API": job is pending
+"Vendure API" --> Client: reindex response
+...some time later...
+JobQueue -> Worker: Run reindex logic
+Worker --> JobQueue: Reindexing complete
+@enduml

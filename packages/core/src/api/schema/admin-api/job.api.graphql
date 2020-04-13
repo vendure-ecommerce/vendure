@@ -10,6 +10,12 @@ type Mutation {
     removeSettledJobs(queueNames: [String!], olderThan: DateTime): Int!
 }
 
+"""
+@description
+The state of a Job in the JobQueue
+
+@docsCategory common
+"""
 enum JobState {
     PENDING
     RUNNING

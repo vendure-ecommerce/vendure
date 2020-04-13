@@ -36,3 +36,13 @@ Internally, the Worker is an instance of a [NestJS microservice](https://docs.ne
 ## Running on the main process
 
 There is an option `runInMainProcess` which, if set to `true` will cause the Worker to be bootstrapped along with the main application, without the need for a separate process running `bootstrapWorker`. This is mainly used for testing and development, and is not advised for production use, since it negates the benefits of running long tasks off of the main process.
+
+## Running custom code on the worker
+
+If you are authoring a [Vendure plugin]({{< relref "/docs/plugins" >}}) to implement custom functionality, you can also make use of the worker process in order to handle long-running or computationally-demanding tasks. See the [Plugin Examples]({{< relref "plugin-examples" >}}#running-processes-on-the-worker) page for an example of this.
+
+{{% alert "primary" %}}
+Note: The [WorkerService]({{< relref "worker-service" >}}) combines well with the [JobQueueService]({{< relref "job-queue-service" >}}).
+
+A real example of this can be seen in the [EmailPlugin source](https://github.com/vendure-ecommerce/vendure/blob/07e1958f1ad1766e6fd3dae80f526bb688c0288e/packages/email-plugin/src/plugin.ts#L201-L210)
+{{% /alert %}}

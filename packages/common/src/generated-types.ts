@@ -1314,6 +1314,12 @@ export type JobSortParameter = {
   duration?: Maybe<SortOrder>;
 };
 
+/**
+ * @description
+ * The state of a Job in the JobQueue
+ * 
+ * @docsCategory common
+ */
 export enum JobState {
   PENDING = 'PENDING',
   RUNNING = 'RUNNING',

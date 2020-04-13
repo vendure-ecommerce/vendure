@@ -384,6 +384,8 @@ export interface WorkerOptions {
 /**
  * @description
  * Options related to the built-in job queue.
+ *
+ * @docsCategory JobQueue
  */
 export interface JobQueueOptions {
     /**
@@ -395,10 +397,10 @@ export interface JobQueueOptions {
     jobQueueStrategy?: JobQueueStrategy;
     /**
      * @description
-     * Defines the interval in ms used by the JobService to poll for new
+     * Defines the interval in ms used by the {@link JobQueueService} to poll for new
      * jobs in the queue to process.
      *
-     * @default 100
+     * @default 200
      */
     pollInterval?: number;
 }

@@ -14,10 +14,11 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
  *
  * The PluginCommonModule exports:
  *
- * * EventBusModule, allowing the injection of the {@link EventBus} service.
- * * ServiceModule allowing the injection of any of the various entity services such as ProductService, OrderService etc.
- * * ConfigModule, allowing the injection of the ConfigService.
- * * WorkerServiceModule, allowing the injection of the {@link WorkerService}.
+ * * `EventBusModule`, allowing the injection of the {@link EventBus} service.
+ * * `ServiceModule` allowing the injection of any of the various entity services such as ProductService, OrderService etc.
+ * * `ConfigModule`, allowing the injection of the ConfigService.
+ * * `WorkerServiceModule`, allowing the injection of the {@link WorkerService}.
+ * * `JobQueueModule`, allowing the injection of the {@link JobQueueService}.
  *
  * @docsCategory plugin
  */

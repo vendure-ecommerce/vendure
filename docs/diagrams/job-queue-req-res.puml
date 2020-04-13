@@ -1,0 +1,9 @@
+@startuml
+!include theme.puml
+hide footbox
+title Regular request-response
+Client -> "Vendure API": query `product(ID: 1)`
+"Vendure API" -> DB #99FF99: Lookup data
+DB --> "Vendure API": Return data
+"Vendure API" --> Client: product query response
+@enduml
