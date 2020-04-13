@@ -1,3 +1,61 @@
+## 0.11.0 (2020-04-13)
+
+
+#### Fixes
+
+* **admin-ui** Fix display of in-progress jobs ([5bed0e6](https://github.com/vendure-ecommerce/vendure/commit/5bed0e6))
+* **admin-ui** Get entity default language from active Channel ([effe2c6](https://github.com/vendure-ecommerce/vendure/commit/effe2c6)), closes [#296](https://github.com/vendure-ecommerce/vendure/issues/296)
+* **admin-ui** Refresh Collection List on deletion ([4202398](https://github.com/vendure-ecommerce/vendure/commit/4202398)), closes [#295](https://github.com/vendure-ecommerce/vendure/issues/295)
+* **core** add missing translations for default channel not found (#301) ([07e1958](https://github.com/vendure-ecommerce/vendure/commit/07e1958)), closes [#301](https://github.com/vendure-ecommerce/vendure/issues/301)
+* **core** Correctly derive request language from active Channel ([aae4aa9](https://github.com/vendure-ecommerce/vendure/commit/aae4aa9))
+* **core** Correctly reindex enabled state ([2231505](https://github.com/vendure-ecommerce/vendure/commit/2231505)), closes [#295](https://github.com/vendure-ecommerce/vendure/issues/295)
+* **core** Fix deletion of Collections ([44916b7](https://github.com/vendure-ecommerce/vendure/commit/44916b7)), closes [#297](https://github.com/vendure-ecommerce/vendure/issues/297)
+* **core** Fix generated import in CLI populate types ([4ea139f](https://github.com/vendure-ecommerce/vendure/commit/4ea139f))
+* **core** Fix race condition when moving Collections ([987b611](https://github.com/vendure-ecommerce/vendure/commit/987b611))
+* **core** Limit Channel defaultLanguage to one of availableLanguages ([b9f4dc0](https://github.com/vendure-ecommerce/vendure/commit/b9f4dc0))
+* **core** Use configured defaultLanguageCode rather than hard-coded val ([d2942e6](https://github.com/vendure-ecommerce/vendure/commit/d2942e6)), closes [#296](https://github.com/vendure-ecommerce/vendure/issues/296)
+* **core** Validate availableLanguages when update GlobalSettings ([e304ae2](https://github.com/vendure-ecommerce/vendure/commit/e304ae2))
+* **elasticsearch-plugin** Fix bad import paths ([99733fa](https://github.com/vendure-ecommerce/vendure/commit/99733fa))
+* **email-plugin** Pass all email options when creating transport ([1c6b39f](https://github.com/vendure-ecommerce/vendure/commit/1c6b39f))
+
+#### Features
+
+* **admin-ui** Display live list of queued jobs ([bbe5855](https://github.com/vendure-ecommerce/vendure/commit/bbe5855))
+* **admin-ui** Enable setting default language for Channels ([0120202](https://github.com/vendure-ecommerce/vendure/commit/0120202)), closes [#296](https://github.com/vendure-ecommerce/vendure/issues/296)
+* **admin-ui** Implement Asset deletion UI ([4912a29](https://github.com/vendure-ecommerce/vendure/commit/4912a29)), closes [#285](https://github.com/vendure-ecommerce/vendure/issues/285)
+* **admin-ui** Update to Angular 9.1.0 ([084edd9](https://github.com/vendure-ecommerce/vendure/commit/084edd9))
+* **asset-server-plugin** Update Sharp version to 0.25.2 ([13edc9c](https://github.com/vendure-ecommerce/vendure/commit/13edc9c))
+* **core** Add DB-based persistence for JobQueue ([a61df93](https://github.com/vendure-ecommerce/vendure/commit/a61df93)), closes [#282](https://github.com/vendure-ecommerce/vendure/issues/282)
+* **core** Add jobQueues query ([46068b3](https://github.com/vendure-ecommerce/vendure/commit/46068b3))
+* **core** Export ProcessContext service ([3177ac0](https://github.com/vendure-ecommerce/vendure/commit/3177ac0))
+* **core** Extract SQL-based JobQueueStrategy in a bundled plugin ([a2069f6](https://github.com/vendure-ecommerce/vendure/commit/a2069f6))
+* **core** Implement deleteAsset mutation ([efa12ba](https://github.com/vendure-ecommerce/vendure/commit/efa12ba)), closes [#285](https://github.com/vendure-ecommerce/vendure/issues/285)
+* **core** Implement removeSettledJobs mutation ([82af7f6](https://github.com/vendure-ecommerce/vendure/commit/82af7f6))
+* **core** Log any errors when creating Asset preview images ([e1b8cb8](https://github.com/vendure-ecommerce/vendure/commit/e1b8cb8))
+* **core** Redesign JobQueue to allow persistence, concurrency etc ([7acf532](https://github.com/vendure-ecommerce/vendure/commit/7acf532)), closes [#282](https://github.com/vendure-ecommerce/vendure/issues/282)
+* **core** Resume interrupted jobs in queue on restart ([9b66d33](https://github.com/vendure-ecommerce/vendure/commit/9b66d33))
+* **core** Update to Nestjs v7 ([3d6657a](https://github.com/vendure-ecommerce/vendure/commit/3d6657a))
+* **core** Update to TypeScript 3.8 ([e255674](https://github.com/vendure-ecommerce/vendure/commit/e255674)), closes [#286](https://github.com/vendure-ecommerce/vendure/issues/286)
+* **create** Add DefaultJobQueuePlugin to default config template ([38b375f](https://github.com/vendure-ecommerce/vendure/commit/38b375f))
+* **elasticsearch-plugin** Update index on asset deletion ([c80662a](https://github.com/vendure-ecommerce/vendure/commit/c80662a))
+* **elasticsearch-plugin** Update to use new job queue ([42b1d28](https://github.com/vendure-ecommerce/vendure/commit/42b1d28))
+* **email-plugin** Generate and send emails on the worker ([0cc5f87](https://github.com/vendure-ecommerce/vendure/commit/0cc5f87))
+* **testing** Add `bootstrap` method to TestServer ([dab9e21](https://github.com/vendure-ecommerce/vendure/commit/dab9e21))
+
+#### Perf
+
+* **admin-ui-plugin** Use trackBy function to improve perf of datatable ([09ab4d7](https://github.com/vendure-ecommerce/vendure/commit/09ab4d7))
+
+
+### BREAKING CHANGE
+
+* (If using the DefaultJobQueuePlugin) A new JobRecord entity has been added, so a DB migration will be needed.
+* In order to accommodate Asset deletion, some non-destructive DB modifications have been made which will require a migration.
+* Nestjs has been updated to v7. If you make use of any of the Nest internals in your plugins, this may cause some breaking changes. Please see the [Nest migration guide](https://docs.nestjs.com/migration-guide) for details.
+
+  This release also includes updates to many dependencies which in turn have dropped support for Node.js v8. Therefore **Vendure now supports Node.js v10** or higher.
+* The CollectionAsset entity had a cascade delete defined, which will require a DB migration.
+* The JobQueueService has been completely re-designed. In the event that you are using this service in your Plugins, please see the [API documentation](https://www.vendure.io/docs/developer-guide/job-queue) on how to use it now.
 ## <small>0.10.2 (2020-04-02)</small>
 
 
