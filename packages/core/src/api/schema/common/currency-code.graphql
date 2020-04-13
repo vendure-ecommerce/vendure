@@ -58,9 +58,9 @@ enum CurrencyCode {
     "Canadian dollar"
     CAD
     "Congolese franc"
-    CHE
+    CDF
     "Swiss franc"
-    CHW
+    CHF
     "Chilean peso"
     CLP
     "Renminbi (Chinese) yuan"
