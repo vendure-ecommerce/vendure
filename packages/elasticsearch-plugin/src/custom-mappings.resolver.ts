@@ -1,7 +1,6 @@
 import { Inject } from '@nestjs/common';
-import { ResolveProperty, Resolver } from '@nestjs/graphql';
-
-import { DeepRequired } from '../../common/lib/shared-types';
+import { ResolveField, Resolver } from '@nestjs/graphql';
+import { DeepRequired } from '@vendure/common/lib/shared-types';
 
 import { ELASTIC_SEARCH_OPTIONS } from './constants';
 import { ElasticsearchOptions } from './options';
@@ -15,7 +14,7 @@ import { ElasticsearchOptions } from './options';
 export class CustomMappingsResolver {
     constructor(@Inject(ELASTIC_SEARCH_OPTIONS) private options: DeepRequired<ElasticsearchOptions>) {}
 
-    @ResolveProperty()
+    @ResolveField()
     __resolveType(value: any): string {
         const productPropertyNames = Object.keys(this.options.customProductMappings);
         return Object.keys(value).every(k => productPropertyNames.includes(k))

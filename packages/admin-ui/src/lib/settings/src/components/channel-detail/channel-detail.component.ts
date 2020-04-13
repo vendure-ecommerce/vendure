@@ -2,10 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { Observable } from 'rxjs';
-import { map, mergeMap, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     Channel,
@@ -15,11 +11,13 @@ import {
     LanguageCode,
     UpdateChannelInput,
 } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
-
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
+import { Observable } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
 @Component({
     selector: 'vdr-channel-detail',
     templateUrl: './channel-detail.component.html',
@@ -31,23 +29,25 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     zones$: Observable<GetZones.Zones[]>;
     detailForm: FormGroup;
     currencyCodes = Object.values(CurrencyCode);
+    availableLanguageCodes$: Observable<LanguageCode[]>;
 
     constructor(
         router: Router,
         route: ActivatedRoute,
-        serverConfigService: ServerConfigService,
+        protected serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             token: ['', Validators.required],
             pricesIncludeTax: [false],
             currencyCode: [''],
             defaultShippingZoneId: ['', Validators.required],
+            defaultLanguageCode: [],
             defaultTaxZoneId: ['', Validators.required],
         });
     }
@@ -55,6 +55,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     ngOnInit() {
         this.init();
         this.zones$ = this.dataService.settings.getZones().mapSingle(data => data.zones);
+        this.availableLanguageCodes$ = this.serverConfigService.getAvailableLanguages();
     }
 
     ngOnDestroy() {
@@ -73,7 +74,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
         const input: CreateChannelInput = {
             code: formValue.code,
             token: formValue.token,
-            defaultLanguageCode: getDefaultLanguage(),
+            defaultLanguageCode: formValue.defaultLanguageCode,
             pricesIncludeTax: formValue.pricesIncludeTax,
             currencyCode: formValue.currencyCode,
             defaultShippingZoneId: formValue.defaultShippingZoneId,
@@ -127,6 +128,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                         pricesIncludeTax: formValue.pricesIncludeTax,
                         currencyCode: formValue.currencyCode,
                         defaultShippingZoneId: formValue.defaultShippingZoneId,
+                        defaultLanguageCode: formValue.defaultLanguageCode,
                         defaultTaxZoneId: formValue.defaultTaxZoneId,
                     } as UpdateChannelInput;
                     return this.dataService.settings.updateChannel(input);
@@ -158,6 +160,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
             pricesIncludeTax: entity.pricesIncludeTax,
             currencyCode: entity.currencyCode,
             defaultShippingZoneId: entity.defaultShippingZone ? entity.defaultShippingZone.id : '',
+            defaultLanguageCode: entity.defaultLanguageCode,
             defaultTaxZoneId: entity.defaultTaxZone ? entity.defaultTaxZone.id : '',
         });
         if (entity.code === DEFAULT_CHANNEL_CODE) {

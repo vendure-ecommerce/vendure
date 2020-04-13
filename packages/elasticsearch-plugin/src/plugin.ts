@@ -240,36 +240,44 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
         Logger.info(`Sucessfully connected to Elasticsearch instance at "${host}:${port}"`, loggerCtx);
 
         await this.elasticsearchService.createIndicesIfNotExists();
+        this.elasticsearchIndexService.initJobQueue();
 
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
-                return this.elasticsearchIndexService.deleteProduct(event.ctx, event.product).start();
+                return this.elasticsearchIndexService.deleteProduct(event.ctx, event.product);
             } else {
-                return this.elasticsearchIndexService.updateProduct(event.ctx, event.product).start();
+                return this.elasticsearchIndexService.updateProduct(event.ctx, event.product);
             }
         });
         this.eventBus.ofType(ProductVariantEvent).subscribe(event => {
             if (event.type === 'deleted') {
-                return this.elasticsearchIndexService.deleteVariant(event.ctx, event.variants).start();
+                return this.elasticsearchIndexService.deleteVariant(event.ctx, event.variants);
             } else {
-                return this.elasticsearchIndexService.updateVariants(event.ctx, event.variants).start();
+                return this.elasticsearchIndexService.updateVariants(event.ctx, event.variants);
             }
         });
         this.eventBus.ofType(AssetEvent).subscribe(event => {
             if (event.type === 'updated') {
-                return this.elasticsearchIndexService.updateAsset(event.ctx, event.asset).start();
+                return this.elasticsearchIndexService.updateAsset(event.ctx, event.asset);
+            }
+            if (event.type === 'deleted') {
+                return this.elasticsearchIndexService.deleteAsset(event.ctx, event.asset);
             }
         });
 
         this.eventBus.ofType(ProductChannelEvent).subscribe(event => {
             if (event.type === 'assigned') {
-                return this.elasticsearchIndexService
-                    .assignProductToChannel(event.ctx, event.product, event.channelId)
-                    .start();
+                return this.elasticsearchIndexService.assignProductToChannel(
+                    event.ctx,
+                    event.product,
+                    event.channelId,
+                );
             } else {
-                return this.elasticsearchIndexService
-                    .removeProductFromChannel(event.ctx, event.product, event.channelId)
-                    .start();
+                return this.elasticsearchIndexService.removeProductFromChannel(
+                    event.ctx,
+                    event.product,
+                    event.channelId,
+                );
             }
         });
 
@@ -286,7 +294,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
                 filter(e => 0 < e.ids.length),
             )
             .subscribe(events => {
-                return this.elasticsearchIndexService.updateVariantsById(events.ctx, events.ids).start();
+                return this.elasticsearchIndexService.updateVariantsById(events.ctx, events.ids);
             });
 
         this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {

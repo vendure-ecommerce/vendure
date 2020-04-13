@@ -75,11 +75,13 @@ import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
+import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
 
 const IMPORTS = [
@@ -160,6 +162,8 @@ const DECLARATIONS = [
     AssetPreviewPipe,
     LinkDialogComponent,
     ExternalImageDialogComponent,
+    TimeAgoPipe,
+    DurationPipe,
 ];
 
 @NgModule({

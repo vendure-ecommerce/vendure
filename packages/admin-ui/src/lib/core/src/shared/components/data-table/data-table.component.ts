@@ -40,4 +40,12 @@ export class DataTableComponent<T> implements AfterContentInit {
     ngAfterContentInit(): void {
         this.rowTemplate = this.templateRefs.last;
     }
+
+    trackByFn(index: number, item: any) {
+        if ((item as any).id != null) {
+            return (item as any).id;
+        } else {
+            return index;
+        }
+    }
 }

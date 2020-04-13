@@ -11,74 +11,13 @@ export interface IntrospectionResultData {
         }[];
     };
 }
-
 const result: IntrospectionResultData = {
     __schema: {
         types: [
             {
                 kind: 'INTERFACE',
-                name: 'PaginatedList',
-                possibleTypes: [
-                    {
-                        name: 'AdministratorList',
-                    },
-                    {
-                        name: 'AssetList',
-                    },
-                    {
-                        name: 'CollectionList',
-                    },
-                    {
-                        name: 'ProductVariantList',
-                    },
-                    {
-                        name: 'OrderList',
-                    },
-                    {
-                        name: 'HistoryEntryList',
-                    },
-                    {
-                        name: 'CountryList',
-                    },
-                    {
-                        name: 'CustomerList',
-                    },
-                    {
-                        name: 'FacetList',
-                    },
-                    {
-                        name: 'PaymentMethodList',
-                    },
-                    {
-                        name: 'ProductList',
-                    },
-                    {
-                        name: 'PromotionList',
-                    },
-                    {
-                        name: 'RoleList',
-                    },
-                    {
-                        name: 'ShippingMethodList',
-                    },
-                    {
-                        name: 'TaxRateList',
-                    },
-                ],
-            },
-            {
-                kind: 'INTERFACE',
                 name: 'Node',
                 possibleTypes: [
-                    {
-                        name: 'Administrator',
-                    },
-                    {
-                        name: 'User',
-                    },
-                    {
-                        name: 'Role',
-                    },
                     {
                         name: 'Channel',
                     },
@@ -87,6 +26,15 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'Country',
+                    },
+                    {
+                        name: 'Administrator',
+                    },
+                    {
+                        name: 'User',
+                    },
+                    {
+                        name: 'Role',
                     },
                     {
                         name: 'Asset',
@@ -161,13 +109,70 @@ const result: IntrospectionResultData = {
                         name: 'Facet',
                     },
                     {
+                        name: 'Job',
+                    },
+                    {
                         name: 'PaymentMethod',
+                    },
+                    {
+                        name: 'Product',
                     },
                     {
                         name: 'ProductOptionGroup',
                     },
+                ],
+            },
+            {
+                kind: 'INTERFACE',
+                name: 'PaginatedList',
+                possibleTypes: [
                     {
-                        name: 'Product',
+                        name: 'AdministratorList',
+                    },
+                    {
+                        name: 'AssetList',
+                    },
+                    {
+                        name: 'ProductVariantList',
+                    },
+                    {
+                        name: 'OrderList',
+                    },
+                    {
+                        name: 'HistoryEntryList',
+                    },
+                    {
+                        name: 'CollectionList',
+                    },
+                    {
+                        name: 'CountryList',
+                    },
+                    {
+                        name: 'CustomerList',
+                    },
+                    {
+                        name: 'FacetList',
+                    },
+                    {
+                        name: 'JobList',
+                    },
+                    {
+                        name: 'PaymentMethodList',
+                    },
+                    {
+                        name: 'ProductList',
+                    },
+                    {
+                        name: 'PromotionList',
+                    },
+                    {
+                        name: 'RoleList',
+                    },
+                    {
+                        name: 'ShippingMethodList',
+                    },
+                    {
+                        name: 'TaxRateList',
                     },
                 ],
             },
@@ -270,5 +275,4 @@ const result: IntrospectionResultData = {
         ],
     },
 };
-
 export default result;

@@ -8,6 +8,7 @@ import {
     Order,
     OrderStateTransitionEvent,
     PluginCommonModule,
+    ProcessContextModule,
     RequestContext,
     VendureEvent,
 } from '@vendure/core';
@@ -20,7 +21,6 @@ import { EmailPlugin } from './plugin';
 import { EmailPluginOptions } from './types';
 
 describe('EmailPlugin', () => {
-    let plugin: EmailPlugin;
     let eventBus: EventBus;
     let onSend: jest.Mock;
     let module: TestingModule;
@@ -36,6 +36,7 @@ describe('EmailPlugin', () => {
                     type: 'sqljs',
                     retryAttempts: 0,
                 }),
+                ProcessContextModule.forRoot(),
                 PluginCommonModule,
                 EmailPlugin.init({
                     templatePath: path.join(__dirname, '../test-templates'),
@@ -50,7 +51,7 @@ describe('EmailPlugin', () => {
             providers: [MockService],
         }).compile();
 
-        plugin = module.get(EmailPlugin);
+        const plugin = module.get(EmailPlugin);
         eventBus = module.get(EventBus);
         await plugin.onVendureBootstrap();
         return module;
@@ -63,10 +64,10 @@ describe('EmailPlugin', () => {
     });
 
     it('setting from, recipient, subject', async () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
         const handler = new EmailEventListener('test')
             .on(MockEvent)
             .setFrom('"test from" <noreply@test.com>')
@@ -84,10 +85,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('event filtering', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('single filter', async () => {
             const handler = new EmailEventListener('test')
@@ -123,7 +124,7 @@ describe('EmailPlugin', () => {
             await pause();
             expect(onSend).not.toHaveBeenCalled();
 
-            const ctxWithUser = RequestContext.fromObject({ ...ctx, _session: { user: { id: 42 } } });
+            const ctxWithUser = RequestContext.deserialize({ ...ctx, _session: { user: { id: 42 } } } as any);
 
             eventBus.publish(new MockEvent(ctxWithUser, true));
             await pause();
@@ -152,10 +153,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('templateVars', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('interpolates subject', async () => {
             const handler = new EmailEventListener('test')
@@ -273,10 +274,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('handlebars helpers', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('formateDate', async () => {
             const handler = new EmailEventListener('test-helpers')
@@ -310,10 +311,10 @@ describe('EmailPlugin', () => {
     });
 
     describe('multiple configs', () => {
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         it('additional LanguageCode', async () => {
             const handler = new EmailEventListener('test')
@@ -331,13 +332,13 @@ describe('EmailPlugin', () => {
 
             await initPluginWithHandlers([handler]);
 
-            const ctxTa = RequestContext.fromObject({ ...ctx, _languageCode: LanguageCode.ta });
+            const ctxTa = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.ta } as any);
             eventBus.publish(new MockEvent(ctxTa, true));
             await pause();
             expect(onSend.mock.calls[0][0].subject).toBe('Hello, Test!');
             expect(onSend.mock.calls[0][0].body).toContain('Default body.');
 
-            const ctxDe = RequestContext.fromObject({ ...ctx, _languageCode: LanguageCode.de });
+            const ctxDe = RequestContext.deserialize({ ...ctx, _languageCode: LanguageCode.de } as any);
             eventBus.publish(new MockEvent(ctxDe, true));
             await pause();
             expect(onSend.mock.calls[1][0].subject).toBe('Servus, Test!');
@@ -362,10 +363,10 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(
                 new MockEvent(
-                    RequestContext.fromObject({
+                    RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
                         _languageCode: LanguageCode.en,
-                    }),
+                    } as any),
                     true,
                 ),
             );
@@ -390,10 +391,10 @@ describe('EmailPlugin', () => {
 
             eventBus.publish(
                 new MockEvent(
-                    RequestContext.fromObject({
+                    RequestContext.deserialize({
                         _channel: { code: DEFAULT_CHANNEL_CODE },
                         _languageCode: LanguageCode.en,
-                    }),
+                    } as any),
                     true,
                 ),
             );
@@ -407,15 +408,15 @@ describe('EmailPlugin', () => {
 
     describe('orderConfirmationHandler', () => {
         beforeEach(async () => {
-            module = await initPluginWithHandlers([orderConfirmationHandler], {
+            await initPluginWithHandlers([orderConfirmationHandler], {
                 templatePath: path.join(__dirname, '../templates'),
             });
         });
 
-        const ctx = RequestContext.fromObject({
+        const ctx = RequestContext.deserialize({
             _channel: { code: DEFAULT_CHANNEL_CODE },
             _languageCode: LanguageCode.en,
-        });
+        } as any);
 
         const order = ({
             code: 'ABCDE',

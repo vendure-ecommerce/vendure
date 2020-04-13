@@ -5,16 +5,15 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import {
-    TestAPIExtensionPlugin,
-    TestLazyExtensionPlugin,
-    TestPluginWithAllLifecycleHooks,
-    TestPluginWithConfigAndBootstrap,
-    TestPluginWithProvider,
-    TestRestPlugin,
-} from './fixtures/test-plugins';
+import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
+import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
+import { TestPluginWithConfigAndBootstrap } from './fixtures/test-plugins/with-config-and-bootstrap';
+import { TestLazyExtensionPlugin } from './fixtures/test-plugins/with-lazy-api-extensions';
+import { TestPluginWithProvider } from './fixtures/test-plugins/with-provider';
+import { TestRestPlugin } from './fixtures/test-plugins/with-rest-controller';
+import { TestProcessContextPlugin } from './fixtures/test-plugins/with-worker-controller';
 
 describe('Plugins', () => {
     const bootstrapMockFn = jest.fn();
@@ -39,6 +38,7 @@ describe('Plugins', () => {
             TestPluginWithProvider,
             TestLazyExtensionPlugin,
             TestRestPlugin,
+            TestProcessContextPlugin,
         ],
     });
 
@@ -158,6 +158,25 @@ describe('Plugins', () => {
             expect(response.status).toBe(500);
             const result = await response.json();
             expect(result.message).toContain('uh oh!');
+        });
+    });
+
+    describe('processContext', () => {
+        it('server context', async () => {
+            const response = await shopClient.fetch(
+                `http://localhost:${testConfig.port}/process-context/server`,
+            );
+            const body = await response.text();
+
+            expect(body).toBe('true');
+        });
+        it('worker context', async () => {
+            const response = await shopClient.fetch(
+                `http://localhost:${testConfig.port}/process-context/worker`,
+            );
+            const body = await response.text();
+
+            expect(body).toBe('true');
         });
     });
 

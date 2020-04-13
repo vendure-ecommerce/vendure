@@ -1,4 +1,12 @@
-import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
+import {
+    MiddlewareConsumer,
+    Module,
+    NestModule,
+    OnApplicationBootstrap,
+    OnApplicationShutdown,
+    OnModuleInit,
+} from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 
@@ -9,12 +17,24 @@ import { Logger } from './config/logger/vendure-logger';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
+import { ProcessContextModule } from './process-context/process-context.module';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot()],
+    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot(), ProcessContextModule.forRoot()],
 })
-export class AppModule implements NestModule, OnApplicationShutdown {
-    constructor(private configService: ConfigService, private i18nService: I18nService) {}
+export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
+    constructor(
+        private configService: ConfigService,
+        private i18nService: I18nService,
+        private moduleRef: ModuleRef,
+    ) {}
+
+    async onApplicationBootstrap() {
+        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        if (typeof jobQueueStrategy.init === 'function') {
+            await jobQueueStrategy.init(this.moduleRef);
+        }
+    }
 
     configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath } = this.configService;
@@ -39,7 +59,11 @@ export class AppModule implements NestModule, OnApplicationShutdown {
         }
     }
 
-    onApplicationShutdown(signal?: string) {
+    async onApplicationShutdown(signal?: string) {
+        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        if (typeof jobQueueStrategy.destroy === 'function') {
+            await jobQueueStrategy.destroy();
+        }
         if (signal) {
             Logger.info('Received shutdown signal:' + signal);
         }

@@ -1,4 +1,3 @@
-export * from './helpers/job-manager/job';
 export * from './helpers/utils/translate-entity';
 export * from './helpers/utils/patch-entity';
 export * from './helpers/utils/channel-aware-orm-utils';
@@ -17,7 +16,6 @@ export * from './services/customer-group.service';
 export * from './services/facet.service';
 export * from './services/facet-value.service';
 export * from './services/global-settings.service';
-export * from './services/job.service';
 export * from './services/order.service';
 export * from './services/payment-method.service';
 export * from './services/product.service';

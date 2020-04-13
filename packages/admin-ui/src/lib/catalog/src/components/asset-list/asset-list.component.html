@@ -20,6 +20,8 @@
 <vdr-asset-gallery
     [assets]="(items$ | async)! | paginate: (paginationConfig$ | async) || {}"
     [multiSelect]="true"
+    [canDelete]="'DeleteCatalog' | hasPermission"
+    (deleteAsset)="deleteAsset($event)"
 ></vdr-asset-gallery>
 
 <div class="paging-controls">

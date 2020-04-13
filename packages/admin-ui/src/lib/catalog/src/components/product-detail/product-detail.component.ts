@@ -26,7 +26,15 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
-import { distinctUntilChanged, map, mergeMap, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
+import {
+    distinctUntilChanged,
+    map,
+    mergeMap,
+    switchMap,
+    take,
+    takeUntil,
+    withLatestFrom,
+} from 'rxjs/operators';
 
 import { ProductDetailService } from '../../providers/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
@@ -86,11 +94,11 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         private formBuilder: FormBuilder,
         private modalService: ModalService,
         private notificationService: NotificationService,
-        private dataService: DataService,
+        protected dataService: DataService,
         private location: Location,
         private changeDetector: ChangeDetectorRef,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Product');
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
         this.detailForm = this.formBuilder.group({

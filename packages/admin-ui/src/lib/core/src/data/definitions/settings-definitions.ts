@@ -571,18 +571,24 @@ export const GET_SERVER_CONFIG = gql`
 `;
 
 export const JOB_INFO_FRAGMENT = gql`
-    fragment JobInfo on JobInfo {
+    fragment JobInfo on Job {
         id
-        name
+        createdAt
+        startedAt
+        settledAt
+        queueName
         state
+        isSettled
         progress
         duration
+        data
         result
+        error
     }
 `;
 
 export const GET_JOB_INFO = gql`
-    query GetJobInfo($id: String!) {
+    query GetJobInfo($id: ID!) {
         job(jobId: $id) {
             ...JobInfo
         }
@@ -590,13 +596,34 @@ export const GET_JOB_INFO = gql`
     ${JOB_INFO_FRAGMENT}
 `;
 
-export const GET_ALL_JOBS = gql`
-    query GetAllJobs($input: JobListInput) {
-        jobs(input: $input) {
+export const GET_JOBS_LIST = gql`
+    query GetAllJobs($options: JobListOptions) {
+        jobs(options: $options) {
+            items {
+                ...JobInfo
+            }
+            totalItems
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
+`;
+
+export const GET_JOBS_BY_ID = gql`
+    query GetJobsById($ids: [ID!]!) {
+        jobsById(jobIds: $ids) {
             ...JobInfo
         }
     }
     ${JOB_INFO_FRAGMENT}
+`;
+
+export const GET_JOB_QUEUE_LIST = gql`
+    query GetJobQueueList {
+        jobQueues {
+            name
+            running
+        }
+    }
 `;
 
 export const REINDEX = gql`

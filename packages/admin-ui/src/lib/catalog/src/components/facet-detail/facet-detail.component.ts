@@ -41,12 +41,12 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Facet');
         this.customValueFields = this.getCustomFieldConfig('FacetValue');
         this.detailForm = this.formBuilder.group({

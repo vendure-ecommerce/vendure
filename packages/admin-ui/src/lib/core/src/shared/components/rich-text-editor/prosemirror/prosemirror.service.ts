@@ -22,7 +22,7 @@ import { SetupOptions } from './types';
 export interface CreateEditorViewOptions {
     onTextInput: (content: string) => void;
     element: HTMLElement;
-    isEditable: () => boolean;
+    isReadOnly: () => boolean;
 }
 
 @Injectable()
@@ -52,14 +52,16 @@ export class ProsemirrorService {
                     options.onTextInput(content);
                 }
             },
-            editable: () => options.isEditable(),
+            editable: () => options.isReadOnly(),
         });
     }
 
     update(text: string) {
         if (this.editorView) {
             const state = this.getStateFromText(text);
-            this.editorView.updateState(state);
+            if (document.body.contains(this.editorView.dom)) {
+                this.editorView.updateState(state);
+            }
         }
     }
 
@@ -72,6 +74,10 @@ export class ProsemirrorService {
     setEnabled(enabled: boolean) {
         if (this.editorView) {
             this.enabled = enabled;
+            // Updating the state causes ProseMirror to check the
+            // `editable()` function from the contructor config object
+            // newly.
+            this.editorView.updateState(this.editorView.state);
         }
     }
 

@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateGroupOptionInput, CreateProductOptionInput, LanguageCode, UpdateProductOptionInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateGroupOptionInput,
+    CreateProductOptionInput,
+    UpdateProductOptionInput,
+} from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';

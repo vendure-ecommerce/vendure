@@ -1,6 +1,5 @@
-import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
-    JobInfo,
     Permission,
     QuerySearchArgs,
     SearchInput,
@@ -32,7 +31,7 @@ export class ShopFulltextSearchResolver implements Omit<BaseSearchResolver, 'rei
         return result;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: SearchInput },
@@ -58,7 +57,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
         return result;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: SearchInput },
@@ -68,7 +67,7 @@ export class AdminFulltextSearchResolver implements BaseSearchResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindex(@Ctx() ctx: RequestContext): Promise<JobInfo> {
+    async reindex(@Ctx() ctx: RequestContext) {
         return this.fulltextSearchService.reindex(ctx);
     }
 }

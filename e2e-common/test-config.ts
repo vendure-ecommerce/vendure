@@ -1,5 +1,11 @@
 import { mergeConfig } from '@vendure/core';
-import { MysqlInitializer, PostgresInitializer, registerInitializer, SqljsInitializer, testConfig as defaultTestConfig } from '@vendure/testing';
+import {
+    MysqlInitializer,
+    PostgresInitializer,
+    registerInitializer,
+    SqljsInitializer,
+    testConfig as defaultTestConfig,
+} from '@vendure/testing';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
@@ -31,6 +37,9 @@ if (process.env.E2E_DEBUG) {
 export const testConfig = mergeConfig(defaultTestConfig, {
     importExportOptions: {
         importAssetsDir: path.join(packageDir, 'fixtures/assets'),
+    },
+    jobQueueOptions: {
+        pollInterval: 100,
     },
     dbConnectionOptions: getDbConfig(),
 });

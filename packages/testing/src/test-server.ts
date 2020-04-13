@@ -42,7 +42,16 @@ export class TestServer {
             console.error(e);
             process.exit(1);
         }
+        await this.bootstrap();
+    }
 
+    /**
+     * @description
+     * Bootstraps a Vendure server instance. Generally the `.init()` method should be used, as that will also
+     * populate the test data. However, the `bootstrap()` method is sometimes useful in tests which need to
+     * start and stop a Vendure instance multiple times without re-populating data.
+     */
+    async bootstrap() {
         const [app, worker] = await this.bootstrapForTesting(this.vendureConfig);
         if (app) {
             this.app = app;

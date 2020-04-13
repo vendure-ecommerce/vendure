@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -22,6 +22,8 @@ import {
     Me,
     Permission,
     RemoveProductsFromChannel,
+    UpdateChannel,
+    UpdateGlobalSettings,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -352,6 +354,57 @@ describe('Channels', () => {
         });
     });
 
+    describe('setting defaultLanguage', () => {
+        it(
+            'throws if languageCode not in availableLanguages',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                    input: {
+                        id: 'T_1',
+                        defaultLanguageCode: LanguageCode.zh,
+                    },
+                });
+            }, 'Language "zh" is not available. First enable it via GlobalSettings and try again.'),
+        );
+
+        it('allows setting to an available language', async () => {
+            await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+                UPDATE_GLOBAL_SETTINGS,
+                {
+                    input: {
+                        availableLanguages: [LanguageCode.en, LanguageCode.zh],
+                    },
+                },
+            );
+
+            const { updateChannel } = await adminClient.query<
+                UpdateChannel.Mutation,
+                UpdateChannel.Variables
+            >(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultLanguageCode: LanguageCode.zh,
+                },
+            });
+
+            expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.zh);
+        });
+
+        it(
+            'attempting to remove availableLanguage when used by a Channel throws',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+                    UPDATE_GLOBAL_SETTINGS,
+                    {
+                        input: {
+                            availableLanguages: [LanguageCode.en],
+                        },
+                    },
+                );
+            }, 'Cannot remove make language "zh" unavailable as it is used as the defaultLanguage by the channel "__default_channel__"'),
+        );
+    });
+
     it('deleteChannel', async () => {
         const PROD_ID = 'T_1';
 
@@ -398,11 +451,31 @@ const GET_CHANNELS = gql`
     }
 `;
 
+const UPDATE_CHANNEL = gql`
+    mutation UpdateChannel($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+            id
+            code
+            defaultLanguageCode
+            currencyCode
+        }
+    }
+`;
+
 const DELETE_CHANNEL = gql`
     mutation DeleteChannel($id: ID!) {
         deleteChannel(id: $id) {
             message
             result
+        }
+    }
+`;
+
+const UPDATE_GLOBAL_SETTINGS = gql`
+    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
+        updateGlobalSettings(input: $input) {
+            id
+            availableLanguages
         }
     }
 `;

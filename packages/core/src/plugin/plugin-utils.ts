@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import proxy from 'http-proxy-middleware';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import { Logger, VendureConfig } from '../config';
 
@@ -37,13 +37,13 @@ import { Logger, VendureConfig } from '../config';
 export function createProxyHandler(options: ProxyOptions): RequestHandler {
     const route = options.route.charAt(0) === '/' ? options.route : '/' + options.route;
     const proxyHostname = options.hostname || 'localhost';
-    const middleware = proxy({
+    const middleware = createProxyMiddleware({
         // TODO: how do we detect https?
         target: `http://${proxyHostname}:${options.port}`,
         pathRewrite: {
             [`^${route}`]: `/` + (options.basePath || ''),
         },
-        logProvider(provider: proxy.LogProvider): proxy.LogProvider {
+        logProvider(provider) {
             return {
                 log(message: string) {
                     Logger.debug(message, options.label);

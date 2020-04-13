@@ -9,7 +9,6 @@ import {
     AsyncQueue,
     FacetValue,
     ID,
-    JobService,
     Logger,
     Product,
     ProductVariant,
@@ -36,6 +35,7 @@ import {
     BulkOperation,
     BulkOperationDoc,
     BulkResponseBody,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ProductIndexItem,
@@ -76,7 +76,6 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         @InjectConnection() private connection: Connection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
         private productVariantService: ProductVariantService,
-        private jobService: JobService,
     ) {}
 
     onModuleInit(): any {
@@ -98,7 +97,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         productId,
     }: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             await this.updateProductInternal(ctx, productId, ctx.channelId);
             return true;
@@ -113,11 +112,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         productId,
     }: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             await this.deleteProductInternal(productId, ctx.channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-            await this.deleteVariantsInternal(variants.map(v => v.id), ctx.channelId);
+            await this.deleteVariantsInternal(
+                variants.map(v => v.id),
+                ctx.channelId,
+            );
             return true;
         });
     }
@@ -131,11 +133,15 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         productId,
         channelId,
     }: AssignProductToChannelMessage['data']): Observable<AssignProductToChannelMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             await this.updateProductInternal(ctx, productId, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-            await this.updateVariantsInternal(ctx, variants.map(v => v.id), channelId);
+            await this.updateVariantsInternal(
+                ctx,
+                variants.map(v => v.id),
+                channelId,
+            );
             return true;
         });
     }
@@ -149,11 +155,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         productId,
         channelId,
     }: RemoveProductFromChannelMessage['data']): Observable<RemoveProductFromChannelMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             await this.deleteProductInternal(productId, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-            await this.deleteVariantsInternal(variants.map(v => v.id), channelId);
+            await this.deleteVariantsInternal(
+                variants.map(v => v.id),
+                channelId,
+            );
             return true;
         });
     }
@@ -166,7 +175,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         variantIds,
     }: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             return this.asyncQueue.push(async () => {
                 await this.updateVariantsInternal(ctx, variantIds, ctx.channelId);
@@ -180,7 +189,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         variantIds,
     }: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             const variants = await this.connection
                 .getRepository(ProductVariant)
@@ -199,7 +208,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         ids,
     }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         const { batchSize } = this.options;
 
         return asyncObservable(async observer => {
@@ -254,7 +263,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         dropIndices,
     }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         const { batchSize } = this.options;
 
         return asyncObservable(async observer => {
@@ -317,8 +326,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     @MessagePattern(UpdateAssetMessage.pattern)
     updateAsset(data: UpdateAssetMessage['data']): Observable<UpdateAssetMessage['response']> {
         return asyncObservable(async () => {
-            const result1 = await this.updateAssetForIndex(PRODUCT_INDEX_NAME, data.asset);
-            const result2 = await this.updateAssetForIndex(VARIANT_INDEX_NAME, data.asset);
+            const result1 = await this.updateAssetFocalPointForIndex(PRODUCT_INDEX_NAME, data.asset);
+            const result2 = await this.updateAssetFocalPointForIndex(VARIANT_INDEX_NAME, data.asset);
             await this.client.indices.refresh({
                 index: [
                     this.options.indexPrefix + PRODUCT_INDEX_NAME,
@@ -329,16 +338,57 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         });
     }
 
-    private async updateAssetForIndex(indexName: string, asset: Asset): Promise<boolean> {
+    @MessagePattern(DeleteAssetMessage.pattern)
+    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
+        return asyncObservable(async () => {
+            const result1 = await this.deleteAssetForIndex(PRODUCT_INDEX_NAME, data.asset);
+            const result2 = await this.deleteAssetForIndex(VARIANT_INDEX_NAME, data.asset);
+            await this.client.indices.refresh({
+                index: [
+                    this.options.indexPrefix + PRODUCT_INDEX_NAME,
+                    this.options.indexPrefix + VARIANT_INDEX_NAME,
+                ],
+            });
+            return result1 && result2;
+        });
+    }
+
+    private async updateAssetFocalPointForIndex(indexName: string, asset: Asset): Promise<boolean> {
         const focalPoint = asset.focalPoint || null;
         const params = { focalPoint };
+        return this.updateAssetForIndex(
+            indexName,
+            asset,
+            {
+                source: 'ctx._source.productPreviewFocalPoint = params.focalPoint',
+                params,
+            },
+            {
+                source: 'ctx._source.productVariantPreviewFocalPoint = params.focalPoint',
+                params,
+            },
+        );
+    }
+
+    private async deleteAssetForIndex(indexName: string, asset: Asset): Promise<boolean> {
+        return this.updateAssetForIndex(
+            indexName,
+            asset,
+            { source: 'ctx._source.productAssetId = null' },
+            { source: 'ctx._source.productVariantAssetId = null' },
+        );
+    }
+
+    private async updateAssetForIndex(
+        indexName: string,
+        asset: Asset,
+        updateProductScript: { source: string; params?: any },
+        updateVariantScript: { source: string; params?: any },
+    ): Promise<boolean> {
         const result1 = await this.client.update_by_query({
             index: this.options.indexPrefix + indexName,
             body: {
-                script: {
-                    source: 'ctx._source.productPreviewFocalPoint = params.focalPoint',
-                    params,
-                },
+                script: updateProductScript,
                 query: {
                     term: {
                         productAssetId: asset.id,
@@ -352,10 +402,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const result2 = await this.client.update_by_query({
             index: this.options.indexPrefix + indexName,
             body: {
-                script: {
-                    source: 'ctx._source.productVariantPreviewFocalPoint = params.focalPoint',
-                    params,
-                },
+                script: updateVariantScript,
                 query: {
                     term: {
                         productVariantAssetId: asset.id,
@@ -426,16 +473,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             for (const variantProductId of productIdsOfVariants) {
                 await this.updateProductInternal(ctx, variantProductId, channelId);
             }
-            const operations = updatedVariants.reduce(
-                (ops, variant) => {
-                    return [
-                        ...ops,
-                        { update: { _id: this.getId(variant.id, channelId) } },
-                        { doc: this.createVariantIndexItem(variant, channelId), doc_as_upsert: true },
-                    ];
-                },
-                [] as Array<BulkOperation | BulkOperationDoc<VariantIndexItem>>,
-            );
+            const operations = updatedVariants.reduce((ops, variant) => {
+                return [
+                    ...ops,
+                    { update: { _id: this.getId(variant.id, channelId) } },
+                    { doc: this.createVariantIndexItem(variant, channelId), doc_as_upsert: true },
+                ];
+            }, [] as Array<BulkOperation | BulkOperationDoc<VariantIndexItem>>);
             Logger.verbose(`Updating ${updatedVariants.length} ProductVariants`, loggerCtx);
             await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
         }
@@ -447,14 +491,15 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             relations: ['variants'],
         });
         if (product) {
-            updatedProductVariants = await this.connection
-                .getRepository(ProductVariant)
-                .findByIds(product.variants.map(v => v.id), {
+            updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
+                product.variants.map(v => v.id),
+                {
                     relations: variantRelations,
                     where: {
                         deletedAt: null,
                     },
-                });
+                },
+            );
             if (product.enabled === false) {
                 updatedProductVariants.forEach(v => (v.enabled = false));
             }
@@ -648,7 +693,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             facetValueIds: this.getFacetValueIds(variants),
             collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
             channelIds: first.product.channels.map(c => c.id as string),
-            enabled: variants.some(v => v.enabled),
+            enabled: variants.some(v => v.enabled) && first.product.enabled,
         };
 
         const customMappings = Object.entries(this.options.customProductMappings);

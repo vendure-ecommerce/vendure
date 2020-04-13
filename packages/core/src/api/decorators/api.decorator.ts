@@ -1,4 +1,4 @@
-import { createParamDecorator } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GraphQLResolveInfo } from 'graphql';
 
 import { getApiType } from '../common/get-api-type';
@@ -23,6 +23,7 @@ import { getApiType } from '../common/get-api-type';
  * @docsCategory request
  * @docsPage Decorators
  */
-export const Api = createParamDecorator((data, [root, args, ctx, info]) => {
+export const Api = createParamDecorator((data, ctx: ExecutionContext) => {
+    const info = ctx.getArgByIndex(3);
     return getApiType(info);
 });

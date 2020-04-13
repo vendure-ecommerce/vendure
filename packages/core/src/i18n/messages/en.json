@@ -9,6 +9,7 @@
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",
     "cannot-remove-option-group-due-to-variants": "Cannot remove ProductOptionGroup \"{ code }\" as it is used by {count, plural, one {1 ProductVariant} other {# ProductVariants}}",
     "cannot-remove-tax-category-due-to-tax-rates": "Cannot remove TaxCategory \"{ name }\" as it is referenced by {count, plural, one {1 TaxRate} other {# TaxRates}}",
+    "cannot-set-default-language-as-unavailable": "Cannot remove make language \"{ language }\" unavailable as it is used as the defaultLanguage by the channel \"{channelCode}\"",
     "cannot-transition-order-from-to": "Cannot transition Order from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-payment-from-to": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "cannot-transition-refund-from-to": "Cannot transition Refund from \"{ fromState }\" to \"{ toState }\"",
@@ -23,6 +24,7 @@
     "create-fulfillment-items-already-fulfilled": "One or more OrderItems have already been fulfilled",
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",
     "create-fulfillment-nothing-to-fulfill": "Nothing to fulfill",
+    "default-channel-not-found":  "Default channel not found",
     "email-address-not-available": "This email address is not available",
     "email-address-not-verified": "Please verify this email address before logging in",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
@@ -39,6 +41,7 @@
     "identifier-change-token-not-recognized": "Identifier change token not recognized",
     "identifier-change-token-has-expired": "Identifier change token has expired",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
+    "language-not-available-in-global-settings": "Language \"{code}\" is not available. First enable it via GlobalSettings and try again.",
     "missing-password-on-registration": "A password must be provided when `authOptions.requireVerification` is set to \"false\"",
     "no-search-plugin-configured": "No search plugin has been configured",
     "no-valid-channel-specified": "No valid channel was specified (ensure the 'vendure-token' header was specified in the request)",
@@ -69,6 +72,7 @@
     "unexpected-password-on-registration": "Do not provide a password when `authOptions.requireVerification` is set to \"true\""
   },
   "message": {
+    "asset-to-be-deleted-is-featured": "The selected Asset is featured by {products, plural, =0 {} one {1 Product} other {# Products}}{variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}}{collections, plural, =0 {} one { 1 Collection} other { # Collections}}",
     "country-used-in-addresses": "The selected Country cannot be deleted as it is used in {count, plural, one {1 Address} other {# Addresses}}",
     "facet-force-deleted": "The Facet was deleted and its FacetValues were removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-used": "The selected Facet includes FacetValues which are assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",

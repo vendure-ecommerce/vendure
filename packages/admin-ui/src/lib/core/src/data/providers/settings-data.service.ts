@@ -26,6 +26,8 @@ import {
     GetCountryList,
     GetGlobalSettings,
     GetJobInfo,
+    GetJobQueueList,
+    GetJobsById,
     GetPaymentMethod,
     GetPaymentMethodList,
     GetTaxCategories,
@@ -34,6 +36,7 @@ import {
     GetTaxRateList,
     GetZone,
     GetZones,
+    JobListOptions,
     JobState,
     RemoveMembersFromZone,
     SearchForTestOrder,
@@ -64,14 +67,16 @@ import {
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
     GET_ACTIVE_CHANNEL,
-    GET_ALL_JOBS,
     GET_AVAILABLE_COUNTRIES,
     GET_CHANNEL,
     GET_CHANNELS,
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
+    GET_JOBS_BY_ID,
+    GET_JOBS_LIST,
     GET_JOB_INFO,
+    GET_JOB_QUEUE_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -331,14 +336,30 @@ export class SettingsDataService {
     }
 
     pollJobs(ids: string[]) {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_ALL_JOBS, {
-            input: { ids },
+        return this.baseDataService.query<GetJobsById.Query, GetJobsById.Variables>(GET_JOBS_BY_ID, {
+            ids,
         });
     }
 
+    getAllJobs(options?: JobListOptions) {
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
+            options,
+        });
+    }
+
+    getJobQueues() {
+        return this.baseDataService.query<GetJobQueueList.Query>(GET_JOB_QUEUE_LIST);
+    }
+
     getRunningJobs() {
-        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_ALL_JOBS, {
-            input: { state: JobState.RUNNING },
+        return this.baseDataService.query<GetAllJobs.Query, GetAllJobs.Variables>(GET_JOBS_LIST, {
+            options: {
+                filter: {
+                    state: {
+                        eq: JobState.RUNNING,
+                    },
+                },
+            },
         });
     }
 

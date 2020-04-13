@@ -4,7 +4,7 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { defer, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
@@ -20,6 +20,7 @@ import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     AssignProductToChannelMessage,
+    DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
@@ -57,7 +58,7 @@ export class IndexerController {
 
     @MessagePattern(ReindexMessage.pattern)
     reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
             const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
@@ -100,7 +101,7 @@ export class IndexerController {
         ctx: rawContext,
         ids,
     }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
-        const ctx = RequestContext.fromObject(rawContext);
+        const ctx = RequestContext.deserialize(rawContext);
 
         return asyncObservable(async observer => {
             const timeStart = Date.now();
@@ -137,7 +138,7 @@ export class IndexerController {
 
     @MessagePattern(UpdateProductMessage.pattern)
     updateProduct(data: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
         });
@@ -145,7 +146,7 @@ export class IndexerController {
 
     @MessagePattern(UpdateVariantMessage.pattern)
     updateVariants(data: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
         });
@@ -153,7 +154,7 @@ export class IndexerController {
 
     @MessagePattern(DeleteProductMessage.pattern)
     deleteProduct(data: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
         });
@@ -161,11 +162,15 @@ export class IndexerController {
 
     @MessagePattern(DeleteVariantMessage.pattern)
     deleteVariant(data: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
             if (variants.length) {
-                await this.removeSearchIndexItems(ctx.languageCode, ctx.channelId, variants.map(v => v.id));
+                await this.removeSearchIndexItems(
+                    ctx.languageCode,
+                    ctx.channelId,
+                    variants.map(v => v.id),
+                );
             }
             return true;
         });
@@ -175,7 +180,7 @@ export class IndexerController {
     assignProductToChannel(
         data: AssignProductToChannelMessage['data'],
     ): Observable<AssignProductToChannelMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.updateProductInChannel(ctx, data.productId, data.channelId);
         });
@@ -185,7 +190,7 @@ export class IndexerController {
     removeProductFromChannel(
         data: RemoveProductFromChannelMessage['data'],
     ): Observable<RemoveProductFromChannelMessage['response']> {
-        const ctx = RequestContext.fromObject(data.ctx);
+        const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.deleteProductInChannel(ctx, data.productId, data.channelId);
         });
@@ -209,6 +214,20 @@ export class IndexerController {
         });
     }
 
+    @MessagePattern(DeleteAssetMessage.pattern)
+    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
+        return asyncObservable(async () => {
+            const id = data.asset.id;
+            await this.connection
+                .getRepository(SearchIndexItem)
+                .update({ productAssetId: id }, { productAssetId: null });
+            await this.connection
+                .getRepository(SearchIndexItem)
+                .update({ productVariantAssetId: id }, { productVariantAssetId: null });
+            return true;
+        });
+    }
+
     private async updateProductInChannel(
         ctx: RequestContext,
         productId: ID,
@@ -218,12 +237,13 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
-            let updatedVariants = await this.connection
-                .getRepository(ProductVariant)
-                .findByIds(product.variants.map(v => v.id), {
+            let updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
+                product.variants.map(v => v.id),
+                {
                     relations: variantRelations,
                     where: { deletedAt: null },
-                });
+                },
+            );
             if (product.enabled === false) {
                 updatedVariants.forEach(v => (v.enabled = false));
             }
@@ -301,7 +321,7 @@ export class IndexerController {
                     channelId,
                     languageCode,
                     sku: v.sku,
-                    enabled: v.enabled,
+                    enabled: v.product.enabled === false ? false : v.enabled,
                     slug: v.product.slug,
                     price: v.price,
                     priceWithTax: v.priceWithTax,

@@ -87,7 +87,7 @@ export async function importProductsFromCsv(
     app: INestApplication,
     productsCsvPath: string,
     languageCode: import('@vendure/core').LanguageCode,
-) {
+): Promise<import('@vendure/core').ImportProgress> {
     const { Importer } = await import('@vendure/core');
     const importer = app.get(Importer);
     const productData = await fs.readFile(productsCsvPath, 'utf-8');

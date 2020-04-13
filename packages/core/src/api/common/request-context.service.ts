@@ -37,7 +37,7 @@ export class RequestContextService {
         const apiType = getApiType(info);
 
         const hasOwnerPermission = !!requiredPermissions && requiredPermissions.includes(Permission.Owner);
-        const languageCode = this.getLanguageCode(req);
+        const languageCode = this.getLanguageCode(req, channel);
         const user = session && (session as AuthenticatedSession).user;
         const isAuthorized = this.userHasRequiredPermissionsOnChannel(requiredPermissions, channel, user);
         const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
@@ -65,8 +65,12 @@ export class RequestContextService {
         return channelToken;
     }
 
-    private getLanguageCode(req: Request): LanguageCode | undefined {
-        return req.query && req.query.languageCode;
+    private getLanguageCode(req: Request, channel: Channel): LanguageCode | undefined {
+        return (
+            (req.query && req.query.languageCode) ??
+            channel.defaultLanguageCode ??
+            this.configService.defaultLanguageCode
+        );
     }
 
     private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
@@ -91,11 +95,8 @@ export class RequestContextService {
      * Returns true if any element of arr1 appears in arr2.
      */
     private arraysIntersect<T>(arr1: T[], arr2: T[]): boolean {
-        return arr1.reduce(
-            (intersects, role) => {
-                return intersects || arr2.includes(role);
-            },
-            false as boolean,
-        );
+        return arr1.reduce((intersects, role) => {
+            return intersects || arr2.includes(role);
+        }, false as boolean);
     }
 }

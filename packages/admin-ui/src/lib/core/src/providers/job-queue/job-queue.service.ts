@@ -41,7 +41,7 @@ export class JobQueueService implements OnDestroy {
             .subscribe(jobs => {
                 if (jobs.length) {
                     this.dataService.settings.pollJobs(jobs.map(j => j.id)).single$.subscribe(data => {
-                        data.jobs.forEach(job => {
+                        data.jobsById.forEach(job => {
                             this.updateJob$.next(job);
                         });
                     });
@@ -68,7 +68,7 @@ export class JobQueueService implements OnDestroy {
                     isLoggedIn ? this.dataService.settings.getRunningJobs().single$ : EMPTY,
                 ),
             )
-            .subscribe(data => data.jobs.forEach(job => this.updateJob$.next(job)));
+            .subscribe(data => data.jobs.items.forEach(job => this.updateJob$.next(job)));
     }
 
     addJob(jobId: string, onComplete?: (job: JobInfoFragment) => void) {

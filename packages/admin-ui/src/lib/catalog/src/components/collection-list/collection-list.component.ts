@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { GetCollectionList } from '@vendure/admin-ui/core';
-import { DataService, ModalService, NotificationService, QueryResult } from '@vendure/admin-ui/core';
+import {
+    DataService,
+    GetCollectionList,
+    ModalService,
+    NotificationService,
+    QueryResult,
+} from '@vendure/admin-ui/core';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { distinctUntilChanged, map, switchMap, take } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, switchMap, take } from 'rxjs/operators';
 
 import { RearrangeEvent } from '../collection-tree/collection-tree.component';
 
@@ -31,7 +36,7 @@ export class CollectionListComponent implements OnInit {
 
     ngOnInit() {
         this.queryResult = this.dataService.collection.getCollections(99999, 0).refetchOnChannelChange();
-        this.items$ = this.queryResult.mapStream(data => data.collections.items);
+        this.items$ = this.queryResult.mapStream(data => data.collections.items).pipe(shareReplay(1));
         this.activeCollectionId$ = this.route.paramMap.pipe(
             map(pm => pm.get('contents')),
             distinctUntilChanged(),

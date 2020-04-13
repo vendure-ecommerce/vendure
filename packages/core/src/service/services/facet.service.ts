@@ -11,10 +11,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -31,6 +31,7 @@ export class FacetService {
         private facetValueService: FacetValueService,
         private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
+        private configService: ConfigService,
     ) {}
 
     findAll(
@@ -80,7 +81,7 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
         });
-        return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(facet.id, this.configService.defaultLanguageCode));
     }
 
     async update(input: UpdateFacetInput): Promise<Translated<Facet>> {
@@ -89,7 +90,7 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
         });
-        return assertFound(this.findOne(facet.id, DEFAULT_LANGUAGE_CODE));
+        return assertFound(this.findOne(facet.id, this.configService.defaultLanguageCode));
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
@@ -97,9 +98,7 @@ export class FacetService {
         let productCount = 0;
         let variantCount = 0;
         if (facet.values.length) {
-            const counts = await this.facetValueService.checkFacetValueUsage(
-                facet.values.map(fv => fv.id),
-            );
+            const counts = await this.facetValueService.checkFacetValueUsage(facet.values.map(fv => fv.id));
             productCount = counts.productCount;
             variantCount = counts.variantCount;
         }

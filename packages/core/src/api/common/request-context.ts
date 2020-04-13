@@ -1,8 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import i18next from 'i18next';
+import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
+import { TFunction } from 'i18next';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { Channel } from '../../entity/channel/channel.entity';
 import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
@@ -10,6 +9,17 @@ import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 
 import { ApiType } from './get-api-type';
+
+export type SerializedRequestContext = {
+    _session: JsonCompatible<Session> & {
+        user: JsonCompatible<User>;
+    };
+    _apiType: ApiType;
+    _channel: JsonCompatible<Channel>;
+    _languageCode: LanguageCode;
+    _isAuthorized: boolean;
+    _authorizedAsOwnerOnly: boolean;
+};
 
 /**
  * @description
@@ -24,7 +34,7 @@ export class RequestContext {
     private readonly _session?: Session;
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
-    private readonly _translationFn: i18next.TFunction;
+    private readonly _translationFn: TFunction;
     private readonly _apiType: ApiType;
 
     /**
@@ -37,14 +47,13 @@ export class RequestContext {
         languageCode?: LanguageCode;
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
-        translationFn?: i18next.TFunction;
+        translationFn?: TFunction;
     }) {
         const { apiType, channel, session, languageCode, translationFn } = options;
         this._apiType = apiType;
         this._channel = channel;
         this._session = session;
-        this._languageCode =
-            languageCode || (channel && channel.defaultLanguageCode) || DEFAULT_LANGUAGE_CODE;
+        this._languageCode = languageCode || (channel && channel.defaultLanguageCode);
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
@@ -55,7 +64,7 @@ export class RequestContext {
      * Creates a new RequestContext object from a plain object which is the result of
      * a JSON serialization - deserialization operation.
      */
-    static fromObject(ctxObject: any): RequestContext {
+    static deserialize(ctxObject: SerializedRequestContext): RequestContext {
         let session: Session | undefined;
         if (ctxObject._session) {
             if (ctxObject._session.user) {
@@ -76,6 +85,10 @@ export class RequestContext {
             isAuthorized: ctxObject._isAuthorized,
             authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
         });
+    }
+
+    serialize(): SerializedRequestContext {
+        return JSON.parse(JSON.stringify(this));
     }
 
     get apiType(): ApiType {

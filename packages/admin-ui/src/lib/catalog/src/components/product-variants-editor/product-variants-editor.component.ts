@@ -4,7 +4,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { DeactivateAware } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
-import { getDefaultLanguage } from '@vendure/admin-ui/core';
+import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import {
     CreateProductOptionGroup,
     CreateProductOptionInput,
@@ -74,7 +74,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
     ngOnInit() {
         this.initOptionsAndVariants();
         this.languageCode =
-            (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultLanguage();
+            (this.route.snapshot.paramMap.get('lang') as LanguageCode) || getDefaultUiLanguage();
         this.dataService.settings.getActiveChannel().single$.subscribe(data => {
             this.currencyCode = data.activeChannel.currencyCode;
         });

@@ -1,13 +1,14 @@
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Observable, Subject } from 'rxjs';
+import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs/operators';
 
+import { DataService } from '../data/providers/data.service';
 import { ServerConfigService } from '../data/server-config';
 
 import { DeactivateAware } from './deactivate-aware';
 import { CustomFieldConfig, CustomFields, LanguageCode } from './generated-types';
-import { getDefaultLanguage } from './utilities/get-default-language';
+import { getDefaultUiLanguage } from './utilities/get-default-ui-language';
 
 export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt?: string }>
     implements DeactivateAware {
@@ -23,6 +24,7 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         protected route: ActivatedRoute,
         protected router: Router,
         protected serverConfigService: ServerConfigService,
+        protected dataService: DataService,
     ) {}
 
     init() {
@@ -37,7 +39,15 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
         );
         this.languageCode$ = this.route.paramMap.pipe(
             map(paramMap => paramMap.get('lang')),
-            map(lang => (!lang ? getDefaultLanguage() : (lang as LanguageCode))),
+            switchMap(lang => {
+                if (lang) {
+                    return of(lang as LanguageCode);
+                } else {
+                    return this.dataService.settings
+                        .getActiveChannel()
+                        .mapSingle(data => data.activeChannel.defaultLanguageCode);
+                }
+            }),
             distinctUntilChanged(),
             shareReplay(1),
         );

@@ -4,6 +4,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '../config/config.module';
 import { Logger } from '../config/logger/vendure-logger';
 import { PluginModule } from '../plugin/plugin.module';
+import { ProcessContextModule } from '../process-context/process-context.module';
 import { ServiceModule } from '../service/service.module';
 
 import { MessageInterceptor } from './message-interceptor';
@@ -11,7 +12,13 @@ import { WorkerMonitor } from './worker-monitor';
 import { WorkerServiceModule } from './worker-service.module';
 
 @Module({
-    imports: [ConfigModule, ServiceModule.forWorker(), PluginModule.forWorker(), WorkerServiceModule],
+    imports: [
+        ConfigModule,
+        ServiceModule.forWorker(),
+        PluginModule.forWorker(),
+        WorkerServiceModule,
+        ProcessContextModule.forWorker(),
+    ],
     providers: [
         WorkerMonitor,
         {

@@ -1,5 +1,5 @@
 import { DynamicModule } from '@nestjs/common';
-import { METADATA } from '@nestjs/common/constants';
+import { MODULE_METADATA } from '@nestjs/common/constants';
 import { Type } from '@vendure/common/lib/shared-types';
 
 import { notNullOrUndefined } from '../../../common/lib/shared-utils';
@@ -25,10 +25,10 @@ export function getEntitiesFromPlugins(plugins?: Array<Type<any> | DynamicModule
 
 export function getModuleMetadata(module: Type<any>) {
     return {
-        controllers: Reflect.getMetadata(METADATA.CONTROLLERS, module) || [],
-        providers: Reflect.getMetadata(METADATA.PROVIDERS, module) || [],
-        imports: Reflect.getMetadata(METADATA.IMPORTS, module) || [],
-        exports: Reflect.getMetadata(METADATA.EXPORTS, module) || [],
+        controllers: Reflect.getMetadata(MODULE_METADATA.CONTROLLERS, module) || [],
+        providers: Reflect.getMetadata(MODULE_METADATA.PROVIDERS, module) || [],
+        imports: Reflect.getMetadata(MODULE_METADATA.IMPORTS, module) || [],
+        exports: Reflect.getMetadata(MODULE_METADATA.EXPORTS, module) || [],
     };
 }
 

@@ -2,10 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     CreateAddressInput,
@@ -20,6 +16,9 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { forkJoin, Observable, Subject } from 'rxjs';
+import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
 
 type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
 
@@ -49,10 +48,10 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
         private formBuilder: FormBuilder,
-        private dataService: DataService,
+        protected dataService: DataService,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
 
         this.customFields = this.getCustomFieldConfig('Customer');
         this.detailForm = this.formBuilder.group({

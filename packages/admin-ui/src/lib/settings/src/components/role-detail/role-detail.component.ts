@@ -2,21 +2,14 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
-import {
-    CreateRoleInput,
-    LanguageCode,
-    Permission,
-    Role,
-    UpdateRoleInput,
-} from '@vendure/admin-ui/core';
+import { CreateRoleInput, LanguageCode, Permission, Role, UpdateRoleInput } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { Observable } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-role-detail',
@@ -34,11 +27,11 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.permissions = Object.keys(Permission).reduce(
             (result, key) => ({ ...result, [key]: false }),
             {} as { [K in Permission]: boolean },

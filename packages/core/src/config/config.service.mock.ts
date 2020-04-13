@@ -38,6 +38,7 @@ export class MockConfigService implements MockClass<ConfigService> {
     logger = {} as any;
     apolloServerPlugins = [];
     plugins = [];
+    jobQueueOptions = {};
 }
 
 export const ENCODED = 'encoded';

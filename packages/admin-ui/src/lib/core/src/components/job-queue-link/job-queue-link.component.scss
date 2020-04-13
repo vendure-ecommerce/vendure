@@ -2,8 +2,9 @@
 
 :host {
     position: fixed;
-    bottom: 12px;
-    left: 12px;
+    display: block;
+    bottom: 0;
+    left: 0;
     z-index: 5;
 }
 
@@ -12,6 +13,9 @@
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
     &.hidden {
         display: none;
+    }
+    &:hover {
+        background-color: $color-grey-100;
     }
 }
 

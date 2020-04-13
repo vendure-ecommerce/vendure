@@ -1,4 +1,4 @@
-import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { CollectionBreadcrumb, ProductVariantListOptions } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -21,7 +21,7 @@ export class CollectionEntityResolver {
         private assetService: AssetService,
     ) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async productVariants(
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
@@ -41,7 +41,7 @@ export class CollectionEntityResolver {
         return this.productVariantService.getVariantsByCollectionId(ctx, collection.id, options);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async breadcrumbs(
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
@@ -49,7 +49,7 @@ export class CollectionEntityResolver {
         return this.collectionService.getBreadcrumbs(ctx, collection) as any;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async parent(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection> {
         if (collection.parent) {
             return collection.parent;
@@ -57,7 +57,7 @@ export class CollectionEntityResolver {
         return this.collectionService.getParent(ctx, collection.id) as any;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async children(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Collection[]> {
         if (collection.children) {
             return collection.children;
@@ -65,7 +65,7 @@ export class CollectionEntityResolver {
         return this.collectionService.getChildren(ctx, collection.id) as any;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async featuredAsset(
         @Ctx() ctx: RequestContext,
         @Parent() collection: Collection,
@@ -76,7 +76,7 @@ export class CollectionEntityResolver {
         return this.assetService.getFeaturedAsset(collection);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async assets(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Asset[] | undefined> {
         return this.assetService.getEntityAssets(collection);
     }

@@ -2,7 +2,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
 
 import { EmailEventListener, EmailTemplateConfig, SetTemplateVarsFn } from './event-listener';
-import { EventWithAsyncData, EventWithContext, LoadDataFn } from './types';
+import { EventWithAsyncData, EventWithContext, IntermediateEmailDetails, LoadDataFn } from './types';
 
 /**
  * @description
@@ -169,10 +169,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     async handle(
         event: Event,
         globals: { [key: string]: any } = {},
-    ): Promise<
-        | { from: string; recipient: string; templateVars: any; subject: string; templateFile: string }
-        | undefined
-    > {
+    ): Promise<IntermediateEmailDetails | undefined> {
         for (const filterFn of this.filterFns) {
             if (!filterFn(event)) {
                 return;
@@ -202,6 +199,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const recipient = this.setRecipientFn(event);
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
         return {
+            type: this.type,
             recipient,
             from: this.from,
             templateVars: { ...globals, ...templateVars },

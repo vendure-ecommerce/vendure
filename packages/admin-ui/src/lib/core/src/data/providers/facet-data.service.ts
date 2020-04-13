@@ -14,7 +14,6 @@ import {
     UpdateFacetValueInput,
     UpdateFacetValues,
 } from '../../common/generated-types';
-import { getDefaultLanguage } from '../../common/utilities/get-default-language';
 import {
     CREATE_FACET,
     CREATE_FACET_VALUES,

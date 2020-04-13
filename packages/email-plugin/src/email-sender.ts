@@ -3,11 +3,12 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';
+import SendmailTransport from 'nodemailer/lib/sendmail-transport';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import path from 'path';
 import { Stream } from 'stream';
 
-import { EmailDetails, EmailTransportOptions } from './types';
+import { EmailDetails, EmailTransportOptions, SendmailTransportOptions, SMTPTransportOptions } from './types';
 
 export type StreamTransportInfo = {
     envelope: {
@@ -22,8 +23,10 @@ export type StreamTransportInfo = {
  * Uses the configured transport to send the generated email.
  */
 export class EmailSender {
+    private _smtpTransport: Mail | undefined;
+    private _sendMailTransport: Mail | undefined;
+
     async send(email: EmailDetails, options: EmailTransportOptions) {
-        let transporter: Mail;
         switch (options.type) {
             case 'none':
                 return;
@@ -41,20 +44,10 @@ export class EmailSender {
                 }
                 break;
             case 'sendmail':
-                transporter = createTransport({
-                    sendmail: true,
-                    path: options.path,
-                });
-                await this.sendMail(email, transporter);
+                await this.sendMail(email, this.getSendMailTransport(options));
                 break;
             case 'smtp':
-                transporter = createTransport({
-                    host: options.host,
-                    port: options.port,
-                    secure: options.secure,
-                    auth: options.auth,
-                } as SMTPTransport.Options);
-                await this.sendMail(email, transporter);
+                await this.sendMail(email, this.getSmtpTransport(options));
                 break;
             case 'testing':
                 options.onSend(email);
@@ -62,6 +55,20 @@ export class EmailSender {
             default:
                 return assertNever(options);
         }
+    }
+
+    private getSmtpTransport(options: SMTPTransportOptions) {
+        if (!this._smtpTransport) {
+            this._smtpTransport = createTransport(options);
+        }
+        return this._smtpTransport;
+    }
+
+    private getSendMailTransport(options: SendmailTransportOptions) {
+        if (!this._sendMailTransport) {
+            this._sendMailTransport = createTransport({ sendmail: true, ...options });
+        }
+        return this._sendMailTransport;
     }
 
     private async sendMail(email: EmailDetails, transporter: Mail): Promise<any> {

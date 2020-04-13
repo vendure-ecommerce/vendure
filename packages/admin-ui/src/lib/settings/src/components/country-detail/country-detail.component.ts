@@ -2,20 +2,14 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { combineLatest, Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
-import {
-    Country,
-    CreateCountryInput,
-    LanguageCode,
-    UpdateCountryInput,
-} from '@vendure/admin-ui/core';
+import { Country, CreateCountryInput, LanguageCode, UpdateCountryInput } from '@vendure/admin-ui/core';
 import { createUpdatedTranslatable } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
+import { combineLatest, Observable } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-country-detail',
@@ -32,11 +26,11 @@ export class CountryDetailComponent extends BaseDetailComponent<Country.Fragment
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             name: ['', Validators.required],

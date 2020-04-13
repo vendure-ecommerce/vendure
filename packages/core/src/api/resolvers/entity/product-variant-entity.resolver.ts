@@ -1,4 +1,4 @@
-import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -18,7 +18,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class ProductVariantEntityResolver {
     constructor(private productVariantService: ProductVariantService, private assetService: AssetService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async assets(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
@@ -26,7 +26,7 @@ export class ProductVariantEntityResolver {
         return this.assetService.getEntityAssets(productVariant);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async featuredAsset(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
@@ -37,7 +37,7 @@ export class ProductVariantEntityResolver {
         return this.assetService.getFeaturedAsset(productVariant);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async options(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
@@ -48,7 +48,7 @@ export class ProductVariantEntityResolver {
         return this.productVariantService.getOptionsForVariant(ctx, productVariant.id);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
@@ -71,7 +71,7 @@ export class ProductVariantEntityResolver {
 export class ProductVariantAdminEntityResolver {
     constructor(private stockMovementService: StockMovementService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async stockMovements(
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,

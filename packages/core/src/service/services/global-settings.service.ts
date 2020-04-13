@@ -3,14 +3,14 @@ import { InjectConnection } from '@nestjs/typeorm';
 import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
 import { Connection } from 'typeorm';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { InternalServerError } from '../../common/error/errors';
+import { ConfigService } from '../../config/config.service';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 @Injectable()
 export class GlobalSettingsService {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(@InjectConnection() private connection: Connection, private configService: ConfigService) {}
 
     /**
      * Ensure there is a global settings row in the database.
@@ -20,7 +20,7 @@ export class GlobalSettingsService {
             await this.getSettings();
         } catch (err) {
             const settings = new GlobalSettings({
-                availableLanguages: [DEFAULT_LANGUAGE_CODE],
+                availableLanguages: [this.configService.defaultLanguageCode],
             });
             await this.connection.getRepository(GlobalSettings).save(settings, { reload: false });
         }

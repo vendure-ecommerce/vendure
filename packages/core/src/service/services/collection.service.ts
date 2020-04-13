@@ -16,9 +16,8 @@ import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Connection } from 'typeorm';
 
-import { RequestContext } from '../../api/common/request-context';
+import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { configurableDefToOperation } from '../../common/configurable-operation';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -28,6 +27,7 @@ import {
     facetValueCollectionFilter,
     variantNameCollectionFilter,
 } from '../../config/collection/default-collection-filters';
+import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
@@ -36,6 +36,9 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
+import { Job } from '../../job-queue/job';
+import { JobQueue } from '../../job-queue/job-queue';
+import { JobQueueService } from '../../job-queue/job-queue.service';
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -43,12 +46,11 @@ import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
-import { ApplyCollectionFiltersMessage } from '../types/collection-messages';
+import { ApplyCollectionFiletersJobData, ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
-import { JobService } from './job.service';
 
 export class CollectionService implements OnModuleInit {
     private rootCollection: Collection | undefined;
@@ -56,6 +58,7 @@ export class CollectionService implements OnModuleInit {
         facetValueCollectionFilter,
         variantNameCollectionFilter,
     ];
+    private applyFiltersQueue: JobQueue<ApplyCollectionFiletersJobData>;
 
     constructor(
         @InjectConnection() private connection: Connection,
@@ -66,7 +69,8 @@ export class CollectionService implements OnModuleInit {
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
         private workerService: WorkerService,
-        private jobService: JobService,
+        private jobQueueService: JobQueueService,
+        private configService: ConfigService,
     ) {}
 
     onModuleInit() {
@@ -76,11 +80,23 @@ export class CollectionService implements OnModuleInit {
         merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
             .subscribe(async event => {
-                const collections = await this.connection.getRepository(Collection).find({
-                    relations: ['productVariants'],
+                const collections = await this.connection.getRepository(Collection).find();
+                this.applyFiltersQueue.add({
+                    ctx: event.ctx.serialize(),
+                    collectionIds: collections.map(c => c.id),
                 });
-                this.applyCollectionFilters(event.ctx, collections);
             });
+
+        this.applyFiltersQueue = this.jobQueueService.createQueue({
+            name: 'apply-collection-filters',
+            concurrency: 1,
+            process: async job => {
+                const collections = await this.connection
+                    .getRepository(Collection)
+                    .findByIds(job.data.collectionIds);
+                this.applyCollectionFilters(job.data.ctx, collections, job);
+            },
+        });
     }
 
     async findAll(
@@ -259,7 +275,10 @@ export class CollectionService implements OnModuleInit {
             },
         });
         await this.assetService.updateEntityAssets(collection, input);
-        this.applyCollectionFilters(ctx, [collection]);
+        this.applyFiltersQueue.add({
+            ctx: ctx.serialize(),
+            collectionIds: [collection.id],
+        });
         return assertFound(this.findOne(ctx, collection.id));
     }
 
@@ -277,7 +296,10 @@ export class CollectionService implements OnModuleInit {
             },
         });
         if (input.filters) {
-            this.applyCollectionFilters(ctx, [collection]);
+            this.applyFiltersQueue.add({
+                ctx: ctx.serialize(),
+                collectionIds: [collection.id],
+            });
         }
         return assertFound(this.findOne(ctx, collection.id));
     }
@@ -328,7 +350,10 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(Collection).save(siblings);
-        await this.applyCollectionFilters(ctx, [target]);
+        this.applyFiltersQueue.add({
+            ctx: ctx.serialize(),
+            collectionIds: [target.id],
+        });
         return assertFound(this.findOne(ctx, input.collectionId));
     }
 
@@ -359,37 +384,33 @@ export class CollectionService implements OnModuleInit {
     /**
      * Applies the CollectionFilters and returns an array of all affected ProductVariant ids.
      */
-    private async applyCollectionFilters(ctx: RequestContext, collections: Collection[]): Promise<void> {
+    private async applyCollectionFilters(
+        ctx: SerializedRequestContext,
+        collections: Collection[],
+        job: Job<ApplyCollectionFiletersJobData>,
+    ): Promise<void> {
         const collectionIds = collections.map(c => c.id);
+        const requestContext = RequestContext.deserialize(ctx);
 
-        const job = this.jobService.createJob({
-            name: 'apply-collection-filters',
-            metadata: { collectionIds },
-            singleInstance: false,
-            work: async reporter => {
-                Logger.verbose(`sending ApplyCollectionFiltersMessage message`);
-                this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
-                    next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
-                        const progress = Math.ceil((completed / total) * 100);
-                        const collection = collections.find(c => idsAreEqual(c.id, collectionId));
-                        if (collection) {
-                            this.eventBus.publish(
-                                new CollectionModificationEvent(ctx, collection, affectedVariantIds),
-                            );
-                        }
-                        reporter.setProgress(progress);
-                    },
-                    complete: () => {
-                        reporter.complete();
-                    },
-                    error: err => {
-                        Logger.error(err);
-                        reporter.complete();
-                    },
-                });
+        this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
+            next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
+                const progress = Math.ceil((completed / total) * 100);
+                const collection = collections.find(c => idsAreEqual(c.id, collectionId));
+                if (collection) {
+                    this.eventBus.publish(
+                        new CollectionModificationEvent(requestContext, collection, affectedVariantIds),
+                    );
+                }
+                job.setProgress(progress);
+            },
+            complete: () => {
+                job.complete();
+            },
+            error: err => {
+                Logger.error(err);
+                job.fail(err);
             },
         });
-        await job.start();
     }
 
     /**
@@ -463,7 +484,7 @@ export class CollectionService implements OnModuleInit {
 
         const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
             new CollectionTranslation({
-                languageCode: DEFAULT_LANGUAGE_CODE,
+                languageCode: this.configService.defaultLanguageCode,
                 name: ROOT_COLLECTION_NAME,
                 description: 'The root of the Collection tree.',
             }),

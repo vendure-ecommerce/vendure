@@ -1,5 +1,5 @@
 import { Omit } from '@vendure/common/lib/omit';
-import { RequestContext, Type, VendureEvent } from '@vendure/core';
+import { RequestContext, Type, VendureEvent, WorkerMessage } from '@vendure/core';
 import { Connection } from 'typeorm';
 
 import { EmailEventHandler } from './event-handler';
@@ -272,3 +272,16 @@ export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     connection: Connection;
     inject: <T>(type: Type<T>) => T;
 }) => Promise<R>;
+
+export type IntermediateEmailDetails = {
+    type: string;
+    from: string;
+    recipient: string;
+    templateVars: any;
+    subject: string;
+    templateFile: string;
+};
+
+export class EmailWorkerMessage extends WorkerMessage<IntermediateEmailDetails, boolean> {
+    static readonly pattern = 'send-email';
+}

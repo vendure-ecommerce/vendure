@@ -1,7 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { UserInputError } from '../../common/error/errors';
 import {
     CustomFieldConfig,
@@ -63,8 +62,7 @@ function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
             throw new UserInputError(error);
         }
         if (Array.isArray(error)) {
-            const localizedError =
-                error.find(e => e.languageCode === (languageCode || DEFAULT_LANGUAGE_CODE)) || error[0];
+            const localizedError = error.find(e => e.languageCode === languageCode) || error[0];
             throw new UserInputError(localizedError.value);
         }
     }

@@ -1,5 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -7,14 +8,8 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-     * `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-     * 8601 standard for representation of dates and times using the Gregorian calendar.
-     */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Upload` scalar type represents a file upload. */
     Upload: any;
 };
 
@@ -584,7 +579,8 @@ export type CreateZoneInput = {
     memberIds?: Maybe<Array<Scalars['ID']>>;
 };
 
-/** @description
+/**
+ * @description
  * ISO 4217 currency code
  *
  * @docsCategory common
@@ -984,7 +980,6 @@ export type CustomerSortParameter = {
 };
 
 export type CustomField = {
-    __typename?: 'CustomField';
     name: Scalars['String'];
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
@@ -1030,7 +1025,8 @@ export type DateRange = {
     end: Scalars['DateTime'];
 };
 
-/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+/**
+ * Expects the same validation formats as the <input type="datetime-local"> HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
@@ -1132,7 +1128,8 @@ export type FacetValue = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-/** Which FacetValues are present in the products returned
+/**
+ * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
@@ -1265,32 +1262,78 @@ export type IntCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
-export type JobInfo = {
-    __typename?: 'JobInfo';
-    id: Scalars['String'];
-    name: Scalars['String'];
+export type Job = Node & {
+    __typename?: 'Job';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    startedAt?: Maybe<Scalars['DateTime']>;
+    settledAt?: Maybe<Scalars['DateTime']>;
+    queueName: Scalars['String'];
     state: JobState;
     progress: Scalars['Float'];
-    metadata?: Maybe<Scalars['JSON']>;
+    data?: Maybe<Scalars['JSON']>;
     result?: Maybe<Scalars['JSON']>;
-    started?: Maybe<Scalars['DateTime']>;
-    ended?: Maybe<Scalars['DateTime']>;
-    duration?: Maybe<Scalars['Int']>;
+    error?: Maybe<Scalars['JSON']>;
+    isSettled: Scalars['Boolean'];
+    duration: Scalars['Int'];
 };
 
-export type JobListInput = {
-    state?: Maybe<JobState>;
-    ids?: Maybe<Array<Scalars['String']>>;
+export type JobFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    startedAt?: Maybe<DateOperators>;
+    settledAt?: Maybe<DateOperators>;
+    queueName?: Maybe<StringOperators>;
+    state?: Maybe<StringOperators>;
+    progress?: Maybe<NumberOperators>;
+    isSettled?: Maybe<BooleanOperators>;
+    duration?: Maybe<NumberOperators>;
 };
 
+export type JobList = PaginatedList & {
+    __typename?: 'JobList';
+    items: Array<Job>;
+    totalItems: Scalars['Int'];
+};
+
+export type JobListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<JobSortParameter>;
+    filter?: Maybe<JobFilterParameter>;
+};
+
+export type JobQueue = {
+    __typename?: 'JobQueue';
+    name: Scalars['String'];
+    running: Scalars['Boolean'];
+};
+
+export type JobSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    startedAt?: Maybe<SortOrder>;
+    settledAt?: Maybe<SortOrder>;
+    queueName?: Maybe<SortOrder>;
+    progress?: Maybe<SortOrder>;
+    duration?: Maybe<SortOrder>;
+};
+
+/**
+ * @description
+ * The state of a Job in the JobQueue
+ *
+ * @docsCategory common
+ */
 export enum JobState {
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',
     COMPLETED = 'COMPLETED',
+    RETRYING = 'RETRYING',
     FAILED = 'FAILED',
 }
 
-/** @description
+/**
+ * @description
  * ISO 639-1 language code
  *
  * @docsCategory common
@@ -1706,6 +1749,8 @@ export type Mutation = {
     createAssets: Array<Asset>;
     /** Update an existing Asset */
     updateAsset: Asset;
+    /** Delete an Asset */
+    deleteAsset: DeletionResponse;
     login: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -1762,6 +1807,8 @@ export type Mutation = {
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
+    /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+    removeSettledJobs: Scalars['Int'];
     settlePayment: Payment;
     fulfillOrder: Fulfillment;
     cancelOrder: Order;
@@ -1778,7 +1825,7 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
-    reindex: JobInfo;
+    reindex: Job;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -1857,6 +1904,11 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationUpdateAssetArgs = {
     input: UpdateAssetInput;
+};
+
+export type MutationDeleteAssetArgs = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationLoginArgs = {
@@ -1981,6 +2033,11 @@ export type MutationUpdateGlobalSettingsArgs = {
 
 export type MutationImportProductsArgs = {
     csvFile: Scalars['Upload'];
+};
+
+export type MutationRemoveSettledJobsArgs = {
+    queueNames?: Maybe<Array<Scalars['String']>>;
+    olderThan?: Maybe<Scalars['DateTime']>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -2152,7 +2209,6 @@ export type MutationRemoveMembersFromZoneArgs = {
 };
 
 export type Node = {
-    __typename?: 'Node';
     id: Scalars['ID'];
 };
 
@@ -2301,7 +2357,6 @@ export type OrderSortParameter = {
 };
 
 export type PaginatedList = {
-    __typename?: 'PaginatedList';
     items: Array<Node>;
     totalItems: Scalars['Int'];
 };
@@ -2357,7 +2412,8 @@ export type PaymentMethodSortParameter = {
     code?: Maybe<SortOrder>;
 };
 
-/** "
+/**
+ * "
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
@@ -2698,8 +2754,10 @@ export type Query = {
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
-    job?: Maybe<JobInfo>;
-    jobs: Array<JobInfo>;
+    job?: Maybe<Job>;
+    jobs: JobList;
+    jobsById: Array<Job>;
+    jobQueues: Array<JobQueue>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -2787,11 +2845,15 @@ export type QueryFacetArgs = {
 };
 
 export type QueryJobArgs = {
-    jobId: Scalars['String'];
+    jobId: Scalars['ID'];
 };
 
 export type QueryJobsArgs = {
-    input?: Maybe<JobListInput>;
+    options?: Maybe<JobListOptions>;
+};
+
+export type QueryJobsByIdArgs = {
+    jobIds: Array<Scalars['ID']>;
 };
 
 export type QueryOrderArgs = {
@@ -3004,10 +3066,12 @@ export type SearchResult = {
     slug: Scalars['String'];
     productId: Scalars['ID'];
     productName: Scalars['String'];
+    /** @deprecated Use `productAsset.preview` instead */
     productPreview: Scalars['String'];
     productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
+    /** @deprecated Use `productVariantAsset.preview` instead */
     productVariantPreview: Scalars['String'];
     productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
@@ -3118,7 +3182,6 @@ export type StockAdjustment = Node &
     };
 
 export type StockMovement = {
-    __typename?: 'StockMovement';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3463,6 +3526,7 @@ export type Zone = Node & {
     name: Scalars['String'];
     members: Array<Country>;
 };
+
 export type CreateAssetsMutationVariables = {
     input: Array<CreateAssetInput>;
 };
@@ -3470,15 +3534,14 @@ export type CreateAssetsMutationVariables = {
 export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     createAssets: Array<
         { __typename?: 'Asset' } & Pick<Asset, 'id' | 'name' | 'source' | 'preview'> & {
-                focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+                focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
             }
     >;
 };
+
 export namespace CreateAssets {
     export type Variables = CreateAssetsMutationVariables;
     export type Mutation = CreateAssetsMutation;
     export type CreateAssets = NonNullable<CreateAssetsMutation['createAssets'][0]>;
-    export type FocalPoint = NonNullable<
-        (NonNullable<CreateAssetsMutation['createAssets'][0]>)['focalPoint']
-    >;
+    export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
 }

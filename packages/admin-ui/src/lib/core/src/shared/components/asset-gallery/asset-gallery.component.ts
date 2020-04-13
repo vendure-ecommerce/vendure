@@ -16,7 +16,9 @@ export class AssetGalleryComponent implements OnChanges {
      * If true, allows multiple assets to be selected by ctrl+clicking.
      */
     @Input() multiSelect = false;
+    @Input() canDelete = false;
     @Output() selectionChange = new EventEmitter<Asset[]>();
+    @Output() deleteAsset = new EventEmitter<Asset>();
 
     selection: Asset[] = [];
 

@@ -13,9 +13,9 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
-import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
+import { ConfigService } from '../../../config/config.service';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../../entity/facet/facet.entity';
 import { FacetValueService } from '../../../service/services/facet-value.service';
@@ -26,7 +26,11 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Facet')
 export class FacetResolver {
-    constructor(private facetService: FacetService, private facetValueService: FacetValueService) {}
+    constructor(
+        private facetService: FacetService,
+        private facetValueService: FacetValueService,
+        private configService: ConfigService,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadCatalog)
@@ -84,7 +88,7 @@ export class FacetResolver {
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         const facetId = input[0].facetId;
-        const facet = await this.facetService.findOne(facetId, DEFAULT_LANGUAGE_CODE);
+        const facet = await this.facetService.findOne(facetId, this.configService.defaultLanguageCode);
         if (!facet) {
             throw new EntityNotFoundError('Facet', facetId);
         }

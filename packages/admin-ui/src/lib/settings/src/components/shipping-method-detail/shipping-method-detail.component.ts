@@ -52,11 +52,11 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private formBuilder: FormBuilder,
         private notificationService: NotificationService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
             description: ['', Validators.required],

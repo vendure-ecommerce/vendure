@@ -1,6 +1,6 @@
-import { Args, Mutation, Parent, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
-    JobInfo,
+    Job as GraphQLJob,
     Permission,
     QuerySearchArgs,
     SearchInput,
@@ -28,7 +28,7 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
         return result;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: ElasticSearchInput },
@@ -37,7 +37,7 @@ export class ShopElasticSearchResolver implements Omit<SearchResolver, 'reindex'
         return facetValues.filter(i => !i.facetValue.facet.isPrivate);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async prices(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: ElasticSearchInput },
@@ -62,7 +62,7 @@ export class AdminElasticSearchResolver implements SearchResolver {
         return result;
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(
         @Ctx() ctx: RequestContext,
         @Parent() parent: { input: SearchInput },
@@ -72,7 +72,7 @@ export class AdminElasticSearchResolver implements SearchResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async reindex(@Ctx() ctx: RequestContext): Promise<JobInfo> {
-        return this.elasticsearchService.reindex(ctx, false);
+    async reindex(@Ctx() ctx: RequestContext): Promise<GraphQLJob> {
+        return (this.elasticsearchService.reindex(ctx, false) as unknown) as GraphQLJob;
     }
 }

@@ -268,10 +268,16 @@ export const GET_STOCK_MOVEMENT = gql`
     ${VARIANT_WITH_STOCK_FRAGMENT}
 `;
 export const GET_RUNNING_JOBS = gql`
-    query GetRunningJobs {
-        jobs {
-            name
-            state
+    query GetRunningJobs($options: JobListOptions) {
+        jobs(options: $options) {
+            items {
+                id
+                queueName
+                state
+                isSettled
+                duration
+            }
+            totalItems
         }
     }
 `;
@@ -348,4 +354,13 @@ export const UPDATE_ASSET = gql`
         }
     }
     ${ASSET_FRAGMENT}
+`;
+
+export const DELETE_ASSET = gql`
+    mutation DeleteAsset($id: ID!, $force: Boolean) {
+        deleteAsset(id: $id, force: $force) {
+            result
+            message
+        }
+    }
 `;

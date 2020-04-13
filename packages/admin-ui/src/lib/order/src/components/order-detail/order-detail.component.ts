@@ -2,10 +2,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { omit } from '@vendure/common/lib/omit';
-import { Observable, of, Subject } from 'rxjs';
-import { startWith, switchMap, take } from 'rxjs/operators';
-
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     AdjustmentType,
@@ -19,6 +15,10 @@ import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { omit } from '@vendure/common/lib/omit';
+import { Observable, of, Subject } from 'rxjs';
+import { startWith, switchMap, take } from 'rxjs/operators';
+
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
@@ -33,7 +33,7 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
-    history$: Observable<GetOrderHistory.Items[] | null>;
+    history$: Observable<GetOrderHistory.Items[] | null | undefined>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
     orderLineCustomFields: CustomFieldConfig[];
@@ -43,11 +43,11 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         route: ActivatedRoute,
         serverConfigService: ServerConfigService,
         private changeDetector: ChangeDetectorRef,
-        private dataService: DataService,
+        protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
     ) {
-        super(route, router, serverConfigService);
+        super(route, router, serverConfigService, dataService);
     }
 
     get visibileOrderLineCustomFields(): CustomFieldConfig[] {

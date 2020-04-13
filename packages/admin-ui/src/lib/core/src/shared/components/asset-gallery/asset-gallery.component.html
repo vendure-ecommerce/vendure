@@ -39,13 +39,18 @@
             </div>
             <div>
                 <button (click)="previewAsset(lastSelected())" class="btn btn-link">
-                    {{ 'asset.preview' | translate }}
+                    <clr-icon shape="eye"></clr-icon> {{ 'asset.preview' | translate }}
                 </button>
             </div>
             <div>
                 <a [routerLink]="['./', lastSelected().id]" class="btn btn-link">
-                    {{ 'common.edit' | translate }}
+                    <clr-icon shape="pencil"></clr-icon> {{ 'common.edit' | translate }}
                 </a>
+            </div>
+            <div *ngIf="selection.length === 1 && canDelete">
+                <button (click)="deleteAsset.emit(lastSelected())" class="btn btn-link">
+                    <clr-icon shape="trash" class="is-danger"></clr-icon> {{ 'common.delete' | translate }}
+                </button>
             </div>
         </div>
     </div>

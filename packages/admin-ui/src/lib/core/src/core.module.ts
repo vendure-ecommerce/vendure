@@ -4,13 +4,14 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { MessageFormatConfig, MESSAGE_FORMAT_CONFIG } from 'ngx-translate-messageformat-compiler';
 
 import { getAppConfig } from './app.config';
-import { getDefaultLanguage } from './common/utilities/get-default-language';
+import { getDefaultUiLanguage } from './common/utilities/get-default-ui-language';
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { ChannelSwitcherComponent } from './components/channel-switcher/channel-switcher.component';
-import { JobListComponent } from './components/job-list/job-list.component';
+import { JobQueueLinkComponent } from './components/job-queue-link/job-queue-link.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
@@ -38,6 +39,7 @@ import { SharedModule } from './shared/shared.module';
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
+    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,
@@ -47,7 +49,7 @@ import { SharedModule } from './shared/shared.module';
         OverlayHostComponent,
         NotificationComponent,
         UiLanguageSwitcherDialogComponent,
-        JobListComponent,
+        JobQueueLinkComponent,
         ChannelSwitcherComponent,
     ],
 })
@@ -57,7 +59,7 @@ export class CoreModule {
     }
 
     private initUiLanguages() {
-        const defaultLanguage = getDefaultLanguage();
+        const defaultLanguage = getDefaultUiLanguage();
         const lastLanguage = this.localStorageService.get('uiLanguageCode');
         const availableLanguages = getAppConfig().availableLanguages;
 
@@ -80,4 +82,21 @@ export function HttpLoaderFactory(http: HttpClient, location: PlatformLocation) 
     // Dynamically get the baseHref, which is configured in the angular.json file
     const baseHref = location.getBaseHrefFromDOM();
     return new CustomHttpTranslationLoader(http, baseHref + 'i18n-messages/');
+}
+
+/**
+ * Returns the locales defined in the vendure-ui-config.json, ensuring that the
+ * default language is the first item in the array as per the messageformat
+ * documentation:
+ *
+ * > The default locale will be the first entry of the array
+ * https://messageformat.github.io/messageformat/MessageFormat
+ */
+export function getLocales(): MessageFormatConfig {
+    const locales = getAppConfig().availableLanguages;
+    const defaultLanguage = getDefaultUiLanguage();
+    const localesWithoutDefault = locales.filter(l => l !== defaultLanguage);
+    return {
+        locales: [defaultLanguage, ...localesWithoutDefault],
+    };
 }

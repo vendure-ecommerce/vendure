@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Role } from '../../../entity/role/role.entity';
@@ -10,7 +10,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class RoleEntityResolver {
     constructor(private roleService: RoleService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() role: Role): Promise<Channel[]> {
         if (role.channels) {
             return role.channels;

@@ -1,19 +1,26 @@
 /* tslint:disable:no-non-null-assertion */
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
-import { DefaultLogger, facetValueCollectionFilter, LogLevel, mergeConfig } from '@vendure/core';
+import {
+    DefaultJobQueuePlugin,
+    DefaultLogger,
+    facetValueCollectionFilter,
+    LogLevel,
+    mergeConfig,
+} from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import {
     AssignProductsToChannel,
     CreateChannel,
     CreateCollection,
     CreateFacet,
     CurrencyCode,
+    DeleteAsset,
     DeleteProduct,
     DeleteProductVariant,
     LanguageCode,
@@ -33,6 +40,7 @@ import {
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
+    DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     REMOVE_PRODUCT_FROM_CHANNEL,
@@ -69,6 +77,7 @@ describe('Elasticsearch plugin', () => {
                     port: process.env.CI ? +(process.env.E2E_ELASTIC_PORT || 9200) : 9200,
                     host: process.env.CI ? 'http://127.0.0.1' : 'http://192.168.99.100',
                 }),
+                DefaultJobQueuePlugin,
             ],
         }),
     );
@@ -515,6 +524,8 @@ describe('Elasticsearch plugin', () => {
                     },
                 );
                 await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters to update
+                await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
 
                 expect(result.search.items.map(i => i.productName)).toEqual([
@@ -561,6 +572,8 @@ describe('Elasticsearch plugin', () => {
                     },
                 });
                 await awaitRunningJobs(adminClient);
+                // add an additional check for the collection filters to update
+                await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({
                     collectionId: createCollection.id,
                     groupByProduct: true,
@@ -600,42 +613,59 @@ describe('Elasticsearch plugin', () => {
                 ]);
             });
 
-            it('updates index when asset focalPoint is changed', async () => {
-                const { search: search1 } = await doAdminSearchQuery({
-                    term: 'laptop',
-                    groupByProduct: true,
-                    take: 1,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
-                });
-
-                expect(search1.items[0].productAsset!.id).toBe('T_1');
-                expect(search1.items[0].productAsset!.focalPoint).toBeNull();
-
-                await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
-                    input: {
-                        id: 'T_1',
-                        focalPoint: {
-                            x: 0.42,
-                            y: 0.42,
+            describe('asset changes', () => {
+                function searchForLaptop() {
+                    return doAdminSearchQuery({
+                        term: 'laptop',
+                        groupByProduct: true,
+                        take: 1,
+                        sort: {
+                            name: SortOrder.ASC,
                         },
-                    },
+                    });
+                }
+
+                it('updates index when asset focalPoint is changed', async () => {
+                    const { search: search1 } = await searchForLaptop();
+
+                    expect(search1.items[0].productAsset!.id).toBe('T_1');
+                    expect(search1.items[0].productAsset!.focalPoint).toBeNull();
+
+                    await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(UPDATE_ASSET, {
+                        input: {
+                            id: 'T_1',
+                            focalPoint: {
+                                x: 0.42,
+                                y: 0.42,
+                            },
+                        },
+                    });
+
+                    await awaitRunningJobs(adminClient);
+
+                    const { search: search2 } = await searchForLaptop();
+
+                    expect(search2.items[0].productAsset!.id).toBe('T_1');
+                    expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
                 });
 
-                await awaitRunningJobs(adminClient);
+                it('updates index when asset deleted', async () => {
+                    const { search: search1 } = await searchForLaptop();
 
-                const { search: search2 } = await doAdminSearchQuery({
-                    term: 'laptop',
-                    groupByProduct: true,
-                    take: 1,
-                    sort: {
-                        name: SortOrder.ASC,
-                    },
+                    const assetId = search1.items[0].productAsset?.id;
+                    expect(assetId).toBeTruthy();
+
+                    await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
+                        id: assetId!,
+                        force: true,
+                    });
+
+                    await awaitRunningJobs(adminClient);
+
+                    const { search: search2 } = await searchForLaptop();
+
+                    expect(search2.items[0].productAsset).toBeNull();
                 });
-
-                expect(search2.items[0].productAsset!.id).toBe('T_1');
-                expect(search2.items[0].productAsset!.focalPoint).toEqual({ x: 0.42, y: 0.42 });
             });
 
             it('does not include deleted ProductVariants in index', async () => {
@@ -677,7 +707,10 @@ describe('Elasticsearch plugin', () => {
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
-                        input: [{ id: 'T_1', enabled: false }, { id: 'T_2', enabled: false }],
+                        input: [
+                            { id: 'T_1', enabled: false },
+                            { id: 'T_2', enabled: false },
+                        ],
                     },
                 );
                 await awaitRunningJobs(adminClient);
@@ -711,6 +744,19 @@ describe('Elasticsearch plugin', () => {
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({ groupByProduct: true, term: 'gaming' });
                 expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                    { productId: 'T_3', enabled: false },
+                ]);
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/295
+            it('enabled status survives reindex', async () => {
+                await adminClient.query<Reindex.Mutation>(REINDEX);
+
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ groupByProduct: true, take: 3 });
+                expect(result.search.items.map(pick(['productId', 'enabled']))).toEqual([
+                    { productId: 'T_1', enabled: false },
+                    { productId: 'T_2', enabled: true },
                     { productId: 'T_3', enabled: false },
                 ]);
             });
@@ -870,7 +916,7 @@ const REINDEX = gql`
     mutation Reindex {
         reindex {
             id
-            name
+            queueName
             state
             progress
             duration
@@ -880,10 +926,10 @@ const REINDEX = gql`
 `;
 
 const GET_JOB_INFO = gql`
-    query GetJobInfo($id: String!) {
+    query GetJobInfo($id: ID!) {
         job(jobId: $id) {
             id
-            name
+            queueName
             state
             progress
             duration

@@ -10,11 +10,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { DEFAULT_LANGUAGE_CODE } from '../../common/constants';
 import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
-import { assertFound, idsAreEqual } from '../../common/utils';
+import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
@@ -193,7 +192,10 @@ export class ProductVariantService {
         for (const productInput of input) {
             await this.updateSingle(ctx, productInput);
         }
-        const updatedVariants = await this.findByIds(ctx, input.map(i => i.id));
+        const updatedVariants = await this.findByIds(
+            ctx,
+            input.map(i => i.id),
+        );
         this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated'));
         return updatedVariants;
     }
@@ -365,7 +367,12 @@ export class ProductVariantService {
         if (optionIds.length !== product.optionGroups.length) {
             this.throwIncompatibleOptionsError(product.optionGroups);
         }
-        if (!samplesEach(optionIds, product.optionGroups.map(g => g.options.map(o => o.id)))) {
+        if (
+            !samplesEach(
+                optionIds,
+                product.optionGroups.map(g => g.options.map(o => o.id)),
+            )
+        ) {
             this.throwIncompatibleOptionsError(product.optionGroups);
         }
         product.variants.forEach(variant => {
@@ -407,18 +414,5 @@ export class ProductVariantService {
             taxCategory = await this.taxCategoryService.create({ name: 'Standard Tax' });
         }
         return taxCategory;
-    }
-
-    private createVariantName(productName: string, options: ProductOption[]): string {
-        const optionsSuffix = options
-            .map(option => {
-                const defaultTranslation = option.translations.find(
-                    t => t.languageCode === DEFAULT_LANGUAGE_CODE,
-                );
-                return defaultTranslation ? defaultTranslation.name : option.code;
-            })
-            .join(' ');
-
-        return options.length ? `${productName} ${optionsSuffix}` : productName;
     }
 }

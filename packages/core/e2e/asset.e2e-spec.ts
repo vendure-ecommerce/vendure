@@ -1,25 +1,35 @@
+/* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
     CreateAssets,
+    DeleteAsset,
+    DeletionResult,
     GetAsset,
     GetAssetList,
+    GetProductWithVariants,
     SortOrder,
     UpdateAsset,
 } from './graphql/generated-e2e-admin-types';
-import { GET_ASSET_LIST, UPDATE_ASSET } from './graphql/shared-definitions';
+import {
+    DELETE_ASSET,
+    GET_ASSET_LIST,
+    GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_ASSET,
+} from './graphql/shared-definitions';
 
 describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
 
     let firstAssetId: string;
+    let createdAssetId: string;
 
     beforeAll(async () => {
         await server.init({
@@ -136,6 +146,8 @@ describe('Asset resolver', () => {
                 type: 'IMAGE',
             },
         ]);
+
+        createdAssetId = createAssets[0].id;
     });
 
     describe('updateAsset', () => {
@@ -185,6 +197,88 @@ describe('Asset resolver', () => {
             );
 
             expect(updateAsset.focalPoint).toEqual(null);
+        });
+    });
+
+    describe('deleteAsset', () => {
+        let firstProduct: GetProductWithVariants.Product;
+
+        beforeAll(async () => {
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: 'T_1',
+            });
+
+            firstProduct = product!;
+        });
+
+        it('non-featured asset', async () => {
+            const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
+                DELETE_ASSET,
+                {
+                    id: createdAssetId,
+                },
+            );
+
+            expect(deleteAsset.result).toBe(DeletionResult.DELETED);
+
+            const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
+                id: createdAssetId,
+            });
+            expect(asset).toBeNull();
+        });
+
+        it('featured asset not deleted', async () => {
+            const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
+                DELETE_ASSET,
+                {
+                    id: firstProduct.featuredAsset!.id,
+                },
+            );
+
+            expect(deleteAsset.result).toBe(DeletionResult.NOT_DELETED);
+            expect(deleteAsset.message).toContain(`The selected Asset is featured by 1 Product`);
+
+            const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
+                id: firstAssetId,
+            });
+            expect(asset).not.toBeNull();
+        });
+
+        it('featured asset force deleted', async () => {
+            const { product: p1 } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: firstProduct.id,
+            });
+            expect(p1!.assets.length).toEqual(1);
+
+            const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
+                DELETE_ASSET,
+                {
+                    id: firstProduct.featuredAsset!.id,
+                    force: true,
+                },
+            );
+
+            expect(deleteAsset.result).toBe(DeletionResult.DELETED);
+
+            const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
+                id: firstAssetId,
+            });
+            expect(asset).not.toBeNull();
+
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: firstProduct.id,
+            });
+            expect(product!.featuredAsset).toBeNull();
+            expect(product!.assets.length).toEqual(0);
         });
     });
 });

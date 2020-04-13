@@ -63,7 +63,8 @@ export class TestOrderBuilderComponent implements OnInit {
                 preview: result.productPreview,
                 quantity: 1,
                 sku: result.sku,
-                unitPriceWithTax: result.priceWithTax.value,
+                unitPriceWithTax:
+                    (result.priceWithTax.__typename === 'SinglePrice' && result.priceWithTax.value) || 0,
             });
             this.persistToLocalStorage();
             this.orderLinesChange.emit(this.lines);

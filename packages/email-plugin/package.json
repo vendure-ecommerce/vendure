@@ -1,6 +1,6 @@
 {
   "name": "@vendure/email-plugin",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -21,10 +21,10 @@
   "dependencies": {
     "dateformat": "^3.0.3",
     "express": "^4.16.4",
-    "fs-extra": "^8.0.1",
-    "handlebars": "^4.7.3",
-    "mjml": "^4.3.0",
-    "nodemailer": "^5.0.0"
+    "fs-extra": "^9.0.0",
+    "handlebars": "^4.7.6",
+    "mjml": "^4.6.2",
+    "nodemailer": "^6.4.6"
   },
   "devDependencies": {
     "@types/dateformat": "^3.0.0",
@@ -32,10 +32,10 @@
     "@types/fs-extra": "^8.0.1",
     "@types/handlebars": "^4.1.0",
     "@types/mjml": "^4.0.2",
-    "@types/nodemailer": "^4.6.5",
-    "@vendure/common": "^0.10.1",
-    "@vendure/core": "^0.10.1",
+    "@types/nodemailer": "^6.4.0",
+    "@vendure/common": "^0.11.0",
+    "@vendure/core": "^0.11.0",
     "rimraf": "^3.0.0",
-    "typescript": "~3.5.3"
+    "typescript": "3.8.3"
   }
 }

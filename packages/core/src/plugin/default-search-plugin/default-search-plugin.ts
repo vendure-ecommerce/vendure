@@ -41,9 +41,9 @@ export interface DefaultSearchReindexResponse extends SearchReindexResponse {
  *
  * @example
  * ```ts
- * import { DefaultSearchPlugin } from '\@vendure/core';
+ * import { DefaultSearchPlugin, VendureConfig } from '\@vendure/core';
  *
- * const config: VendureConfig = {
+ * export const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
  *     DefaultSearchPlugin,
@@ -67,34 +67,43 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
 
     /** @internal */
     async onVendureBootstrap() {
+        this.searchIndexService.initJobQueue();
+
         this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
-                return this.searchIndexService.deleteProduct(event.ctx, event.product).start();
+                return this.searchIndexService.deleteProduct(event.ctx, event.product);
             } else {
-                return this.searchIndexService.updateProduct(event.ctx, event.product).start();
+                return this.searchIndexService.updateProduct(event.ctx, event.product);
             }
         });
         this.eventBus.ofType(ProductVariantEvent).subscribe(event => {
             if (event.type === 'deleted') {
-                return this.searchIndexService.deleteVariant(event.ctx, event.variants).start();
+                return this.searchIndexService.deleteVariant(event.ctx, event.variants);
             } else {
-                return this.searchIndexService.updateVariants(event.ctx, event.variants).start();
+                return this.searchIndexService.updateVariants(event.ctx, event.variants);
             }
         });
         this.eventBus.ofType(AssetEvent).subscribe(event => {
             if (event.type === 'updated') {
-                return this.searchIndexService.updateAsset(event.ctx, event.asset).start();
+                return this.searchIndexService.updateAsset(event.ctx, event.asset);
+            }
+            if (event.type === 'deleted') {
+                return this.searchIndexService.deleteAsset(event.ctx, event.asset);
             }
         });
         this.eventBus.ofType(ProductChannelEvent).subscribe(event => {
             if (event.type === 'assigned') {
-                return this.searchIndexService
-                    .assignProductToChannel(event.ctx, event.product.id, event.channelId)
-                    .start();
+                return this.searchIndexService.assignProductToChannel(
+                    event.ctx,
+                    event.product.id,
+                    event.channelId,
+                );
             } else {
-                return this.searchIndexService
-                    .removeProductFromChannel(event.ctx, event.product.id, event.channelId)
-                    .start();
+                return this.searchIndexService.removeProductFromChannel(
+                    event.ctx,
+                    event.product.id,
+                    event.channelId,
+                );
             }
         });
 
@@ -111,13 +120,13 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
                 filter(e => 0 < e.ids.length),
             )
             .subscribe(events => {
-                return this.searchIndexService.updateVariantsById(events.ctx, events.ids).start();
+                return this.searchIndexService.updateVariantsById(events.ctx, events.ids);
             });
 
         this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {
             const defaultTaxZone = event.ctx.channel.defaultTaxZone;
             if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return this.searchIndexService.reindex(event.ctx).start();
+                return this.searchIndexService.reindex(event.ctx);
             }
         });
     }

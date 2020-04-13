@@ -3,12 +3,14 @@ import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
 import {
+    DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -51,6 +53,7 @@ export const devConfig: VendureConfig = {
             port: 5002,
         }),
         DefaultSearchPlugin,
+        DefaultJobQueuePlugin,
         // ElasticsearchPlugin.init({
         //     host: 'http://192.168.99.100',
         //     port: 9200,
@@ -106,7 +109,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: false,
+                synchronize: true,
                 type: 'mysql',
                 host: '192.168.99.100',
                 port: 3306,

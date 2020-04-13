@@ -1,4 +1,4 @@
-import { Args, Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { QueryOrdersArgs } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -20,7 +20,7 @@ export class CustomerEntityResolver {
         private orderService: OrderService,
         private userService: UserService,
     ) {}
-    @ResolveProperty()
+    @ResolveField()
     async addresses(
         @Ctx() ctx: RequestContext,
         @Parent() customer: Customer,
@@ -33,7 +33,7 @@ export class CustomerEntityResolver {
         return this.customerService.findAddressesByCustomerId(ctx, customer.id);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async orders(
         @Ctx() ctx: RequestContext,
         @Parent() customer: Customer,
@@ -47,7 +47,7 @@ export class CustomerEntityResolver {
         return this.orderService.findByCustomerId(ctx, customer.id, args.options || undefined);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     user(@Ctx() ctx: RequestContext, @Parent() customer: Customer) {
         if (customer.user) {
             return customer.user;

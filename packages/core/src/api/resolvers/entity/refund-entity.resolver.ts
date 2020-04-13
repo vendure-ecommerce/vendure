@@ -1,4 +1,4 @@
-import { Parent, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
@@ -10,7 +10,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 export class RefundEntityResolver {
     constructor(private orderService: OrderService) {}
 
-    @ResolveProperty()
+    @ResolveField()
     async orderItems(@Ctx() ctx: RequestContext, @Parent() refund: Refund): Promise<OrderItem[]> {
         if (refund.orderItems) {
             return refund.orderItems;

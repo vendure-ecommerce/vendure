@@ -43,6 +43,16 @@
             <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
         </select>
     </vdr-form-field>
+    <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">
+        <select
+            clrSelect
+            name="defaultLanguageCode"
+            formControlName="defaultLanguageCode"
+            [vdrDisabled]="!('SuperAdmin' | hasPermission)"
+        >
+            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">{{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})</option>
+        </select>
+    </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
         <clr-toggle-wrapper>
             <input

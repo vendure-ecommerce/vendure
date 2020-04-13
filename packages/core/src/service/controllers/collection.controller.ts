@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
+import { pick } from '@vendure/common/lib/pick';
 import { ID } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
@@ -71,9 +72,20 @@ export class CollectionController {
             ...(collection.filters || []),
         ]);
         const postIds = collection.productVariants.map(v => v.id);
-        await this.connection
-            .getRepository(Collection)
-            .save(collection, { chunk: Math.ceil(collection.productVariants.length / 500) });
+        try {
+            await this.connection
+                .getRepository(Collection)
+                // Only update the exact changed properties, to avoid VERY hard-to-debug
+                // non-deterministic race conditions e.g. when the "position" is changed
+                // by moving a Collection and then this save operation clobbers it back
+                // to the old value.
+                .save(pick(collection, ['id', 'productVariants']), {
+                    chunk: Math.ceil(collection.productVariants.length / 500),
+                    reload: false,
+                });
+        } catch (e) {
+            Logger.error(e);
+        }
 
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);

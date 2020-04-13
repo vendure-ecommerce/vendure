@@ -20,6 +20,7 @@ import { ChannelListComponent } from './components/channel-list/channel-list.com
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { JobListComponent } from './components/job-list/job-list.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
@@ -170,6 +171,13 @@ export const settingsRoutes: Route[] = [
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: _('breadcrumb.global-settings'),
+        },
+    },
+    {
+        path: 'jobs',
+        component: JobListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.job-queue'),
         },
     },
 ];

@@ -1,4 +1,4 @@
-import { Mutation, Query, ResolveProperty, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Permission, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
 
@@ -15,7 +15,7 @@ export class SearchResolver {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }
 
-    @ResolveProperty()
+    @ResolveField()
     async facetValues(...args: any[]): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         throw new InternalServerError(`error.no-search-plugin-configured`);
     }

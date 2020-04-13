@@ -1,28 +1,52 @@
 type Query {
-    job(jobId: String!): JobInfo
-    jobs(input: JobListInput): [JobInfo!]!
+    job(jobId: ID!): Job
+    jobs(options: JobListOptions): JobList!
+    jobsById(jobIds: [ID!]!): [Job!]!
+    jobQueues: [JobQueue!]!
 }
 
+type Mutation {
+    "Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted."
+    removeSettledJobs(queueNames: [String!], olderThan: DateTime): Int!
+}
+
+"""
+@description
+The state of a Job in the JobQueue
+
+@docsCategory common
+"""
 enum JobState {
     PENDING
     RUNNING
     COMPLETED
+    RETRYING
     FAILED
 }
 
-input JobListInput {
-    state: JobState
-    ids: [String!]
+input JobListOptions
+
+type JobList implements PaginatedList {
+    items: [Job!]!
+    totalItems: Int!
 }
 
-type JobInfo {
-    id: String!
-    name: String!
+type Job implements Node {
+    id: ID!
+    createdAt: DateTime!
+    startedAt: DateTime
+    settledAt: DateTime
+    queueName: String!
     state: JobState!
     progress: Float!
-    metadata: JSON
+    data: JSON
     result: JSON
-    started: DateTime
-    ended: DateTime
-    duration: Int
+    error: JSON
+    isSettled: Boolean!
+    duration: Int!
+}
+
+type JobQueue {
+    name: String!
+    running: Boolean!
 }

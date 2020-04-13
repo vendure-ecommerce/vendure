@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { AssetType, CreateAssetInput, UpdateAssetInput } from '@vendure/common/lib/generated-types';
+import {
+    AssetType,
+    CreateAssetInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateAssetInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
@@ -10,7 +16,7 @@ import { Stream } from 'stream';
 import { Connection, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, UserInputError } from '../../common/error/errors';
+import { InternalServerError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -18,6 +24,9 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
+import { Collection } from '../../entity/collection/collection.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -158,6 +167,30 @@ export class AssetService {
         return updatedAsset;
     }
 
+    async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
+        const asset = await getEntityOrThrow(this.connection, Asset, id);
+        const usages = await this.findAssetUsages(asset);
+        const hasUsages = !!(usages.products.length || usages.variants.length || usages.collections.length);
+        if (hasUsages && !force) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.asset-to-be-deleted-is-featured', {
+                    products: usages.products.length,
+                    variants: usages.variants.length,
+                    collections: usages.collections.length,
+                }),
+            };
+        }
+        // Create a new asset so that the id is still available
+        // after deletion (the .remove() method sets it to undefined)
+        const deletedAsset = new Asset(asset);
+        await this.connection.getRepository(Asset).remove(asset);
+        this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
+        return {
+            result: DeletionResult.DELETED,
+        };
+    }
+
     /**
      * Create an Asset from a file stream created during data import.
      */
@@ -180,7 +213,13 @@ export class AssetService {
 
         const sourceFileIdentifier = await assetStorageStrategy.writeFileFromStream(sourceFileName, stream);
         const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileIdentifier);
-        const preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+        let preview: Buffer;
+        try {
+            preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+        } catch (e) {
+            Logger.error(`Could not create Asset preview image: ${e.message}`);
+            throw e;
+        }
         const previewFileIdentifier = await assetStorageStrategy.writeFileFromBuffer(
             previewFileName,
             preview,
@@ -283,5 +322,31 @@ export class AssetService {
             default:
                 throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
+    }
+
+    /**
+     * Find the entities which reference the given Asset as a featuredAsset.
+     */
+    private async findAssetUsages(
+        asset: Asset,
+    ): Promise<{ products: Product[]; variants: ProductVariant[]; collections: Collection[] }> {
+        const products = await this.connection.getRepository(Product).find({
+            where: {
+                featuredAsset: asset,
+                deletedAt: null,
+            },
+        });
+        const variants = await this.connection.getRepository(ProductVariant).find({
+            where: {
+                featuredAsset: asset,
+                deletedAt: null,
+            },
+        });
+        const collections = await this.connection.getRepository(Collection).find({
+            where: {
+                featuredAsset: asset,
+            },
+        });
+        return { products, variants, collections };
     }
 }

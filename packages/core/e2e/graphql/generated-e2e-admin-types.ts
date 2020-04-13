@@ -1,5 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
+
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -7,14 +8,8 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
-    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
-     * `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
-     * 8601 standard for representation of dates and times using the Gregorian calendar.
-     */
     DateTime: any;
-    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
-    /** The `Upload` scalar type represents a file upload. */
     Upload: any;
 };
 
@@ -584,7 +579,8 @@ export type CreateZoneInput = {
     memberIds?: Maybe<Array<Scalars['ID']>>;
 };
 
-/** @description
+/**
+ * @description
  * ISO 4217 currency code
  *
  * @docsCategory common
@@ -984,7 +980,6 @@ export type CustomerSortParameter = {
 };
 
 export type CustomField = {
-    __typename?: 'CustomField';
     name: Scalars['String'];
     type: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
@@ -1030,7 +1025,8 @@ export type DateRange = {
     end: Scalars['DateTime'];
 };
 
-/** Expects the same validation formats as the <input type="datetime-local"> HTML element.
+/**
+ * Expects the same validation formats as the <input type="datetime-local"> HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
@@ -1132,7 +1128,8 @@ export type FacetValue = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-/** Which FacetValues are present in the products returned
+/**
+ * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
@@ -1265,32 +1262,78 @@ export type IntCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
-export type JobInfo = {
-    __typename?: 'JobInfo';
-    id: Scalars['String'];
-    name: Scalars['String'];
+export type Job = Node & {
+    __typename?: 'Job';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    startedAt?: Maybe<Scalars['DateTime']>;
+    settledAt?: Maybe<Scalars['DateTime']>;
+    queueName: Scalars['String'];
     state: JobState;
     progress: Scalars['Float'];
-    metadata?: Maybe<Scalars['JSON']>;
+    data?: Maybe<Scalars['JSON']>;
     result?: Maybe<Scalars['JSON']>;
-    started?: Maybe<Scalars['DateTime']>;
-    ended?: Maybe<Scalars['DateTime']>;
-    duration?: Maybe<Scalars['Int']>;
+    error?: Maybe<Scalars['JSON']>;
+    isSettled: Scalars['Boolean'];
+    duration: Scalars['Int'];
 };
 
-export type JobListInput = {
-    state?: Maybe<JobState>;
-    ids?: Maybe<Array<Scalars['String']>>;
+export type JobFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    startedAt?: Maybe<DateOperators>;
+    settledAt?: Maybe<DateOperators>;
+    queueName?: Maybe<StringOperators>;
+    state?: Maybe<StringOperators>;
+    progress?: Maybe<NumberOperators>;
+    isSettled?: Maybe<BooleanOperators>;
+    duration?: Maybe<NumberOperators>;
 };
 
+export type JobList = PaginatedList & {
+    __typename?: 'JobList';
+    items: Array<Job>;
+    totalItems: Scalars['Int'];
+};
+
+export type JobListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<JobSortParameter>;
+    filter?: Maybe<JobFilterParameter>;
+};
+
+export type JobQueue = {
+    __typename?: 'JobQueue';
+    name: Scalars['String'];
+    running: Scalars['Boolean'];
+};
+
+export type JobSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    startedAt?: Maybe<SortOrder>;
+    settledAt?: Maybe<SortOrder>;
+    queueName?: Maybe<SortOrder>;
+    progress?: Maybe<SortOrder>;
+    duration?: Maybe<SortOrder>;
+};
+
+/**
+ * @description
+ * The state of a Job in the JobQueue
+ *
+ * @docsCategory common
+ */
 export enum JobState {
     PENDING = 'PENDING',
     RUNNING = 'RUNNING',
     COMPLETED = 'COMPLETED',
+    RETRYING = 'RETRYING',
     FAILED = 'FAILED',
 }
 
-/** @description
+/**
+ * @description
  * ISO 639-1 language code
  *
  * @docsCategory common
@@ -1706,6 +1749,8 @@ export type Mutation = {
     createAssets: Array<Asset>;
     /** Update an existing Asset */
     updateAsset: Asset;
+    /** Delete an Asset */
+    deleteAsset: DeletionResponse;
     login: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -1762,6 +1807,8 @@ export type Mutation = {
     deleteFacetValues: Array<DeletionResponse>;
     updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
+    /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
+    removeSettledJobs: Scalars['Int'];
     settlePayment: Payment;
     fulfillOrder: Fulfillment;
     cancelOrder: Order;
@@ -1778,7 +1825,7 @@ export type Mutation = {
     createProductOption: ProductOption;
     /** Create a new ProductOption within a ProductOptionGroup */
     updateProductOption: ProductOption;
-    reindex: JobInfo;
+    reindex: Job;
     /** Create a new Product */
     createProduct: Product;
     /** Update an existing Product */
@@ -1857,6 +1904,11 @@ export type MutationCreateAssetsArgs = {
 
 export type MutationUpdateAssetArgs = {
     input: UpdateAssetInput;
+};
+
+export type MutationDeleteAssetArgs = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
 };
 
 export type MutationLoginArgs = {
@@ -1981,6 +2033,11 @@ export type MutationUpdateGlobalSettingsArgs = {
 
 export type MutationImportProductsArgs = {
     csvFile: Scalars['Upload'];
+};
+
+export type MutationRemoveSettledJobsArgs = {
+    queueNames?: Maybe<Array<Scalars['String']>>;
+    olderThan?: Maybe<Scalars['DateTime']>;
 };
 
 export type MutationSettlePaymentArgs = {
@@ -2152,7 +2209,6 @@ export type MutationRemoveMembersFromZoneArgs = {
 };
 
 export type Node = {
-    __typename?: 'Node';
     id: Scalars['ID'];
 };
 
@@ -2301,7 +2357,6 @@ export type OrderSortParameter = {
 };
 
 export type PaginatedList = {
-    __typename?: 'PaginatedList';
     items: Array<Node>;
     totalItems: Scalars['Int'];
 };
@@ -2357,7 +2412,8 @@ export type PaymentMethodSortParameter = {
     code?: Maybe<SortOrder>;
 };
 
-/** "
+/**
+ * "
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
@@ -2698,8 +2754,10 @@ export type Query = {
     facets: FacetList;
     facet?: Maybe<Facet>;
     globalSettings: GlobalSettings;
-    job?: Maybe<JobInfo>;
-    jobs: Array<JobInfo>;
+    job?: Maybe<Job>;
+    jobs: JobList;
+    jobsById: Array<Job>;
+    jobQueues: Array<JobQueue>;
     order?: Maybe<Order>;
     orders: OrderList;
     paymentMethods: PaymentMethodList;
@@ -2787,11 +2845,15 @@ export type QueryFacetArgs = {
 };
 
 export type QueryJobArgs = {
-    jobId: Scalars['String'];
+    jobId: Scalars['ID'];
 };
 
 export type QueryJobsArgs = {
-    input?: Maybe<JobListInput>;
+    options?: Maybe<JobListOptions>;
+};
+
+export type QueryJobsByIdArgs = {
+    jobIds: Array<Scalars['ID']>;
 };
 
 export type QueryOrderArgs = {
@@ -3004,10 +3066,12 @@ export type SearchResult = {
     slug: Scalars['String'];
     productId: Scalars['ID'];
     productName: Scalars['String'];
+    /** @deprecated Use `productAsset.preview` instead */
     productPreview: Scalars['String'];
     productAsset?: Maybe<SearchResultAsset>;
     productVariantId: Scalars['ID'];
     productVariantName: Scalars['String'];
+    /** @deprecated Use `productVariantAsset.preview` instead */
     productVariantPreview: Scalars['String'];
     productVariantAsset?: Maybe<SearchResultAsset>;
     price: SearchResultPrice;
@@ -3118,7 +3182,6 @@ export type StockAdjustment = Node &
     };
 
 export type StockMovement = {
-    __typename?: 'StockMovement';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3463,6 +3526,7 @@ export type Zone = Node & {
     name: Scalars['String'];
     members: Array<Country>;
 };
+
 export type GetAdministratorsQueryVariables = {
     options?: Maybe<AdministratorListOptions>;
 };
@@ -3478,7 +3542,7 @@ export type GetAdministratorQueryVariables = {
 };
 
 export type GetAdministratorQuery = { __typename?: 'Query' } & {
-    administrator: Maybe<{ __typename?: 'Administrator' } & AdministratorFragment>;
+    administrator?: Maybe<{ __typename?: 'Administrator' } & AdministratorFragment>;
 };
 
 export type UpdateAdministratorMutationVariables = {
@@ -3492,13 +3556,13 @@ export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
 export type Q1QueryVariables = {};
 
 export type Q1Query = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
 };
 
 export type Q2QueryVariables = {};
 
 export type Q2Query = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
 };
 
 export type GetAssetQueryVariables = {
@@ -3506,7 +3570,7 @@ export type GetAssetQueryVariables = {
 };
 
 export type GetAssetQuery = { __typename?: 'Query' } & {
-    asset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'width' | 'height'> & AssetFragment>;
+    asset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'width' | 'height'> & AssetFragment>;
 };
 
 export type CreateAssetsMutationVariables = {
@@ -3516,7 +3580,7 @@ export type CreateAssetsMutationVariables = {
 export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     createAssets: Array<
         { __typename?: 'Asset' } & {
-            focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+            focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
         } & AssetFragment
     >;
 };
@@ -3541,12 +3605,34 @@ export type GetChannelsQuery = { __typename?: 'Query' } & {
     channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
 };
 
+export type UpdateChannelMutationVariables = {
+    input: UpdateChannelInput;
+};
+
+export type UpdateChannelMutation = { __typename?: 'Mutation' } & {
+    updateChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'
+    >;
+};
+
 export type DeleteChannelMutationVariables = {
     id: Scalars['ID'];
 };
 
 export type DeleteChannelMutation = { __typename?: 'Mutation' } & {
     deleteChannel: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
+};
+
+export type UpdateGlobalSettingsMutationVariables = {
+    input: UpdateGlobalSettingsInput;
+};
+
+export type UpdateGlobalSettingsMutation = { __typename?: 'Mutation' } & {
+    updateGlobalSettings: { __typename?: 'GlobalSettings' } & Pick<
+        GlobalSettings,
+        'id' | 'availableLanguages'
+    >;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = {};
@@ -3576,7 +3662,7 @@ export type GetCollectionQueryVariables = {
 };
 
 export type GetCollectionQuery = { __typename?: 'Query' } & {
-    collection: Maybe<
+    collection?: Maybe<
         { __typename?: 'Collection' } & {
             productVariants: { __typename?: 'ProductVariantList' } & {
                 items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
@@ -3609,7 +3695,7 @@ export type GetCollectionsQuery = { __typename?: 'Query' } & {
     collections: { __typename?: 'CollectionList' } & {
         items: Array<
             { __typename?: 'Collection' } & Pick<Collection, 'id' | 'name' | 'position'> & {
-                    parent: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
+                    parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
                 }
         >;
     };
@@ -3620,7 +3706,7 @@ export type GetCollectionProductsQueryVariables = {
 };
 
 export type GetCollectionProductsQuery = { __typename?: 'Query' } & {
-    collection: Maybe<
+    collection?: Maybe<
         { __typename?: 'Collection' } & {
             productVariants: { __typename?: 'ProductVariantList' } & {
                 items: Array<
@@ -3651,7 +3737,7 @@ export type GetCollectionBreadcrumbsQueryVariables = {
 };
 
 export type GetCollectionBreadcrumbsQuery = { __typename?: 'Query' } & {
-    collection: Maybe<
+    collection?: Maybe<
         { __typename?: 'Collection' } & {
             breadcrumbs: Array<
                 { __typename?: 'CollectionBreadcrumb' } & Pick<CollectionBreadcrumb, 'id' | 'name'>
@@ -3687,7 +3773,7 @@ export type GetProductCollectionsQueryVariables = {
 };
 
 export type GetProductCollectionsQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & Pick<Product, 'id'> & {
                 collections: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
             }
@@ -3707,7 +3793,7 @@ export type GetCountryQueryVariables = {
 };
 
 export type GetCountryQuery = { __typename?: 'Query' } & {
-    country: Maybe<{ __typename?: 'Country' } & CountryFragment>;
+    country?: Maybe<{ __typename?: 'Country' } & CountryFragment>;
 };
 
 export type CreateCountryMutationVariables = {
@@ -3732,9 +3818,9 @@ export type GetCustomerWithUserQueryVariables = {
 };
 
 export type GetCustomerWithUserQuery = { __typename?: 'Query' } & {
-    customer: Maybe<
+    customer?: Maybe<
         { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                user: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified'>>;
+                user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified'>>;
             }
     >;
 };
@@ -3777,7 +3863,7 @@ export type GetCustomerOrdersQueryVariables = {
 };
 
 export type GetCustomerOrdersQuery = { __typename?: 'Query' } & {
-    customer: Maybe<
+    customer?: Maybe<
         { __typename?: 'Customer' } & {
             orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
                     items: Array<{ __typename?: 'Order' } & Pick<Order, 'id'>>;
@@ -3809,6 +3895,12 @@ export type DeleteCustomerMutationVariables = {
 
 export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
     deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type ReindexMutationVariables = {};
+
+export type ReindexMutation = { __typename?: 'Mutation' } & {
+    reindex: { __typename?: 'Job' } & Pick<Job, 'id'>;
 };
 
 export type SearchProductsAdminQueryVariables = {
@@ -3858,22 +3950,22 @@ export type SearchGetAssetsQuery = { __typename?: 'Query' } & {
                     SearchResult,
                     'productId' | 'productName' | 'productVariantName'
                 > & {
-                        productAsset: Maybe<
+                        productAsset?: Maybe<
                             { __typename?: 'SearchResultAsset' } & Pick<
                                 SearchResultAsset,
                                 'id' | 'preview'
                             > & {
-                                    focalPoint: Maybe<
+                                    focalPoint?: Maybe<
                                         { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
                                     >;
                                 }
                         >;
-                        productVariantAsset: Maybe<
+                        productVariantAsset?: Maybe<
                             { __typename?: 'SearchResultAsset' } & Pick<
                                 SearchResultAsset,
                                 'id' | 'preview'
                             > & {
-                                    focalPoint: Maybe<
+                                    focalPoint?: Maybe<
                                         { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
                                     >;
                                 }
@@ -3931,14 +4023,14 @@ export type IdTest2Query = { __typename?: 'Query' } & {
 export type IdTest3QueryVariables = {};
 
 export type IdTest3Query = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
 };
 
 export type IdTest4MutationVariables = {};
 
 export type IdTest4Mutation = { __typename?: 'Mutation' } & {
     updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+            featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
         };
 };
 
@@ -3953,7 +4045,7 @@ export type IdTest6QueryVariables = {
 };
 
 export type IdTest6Query = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
 };
 
 export type IdTest7MutationVariables = {
@@ -3962,7 +4054,7 @@ export type IdTest7MutationVariables = {
 
 export type IdTest7Mutation = { __typename?: 'Mutation' } & {
     updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+            featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
         };
 };
 
@@ -3983,7 +4075,7 @@ export type IdTest9Query = { __typename?: 'Query' } & {
 };
 
 export type ProdFragmentFragment = { __typename?: 'Product' } & Pick<Product, 'id'> & {
-        featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
+        featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
     };
 
 export type GetFacetWithValuesQueryVariables = {
@@ -3991,7 +4083,7 @@ export type GetFacetWithValuesQueryVariables = {
 };
 
 export type GetFacetWithValuesQuery = { __typename?: 'Query' } & {
-    facet: Maybe<{ __typename?: 'Facet' } & FacetWithValuesFragment>;
+    facet?: Maybe<{ __typename?: 'Facet' } & FacetWithValuesFragment>;
 };
 
 export type DeleteFacetValuesMutationVariables = {
@@ -4084,7 +4176,7 @@ export type ProductVariantFragment = { __typename?: 'ProductVariant' } & Pick<
                     facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
                 }
         >;
-        featuredAsset: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
+        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
         assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
         translations: Array<
             { __typename?: 'ProductVariantTranslation' } & Pick<
@@ -4098,7 +4190,7 @@ export type ProductWithVariantsFragment = { __typename?: 'Product' } & Pick<
     Product,
     'id' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'
 > & {
-        featuredAsset: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
+        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
         assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
         translations: Array<
             { __typename?: 'ProductTranslation' } & Pick<
@@ -4135,7 +4227,7 @@ export type CollectionFragment = { __typename?: 'Collection' } & Pick<
     Collection,
     'id' | 'name' | 'description' | 'isPrivate' | 'languageCode'
 > & {
-        featuredAsset: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
+        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
         assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
         filters: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
         translations: Array<
@@ -4144,8 +4236,8 @@ export type CollectionFragment = { __typename?: 'Collection' } & Pick<
                 'id' | 'languageCode' | 'name' | 'description'
             >
         >;
-        parent: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-        children: Maybe<Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>>;
+        parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
+        children?: Maybe<Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>>;
     };
 
 export type FacetValueFragment = { __typename?: 'FacetValue' } & Pick<
@@ -4199,8 +4291,8 @@ export type CustomerFragment = { __typename?: 'Customer' } & Pick<
     Customer,
     'id' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'
 > & {
-        user: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>>;
-        addresses: Maybe<Array<{ __typename?: 'Address' } & AddressFragment>>;
+        user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>>;
+        addresses?: Maybe<Array<{ __typename?: 'Address' } & AddressFragment>>;
     };
 
 export type AdjustmentFragment = { __typename?: 'Adjustment' } & Pick<
@@ -4224,12 +4316,12 @@ export type ShippingAddressFragment = { __typename?: 'OrderAddress' } & Pick<
 export type OrderFragment = { __typename?: 'Order' } & Pick<
     Order,
     'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'
-> & { customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>> };
+> & { customer?: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>> };
 
 export type OrderItemFragment = { __typename?: 'OrderItem' } & Pick<
     OrderItem,
     'id' | 'cancelled' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'
-> & { fulfillment: Maybe<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'>> };
+> & { fulfillment?: Maybe<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'>> };
 
 export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
     Order,
@@ -4246,13 +4338,13 @@ export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
     | 'shipping'
     | 'total'
 > & {
-        customer: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>>;
+        customer?: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>>;
         lines: Array<
             { __typename?: 'OrderLine' } & Pick<
                 OrderLine,
                 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'
             > & {
-                    featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'preview'>>;
+                    featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'preview'>>;
                     productVariant: { __typename?: 'ProductVariant' } & Pick<
                         ProductVariant,
                         'id' | 'name' | 'sku'
@@ -4261,11 +4353,11 @@ export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
                 }
         >;
         adjustments: Array<{ __typename?: 'Adjustment' } & AdjustmentFragment>;
-        shippingMethod: Maybe<
+        shippingMethod?: Maybe<
             { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
         >;
-        shippingAddress: Maybe<{ __typename?: 'OrderAddress' } & ShippingAddressFragment>;
-        payments: Maybe<
+        shippingAddress?: Maybe<{ __typename?: 'OrderAddress' } & ShippingAddressFragment>;
+        payments?: Maybe<
             Array<
                 { __typename?: 'Payment' } & Pick<
                     Payment,
@@ -4293,7 +4385,7 @@ export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
 > & {
         category: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
         zone: { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>;
-        customerGroup: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+        customerGroup?: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
     };
 
 export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & {
@@ -4308,10 +4400,10 @@ export type VariantWithStockFragment = { __typename?: 'ProductVariant' } & Pick<
 > & {
         stockMovements: { __typename?: 'StockMovementList' } & Pick<StockMovementList, 'totalItems'> & {
                 items: Array<
-                    { __typename?: 'StockAdjustment' | 'Sale' | 'Cancellation' | 'Return' } & Pick<
-                        StockMovement,
-                        'id' | 'type' | 'quantity'
-                    >
+                    | ({ __typename?: 'StockAdjustment' } & Pick<StockAdjustment, 'id' | 'type' | 'quantity'>)
+                    | ({ __typename?: 'Sale' } & Pick<Sale, 'id' | 'type' | 'quantity'>)
+                    | ({ __typename?: 'Cancellation' } & Pick<Cancellation, 'id' | 'type' | 'quantity'>)
+                    | ({ __typename?: 'Return' } & Pick<Return, 'id' | 'type' | 'quantity'>)
                 >;
             };
     };
@@ -4346,7 +4438,7 @@ export type GetProductWithVariantsQueryVariables = {
 };
 
 export type GetProductWithVariantsQuery = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+    product?: Maybe<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
 };
 
 export type GetProductListQueryVariables = {
@@ -4357,7 +4449,7 @@ export type GetProductListQuery = { __typename?: 'Query' } & {
     products: { __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & {
             items: Array<
                 { __typename?: 'Product' } & Pick<Product, 'id' | 'languageCode' | 'name' | 'slug'> & {
-                        featuredAsset: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>>;
+                        featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>>;
                     }
             >;
         };
@@ -4413,7 +4505,7 @@ export type GetCustomerListQuery = { __typename?: 'Query' } & {
                 { __typename?: 'Customer' } & Pick<
                     Customer,
                     'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
-                > & { user: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'verified'>> }
+                > & { user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'verified'>> }
             >;
         };
 };
@@ -4458,7 +4550,7 @@ export type GetCustomerQueryVariables = {
 };
 
 export type GetCustomerQuery = { __typename?: 'Query' } & {
-    customer: Maybe<
+    customer?: Maybe<
         { __typename?: 'Customer' } & {
             orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
                     items: Array<
@@ -4524,7 +4616,7 @@ export type GetProductSimpleQueryVariables = {
 };
 
 export type GetProductSimpleQuery = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'slug'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'slug'>>;
 };
 
 export type GetStockMovementQueryVariables = {
@@ -4532,17 +4624,23 @@ export type GetStockMovementQueryVariables = {
 };
 
 export type GetStockMovementQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & Pick<Product, 'id'> & {
                 variants: Array<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>;
             }
     >;
 };
 
-export type GetRunningJobsQueryVariables = {};
+export type GetRunningJobsQueryVariables = {
+    options?: Maybe<JobListOptions>;
+};
 
 export type GetRunningJobsQuery = { __typename?: 'Query' } & {
-    jobs: Array<{ __typename?: 'JobInfo' } & Pick<JobInfo, 'name' | 'state'>>;
+    jobs: { __typename?: 'JobList' } & Pick<JobList, 'totalItems'> & {
+            items: Array<
+                { __typename?: 'Job' } & Pick<Job, 'id' | 'queueName' | 'state' | 'isSettled' | 'duration'>
+            >;
+        };
 };
 
 export type CreatePromotionMutationVariables = {
@@ -4556,7 +4654,7 @@ export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
 export type MeQueryVariables = {};
 
 export type MeQuery = { __typename?: 'Query' } & {
-    me: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
+    me?: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
 };
 
 export type CreateChannelMutationVariables = {
@@ -4568,8 +4666,8 @@ export type CreateChannelMutation = { __typename?: 'Mutation' } & {
         Channel,
         'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
     > & {
-            defaultShippingZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
-            defaultTaxZone: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+            defaultShippingZone?: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
+            defaultTaxZone?: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
         };
 };
 
@@ -4603,8 +4701,17 @@ export type UpdateAssetMutationVariables = {
 
 export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
     updateAsset: { __typename?: 'Asset' } & {
-        focalPoint: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+        focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
     } & AssetFragment;
+};
+
+export type DeleteAssetMutationVariables = {
+    id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
+    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type UpdateOptionGroupMutationVariables = {
@@ -4657,7 +4764,7 @@ export type GetOrderQueryVariables = {
 };
 
 export type GetOrderQuery = { __typename?: 'Query' } & {
-    order: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
+    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
 export type SettlePaymentMutationVariables = {
@@ -4683,9 +4790,9 @@ export type GetOrderFulfillmentsQueryVariables = {
 };
 
 export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
-    order: Maybe<
+    order?: Maybe<
         { __typename?: 'Order' } & Pick<Order, 'id'> & {
-                fulfillments: Maybe<
+                fulfillments?: Maybe<
                     Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
                 >;
             }
@@ -4698,7 +4805,7 @@ export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & {
         items: Array<
             { __typename?: 'Order' } & Pick<Order, 'id'> & {
-                    fulfillments: Maybe<
+                    fulfillments?: Maybe<
                         Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
                     >;
                 }
@@ -4711,9 +4818,9 @@ export type GetOrderFulfillmentItemsQueryVariables = {
 };
 
 export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
-    order: Maybe<
+    order?: Maybe<
         { __typename?: 'Order' } & Pick<Order, 'id'> & {
-                fulfillments: Maybe<
+                fulfillments?: Maybe<
                     Array<
                         { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'> & {
                                 orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
@@ -4766,12 +4873,12 @@ export type GetOrderHistoryQueryVariables = {
 };
 
 export type GetOrderHistoryQuery = { __typename?: 'Query' } & {
-    order: Maybe<
+    order?: Maybe<
         { __typename?: 'Order' } & Pick<Order, 'id'> & {
                 history: { __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & {
                         items: Array<
                             { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                                    administrator: Maybe<
+                                    administrator?: Maybe<
                                         { __typename?: 'Administrator' } & Pick<Administrator, 'id'>
                                     >;
                                 }
@@ -4882,7 +4989,7 @@ export type GetOptionGroupQueryVariables = {
 };
 
 export type GetOptionGroupQuery = { __typename?: 'Query' } & {
-    productOptionGroup: Maybe<
+    productOptionGroup?: Maybe<
         { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & {
                 options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
             }
@@ -4912,7 +5019,7 @@ export type GetPromotionQueryVariables = {
 };
 
 export type GetPromotionQuery = { __typename?: 'Query' } & {
-    promotion: Maybe<{ __typename?: 'Promotion' } & PromotionFragment>;
+    promotion?: Maybe<{ __typename?: 'Promotion' } & PromotionFragment>;
 };
 
 export type UpdatePromotionMutationVariables = {
@@ -4957,7 +5064,9 @@ export type GetRoleQueryVariables = {
     id: Scalars['ID'];
 };
 
-export type GetRoleQuery = { __typename?: 'Query' } & { role: Maybe<{ __typename?: 'Role' } & RoleFragment> };
+export type GetRoleQuery = { __typename?: 'Query' } & {
+    role?: Maybe<{ __typename?: 'Role' } & RoleFragment>;
+};
 
 export type UpdateRoleMutationVariables = {
     input: UpdateRoleInput;
@@ -4996,7 +5105,7 @@ export type GetShippingMethodQueryVariables = {
 };
 
 export type GetShippingMethodQuery = { __typename?: 'Query' } & {
-    shippingMethod: Maybe<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
+    shippingMethod?: Maybe<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
 };
 
 export type CreateShippingMethodMutationVariables = {
@@ -5068,7 +5177,7 @@ export type TestShippingMethodQuery = { __typename?: 'Query' } & {
         TestShippingMethodResult,
         'eligible'
     > & {
-            quote: Maybe<
+            quote?: Maybe<
                 { __typename?: 'TestShippingMethodQuote' } & Pick<
                     TestShippingMethodQuote,
                     'price' | 'priceWithTax' | 'metadata'
@@ -5093,7 +5202,7 @@ export type TestEligibleMethodsQuery = { __typename?: 'Query' } & {
 export type GetMeQueryVariables = {};
 
 export type GetMeQuery = { __typename?: 'Query' } & {
-    me: Maybe<{ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'identifier'>>;
+    me?: Maybe<{ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'identifier'>>;
 };
 
 export type GetProductsTake3QueryVariables = {};
@@ -5107,13 +5216,13 @@ export type GetProductsTake3Query = { __typename?: 'Query' } & {
 export type GetProduct1QueryVariables = {};
 
 export type GetProduct1Query = { __typename?: 'Query' } & {
-    product: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
+    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
 };
 
 export type GetProduct2VariantsQueryVariables = {};
 
 export type GetProduct2VariantsQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & Pick<Product, 'id'> & {
                 variants: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
             }
@@ -5123,7 +5232,7 @@ export type GetProduct2VariantsQuery = { __typename?: 'Query' } & {
 export type GetProductCollectionQueryVariables = {};
 
 export type GetProductCollectionQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & {
             collections: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
         }
@@ -5143,7 +5252,7 @@ export type GetCollectionVariantsQueryVariables = {
 };
 
 export type GetCollectionVariantsQuery = { __typename?: 'Query' } & {
-    collection: Maybe<
+    collection?: Maybe<
         { __typename?: 'Collection' } & {
             productVariants: { __typename?: 'ProductVariantList' } & {
                 items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
@@ -5165,7 +5274,7 @@ export type GetProductFacetValuesQueryVariables = {
 };
 
 export type GetProductFacetValuesQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
                 facetValues: Array<{ __typename?: 'FacetValue' } & Pick<FacetValue, 'name'>>;
             }
@@ -5177,7 +5286,7 @@ export type GetVariantFacetValuesQueryVariables = {
 };
 
 export type GetVariantFacetValuesQuery = { __typename?: 'Query' } & {
-    product: Maybe<
+    product?: Maybe<
         { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
                 variants: Array<
                     { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'> & {
@@ -5215,7 +5324,7 @@ export type GetTaxCategoryQueryVariables = {
 };
 
 export type GetTaxCategoryQuery = { __typename?: 'Query' } & {
-    taxCategory: Maybe<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
+    taxCategory?: Maybe<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
 };
 
 export type CreateTaxCategoryMutationVariables = {
@@ -5255,7 +5364,7 @@ export type GetTaxRateQueryVariables = {
 };
 
 export type GetTaxRateQuery = { __typename?: 'Query' } & {
-    taxRate: Maybe<{ __typename?: 'TaxRate' } & TaxRateFragment>;
+    taxRate?: Maybe<{ __typename?: 'TaxRate' } & TaxRateFragment>;
 };
 
 export type CreateTaxRateMutationVariables = {
@@ -5292,7 +5401,9 @@ export type GetZoneQueryVariables = {
     id: Scalars['ID'];
 };
 
-export type GetZoneQuery = { __typename?: 'Query' } & { zone: Maybe<{ __typename?: 'Zone' } & ZoneFragment> };
+export type GetZoneQuery = { __typename?: 'Query' } & {
+    zone?: Maybe<{ __typename?: 'Zone' } & ZoneFragment>;
+};
 
 export type CreateZoneMutationVariables = {
     input: CreateZoneInput;
@@ -5327,6 +5438,7 @@ export type RemoveMembersFromZoneMutationVariables = {
 export type RemoveMembersFromZoneMutation = { __typename?: 'Mutation' } & {
     removeMembersFromZone: { __typename?: 'Zone' } & ZoneFragment;
 };
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -5372,9 +5484,7 @@ export namespace CreateAssets {
     export type Variables = CreateAssetsMutationVariables;
     export type Mutation = CreateAssetsMutation;
     export type CreateAssets = AssetFragment;
-    export type FocalPoint = NonNullable<
-        (NonNullable<CreateAssetsMutation['createAssets'][0]>)['focalPoint']
-    >;
+    export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
 }
 
 export namespace CanCreateCustomer {
@@ -5395,10 +5505,22 @@ export namespace GetChannels {
     export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
 }
 
+export namespace UpdateChannel {
+    export type Variables = UpdateChannelMutationVariables;
+    export type Mutation = UpdateChannelMutation;
+    export type UpdateChannel = UpdateChannelMutation['updateChannel'];
+}
+
 export namespace DeleteChannel {
     export type Variables = DeleteChannelMutationVariables;
     export type Mutation = DeleteChannelMutation;
     export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
+}
+
+export namespace UpdateGlobalSettings {
+    export type Variables = UpdateGlobalSettingsMutationVariables;
+    export type Mutation = UpdateGlobalSettingsMutation;
+    export type UpdateGlobalSettings = UpdateGlobalSettingsMutation['updateGlobalSettings'];
 }
 
 export namespace GetCollectionsWithAssets {
@@ -5407,7 +5529,7 @@ export namespace GetCollectionsWithAssets {
     export type Collections = GetCollectionsWithAssetsQuery['collections'];
     export type Items = NonNullable<GetCollectionsWithAssetsQuery['collections']['items'][0]>;
     export type Assets = NonNullable<
-        (NonNullable<GetCollectionsWithAssetsQuery['collections']['items'][0]>)['assets'][0]
+        NonNullable<GetCollectionsWithAssetsQuery['collections']['items'][0]>['assets'][0]
     >;
 }
 
@@ -5417,7 +5539,7 @@ export namespace GetProductsWithVariantIds {
     export type Products = GetProductsWithVariantIdsQuery['products'];
     export type Items = NonNullable<GetProductsWithVariantIdsQuery['products']['items'][0]>;
     export type Variants = NonNullable<
-        (NonNullable<GetProductsWithVariantIdsQuery['products']['items'][0]>)['variants'][0]
+        NonNullable<GetProductsWithVariantIdsQuery['products']['items'][0]>['variants'][0]
     >;
 }
 
@@ -5425,9 +5547,9 @@ export namespace GetCollection {
     export type Variables = GetCollectionQueryVariables;
     export type Query = GetCollectionQuery;
     export type Collection = CollectionFragment;
-    export type ProductVariants = (NonNullable<GetCollectionQuery['collection']>)['productVariants'];
+    export type ProductVariants = NonNullable<GetCollectionQuery['collection']>['productVariants'];
     export type Items = NonNullable<
-        (NonNullable<GetCollectionQuery['collection']>)['productVariants']['items'][0]
+        NonNullable<GetCollectionQuery['collection']>['productVariants']['items'][0]
     >;
 }
 
@@ -5450,21 +5572,21 @@ export namespace GetCollections {
     export type Query = GetCollectionsQuery;
     export type Collections = GetCollectionsQuery['collections'];
     export type Items = NonNullable<GetCollectionsQuery['collections']['items'][0]>;
-    export type Parent = NonNullable<(NonNullable<GetCollectionsQuery['collections']['items'][0]>)['parent']>;
+    export type Parent = NonNullable<NonNullable<GetCollectionsQuery['collections']['items'][0]>['parent']>;
 }
 
 export namespace GetCollectionProducts {
     export type Variables = GetCollectionProductsQueryVariables;
     export type Query = GetCollectionProductsQuery;
     export type Collection = NonNullable<GetCollectionProductsQuery['collection']>;
-    export type ProductVariants = (NonNullable<GetCollectionProductsQuery['collection']>)['productVariants'];
+    export type ProductVariants = NonNullable<GetCollectionProductsQuery['collection']>['productVariants'];
     export type Items = NonNullable<
-        (NonNullable<GetCollectionProductsQuery['collection']>)['productVariants']['items'][0]
+        NonNullable<GetCollectionProductsQuery['collection']>['productVariants']['items'][0]
     >;
     export type FacetValues = NonNullable<
-        (NonNullable<
-            (NonNullable<GetCollectionProductsQuery['collection']>)['productVariants']['items'][0]
-        >)['facetValues'][0]
+        NonNullable<
+            NonNullable<GetCollectionProductsQuery['collection']>['productVariants']['items'][0]
+        >['facetValues'][0]
     >;
 }
 
@@ -5483,7 +5605,7 @@ export namespace GetCollectionBreadcrumbs {
     export type Query = GetCollectionBreadcrumbsQuery;
     export type Collection = NonNullable<GetCollectionBreadcrumbsQuery['collection']>;
     export type Breadcrumbs = NonNullable<
-        (NonNullable<GetCollectionBreadcrumbsQuery['collection']>)['breadcrumbs'][0]
+        NonNullable<GetCollectionBreadcrumbsQuery['collection']>['breadcrumbs'][0]
     >;
 }
 
@@ -5493,7 +5615,7 @@ export namespace GetCollectionsForProducts {
     export type Products = GetCollectionsForProductsQuery['products'];
     export type Items = NonNullable<GetCollectionsForProductsQuery['products']['items'][0]>;
     export type Collections = NonNullable<
-        (NonNullable<GetCollectionsForProductsQuery['products']['items'][0]>)['collections'][0]
+        NonNullable<GetCollectionsForProductsQuery['products']['items'][0]>['collections'][0]
     >;
 }
 
@@ -5508,7 +5630,7 @@ export namespace GetProductCollections {
     export type Query = GetProductCollectionsQuery;
     export type Product = NonNullable<GetProductCollectionsQuery['product']>;
     export type Collections = NonNullable<
-        (NonNullable<GetProductCollectionsQuery['product']>)['collections'][0]
+        NonNullable<GetProductCollectionsQuery['product']>['collections'][0]
     >;
 }
 
@@ -5539,7 +5661,7 @@ export namespace GetCustomerWithUser {
     export type Variables = GetCustomerWithUserQueryVariables;
     export type Query = GetCustomerWithUserQuery;
     export type Customer = NonNullable<GetCustomerWithUserQuery['customer']>;
-    export type User = NonNullable<(NonNullable<GetCustomerWithUserQuery['customer']>)['user']>;
+    export type User = NonNullable<NonNullable<GetCustomerWithUserQuery['customer']>['user']>;
 }
 
 export namespace CreateAddress {
@@ -5560,8 +5682,8 @@ export namespace GetCustomerOrders {
     export type Variables = GetCustomerOrdersQueryVariables;
     export type Query = GetCustomerOrdersQuery;
     export type Customer = NonNullable<GetCustomerOrdersQuery['customer']>;
-    export type Orders = (NonNullable<GetCustomerOrdersQuery['customer']>)['orders'];
-    export type Items = NonNullable<(NonNullable<GetCustomerOrdersQuery['customer']>)['orders']['items'][0]>;
+    export type Orders = NonNullable<GetCustomerOrdersQuery['customer']>['orders'];
+    export type Items = NonNullable<NonNullable<GetCustomerOrdersQuery['customer']>['orders']['items'][0]>;
 }
 
 export namespace CreateCustomer {
@@ -5582,6 +5704,12 @@ export namespace DeleteCustomer {
     export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
 }
 
+export namespace Reindex {
+    export type Variables = ReindexMutationVariables;
+    export type Mutation = ReindexMutation;
+    export type Reindex = ReindexMutation['reindex'];
+}
+
 export namespace SearchProductsAdmin {
     export type Variables = SearchProductsAdminQueryVariables;
     export type Query = SearchProductsAdminQuery;
@@ -5594,7 +5722,7 @@ export namespace SearchFacetValues {
     export type Query = SearchFacetValuesQuery;
     export type Search = SearchFacetValuesQuery['search'];
     export type FacetValues = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>;
-    export type FacetValue = (NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>)['facetValue'];
+    export type FacetValue = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>['facetValue'];
 }
 
 export namespace SearchGetAssets {
@@ -5603,18 +5731,18 @@ export namespace SearchGetAssets {
     export type Search = SearchGetAssetsQuery['search'];
     export type Items = NonNullable<SearchGetAssetsQuery['search']['items'][0]>;
     export type ProductAsset = NonNullable<
-        (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productAsset']
+        NonNullable<SearchGetAssetsQuery['search']['items'][0]>['productAsset']
     >;
     export type FocalPoint = NonNullable<
-        (NonNullable<(NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productAsset']>)['focalPoint']
+        NonNullable<NonNullable<SearchGetAssetsQuery['search']['items'][0]>['productAsset']>['focalPoint']
     >;
     export type ProductVariantAsset = NonNullable<
-        (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productVariantAsset']
+        NonNullable<SearchGetAssetsQuery['search']['items'][0]>['productVariantAsset']
     >;
     export type _FocalPoint = NonNullable<
-        (NonNullable<
-            (NonNullable<SearchGetAssetsQuery['search']['items'][0]>)['productVariantAsset']
-        >)['focalPoint']
+        NonNullable<
+            NonNullable<SearchGetAssetsQuery['search']['items'][0]>['productVariantAsset']
+        >['focalPoint']
     >;
 }
 
@@ -5623,22 +5751,22 @@ export namespace SearchGetPrices {
     export type Query = SearchGetPricesQuery;
     export type Search = SearchGetPricesQuery['search'];
     export type Items = NonNullable<SearchGetPricesQuery['search']['items'][0]>;
-    export type Price = (NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'];
+    export type Price = NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'];
     export type PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
         { __typename: 'PriceRange' }
     >;
     export type SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['price'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
         { __typename: 'SinglePrice' }
     >;
-    export type PriceWithTax = (NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'];
+    export type PriceWithTax = NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'];
     export type _PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
         { __typename: 'PriceRange' }
     >;
     export type _SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<(NonNullable<SearchGetPricesQuery['search']['items'][0]>)['priceWithTax'], '__typename'>,
+        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
         { __typename: 'SinglePrice' }
     >;
 }
@@ -5655,9 +5783,9 @@ export namespace IdTest2 {
     export type Query = IdTest2Query;
     export type Products = IdTest2Query['products'];
     export type Items = NonNullable<IdTest2Query['products']['items'][0]>;
-    export type Variants = NonNullable<(NonNullable<IdTest2Query['products']['items'][0]>)['variants'][0]>;
+    export type Variants = NonNullable<NonNullable<IdTest2Query['products']['items'][0]>['variants'][0]>;
     export type Options = NonNullable<
-        (NonNullable<(NonNullable<IdTest2Query['products']['items'][0]>)['variants'][0]>)['options'][0]
+        NonNullable<NonNullable<IdTest2Query['products']['items'][0]>['variants'][0]>['options'][0]
     >;
 }
 
@@ -5735,7 +5863,7 @@ export namespace GetProductListWithVariants {
     export type Products = GetProductListWithVariantsQuery['products'];
     export type Items = NonNullable<GetProductListWithVariantsQuery['products']['items'][0]>;
     export type Variants = NonNullable<
-        (NonNullable<GetProductListWithVariantsQuery['products']['items'][0]>)['variants'][0]
+        NonNullable<GetProductListWithVariantsQuery['products']['items'][0]>['variants'][0]
     >;
 }
 
@@ -5767,7 +5895,7 @@ export namespace ProductVariant {
     export type TaxCategory = ProductVariantFragment['taxCategory'];
     export type Options = NonNullable<ProductVariantFragment['options'][0]>;
     export type FacetValues = NonNullable<ProductVariantFragment['facetValues'][0]>;
-    export type Facet = (NonNullable<ProductVariantFragment['facetValues'][0]>)['facet'];
+    export type Facet = NonNullable<ProductVariantFragment['facetValues'][0]>['facet'];
     export type FeaturedAsset = AssetFragment;
     export type Assets = AssetFragment;
     export type Translations = NonNullable<ProductVariantFragment['translations'][0]>;
@@ -5781,7 +5909,7 @@ export namespace ProductWithVariants {
     export type OptionGroups = NonNullable<ProductWithVariantsFragment['optionGroups'][0]>;
     export type Variants = ProductVariantFragment;
     export type FacetValues = NonNullable<ProductWithVariantsFragment['facetValues'][0]>;
-    export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
+    export type Facet = NonNullable<ProductWithVariantsFragment['facetValues'][0]>['facet'];
     export type Channels = NonNullable<ProductWithVariantsFragment['channels'][0]>;
 }
 
@@ -5802,7 +5930,7 @@ export namespace Collection {
     export type Filters = ConfigurableOperationFragment;
     export type Translations = NonNullable<CollectionFragment['translations'][0]>;
     export type Parent = NonNullable<CollectionFragment['parent']>;
-    export type Children = NonNullable<(NonNullable<CollectionFragment['children']>)[0]>;
+    export type Children = NonNullable<NonNullable<CollectionFragment['children']>[0]>;
 }
 
 export namespace FacetValue {
@@ -5855,15 +5983,13 @@ export namespace OrderWithLines {
     export type Fragment = OrderWithLinesFragment;
     export type Customer = NonNullable<OrderWithLinesFragment['customer']>;
     export type Lines = NonNullable<OrderWithLinesFragment['lines'][0]>;
-    export type FeaturedAsset = NonNullable<
-        (NonNullable<OrderWithLinesFragment['lines'][0]>)['featuredAsset']
-    >;
-    export type ProductVariant = (NonNullable<OrderWithLinesFragment['lines'][0]>)['productVariant'];
+    export type FeaturedAsset = NonNullable<NonNullable<OrderWithLinesFragment['lines'][0]>['featuredAsset']>;
+    export type ProductVariant = NonNullable<OrderWithLinesFragment['lines'][0]>['productVariant'];
     export type Items = OrderItemFragment;
     export type Adjustments = AdjustmentFragment;
     export type ShippingMethod = NonNullable<OrderWithLinesFragment['shippingMethod']>;
     export type ShippingAddress = ShippingAddressFragment;
-    export type Payments = NonNullable<(NonNullable<OrderWithLinesFragment['payments']>)[0]>;
+    export type Payments = NonNullable<NonNullable<OrderWithLinesFragment['payments']>[0]>;
 }
 
 export namespace Promotion {
@@ -5929,7 +6055,7 @@ export namespace GetProductList {
     export type Products = GetProductListQuery['products'];
     export type Items = NonNullable<GetProductListQuery['products']['items'][0]>;
     export type FeaturedAsset = NonNullable<
-        (NonNullable<GetProductListQuery['products']['items'][0]>)['featuredAsset']
+        NonNullable<GetProductListQuery['products']['items'][0]>['featuredAsset']
     >;
 }
 
@@ -5968,7 +6094,7 @@ export namespace GetCustomerList {
     export type Query = GetCustomerListQuery;
     export type Customers = GetCustomerListQuery['customers'];
     export type Items = NonNullable<GetCustomerListQuery['customers']['items'][0]>;
-    export type User = NonNullable<(NonNullable<GetCustomerListQuery['customers']['items'][0]>)['user']>;
+    export type User = NonNullable<NonNullable<GetCustomerListQuery['customers']['items'][0]>['user']>;
 }
 
 export namespace GetAssetList {
@@ -6000,8 +6126,8 @@ export namespace GetCustomer {
     export type Variables = GetCustomerQueryVariables;
     export type Query = GetCustomerQuery;
     export type Customer = CustomerFragment;
-    export type Orders = (NonNullable<GetCustomerQuery['customer']>)['orders'];
-    export type Items = NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']['items'][0]>;
+    export type Orders = NonNullable<GetCustomerQuery['customer']>['orders'];
+    export type Items = NonNullable<NonNullable<GetCustomerQuery['customer']>['orders']['items'][0]>;
 }
 
 export namespace AttemptLogin {
@@ -6053,7 +6179,8 @@ export namespace GetStockMovement {
 export namespace GetRunningJobs {
     export type Variables = GetRunningJobsQueryVariables;
     export type Query = GetRunningJobsQuery;
-    export type Jobs = NonNullable<GetRunningJobsQuery['jobs'][0]>;
+    export type Jobs = GetRunningJobsQuery['jobs'];
+    export type Items = NonNullable<GetRunningJobsQuery['jobs']['items'][0]>;
 }
 
 export namespace CreatePromotion {
@@ -6103,6 +6230,12 @@ export namespace UpdateAsset {
     export type FocalPoint = NonNullable<UpdateAssetMutation['updateAsset']['focalPoint']>;
 }
 
+export namespace DeleteAsset {
+    export type Variables = DeleteAssetMutationVariables;
+    export type Mutation = DeleteAssetMutation;
+    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -6121,12 +6254,12 @@ export namespace GetPromoProducts {
     export type Products = GetPromoProductsQuery['products'];
     export type Items = NonNullable<GetPromoProductsQuery['products']['items'][0]>;
     export type Variants = NonNullable<
-        (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
+        NonNullable<GetPromoProductsQuery['products']['items'][0]>['variants'][0]
     >;
     export type FacetValues = NonNullable<
-        (NonNullable<
-            (NonNullable<GetPromoProductsQuery['products']['items'][0]>)['variants'][0]
-        >)['facetValues'][0]
+        NonNullable<
+            NonNullable<GetPromoProductsQuery['products']['items'][0]>['variants'][0]
+        >['facetValues'][0]
     >;
 }
 
@@ -6161,7 +6294,7 @@ export namespace GetOrderFulfillments {
     export type Query = GetOrderFulfillmentsQuery;
     export type Order = NonNullable<GetOrderFulfillmentsQuery['order']>;
     export type Fulfillments = NonNullable<
-        (NonNullable<(NonNullable<GetOrderFulfillmentsQuery['order']>)['fulfillments']>)[0]
+        NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[0]
     >;
 }
 
@@ -6171,7 +6304,7 @@ export namespace GetOrderListFulfillments {
     export type Orders = GetOrderListFulfillmentsQuery['orders'];
     export type Items = NonNullable<GetOrderListFulfillmentsQuery['orders']['items'][0]>;
     export type Fulfillments = NonNullable<
-        (NonNullable<(NonNullable<GetOrderListFulfillmentsQuery['orders']['items'][0]>)['fulfillments']>)[0]
+        NonNullable<NonNullable<GetOrderListFulfillmentsQuery['orders']['items'][0]>['fulfillments']>[0]
     >;
 }
 
@@ -6180,12 +6313,12 @@ export namespace GetOrderFulfillmentItems {
     export type Query = GetOrderFulfillmentItemsQuery;
     export type Order = NonNullable<GetOrderFulfillmentItemsQuery['order']>;
     export type Fulfillments = NonNullable<
-        (NonNullable<(NonNullable<GetOrderFulfillmentItemsQuery['order']>)['fulfillments']>)[0]
+        NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[0]
     >;
     export type OrderItems = NonNullable<
-        (NonNullable<
-            (NonNullable<(NonNullable<GetOrderFulfillmentItemsQuery['order']>)['fulfillments']>)[0]
-        >)['orderItems'][0]
+        NonNullable<
+            NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[0]
+        >['orderItems'][0]
     >;
 }
 
@@ -6194,9 +6327,7 @@ export namespace CancelOrder {
     export type Mutation = CancelOrderMutation;
     export type CancelOrder = CancelOrderMutation['cancelOrder'];
     export type Lines = NonNullable<CancelOrderMutation['cancelOrder']['lines'][0]>;
-    export type Items = NonNullable<
-        (NonNullable<CancelOrderMutation['cancelOrder']['lines'][0]>)['items'][0]
-    >;
+    export type Items = NonNullable<NonNullable<CancelOrderMutation['cancelOrder']['lines'][0]>['items'][0]>;
 }
 
 export namespace RefundOrder {
@@ -6215,10 +6346,10 @@ export namespace GetOrderHistory {
     export type Variables = GetOrderHistoryQueryVariables;
     export type Query = GetOrderHistoryQuery;
     export type Order = NonNullable<GetOrderHistoryQuery['order']>;
-    export type History = (NonNullable<GetOrderHistoryQuery['order']>)['history'];
-    export type Items = NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>;
+    export type History = NonNullable<GetOrderHistoryQuery['order']>['history'];
+    export type Items = NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'][0]>;
     export type Administrator = NonNullable<
-        (NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>)['administrator']
+        NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']['items'][0]>['administrator']
     >;
 }
 
@@ -6269,9 +6400,9 @@ export namespace AddOptionGroupToProduct {
         AddOptionGroupToProductMutation['addOptionGroupToProduct']['optionGroups'][0]
     >;
     export type Options = NonNullable<
-        (NonNullable<
+        NonNullable<
             AddOptionGroupToProductMutation['addOptionGroupToProduct']['optionGroups'][0]
-        >)['options'][0]
+        >['options'][0]
     >;
 }
 
@@ -6283,9 +6414,9 @@ export namespace RemoveOptionGroupFromProduct {
         RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']['optionGroups'][0]
     >;
     export type Options = NonNullable<
-        (NonNullable<
+        NonNullable<
             RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']['optionGroups'][0]
-        >)['options'][0]
+        >['options'][0]
     >;
 }
 
@@ -6293,7 +6424,7 @@ export namespace GetOptionGroup {
     export type Variables = GetOptionGroupQueryVariables;
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
-    export type Options = NonNullable<(NonNullable<GetOptionGroupQuery['productOptionGroup']>)['options'][0]>;
+    export type Options = NonNullable<NonNullable<GetOptionGroupQuery['productOptionGroup']>['options'][0]>;
 }
 
 export namespace DeletePromotion {
@@ -6402,7 +6533,7 @@ export namespace GetEligibilityCheckers {
         GetEligibilityCheckersQuery['shippingEligibilityCheckers'][0]
     >;
     export type Args = NonNullable<
-        (NonNullable<GetEligibilityCheckersQuery['shippingEligibilityCheckers'][0]>)['args'][0]
+        NonNullable<GetEligibilityCheckersQuery['shippingEligibilityCheckers'][0]>['args'][0]
     >;
 }
 
@@ -6410,7 +6541,7 @@ export namespace GetCalculators {
     export type Variables = GetCalculatorsQueryVariables;
     export type Query = GetCalculatorsQuery;
     export type ShippingCalculators = NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>;
-    export type Args = NonNullable<(NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>)['args'][0]>;
+    export type Args = NonNullable<NonNullable<GetCalculatorsQuery['shippingCalculators'][0]>['args'][0]>;
 }
 
 export namespace TestShippingMethod {
@@ -6451,7 +6582,7 @@ export namespace GetProduct2Variants {
     export type Variables = GetProduct2VariantsQueryVariables;
     export type Query = GetProduct2VariantsQuery;
     export type Product = NonNullable<GetProduct2VariantsQuery['product']>;
-    export type Variants = NonNullable<(NonNullable<GetProduct2VariantsQuery['product']>)['variants'][0]>;
+    export type Variants = NonNullable<NonNullable<GetProduct2VariantsQuery['product']>['variants'][0]>;
 }
 
 export namespace GetProductCollection {
@@ -6459,7 +6590,7 @@ export namespace GetProductCollection {
     export type Query = GetProductCollectionQuery;
     export type Product = NonNullable<GetProductCollectionQuery['product']>;
     export type Collections = NonNullable<
-        (NonNullable<GetProductCollectionQuery['product']>)['collections'][0]
+        NonNullable<GetProductCollectionQuery['product']>['collections'][0]
     >;
 }
 
@@ -6473,9 +6604,9 @@ export namespace GetCollectionVariants {
     export type Variables = GetCollectionVariantsQueryVariables;
     export type Query = GetCollectionVariantsQuery;
     export type Collection = NonNullable<GetCollectionVariantsQuery['collection']>;
-    export type ProductVariants = (NonNullable<GetCollectionVariantsQuery['collection']>)['productVariants'];
+    export type ProductVariants = NonNullable<GetCollectionVariantsQuery['collection']>['productVariants'];
     export type Items = NonNullable<
-        (NonNullable<GetCollectionVariantsQuery['collection']>)['productVariants']['items'][0]
+        NonNullable<GetCollectionVariantsQuery['collection']>['productVariants']['items'][0]
     >;
 }
 
@@ -6491,7 +6622,7 @@ export namespace GetProductFacetValues {
     export type Query = GetProductFacetValuesQuery;
     export type Product = NonNullable<GetProductFacetValuesQuery['product']>;
     export type FacetValues = NonNullable<
-        (NonNullable<GetProductFacetValuesQuery['product']>)['facetValues'][0]
+        NonNullable<GetProductFacetValuesQuery['product']>['facetValues'][0]
     >;
 }
 
@@ -6499,9 +6630,9 @@ export namespace GetVariantFacetValues {
     export type Variables = GetVariantFacetValuesQueryVariables;
     export type Query = GetVariantFacetValuesQuery;
     export type Product = NonNullable<GetVariantFacetValuesQuery['product']>;
-    export type Variants = NonNullable<(NonNullable<GetVariantFacetValuesQuery['product']>)['variants'][0]>;
+    export type Variants = NonNullable<NonNullable<GetVariantFacetValuesQuery['product']>['variants'][0]>;
     export type FacetValues = NonNullable<
-        (NonNullable<(NonNullable<GetVariantFacetValuesQuery['product']>)['variants'][0]>)['facetValues'][0]
+        NonNullable<NonNullable<GetVariantFacetValuesQuery['product']>['variants'][0]>['facetValues'][0]
     >;
 }
 

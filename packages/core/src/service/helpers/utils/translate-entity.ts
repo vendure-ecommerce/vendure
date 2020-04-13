@@ -4,6 +4,7 @@ import { DEFAULT_LANGUAGE_CODE } from '../../../common/constants';
 import { InternalServerError } from '../../../common/error/errors';
 import { UnwrappedArray } from '../../../common/types/common-types';
 import { Translatable, Translated, Translation } from '../../../common/types/locale-types';
+import { VendureEntity } from '../../../entity/base/base.entity';
 
 // prettier-ignore
 export type TranslatableRelationsKeys<T> = {
@@ -34,15 +35,20 @@ export type DeepTranslatableRelations<T> = Array<TranslatableRelationsKeys<T> | 
  * Converts a Translatable entity into the public-facing entity by unwrapping
  * the translated strings from the matching Translation entity.
  */
-export function translateEntity<T extends Translatable>(
+export function translateEntity<T extends Translatable & VendureEntity>(
     translatable: T,
     languageCode: LanguageCode,
 ): Translated<T> {
-    let translation: Translation<any> | undefined;
+    let translation: Translation<VendureEntity> | undefined;
     if (translatable.translations) {
         translation = translatable.translations.find(t => t.languageCode === languageCode);
         if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
             translation = translatable.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
+        }
+        if (!translation) {
+            // If we cannot find any suitable translation, just return the first one to at least
+            // prevent graphql errors when returning the entity.
+            translation = translatable.translations[0];
         }
     }
 
@@ -72,7 +78,7 @@ export function translateEntity<T extends Translatable>(
 /**
  * Translates an entity and its deeply-nested translatable properties. Supports up to 2 levels of nesting.
  */
-export function translateDeep<T extends Translatable>(
+export function translateDeep<T extends Translatable & VendureEntity>(
     translatable: T,
     languageCode: LanguageCode,
     translatableRelations: DeepTranslatableRelations<T> = [],
@@ -134,7 +140,7 @@ function translateLeaf(
     }
 }
 
-export type TreeNode = { children: TreeNode[] } & Translatable;
+export type TreeNode = { children: TreeNode[] } & Translatable & VendureEntity;
 
 /**
  * Translates a tree structure of Translatable entities
