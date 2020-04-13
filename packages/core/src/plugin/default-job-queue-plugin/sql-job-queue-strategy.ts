@@ -11,6 +11,13 @@ import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-
 
 import { JobRecord } from './job-record.entity';
 
+/**
+ * @description
+ * A {@link JobQueueStrategy} which uses the configured SQL database to persist jobs in the queue.
+ * This strategy is used by the {@link DefaultJobQueuePlugin}.
+ *
+ * @docsCategory JobQueue
+ */
 export class SqlJobQueueStrategy implements JobQueueStrategy {
     private connection: Connection | undefined;
     private listQueryBuilder: ListQueryBuilder;

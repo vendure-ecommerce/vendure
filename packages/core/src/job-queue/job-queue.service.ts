@@ -16,7 +16,41 @@ import { CreateQueueOptions, JobData } from './types';
  * The JobQueueService is used to create new {@link JobQueue} instances and access
  * existing jobs.
  *
- * @docsCateogory JobQueue
+ * @example
+ * ```TypeScript
+ * // A service which transcodes video files
+ * class VideoTranscoderService {
+ *
+ *   private jobQueue: JobQueue<{ videoId: string; }>;
+ *
+ *   onModuleInit() {
+ *     // The JobQueue is created on initialization
+ *     this.jobQueue = this.jobQueueService.createQueue({
+ *       name: 'transcode-video',
+ *       concurrency: 5,
+ *       process: async job => {
+ *         try {
+ *           const result = await this.transcodeVideo(job.data.videoId);
+ *           job.complete(result);
+ *         } catch (e) {
+ *           job.fail(e);
+ *         }
+ *       },
+ *     });
+ *   }
+ *
+ *   addToTranscodeQueue(videoId: string) {
+ *     this.jobQueue.add({ videoId, })
+ *   }
+ *
+ *   private transcodeVideo(videoId: string) {
+ *     // e.g. call some external transcoding service
+ *   }
+ *
+ * }
+ * ```
+ *
+ * @docsCategory JobQueue
  */
 @Injectable()
 export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy {
@@ -30,6 +64,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
 
     constructor(private configService: ConfigService, private processContext: ProcessContext) {}
 
+    /** @internal */
     async onApplicationBootstrap() {
         if (this.processContext.isServer) {
             const { pollInterval } = this.configService.jobQueueOptions;
@@ -94,6 +129,11 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
         return this.jobQueueStrategy.findManyById(ids);
     }
 
+    /**
+     * @description
+     * Returns an array of `{ name: string; running: boolean; }` for each
+     * registered JobQueue.
+     */
     getJobQueues(): GraphQlJobQueue[] {
         return this.queues.map(queue => ({
             name: queue.name,
@@ -101,6 +141,11 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
         }));
     }
 
+    /**
+     * @description
+     * Removes settled jobs (completed or failed). The implementation is handled by the configured
+     * {@link JobQueueStrategy}.
+     */
     removeSettledJobs(queueNames: string[], olderThan?: Date) {
         return this.jobQueueStrategy.removeSettledJobs(queueNames, olderThan);
     }

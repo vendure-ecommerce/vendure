@@ -9,9 +9,13 @@ import { CreateQueueOptions, JobConfig, JobData } from './types';
  * @description
  * A JobQueue is used to process {@link Job}s. A job is added to the queue via the
  * `.add()` method, and the queue will then poll for new jobs and process each
- * according to the process
+ * according to the defined `process` function.
  *
- * @docsCateogory JobQueue
+ * *Note*: JobQueue instances should not be directly instantiated. Rather, the
+ * {@link JobQueueService} `createQueue()` method should be used (see that service
+ * for example usage).
+ *
+ * @docsCategory JobQueue
  */
 export class JobQueue<Data extends JobData<Data> = {}> {
     private activeJobs: Array<Job<Data>> = [];
