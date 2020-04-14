@@ -75,7 +75,7 @@ Next we will define an [AdminUiExtension]({{< relref "admin-ui-extension" >}}) o
 import path from 'path';
 import { VendureConfig } from '@vendure/core';
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
-import { compileUiExtensions } from '@vendure/u-devkit/compiler';
+import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
 import { reactUiExtension } from './ui-extension/ui-extension';
 
 export const config: VendureConfig = {
