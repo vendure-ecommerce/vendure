@@ -103,8 +103,7 @@ export class ShippingMethodService {
         const shippingMethod = await getEntityOrThrow(this.connection, ShippingMethod, id, ctx.channelId, {
             where: { deletedAt: null },
         });
-        shippingMethod.deletedAt = new Date();
-        await this.connection.getRepository(ShippingMethod).save(shippingMethod, { reload: false });
+        await this.connection.getRepository(ShippingMethod).softDelete({ id: shippingMethod.id });
         await this.updateActiveShippingMethods();
         return {
             result: DeletionResult.DELETED,
@@ -112,17 +111,17 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingEligibilityCheckers.map(x =>
+        return this.shippingConfiguration.shippingEligibilityCheckers.map((x) =>
             configurableDefToOperation(ctx, x),
         );
     }
 
     getShippingCalculators(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingCalculators.map(x => configurableDefToOperation(ctx, x));
+        return this.shippingConfiguration.shippingCalculators.map((x) => configurableDefToOperation(ctx, x));
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
-        return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
+        return this.activeShippingMethods.filter((sm) => sm.channels.find((c) => c.id === channel.id));
     }
 
     private async updateActiveShippingMethods() {

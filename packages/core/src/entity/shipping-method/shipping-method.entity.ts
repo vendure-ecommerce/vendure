@@ -1,6 +1,6 @@
 import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
@@ -36,7 +36,7 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
         this.allCalculators = calculators.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
 
-    @Column({ type: Date, nullable: true })
+    @DeleteDateColumn({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     @Column() code: string;
@@ -47,7 +47,7 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
 
     @Column('simple-json') calculator: ConfigurableOperation;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 

@@ -1,6 +1,6 @@
 import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
@@ -59,7 +59,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         this.allActions = actions.reduce((hash, o) => ({ ...hash, [o.code]: o }), {});
     }
 
-    @Column({ type: Date, nullable: true })
+    @DeleteDateColumn({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     @Column({ type: Date, nullable: true })
@@ -78,7 +78,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
 
     @Column() enabled: boolean;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 

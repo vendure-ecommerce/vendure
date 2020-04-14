@@ -1,5 +1,14 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
+import {
+    Column,
+    DeleteDateColumn,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    OneToMany,
+    OneToOne,
+} from 'typeorm';
 
 import { SoftDeletable } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -24,7 +33,7 @@ export class Customer extends VendureEntity implements HasCustomFields, SoftDele
         super(input);
     }
 
-    @Column({ type: Date, nullable: true })
+    @DeleteDateColumn({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     @Column({ nullable: true })
@@ -40,20 +49,20 @@ export class Customer extends VendureEntity implements HasCustomFields, SoftDele
     @Column({ unique: true })
     emailAddress: string;
 
-    @ManyToMany(type => CustomerGroup)
+    @ManyToMany((type) => CustomerGroup)
     @JoinTable()
     groups: CustomerGroup[];
 
-    @OneToMany(type => Address, address => address.customer)
+    @OneToMany((type) => Address, (address) => address.customer)
     addresses: Address[];
 
-    @OneToMany(type => Order, order => order.customer)
+    @OneToMany((type) => Order, (order) => order.customer)
     orders: Order[];
 
-    @OneToOne(type => User, { eager: true })
+    @OneToOne((type) => User, { eager: true })
     @JoinColumn()
     user?: User;
 
-    @Column(type => CustomCustomerFields)
+    @Column((type) => CustomCustomerFields)
     customFields: CustomCustomerFields;
 }

@@ -69,7 +69,7 @@ export class ProductService {
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
-                const items = products.map(product =>
+                const items = products.map((product) =>
                     translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
                 );
                 return {
@@ -95,8 +95,8 @@ export class ProductService {
     async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
         return findByIdsInChannel(this.connection, Product, productIds, ctx.channelId, {
             relations: this.relations,
-        }).then(products =>
-            products.map(product =>
+        }).then((products) =>
+            products.map((product) =>
                 translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
             ),
         );
@@ -128,7 +128,7 @@ export class ProductService {
             input,
             entityType: Product,
             translationType: ProductTranslation,
-            beforeSave: async p => {
+            beforeSave: async (p) => {
                 this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
@@ -148,7 +148,7 @@ export class ProductService {
             input,
             entityType: Product,
             translationType: ProductTranslation,
-            beforeSave: async p => {
+            beforeSave: async (p) => {
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
                 }
@@ -162,8 +162,7 @@ export class ProductService {
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
-        product.deletedAt = new Date();
-        await this.connection.getRepository(Product).save(product, { reload: false });
+        await this.connection.getRepository(Product).softDelete({ id: productId });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
         return {
             result: DeletionResult.DELETED,
@@ -199,7 +198,10 @@ export class ProductService {
             }
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
-        return this.findByIds(ctx, productsWithVariants.map(p => p.id));
+        return this.findByIds(
+            ctx,
+            productsWithVariants.map((p) => p.id),
+        );
     }
 
     async removeProductsFromChannel(
@@ -222,7 +224,10 @@ export class ProductService {
             await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
-        return this.findByIds(ctx, products.map(p => p.id));
+        return this.findByIds(
+            ctx,
+            products.map((p) => p.id),
+        );
     }
 
     async addOptionGroupToProduct(
@@ -252,7 +257,7 @@ export class ProductService {
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
         const product = await this.getProductWithOptionGroups(productId);
-        const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
+        const optionGroup = product.optionGroups.find((g) => idsAreEqual(g.id, optionGroupId));
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
@@ -262,7 +267,7 @@ export class ProductService {
                 count: product.variants.length,
             });
         }
-        product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
+        product.optionGroups = product.optionGroups.filter((g) => g.id !== optionGroupId);
 
         await this.connection.manager.save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));

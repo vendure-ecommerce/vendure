@@ -1,5 +1,5 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -29,7 +29,7 @@ export class Product extends VendureEntity
         super(input);
     }
 
-    @Column({ type: Date, nullable: true })
+    @DeleteDateColumn({ type: Date, nullable: true })
     deletedAt: Date | null;
 
     name: LocaleString;

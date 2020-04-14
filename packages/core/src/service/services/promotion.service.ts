@@ -81,11 +81,11 @@ export class PromotionService {
     }
 
     getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.availableConditions.map(x => configurableDefToOperation(ctx, x));
+        return this.availableConditions.map((x) => configurableDefToOperation(ctx, x));
     }
 
     getPromotionActions(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.availableActions.map(x => configurableDefToOperation(ctx, x));
+        return this.availableActions.map((x) => configurableDefToOperation(ctx, x));
     }
 
     /**
@@ -106,8 +106,8 @@ export class PromotionService {
             perCustomerUsageLimit: input.perCustomerUsageLimit,
             startsAt: input.startsAt,
             endsAt: input.endsAt,
-            conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
-            actions: input.actions.map(a => this.parseOperationArgs('action', a)),
+            conditions: input.conditions.map((c) => this.parseOperationArgs('condition', c)),
+            actions: input.actions.map((a) => this.parseOperationArgs('action', a)),
             priorityScore: this.calculatePriorityScore(input),
         });
         this.validatePromotionConditions(promotion);
@@ -121,10 +121,12 @@ export class PromotionService {
         const promotion = await getEntityOrThrow(this.connection, Promotion, input.id, ctx.channelId);
         const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
-            updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
+            updatedPromotion.conditions = input.conditions.map((c) =>
+                this.parseOperationArgs('condition', c),
+            );
         }
         if (input.actions) {
-            updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
+            updatedPromotion.actions = input.actions.map((a) => this.parseOperationArgs('action', a));
         }
         this.validatePromotionConditions(updatedPromotion);
         promotion.priorityScore = this.calculatePriorityScore(input);
@@ -135,7 +137,7 @@ export class PromotionService {
 
     async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Promotion, promotionId);
-        await this.connection.getRepository(Promotion).update({ id: promotionId }, { deletedAt: new Date() });
+        await this.connection.getRepository(Promotion).softDelete({ id: promotionId });
         return {
             result: DeletionResult.DELETED,
         };
@@ -171,8 +173,8 @@ export class PromotionService {
         }
         allAdjustments.push(...order.adjustments);
         const allPromotionIds = allAdjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
-            .map(a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
+            .filter((a) => a.type === AdjustmentType.PROMOTION)
+            .map((a) => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
         const promotionIds = unique(allPromotionIds);
         const promotions = await this.connection.getRepository(Promotion).findByIds(promotionIds);
         order.promotions = promotions;
@@ -206,10 +208,10 @@ export class PromotionService {
 
     private calculatePriorityScore(input: CreatePromotionInput | UpdatePromotionInput): number {
         const conditions = input.conditions
-            ? input.conditions.map(c => this.getAdjustmentOperationByCode('condition', c.code))
+            ? input.conditions.map((c) => this.getAdjustmentOperationByCode('condition', c.code))
             : [];
         const actions = input.actions
-            ? input.actions.map(c => this.getAdjustmentOperationByCode('action', c.code))
+            ? input.actions.map((c) => this.getAdjustmentOperationByCode('action', c.code))
             : [];
         return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
     }
@@ -220,7 +222,7 @@ export class PromotionService {
     ): PromotionCondition | PromotionAction {
         const available: Array<PromotionAction | PromotionCondition> =
             type === 'condition' ? this.availableConditions : this.availableActions;
-        const match = available.find(a => a.code === code);
+        const match = available.find((a) => a.code === code);
         if (!match) {
             throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
         }
