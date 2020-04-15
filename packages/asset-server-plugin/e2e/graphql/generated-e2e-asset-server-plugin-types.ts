@@ -3539,9 +3539,24 @@ export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
+export type DeleteAssetMutationVariables = {
+    id: Scalars['ID'];
+    force: Scalars['Boolean'];
+};
+
+export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
+    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
 export namespace CreateAssets {
     export type Variables = CreateAssetsMutationVariables;
     export type Mutation = CreateAssetsMutation;
     export type CreateAssets = NonNullable<CreateAssetsMutation['createAssets'][0]>;
     export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
+}
+
+export namespace DeleteAsset {
+    export type Variables = DeleteAssetMutationVariables;
+    export type Mutation = DeleteAssetMutation;
+    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
 }

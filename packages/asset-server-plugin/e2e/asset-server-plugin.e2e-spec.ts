@@ -6,10 +6,10 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { AssetServerPlugin } from '../src/plugin';
 
-import { CreateAssets } from './graphql/generated-e2e-asset-server-plugin-types';
+import { CreateAssets, DeleteAsset, DeletionResult } from './graphql/generated-e2e-asset-server-plugin-types';
 
 const TEST_ASSET_DIR = 'test-assets';
 const IMAGE_BASENAME = 'derick-david-409858-unsplash';
@@ -163,6 +163,23 @@ describe('AssetServerPlugin', () => {
             return fetch(`${asset.preview}?h=10.5`);
         });
     });
+
+    describe('deletion', () => {
+        it('deleting Asset deletes binary file', async () => {
+            const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
+                DELETE_ASSET,
+                {
+                    id: asset.id,
+                    force: true,
+                },
+            );
+
+            expect(deleteAsset.result).toBe(DeletionResult.DELETED);
+
+            expect(fs.existsSync(sourceFilePath)).toBe(false);
+            expect(fs.existsSync(previewFilePath)).toBe(false);
+        });
+    });
 });
 
 export const CREATE_ASSETS = gql`
@@ -176,6 +193,14 @@ export const CREATE_ASSETS = gql`
                 x
                 y
             }
+        }
+    }
+`;
+
+export const DELETE_ASSET = gql`
+    mutation DeleteAsset($id: ID!, $force: Boolean!) {
+        deleteAsset(id: $id, force: $force) {
+            result
         }
     }
 `;
