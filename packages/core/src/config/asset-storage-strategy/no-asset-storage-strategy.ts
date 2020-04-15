@@ -27,6 +27,10 @@ export class NoAssetStorageStrategy implements AssetStorageStrategy {
         throw new InternalServerError(errorMessage);
     }
 
+    deleteFile(identifier: string): Promise<void> {
+        throw new InternalServerError(errorMessage);
+    }
+
     toAbsoluteUrl(request: Request, identifier: string): string {
         throw new InternalServerError(errorMessage);
     }

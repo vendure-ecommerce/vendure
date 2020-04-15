@@ -103,7 +103,7 @@ export class AssetService {
                 });
             assets = (entityWithAssets && entityWithAssets.assets) || [];
         }
-        return assets.sort((a, b) => a.position - b.position).map((a) => a.asset);
+        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
@@ -133,7 +133,7 @@ export class AssetService {
         if (assetIds && assetIds.length) {
             const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
             const sortedAssets = assetIds
-                .map((id) => assets.find((a) => idsAreEqual(a.id, id)))
+                .map(id => assets.find(a => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
             await this.removeExistingOrderableAssets(entity);
             entity.assets = await this.createOrderableAssets(entity, sortedAssets);
@@ -185,6 +185,12 @@ export class AssetService {
         // after deletion (the .remove() method sets it to undefined)
         const deletedAsset = new Asset(asset);
         await this.connection.getRepository(Asset).remove(asset);
+        try {
+            await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.source);
+            await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.preview);
+        } catch (e) {
+            Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
+        }
         this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
         return {
             result: DeletionResult.DELETED,
@@ -303,7 +309,7 @@ export class AssetService {
     private getOrderableAssetType(entity: EntityWithAssets): Type<OrderableAsset> {
         const assetRelation = this.connection
             .getRepository(entity.constructor)
-            .metadata.relations.find((r) => r.propertyName === 'assets');
+            .metadata.relations.find(r => r.propertyName === 'assets');
         if (!assetRelation || typeof assetRelation.type === 'string') {
             throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
