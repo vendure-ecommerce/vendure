@@ -44,11 +44,8 @@
                     id="visibility"
                 />
                 <label class="visible-toggle">
-                    {{
-                        detailForm.value.facet.visible
-                            ? ('catalog.public' | translate)
-                            : ('catalog.private' | translate)
-                    }}
+                    <ng-container *ngIf="detailForm.value.facet.visible; else private">{{ 'catalog.public' | translate }}</ng-container>
+                    <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
                 </label>
             </clr-toggle-wrapper>
         </vdr-form-field>
