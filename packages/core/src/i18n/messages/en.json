@@ -43,6 +43,7 @@
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
     "language-not-available-in-global-settings": "Language \"{code}\" is not available. First enable it via GlobalSettings and try again.",
     "missing-password-on-registration": "A password must be provided when `authOptions.requireVerification` is set to \"false\"",
+    "no-active-tax-zone": "The active tax zone could not be determined. Ensure a default tax zone is set for the current channel.",
     "no-search-plugin-configured": "No search plugin has been configured",
     "no-valid-channel-specified": "No valid channel was specified (ensure the 'vendure-token' header was specified in the request)",
     "order-contents-may-only-be-modified-in-addingitems-state": "Order contents may only be modified when in the \"AddingItems\" state",
