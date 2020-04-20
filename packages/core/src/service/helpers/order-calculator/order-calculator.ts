@@ -7,6 +7,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { PromotionUtils, ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
@@ -46,6 +47,9 @@ export class OrderCalculator {
         const zones = this.zoneService.findAll(ctx);
         const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel, order);
         let taxZoneChanged = false;
+        if (!activeTaxZone) {
+            throw new InternalServerError(`error.no-active-tax-zone`);
+        }
         if (!order.taxZoneId || !idsAreEqual(order.taxZoneId, activeTaxZone.id)) {
             order.taxZoneId = activeTaxZone.id;
             taxZoneChanged = true;
@@ -58,7 +62,7 @@ export class OrderCalculator {
                 activeTaxZone,
                 this.createTaxRateGetter(activeTaxZone),
             );
-            updatedOrderLine.activeItems.forEach(item => updatedOrderItems.add(item));
+            updatedOrderLine.activeItems.forEach((item) => updatedOrderItems.add(item));
         }
         order.clearAdjustments();
         this.calculateOrderTotals(order);
@@ -71,7 +75,7 @@ export class OrderCalculator {
             // Then test and apply promotions
             const totalBeforePromotions = order.total;
             const itemsModifiedByPromotions = await this.applyPromotions(order, promotions);
-            itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
+            itemsModifiedByPromotions.forEach((item) => updatedOrderItems.add(item));
 
             if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
                 // Finally, re-calculate taxes because the promotions may have
@@ -160,7 +164,7 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
+            const applicablePromotions = await filterAsync(promotions, (p) => p.test(order, utils));
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
@@ -168,7 +172,7 @@ export class OrderCalculator {
                     for (const item of line.items) {
                         const itemHasPromotions =
                             item.pendingAdjustments &&
-                            !!item.pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+                            !!item.pendingAdjustments.find((a) => a.type === AdjustmentType.PROMOTION);
                         if (itemHasPromotions) {
                             item.clearAdjustments(AdjustmentType.PROMOTION);
                         }
@@ -199,7 +203,7 @@ export class OrderCalculator {
 
     private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
         order.clearAdjustments(AdjustmentType.PROMOTION);
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
+        const applicableOrderPromotions = await filterAsync(promotions, (p) => p.test(order, utils));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
@@ -220,7 +224,7 @@ export class OrderCalculator {
         const currentShippingMethod = order.shippingMethod;
         if (results && results.length && currentShippingMethod) {
             let selected: { method: ShippingMethod; result: ShippingCalculationResult } | undefined;
-            selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
+            selected = results.find((r) => idsAreEqual(r.method.id, currentShippingMethod.id));
             if (!selected) {
                 selected = results[0];
             }
@@ -265,7 +269,7 @@ export class OrderCalculator {
                 }
                 const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
                 return facetValueIds.reduce(
-                    (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
+                    (result, id) => result && !!allFacetValues.find((fv) => idsAreEqual(fv.id, id)),
                     true as boolean,
                 );
             },
