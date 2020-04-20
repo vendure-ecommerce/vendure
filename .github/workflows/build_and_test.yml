@@ -66,6 +66,13 @@ jobs:
           discovery.type: single-node
           bootstrap.memory_lock: true
           ES_JAVA_OPTS: -Xms512m -Xmx512m
+          # Elasticsearch will force read-only mode when total available disk space is less than 5%. Since we will
+          # be running on a shared Azure instance with 84GB SSD, we easily go below 5% available even when there are still
+          # > 3GB free. So we set this value to an absolute one rather than a percentage to prevent all the Elasticsearch
+          # e2e tests from failing.
+          cluster.routing.allocation.disk.watermark.low: 500mb
+          cluster.routing.allocation.disk.watermark.high: 200mb
+          cluster.routing.allocation.disk.watermark.flood_stage: 100mb
         ports:
           - 9200
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -83,6 +90,10 @@ jobs:
           yarn install
           yarn bootstrap
           yarn lerna run ci
+      - name: df
+        run: |
+          df -h
+          docker system df
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
