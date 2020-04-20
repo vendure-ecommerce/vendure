@@ -12,36 +12,36 @@ env:
   CI: true
   node: 12.x
 jobs:
-  build:
-    name: build
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ env.node }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ env.node }}
-    - name: Install & build
-      run: |
-        yarn install
-        yarn bootstrap
-        yarn build
-  unit-tests:
-    name: unit tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Use Node.js ${{ env.node }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ env.node }}
-      - name: Install & build
-        run: |
-          yarn install
-          yarn bootstrap
-          yarn lerna run ci
-      - name: Unit tests
-        run: yarn test
+  #build:
+  #  name: build
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #  - uses: actions/checkout@v2
+  #  - name: Use Node.js ${{ env.node }}
+  #    uses: actions/setup-node@v1
+  #    with:
+  #      node-version: ${{ env.node }}
+  #  - name: Install & build
+  #    run: |
+  #      yarn install
+  #      yarn bootstrap
+  #      yarn build
+  #unit-tests:
+  #  name: unit tests
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - uses: actions/checkout@v1
+  #    - name: Use Node.js ${{ env.node }}
+  #      uses: actions/setup-node@v1
+  #      with:
+  #        node-version: ${{ env.node }}
+  #    - name: Install & build
+  #      run: |
+  #        yarn install
+  #        yarn bootstrap
+  #        yarn lerna run ci
+  #    - name: Unit tests
+  #      run: yarn test
   e2e-tests:
     name: e2e tests
     runs-on: ubuntu-latest
@@ -83,6 +83,10 @@ jobs:
           yarn install
           yarn bootstrap
           yarn lerna run ci
+      - name: df
+        run: |
+          df -h
+          docker system df
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
