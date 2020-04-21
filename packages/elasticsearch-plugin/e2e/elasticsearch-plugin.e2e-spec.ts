@@ -66,9 +66,6 @@ import {
     SearchProductsAdmin,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
-console.log('process.argv', process.argv);
-const SKIP_TESTS = process.env.SKIP_ELASTICSEARCH_E2E_TESTS;
-
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
@@ -91,9 +88,6 @@ describe('Elasticsearch plugin', () => {
     );
 
     beforeAll(async () => {
-        if (SKIP_TESTS) {
-            return;
-        }
         await server.init({
             initialData,
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
@@ -105,17 +99,8 @@ describe('Elasticsearch plugin', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
-        if (SKIP_TESTS) {
-            return;
-        }
         await server.destroy();
     });
-
-    if (SKIP_TESTS) {
-        it.only('skip ElasticsearchPlugin e2e tests', () => {
-            /**/
-        });
-    }
 
     function doAdminSearchQuery(input: SearchInput) {
         return adminClient.query<SearchProductsAdmin.Query, SearchProductsAdmin.Variables>(SEARCH_PRODUCTS, {

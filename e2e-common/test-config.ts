@@ -33,6 +33,13 @@ if (process.env.E2E_DEBUG) {
     console.log('E2E_DEBUG', process.env.E2E_DEBUG, ' - setting long timeout');
     jest.setTimeout(1800 * 1000);
 }
+/**
+ * Increase default timeout in CI to 10 seconds because occasionally valid tests fail due to
+ * timeouts.
+ */
+if (process.env.CI) {
+    jest.setTimeout(10 * 1000);
+}
 
 export const testConfig = mergeConfig(defaultTestConfig, {
     importExportOptions: {
