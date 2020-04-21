@@ -7,5 +7,5 @@ import { Channel, Order, Zone } from '../../entity';
  * @docsCategory tax
  */
 export interface TaxZoneStrategy {
-    determineTaxZone(zones: Zone[], channel: Channel, order?: Order): Zone;
+    determineTaxZone(zones: Zone[], channel: Channel, order?: Order): Zone | undefined;
 }
