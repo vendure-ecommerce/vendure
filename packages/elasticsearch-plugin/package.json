@@ -12,7 +12,7 @@
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=elasticsearch-plugin"
+    "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --runInBand --package=elasticsearch-plugin"
   },
   "publishConfig": {
     "access": "public"
