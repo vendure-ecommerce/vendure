@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -34,6 +34,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     ME,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -102,8 +103,8 @@ describe('Channels', () => {
 
         expect(me!.channels.length).toBe(2);
 
-        const secondChannelData = me!.channels.find((c) => c.token === SECOND_CHANNEL_TOKEN);
-        const nonOwnerPermissions = Object.values(Permission).filter((p) => p !== Permission.Owner);
+        const secondChannelData = me!.channels.find(c => c.token === SECOND_CHANNEL_TOKEN);
+        const nonOwnerPermissions = Object.values(Permission).filter(p => p !== Permission.Owner);
         expect(secondChannelData!.permissions).toEqual(nonOwnerPermissions);
     });
 
@@ -113,7 +114,7 @@ describe('Channels', () => {
 
         expect(me!.channels.length).toBe(2);
 
-        const secondChannelData = me!.channels.find((c) => c.token === SECOND_CHANNEL_TOKEN);
+        const secondChannelData = me!.channels.find(c => c.token === SECOND_CHANNEL_TOKEN);
         expect(me!.channels).toEqual([
             {
                 code: DEFAULT_CHANNEL_CODE,
@@ -172,7 +173,7 @@ describe('Channels', () => {
             },
         });
 
-        expect(createAdministrator.user.roles.map((r) => r.description)).toEqual(['second channel admin']);
+        expect(createAdministrator.user.roles.map(r => r.description)).toEqual(['second channel admin']);
     });
 
     it(
@@ -290,7 +291,7 @@ describe('Channels', () => {
                 },
             });
 
-            expect(assignProductsToChannel[0].channels.map((c) => c.id).sort()).toEqual(['T_1', 'T_2']);
+            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
             await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
             const { product } = await adminClient.query<
                 GetProductWithVariants.Query,
@@ -299,12 +300,12 @@ describe('Channels', () => {
                 id: product1.id,
             });
 
-            expect(product!.variants.map((v) => v.price)).toEqual(
-                product1.variants.map((v) => v.price * PRICE_FACTOR),
+            expect(product!.variants.map(v => v.price)).toEqual(
+                product1.variants.map(v => v.price * PRICE_FACTOR),
             );
             // Second Channel is configured to include taxes in price, so they should be the same.
-            expect(product!.variants.map((v) => v.priceWithTax)).toEqual(
-                product1.variants.map((v) => v.price * PRICE_FACTOR),
+            expect(product!.variants.map(v => v.priceWithTax)).toEqual(
+                product1.variants.map(v => v.price * PRICE_FACTOR),
             );
         });
 
@@ -319,7 +320,7 @@ describe('Channels', () => {
                 },
             });
 
-            expect(assignProductsToChannel[0].channels.map((c) => c.id).sort()).toEqual(['T_1', 'T_2']);
+            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
         });
 
         it(
@@ -350,7 +351,7 @@ describe('Channels', () => {
                 },
             });
 
-            expect(removeProductsFromChannel[0].channels.map((c) => c.id)).toEqual(['T_1']);
+            expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
         });
     });
 
@@ -417,7 +418,7 @@ describe('Channels', () => {
                 productIds: [PROD_ID],
             },
         });
-        expect(assignProductsToChannel[0].channels.map((c) => c.id).sort()).toEqual(['T_1', 'T_2']);
+        expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
 
         const { deleteChannel } = await adminClient.query<DeleteChannel.Mutation, DeleteChannel.Variables>(
             DELETE_CHANNEL,
@@ -429,7 +430,7 @@ describe('Channels', () => {
         expect(deleteChannel.result).toBe(DeletionResult.DELETED);
 
         const { channels } = await adminClient.query<GetChannels.Query>(GET_CHANNELS);
-        expect(channels.map((c) => c.id).sort()).toEqual(['T_1', 'T_3']);
+        expect(channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
 
         const { product } = await adminClient.query<
             GetProductWithVariants.Query,
@@ -437,7 +438,7 @@ describe('Channels', () => {
         >(GET_PRODUCT_WITH_VARIANTS, {
             id: PROD_ID,
         });
-        expect(product!.channels.map((c) => c.id)).toEqual(['T_1']);
+        expect(product!.channels.map(c => c.id)).toEqual(['T_1']);
     });
 });
 
@@ -447,17 +448,6 @@ const GET_CHANNELS = gql`
             id
             code
             token
-        }
-    }
-`;
-
-const UPDATE_CHANNEL = gql`
-    mutation UpdateChannel($input: UpdateChannelInput!) {
-        updateChannel(input: $input) {
-            id
-            code
-            defaultLanguageCode
-            currencyCode
         }
     }
 `;

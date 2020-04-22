@@ -14,7 +14,7 @@ import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
-import { TaxRate } from '../../entity';
+import { Channel, TaxRate } from '../../entity';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -74,6 +74,22 @@ export class ZoneService implements OnModuleInit {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const zone = await getEntityOrThrow(this.connection, Zone, id);
+
+        const channelsUsingZone = await this.connection
+            .getRepository(Channel)
+            .createQueryBuilder('channel')
+            .where('channel.defaultTaxZone = :id', { id })
+            .orWhere('channel.defaultShippingZone = :id', { id })
+            .getMany();
+
+        if (0 < channelsUsingZone.length) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: ctx.translate('message.zone-used-in-channels', {
+                    channelCodes: channelsUsingZone.map(t => t.code).join(', '),
+                }),
+            };
+        }
 
         const taxRatesUsingZone = await this.connection
             .getRepository(TaxRate)
