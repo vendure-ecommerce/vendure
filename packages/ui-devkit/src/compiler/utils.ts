@@ -1,14 +1,12 @@
 /* tslint:disable:no-console */
-import { LanguageCode } from '@vendure/common/lib/generated-types';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 import * as fs from 'fs-extra';
-import glob from 'glob';
 import * as path from 'path';
 
 import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
-import { AdminUiExtension, Extension, StaticAssetDefinition, Translations } from './types';
+import { AdminUiExtension, Extension, StaticAssetDefinition } from './types';
 
 export const logger = {
     log: (message: string) => console.log(chalk.green(message)),
@@ -50,14 +48,9 @@ export function copyUiDevkit(outputPath: string) {
  */
 export async function copyStaticAsset(outputPath: string, staticAssetDef: StaticAssetDefinition) {
     const staticAssetPath = getStaticAssetPath(staticAssetDef);
-    const stats = fs.statSync(staticAssetPath);
     let assetOutputPath: string;
-    if (stats.isDirectory()) {
-        const assetDirname = path.basename(staticAssetPath);
-        assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetDirname);
-    } else {
-        assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR);
-    }
+    const assetBasename = path.basename(staticAssetPath);
+    assetOutputPath = path.join(outputPath, STATIC_ASSETS_OUTPUT_DIR, assetBasename);
     fs.copySync(staticAssetPath, assetOutputPath);
     if (typeof staticAssetDef !== 'string') {
         // The asset is being renamed
