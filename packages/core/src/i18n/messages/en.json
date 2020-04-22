@@ -25,6 +25,7 @@
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",
     "create-fulfillment-nothing-to-fulfill": "Nothing to fulfill",
     "default-channel-not-found":  "Default channel not found",
+    "email-address-must-be-unique": "The email address must be unique",
     "email-address-not-available": "This email address is not available",
     "email-address-not-verified": "Please verify this email address before logging in",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",

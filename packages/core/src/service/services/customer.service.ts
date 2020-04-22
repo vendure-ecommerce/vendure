@@ -13,12 +13,7 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -96,7 +91,7 @@ export class CustomerService {
         });
 
         if (existing) {
-            throw new InternalServerError(`error.email-address-must-be-unique`);
+            throw new UserInputError(`error.email-address-must-be-unique`);
         }
         customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
 
