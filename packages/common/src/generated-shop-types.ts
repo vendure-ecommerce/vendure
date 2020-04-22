@@ -363,9 +363,9 @@ export enum CurrencyCode {
     /** Canadian dollar */
     CAD = 'CAD',
     /** Congolese franc */
-    CHE = 'CHE',
+    CDF = 'CDF',
     /** Swiss franc */
-    CHW = 'CHW',
+    CHF = 'CHF',
     /** Chilean peso */
     CLP = 'CLP',
     /** Renminbi (Chinese) yuan */
