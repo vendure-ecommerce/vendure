@@ -267,6 +267,8 @@
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
+    "no-default-shipping-zone-set": "This channel has no default shipping zone. This may cause errors when calculating order shipping charges.",
+    "no-default-tax-zone-set": "This channel has no default tax zone, which will cause errors when calculating prices. Please create or select a zone.",
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
   },
   "lang": {
