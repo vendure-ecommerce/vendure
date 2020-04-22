@@ -17,6 +17,7 @@ import {
     DeleteCountry,
     DeleteTaxCategory,
     DeleteTaxRate,
+    DeleteZone,
     GetActiveChannel,
     GetAllJobs,
     GetAvailableCountries,
@@ -66,6 +67,7 @@ import {
     DELETE_COUNTRY,
     DELETE_TAX_CATEGORY,
     DELETE_TAX_RATE,
+    DELETE_ZONE,
     GET_ACTIVE_CHANNEL,
     GET_AVAILABLE_COUNTRIES,
     GET_CHANNEL,
@@ -73,10 +75,10 @@ import {
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
-    GET_JOB_INFO,
-    GET_JOB_QUEUE_LIST,
     GET_JOBS_BY_ID,
     GET_JOBS_LIST,
+    GET_JOB_INFO,
+    GET_JOB_QUEUE_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -155,6 +157,12 @@ export class SettingsDataService {
     updateZone(input: UpdateZoneInput) {
         return this.baseDataService.mutate<UpdateZone.Mutation, UpdateZone.Variables>(UPDATE_ZONE, {
             input,
+        });
+    }
+
+    deleteZone(id: string) {
+        return this.baseDataService.mutate<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
+            id,
         });
     }
 

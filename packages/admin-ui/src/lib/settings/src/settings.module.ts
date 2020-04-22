@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { SharedModule } from '@vendure/admin-ui/core';
 
+import { AddCountryToZoneDialogComponent } from './components/add-country-to-zone-dialog/add-country-to-zone-dialog.component';
 import { AdminDetailComponent } from './components/admin-detail/admin-detail.component';
 import { AdministratorListComponent } from './components/administrator-list/administrator-list.component';
 import { ChannelDetailComponent } from './components/channel-detail/channel-detail.component';
@@ -26,7 +27,11 @@ import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-de
 import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
 import { TestAddressFormComponent } from './components/test-address-form/test-address-form.component';
 import { TestOrderBuilderComponent } from './components/test-order-builder/test-order-builder.component';
-import { ZoneSelectorDialogComponent } from './components/zone-selector-dialog/zone-selector-dialog.component';
+import { ZoneDetailDialogComponent } from './components/zone-detail-dialog/zone-detail-dialog.component';
+import { ZoneListComponent } from './components/zone-list/zone-list.component';
+import { ZoneMemberControlsDirective } from './components/zone-member-list/zone-member-controls.directive';
+import { ZoneMemberListHeaderDirective } from './components/zone-member-list/zone-member-list-header.directive';
+import { ZoneMemberListComponent } from './components/zone-member-list/zone-member-list.component';
 import { settingsRoutes } from './settings.routes';
 
 @NgModule({
@@ -41,7 +46,6 @@ import { settingsRoutes } from './settings.routes';
         PermissionGridComponent,
         CountryListComponent,
         CountryDetailComponent,
-        ZoneSelectorDialogComponent,
         TaxRateListComponent,
         TaxRateDetailComponent,
         ChannelListComponent,
@@ -57,6 +61,12 @@ import { settingsRoutes } from './settings.routes';
         ShippingEligibilityTestResultComponent,
         JobListComponent,
         JobStateLabelComponent,
+        ZoneListComponent,
+        AddCountryToZoneDialogComponent,
+        ZoneMemberListComponent,
+        ZoneMemberListHeaderDirective,
+        ZoneMemberControlsDirective,
+        ZoneDetailDialogComponent,
     ],
 })
 export class SettingsModule {}

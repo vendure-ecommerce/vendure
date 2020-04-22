@@ -42,7 +42,8 @@
     "roles": "Roles",
     "shipping-methods": "Shipping methods",
     "tax-categories": "Tax categories",
-    "tax-rates": "Tax rates"
+    "tax-rates": "Tax rates",
+    "zones": "Zones"
   },
   "catalog": {
     "add-facet-value": "Add facet value",
@@ -67,6 +68,7 @@
     "confirm-delete-product-variant": "Delete product variant?",
     "confirm-delete-promotion": "Delete promotion?",
     "confirm-delete-shipping-method": "Delete shipping method?",
+    "confirm-delete-zone": "Delete zone?",
     "create-new-collection": "Create new collection",
     "create-new-facet": "Create new facet",
     "create-new-product": "New product",
@@ -188,7 +190,8 @@
     "updated-at": "Updated at",
     "username": "Username",
     "view-next-month": "View next month",
-    "view-previous-month": "View previous month"
+    "view-previous-month": "View previous month",
+    "with-selected": "With selected..."
   },
   "customer": {
     "addresses": "Addresses",
@@ -484,7 +487,8 @@
     "settings": "Settings",
     "shipping-methods": "Shipping methods",
     "tax-categories": "Tax categories",
-    "tax-rates": "Tax Rates"
+    "tax-rates": "Tax Rates",
+    "zones": "Zones"
   },
   "order": {
     "add-note": "Add note",
@@ -578,7 +582,7 @@
     "unit-price": "Unit price"
   },
   "settings": {
-    "add-countries-to-zone": "Add countries to zone...",
+    "add-countries-to-zone": "Add countries to { zoneName }",
     "add-countries-to-zone-success": "Added { countryCount } {countryCount, plural, one {country} other {countries}} to zone \"{ zoneName }\"",
     "add-products-to-test-order": "Add products to the test order",
     "administrator": "Administrator",
@@ -596,6 +600,7 @@
     "create-new-shipping-method": "Create new shipping method",
     "create-new-tax-category": "Create tax category",
     "create-new-tax-rate": "Create new tax rate",
+    "create-new-zone": "Create new zone",
     "create-zone": "Create zone",
     "currency": "Currency",
     "customer": "Customer",
@@ -605,6 +610,7 @@
     "delete": "Delete",
     "elibigle": "Eligible",
     "email-address": "Email address",
+    "filter-by-member-name": "Filter by country",
     "first-name": "First name",
     "hide-settled-jobs": "Hide settled jobs",
     "job-data": "Job data",
@@ -623,13 +629,12 @@
     "promotion": "Promotion",
     "rate": "Rate",
     "read": "Read",
-    "remove-countries-from-zone": "Remove countries from zone...",
     "remove-countries-from-zone-success": "Removed { countryCount } {countryCount, plural, one {country} other {countries}} from zone \"{ zoneName }\"",
+    "remove-from-zone": "Remove from zone",
     "roles": "Roles",
     "search-by-product-name-or-sku": "Search by product name or SKU",
     "search-country-by-name": "Search countries by name",
     "section": "Section",
-    "select-zone": "Select zone",
     "settings": "Settings",
     "shipping-calculator": "Shipping calculator",
     "shipping-eligibility-checker": "Shipping eligibility checker",
@@ -643,6 +648,8 @@
     "test-shipping-methods": "Test shipping methods",
     "track-inventory-default": "Track inventory by default",
     "update": "Update",
+    "update-zone": "Update zone",
+    "view-zone-members": "View members",
     "zone": "Zone"
   }
 }

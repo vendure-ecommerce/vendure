@@ -94,11 +94,16 @@ export const GET_ZONES = gql`
     query GetZones {
         zones {
             id
+            createdAt
+            updatedAt
             name
             members {
+                createdAt
+                updatedAt
                 id
                 name
                 code
+                enabled
             }
         }
     }
@@ -129,6 +134,15 @@ export const UPDATE_ZONE = gql`
         }
     }
     ${ZONE_FRAGMENT}
+`;
+
+export const DELETE_ZONE = gql`
+    mutation DeleteZone($id: ID!) {
+        deleteZone(id: $id) {
+            message
+            result
+        }
+    }
 `;
 
 export const ADD_MEMBERS_TO_ZONE = gql`

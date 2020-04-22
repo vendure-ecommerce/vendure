@@ -2,12 +2,13 @@
     <table class="table">
         <thead>
             <tr>
-                <th *ngIf="isRowSelectedFn">
-                    <vdr-select-toggle
-                        size="small"
-                        [selected]="allSelected"
-                        (selectedChange)="allSelectChange.emit()"
-                    ></vdr-select-toggle>
+                <th *ngIf="isRowSelectedFn" class="align-middle">
+                    <input
+                        type="checkbox"
+                        clrCheckbox
+                        [checked]="allSelected"
+                        (change)="allSelectChange.emit()"
+                    />
                 </th>
                 <th *ngFor="let header of columns?.toArray()" class="left" [class.expand]="header.expand">
                     <ng-container *ngTemplateOutlet="header.template"></ng-container>
@@ -24,15 +25,17 @@
                                   currentPage: currentPage,
                                   totalItems: totalItems
                               };
-                    index as i; trackBy: trackByFn
+                    index as i;
+                    trackBy: trackByFn
                 "
             >
-                <td *ngIf="isRowSelectedFn">
-                    <vdr-select-toggle
-                        size="small"
-                        [selected]="isRowSelectedFn(item)"
-                        (selectedChange)="rowSelectChange.emit(item)"
-                    ></vdr-select-toggle>
+                <td *ngIf="isRowSelectedFn" class="align-middle">
+                    <input
+                        type="checkbox"
+                        clrCheckbox
+                        [checked]="isRowSelectedFn(item)"
+                        (change)="rowSelectChange.emit(item)"
+                    />
                 </td>
                 <ng-container
                     *ngTemplateOutlet="rowTemplate; context: { item: item, index: i }"
