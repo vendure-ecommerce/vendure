@@ -3605,17 +3605,6 @@ export type GetChannelsQuery = { __typename?: 'Query' } & {
     channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
 };
 
-export type UpdateChannelMutationVariables = {
-    input: UpdateChannelInput;
-};
-
-export type UpdateChannelMutation = { __typename?: 'Mutation' } & {
-    updateChannel: { __typename?: 'Channel' } & Pick<
-        Channel,
-        'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'
-    >;
-};
-
 export type DeleteChannelMutationVariables = {
     id: Scalars['ID'];
 };
@@ -4714,6 +4703,17 @@ export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
     deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
+export type UpdateChannelMutationVariables = {
+    input: UpdateChannelInput;
+};
+
+export type UpdateChannelMutation = { __typename?: 'Mutation' } & {
+    updateChannel: { __typename?: 'Channel' } & Pick<
+        Channel,
+        'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'
+    >;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5505,12 +5505,6 @@ export namespace GetChannels {
     export type Channels = NonNullable<GetChannelsQuery['channels'][0]>;
 }
 
-export namespace UpdateChannel {
-    export type Variables = UpdateChannelMutationVariables;
-    export type Mutation = UpdateChannelMutation;
-    export type UpdateChannel = UpdateChannelMutation['updateChannel'];
-}
-
 export namespace DeleteChannel {
     export type Variables = DeleteChannelMutationVariables;
     export type Mutation = DeleteChannelMutation;
@@ -6234,6 +6228,12 @@ export namespace DeleteAsset {
     export type Variables = DeleteAssetMutationVariables;
     export type Mutation = DeleteAssetMutation;
     export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
+}
+
+export namespace UpdateChannel {
+    export type Variables = UpdateChannelMutationVariables;
+    export type Mutation = UpdateChannelMutation;
+    export type UpdateChannel = UpdateChannelMutation['updateChannel'];
 }
 
 export namespace UpdateOptionGroup {

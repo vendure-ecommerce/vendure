@@ -22,12 +22,15 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { ZoneService } from './zone.service';
+
 @Injectable()
 export class CountryService {
     constructor(
         @InjectConnection() private connection: Connection,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
+        private zoneService: ZoneService,
     ) {}
 
     findAll(
@@ -71,6 +74,7 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
+        await this.zoneService.updateZonesCache();
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -80,6 +84,7 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
+        await this.zoneService.updateZonesCache();
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -97,6 +102,7 @@ export class CountryService {
                 message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
             };
         } else {
+            await this.zoneService.updateZonesCache();
             await this.connection.getRepository(Country).remove(country);
             return {
                 result: DeletionResult.DELETED,

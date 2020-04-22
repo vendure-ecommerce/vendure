@@ -139,7 +139,11 @@ export class ZoneService implements OnModuleInit {
         return this.connection.getRepository(Country).findByIds(ids);
     }
 
-    private async updateZonesCache() {
+    /**
+     * TODO: This is not good for multi-instance deployments. A better solution will
+     * need to be found without adversely affecting performance.
+     */
+    async updateZonesCache() {
         this.zones = await this.connection.getRepository(Zone).find({
             relations: ['members'],
         });
