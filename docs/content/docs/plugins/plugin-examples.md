@@ -178,6 +178,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { InjectConnection } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { ProcessOrderMessage } from './process-order-message';
 
 @Controller()
 class OrderProcessingController {
@@ -185,7 +186,7 @@ class OrderProcessingController {
   constructor(@InjectConnection() private connection: Connection) {}
 
   @MessagePattern(ProcessOrderMessage.pattern)
-  async processOrder(orderId: ID) {
+  async processOrder({ orderId }: ProcessOrderMessage['data']) {
     const order = await this.connection.getRepository(Order).findOne(orderId);
     // ...do some expensive / slow computation
     return true;

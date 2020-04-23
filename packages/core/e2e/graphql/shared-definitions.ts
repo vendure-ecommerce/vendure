@@ -364,3 +364,14 @@ export const DELETE_ASSET = gql`
         }
     }
 `;
+
+export const UPDATE_CHANNEL = gql`
+    mutation UpdateChannel($input: UpdateChannelInput!) {
+        updateChannel(input: $input) {
+            id
+            code
+            defaultLanguageCode
+            currencyCode
+        }
+    }
+`;

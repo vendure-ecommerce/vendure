@@ -1,0 +1,132 @@
+<vdr-action-bar>
+    <vdr-ab-left> </vdr-ab-left>
+    <vdr-ab-right>
+        <vdr-action-bar-items locationId="zone-list"></vdr-action-bar-items>
+        <button class="btn btn-primary" *vdrIfPermissions="'CreateSettings'" (click)="create()">
+            <clr-icon shape="plus"></clr-icon>
+            {{ 'settings.create-new-zone' | translate }}
+        </button>
+    </vdr-ab-right>
+</vdr-action-bar>
+<div class="zone-wrapper">
+    <table class="table zone-list">
+        <tbody>
+            <tr *ngFor="let zone of zones$ | async" [class.active]="zone.id === (activeZone$ | async)?.id">
+                <td class="left align-middle"><vdr-entity-info [entity]="zone"></vdr-entity-info></td>
+                <td class="left align-middle"><vdr-chip [colorFrom]="zone.name">{{ zone.name }}</vdr-chip></td>
+                <td class="text-right align-middle">
+                    <a
+                        class="btn btn-link btn-sm"
+                        [routerLink]="['./', { contents: zone.id }]"
+                        queryParamsHandling="preserve"
+                    >
+                        <clr-icon shape="view-list"></clr-icon>
+                        {{ 'settings.view-zone-members' | translate }}
+                    </a>
+                </td>
+                <td class="align-middle">
+                    <button class="btn btn-link btn-sm" (click)="update(zone)">
+                        <clr-icon shape="edit"></clr-icon>
+                        {{ 'common.edit' | translate }}
+                    </button>
+                </td>
+                <td class="align-middle">
+                    <vdr-dropdown>
+                        <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
+                            {{ 'common.actions' | translate }}
+                            <clr-icon shape="caret down"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="delete(zone.id)"
+                                [disabled]="!('DeleteSettings' | hasPermission)"
+                            >
+                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                {{ 'common.delete' | translate }}
+                            </button>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="zone-members" [class.expanded]="activeZone$ | async">
+        <ng-container *ngIf="activeZone$ | async as activeZone">
+            <vdr-zone-member-list
+                [members]="activeZone.members"
+                [selectedMemberIds]="selectedMemberIds"
+                (selectionChange)="selectedMemberIds = $event"
+            >
+                <div *vdrZoneMemberListHeader>
+                    <div class="flex">
+                        <div class="header-title-row">
+                            {{ activeZone.name }} ({{ activeZone.members.length }})
+                        </div>
+                        <div class="flex-spacer"></div>
+                        <button type="button" class="close-button" (click)="closeMembers()">
+                            <clr-icon shape="close"></clr-icon>
+                        </button>
+                    </div>
+                    <div class="controls">
+                        <vdr-dropdown>
+                            <button
+                                type="button"
+                                class="btn btn-secondary btn-sm"
+                                vdrDropdownTrigger
+                                [disabled]="selectedMemberIds.length === 0"
+                            >
+                                {{ 'common.with-selected' | translate }}
+                                <clr-icon shape="caret down"></clr-icon>
+                            </button>
+                            <vdr-dropdown-menu vdrPosition="bottom-right">
+                                <button
+                                    type="button"
+                                    class="delete-button"
+                                    (click)="removeFromZone(activeZone, selectedMemberIds)"
+                                    vdrDropdownItem
+                                    [disabled]="!('DeleteSettings' | hasPermission)"
+                                >
+                                    <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                    {{ 'settings.remove-from-zone' | translate }}
+                                </button>
+                            </vdr-dropdown-menu>
+                        </vdr-dropdown>
+                        <button class="btn btn-secondary btn-sm" (click)="addToZone(activeZone)">
+                            {{ 'settings.add-countries-to-zone' | translate: { zoneName: activeZone.name } }}
+                        </button>
+                    </div>
+                </div>
+                <div *vdrZoneMemberControls="let member = member">
+                    <vdr-dropdown>
+                        <button type="button" class="btn btn-link btn-sm" vdrDropdownTrigger>
+                            {{ 'common.actions' | translate }}
+                            <clr-icon shape="caret down"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                            <a
+                                type="button"
+                                [routerLink]="['/settings', 'countries', member.id]"
+                                vdrDropdownItem
+                            >
+                                <clr-icon shape="edit"></clr-icon>
+                                {{ 'common.edit' | translate }}
+                            </a>
+                            <button
+                                type="button"
+                                class="delete-button"
+                                (click)="removeFromZone(activeZone, [member.id])"
+                                vdrDropdownItem
+                                [disabled]="!('DeleteSettings' | hasPermission)"
+                            >
+                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                {{ 'settings.remove-from-zone' | translate }}
+                            </button>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </div>
+            </vdr-zone-member-list>
+        </ng-container>
+    </div>
+</div>

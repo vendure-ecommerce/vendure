@@ -640,9 +640,9 @@ export enum CurrencyCode {
   /** Canadian dollar */
   CAD = 'CAD',
   /** Congolese franc */
-  CHE = 'CHE',
+  CDF = 'CDF',
   /** Swiss franc */
-  CHW = 'CHW',
+  CHF = 'CHF',
   /** Chilean peso */
   CLP = 'CLP',
   /** Renminbi (Chinese) yuan */
@@ -5344,10 +5344,10 @@ export type GetZonesQuery = (
   { __typename?: 'Query' }
   & { zones: Array<(
     { __typename?: 'Zone' }
-    & Pick<Zone, 'id' | 'name'>
+    & Pick<Zone, 'id' | 'createdAt' | 'updatedAt' | 'name'>
     & { members: Array<(
       { __typename?: 'Country' }
-      & Pick<Country, 'id' | 'name' | 'code'>
+      & Pick<Country, 'createdAt' | 'updatedAt' | 'id' | 'name' | 'code' | 'enabled'>
     )> }
   )> }
 );
@@ -5388,6 +5388,19 @@ export type UpdateZoneMutation = (
   & { updateZone: (
     { __typename?: 'Zone' }
     & ZoneFragment
+  ) }
+);
+
+export type DeleteZoneMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteZoneMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteZone: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'message' | 'result'>
   ) }
 );
 
@@ -7132,6 +7145,12 @@ export namespace UpdateZone {
   export type Variables = UpdateZoneMutationVariables;
   export type Mutation = UpdateZoneMutation;
   export type UpdateZone = ZoneFragment;
+}
+
+export namespace DeleteZone {
+  export type Variables = DeleteZoneMutationVariables;
+  export type Mutation = DeleteZoneMutation;
+  export type DeleteZone = DeleteZoneMutation['deleteZone'];
 }
 
 export namespace AddMembersToZone {

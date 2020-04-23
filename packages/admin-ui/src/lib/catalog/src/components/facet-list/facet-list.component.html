@@ -50,7 +50,8 @@
         </td>
         <td class="left align-middle" [class.private]="facet.isPrivate">
             <vdr-chip>
-                {{ facet.isPrivate ? ('catalog.private' | translate) : ('catalog.public' | translate) }}
+                <ng-container *ngIf="!facet.isPrivate; else private">{{ 'catalog.public' | translate }}</ng-container>
+                <ng-template #private>{{ 'catalog.private' | translate }}</ng-template>
             </vdr-chip>
         </td>
         <td class="right align-middle" [class.private]="facet.isPrivate">

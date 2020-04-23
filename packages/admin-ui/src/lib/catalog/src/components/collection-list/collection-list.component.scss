@@ -13,7 +13,7 @@
 
 .collection-wrapper {
     display: flex;
-    height: 100%;
+    height: calc(100% - 50px);
 
     vdr-collection-tree {
         flex: 1;

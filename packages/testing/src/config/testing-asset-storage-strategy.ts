@@ -43,4 +43,8 @@ export class TestingAssetStorageStrategy implements AssetStorageStrategy {
     fileExists(fileName: string): Promise<boolean> {
         return Promise.resolve(false);
     }
+
+    deleteFile(identifier: string): Promise<void> {
+        return Promise.resolve();
+    }
 }

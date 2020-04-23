@@ -25,6 +25,7 @@
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",
     "create-fulfillment-nothing-to-fulfill": "Nothing to fulfill",
     "default-channel-not-found":  "Default channel not found",
+    "email-address-must-be-unique": "The email address must be unique",
     "email-address-not-available": "This email address is not available",
     "email-address-not-verified": "Please verify this email address before logging in",
     "entity-has-no-translation-in-language": "Translatable entity '{ entityName }' has not been translated into the requested language ({ languageCode })",
@@ -43,8 +44,10 @@
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
     "language-not-available-in-global-settings": "Language \"{code}\" is not available. First enable it via GlobalSettings and try again.",
     "missing-password-on-registration": "A password must be provided when `authOptions.requireVerification` is set to \"false\"",
+    "no-active-tax-zone": "The active tax zone could not be determined. Ensure a default tax zone is set for the current channel.",
     "no-search-plugin-configured": "No search plugin has been configured",
     "no-valid-channel-specified": "No valid channel was specified (ensure the 'vendure-token' header was specified in the request)",
+    "order-already-has-customer": "This Order already has a Customer associated with it",
     "order-contents-may-only-be-modified-in-addingitems-state": "Order contents may only be modified when in the \"AddingItems\" state",
     "order-does-not-contain-line-with-id": "This order does not contain an OrderLine with the id { id }",
     "order-item-quantity-must-be-positive": "{ quantity } is not a valid quantity for an OrderItem",
@@ -78,6 +81,7 @@
     "facet-used": "The selected Facet includes FacetValues which are assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
     "facet-value-force-deleted": "The selected FacetValue was removed from {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}} and deleted",
     "facet-value-used": "The selected FacetValue is assigned to {products, plural, =0 {} one {1 Product} other {# Products}}{both, select, both { , } single {}}{variants, plural, =0 {} one {1 ProductVariant} other {# ProductVariants}}",
+    "zone-used-in-channels": "The selected Zone cannot be deleted as it used as a default in the following Channels: { channelCodes }",
     "zone-used-in-tax-rates": "The selected Zone cannot be deleted as it is used in the following TaxRates: { taxRateNames }"
   }
 }

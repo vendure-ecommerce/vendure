@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ZONE_FRAGMENT } from './graphql/fragments';
 import {
@@ -15,9 +15,10 @@ import {
     GetZone,
     GetZones,
     RemoveMembersFromZone,
+    UpdateChannel,
     UpdateZone,
 } from './graphql/generated-e2e-admin-types';
-import { GET_COUNTRY_LIST } from './graphql/shared-definitions';
+import { GET_COUNTRY_LIST, UPDATE_CHANNEL } from './graphql/shared-definitions';
 
 // tslint:disable:no-non-null-assertion
 
@@ -135,6 +136,53 @@ describe('Facet resolver', () => {
                 message:
                     'The selected Zone cannot be deleted as it is used in the following ' +
                     'TaxRates: Standard Tax Oceania, Reduced Tax Oceania, Zero Tax Oceania',
+            });
+
+            const result2 = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);
+            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+        });
+
+        it('does not delete Zone that is used as a Channel defaultTaxZone', async () => {
+            await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultTaxZoneId: oceania.id,
+                },
+            });
+
+            const result1 = await adminClient.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
+                id: oceania.id,
+            });
+
+            expect(result1.deleteZone).toEqual({
+                result: DeletionResult.NOT_DELETED,
+                message:
+                    'The selected Zone cannot be deleted as it used as a default in the following Channels: ' +
+                    '__default_channel__',
+            });
+
+            const result2 = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);
+            expect(result2.zones.find(c => c.id === oceania.id)).not.toBeUndefined();
+        });
+
+        it('does not delete Zone that is used as a Channel defaultShippingZone', async () => {
+            await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                    defaultShippingZoneId: oceania.id,
+                },
+            });
+
+            const result1 = await adminClient.query<DeleteZone.Mutation, DeleteZone.Variables>(DELETE_ZONE, {
+                id: oceania.id,
+            });
+
+            expect(result1.deleteZone).toEqual({
+                result: DeletionResult.NOT_DELETED,
+                message:
+                    'The selected Zone cannot be deleted as it used as a default in the following Channels: ' +
+                    '__default_channel__',
             });
 
             const result2 = await adminClient.query<GetZones.Query>(GET_ZONE_LIST);

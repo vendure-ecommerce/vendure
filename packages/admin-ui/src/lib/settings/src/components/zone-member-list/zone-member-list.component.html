@@ -1,0 +1,40 @@
+<div class="members-header">
+    <ng-container *ngIf="headerTemplate">
+        <ng-container *ngTemplateOutlet="headerTemplate.templateRef"></ng-container>
+    </ng-container>
+    <input
+        type="text"
+        [placeholder]="'settings.filter-by-member-name' | translate"
+        class="clr-input"
+        [(ngModel)]="filterTerm"
+    />
+</div>
+<vdr-data-table
+    [items]="filteredMembers()"
+    [allSelected]="areAllSelected()"
+    [isRowSelectedFn]="('UpdateSettings' | hasPermission) && isMemberSelected"
+    (rowSelectChange)="toggleSelectMember($event)"
+    (allSelectChange)="toggleSelectAll()"
+>
+    <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.enabled' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-member="item">
+        <td class="left align-middle">{{ member.code }}</td>
+        <td class="left align-middle">{{ member.name }}</td>
+        <td class="left align-middle">
+            <clr-icon
+                [class.is-success]="member.enabled"
+                [attr.shape]="member.enabled ? 'check' : 'times'"
+            ></clr-icon>
+        </td>
+        <td class="right align-middle">
+            <ng-container *ngIf="controlsTemplate">
+                <ng-container
+                    *ngTemplateOutlet="controlsTemplate.templateRef; context: { member: member }"
+                ></ng-container>
+            </ng-container>
+        </td>
+    </ng-template>
+</vdr-data-table>

@@ -185,6 +185,12 @@ export class AssetService {
         // after deletion (the .remove() method sets it to undefined)
         const deletedAsset = new Asset(asset);
         await this.connection.getRepository(Asset).remove(asset);
+        try {
+            await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.source);
+            await this.configService.assetOptions.assetStorageStrategy.deleteFile(asset.preview);
+        } catch (e) {
+            Logger.error(`error.could-not-delete-asset-file`, undefined, e.stack);
+        }
         this.eventBus.publish(new AssetEvent(ctx, deletedAsset, 'deleted'));
         return {
             result: DeletionResult.DELETED,

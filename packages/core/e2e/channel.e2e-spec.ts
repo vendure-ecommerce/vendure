@@ -34,6 +34,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     ME,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -447,17 +448,6 @@ const GET_CHANNELS = gql`
             id
             code
             token
-        }
-    }
-`;
-
-const UPDATE_CHANNEL = gql`
-    mutation UpdateChannel($input: UpdateChannelInput!) {
-        updateChannel(input: $input) {
-            id
-            code
-            defaultLanguageCode
-            currencyCode
         }
     }
 `;

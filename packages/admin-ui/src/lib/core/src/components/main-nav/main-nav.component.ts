@@ -144,6 +144,12 @@ export class MainNavComponent implements OnInit {
                         id: 'countries',
                         label: _('nav.countries'),
                         routerLink: ['/settings', 'countries'],
+                        icon: 'flag',
+                    },
+                    {
+                        id: 'zones',
+                        label: _('nav.zones'),
+                        routerLink: ['/settings', 'zones'],
                         icon: 'world',
                     },
                     {

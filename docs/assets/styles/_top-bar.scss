@@ -1,9 +1,11 @@
-@import "variables";
+@import 'variables';
+
+$top-bar-bg: #2a2929;
 
 .top-bar {
     position: fixed;
     padding: 0 24px;
-    background-color: #2a2929;
+    background-color: $top-bar-bg;
     width: 100%;
     top: 0;
     height: $top-bar-height;
@@ -20,7 +22,7 @@
         margin: auto;
     }
 
-    @media all and (max-width: $sm-breakpoint){
+    @media all and (max-width: $sm-breakpoint) {
         padding: 12px;
         font-size: $font-size-14;
     }
@@ -28,7 +30,8 @@
     &.landing-page {
         background-color: transparent;
         .right {
-            a:link, a:visited {
+            a:link,
+            a:visited {
                 color: $gray-700;
             }
             a:hover {
@@ -36,12 +39,20 @@
                 text-decoration: none;
             }
         }
+        .submenu .trigger-icon {
+            filter: invert(0.3);
+        }
 
         &.floating {
-            background-color: #2a2929;
+            background-color: $top-bar-bg;
+
+            .submenu .trigger-icon {
+                filter: invert(0.8);
+            }
 
             .right {
-                a:link, a:visited {
+                a:link,
+                a:visited {
                     color: $gray-400;
                 }
                 a:hover {
@@ -78,12 +89,11 @@
             font-family: $brand-font-face;
             display: inline-block;
             margin-right: 12px;
-            @media all and (max-width: $sm-breakpoint){
+            @media all and (max-width: $sm-breakpoint) {
                 display: none;
             }
         }
     }
-
 
     .version-label {
         display: inline-block;
@@ -97,20 +107,79 @@
     }
 
     .right {
+        display: flex;
         a {
             margin-left: 18px;
         }
-        a:link, a:visited {
+        a:link,
+        a:visited {
             color: $gray-400;
         }
         a:hover {
             color: $gray-100;
             text-decoration: none;
         }
-        @media all and (max-width: $sm-breakpoint){
+        @media all and (max-width: $sm-breakpoint) {
             text-align: right;
             a {
                 margin-left: 12px;
+            }
+        }
+    }
+
+    .submenu {
+        position: relative;
+        .trigger {
+            display: flex;
+            align-items: flex-end;
+        }
+        .trigger-icon {
+            transform: rotateZ(180deg);
+            width: 12px;
+            height: 12px;
+            filter: invert(0.8);
+            margin-left: 3px;
+            margin-bottom: 2px;
+        }
+
+        .overlay {
+            position: absolute;
+            @media all and (max-width: $sm-breakpoint) {
+                top: 28px;
+            }
+            top: 34px;
+            right: 0;
+            border-radius: 2px;
+            visibility: hidden;
+            overflow: hidden;
+            height: 0;
+            background-color: $top-bar-bg;
+            padding: $padding-4;
+            box-shadow: 0px 5px 3px 0px rgba(0, 0, 0, 0.21);
+            opacity: 0;
+            a:link,
+            a:visited {
+                margin: $padding-16 $padding-8;
+                color: $gray-400;
+            }
+            &.expanded {
+                visibility: visible;
+                height: auto;
+                opacity: 1;
+                transition: visibility 0s, opacity 0.2s;
+            }
+        }
+
+        .overlay a {
+            display: flex;
+            align-items: center;
+            // justify-content: space-between;
+            flex: 1;
+            .menu-icon {
+                width: 24px;
+                height: 24px;
+                filter: contrast(0);
+                margin-right: 12px;
             }
         }
     }
@@ -131,7 +200,7 @@
         &:focus {
             background-color: $gray-300;
         }
-        @media all and (max-width: $sm-breakpoint){
+        @media all and (max-width: $sm-breakpoint) {
             background-color: $gray-300;
         }
     }
@@ -145,7 +214,7 @@
             width: 24px;
             height: 24px;
         }
-        @media all and (max-width: $sm-breakpoint){
+        @media all and (max-width: $sm-breakpoint) {
             display: block;
         }
     }

@@ -1,0 +1,20 @@
+@import "variables";
+
+.members-header {
+    background-color: $color-grey-100;
+    position: sticky;
+    top: 0;
+    padding: 6px;
+    z-index: 5;
+    border-bottom: 1px solid $color-grey-300;
+
+    .header-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .clr-input {
+        width: 100%;
+    }
+}

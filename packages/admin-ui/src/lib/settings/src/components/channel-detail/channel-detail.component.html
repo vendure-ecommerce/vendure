@@ -50,7 +50,9 @@
             formControlName="defaultLanguageCode"
             [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
-            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">{{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})</option>
+            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode"
+                >{{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})</option
+            >
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
@@ -74,6 +76,14 @@
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
+    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId" clrAlertType="danger" [clrAlertClosable]="false">
+        <clr-alert-item>
+            <span class="alert-text">
+                {{ 'error.no-default-tax-zone-set' | translate }}
+            </span>
+        </clr-alert-item>
+    </clr-alert>
+
     <vdr-form-field [label]="'settings.default-shipping-zone' | translate" for="defaultShippingZoneId">
         <select
             clrSelect
@@ -84,4 +94,11 @@
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
+    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId" clrAlertType="warning" [clrAlertClosable]="false">
+        <clr-alert-item>
+            <span class="alert-text">
+                {{ 'error.no-default-shipping-zone-set' | translate }}
+            </span>
+        </clr-alert-item>
+    </clr-alert>
 </form>

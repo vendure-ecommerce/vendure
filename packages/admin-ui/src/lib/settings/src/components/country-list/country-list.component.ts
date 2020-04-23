@@ -1,14 +1,17 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
-import { map, mergeMap, startWith, switchMap, take, tap } from 'rxjs/operators';
-
-import { Country, DeletionResult, GetCountryList, GetZones, Zone } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
-import { ZoneSelectorDialogComponent } from '../zone-selector-dialog/zone-selector-dialog.component';
+import {
+    DataService,
+    DeletionResult,
+    GetCountryList,
+    GetZones,
+    ModalService,
+    NotificationService,
+    Zone,
+} from '@vendure/admin-ui/core';
+import { combineLatest, EMPTY, Observable, Subject } from 'rxjs';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-country-list',
@@ -21,7 +24,6 @@ export class CountryListComponent implements OnInit, OnDestroy {
     countriesWithZones$: Observable<Array<GetCountryList.Items & { zones: GetZones.Zones[] }>>;
     zones$: Observable<GetZones.Zones[]>;
 
-    selectedCountryIds: string[] = [];
     private countries: GetCountryList.Items[] = [];
     private destroy$ = new Subject();
 
@@ -52,104 +54,6 @@ export class CountryListComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
-    }
-
-    areAllSelected(): boolean {
-        return this.selectedCountryIds.length === this.countries.length;
-    }
-
-    toggleSelectAll() {
-        if (this.areAllSelected()) {
-            this.selectedCountryIds = [];
-        } else {
-            this.selectedCountryIds = this.countries.map(v => v.id);
-        }
-    }
-
-    toggleSelectCountry(country: Country.Fragment) {
-        const index = this.selectedCountryIds.indexOf(country.id);
-        if (-1 < index) {
-            this.selectedCountryIds.splice(index, 1);
-        } else {
-            this.selectedCountryIds.push(country.id);
-        }
-    }
-
-    isCountrySelected = (country: Country.Fragment): boolean => {
-        return -1 < this.selectedCountryIds.indexOf(country.id);
-    };
-
-    addCountriesToZone() {
-        this.zones$
-            .pipe(
-                take(1),
-                mergeMap(zones => {
-                    return this.modalService.fromComponent(ZoneSelectorDialogComponent, {
-                        locals: {
-                            allZones: zones,
-                            canCreateNewZone: true,
-                        },
-                    });
-                }),
-                mergeMap(selection => {
-                    if (selection && this.isZone(selection)) {
-                        return this.dataService.settings
-                            .addMembersToZone(selection.id, this.selectedCountryIds)
-                            .pipe(map(data => data.addMembersToZone));
-                    } else if (selection) {
-                        return this.dataService.settings
-                            .createZone({
-                                name: typeof selection === 'string' ? selection : selection.name,
-                                memberIds: this.selectedCountryIds,
-                            })
-                            .pipe(map(data => data.createZone));
-                    } else {
-                        return of(undefined);
-                    }
-                }),
-            )
-            .subscribe(result => {
-                if (result) {
-                    this.notificationService.success(_(`settings.add-countries-to-zone-success`), {
-                        countryCount: this.selectedCountryIds.length,
-                        zoneName: result.name,
-                    });
-                    this.selectedCountryIds = [];
-                }
-            });
-    }
-
-    removeCountriesFromZone() {
-        this.zones$
-            .pipe(
-                take(1),
-                mergeMap(zones => {
-                    return this.modalService.fromComponent(ZoneSelectorDialogComponent, {
-                        locals: {
-                            allZones: zones,
-                            canCreateNewZone: false,
-                        },
-                    });
-                }),
-                mergeMap(selection => {
-                    if (selection && this.isZone(selection)) {
-                        return this.dataService.settings
-                            .removeMembersFromZone(selection.id, this.selectedCountryIds)
-                            .pipe(map(data => data.removeMembersFromZone));
-                    } else {
-                        return of(undefined);
-                    }
-                }),
-            )
-            .subscribe(result => {
-                if (result) {
-                    this.notificationService.success(_(`settings.remove-countries-from-zone-success`), {
-                        countryCount: this.selectedCountryIds.length,
-                        zoneName: result.name,
-                    });
-                    this.selectedCountryIds = [];
-                }
-            });
     }
 
     deleteCountry(countryId: string) {

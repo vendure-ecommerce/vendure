@@ -60,6 +60,10 @@ export class LocalAssetStorageStrategy implements AssetStorageStrategy {
         return Promise.resolve(readStream);
     }
 
+    deleteFile(identifier: string): Promise<void> {
+        return fs.unlink(this.identifierToFilePath(identifier));
+    }
+
     private filePathToIdentifier(filePath: string): string {
         const filePathDirname = path.dirname(filePath);
         const deltaDirname = filePathDirname.replace(this.uploadPath, '');

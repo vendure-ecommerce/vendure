@@ -342,7 +342,6 @@ export class CollectionService implements OnModuleInit {
             .leftJoin('collection.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
             .getMany();
-        const normalizedIndex = Math.max(Math.min(input.index, siblings.length), 0);
 
         if (!idsAreEqual(target.parent.id, input.parentId)) {
             target.parent = new Collection({ id: input.parentId });

@@ -31,6 +31,7 @@ import { TaxCategoryDetailComponent } from './components/tax-category-detail/tax
 import { TaxCategoryListComponent } from './components/tax-category-list/tax-category-list.component';
 import { TaxRateDetailComponent } from './components/tax-rate-detail/tax-rate-detail.component';
 import { TaxRateListComponent } from './components/tax-rate-list/tax-rate-list.component';
+import { ZoneListComponent } from './components/zone-list/zone-list.component';
 import { AdministratorResolver } from './providers/routing/administrator-resolver';
 import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
@@ -130,6 +131,13 @@ export const settingsRoutes: Route[] = [
         canDeactivate: [CanDeactivateDetailGuard],
         data: {
             breadcrumb: countryBreadcrumb,
+        },
+    },
+    {
+        path: 'zones',
+        component: ZoneListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.zones'),
         },
     },
     {

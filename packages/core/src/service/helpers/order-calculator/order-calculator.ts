@@ -7,6 +7,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
 import { PromotionUtils, ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
@@ -46,6 +47,9 @@ export class OrderCalculator {
         const zones = this.zoneService.findAll(ctx);
         const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel, order);
         let taxZoneChanged = false;
+        if (!activeTaxZone) {
+            throw new InternalServerError(`error.no-active-tax-zone`);
+        }
         if (!order.taxZoneId || !idsAreEqual(order.taxZoneId, activeTaxZone.id)) {
             order.taxZoneId = activeTaxZone.id;
             taxZoneChanged = true;

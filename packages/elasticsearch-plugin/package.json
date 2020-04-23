@@ -1,6 +1,6 @@
 {
   "name": "@vendure/elasticsearch-plugin",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "license": "MIT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -12,7 +12,7 @@
     "build": "rimraf lib && tsc -p ./tsconfig.build.json",
     "lint": "tslint --fix --project ./",
     "test": "jest --config ./jest.config.js",
-    "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=elasticsearch-plugin"
+    "e2e": "node e2e/check-connection.js || jest --config ../../e2e-common/jest-config.js --runInBand --package=elasticsearch-plugin"
   },
   "publishConfig": {
     "access": "public"
@@ -22,8 +22,8 @@
     "deepmerge": "^4.0.0"
   },
   "devDependencies": {
-    "@vendure/common": "^0.11.0",
-    "@vendure/core": "^0.11.0",
+    "@vendure/common": "^0.11.1",
+    "@vendure/core": "^0.11.1",
     "rimraf": "^3.0.0",
     "typescript": "3.8.3"
   }

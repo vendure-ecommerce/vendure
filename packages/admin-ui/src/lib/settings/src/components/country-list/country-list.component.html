@@ -7,14 +7,6 @@
             [placeholder]="'settings.search-country-by-name' | translate"
             class="clr-input search-input"
         />
-        <div *ngIf="selectedCountryIds.length">
-            <button class="btn btn-sm" (click)="addCountriesToZone()">
-                {{ 'settings.add-countries-to-zone' | translate }}
-            </button>
-            <button class="btn btn-sm" (click)="removeCountriesFromZone()">
-                {{ 'settings.remove-countries-from-zone' | translate }}
-            </button>
-        </div>
     </vdr-ab-left>
 
     <vdr-ab-right>
@@ -28,10 +20,6 @@
 
 <vdr-data-table
     [items]="countriesWithZones$ | async"
-    [allSelected]="areAllSelected()"
-    [isRowSelectedFn]="('UpdateSettings' | hasPermission) && isCountrySelected"
-    (rowSelectChange)="toggleSelectCountry($event)"
-    (allSelectChange)="toggleSelectAll()"
 >
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
     <vdr-dt-column [expand]="true">{{ 'common.name' | translate }}</vdr-dt-column>
@@ -43,11 +31,13 @@
         <td class="left align-middle">{{ country.code }}</td>
         <td class="left align-middle">{{ country.name }}</td>
         <td class="left align-middle">
-            <vdr-chip *ngFor="let zone of country.zones" [colorFrom]="zone.id">{{ zone.name }}</vdr-chip>
+            <a [routerLink]="['/settings', 'zones', { contents: zone.id }]" *ngFor="let zone of country.zones">
+            <vdr-chip [colorFrom]="zone.name">{{ zone.name }}</vdr-chip>
+            </a>
         </td>
         <td class="left align-middle">
             <clr-icon
-                [class.enabled]="country.enabled"
+                [class.is-success]="country.enabled"
                 [attr.shape]="country.enabled ? 'check' : 'times'"
             ></clr-icon>
         </td>

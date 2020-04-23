@@ -37,6 +37,9 @@
         @media screen and (max-width: $sm-breakpoint) {
             font-size: 1.2em;
         }
+        strong {
+            font-weight: bold;
+        }
     }
 
     .content {
@@ -174,6 +177,11 @@
             @media all and (max-width: $sm-breakpoint){
                 flex-direction: column;
             }
+        }
+        .install-code {
+            width: 71vw;
+            margin: auto;
+            margin-bottom: $padding-16 * 2;
         }
         .install-code, .getting-started-link {
             flex: 1;

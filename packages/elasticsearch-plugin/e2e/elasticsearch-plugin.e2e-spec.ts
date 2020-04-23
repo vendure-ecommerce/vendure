@@ -1,10 +1,12 @@
-/* tslint:disable:no-non-null-assertion */
+/* tslint:disable:no-non-null-assertion no-console */
+import { Client } from '@elastic/elasticsearch';
 import { SortOrder } from '@vendure/common/lib/generated-types';
 import { pick } from '@vendure/common/lib/pick';
 import {
     DefaultJobQueuePlugin,
     DefaultLogger,
     facetValueCollectionFilter,
+    Logger,
     LogLevel,
     mergeConfig,
 } from '@vendure/core';
@@ -50,16 +52,27 @@ import {
     UPDATE_PRODUCT_VARIANTS,
     UPDATE_TAX_RATE,
 } from '../../core/e2e/graphql/shared-definitions';
+import { SEARCH_PRODUCTS_SHOP } from '../../core/e2e/graphql/shop-definitions';
+import { awaitRunningJobs } from '../../core/e2e/utils/await-running-jobs';
+import { loggerCtx } from '../src/constants';
 import { ElasticsearchPlugin } from '../src/plugin';
 
-import { SEARCH_PRODUCTS_SHOP } from './../../core/e2e/graphql/shop-definitions';
-import { awaitRunningJobs } from './../../core/e2e/utils/await-running-jobs';
+// tslint:disable-next-line:no-var-requires
+const { elasticsearchHost, elasticsearchPort } = require('./constants');
 import {
     GetJobInfo,
     JobState,
     Reindex,
     SearchProductsAdmin,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
+
+/**
+ * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
+ * We increase the timeout to 30 seconds to prevent failure due to timeouts.
+ */
+if (process.env.CI) {
+    jest.setTimeout(10 * 3000);
+}
 
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
@@ -74,8 +87,8 @@ describe('Elasticsearch plugin', () => {
             plugins: [
                 ElasticsearchPlugin.init({
                     indexPrefix: 'e2e-tests',
-                    port: process.env.CI ? +(process.env.E2E_ELASTIC_PORT || 9200) : 9200,
-                    host: process.env.CI ? 'http://127.0.0.1' : 'http://192.168.99.100',
+                    port: elasticsearchPort,
+                    host: elasticsearchHost,
                 }),
                 DefaultJobQueuePlugin,
             ],
