@@ -72,6 +72,10 @@ export const devConfig: VendureConfig = {
         }),
         AdminUiPlugin.init({
             port: 5001,
+            adminUiConfig: {
+                apiHost: 'https://my-host.com',
+                apiPort: 443,
+            },
         }),
     ],
 };
