@@ -93,7 +93,8 @@ ${extensions
     .map(e =>
         e.ngModules
             .filter(m => m.type === 'shared')
-            .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`),
+            .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`)
+			.join(''),
     )
     .join('')}
 
