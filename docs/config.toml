@@ -4,6 +4,7 @@ title = "Vendure E-commerce"
 googleAnalytics = "UA-133911942-1"
 pygmentsCodeFences = true
 pygmentsUseClasses = true
+enableGitInfo = true
 images = ["share-image.jpg"]
 disableKinds = [
   "taxonomy",
