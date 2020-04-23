@@ -66,6 +66,14 @@ import {
     SearchProductsAdmin,
 } from './graphql/generated-e2e-elasticsearch-plugin-types';
 
+/**
+ * The Elasticsearch tests sometimes take a long time in CI due to limited resources.
+ * We increase the timeout to 30 seconds to prevent failure due to timeouts.
+ */
+if (process.env.CI) {
+    jest.setTimeout(10 * 3000);
+}
+
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
