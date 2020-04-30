@@ -11,6 +11,8 @@ import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 
 import { ApiModule } from './api/api.module';
+import { Injector } from './common/injector';
+import { InjectableStrategy } from './common/types/injectable-strategy';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
@@ -30,10 +32,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
     ) {}
 
     async onApplicationBootstrap() {
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        if (typeof jobQueueStrategy.init === 'function') {
-            await jobQueueStrategy.init(this.moduleRef);
-        }
+        await this.initInjectableStrategies();
     }
 
     configure(consumer: MiddlewareConsumer) {
@@ -60,10 +59,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
     }
 
     async onApplicationShutdown(signal?: string) {
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        if (typeof jobQueueStrategy.destroy === 'function') {
-            await jobQueueStrategy.destroy();
-        }
+        await this.destroyInjectableStrategies();
         if (signal) {
             Logger.info('Received shutdown signal:' + signal);
         }
@@ -84,5 +80,44 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             result[route].push(middleware.handler);
         }
         return result;
+    }
+
+    private async initInjectableStrategies() {
+        const injector = new Injector(this.moduleRef);
+        for (const strategy of this.getInjectableStrategies()) {
+            if (typeof strategy.init === 'function') {
+                await strategy.init(injector);
+            }
+        }
+    }
+
+    private async destroyInjectableStrategies() {
+        for (const strategy of this.getInjectableStrategies()) {
+            if (typeof strategy.destroy === 'function') {
+                await strategy.destroy();
+            }
+        }
+    }
+
+    private getInjectableStrategies(): InjectableStrategy[] {
+        const {
+            assetNamingStrategy,
+            assetPreviewStrategy,
+            assetStorageStrategy,
+        } = this.configService.assetOptions;
+        const { taxCalculationStrategy, taxZoneStrategy } = this.configService.taxOptions;
+        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        const { mergeStrategy } = this.configService.orderOptions;
+        const { entityIdStrategy } = this.configService;
+        return [
+            assetNamingStrategy,
+            assetPreviewStrategy,
+            assetStorageStrategy,
+            taxCalculationStrategy,
+            taxZoneStrategy,
+            jobQueueStrategy,
+            mergeStrategy,
+            entityIdStrategy,
+        ];
     }
 }

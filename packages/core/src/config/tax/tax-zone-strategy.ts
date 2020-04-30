@@ -1,3 +1,4 @@
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { Channel, Order, Zone } from '../../entity';
 
 /**
@@ -6,6 +7,6 @@ import { Channel, Order, Zone } from '../../entity';
  *
  * @docsCategory tax
  */
-export interface TaxZoneStrategy {
+export interface TaxZoneStrategy extends InjectableStrategy {
     determineTaxZone(zones: Zone[], channel: Channel, order?: Order): Zone | undefined;
 }

@@ -1,4 +1,5 @@
 import { RequestContext } from '../../api/common/request-context';
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { TaxCategory, Zone } from '../../entity';
 import { TaxCalculationResult } from '../../service/helpers/tax-calculator/tax-calculator';
 import { TaxRateService } from '../../service/services/tax-rate.service';
@@ -9,7 +10,7 @@ import { TaxRateService } from '../../service/services/tax-rate.service';
  *
  * @docsCategory tax
  */
-export interface TaxCalculationStrategy {
+export interface TaxCalculationStrategy extends InjectableStrategy {
     calculate(args: TaxCalculationArgs): TaxCalculationResult;
 }
 

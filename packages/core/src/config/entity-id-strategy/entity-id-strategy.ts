@@ -1,5 +1,7 @@
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
+
 /**
  * @description
  * Defines the type of primary key used for all entities in the database.
@@ -20,7 +22,7 @@ export type PrimaryKeyType = 'increment' | 'uuid';
  * @docsCategory entities
  * @docsPage Entity Configuration
  * */
-export interface EntityIdStrategy<T extends ID = ID> {
+export interface EntityIdStrategy<T extends ID = ID> extends InjectableStrategy {
     readonly primaryKeyType: PrimaryKeyType;
     encodeId: (primaryKey: T) => string;
     decodeId: (id: string) => T;

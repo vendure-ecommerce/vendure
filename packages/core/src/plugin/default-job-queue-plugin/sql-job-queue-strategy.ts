@@ -1,9 +1,8 @@
-import { ModuleRef } from '@nestjs/core';
-import { getConnectionToken } from '@nestjs/typeorm';
 import { JobListOptions, JobState } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Brackets, Connection, FindConditions, In, LessThan, Not } from 'typeorm';
+import { Brackets, Connection, FindConditions, In, LessThan } from 'typeorm';
 
+import { Injector } from '../../common/injector';
 import { JobQueueStrategy } from '../../config/job-queue/job-queue-strategy';
 import { Job } from '../../job-queue/job';
 import { ProcessContext } from '../../process-context/process-context';
@@ -22,11 +21,11 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
     private connection: Connection | undefined;
     private listQueryBuilder: ListQueryBuilder;
 
-    init(moduleRef: ModuleRef) {
-        const processContext = moduleRef.get(ProcessContext, { strict: false });
+    init(injector: Injector) {
+        const processContext = injector.get(ProcessContext);
         if (processContext.isServer) {
-            this.connection = moduleRef.get(getConnectionToken() as any, { strict: false });
-            this.listQueryBuilder = moduleRef.get(ListQueryBuilder, { strict: false });
+            this.connection = injector.getConnection();
+            this.listQueryBuilder = injector.get(ListQueryBuilder);
         }
     }
 

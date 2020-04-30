@@ -2,6 +2,7 @@ import { ModuleRef } from '@nestjs/core';
 import { JobListOptions } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { Job } from '../../job-queue/job';
 
 /**
@@ -12,30 +13,7 @@ import { Job } from '../../job-queue/job';
  *
  * @docsCategory JobQueue
  */
-export interface JobQueueStrategy {
-    /**
-     * @description
-     * Initialization logic to be run after the Vendure server has been initialized
-     * (in the Nestjs [onApplicationBootstrap hook](https://docs.nestjs.com/fundamentals/lifecycle-events)).
-     *
-     * Receives an instance of the application's ModuleRef, which can be used to inject
-     * providers:
-     *
-     * @example
-     * ```TypeScript
-     * init(moduleRef: ModuleRef) {
-     *     const myService = moduleRef.get(MyService, { strict: false });
-     * }
-     * ```
-     */
-    init?(moduleRef: ModuleRef): void | Promise<void>;
-
-    /**
-     * @description
-     * Teardown logic to be run when the Vendure server shuts down.
-     */
-    destroy?(): void | Promise<void>;
-
+export interface JobQueueStrategy extends InjectableStrategy {
     /**
      * @description
      * Add a new job to the queue.
