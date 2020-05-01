@@ -77,7 +77,9 @@ if (process.env.CI) {
 describe('Elasticsearch plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
-            port: 4050,
+            apiOptions: {
+                port: 4050,
+            },
             workerOptions: {
                 options: {
                     port: 4055,

@@ -143,7 +143,7 @@ import {
     imports: [PluginCommonModule],
     providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }],
     workers: [EmailProcessorController],
-    configuration: (config) => EmailPlugin.configure(config),
+    configuration: config => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
@@ -172,7 +172,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     static configure(config: RuntimeVendureConfig): RuntimeVendureConfig {
         if (isDevModeOptions(this.options) && this.options.mailboxPort !== undefined) {
             const route = 'mailbox';
-            config.middleware.push({
+            config.apiOptions.middleware.push({
                 handler: createProxyHandler({ port: this.options.mailboxPort, route, label: 'Dev Mailbox' }),
                 route,
             });
@@ -201,10 +201,10 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
             this.jobQueue = this.jobQueueService.createQueue({
                 name: 'send-email',
                 concurrency: 5,
-                process: (job) => {
+                process: job => {
                     this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
                         complete: () => job.complete(),
-                        error: (err) => job.fail(err),
+                        error: err => job.fail(err),
                     });
                 },
             });
@@ -220,7 +220,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
 
     private async setupEventSubscribers() {
         for (const handler of EmailPlugin.options.handlers) {
-            this.eventBus.ofType(handler.event).subscribe((event) => {
+            this.eventBus.ofType(handler.event).subscribe(event => {
                 return this.handleEvent(handler, event);
             });
         }
@@ -237,7 +237,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
                 (event as EventWithAsyncData<EventWithContext, any>).data = await handler._loadDataFn({
                     event,
                     connection: this.connection,
-                    inject: (t) => this.moduleRef.get(t, { strict: false }),
+                    inject: t => this.moduleRef.get(t, { strict: false }),
                 });
             }
             const result = await handler.handle(event as any, EmailPlugin.options.globalTemplateVars);

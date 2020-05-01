@@ -27,7 +27,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         ShopApiModule,
         configureGraphQLModule(configService => ({
             apiType: 'shop',
-            apiPath: configService.shopApiPath,
+            apiPath: configService.apiOptions.shopApiPath,
             typePaths: ['type', 'shop-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
@@ -35,7 +35,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         })),
         configureGraphQLModule(configService => ({
             apiType: 'admin',
-            apiPath: configService.adminApiPath,
+            apiPath: configService.apiOptions.adminApiPath,
             typePaths: ['type', 'admin-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),

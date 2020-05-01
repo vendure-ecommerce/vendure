@@ -29,16 +29,22 @@ import { RuntimeVendureConfig } from './vendure-config';
  * @docsCategory configuration
  */
 export const defaultConfig: RuntimeVendureConfig = {
-    channelTokenKey: 'vendure-token',
     defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
-    hostname: '',
-    port: 3000,
-    cors: {
-        origin: true,
-        credentials: true,
-    },
     logger: new DefaultLogger(),
+    apiOptions: {
+        hostname: '',
+        port: 3000,
+        adminApiPath: 'admin-api',
+        shopApiPath: 'shop-api',
+        channelTokenKey: 'vendure-token',
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+        middleware: [],
+        apolloServerPlugins: [],
+    },
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
@@ -51,8 +57,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
     },
-    adminApiPath: 'admin-api',
-    shopApiPath: 'shop-api',
+
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
@@ -116,7 +121,5 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductVariant: [],
         User: [],
     },
-    middleware: [],
-    apolloServerPlugins: [],
     plugins: [],
 };

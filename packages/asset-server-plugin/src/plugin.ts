@@ -155,7 +155,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.assetOptions.assetNamingStrategy =
             this.options.namingStrategy || new HashedAssetNamingStrategy();
-        config.middleware.push({
+        config.apiOptions.middleware.push({
             handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
             route: this.options.route,
         });

@@ -1,3 +1,4 @@
+import { mergeConfig } from '@vendure/core';
 import {
     ApolloServerPlugin,
     GraphQLRequestContext,
@@ -8,7 +9,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { createTestEnvironment } from '../../testing/lib/create-test-environment';
 
 class MyApolloServerPlugin implements ApolloServerPlugin {
@@ -38,10 +39,13 @@ class MyApolloServerPlugin implements ApolloServerPlugin {
 }
 
 describe('custom apolloServerPlugins', () => {
-    const { server, adminClient, shopClient } = createTestEnvironment({
-        ...testConfig,
-        apolloServerPlugins: [new MyApolloServerPlugin()],
-    });
+    const { server, adminClient, shopClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            apiOptions: {
+                apolloServerPlugins: [new MyApolloServerPlugin()],
+            },
+        }),
+    );
 
     beforeAll(async () => {
         await server.init({

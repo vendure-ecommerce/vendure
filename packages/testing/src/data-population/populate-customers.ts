@@ -13,7 +13,7 @@ export async function populateCustomers(
     logging: boolean = false,
     simpleGraphQLClient = new SimpleGraphQLClient(
         config,
-        `http://localhost:${config.port}/${config.adminApiPath}`,
+        `http://localhost:${config.apiOptions.port}/${config.apiOptions.adminApiPath}`,
     ),
 ) {
     const client = simpleGraphQLClient;

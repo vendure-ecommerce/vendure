@@ -59,14 +59,9 @@ export interface TestEnvironment {
  */
 export function createTestEnvironment(config: Required<VendureConfig>): TestEnvironment {
     const server = new TestServer(config);
-    const adminClient = new SimpleGraphQLClient(
-        config,
-        `http://localhost:${config.port}/${config.adminApiPath}`,
-    );
-    const shopClient = new SimpleGraphQLClient(
-        config,
-        `http://localhost:${config.port}/${config.shopApiPath}`,
-    );
+    const { port, adminApiPath, shopApiPath } = config.apiOptions;
+    const adminClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${adminApiPath}`);
+    const shopClient = new SimpleGraphQLClient(config, `http://localhost:${port}/${shopApiPath}`);
     return {
         server,
         adminClient,

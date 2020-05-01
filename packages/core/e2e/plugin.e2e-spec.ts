@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { TestPluginWithAllLifecycleHooks } from './fixtures/test-plugins/with-all-lifecycle-hooks';
 import { TestAPIExtensionPlugin } from './fixtures/test-plugins/with-api-extensions';
@@ -129,7 +129,7 @@ describe('Plugins', () => {
     });
 
     describe('REST plugins', () => {
-        const restControllerUrl = `http://localhost:${testConfig.port}/test`;
+        const restControllerUrl = `http://localhost:${testConfig.apiOptions.port}/test`;
 
         it('public route', async () => {
             const response = await shopClient.fetch(restControllerUrl + '/public');
@@ -164,7 +164,7 @@ describe('Plugins', () => {
     describe('processContext', () => {
         it('server context', async () => {
             const response = await shopClient.fetch(
-                `http://localhost:${testConfig.port}/process-context/server`,
+                `http://localhost:${testConfig.apiOptions.port}/process-context/server`,
             );
             const body = await response.text();
 
@@ -172,7 +172,7 @@ describe('Plugins', () => {
         });
         it('worker context', async () => {
             const response = await shopClient.fetch(
-                `http://localhost:${testConfig.port}/process-context/worker`,
+                `http://localhost:${testConfig.apiOptions.port}/process-context/worker`,
             );
             const body = await response.text();
 

@@ -26,12 +26,14 @@ const path = require('path');
 {{/if}}
 
 {{#if isTs}}export {{/if}}const config{{#if isTs}}: VendureConfig{{/if}} = {
+    apiOptions: {
+        port: 3000,
+        adminApiPath: 'admin-api',
+        shopApiPath: 'shop-api',
+    },
     authOptions: {
         sessionSecret: '{{ sessionSecret }}',
     },
-    port: 3000,
-    adminApiPath: 'admin-api',
-    shopApiPath: 'shop-api',
     dbConnectionOptions: {
         type: '{{ dbType }}',
         {{#if requiresConnection}}

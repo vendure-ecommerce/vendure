@@ -54,7 +54,7 @@ export class RequestContextService {
     }
 
     private getChannelToken(req: Request): string {
-        const tokenKey = this.configService.channelTokenKey;
+        const tokenKey = this.configService.apiOptions.channelTokenKey;
         let channelToken = '';
 
         if (req && req.query && req.query[tokenKey]) {
@@ -86,7 +86,7 @@ export class RequestContextService {
             return false;
         }
         const permissionsOnChannel = user.roles
-            .filter((role) => role.channels.find((c) => idsAreEqual(c.id, channel.id)))
+            .filter(role => role.channels.find(c => idsAreEqual(c.id, channel.id)))
             .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
         return this.arraysIntersect(permissions, permissionsOnChannel);
     }

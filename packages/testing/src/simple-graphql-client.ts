@@ -53,7 +53,9 @@ export class SimpleGraphQLClient {
      */
     setChannelToken(token: string | null) {
         this.channelToken = token;
-        this.headers[this.vendureConfig.channelTokenKey] = this.channelToken;
+        if (this.vendureConfig.apiOptions.channelTokenKey) {
+            this.headers[this.vendureConfig.apiOptions.channelTokenKey] = this.channelToken;
+        }
     }
 
     /**
@@ -228,7 +230,7 @@ export class SimpleGraphQLClient {
             curl.setOpt(Curl.option.HTTPPOST, processedPostData);
             curl.setOpt(Curl.option.HTTPHEADER, [
                 `Authorization: Bearer ${this.authToken}`,
-                `${this.vendureConfig.channelTokenKey}: ${this.channelToken}`,
+                `${this.vendureConfig.apiOptions.channelTokenKey}: ${this.channelToken}`,
             ]);
             curl.perform();
             curl.on('end', (statusCode: any, body: any) => {

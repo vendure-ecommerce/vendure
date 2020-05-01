@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { DEFAULT_APP_PATH, defaultAvailableLanguages, defaultLanguage, loggerCtx } from './constants';
+import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
 
 /**
  * @description
@@ -137,7 +137,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         } else {
             port = this.options.port;
         }
-        config.middleware.push({
+        config.apiOptions.middleware.push({
             handler: createProxyHandler({
                 hostname: this.options.hostname,
                 port,
@@ -148,7 +148,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             route,
         });
         if (this.isDevModeApp(app)) {
-            config.middleware.push({
+            config.apiOptions.middleware.push({
                 handler: createProxyHandler({
                     hostname: this.options.hostname,
                     port,
@@ -244,9 +244,12 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
         };
         return {
-            adminApiPath: propOrDefault('adminApiPath', this.configService.adminApiPath),
+            adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
             apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'http://localhost'),
-            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || this.configService.port),
+            apiPort: propOrDefault(
+                'apiPort',
+                AdminUiPlugin.options.apiPort || this.configService.apiOptions.port,
+            ),
             tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',

@@ -71,7 +71,7 @@ export class TestServer {
      */
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
-        await new Promise((resolve) => global.setTimeout(resolve, 500));
+        await new Promise(resolve => global.setTimeout(resolve, 500));
         await this.app.close();
         if (this.worker) {
             await this.worker.close();
@@ -130,11 +130,11 @@ export class TestServer {
         try {
             DefaultLogger.hideNestBoostrapLogs();
             const app = await NestFactory.create(appModule.AppModule, {
-                cors: config.cors,
+                cors: config.apiOptions.cors,
                 logger: new Logger(),
             });
             let worker: INestMicroservice | undefined;
-            await app.listen(config.port);
+            await app.listen(config.apiOptions.port);
             if (config.workerOptions.runInMainProcess) {
                 const workerModule = await import('@vendure/core/dist/worker/worker.module');
                 worker = await NestFactory.createMicroservice(workerModule.WorkerModule, {

@@ -43,14 +43,15 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
+    const { hostname, port, cors } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
-        cors: config.cors,
+        cors,
         logger: new Logger(),
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    await app.listen(config.port, config.hostname);
+    await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
         try {
@@ -142,8 +143,9 @@ async function bootstrapWorkerInternal(
  */
 export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
-): Promise<ReadOnlyRequired<VendureConfig>> {
+): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
+        checkForDeprecatedOptions(userConfig);
         setConfig(userConfig);
     }
 
@@ -207,10 +209,10 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  * If the 'bearer' tokenMethod is being used, then we automatically expose the authTokenHeaderKey header
  * in the CORS options, making sure to preserve any user-configured exposedHeaders.
  */
-function setExposedHeaders(config: ReadOnlyRequired<VendureConfig>) {
+function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     if (config.authOptions.tokenMethod === 'bearer') {
         const authTokenHeaderKey = config.authOptions.authTokenHeaderKey as string;
-        const corsOptions = config.cors;
+        const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
             const { exposedHeaders } = corsOptions;
             let exposedHeadersWithAuthKey: string[];
@@ -257,17 +259,18 @@ function workerWelcomeMessage(config: VendureConfig) {
     Logger.info(`Vendure Worker started${transportString}${connectionString}`);
 }
 
-function logWelcomeMessage(config: VendureConfig) {
+function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
         version = require('../package.json').version;
     } catch (e) {
         version = ' unknown';
     }
+    const { port, shopApiPath, adminApiPath } = config.apiOptions;
     Logger.info(`=================================================`);
-    Logger.info(`Vendure server (v${version}) now running on port ${config.port}`);
-    Logger.info(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
-    Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
+    Logger.info(`Vendure server (v${version}) now running on port ${port}`);
+    Logger.info(`Shop API: http://localhost:${port}/${shopApiPath}`);
+    Logger.info(`Admin API: http://localhost:${port}/${adminApiPath}`);
     logProxyMiddlewares(config);
     Logger.info(`=================================================`);
 }
@@ -283,4 +286,24 @@ function disableSynchronize(userConfig: ReadOnlyRequired<VendureConfig>): ReadOn
         synchronize: false,
     } as ConnectionOptions;
     return config;
+}
+
+function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
+    const deprecatedApiOptions = [
+        'hostname',
+        'port',
+        'adminApiPath',
+        'shopApiPath',
+        'channelTokenKey',
+        'cors',
+        'middleware',
+        'apolloServerPlugins',
+    ];
+    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
+    if (deprecatedOptionsUsed.length) {
+        throw new Error(
+            `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +
+                `They have been moved to the "apiOptions" object. Please update your configuration.`,
+        );
+    }
 }

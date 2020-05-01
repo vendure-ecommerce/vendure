@@ -146,7 +146,7 @@ async function createGraphQLOptions(
             new IdCodecPlugin(idCodecService),
             new TranslateErrorsPlugin(i18nService),
             new AssetInterceptorPlugin(configService),
-            ...configService.apolloServerPlugins,
+            ...configService.apiOptions.apolloServerPlugins,
         ],
     } as GqlModuleOptions;
 

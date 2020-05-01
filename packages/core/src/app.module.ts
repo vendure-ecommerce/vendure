@@ -38,7 +38,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
     }
 
     configure(consumer: MiddlewareConsumer) {
-        const { adminApiPath, shopApiPath } = this.configService;
+        const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
         const i18nextHandler = this.i18nService.handle();
         const defaultMiddleware: Array<{ handler: RequestHandler; route?: string }> = [
             { handler: i18nextHandler, route: adminApiPath },
@@ -53,7 +53,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             defaultMiddleware.push({ handler: cookieHandler, route: adminApiPath });
             defaultMiddleware.push({ handler: cookieHandler, route: shopApiPath });
         }
-        const allMiddleware = defaultMiddleware.concat(this.configService.middleware);
+        const allMiddleware = defaultMiddleware.concat(middleware);
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {
             consumer.apply(...handlers).forRoutes(route);
@@ -76,7 +76,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
     ): { [route: string]: RequestHandler[] } {
         const result = {} as { [route: string]: RequestHandler[] };
         for (const middleware of middlewareArray) {
-            const route = middleware.route || this.configService.adminApiPath;
+            const route = middleware.route || this.configService.apiOptions.adminApiPath;
             if (!result[route]) {
                 result[route] = [];
             }
