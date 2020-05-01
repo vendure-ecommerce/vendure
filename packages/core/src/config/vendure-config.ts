@@ -15,6 +15,7 @@ import { OrderState } from '../service/helpers/order-state-machine/order-state';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -244,9 +245,24 @@ export interface AssetOptions {
 }
 
 /**
- * @docsCategory promotions
+ * @description
+ * Options related to products and collections.
  *
- * */
+ * @docsCategory configuration
+ */
+export interface CatalogOptions {
+    /**
+     * @description
+     * Allows custom {@link CollectionFilter}s to be defined.
+     *
+     * @default defaultCollectionFilters
+     */
+    collectionFilters: Array<CollectionFilter<any>>;
+}
+
+/**
+ * @docsCategory promotions
+ */
 export interface PromotionOptions {
     /**
      * @description
@@ -437,6 +453,11 @@ export interface VendureConfig {
      * Configuration for authorization.
      */
     authOptions: AuthOptions;
+    /**
+     * @description
+     * Configuration for Products and Collections.
+     */
+    catalogOptions?: CatalogOptions;
     /**
      * @description
      * The name of the property which contains the token of the

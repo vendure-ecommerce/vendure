@@ -23,10 +23,6 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { CollectionFilter } from '../../config/collection/collection-filter';
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '../../config/collection/default-collection-filters';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
@@ -54,10 +50,6 @@ import { FacetValueService } from './facet-value.service';
 
 export class CollectionService implements OnModuleInit {
     private rootCollection: Collection | undefined;
-    private availableFilters: Array<CollectionFilter<any>> = [
-        facetValueCollectionFilter,
-        variantNameCollectionFilter,
-    ];
     private applyFiltersQueue: JobQueue<ApplyCollectionFiletersJobData>;
 
     constructor(
@@ -79,18 +71,18 @@ export class CollectionService implements OnModuleInit {
 
         merge(productEvents$, variantEvents$)
             .pipe(debounceTime(50))
-            .subscribe(async event => {
+            .subscribe(async (event) => {
                 const collections = await this.connection.getRepository(Collection).find();
                 this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
-                    collectionIds: collections.map(c => c.id),
+                    collectionIds: collections.map((c) => c.id),
                 });
             });
 
         this.applyFiltersQueue = this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             concurrency: 1,
-            process: async job => {
+            process: async (job) => {
                 const collections = await this.connection
                     .getRepository(Collection)
                     .findByIds(job.data.collectionIds);
@@ -114,7 +106,7 @@ export class CollectionService implements OnModuleInit {
             })
             .getManyAndCount()
             .then(async ([collections, totalItems]) => {
-                const items = collections.map(collection =>
+                const items = collections.map((collection) =>
                     translateDeep(collection, ctx.languageCode, ['parent']),
                 );
                 return {
@@ -136,7 +128,9 @@ export class CollectionService implements OnModuleInit {
     }
 
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.availableFilters.map(x => configurableDefToOperation(ctx, x));
+        return this.configService.catalogOptions.collectionFilters.map((x) =>
+            configurableDefToOperation(ctx, x),
+        );
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
@@ -145,7 +139,7 @@ export class CollectionService implements OnModuleInit {
             .createQueryBuilder('collection')
             .leftJoinAndSelect('collection.translations', 'translation')
             .where(
-                qb =>
+                (qb) =>
                     `collection.id = ${qb
                         .subQuery()
                         .select('child.parentId')
@@ -194,7 +188,7 @@ export class CollectionService implements OnModuleInit {
         }
         const result = await qb.getMany();
 
-        return result.map(collection => translateDeep(collection, ctx.languageCode));
+        return result.map((collection) => translateDeep(collection, ctx.languageCode));
     }
 
     /**
@@ -220,7 +214,7 @@ export class CollectionService implements OnModuleInit {
         };
 
         const descendants = await getChildren(rootId);
-        return descendants.map(c => translateDeep(c, ctx.languageCode));
+        return descendants.map((c) => translateDeep(c, ctx.languageCode));
     }
 
     /**
@@ -252,9 +246,9 @@ export class CollectionService implements OnModuleInit {
 
         return this.connection
             .getRepository(Collection)
-            .findByIds(ancestors.map(c => c.id))
-            .then(categories => {
-                return ctx ? categories.map(c => translateDeep(c, ctx.languageCode)) : categories;
+            .findByIds(ancestors.map((c) => c.id))
+            .then((categories) => {
+                return ctx ? categories.map((c) => translateDeep(c, ctx.languageCode)) : categories;
             });
     }
 
@@ -263,7 +257,7 @@ export class CollectionService implements OnModuleInit {
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
-            beforeSave: async coll => {
+            beforeSave: async (coll) => {
                 await this.channelService.assignToCurrentChannel(coll, ctx);
                 const parent = await this.getParentCollection(ctx, input.parentId);
                 if (parent) {
@@ -287,7 +281,7 @@ export class CollectionService implements OnModuleInit {
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
-            beforeSave: async coll => {
+            beforeSave: async (coll) => {
                 if (input.filters) {
                     coll.filters = this.getCollectionFiltersFromInput(input);
                 }
@@ -331,7 +325,7 @@ export class CollectionService implements OnModuleInit {
 
         if (
             idsAreEqual(input.parentId, target.id) ||
-            descendants.some(cat => idsAreEqual(input.parentId, cat.id))
+            descendants.some((cat) => idsAreEqual(input.parentId, cat.id))
         ) {
             throw new IllegalOperationError(`error.cannot-move-collection-into-self`);
         }
@@ -388,13 +382,13 @@ export class CollectionService implements OnModuleInit {
         collections: Collection[],
         job: Job<ApplyCollectionFiletersJobData>,
     ): Promise<void> {
-        const collectionIds = collections.map(c => c.id);
+        const collectionIds = collections.map((c) => c.id);
         const requestContext = RequestContext.deserialize(ctx);
 
         this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
             next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
                 const progress = Math.ceil((completed / total) * 100);
-                const collection = collections.find(c => idsAreEqual(c.id, collectionId));
+                const collection = collections.find((c) => idsAreEqual(c.id, collectionId));
                 if (collection) {
                     this.eventBus.publish(
                         new CollectionModificationEvent(requestContext, collection, affectedVariantIds),
@@ -405,7 +399,7 @@ export class CollectionService implements OnModuleInit {
             complete: () => {
                 job.complete();
             },
-            error: err => {
+            error: (err) => {
                 Logger.error(err);
                 job.fail(err);
             },
@@ -417,14 +411,14 @@ export class CollectionService implements OnModuleInit {
      */
     async getCollectionProductVariantIds(collection: Collection): Promise<ID[]> {
         if (collection.productVariants) {
-            return collection.productVariants.map(v => v.id);
+            return collection.productVariants.map((v) => v.id);
         } else {
             const productVariants = await this.connection
                 .getRepository(ProductVariant)
                 .createQueryBuilder('variant')
                 .innerJoin('variant.collections', 'collection', 'collection.id = :id', { id: collection.id })
                 .getMany();
-            return productVariants.map(v => v.id);
+            return productVariants.map((v) => v.id);
         }
     }
 
@@ -503,7 +497,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     private getFilterByCode(code: string): CollectionFilter<any> {
-        const match = this.availableFilters.find(a => a.code === code);
+        const match = this.configService.catalogOptions.collectionFilters.find((a) => a.code === code);
         if (!match) {
             throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
         }

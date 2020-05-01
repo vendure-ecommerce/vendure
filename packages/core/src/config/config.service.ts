@@ -11,7 +11,7 @@ import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { Logger, VendureLogger } from './logger/vendure-logger';
 import {
     AssetOptions,
-    AuthOptions,
+    AuthOptions, CatalogOptions,
     ImportExportOptions,
     JobQueueOptions,
     OrderOptions,
@@ -38,6 +38,10 @@ export class ConfigService implements VendureConfig {
 
     get authOptions(): Required<AuthOptions> {
         return this.activeConfig.authOptions;
+    }
+
+    get catalogOptions(): Required<CatalogOptions> {
+        return this.activeConfig.catalogOptions;
     }
 
     get defaultChannelToken(): string | null {

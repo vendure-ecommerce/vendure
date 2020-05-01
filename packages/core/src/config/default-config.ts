@@ -8,6 +8,7 @@ import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strat
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { defaultCollectionFilters } from './collection/default-collection-filters';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
@@ -46,6 +47,9 @@ export const defaultConfig: RuntimeVendureConfig = {
         sessionDuration: '7d',
         requireVerification: true,
         verificationTokenDuration: '7d',
+    },
+    catalogOptions: {
+        collectionFilters: defaultCollectionFilters,
     },
     adminApiPath: 'admin-api',
     shopApiPath: 'shop-api',

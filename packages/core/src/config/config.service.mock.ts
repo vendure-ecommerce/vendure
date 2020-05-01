@@ -20,6 +20,7 @@ export class MockConfigService implements MockClass<ConfigService> {
         assetStorageStrategy: {} as any,
         assetPreviewStrategy: {} as any,
     };
+    catalogOptions: {};
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
     shippingOptions = {};

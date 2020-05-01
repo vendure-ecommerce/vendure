@@ -24,6 +24,17 @@ export interface CollectionFilterConfig<T extends CollectionFilterArgs>
     apply: ApplyCollectionFilterFn<T>;
 }
 
+/**
+ * @description
+ * A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
+ * The filtering is done by defining the `apply()` function, which receives a TypeORM
+ * [`QueryBuilder`](https://typeorm.io/#/select-query-builder) object to which clauses may be added.
+ *
+ * Creating a CollectionFilter is considered an advanced Vendure topic. For more insight into how
+ * they work, study the [default collection filters](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/collection/default-collection-filters.ts)
+ *
+ * @docsCategory configuration
+ */
 export class CollectionFilter<T extends CollectionFilterArgs = {}> extends ConfigurableOperationDef<T> {
     private readonly applyFn: ApplyCollectionFilterFn<T>;
 

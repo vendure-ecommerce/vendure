@@ -139,11 +139,12 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
 
     private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
         const { paymentMethodHandlers } = this.configService.paymentOptions;
-        // TODO: add CollectionFilters once #325 is fixed
+        const { collectionFilters } = this.configService.catalogOptions;
         const { promotionActions, promotionConditions } = this.configService.promotionOptions;
         const { shippingCalculators, shippingEligibilityCheckers } = this.configService.shippingOptions;
         return [
             ...paymentMethodHandlers,
+            ...collectionFilters,
             ...(promotionActions || []),
             ...(promotionConditions || []),
             ...(shippingCalculators || []),

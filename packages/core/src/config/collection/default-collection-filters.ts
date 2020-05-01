@@ -97,3 +97,5 @@ export const variantNameCollectionFilter = new CollectionFilter({
         }
     },
 });
+
+export const defaultCollectionFilters = [facetValueCollectionFilter, variantNameCollectionFilter];
