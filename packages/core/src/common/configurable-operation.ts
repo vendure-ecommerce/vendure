@@ -15,6 +15,8 @@ import { RequestContext } from '../api/common/request-context';
 
 import { DEFAULT_LANGUAGE_CODE } from './constants';
 import { InternalServerError } from './error/errors';
+import { Injector } from './injector';
+import { InjectableStrategy } from './types/injectable-strategy';
 
 /**
  * @description
@@ -106,16 +108,72 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
 
 /**
  * @description
+ * Common configuration options used when creating a new instance of a
+ * {@link ConfigurableOperationDef}.
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
+ */
+export interface ConfigurableOperationDefOptions<T extends ConfigArgs<ConfigArgType>>
+    extends InjectableStrategy {
+    /**
+     * @description
+     * A unique code used to identify this operation.
+     */
+    code: string;
+    /**
+     * @description
+     * Optional provider-specific arguments which, when specified, are
+     * editable in the admin-ui. For example, args could be used to store an API key
+     * for a payment provider service.
+     *
+     * @example
+     * ```ts
+     * args: {
+     *   apiKey: { type: 'string' },
+     * }
+     * ```
+     *
+     * See {@link ConfigArgs} for available configuration options.
+     */
+    args: T;
+    /**
+     * @description
+     * A human-readable description for the operation method.
+     */
+    description: LocalizedStringArray;
+}
+
+/**
+ * @description
  * Defines a ConfigurableOperation, which is a method which can be configured
  * by the Administrator via the Admin API.
  *
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export interface ConfigurableOperationDef {
-    code: string;
-    args: ConfigArgs<any>;
-    description: LocalizedStringArray;
+export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
+    get code(): string {
+        return this.options.code;
+    }
+    get args(): T {
+        return this.options.args;
+    }
+    get description(): LocalizedStringArray {
+        return this.options.description;
+    }
+    constructor(protected options: ConfigurableOperationDefOptions<T>) {}
+
+    async init(injector: Injector) {
+        if (typeof this.options.init === 'function') {
+            await this.options.init(injector);
+        }
+    }
+    async destroy() {
+        if (typeof this.options.destroy === 'function') {
+            await this.options.destroy();
+        }
+    }
 }
 
 /**
@@ -124,7 +182,7 @@ export interface ConfigurableOperationDef {
  */
 export function configurableDefToOperation(
     ctx: RequestContext,
-    def: ConfigurableOperationDef,
+    def: ConfigurableOperationDef<ConfigArgs<any>>,
 ): ConfigurableOperationDefinition {
     return {
         code: def.code,

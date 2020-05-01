@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    ConfigurableOperationDefOptions,
     LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
@@ -20,6 +21,8 @@ export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
  * @description
  * An object containing utility methods which may be used in promotion `check` functions
  * in order to determine whether a promotion should be applied.
+ *
+ * TODO: Remove this and use the new init() method to inject providers where needed.
  *
  * @docsCategory promotions
  */
@@ -45,6 +48,12 @@ export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
     utils: PromotionUtils,
 ) => boolean | Promise<boolean>;
 
+export interface PromotionConditionConfig<T extends PromotionConditionArgs>
+    extends ConfigurableOperationDefOptions<T> {
+    check: CheckPromotionConditionFn<T>;
+    priorityValue?: number;
+}
+
 /**
  * @description
  * PromotionConditions are used to create {@link Promotion}s. The purpose of a PromotionCondition
@@ -53,23 +62,12 @@ export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
  *
  * @docsCategory promotions
  */
-export class PromotionCondition<T extends PromotionConditionArgs = {}> implements ConfigurableOperationDef {
-    readonly code: string;
-    readonly description: LocalizedStringArray;
-    readonly args: PromotionConditionArgs;
+export class PromotionCondition<T extends PromotionConditionArgs = {}> extends ConfigurableOperationDef<T> {
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
 
-    constructor(config: {
-        args: T;
-        check: CheckPromotionConditionFn<T>;
-        code: string;
-        description: LocalizedStringArray;
-        priorityValue?: number;
-    }) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+    constructor(config: PromotionConditionConfig<T>) {
+        super(config);
         this.checkFn = config.check;
         this.priorityValue = config.priorityValue || 0;
     }

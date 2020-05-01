@@ -11,6 +11,7 @@ import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 
 import { ApiModule } from './api/api.module';
+import { ConfigurableOperationDef } from './common/configurable-operation';
 import { Injector } from './common/injector';
 import { InjectableStrategy } from './common/types/injectable-strategy';
 import { ConfigModule } from './config/config.module';
@@ -33,6 +34,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
 
     async onApplicationBootstrap() {
         await this.initInjectableStrategies();
+        await this.initConfigurableOperations();
     }
 
     configure(consumer: MiddlewareConsumer) {
@@ -60,6 +62,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
 
     async onApplicationShutdown(signal?: string) {
         await this.destroyInjectableStrategies();
+        await this.destroyConfigurableOperations();
         if (signal) {
             Logger.info('Received shutdown signal:' + signal);
         }
@@ -99,6 +102,19 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
         }
     }
 
+    private async initConfigurableOperations() {
+        const injector = new Injector(this.moduleRef);
+        for (const operation of this.getConfigurableOperations()) {
+            await operation.init(injector);
+        }
+    }
+
+    private async destroyConfigurableOperations() {
+        for (const operation of this.getConfigurableOperations()) {
+            await operation.destroy();
+        }
+    }
+
     private getInjectableStrategies(): InjectableStrategy[] {
         const {
             assetNamingStrategy,
@@ -118,6 +134,20 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             jobQueueStrategy,
             mergeStrategy,
             entityIdStrategy,
+        ];
+    }
+
+    private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
+        const { paymentMethodHandlers } = this.configService.paymentOptions;
+        // TODO: add CollectionFilters once #325 is fixed
+        const { promotionActions, promotionConditions } = this.configService.promotionOptions;
+        const { shippingCalculators, shippingEligibilityCheckers } = this.configService.shippingOptions;
+        return [
+            ...paymentMethodHandlers,
+            ...(promotionActions || []),
+            ...(promotionConditions || []),
+            ...(shippingCalculators || []),
+            ...(shippingEligibilityCheckers || []),
         ];
     }
 }

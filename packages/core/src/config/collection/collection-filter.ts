@@ -1,5 +1,5 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset, ConfigArgType } from '@vendure/common/lib/shared-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {
@@ -7,7 +7,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-    LocalizedStringArray,
+    ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
@@ -19,23 +19,16 @@ export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
     args: ConfigArgValues<T>,
 ) => SelectQueryBuilder<ProductVariant>;
 
-export interface CollectionFilterConfig<T extends CollectionFilterArgs> {
-    args: T;
-    code: string;
-    description: LocalizedStringArray;
+export interface CollectionFilterConfig<T extends CollectionFilterArgs>
+    extends ConfigurableOperationDefOptions<T> {
     apply: ApplyCollectionFilterFn<T>;
 }
 
-export class CollectionFilter<T extends CollectionFilterArgs = {}> implements ConfigurableOperationDef {
-    readonly code: string;
-    readonly args: CollectionFilterArgs;
-    readonly description: LocalizedStringArray;
+export class CollectionFilter<T extends CollectionFilterArgs = {}> extends ConfigurableOperationDef<T> {
     private readonly applyFn: ApplyCollectionFilterFn<T>;
 
     constructor(config: CollectionFilterConfig<T>) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+        super(config);
         this.applyFn = config.apply;
     }
 

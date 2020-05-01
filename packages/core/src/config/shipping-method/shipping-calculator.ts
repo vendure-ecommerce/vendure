@@ -6,12 +6,17 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-    LocalizedStringArray,
+    ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
 export type ShippingCalculatorArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
 export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
+
+export interface ShippingCalculatorConfig<T extends ShippingCalculatorArgs>
+    extends ConfigurableOperationDefOptions<T> {
+    calculate: CalculateShippingFn<T>;
+}
 
 /**
  * @description
@@ -37,24 +42,11 @@ export type ShippingCalculatorArgs = ConfigArgs<ShippingCalculatorArgType>;
  * @docsCategory shipping
  * @docsPage ShippingCalculator
  */
-export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> implements ConfigurableOperationDef {
-    /** @internal */
-    readonly code: string;
-    /** @internal */
-    readonly description: LocalizedStringArray;
-    /** @internal */
-    readonly args: ShippingCalculatorArgs;
+export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> extends ConfigurableOperationDef<T> {
     private readonly calculateFn: CalculateShippingFn<T>;
 
-    constructor(config: {
-        args: T;
-        calculate: CalculateShippingFn<T>;
-        code: string;
-        description: LocalizedStringArray;
-    }) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+    constructor(config: ShippingCalculatorConfig<T>) {
+        super(config);
         this.calculateFn = config.calculate;
     }
 
