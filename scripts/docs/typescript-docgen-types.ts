@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts, { HeritageClause } from 'typescript';
 
 export interface MethodParameterInfo {
     name: string;
@@ -46,14 +46,14 @@ export interface DeclarationInfo {
 
 export interface InterfaceInfo extends DeclarationInfo {
     kind: 'interface';
-    extends?: string;
+    extendsClause: HeritageClause | undefined;
     members: Array<PropertyInfo | MethodInfo>;
 }
 
 export interface ClassInfo extends DeclarationInfo {
     kind: 'class';
-    implements?: string;
-    extends?: string;
+    extendsClause: HeritageClause | undefined;
+    implementsClause: HeritageClause | undefined;
     members: Array<PropertyInfo | MethodInfo>;
 }
 
