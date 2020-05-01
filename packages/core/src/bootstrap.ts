@@ -15,7 +15,7 @@ import { registerCustomEntityFields } from './entity/register-custom-entity-fiel
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
-import { logProxyMiddlewares } from './plugin/plugin-utils';
+import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -267,12 +267,24 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
         version = ' unknown';
     }
     const { port, shopApiPath, adminApiPath } = config.apiOptions;
-    Logger.info(`=================================================`);
-    Logger.info(`Vendure server (v${version}) now running on port ${port}`);
-    Logger.info(`Shop API: http://localhost:${port}/${shopApiPath}`);
-    Logger.info(`Admin API: http://localhost:${port}/${adminApiPath}`);
-    logProxyMiddlewares(config);
-    Logger.info(`=================================================`);
+    const apiCliGreetings: Array<[string, string]> = [];
+    apiCliGreetings.push(['Shop API', `http://localhost:${port}/${shopApiPath}`]);
+    apiCliGreetings.push(['Admin API', `http://localhost:${port}/${adminApiPath}`]);
+    apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
+    const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
+    const title = `Vendure server (v${version}) now running on port ${port}`;
+    const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
+    const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
+    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info(title.padStart(title.length + titlePadLength));
+    Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
+    columnarGreetings.forEach(line => Logger.info(line));
+    Logger.info(`=`.repeat(maxLineLength));
+}
+
+function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
+    const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
+    return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
 
 /**

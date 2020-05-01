@@ -108,19 +108,21 @@ export interface ProxyOptions {
 }
 
 /**
- * If any proxy middleware has been set up using the createProxyHandler function, log this information.
+ * Generate CLI greeting lines for any proxy middleware that was set up with the createProxyHandler function.
  */
-export function logProxyMiddlewares(config: RuntimeVendureConfig) {
-    const {} = config.apiOptions;
+export function getProxyMiddlewareCliGreetings(config: RuntimeVendureConfig): Array<[string, string]> {
+    const output: Array<[string, string]> = [];
     for (const middleware of config.apiOptions.middleware || []) {
         if ((middleware.handler as any).proxyMiddleware) {
             const { port, hostname, label, route, basePath } = (middleware.handler as any)
                 .proxyMiddleware as ProxyOptions;
-            Logger.info(
-                `${label}: http://${config.apiOptions.hostname || 'localhost'}:${
+            output.push([
+                label,
+                `http://${config.apiOptions.hostname || 'localhost'}:${
                     config.apiOptions.port
                 }/${route}/ -> http://${hostname || 'localhost'}:${port}${basePath ? `/${basePath}` : ''}`,
-            );
+            ]);
         }
     }
+    return output;
 }
