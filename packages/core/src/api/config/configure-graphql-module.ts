@@ -31,6 +31,8 @@ export interface GraphQLApiOptions {
     apiType: 'shop' | 'admin';
     typePaths: string[];
     apiPath: string;
+    debug: boolean;
+    playground: boolean | any;
     // tslint:disable-next-line:ban-types
     resolverModule: Function;
 }
@@ -133,12 +135,8 @@ async function createGraphQLOptions(
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
         },
-        playground: {
-            settings: {
-                'request.credentials': 'include',
-            } as any,
-        },
-        debug: true,
+        playground: options.playground || false,
+        debug: options.debug || false,
         context: (req: any) => req,
         // This is handled by the Express cors plugin
         cors: false,

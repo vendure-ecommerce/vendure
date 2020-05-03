@@ -8,7 +8,11 @@ export class MockConfigService implements MockClass<ConfigService> {
     apiOptions = {
         channelTokenKey: 'vendure-token',
         adminApiPath: 'admin-api',
+        adminApiPlayground: false,
+        adminApiDebug: true,
         shopApiPath: 'shop-api',
+        shopApiPlayground: false,
+        shopApiDebug: true,
         port: 3000,
         cors: false,
         middleware: [],
@@ -16,7 +20,6 @@ export class MockConfigService implements MockClass<ConfigService> {
     };
     authOptions: {};
     defaultChannelToken: 'channel-token';
-
     defaultLanguageCode: jest.Mock<any>;
     roundingStrategy: {};
     entityIdStrategy = new MockIdStrategy();
