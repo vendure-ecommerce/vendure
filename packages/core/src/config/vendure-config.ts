@@ -67,6 +67,38 @@ export interface ApiOptions {
     shopApiPath?: string;
     /**
      * @description
+     * The playground config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    adminApiPlayground?: boolean | any;
+    /**
+     * @description
+     * The playground config to the shop GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    shopApiPlayground?: boolean | any;
+    /**
+     * @description
+     * The debug config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    adminApiDebug?: boolean;
+    /**
+     * @description
+     * The debug config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    shopApiDebug?: boolean;
+    /**
+     * @description
      * The name of the property which contains the token of the
      * active channel. This property can be included either in
      * the request header or as a query string.
