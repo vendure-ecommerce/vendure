@@ -12,7 +12,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
@@ -400,6 +400,23 @@ describe('Customer resolver', () => {
             expect(createCustomer.user!.verified).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(0);
         });
+
+        it(
+            'throws when using an existing, non-deleted emailAddress',
+            assertThrowsWithMessage(async () => {
+                const { createCustomer } = await adminClient.query<
+                    CreateCustomer.Mutation,
+                    CreateCustomer.Variables
+                >(CREATE_CUSTOMER, {
+                    input: {
+                        emailAddress: 'test2@test.com',
+                        firstName: 'New',
+                        lastName: 'Customer',
+                    },
+                    password: 'test',
+                });
+            }, 'The email address must be unique'),
+        );
     });
 
     describe('deletion', () => {
@@ -456,6 +473,23 @@ describe('Customer resolver', () => {
                 `No Customer with the id '3' could be found`,
             ),
         );
+
+        it('new Customer can be created with same emailAddress as a deleted Customer', async () => {
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: thirdCustomer.emailAddress,
+                    firstName: 'Reusing Email',
+                    lastName: 'Customer',
+                },
+            });
+
+            expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
+            expect(createCustomer.firstName).toBe('Reusing Email');
+            expect(createCustomer.user?.identifier).toBe(thirdCustomer.emailAddress);
+        });
     });
 });
 

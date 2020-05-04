@@ -84,13 +84,20 @@ export class CustomerService {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
-        const existing = await this.connection.getRepository(Customer).findOne({
+        const existingCustomer = await this.connection.getRepository(Customer).findOne({
             where: {
                 emailAddress: input.emailAddress,
+                deletedAt: null,
+            },
+        });
+        const existingUser = await this.connection.getRepository(User).findOne({
+            where: {
+                identifier: input.emailAddress,
+                deletedAt: null,
             },
         });
 
-        if (existing) {
+        if (existingCustomer || existingUser) {
             throw new UserInputError(`error.email-address-must-be-unique`);
         }
         customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
@@ -243,6 +250,7 @@ export class CustomerService {
         const existing = await this.connection.getRepository(Customer).findOne({
             where: {
                 emailAddress: input.emailAddress,
+                deletedAt: null,
             },
         });
         if (existing) {
@@ -305,8 +313,10 @@ export class CustomerService {
     }
 
     async softDelete(customerId: ID): Promise<DeletionResponse> {
-        await getEntityOrThrow(this.connection, Customer, customerId);
+        const customer = await getEntityOrThrow(this.connection, Customer, customerId);
         await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
+        // tslint:disable-next-line:no-non-null-assertion
+        await this.userService.softDelete(customer.user!.id);
         return {
             result: DeletionResult.DELETED,
         };

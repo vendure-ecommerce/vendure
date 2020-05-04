@@ -1,6 +1,7 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { SoftDeletable } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
@@ -14,12 +15,15 @@ import { Role } from '../role/role.entity';
  * @docsCategory entities
  */
 @Entity()
-export class User extends VendureEntity implements HasCustomFields {
+export class User extends VendureEntity implements HasCustomFields, SoftDeletable {
     constructor(input?: DeepPartial<User>) {
         super(input);
     }
 
-    @Column({ unique: true })
+    @Column({ type: Date, nullable: true })
+    deletedAt: Date | null;
+
+    @Column()
     identifier: string;
 
     @Column({ select: false }) passwordHash: string;
@@ -44,7 +48,7 @@ export class User extends VendureEntity implements HasCustomFields {
     /**
      * @description
      * When a request has been made to change the User's identifier, the new identifier
-     * will be stored here until it has been verfified, after which it will
+     * will be stored here until it has been verified, after which it will
      * replace the current value of the `identifier` field.
      */
     @Column({ type: 'varchar', nullable: true })
