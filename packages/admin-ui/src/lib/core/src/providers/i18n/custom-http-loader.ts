@@ -12,7 +12,7 @@ export type Dictionary = {
  * values which are empty strings. This means that during development, translation keys which have
  * been extracted but not yet defined will fall back to the raw key text rather than displaying nothing.
  *
- * Orignally from https://github.com/ngx-translate/core/issues/662#issuecomment-377010232
+ * Originally from https://github.com/ngx-translate/core/issues/662#issuecomment-377010232
  */
 export class CustomHttpTranslationLoader implements TranslateLoader {
     constructor(
