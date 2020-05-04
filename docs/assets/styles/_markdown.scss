@@ -62,14 +62,8 @@ $block-border-radius: 4px;
         font-weight: 400;
         line-height: 1.25;
 
-        &[id]:target:before {
-            display: block;
-            content: " ";
-            margin-top: -75px; // Set the Appropriate Height
-            height: 75px; // Set the Appropriate Height
-            visibility: hidden;
-        }
         &[id]:target {
+            scroll-margin-top: 60px;
             text-decoration: underline;
         }
     }
