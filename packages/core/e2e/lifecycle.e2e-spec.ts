@@ -1,4 +1,10 @@
-import { AutoIncrementIdStrategy, Injector, ProductService, ShippingEligibilityChecker } from '@vendure/core';
+import {
+    AutoIncrementIdStrategy,
+    defaultShippingEligibilityChecker,
+    Injector,
+    ProductService,
+    ShippingEligibilityChecker,
+} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
@@ -48,7 +54,7 @@ describe('lifecycle hooks for configurable objects', () => {
         ...testConfig,
         entityIdStrategy: new TestIdStrategy(),
         shippingOptions: {
-            shippingEligibilityCheckers: [testShippingEligChecker],
+            shippingEligibilityCheckers: [defaultShippingEligibilityChecker, testShippingEligChecker],
         },
     });
 
