@@ -1,6 +1,7 @@
 import { ArgumentsHost, ExceptionFilter, HttpException } from '@nestjs/common';
 
 import { Logger, LogLevel } from '../../config';
+import { HEALTH_CHECK_ROUTE } from '../../health-check/constants';
 import { I18nError } from '../../i18n/i18n-error';
 import { parseContext } from '../common/parse-context';
 
@@ -46,7 +47,11 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
             Logger.error(message, undefined, stack);
         }
 
-        if (!isGraphQL) {
+        if (exception instanceof HttpException && req.path.startsWith('/' + HEALTH_CHECK_ROUTE)) {
+            // Special case for the health check error, since we want to display the response only
+            // so it matches the format of the success case.
+            res.status(exception.getStatus()).send(exception.getResponse());
+        } else if (!isGraphQL) {
             // In the GraphQL context, we can let the error pass
             // through to the next layer, where Apollo Server will
             // return a response for us. But when in the REST context,

@@ -17,13 +17,21 @@ import { InjectableStrategy } from './common/types/injectable-strategy';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
+import { HealthCheckModule } from './health-check/health-check.module';
 import { I18nModule } from './i18n/i18n.module';
 import { I18nService } from './i18n/i18n.service';
 import { PluginModule } from './plugin/plugin.module';
 import { ProcessContextModule } from './process-context/process-context.module';
 
 @Module({
-    imports: [ConfigModule, I18nModule, ApiModule, PluginModule.forRoot(), ProcessContextModule.forRoot()],
+    imports: [
+        ConfigModule,
+        I18nModule,
+        ApiModule,
+        PluginModule.forRoot(),
+        ProcessContextModule.forRoot(),
+        HealthCheckModule,
+    ],
 })
 export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
     constructor(

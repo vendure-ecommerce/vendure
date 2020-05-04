@@ -43,6 +43,7 @@
     "@nestjs/graphql": "7.0.14",
     "@nestjs/microservices": "7.0.5",
     "@nestjs/platform-express": "7.0.5",
+    "@nestjs/terminus": "7.0.1",
     "@nestjs/testing": "7.0.5",
     "@nestjs/typeorm": "7.0.0",
     "@types/fs-extra": "^8.0.1",
