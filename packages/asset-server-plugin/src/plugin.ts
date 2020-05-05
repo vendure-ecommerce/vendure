@@ -1,10 +1,13 @@
+import { DNSHealthIndicator, TerminusModule } from '@nestjs/terminus';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
     createProxyHandler,
+    HealthCheckRegistryService,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    PluginCommonModule,
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
@@ -119,6 +122,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * @docsCategory AssetServerPlugin
  */
 @VendurePlugin({
+    imports: [PluginCommonModule, TerminusModule],
     configuration: config => AssetServerPlugin.configure(config),
 })
 export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
@@ -133,6 +137,11 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
     private static options: AssetServerOptions;
+
+    constructor(
+        private healthCheckRegistryService: HealthCheckRegistryService,
+        private dns: DNSHealthIndicator,
+    ) {}
 
     /**
      * @description
@@ -178,6 +187,11 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
         this.createAssetServer();
+        const { hostname, port } = AssetServerPlugin.options;
+        // console.log('SWAGGGGGGGG!');
+        // this.healthCheckRegistryService.registerIndicatorFunction(() =>
+        //     this.dns.pingCheck('asset-server', `${hostname}:${port}`),
+        // );
     }
 
     /** @internal */
@@ -192,12 +206,19 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     private createAssetServer() {
         const assetServer = express();
+        assetServer.get('/health', (req, res) => {
+            res.send('ok');
+        });
         assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
+
         this.server = assetServer.listen(AssetServerPlugin.options.port, () => {
             const addressInfo = this.server.address();
             if (addressInfo && typeof addressInfo !== 'string') {
                 const { address, port } = addressInfo;
-                Logger.info(`Asset server listening on ${address}:${port}`, loggerCtx);
+                Logger.info(`Asset server listening on "http://localhost:${port}"`, loggerCtx);
+                this.healthCheckRegistryService.registerIndicatorFunction(() =>
+                    this.dns.pingCheck('asset-server', `http://localhost:${port}/health`),
+                );
             }
         });
     }
