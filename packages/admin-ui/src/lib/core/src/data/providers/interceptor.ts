@@ -72,6 +72,8 @@ export class DefaultInterceptor implements HttpInterceptor {
                 this.displayErrorNotification(_(`error.could-not-connect-to-server`), {
                     url: `${apiHost}:${apiPort}`,
                 });
+            } else if (response.status === 503 && response.url?.endsWith('/health')) {
+                this.displayErrorNotification(_(`error.health-check-failed`));
             } else {
                 this.displayErrorNotification(this.extractErrorFromHttpResponse(response));
             }

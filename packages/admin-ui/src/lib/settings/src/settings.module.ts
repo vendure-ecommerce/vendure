@@ -10,6 +10,7 @@ import { ChannelListComponent } from './components/channel-list/channel-list.com
 import { CountryDetailComponent } from './components/country-detail/country-detail.component';
 import { CountryListComponent } from './components/country-list/country-list.component';
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
+import { HealthCheckComponent } from './components/health-check/health-check.component';
 import { JobListComponent } from './components/job-list/job-list.component';
 import { JobStateLabelComponent } from './components/job-state-label/job-state-label.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
@@ -67,6 +68,7 @@ import { settingsRoutes } from './settings.routes';
         ZoneMemberListHeaderDirective,
         ZoneMemberControlsDirective,
         ZoneDetailDialogComponent,
+        HealthCheckComponent,
     ],
 })
 export class SettingsModule {}

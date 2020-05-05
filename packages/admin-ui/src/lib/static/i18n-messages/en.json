@@ -41,6 +41,7 @@
     "promotions": "Promotions",
     "roles": "Roles",
     "shipping-methods": "Shipping methods",
+    "system-status": "System status",
     "tax-categories": "Tax categories",
     "tax-rates": "Tax rates",
     "zones": "Zones"
@@ -266,6 +267,7 @@
     "403-forbidden": "You are not currently authorized to access \"{ path }\". Either you lack permissions, or your session has expired.",
     "could-not-connect-to-server": "Could not connect to the Vendure server at { url }",
     "facet-value-form-values-do-not-match": "The number of values in the facet form does not match the actual number of values",
+    "health-check-failed": "System health check failed",
     "no-default-shipping-zone-set": "This channel has no default shipping zone. This may cause errors when calculating order shipping charges.",
     "no-default-tax-zone-set": "This channel has no default tax zone, which will cause errors when calculating prices. Please create or select a zone.",
     "product-variant-form-values-do-not-match": "The number of variants in the product form does not match the actual number of variants"
@@ -487,6 +489,8 @@
     "sales": "Sales",
     "settings": "Settings",
     "shipping-methods": "Shipping methods",
+    "system": "System",
+    "system-status": "System Status",
     "tax-categories": "Tax categories",
     "tax-rates": "Tax Rates",
     "zones": "Zones"
@@ -647,6 +651,14 @@
   },
   "system": {
     "all-job-queues": "All job queues",
+    "health-all-systems-up": "All systems up",
+    "health-error": "Error: one or more systems are down!",
+    "health-last-checked": "Last checked",
+    "health-message": "Message",
+    "health-refresh": "Refresh",
+    "health-status": "Status",
+    "health-status-down": "Down",
+    "health-status-up": "Up",
     "hide-settled-jobs": "Hide settled jobs",
     "job-data": "Job data",
     "job-duration": "Duration",

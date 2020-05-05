@@ -1,6 +1,6 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
-import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
@@ -20,21 +20,15 @@ import { DataService } from './providers/data.service';
 import { FetchAdapter } from './providers/fetch-adapter';
 import { DefaultInterceptor } from './providers/interceptor';
 import { initializeServerConfigService, ServerConfigService } from './server-config';
+import { getServerLocation } from './utils/get-server-location';
 
 export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
     injector: Injector,
 ): ApolloClientOptions<any> {
-    const { apiHost, apiPort, adminApiPath, tokenMethod } = getAppConfig();
-    const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
-    const port = apiPort
-        ? apiPort === 'auto'
-            ? location.port === ''
-                ? ''
-                : `:${location.port}`
-            : `:${apiPort}`
-        : '';
+    const { adminApiPath, tokenMethod } = getAppConfig();
+    const serverLocation = getServerLocation();
     const apolloCache = new InMemoryCache({
         fragmentMatcher: new IntrospectionFragmentMatcher({
             introspectionQueryResultData: introspectionResult,
@@ -76,7 +70,7 @@ export function createApollo(
                 }
             }),
             createUploadLink({
-                uri: `${host}${port}/${adminApiPath}`,
+                uri: `${serverLocation}/${adminApiPath}`,
                 fetch: fetchAdapter.fetch,
             }),
         ]),
