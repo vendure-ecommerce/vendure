@@ -151,7 +151,6 @@
     "guest": "Gość",
     "hide-custom-fields": "Ukryj pola dodatkowe",
     "items-per-page-option": "{ count } na stronę",
-    "jobs-in-progress": "{ count } {count, plural, one {zadanie} other {zadań}} w trakcie",
     "language": "Język",
     "launch-extension": "Uruchom rozszerzenie",
     "live-update": "Aktualizacja live",
@@ -580,7 +579,6 @@
     "add-countries-to-zone-success": "Dodano { countryCount } {countryCount, plural, one {kraj} other {kraje}} do strefy \"{ zoneName }\"",
     "add-products-to-test-order": "Dodaj produkty do testowanego zamówienia",
     "administrator": "Administrator",
-    "all-job-queues": "Kolejka wszystkich zadań",
     "catalog": "Katalog",
     "channel": "Kanał",
     "channel-token": "Token kanału",
@@ -601,16 +599,10 @@
     "default-shipping-zone": "Domyślna strefa zakupowa",
     "default-tax-zone": "Domyślna strefa podatkowa",
     "delete": "Usuń",
-    "elibigle": "Wybieralny",
+    "eligible": "Wybieralny",
     "email-address": "Email",
     "first-name": "Imię",
-    "hide-settled-jobs": "Ukryj rozliczone zlecenia",
-    "job-data": "Dane zlecenia",
-    "job-duration": "Czas trwania",
-    "job-error": "Błąd zlecenia",
-    "job-queue-name": "Nazwa kolejki",
-    "job-result": "Rezultat zlecenia",
-    "job-state": "Status zlecenia",
+
     "last-name": "Nazwisko",
     "no-eligible-shipping-methods": "Brak pasujących metod wysyłki",
     "order": "Zamówienie",
@@ -642,5 +634,16 @@
     "track-inventory-default": "Śledź domyślnie magazyn",
     "update": "Aktualizuj",
     "zone": "Strefa"
+  },
+  "system": {
+    "all-job-queues": "Kolejka wszystkich zadań",
+    "hide-settled-jobs": "Ukryj rozliczone zlecenia",
+    "job-data": "Dane zlecenia",
+    "job-duration": "Czas trwania",
+    "job-error": "Błąd zlecenia",
+    "job-queue-name": "Nazwa kolejki",
+    "job-result": "Rezultat zlecenia",
+    "job-state": "Status zlecenia",
+    "jobs-in-progress": "{ count } {count, plural, one {zadanie} other {zadań}} w trakcie"
   }
 }

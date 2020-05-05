@@ -6,7 +6,7 @@
 >
     <ng-container *ngIf="activeJobCount; else noJobs">
         <clr-icon shape="hourglass" class="has-badge"></clr-icon>
-        {{ 'common.jobs-in-progress' | translate: { count: activeJobCount } }}
+        {{ 'system.jobs-in-progress' | translate: { count: activeJobCount } }}
     </ng-container>
     <ng-template #noJobs>
         <clr-icon shape="hourglass"></clr-icon>
