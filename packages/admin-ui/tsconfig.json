@@ -53,6 +53,9 @@
       ],
       "@vendure/admin-ui/settings": [
         "./src/lib/settings/src/public_api"
+      ],
+      "@vendure/admin-ui/system": [
+        "./src/lib/system/src/public_api"
       ]
     }
   }

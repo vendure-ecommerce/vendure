@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { getServerLocation } from '@vendure/admin-ui/core';
 import { merge, Observable, of, Subject, timer } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, throttleTime } from 'rxjs/operators';
+
+import { getServerLocation } from '../../data/utils/get-server-location';
 
 export type SystemStatus = 'ok' | 'error';
 

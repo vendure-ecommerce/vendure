@@ -175,7 +175,7 @@ export class MainNavComponent implements OnInit {
                     {
                         id: 'job-queue',
                         label: _('nav.job-queue'),
-                        routerLink: ['/settings', 'jobs'],
+                        routerLink: ['/system', 'jobs'],
                         icon: 'tick-chart',
                         statusBadge: this.jobQueueService.activeJobs$.pipe(
                             startWith([]),
@@ -191,7 +191,7 @@ export class MainNavComponent implements OnInit {
                     {
                         id: 'system-status',
                         label: _('nav.system-status'),
-                        routerLink: ['/settings', 'system-status'],
+                        routerLink: ['/system', 'system-status'],
                         icon: 'rack-server',
                         statusBadge: this.healthCheckService.status$.pipe(
                             map(status => ({
