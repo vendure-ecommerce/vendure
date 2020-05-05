@@ -1,11 +1,18 @@
 import { APP_INITIALIZER, Injectable, Provider } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
 import { Permission } from '../../common/generated-types';
 
-import { ActionBarItem, NavMenuItem, NavMenuSection, RouterLinkDefinition } from './nav-builder-types';
+import {
+    ActionBarItem,
+    NavMenuBadgeType,
+    NavMenuItem,
+    NavMenuSection,
+    RouterLinkDefinition,
+} from './nav-builder-types';
 
 /**
  * @description
@@ -126,6 +133,7 @@ export function addActionBarItem(config: ActionBarItem): Provider {
 export class NavBuilderService {
     navMenuConfig$: Observable<NavMenuSection[]>;
     actionBarConfig$: Observable<ActionBarItem[]>;
+    sectionBadges: { [sectionId: string]: Observable<NavMenuBadgeType> } = {};
 
     private initialNavMenuConfig$ = new BehaviorSubject<NavMenuSection[]>([]);
     private addedNavMenuSections: Array<{ config: NavMenuSection; before?: string }> = [];
@@ -195,19 +203,19 @@ export class NavBuilderService {
         const itemAdditions$ = of(this.addedNavMenuItems);
 
         const combinedConfig$ = combineLatest(this.initialNavMenuConfig$, sectionAdditions$).pipe(
-            map(([initalConfig, additions]) => {
+            map(([initialConfig, additions]) => {
                 for (const { config, before } of additions) {
                     if (!config.requiresPermission) {
                         config.requiresPermission = Permission.Authenticated;
                     }
-                    const index = initalConfig.findIndex(c => c.id === before);
+                    const index = initialConfig.findIndex(c => c.id === before);
                     if (-1 < index) {
-                        initalConfig.splice(index, 0, config);
+                        initialConfig.splice(index, 0, config);
                     } else {
-                        initalConfig.push(config);
+                        initialConfig.push(config);
                     }
                 }
-                return initalConfig;
+                return initialConfig;
             }),
             shareReplay(1),
         );
@@ -219,9 +227,7 @@ export class NavBuilderService {
                     if (!section) {
                         // tslint:disable-next-line:no-console
                         console.error(
-                            `Could not add menu item "${item.config.id}", section "${
-                                item.sectionId
-                            }" does not exist`,
+                            `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
                         );
                     } else {
                         const index = section.items.findIndex(i => i.id === item.before);
@@ -232,6 +238,32 @@ export class NavBuilderService {
                         }
                     }
                 }
+
+                // Aggregate any badges defined for the nav items in each section
+                for (const section of sections) {
+                    const itemBadgeStatuses = section.items
+                        .map(i => i.statusBadge)
+                        .filter(notNullOrUndefined);
+                    this.sectionBadges[section.id] = combineLatest(itemBadgeStatuses).pipe(
+                        map(badges => {
+                            const propagatingBadges = badges.filter(b => b.propagateToSection);
+                            if (propagatingBadges.length === 0) {
+                                return 'none';
+                            }
+                            const statuses = propagatingBadges.map(b => b.type);
+                            if (statuses.includes('error')) {
+                                return 'error';
+                            } else if (statuses.includes('warning')) {
+                                return 'warning';
+                            } else if (statuses.includes('info')) {
+                                return 'info';
+                            } else {
+                                return 'none';
+                            }
+                        }),
+                    );
+                }
+
                 return sections;
             }),
         );

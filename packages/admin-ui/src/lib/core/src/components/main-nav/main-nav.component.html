@@ -7,6 +7,9 @@
                 [class.collapsible]="section.collapsible"
                 *vdrIfPermissions="section.requiresPermission"
             >
+                <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
+                    <div *ngIf="sectionBadge !== 'none'" class="status-badge" [class]="sectionBadge"></div>
+                </ng-container>
                 <input [id]="section.id" type="checkbox" [checked]="section.collapsedByDefault" />
                 <label [for]="section.id">{{ section.label | translate }}</label>
                 <ul class="nav-list">
@@ -17,6 +20,13 @@
                             [routerLink]="getRouterLink(item)"
                             routerLinkActive="active"
                         >
+                            <ng-container *ngIf="item.statusBadge | async as itemBadge">
+                                <div
+                                    *ngIf="itemBadge.type !== 'none'"
+                                    class="status-badge"
+                                    [class]="itemBadge.type"
+                                ></div>
+                            </ng-container>
                             <clr-icon [attr.shape]="item.icon || 'block'" size="20"></clr-icon>
                             {{ item.label | translate }}
                         </a>
