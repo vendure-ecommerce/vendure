@@ -21,7 +21,6 @@ export * from './common/version';
 export * from './components/app-shell/app-shell.component';
 export * from './components/breadcrumb/breadcrumb.component';
 export * from './components/channel-switcher/channel-switcher.component';
-export * from './components/job-queue-link/job-queue-link.component';
 export * from './components/main-nav/main-nav.component';
 export * from './components/notification/notification.component';
 export * from './components/overlay-host/overlay-host.component';

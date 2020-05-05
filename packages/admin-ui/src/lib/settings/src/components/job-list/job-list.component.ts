@@ -15,7 +15,7 @@ import { Observable, timer } from 'rxjs';
 import { filter, map, takeUntil } from 'rxjs/operators';
 
 @Component({
-    selector: 'vdr-job-link',
+    selector: 'vdr-job-list',
     templateUrl: './job-list.component.html',
     styleUrls: ['./job-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,7 +37,7 @@ export class JobListComponent extends BaseListComponent<GetAllJobs.Query, GetAll
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.settings.getAllJobs(...args),
-            (data) => data.jobs,
+            data => data.jobs,
             (skip, take) => {
                 const queueFilter =
                     this.queueFilter.value === 'all' ? null : { queueName: { eq: this.queueFilter.value } };
@@ -71,9 +71,9 @@ export class JobListComponent extends BaseListComponent<GetAllJobs.Query, GetAll
             });
         this.queues$ = this.dataService.settings
             .getJobQueues()
-            .mapStream((res) => res.jobQueues)
+            .mapStream(res => res.jobQueues)
             .pipe(
-                map((queues) => {
+                map(queues => {
                     return [{ name: 'all', running: true }, ...queues];
                 }),
             );

@@ -11,7 +11,6 @@ import { getDefaultUiLanguage } from './common/utilities/get-default-ui-language
 import { AppShellComponent } from './components/app-shell/app-shell.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { ChannelSwitcherComponent } from './components/channel-switcher/channel-switcher.component';
-import { JobQueueLinkComponent } from './components/job-queue-link/job-queue-link.component';
 import { MainNavComponent } from './components/main-nav/main-nav.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { OverlayHostComponent } from './components/overlay-host/overlay-host.component';
@@ -49,7 +48,6 @@ import { SharedModule } from './shared/shared.module';
         OverlayHostComponent,
         NotificationComponent,
         UiLanguageSwitcherDialogComponent,
-        JobQueueLinkComponent,
         ChannelSwitcherComponent,
     ],
 })
