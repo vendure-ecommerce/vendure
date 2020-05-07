@@ -59,9 +59,9 @@ export interface AssetServerOptions {
     route: string;
     /**
      * @description
-     * The local directory to which assets will be uploaded.
+     * The local directory to which assets will be uploaded when using the {@link LocalAssetStorageStrategy}.
      */
-    assetUploadDir: string;
+    assetUploadDir: string; // TODO: this is strategy-specific and should be moved out of the global options
     /**
      * @description
      * The complete URL prefix of the asset files. For example, "https://demo.vendure.io/assets/"

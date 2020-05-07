@@ -27,7 +27,8 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
 
 /**
  * @description
- * The `AssetServerPlugin` serves assets (images and other files) from the local file system. It can also perform on-the-fly image transformations
+ * The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
+ * other storage strategies (e.g. {@link S3AssetStorageStrategy}. It can also perform on-the-fly image transformations
  * and caches the results for subsequent calls.
  *
  * ## Installation
