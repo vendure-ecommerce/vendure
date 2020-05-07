@@ -13,6 +13,7 @@ import {
 } from '@vendure/core';
 import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
+import { fromBuffer } from 'file-type';
 import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
@@ -188,10 +189,6 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         fs.ensureDirSync(cachePath);
         this.createAssetServer();
         const { hostname, port } = AssetServerPlugin.options;
-        // console.log('SWAGGGGGGGG!');
-        // this.healthCheckRegistryService.registerIndicatorFunction(() =>
-        //     this.dns.pingCheck('asset-server', `${hostname}:${port}`),
-        // );
     }
 
     /** @internal */
@@ -209,7 +206,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         assetServer.get('/health', (req, res) => {
             res.send('ok');
         });
-        assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
+        assetServer.use(this.sendAsset(), this.generateTransformedImage());
 
         this.server = assetServer.listen(AssetServerPlugin.options.port, () => {
             const addressInfo = this.server.address();
@@ -224,15 +221,24 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /**
-     * Sends the file requested to the broswer.
+     * Reads the file requested and send the response to the browser.
      */
-    private serveStaticFile() {
-        return (req: Request, res: Response) => {
-            const filePath = path.join(
-                AssetServerPlugin.options.assetUploadDir,
-                this.getFileNameFromRequest(req),
-            );
-            res.sendFile(filePath);
+    private sendAsset() {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            const key = this.getFileNameFromRequest(req);
+            try {
+                const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
+                let mimeType = this.getMimeType(key);
+                if (!mimeType) {
+                    mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
+                }
+                res.contentType(mimeType);
+                res.send(file);
+            } catch (e) {
+                const err = new Error('File not found');
+                (err as any).status = 404;
+                return next(err);
+            }
         };
     }
 
@@ -243,7 +249,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     private generateTransformedImage() {
         return async (err: any, req: Request, res: Response, next: NextFunction) => {
-            if (err && err.status === 404) {
+            if (err && (err.status === 404 || err.statusCode === 404)) {
                 if (req.query) {
                     Logger.debug(`Pre-cached Asset not found: ${req.path}`, loggerCtx);
                     let file: Buffer;
@@ -308,5 +314,27 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         const baseName = path.basename(fileName, ext);
         const dirName = path.dirname(fileName);
         return path.join(dirName, `${baseName}${suffix}${ext}`);
+    }
+
+    /**
+     * Attempt to get the mime type from the file name.
+     */
+    private getMimeType(fileName: string): string | undefined {
+        const ext = path.extname(fileName);
+        switch (ext) {
+            case 'jpg':
+            case 'jpeg':
+                return 'image/jpeg';
+            case 'png':
+                return 'image/png';
+            case 'gif':
+                return 'image/gif';
+            case 'svg':
+                return 'image/svg+xml';
+            case 'tiff':
+                return 'image/tiff';
+            case 'webp':
+                return 'image/webp';
+        }
     }
 }
