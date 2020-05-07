@@ -245,7 +245,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         };
         return {
             adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
-            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'http://localhost'),
+            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'auto'),
             apiPort: propOrDefault(
                 'apiPort',
                 AdminUiPlugin.options.apiPort || this.configService.apiOptions.port,
