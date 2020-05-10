@@ -24,6 +24,7 @@ export async function getEntityOrThrow<T extends VendureEntity | ChannelAware>(
     id: ID,
     channelId: ID,
     findOptions?: FindOneOptions<T>,
+    eager?: boolean,
 ): Promise<T>;
 export async function getEntityOrThrow<T extends VendureEntity>(
     connection: Connection,
@@ -31,10 +32,18 @@ export async function getEntityOrThrow<T extends VendureEntity>(
     id: ID,
     findOptionsOrChannelId?: FindOneOptions<T> | ID,
     maybeFindOptions?: FindOneOptions<T>,
+    eager?: boolean,
 ): Promise<T> {
     let entity: T | undefined;
     if (isId(findOptionsOrChannelId)) {
-        entity = await findOneInChannel(connection, entityType, id, findOptionsOrChannelId, maybeFindOptions);
+        entity = await findOneInChannel(
+            connection,
+            entityType,
+            id,
+            findOptionsOrChannelId,
+            maybeFindOptions,
+            eager,
+        );
     } else {
         entity = await connection.getRepository(entityType).findOne(id, findOptionsOrChannelId);
     }

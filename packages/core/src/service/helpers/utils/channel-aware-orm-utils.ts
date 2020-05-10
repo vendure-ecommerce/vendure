@@ -14,11 +14,14 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
     ids: ID[],
     channelId: ID,
     findOptions?: FindManyOptions<T>,
+    eager = true,
 ) {
     const qb = connection.getRepository(entity).createQueryBuilder('product');
     FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, findOptions);
-    // tslint:disable-next-line:no-non-null-assertion
-    FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+    if (eager) {
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+    }
     return qb
         .leftJoin('product.channels', 'channel')
         .andWhere('channel.id = :channelId', { channelId })
@@ -35,11 +38,14 @@ export function findOneInChannel<T extends ChannelAware | VendureEntity>(
     id: ID,
     channelId: ID,
     findOptions?: FindManyOptions<T>,
+    eager = true,
 ) {
     const qb = connection.getRepository(entity).createQueryBuilder('product');
     FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, findOptions);
-    // tslint:disable-next-line:no-non-null-assertion
-    FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+    if (eager) {
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+    }
     return qb
         .leftJoin('product.channels', 'channel')
         .andWhere('product.id = :id', { id })
