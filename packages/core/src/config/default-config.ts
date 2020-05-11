@@ -36,7 +36,11 @@ export const defaultConfig: RuntimeVendureConfig = {
         hostname: '',
         port: 3000,
         adminApiPath: 'admin-api',
+        adminApiPlayground: false,
+        adminApiDebug: false,
         shopApiPath: 'shop-api',
+        shopApiPlayground: false,
+        shopApiDebug: false,
         channelTokenKey: 'vendure-token',
         cors: {
             origin: true,
@@ -57,7 +61,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
     },
-
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
