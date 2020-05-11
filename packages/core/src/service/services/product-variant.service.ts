@@ -362,25 +362,50 @@ export class ProductVariantService {
     }
 
     private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
-        const product = await getEntityOrThrow(this.connection, Product, input.productId, ctx.channelId, {
-            relations: ['optionGroups', 'optionGroups.options', 'variants', 'variants.options'],
-        });
-        const optionIds = [...(input.optionIds || [])];
+        // this could be done with less queries but depending on the data, node will crash
+        // https://github.com/vendure-ecommerce/vendure/issues/328
+        const optionGroups = (
+            await getEntityOrThrow(
+                this.connection,
+                Product,
+                input.productId,
+                ctx.channelId,
+                {
+                    relations: ['optionGroups', 'optionGroups.options'],
+                },
+                false,
+            )
+        ).optionGroups;
 
-        if (optionIds.length !== product.optionGroups.length) {
-            this.throwIncompatibleOptionsError(product.optionGroups);
+        const optionIds = input.optionIds || [];
+
+        if (optionIds.length !== optionGroups.length) {
+            this.throwIncompatibleOptionsError(optionGroups);
         }
         if (
             !samplesEach(
                 optionIds,
-                product.optionGroups.map(g => g.options.map(o => o.id)),
+                optionGroups.map((g) => g.options.map((o) => o.id)),
             )
         ) {
-            this.throwIncompatibleOptionsError(product.optionGroups);
+            this.throwIncompatibleOptionsError(optionGroups);
         }
+
+        const product = await getEntityOrThrow(
+            this.connection,
+            Product,
+            input.productId,
+            ctx.channelId,
+            {
+                relations: ['variants', 'variants.options'],
+            },
+            false,
+        );
+
+        const inputOptionIds = this.sortJoin(optionIds, ',');
+
         product.variants.forEach(variant => {
             const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
-            const inputOptionIds = this.sortJoin(input.optionIds || [], ',');
             if (variantOptionIds === inputOptionIds) {
                 throw new UserInputError('error.product-variant-options-combination-already-exists', {
                     optionNames: this.sortJoin(variant.options, ', ', 'code'),
