@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
+import { DEFAULT_APP_PATH, defaultAvailableLanguages, defaultLanguage, loggerCtx } from './constants';
 
 /**
  * @description
@@ -109,7 +109,7 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [],
-    configuration: config => AdminUiPlugin.configure(config),
+    configuration: (config) => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiPluginOptions;
@@ -226,7 +226,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureClose(): Promise<void> {
         if (this.server) {
-            await new Promise(resolve => this.server.close(() => resolve()));
+            await new Promise((resolve) => this.server.close(() => resolve()));
         }
     }
 
@@ -246,10 +246,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         return {
             adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
             apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'auto'),
-            apiPort: propOrDefault(
-                'apiPort',
-                AdminUiPlugin.options.apiPort || this.configService.apiOptions.port,
-            ),
+            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || 'auto'),
             tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',
