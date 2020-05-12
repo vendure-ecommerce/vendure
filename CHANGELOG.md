@@ -1,3 +1,11 @@
+## <small>0.12.1 (2020-05-12)</small>
+
+
+#### Fixes
+
+* **admin-ui-plugin** Fix default value for apiPort ([efde4d7](https://github.com/vendure-ecommerce/vendure/commit/efde4d7))
+* **create** Fix use of deprecated port option ([96765b4](https://github.com/vendure-ecommerce/vendure/commit/96765b4))
+
 ## 0.12.0 (2020-05-12)
 
 
