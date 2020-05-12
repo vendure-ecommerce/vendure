@@ -192,7 +192,7 @@ export class ServiceModule {
         }
         return {
             module: ServiceModule,
-            imports: [workerTypeOrmModule],
+            imports: [workerTypeOrmModule, ConfigModule],
             controllers: workerControllers,
         };
     }

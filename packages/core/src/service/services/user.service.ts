@@ -14,6 +14,7 @@ import {
 import { ConfigService } from '../../config/config.service';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 
 import { RoleService } from './role.service';
@@ -69,6 +70,11 @@ export class UserService {
             verified: true,
         });
         return this.connection.manager.save(user);
+    }
+
+    async softDelete(userId: ID) {
+        await getEntityOrThrow(this.connection, User, userId);
+        await this.connection.getRepository(User).update({ id: userId }, { deletedAt: new Date() });
     }
 
     async setVerificationToken(user: User): Promise<User> {

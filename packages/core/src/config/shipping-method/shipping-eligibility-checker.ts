@@ -4,6 +4,7 @@ import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 import {
     ConfigArgs,
     ConfigurableOperationDef,
+    ConfigurableOperationDefOptions,
     LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
@@ -12,6 +13,10 @@ import { Order } from '../../entity/order/order.entity';
 export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
 export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
 
+export interface ShippingEligibilityCheckerConfig<T extends ShippingEligibilityCheckerArgs>
+    extends ConfigurableOperationDefOptions<T> {
+    check: CheckShippingEligibilityCheckerFn<T>;
+}
 /**
  * @description
  * The ShippingEligibilityChecker class is used to check whether an order qualifies for a
@@ -34,25 +39,13 @@ export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheck
  * @docsCategory shipping
  * @docsPage ShippingEligibilityChecker
  */
-export class ShippingEligibilityChecker<T extends ShippingEligibilityCheckerArgs = {}>
-    implements ConfigurableOperationDef {
-    /** @internal */
-    readonly code: string;
-    /** @internal */
-    readonly description: LocalizedStringArray;
-    /** @internal */
-    readonly args: ShippingEligibilityCheckerArgs;
+export class ShippingEligibilityChecker<
+    T extends ShippingEligibilityCheckerArgs = {}
+> extends ConfigurableOperationDef<T> {
     private readonly checkFn: CheckShippingEligibilityCheckerFn<T>;
 
-    constructor(config: {
-        args: T;
-        check: CheckShippingEligibilityCheckerFn<T>;
-        code: string;
-        description: LocalizedStringArray;
-    }) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+    constructor(config: ShippingEligibilityCheckerConfig<T>) {
+        super(config);
         this.checkFn = config.check;
     }
 

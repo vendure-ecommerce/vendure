@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 :host {
     // flex: 0 0 auto;
@@ -13,4 +13,39 @@ nav.sidenav {
 
 .nav-list clr-icon {
     margin-right: 12px;
+}
+
+.nav-group,
+.nav-link {
+    position: relative;
+}
+
+.status-badge {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid $color-grey-200;
+
+    &.info {
+        background-color: $color-primary-600;
+    }
+    &.success {
+        background-color: $color-success-500;
+    }
+    &.warning {
+        background-color: $color-warning-500;
+    }
+    &.error {
+        background-color: $color-error-400;
+    }
+}
+
+.nav-group .status-badge {
+    left: 10px;
+    top: 6px;
+}
+.nav-link .status-badge {
+    left: 25px;
+    top: 3px;
 }

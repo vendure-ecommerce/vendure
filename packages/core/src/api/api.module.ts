@@ -25,18 +25,22 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         ApiSharedModule,
         AdminApiModule,
         ShopApiModule,
-        configureGraphQLModule(configService => ({
+        configureGraphQLModule((configService) => ({
             apiType: 'shop',
-            apiPath: configService.shopApiPath,
-            typePaths: ['type', 'shop-api', 'common'].map(p =>
+            apiPath: configService.apiOptions.shopApiPath,
+            playground: configService.apiOptions.shopApiPlayground,
+            debug: configService.apiOptions.shopApiDebug,
+            typePaths: ['type', 'shop-api', 'common'].map((p) =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
             resolverModule: ShopApiModule,
         })),
-        configureGraphQLModule(configService => ({
+        configureGraphQLModule((configService) => ({
             apiType: 'admin',
-            apiPath: configService.adminApiPath,
-            typePaths: ['type', 'admin-api', 'common'].map(p =>
+            apiPath: configService.apiOptions.adminApiPath,
+            playground: configService.apiOptions.adminApiPlayground,
+            debug: configService.apiOptions.adminApiDebug,
+            typePaths: ['type', 'admin-api', 'common'].map((p) =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
             resolverModule: AdminApiModule,

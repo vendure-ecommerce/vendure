@@ -6,6 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
+    ConfigurableOperationDefOptions,
     LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { StateMachineConfig } from '../../common/finite-state-machine';
@@ -141,17 +142,8 @@ export type CreateRefundFn<T extends PaymentMethodArgs> = (
  *
  * @docsCategory payment
  */
-export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs> {
-    /**
-     * @description
-     * A unique code used to identify this handler.
-     */
-    code: string;
-    /**
-     * @description
-     * A human-readable description for the payment method.
-     */
-    description: LocalizedStringArray;
+export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs>
+    extends ConfigurableOperationDefOptions<T> {
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -175,22 +167,6 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * omitted and any Refunds will have to be settled manually by an administrator.
      */
     createRefund?: CreateRefundFn<T>;
-    /**
-     * @description
-     * Optional provider-specific arguments which, when specified, are
-     * editable in the admin-ui. For example, args could be used to store an API key
-     * for a payment provider service.
-     *
-     * @example
-     * ```ts
-     * args: {
-     *   apiKey: { type: 'string' },
-     * }
-     * ```
-     *
-     * See {@link ConfigArgs} for available configuration options.
-     */
-    args: T;
     /**
      * @description
      * This function, when specified, will be invoked before any transition from one {@link PaymentState} to another.
@@ -251,23 +227,16 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @docsCategory payment
  */
-export class PaymentMethodHandler<T extends PaymentMethodArgs = PaymentMethodArgs>
-    implements ConfigurableOperationDef {
-    /** @internal */
-    readonly code: string;
-    /** @internal */
-    readonly description: LocalizedStringArray;
-    /** @internal */
-    readonly args: T;
+export class PaymentMethodHandler<
+    T extends PaymentMethodArgs = PaymentMethodArgs
+> extends ConfigurableOperationDef<T> {
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly createRefundFn?: CreateRefundFn<T>;
     private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+        super(config);
         this.createPaymentFn = config.createPayment;
         this.settlePaymentFn = config.settlePayment;
         this.settlePaymentFn = config.settlePayment;

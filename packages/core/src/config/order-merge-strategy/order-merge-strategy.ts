@@ -1,3 +1,4 @@
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
@@ -11,7 +12,7 @@ import { Order } from '../../entity/order/order.entity';
  *
  * @docsCategory orders
  */
-export interface OrderMergeStrategy {
+export interface OrderMergeStrategy extends InjectableStrategy {
     /**
      * @description
      * Merges the lines of the guest Order with those of the existing Order which is associated

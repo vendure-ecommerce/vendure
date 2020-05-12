@@ -4,6 +4,22 @@ import { Observable } from 'rxjs';
 import { DataService } from '../../data/providers/data.service';
 import { NotificationService } from '../notification/notification.service';
 
+export type NavMenuBadgeType = 'none' | 'info' | 'success' | 'warning' | 'error';
+
+/**
+ * A color-coded notification badge which will be displayed by the
+ * NavMenuItem's icon.
+ */
+export interface NavMenuBadge {
+    type: NavMenuBadgeType;
+    /**
+     * If true, the badge will propagate to the NavMenuItem's
+     * parent section, displaying a notification badge next
+     * to the section name.
+     */
+    propagateToSection?: boolean;
+}
+
 /**
  * A NavMenuItem is a menu item in the main (left-hand side) nav
  * bar.
@@ -15,6 +31,7 @@ export interface NavMenuItem {
     onClick?: (event: MouseEvent) => void;
     icon?: string;
     requiresPermission?: string;
+    statusBadge?: Observable<NavMenuBadge>;
 }
 
 /**

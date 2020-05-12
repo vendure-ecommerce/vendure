@@ -13,7 +13,7 @@
                     name="hide-settled"
                     (change)="refresh()"
                 />
-                <label>{{ 'settings.hide-settled-jobs' | translate }}</label>
+                <label>{{ 'system.hide-settled-jobs' | translate }}</label>
             </clr-checkbox-wrapper>
         </clr-checkbox-container>
     </vdr-ab-left>
@@ -32,7 +32,7 @@
         >
             <ng-template ng-label-tmp ng-option-tmp let-item="item">
                 <ng-container *ngIf="item.name === 'all'; else others">
-                    {{ 'settings.all-job-queues' | translate }}
+                    {{ 'system.all-job-queues' | translate }}
                 </ng-container>
                 <ng-template #others>
                     <vdr-chip [colorFrom]="item.name">{{ item.name }}</vdr-chip>
@@ -52,11 +52,11 @@
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <vdr-dt-column></vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.job-queue-name' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'system.job-queue-name' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.created-at' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.job-state' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.job-duration' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'settings.job-result' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'system.job-state' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'system.job-duration' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'system.job-result' | translate }}</vdr-dt-column>
     <ng-template let-job="item">
         <td class="left align-middle">
             <vdr-entity-info [entity]="job"></vdr-entity-info>
@@ -66,7 +66,7 @@
                 <button
                     class="btn btn-link btn-icon"
                     vdrDropdownTrigger
-                    [title]="'settings.job-data' | translate"
+                    [title]="'system.job-data' | translate"
                 >
                     <clr-icon shape="details"></clr-icon>
                 </button>
@@ -88,7 +88,7 @@
             <vdr-dropdown *ngIf="hasResult(job)">
                 <button class="btn btn-link btn-sm details-button" vdrDropdownTrigger>
                     <clr-icon shape="details"></clr-icon>
-                    {{ 'settings.job-result' | translate }}
+                    {{ 'system.job-result' | translate }}
                 </button>
                 <vdr-dropdown-menu>
                     <div class="result-detail">
@@ -99,7 +99,7 @@
             <vdr-dropdown *ngIf="job.error">
                 <button class="btn btn-link btn-sm details-button" vdrDropdownTrigger>
                     <clr-icon shape="exclamation-circle"></clr-icon>
-                    {{ 'settings.job-error' | translate }}
+                    {{ 'system.job-error' | translate }}
                 </button>
                 <vdr-dropdown-menu>
                     <div class="result-detail">

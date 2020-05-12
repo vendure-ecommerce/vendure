@@ -1,0 +1,15 @@
+@import "variables";
+
+.system-status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    .status-detail {
+        font-weight: bold;
+    }
+    .last-checked {
+        font-weight: normal;
+        color: $color-grey-500;
+    }
+}

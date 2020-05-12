@@ -15,7 +15,7 @@ import { registerCustomEntityFields } from './entity/register-custom-entity-fiel
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
-import { logProxyMiddlewares } from './plugin/plugin-utils';
+import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -43,14 +43,15 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     // config, so that they are available when the AppModule decorator is evaluated.
     // tslint:disable-next-line:whitespace
     const appModule = await import('./app.module');
+    const { hostname, port, cors } = config.apiOptions;
     DefaultLogger.hideNestBoostrapLogs();
     const app = await NestFactory.create(appModule.AppModule, {
-        cors: config.cors,
+        cors,
         logger: new Logger(),
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    await app.listen(config.port, config.hostname);
+    await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
         try {
@@ -142,8 +143,9 @@ async function bootstrapWorkerInternal(
  */
 export async function preBootstrapConfig(
     userConfig: Partial<VendureConfig>,
-): Promise<ReadOnlyRequired<VendureConfig>> {
+): Promise<Readonly<RuntimeVendureConfig>> {
     if (userConfig) {
+        checkForDeprecatedOptions(userConfig);
         setConfig(userConfig);
     }
 
@@ -194,7 +196,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // Check to ensure that no plugins are defining entities with names
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
-        if (allEntities.find(e => e.name === pluginEntity.name)) {
+        if (allEntities.find((e) => e.name === pluginEntity.name)) {
             throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
@@ -207,10 +209,10 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  * If the 'bearer' tokenMethod is being used, then we automatically expose the authTokenHeaderKey header
  * in the CORS options, making sure to preserve any user-configured exposedHeaders.
  */
-function setExposedHeaders(config: ReadOnlyRequired<VendureConfig>) {
+function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     if (config.authOptions.tokenMethod === 'bearer') {
         const authTokenHeaderKey = config.authOptions.authTokenHeaderKey as string;
-        const corsOptions = config.cors;
+        const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
             const { exposedHeaders } = corsOptions;
             let exposedHeadersWithAuthKey: string[];
@@ -219,7 +221,7 @@ function setExposedHeaders(config: ReadOnlyRequired<VendureConfig>) {
             } else if (typeof exposedHeaders === 'string') {
                 exposedHeadersWithAuthKey = exposedHeaders
                     .split(',')
-                    .map(x => x.trim())
+                    .map((x) => x.trim())
                     .concat(authTokenHeaderKey);
             } else {
                 exposedHeadersWithAuthKey = exposedHeaders.concat(authTokenHeaderKey);
@@ -257,19 +259,32 @@ function workerWelcomeMessage(config: VendureConfig) {
     Logger.info(`Vendure Worker started${transportString}${connectionString}`);
 }
 
-function logWelcomeMessage(config: VendureConfig) {
+function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
         version = require('../package.json').version;
     } catch (e) {
         version = ' unknown';
     }
-    Logger.info(`=================================================`);
-    Logger.info(`Vendure server (v${version}) now running on port ${config.port}`);
-    Logger.info(`Shop API: http://localhost:${config.port}/${config.shopApiPath}`);
-    Logger.info(`Admin API: http://localhost:${config.port}/${config.adminApiPath}`);
-    logProxyMiddlewares(config);
-    Logger.info(`=================================================`);
+    const { port, shopApiPath, adminApiPath } = config.apiOptions;
+    const apiCliGreetings: Array<[string, string]> = [];
+    apiCliGreetings.push(['Shop API', `http://localhost:${port}/${shopApiPath}`]);
+    apiCliGreetings.push(['Admin API', `http://localhost:${port}/${adminApiPath}`]);
+    apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
+    const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
+    const title = `Vendure server (v${version}) now running on port ${port}`;
+    const maxLineLength = Math.max(title.length, ...columnarGreetings.map((l) => l.length));
+    const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
+    Logger.info(`=`.repeat(maxLineLength));
+    Logger.info(title.padStart(title.length + titlePadLength));
+    Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
+    columnarGreetings.forEach((line) => Logger.info(line));
+    Logger.info(`=`.repeat(maxLineLength));
+}
+
+function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
+    const columnWidth = Math.max(...lines.map((l) => l[0].length)) + 2;
+    return lines.map((l) => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
 
 /**
@@ -283,4 +298,24 @@ function disableSynchronize(userConfig: ReadOnlyRequired<VendureConfig>): ReadOn
         synchronize: false,
     } as ConnectionOptions;
     return config;
+}
+
+function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
+    const deprecatedApiOptions = [
+        'hostname',
+        'port',
+        'adminApiPath',
+        'shopApiPath',
+        'channelTokenKey',
+        'cors',
+        'middleware',
+        'apolloServerPlugins',
+    ];
+    const deprecatedOptionsUsed = deprecatedApiOptions.filter((option) => config.hasOwnProperty(option));
+    if (deprecatedOptionsUsed.length) {
+        throw new Error(
+            `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +
+                `They have been moved to the "apiOptions" object. Please update your configuration.`,
+        );
+    }
 }

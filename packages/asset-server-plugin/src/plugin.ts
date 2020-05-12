@@ -1,15 +1,19 @@
+import { DNSHealthIndicator, TerminusModule } from '@nestjs/terminus';
 import { Type } from '@vendure/common/lib/shared-types';
 import {
     AssetStorageStrategy,
     createProxyHandler,
+    HealthCheckRegistryService,
     Logger,
     OnVendureBootstrap,
     OnVendureClose,
+    PluginCommonModule,
     RuntimeVendureConfig,
     VendurePlugin,
 } from '@vendure/core';
 import { createHash } from 'crypto';
 import express, { NextFunction, Request, Response } from 'express';
+import { fromBuffer } from 'file-type';
 import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
@@ -23,7 +27,8 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
 
 /**
  * @description
- * The `AssetServerPlugin` serves assets (images and other files) from the local file system. It can also perform on-the-fly image transformations
+ * The `AssetServerPlugin` serves assets (images and other files) from the local file system, and can also be configured to use
+ * other storage strategies (e.g. {@link S3AssetStorageStrategy}. It can also perform on-the-fly image transformations
  * and caches the results for subsequent calls.
  *
  * ## Installation
@@ -119,7 +124,8 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  * @docsCategory AssetServerPlugin
  */
 @VendurePlugin({
-    configuration: config => AssetServerPlugin.configure(config),
+    imports: [PluginCommonModule, TerminusModule],
+    configuration: (config) => AssetServerPlugin.configure(config),
 })
 export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private server: Server;
@@ -133,6 +139,11 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         { name: 'large', width: 800, height: 800, mode: 'resize' },
     ];
     private static options: AssetServerOptions;
+
+    constructor(
+        private healthCheckRegistryService: HealthCheckRegistryService,
+        private dns: DNSHealthIndicator,
+    ) {}
 
     /**
      * @description
@@ -155,7 +166,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         config.assetOptions.assetStorageStrategy = this.assetStorage;
         config.assetOptions.assetNamingStrategy =
             this.options.namingStrategy || new HashedAssetNamingStrategy();
-        config.middleware.push({
+        config.apiOptions.middleware.push({
             handler: createProxyHandler({ ...this.options, label: 'Asset Server' }),
             route: this.options.route,
         });
@@ -166,7 +177,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     onVendureBootstrap(): void | Promise<void> {
         if (AssetServerPlugin.options.presets) {
             for (const preset of AssetServerPlugin.options.presets) {
-                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
+                const existingIndex = this.presets.findIndex((p) => p.name === preset.name);
                 if (-1 < existingIndex) {
                     this.presets.splice(existingIndex, 1, preset);
                 } else {
@@ -178,11 +189,12 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         const cachePath = path.join(AssetServerPlugin.options.assetUploadDir, this.cacheDir);
         fs.ensureDirSync(cachePath);
         this.createAssetServer();
+        const { hostname, port } = AssetServerPlugin.options;
     }
 
     /** @internal */
     onVendureClose(): Promise<void> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             this.server.close(() => resolve());
         });
     }
@@ -192,26 +204,42 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     private createAssetServer() {
         const assetServer = express();
-        assetServer.use(this.serveStaticFile(), this.generateTransformedImage());
+        assetServer.get('/health', (req, res) => {
+            res.send('ok');
+        });
+        assetServer.use(this.sendAsset(), this.generateTransformedImage());
+
         this.server = assetServer.listen(AssetServerPlugin.options.port, () => {
             const addressInfo = this.server.address();
             if (addressInfo && typeof addressInfo !== 'string') {
                 const { address, port } = addressInfo;
-                Logger.info(`Asset server listening on ${address}:${port}`, loggerCtx);
+                Logger.info(`Asset server listening on "http://localhost:${port}"`, loggerCtx);
+                this.healthCheckRegistryService.registerIndicatorFunction(() =>
+                    this.dns.pingCheck('asset-server', `http://localhost:${port}/health`),
+                );
             }
         });
     }
 
     /**
-     * Sends the file requested to the broswer.
+     * Reads the file requested and send the response to the browser.
      */
-    private serveStaticFile() {
-        return (req: Request, res: Response) => {
-            const filePath = path.join(
-                AssetServerPlugin.options.assetUploadDir,
-                this.getFileNameFromRequest(req),
-            );
-            res.sendFile(filePath);
+    private sendAsset() {
+        return async (req: Request, res: Response, next: NextFunction) => {
+            const key = this.getFileNameFromRequest(req);
+            try {
+                const file = await AssetServerPlugin.assetStorage.readFileToBuffer(key);
+                let mimeType = this.getMimeType(key);
+                if (!mimeType) {
+                    mimeType = (await fromBuffer(file))?.mime || 'application/octet-stream';
+                }
+                res.contentType(mimeType);
+                res.send(file);
+            } catch (e) {
+                const err = new Error('File not found');
+                (err as any).status = 404;
+                return next(err);
+            }
         };
     }
 
@@ -222,7 +250,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     private generateTransformedImage() {
         return async (err: any, req: Request, res: Response, next: NextFunction) => {
-            if (err && err.status === 404) {
+            if (err && (err.status === 404 || err.statusCode === 404)) {
                 if (req.query) {
                     Logger.debug(`Pre-cached Asset not found: ${req.path}`, loggerCtx);
                     let file: Buffer;
@@ -264,7 +292,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
             const height = h || '';
             imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}`);
         } else if (preset) {
-            if (this.presets && !!this.presets.find(p => p.name === preset)) {
+            if (this.presets && !!this.presets.find((p) => p.name === preset)) {
                 imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}`);
             }
         }
@@ -277,9 +305,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     private md5(input: string): string {
-        return createHash('md5')
-            .update(input)
-            .digest('hex');
+        return createHash('md5').update(input).digest('hex');
     }
 
     private addSuffix(fileName: string, suffix: string): string {
@@ -287,5 +313,27 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
         const baseName = path.basename(fileName, ext);
         const dirName = path.dirname(fileName);
         return path.join(dirName, `${baseName}${suffix}${ext}`);
+    }
+
+    /**
+     * Attempt to get the mime type from the file name.
+     */
+    private getMimeType(fileName: string): string | undefined {
+        const ext = path.extname(fileName);
+        switch (ext) {
+            case 'jpg':
+            case 'jpeg':
+                return 'image/jpeg';
+            case 'png':
+                return 'image/png';
+            case 'gif':
+                return 'image/gif';
+            case 'svg':
+                return 'image/svg+xml';
+            case 'tiff':
+                return 'image/tiff';
+            case 'webp':
+                return 'image/webp';
+        }
     }
 }

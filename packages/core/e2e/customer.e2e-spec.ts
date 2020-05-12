@@ -46,7 +46,7 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
             sendEmailFn(event);
         });
     }
@@ -164,7 +164,7 @@ describe('Customer resolver', () => {
             });
 
             expect(result.customer!.addresses!.length).toBe(2);
-            firstCustomerAddressIds = result.customer!.addresses!.map(a => a.id).sort();
+            firstCustomerAddressIds = result.customer!.addresses!.map((a) => a.id).sort();
         });
 
         it('updateCustomerAddress updates the country', async () => {
@@ -203,7 +203,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress = result2.customer!.addresses!.filter(
-                a => a.id !== firstCustomerAddressIds[1],
+                (a) => a.id !== firstCustomerAddressIds[1],
             )[0]!;
             expect(otherAddress.defaultShippingAddress).toBe(false);
             expect(otherAddress.defaultBillingAddress).toBe(false);
@@ -227,7 +227,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress2 = result4.customer!.addresses!.filter(
-                a => a.id !== firstCustomerAddressIds[0],
+                (a) => a.id !== firstCustomerAddressIds[0],
             )[0]!;
             expect(otherAddress2.defaultShippingAddress).toBe(false);
             expect(otherAddress2.defaultBillingAddress).toBe(false);
@@ -330,10 +330,10 @@ describe('Customer resolver', () => {
             );
             expect(customer!.addresses!.length).toBe(2);
             const defaultAddress = customer!.addresses!.filter(
-                a => a.defaultBillingAddress && a.defaultShippingAddress,
+                (a) => a.defaultBillingAddress && a.defaultShippingAddress,
             );
             const otherAddress = customer!.addresses!.filter(
-                a => !a.defaultBillingAddress && !a.defaultShippingAddress,
+                (a) => !a.defaultBillingAddress && !a.defaultShippingAddress,
             );
             expect(defaultAddress.length).toBe(1);
             expect(otherAddress.length).toBe(1);
@@ -400,6 +400,23 @@ describe('Customer resolver', () => {
             expect(createCustomer.user!.verified).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(0);
         });
+
+        it(
+            'throws when using an existing, non-deleted emailAddress',
+            assertThrowsWithMessage(async () => {
+                const { createCustomer } = await adminClient.query<
+                    CreateCustomer.Mutation,
+                    CreateCustomer.Variables
+                >(CREATE_CUSTOMER, {
+                    input: {
+                        emailAddress: 'test2@test.com',
+                        firstName: 'New',
+                        lastName: 'Customer',
+                    },
+                    password: 'test',
+                });
+            }, 'The email address must be unique'),
+        );
     });
 
     describe('deletion', () => {
@@ -425,7 +442,7 @@ describe('Customer resolver', () => {
                 GET_CUSTOMER_LIST,
             );
 
-            expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
+            expect(result.customers.items.map((c) => c.id).includes(thirdCustomer.id)).toBe(false);
         });
 
         it(
@@ -456,6 +473,23 @@ describe('Customer resolver', () => {
                 `No Customer with the id '3' could be found`,
             ),
         );
+
+        it('new Customer can be created with same emailAddress as a deleted Customer', async () => {
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: thirdCustomer.emailAddress,
+                    firstName: 'Reusing Email',
+                    lastName: 'Customer',
+                },
+            });
+
+            expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
+            expect(createCustomer.firstName).toBe('Reusing Email');
+            expect(createCustomer.user?.identifier).toBe(thirdCustomer.emailAddress);
+        });
     });
 });
 

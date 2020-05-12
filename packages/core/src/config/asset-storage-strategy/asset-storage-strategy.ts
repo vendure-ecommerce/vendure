@@ -1,6 +1,8 @@
 import { Request } from 'express';
 import { Stream } from 'stream';
 
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
+
 /**
  * @description
  * The AssetPersistenceStrategy determines how Asset files are physically stored
@@ -8,7 +10,7 @@ import { Stream } from 'stream';
  *
  * @docsCategory assets
  */
-export interface AssetStorageStrategy {
+export interface AssetStorageStrategy extends InjectableStrategy {
     /**
      * @description
      * Writes a buffer to the store and returns a unique identifier for that
@@ -57,5 +59,5 @@ export interface AssetStorageStrategy {
      * (i.e. the identifier is already an absolute url) then this method
      * should not be implemented.
      */
-    toAbsoluteUrl?(reqest: Request, identifier: string): string;
+    toAbsoluteUrl?(request: Request, identifier: string): string;
 }

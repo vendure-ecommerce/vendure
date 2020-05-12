@@ -33,6 +33,6 @@ Translation keys are automatically extracted by running:
 ```
 yarn extract-translations
 ```
-This will add any new translation keys to the default language file located in [`./src/i18n-messages/en.json`](./src/i18n-messages/en.json).
+This will add any new translation keys to the default language file located in [`./src/lib/static/i18n-messages/en.json`](./src/lib/static/i18n-messages/en.json).
 
-From this master translation file, other language versions can be created by copying and updating the values for the new language.
+To extract translations into other language, run the same command as specified in the `extract-translations` npm script, but substitute the "en" in "en.json" with the [ISO 639-1 2-character language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for that language.

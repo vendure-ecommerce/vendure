@@ -109,7 +109,7 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [],
-    configuration: config => AdminUiPlugin.configure(config),
+    configuration: (config) => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiPluginOptions;
@@ -137,7 +137,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         } else {
             port = this.options.port;
         }
-        config.middleware.push({
+        config.apiOptions.middleware.push({
             handler: createProxyHandler({
                 hostname: this.options.hostname,
                 port,
@@ -148,7 +148,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             route,
         });
         if (this.isDevModeApp(app)) {
-            config.middleware.push({
+            config.apiOptions.middleware.push({
                 handler: createProxyHandler({
                     hostname: this.options.hostname,
                     port,
@@ -226,7 +226,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureClose(): Promise<void> {
         if (this.server) {
-            await new Promise(resolve => this.server.close(() => resolve()));
+            await new Promise((resolve) => this.server.close(() => resolve()));
         }
     }
 
@@ -244,9 +244,9 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             return partialConfig ? (partialConfig as AdminUiConfig)[prop] || defaultVal : defaultVal;
         };
         return {
-            adminApiPath: propOrDefault('adminApiPath', this.configService.adminApiPath),
-            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'http://localhost'),
-            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || this.configService.port),
+            adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
+            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'auto'),
+            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || 'auto'),
             tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',

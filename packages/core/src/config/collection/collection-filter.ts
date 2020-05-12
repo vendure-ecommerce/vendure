@@ -1,5 +1,5 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset, ConfigArgType } from '@vendure/common/lib/shared-types';
+import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {
@@ -7,7 +7,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-    LocalizedStringArray,
+    ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
@@ -19,23 +19,28 @@ export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
     args: ConfigArgValues<T>,
 ) => SelectQueryBuilder<ProductVariant>;
 
-export interface CollectionFilterConfig<T extends CollectionFilterArgs> {
-    args: T;
-    code: string;
-    description: LocalizedStringArray;
+export interface CollectionFilterConfig<T extends CollectionFilterArgs>
+    extends ConfigurableOperationDefOptions<T> {
     apply: ApplyCollectionFilterFn<T>;
 }
 
-export class CollectionFilter<T extends CollectionFilterArgs = {}> implements ConfigurableOperationDef {
-    readonly code: string;
-    readonly args: CollectionFilterArgs;
-    readonly description: LocalizedStringArray;
+/**
+ * @description
+ * A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
+ * The filtering is done by defining the `apply()` function, which receives a TypeORM
+ * [`QueryBuilder`](https://typeorm.io/#/select-query-builder) object to which clauses may be added.
+ *
+ * Creating a CollectionFilter is considered an advanced Vendure topic. For more insight into how
+ * they work, study the default collection filters
+ * [source](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/src/config/collection/default-collection-filters.ts)
+ *
+ * @docsCategory configuration
+ */
+export class CollectionFilter<T extends CollectionFilterArgs = {}> extends ConfigurableOperationDef<T> {
     private readonly applyFn: ApplyCollectionFilterFn<T>;
 
     constructor(config: CollectionFilterConfig<T>) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+        super(config);
         this.applyFn = config.apply;
     }
 

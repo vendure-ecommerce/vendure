@@ -16,7 +16,7 @@
     "codegen": "ts-node scripts/codegen/generate-graphql-types.ts",
     "generate-typescript-docs": "ts-node scripts/docs/generate-typescript-docs.ts",
     "generate-graphql-docs": "ts-node scripts/docs/generate-graphql-docs.ts --api=shop && ts-node scripts/docs/generate-graphql-docs.ts --api=admin",
-    "version": "yarn check-imports && yarn build && yarn generate-changelog && git add CHANGELOG.md",
+    "version": "yarn check-imports && yarn build && yarn generate-changelog && git add CHANGELOG.md && git add */version.ts",
     "dev-server:start": "cd packages/dev-server && yarn start",
     "test": "lerna run test --stream --no-bail",
     "e2e": "lerna run e2e --stream --no-bail",

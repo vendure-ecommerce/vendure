@@ -1,6 +1,7 @@
 // tslint:disable:no-console
 import fs from 'fs-extra';
 import path from 'path';
+import { HeritageClause } from 'typescript';
 
 import { assertNever } from '../../packages/common/src/shared-utils';
 
@@ -19,7 +20,6 @@ import {
 } from './typescript-docgen-types';
 
 export class TypescriptDocsRenderer {
-
     render(pages: DocsPage[], docsUrl: string, outputPath: string, typeMap: TypeMap): number {
         let generatedCount = 0;
         if (!fs.existsSync(outputPath)) {
@@ -62,7 +62,8 @@ export class TypescriptDocsRenderer {
                 fs.mkdirsSync(categoryDir);
             }
             if (!fs.existsSync(indexFile)) {
-                const indexFileContent = generateFrontMatter(page.category, 10, false) + `\n\n# ${page.category}`;
+                const indexFileContent =
+                    generateFrontMatter(page.category, 10, false) + `\n\n# ${page.category}`;
                 fs.writeFileSync(indexFile, indexFileContent);
                 generatedCount++;
             }
@@ -76,14 +77,27 @@ export class TypescriptDocsRenderer {
     /**
      * Render the interface to a markdown string.
      */
-    private renderInterfaceOrClass(info: InterfaceInfo | ClassInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+    private renderInterfaceOrClass(
+        info: InterfaceInfo | ClassInfo,
+        knownTypeMap: TypeMap,
+        docsUrl: string,
+    ): string {
         const { title, weight, category, description, members } = info;
         let output = '';
         output += `\n\n# ${title}\n\n`;
         output += this.renderGenerationInfoShortcode(info);
         output += `${this.renderDescription(description, knownTypeMap, docsUrl)}\n\n`;
         output += `## Signature\n\n`;
-        output += info.kind === 'interface' ? this.renderInterfaceSignature(info) : this.renderClassSignature(info);
+        output +=
+            info.kind === 'interface' ? this.renderInterfaceSignature(info) : this.renderClassSignature(info);
+        if (info.extendsClause) {
+            output += `## Extends\n\n`;
+            output += `${this.renderHeritageClause(info.extendsClause, knownTypeMap, docsUrl)}\n`;
+        }
+        if (info.kind === 'class' && info.implementsClause) {
+            output += `## Implements\n\n`;
+            output += `${this.renderHeritageClause(info.implementsClause, knownTypeMap, docsUrl)}\n`;
+        }
         if (info.members && info.members.length) {
             output += `## Members\n\n`;
             output += `${this.renderMembers(info, knownTypeMap, docsUrl)}\n`;
@@ -152,11 +166,11 @@ export class TypescriptDocsRenderer {
         let output = '';
         output += `\`\`\`TypeScript\n`;
         output += `interface ${fullText} `;
-        if (interfaceInfo.extends) {
-            output += interfaceInfo.extends + ' ';
+        if (interfaceInfo.extendsClause) {
+            output += interfaceInfo.extendsClause.getText() + ' ';
         }
         output += `{\n`;
-        output += members.map(member => `  ${member.fullText}`).join(`\n`);
+        output += members.map((member) => `  ${member.fullText}`).join(`\n`);
         output += `\n}\n`;
         output += `\`\`\`\n`;
 
@@ -168,24 +182,24 @@ export class TypescriptDocsRenderer {
         let output = '';
         output += `\`\`\`TypeScript\n`;
         output += `class ${fullText} `;
-        if (classInfo.extends) {
-            output += classInfo.extends + ' ';
+        if (classInfo.extendsClause) {
+            output += classInfo.extendsClause.getText() + ' ';
         }
-        if (classInfo.implements) {
-            output += classInfo.implements + ' ';
+        if (classInfo.implementsClause) {
+            output += classInfo.implementsClause.getText() + ' ';
         }
         output += `{\n`;
-        const renderModifiers = (modifiers: string[]) => modifiers.length ? modifiers.join(' ') + ' ' : '';
+        const renderModifiers = (modifiers: string[]) => (modifiers.length ? modifiers.join(' ') + ' ' : '');
         output += members
-            .map(member => {
+            .map((member) => {
                 if (member.kind === 'method') {
-                    const args = member.parameters
-                        .map(p => this.renderParameter(p, p.type))
-                        .join(', ');
+                    const args = member.parameters.map((p) => this.renderParameter(p, p.type)).join(', ');
                     if (member.fullText === 'constructor') {
                         return `  constructor(${args})`;
                     } else {
-                        return `  ${renderModifiers(member.modifiers)}${member.fullText}(${args}) => ${member.type};`;
+                        return `  ${renderModifiers(member.modifiers)}${member.fullText}(${args}) => ${
+                            member.type
+                        };`;
                     }
                 } else {
                     return `  ${renderModifiers(member.modifiers)}${member.fullText}`;
@@ -205,7 +219,7 @@ export class TypescriptDocsRenderer {
         output += `type ${fullText} = `;
         if (members) {
             output += `{\n`;
-            output += members.map(member => `  ${member.fullText}`).join(`\n`);
+            output += members.map((member) => `  ${member.fullText}`).join(`\n`);
             output += `\n}\n`;
         } else {
             output += type.getText() + `\n`;
@@ -221,11 +235,13 @@ export class TypescriptDocsRenderer {
         output += `enum ${fullText} `;
         if (members) {
             output += `{\n`;
-            output += members.map(member => {
-                let line = member.description ? `  // ${member.description}\n` : '';
-                line += `  ${member.fullText}`;
-                return line;
-            }).join(`\n`);
+            output += members
+                .map((member) => {
+                    let line = member.description ? `  // ${member.description}\n` : '';
+                    line += `  ${member.fullText}`;
+                    return line;
+                })
+                .join(`\n`);
             output += `\n}\n`;
         }
         output += `\`\`\`\n`;
@@ -234,7 +250,7 @@ export class TypescriptDocsRenderer {
 
     private renderFunctionSignature(functionInfo: FunctionInfo, knownTypeMap: TypeMap): string {
         const { fullText, parameters, type } = functionInfo;
-        const args = parameters.map(p => this.renderParameter(p, p.type)).join(', ');
+        const args = parameters.map((p) => this.renderParameter(p, p.type)).join(', ');
         let output = '';
         output += `\`\`\`TypeScript\n`;
         output += `function ${fullText}(${args}): ${type ? type.getText() : 'void'}\n`;
@@ -242,7 +258,11 @@ export class TypescriptDocsRenderer {
         return output;
     }
 
-    private renderFunctionParams(params: MethodParameterInfo[], knownTypeMap: TypeMap, docsUrl: string): string {
+    private renderFunctionParams(
+        params: MethodParameterInfo[],
+        knownTypeMap: TypeMap,
+        docsUrl: string,
+    ): string {
         let output = '';
         for (const param of params) {
             const type = this.renderType(param.type, knownTypeMap, docsUrl);
@@ -252,7 +272,11 @@ export class TypescriptDocsRenderer {
         return output;
     }
 
-    private renderMembers(info: InterfaceInfo | ClassInfo | TypeAliasInfo | EnumInfo, knownTypeMap: TypeMap, docsUrl: string): string {
+    private renderMembers(
+        info: InterfaceInfo | ClassInfo | TypeAliasInfo | EnumInfo,
+        knownTypeMap: TypeMap,
+        docsUrl: string,
+    ): string {
         const { members, title } = info;
         let output = '';
         for (const member of members || []) {
@@ -265,7 +289,7 @@ export class TypescriptDocsRenderer {
                     : '';
             } else {
                 const args = member.parameters
-                    .map(p => this.renderParameter(p, this.renderType(p.type, knownTypeMap, docsUrl)))
+                    .map((p) => this.renderParameter(p, this.renderType(p.type, knownTypeMap, docsUrl)))
                     .join(', ');
                 if (member.fullText === 'constructor') {
                     type = `(${args}) => ${title}`;
@@ -274,14 +298,29 @@ export class TypescriptDocsRenderer {
                 }
             }
             output += `### ${member.name}\n\n`;
-            output += `{{< member-info kind="${[...member.modifiers, member.kind].join(' ')}" type="${type}" ${defaultParam}>}}\n\n`;
-            output += `{{< member-description >}}${this.renderDescription(member.description, knownTypeMap, docsUrl)}{{< /member-description >}}\n\n`;
+            output += `{{< member-info kind="${[...member.modifiers, member.kind].join(
+                ' ',
+            )}" type="${type}" ${defaultParam}>}}\n\n`;
+            output += `{{< member-description >}}${this.renderDescription(
+                member.description,
+                knownTypeMap,
+                docsUrl,
+            )}{{< /member-description >}}\n\n`;
         }
         return output;
     }
 
+    private renderHeritageClause(clause: HeritageClause, knownTypeMap: TypeMap, docsUrl: string) {
+        return (
+            clause.types.map((t) => ` * ${this.renderType(t.getText(), knownTypeMap, docsUrl)}`).join('\n') +
+            '\n\n'
+        );
+    }
+
     private renderParameter(p: MethodParameterInfo, typeString: string): string {
-        return `${p.name}${p.optional ? '?' : ''}: ${typeString}${p.initializer ? ` = ${p.initializer}` : ''}`;
+        return `${p.name}${p.optional ? '?' : ''}: ${typeString}${
+            p.initializer ? ` = ${p.initializer}` : ''
+        }`;
     }
 
     private renderGenerationInfoShortcode(info: DeclarationInfo): string {
@@ -297,7 +336,7 @@ export class TypescriptDocsRenderer {
         let typeText = type
             .trim()
             // encode HTML entities
-            .replace(/[\u00A0-\u9999<>\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
+            .replace(/[\u00A0-\u9999<>\&]/gim, (i) => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 
@@ -319,5 +358,4 @@ export class TypescriptDocsRenderer {
         }
         return description;
     }
-
 }

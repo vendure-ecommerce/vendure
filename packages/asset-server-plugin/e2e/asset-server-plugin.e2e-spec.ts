@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { AssetServerPlugin } from '../src/plugin';
 
 import { CreateAssets, DeleteAsset, DeletionResult } from './graphql/generated-e2e-asset-server-plugin-types';
@@ -60,8 +60,8 @@ describe('AssetServerPlugin', () => {
         const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
-            mapVariables: filePaths => ({
-                input: filePaths.map(p => ({ file: null })),
+            mapVariables: (filePaths) => ({
+                input: filePaths.map((p) => ({ file: null })),
             }),
         });
 

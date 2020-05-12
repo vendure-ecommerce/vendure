@@ -19,14 +19,28 @@ import { ConnectionOptions } from 'typeorm';
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
+    apiOptions: {
+        port: API_PORT,
+        adminApiPath: ADMIN_API_PATH,
+        adminApiPlayground: {
+            settings: {
+                'request.credentials': 'include',
+            } as any,
+        },
+        adminApiDebug: true,
+        shopApiPath: SHOP_API_PATH,
+        shopApiPlayground: {
+            settings: {
+                'request.credentials': 'include',
+            } as any,
+        },
+        shopApiDebug: true,
+    },
     authOptions: {
         disableAuth: false,
         sessionSecret: 'some-secret',
         requireVerification: true,
     },
-    port: API_PORT,
-    adminApiPath: ADMIN_API_PATH,
-    shopApiPath: SHOP_API_PATH,
     dbConnectionOptions: {
         synchronize: false,
         logging: false,

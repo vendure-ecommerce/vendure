@@ -8,6 +8,7 @@ import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strat
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { defaultCollectionFilters } from './collection/default-collection-filters';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
@@ -28,16 +29,26 @@ import { RuntimeVendureConfig } from './vendure-config';
  * @docsCategory configuration
  */
 export const defaultConfig: RuntimeVendureConfig = {
-    channelTokenKey: 'vendure-token',
     defaultChannelToken: null,
     defaultLanguageCode: LanguageCode.en,
-    hostname: '',
-    port: 3000,
-    cors: {
-        origin: true,
-        credentials: true,
-    },
     logger: new DefaultLogger(),
+    apiOptions: {
+        hostname: '',
+        port: 3000,
+        adminApiPath: 'admin-api',
+        adminApiPlayground: false,
+        adminApiDebug: false,
+        shopApiPath: 'shop-api',
+        shopApiPlayground: false,
+        shopApiDebug: false,
+        channelTokenKey: 'vendure-token',
+        cors: {
+            origin: true,
+            credentials: true,
+        },
+        middleware: [],
+        apolloServerPlugins: [],
+    },
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
@@ -47,8 +58,9 @@ export const defaultConfig: RuntimeVendureConfig = {
         requireVerification: true,
         verificationTokenDuration: '7d',
     },
-    adminApiPath: 'admin-api',
-    shopApiPath: 'shop-api',
+    catalogOptions: {
+        collectionFilters: defaultCollectionFilters,
+    },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
@@ -112,7 +124,5 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductVariant: [],
         User: [],
     },
-    middleware: [],
-    apolloServerPlugins: [],
     plugins: [],
 };

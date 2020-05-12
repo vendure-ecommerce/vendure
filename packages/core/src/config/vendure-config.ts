@@ -15,6 +15,7 @@ import { OrderState } from '../service/helpers/order-state-machine/order-state';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
@@ -27,6 +28,110 @@ import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
+
+/**
+ * @description
+ * The ApiOptions define how the Vendure GraphQL APIs are exposed, as well as allowing the API layer
+ * to be extended with middleware.
+ *
+ * @docsCategory configuration
+ */
+export interface ApiOptions {
+    /**
+     * @description
+     * Set the hostname of the server. If not set, the server will be available on localhost.
+     *
+     * @default ''
+     */
+    hostname?: string;
+    /**
+     * @description
+     * Which port the Vendure server should listen on.
+     *
+     * @default 3000
+     */
+    port: number;
+    /**
+     * @description
+     * The path to the admin GraphQL API.
+     *
+     * @default 'admin-api'
+     */
+    adminApiPath?: string;
+    /**
+     * @description
+     * The path to the admin GraphQL API.
+     *
+     * @default 'shop-api'
+     */
+    shopApiPath?: string;
+    /**
+     * @description
+     * The playground config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    adminApiPlayground?: boolean | any;
+    /**
+     * @description
+     * The playground config to the shop GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    shopApiPlayground?: boolean | any;
+    /**
+     * @description
+     * The debug config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    adminApiDebug?: boolean;
+    /**
+     * @description
+     * The debug config to the admin GraphQL API
+     * [ApolloServer playground](https://www.apollographql.com/docs/apollo-server/api/apollo-server/#constructoroptions-apolloserver).
+     *
+     * @default false
+     */
+    shopApiDebug?: boolean;
+    /**
+     * @description
+     * The name of the property which contains the token of the
+     * active channel. This property can be included either in
+     * the request header or as a query string.
+     *
+     * @default 'vendure-token'
+     */
+    channelTokenKey?: string;
+    /**
+     * @description
+     * Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
+     *
+     * @default { origin: true, credentials: true }
+     */
+    cors?: boolean | CorsOptions;
+    /**
+     * @description
+     * Custom Express middleware for the server.
+     *
+     * @default []
+     */
+    middleware?: Array<{ handler: RequestHandler; route: string }>;
+    /**
+     * @description
+     * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
+     * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
+     *
+     * Apollo plugins can be used e.g. to perform custom data transformations on incoming operations or outgoing
+     * data.
+     *
+     * @default []
+     */
+    apolloServerPlugins?: PluginDefinition[];
+}
 
 /**
  * @description
@@ -244,9 +349,24 @@ export interface AssetOptions {
 }
 
 /**
- * @docsCategory promotions
+ * @description
+ * Options related to products and collections.
  *
- * */
+ * @docsCategory configuration
+ */
+export interface CatalogOptions {
+    /**
+     * @description
+     * Allows custom {@link CollectionFilter}s to be defined.
+     *
+     * @default defaultCollectionFilters
+     */
+    collectionFilters: Array<CollectionFilter<any>>;
+}
+
+/**
+ * @docsCategory promotions
+ */
 export interface PromotionOptions {
     /**
      * @description
@@ -415,18 +535,9 @@ export interface JobQueueOptions {
 export interface VendureConfig {
     /**
      * @description
-     * The path to the admin GraphQL API.
      *
-     * @default 'admin-api'
      */
-    adminApiPath?: string;
-    /**
-     * @description
-     * The path to the admin GraphQL API.
-     *
-     * @default 'shop-api'
-     */
-    shopApiPath?: string;
+    apiOptions: ApiOptions;
     /**
      * @description
      * Configuration for the handling of Assets.
@@ -439,20 +550,9 @@ export interface VendureConfig {
     authOptions: AuthOptions;
     /**
      * @description
-     * The name of the property which contains the token of the
-     * active channel. This property can be included either in
-     * the request header or as a query string.
-     *
-     * @default 'vendure-token'
+     * Configuration for Products and Collections.
      */
-    channelTokenKey?: string;
-    /**
-     * @description
-     * Set the CORS handling for the server. See the [express CORS docs](https://github.com/expressjs/cors#configuration-options).
-     *
-     * @default { origin: true, credentials: true }
-     */
-    cors?: boolean | CorsOptions;
+    catalogOptions?: CatalogOptions;
     /**
      * @description
      * Defines custom fields which can be used to extend the built-in entities.
@@ -492,13 +592,6 @@ export interface VendureConfig {
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
      * @description
-     * Set the hostname of the server. If not set, the server will be available on localhost.
-     *
-     * @default ''
-     */
-    hostname?: string;
-    /**
-     * @description
      * Configuration settings for data import and export.
      */
     importExportOptions?: ImportExportOptions;
@@ -507,24 +600,6 @@ export interface VendureConfig {
      * Configuration settings governing how orders are handled.
      */
     orderOptions?: OrderOptions;
-    /**
-     * @description
-     * Custom Express middleware for the server.
-     *
-     * @default []
-     */
-    middleware?: Array<{ handler: RequestHandler; route: string }>;
-    /**
-     * @description
-     * Custom [ApolloServerPlugins](https://www.apollographql.com/docs/apollo-server/integrations/plugins/) which
-     * allow the extension of the Apollo Server, which is the underlying GraphQL server used by Vendure.
-     *
-     * Apollo plugins can be used e.g. to perform custom data transformations on incoming operations or outgoing
-     * data.
-     *
-     * @default []
-     */
-    apolloServerPlugins?: PluginDefinition[];
     /**
      * @description
      * Configures available payment processing methods.
@@ -537,13 +612,6 @@ export interface VendureConfig {
      * @default []
      */
     plugins?: Array<DynamicModule | Type<any>>;
-    /**
-     * @description
-     * Which port the Vendure server should listen on.
-     *
-     * @default 3000
-     */
-    port: number;
     /**
      * @description
      * Configures the Conditions and Actions available when creating Promotions.
@@ -586,6 +654,7 @@ export interface VendureConfig {
  * @docsCategory configuration
  */
 export interface RuntimeVendureConfig extends Required<VendureConfig> {
+    apiOptions: Required<ApiOptions>;
     assetOptions: Required<AssetOptions>;
     authOptions: Required<AuthOptions>;
     customFields: Required<CustomFields>;

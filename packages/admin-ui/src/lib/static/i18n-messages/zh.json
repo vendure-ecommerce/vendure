@@ -151,7 +151,6 @@
     "guest": "游客",
     "hide-custom-fields": "隐藏客户化字段",
     "items-per-page-option": "每页显示 { count } 条",
-    "jobs-in-progress": "{ count }个任务正在运行",
     "language": "语言",
     "launch-extension": "启动扩展插件",
     "log-out": "退出",
@@ -255,9 +254,6 @@
     "could-not-connect-to-server": "无法链接服务器 { url }",
     "facet-value-form-values-do-not-match": "表单中商品特征值数量与实际不符",
     "product-variant-form-values-do-not-match": "表单中商品规格数量与实际不符"
-  },
-  "job": {
-    "reindex": "重建索引"
   },
   "lang": {
     "aa": "阿法尔语",
@@ -594,7 +590,7 @@
     "default-shipping-zone": "默认配送区域",
     "default-tax-zone": "默认销售区域",
     "delete": "删除",
-    "elibigle": "符合条件",
+    "eligible": "符合条件",
     "email-address": "电子邮件",
     "first-name": "名",
     "last-name": "姓",
@@ -628,5 +624,8 @@
     "track-inventory-default": "默认跟踪库存",
     "update": "修改",
     "zone": "销售区域"
+  },
+  "system": {
+    "jobs-in-progress": "{ count }个任务正在运行"
   }
 }

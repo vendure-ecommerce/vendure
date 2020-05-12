@@ -1,3 +1,5 @@
+import { InjectableStrategy } from '../../common/types/injectable-strategy';
+
 /**
  * @description
  * The AssetNamingStrategy determines how file names are generated based on the uploaded source file name,
@@ -5,7 +7,7 @@
  *
  * @docsCategory assets
  */
-export interface AssetNamingStrategy {
+export interface AssetNamingStrategy extends InjectableStrategy {
     /**
      * @description
      * Given the original file name of the uploaded file, generate a file name to

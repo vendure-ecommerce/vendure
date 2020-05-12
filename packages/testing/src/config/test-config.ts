@@ -28,10 +28,12 @@ export const E2E_DEFAULT_CHANNEL_TOKEN = 'e2e-default-channel';
  * @docsCategory testing
  */
 export const testConfig: Required<VendureConfig> = mergeConfig(defaultConfig, {
-    port: 3050,
-    adminApiPath: ADMIN_API_PATH,
-    shopApiPath: SHOP_API_PATH,
-    cors: true,
+    apiOptions: {
+        port: 3050,
+        adminApiPath: ADMIN_API_PATH,
+        shopApiPath: SHOP_API_PATH,
+        cors: true,
+    },
     defaultChannelToken: E2E_DEFAULT_CHANNEL_TOKEN,
     authOptions: {
         sessionSecret: 'some-secret',

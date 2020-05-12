@@ -20,21 +20,15 @@ import { DataService } from './providers/data.service';
 import { FetchAdapter } from './providers/fetch-adapter';
 import { DefaultInterceptor } from './providers/interceptor';
 import { initializeServerConfigService, ServerConfigService } from './server-config';
+import { getServerLocation } from './utils/get-server-location';
 
 export function createApollo(
     localStorageService: LocalStorageService,
     fetchAdapter: FetchAdapter,
     injector: Injector,
 ): ApolloClientOptions<any> {
-    const { apiHost, apiPort, adminApiPath, tokenMethod } = getAppConfig();
-    const host = apiHost === 'auto' ? `${location.protocol}//${location.hostname}` : apiHost;
-    const port = apiPort
-        ? apiPort === 'auto'
-            ? location.port === ''
-                ? ''
-                : `:${location.port}`
-            : `:${apiPort}`
-        : '';
+    const { adminApiPath, tokenMethod } = getAppConfig();
+    const serverLocation = getServerLocation();
     const apolloCache = new InMemoryCache({
         fragmentMatcher: new IntrospectionFragmentMatcher({
             introspectionQueryResultData: introspectionResult,
@@ -76,7 +70,7 @@ export function createApollo(
                 }
             }),
             createUploadLink({
-                uri: `${host}${port}/${adminApiPath}`,
+                uri: `${serverLocation}/${adminApiPath}`,
                 fetch: fetchAdapter.fetch,
             }),
         ]),

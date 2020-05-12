@@ -7,10 +7,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 
-import {
-    facetValueCollectionFilter,
-    variantNameCollectionFilter,
-} from '../../config/collection/default-collection-filters';
+import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { Collection } from '../../entity/collection/collection.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -27,13 +24,14 @@ export class CollectionController {
     constructor(
         @InjectConnection() private connection: Connection,
         private collectionService: CollectionService,
+        private configService: ConfigService,
     ) {}
 
     @MessagePattern(ApplyCollectionFiltersMessage.pattern)
     applyCollectionFilters({
         collectionIds,
     }: ApplyCollectionFiltersMessage['data']): Observable<ApplyCollectionFiltersMessage['response']> {
-        return asyncObservable(async observer => {
+        return asyncObservable(async (observer) => {
             Logger.verbose(`Processing ${collectionIds.length} Collections`);
             const timeStart = Date.now();
             const collections = await this.connection.getRepository(Collection).findByIds(collectionIds, {
@@ -60,7 +58,7 @@ export class CollectionController {
     private async applyCollectionFiltersInternal(collection: Collection): Promise<ID[]> {
         const ancestorFilters = await this.collectionService
             .getAncestors(collection.id)
-            .then(ancestors =>
+            .then((ancestors) =>
                 ancestors.reduce(
                     (filters, c) => [...filters, ...(c.filters || [])],
                     [] as ConfigurableOperation[],
@@ -71,7 +69,7 @@ export class CollectionController {
             ...ancestorFilters,
             ...(collection.filters || []),
         ]);
-        const postIds = collection.productVariants.map(v => v.id);
+        const postIds = collection.productVariants.map((v) => v.id);
         try {
             await this.connection
                 .getRepository(Collection)
@@ -90,8 +88,8 @@ export class CollectionController {
         const preIdsSet = new Set(preIds);
         const postIdsSet = new Set(postIds);
         const difference = [
-            ...preIds.filter(id => !postIdsSet.has(id)),
-            ...postIds.filter(id => !preIdsSet.has(id)),
+            ...preIds.filter((id) => !postIdsSet.has(id)),
+            ...postIds.filter((id) => !preIdsSet.has(id)),
         ];
         return difference;
     }
@@ -103,21 +101,15 @@ export class CollectionController {
         if (filters.length === 0) {
             return [];
         }
-        const facetFilters = filters.filter(f => f.code === facetValueCollectionFilter.code);
-        const variantNameFilters = filters.filter(f => f.code === variantNameCollectionFilter.code);
+        const { collectionFilters } = this.configService.catalogOptions;
         let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
 
-        // Apply any facetValue-based filters
-        if (facetFilters.length) {
-            for (const filter of facetFilters) {
-                qb = facetValueCollectionFilter.apply(qb, filter.args);
-            }
-        }
-
-        // Apply any variant name-based filters
-        if (variantNameFilters.length) {
-            for (const filter of variantNameFilters) {
-                qb = variantNameCollectionFilter.apply(qb, filter.args);
+        for (const filterType of collectionFilters) {
+            const filtersOfType = filters.filter((f) => f.code === filterType.code);
+            if (filtersOfType.length) {
+                for (const filter of filtersOfType) {
+                    qb = filterType.apply(qb, filter.args);
+                }
             }
         }
 

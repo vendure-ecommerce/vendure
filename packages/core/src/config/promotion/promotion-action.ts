@@ -6,7 +6,7 @@ import {
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
-    LocalizedStringArray,
+    ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -29,10 +29,8 @@ export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
     utils: PromotionUtils,
 ) => number | Promise<number>;
 
-export interface PromotionActionConfig<T extends PromotionActionArgs> {
-    args: T;
-    code: string;
-    description: LocalizedStringArray;
+export interface PromotionActionConfig<T extends PromotionActionArgs>
+    extends ConfigurableOperationDefOptions<T> {
     priorityValue?: number;
 }
 export interface PromotionItemActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
@@ -48,17 +46,13 @@ export interface PromotionOrderActionConfig<T extends PromotionActionArgs> exten
  *
  * @docsCategory promotions
  */
-export abstract class PromotionAction<T extends PromotionActionArgs = {}>
-    implements ConfigurableOperationDef {
-    readonly code: string;
-    readonly args: PromotionActionArgs;
-    readonly description: LocalizedStringArray;
+export abstract class PromotionAction<T extends PromotionActionArgs = {}> extends ConfigurableOperationDef<
+    T
+> {
     readonly priorityValue: number;
 
     protected constructor(config: PromotionActionConfig<T>) {
-        this.code = config.code;
-        this.description = config.description;
-        this.args = config.args;
+        super(config);
         this.priorityValue = config.priorityValue || 0;
     }
 }

@@ -72,8 +72,8 @@ export class CustomerService {
             .leftJoinAndSelect('country.translations', 'countryTranslation')
             .where('address.customer = :id', { id: customerId })
             .getMany()
-            .then(addresses => {
-                addresses.forEach(address => {
+            .then((addresses) => {
+                addresses.forEach((address) => {
                     address.country = translateDeep(address.country, ctx.languageCode);
                 });
                 return addresses;
@@ -84,13 +84,20 @@ export class CustomerService {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
-        const existing = await this.connection.getRepository(Customer).findOne({
+        const existingCustomer = await this.connection.getRepository(Customer).findOne({
             where: {
                 emailAddress: input.emailAddress,
+                deletedAt: null,
+            },
+        });
+        const existingUser = await this.connection.getRepository(User).findOne({
+            where: {
+                identifier: input.emailAddress,
+                deletedAt: null,
             },
         });
 
-        if (existing) {
+        if (existingCustomer || existingUser) {
             throw new UserInputError(`error.email-address-must-be-unique`);
         }
         customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
@@ -243,6 +250,7 @@ export class CustomerService {
         const existing = await this.connection.getRepository(Customer).findOne({
             where: {
                 emailAddress: input.emailAddress,
+                deletedAt: null,
             },
         });
         if (existing) {
@@ -305,8 +313,10 @@ export class CustomerService {
     }
 
     async softDelete(customerId: ID): Promise<DeletionResponse> {
-        await getEntityOrThrow(this.connection, Customer, customerId);
+        const customer = await getEntityOrThrow(this.connection, Customer, customerId);
         await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
+        // tslint:disable-next-line:no-non-null-assertion
+        await this.userService.softDelete(customer.user!.id);
         return {
             result: DeletionResult.DELETED,
         };
@@ -318,8 +328,8 @@ export class CustomerService {
             .findOne(addressId, { relations: ['customer', 'customer.addresses'] });
         if (result) {
             const customerAddressIds = result.customer.addresses
-                .map(a => a.id)
-                .filter(id => !idsAreEqual(id, addressId)) as string[];
+                .map((a) => a.id)
+                .filter((id) => !idsAreEqual(id, addressId)) as string[];
 
             if (customerAddressIds.length) {
                 if (input.defaultBillingAddress === true) {
@@ -352,7 +362,7 @@ export class CustomerService {
             const customerAddresses = result.customer.addresses;
             if (1 < customerAddresses.length) {
                 const otherAddresses = customerAddresses
-                    .filter(address => !idsAreEqual(address.id, addressToDelete.id))
+                    .filter((address) => !idsAreEqual(address.id, addressToDelete.id))
                     .sort((a, b) => (a.id < b.id ? -1 : 1));
                 if (addressToDelete.defaultShippingAddress) {
                     otherAddresses[0].defaultShippingAddress = true;
