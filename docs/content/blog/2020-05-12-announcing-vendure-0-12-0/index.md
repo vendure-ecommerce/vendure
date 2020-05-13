@@ -1,6 +1,6 @@
 ---
 title: "Announcing Vendure v0.12.0"
-date: 2020-06-12T12:00:00
+date: 2020-05-13T12:00:00
 draft: false
 author: "Michael Bromley"
 images: 
