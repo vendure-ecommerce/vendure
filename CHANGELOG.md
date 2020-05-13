@@ -1,3 +1,10 @@
+## <small>0.12.2 (2020-05-13)</small>
+
+
+#### Fixes
+
+* **create** Add work-around for upstream tslib issue ([2f39379](https://github.com/vendure-ecommerce/vendure/commit/2f39379))
+
 ## <small>0.12.1 (2020-05-12)</small>
 
 
