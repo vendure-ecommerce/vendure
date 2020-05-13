@@ -7,9 +7,7 @@
 
 {{ define "book-section" }} <!-- Single section of menu (recursive) -->
 <ul {{ if .Expanded }}class="expanded"{{ end }}>
-    {{ $list := .Section.Sections }}
-    {{ $list = $list | append .Section.Pages }}
-    {{ range ($list.ByParam "Title").ByParam "Weight" }}
+    {{ range (.Section.Pages.ByParam "Title").ByParam "Weight" }}
         {{ if and (eq .Kind "section") (or (gt (len .Pages) 0) (gt (len .Sections) 0) ) }}
             <li class="section">
                 {{ $expanded := in $.CurrentPage .Permalink }}

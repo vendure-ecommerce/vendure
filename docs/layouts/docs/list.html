@@ -2,13 +2,11 @@
 <article class="markdown">
     {{ partial "breadcrumbs" . }}
     {{- .Content -}}
-    {{ $list := .Sections }}
-    {{ $list = $list | append .Pages }}
 
-    {{ if gt (len $list) 0 }}
+    {{ if gt (len .Pages) 0 }}
     <h3>Contents:</h3>
     <ul class="contents-list">
-        {{ range $list.ByParam "title" }}
+        {{ range .Pages.ByParam "title" }}
         <li>
             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         </li>

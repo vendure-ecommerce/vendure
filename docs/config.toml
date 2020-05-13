@@ -14,4 +14,7 @@ disableKinds = [
     BookSection = "docs"
 [permalinks]
     blog = "/blog/:year/:month/:slug/"
-
+[markup]
+  [markup.tableOfContents]
+    endLevel = 3
+    startLevel = 1
