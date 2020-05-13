@@ -47,4 +47,4 @@ A huge thanks is due to the community members who contributed to this release:
 * [Nico Hauser](https://github.com/Tyratox) fixed a critical performance issue
 * [Kai Chu](https://github.com/kai-chu) improved the configuration possibilities of the GraphQL APIs
 
-### 📃 All changes in the [Vendure 0.12.0 Changelog](https://github.com/vendure-ecommerce/vendure/blob/e97cb93282f77fe91634fc8a2177d23fe44cb628/CHANGELOG.md#0110-2020-04-13)
+### 📃 All changes in the [Vendure 0.12.0 Changelog](https://github.com/vendure-ecommerce/vendure/blob/ed76b3c928129238df727c89b40ccfa7d0b26bf0/CHANGELOG.md#0120-2020-05-12)
