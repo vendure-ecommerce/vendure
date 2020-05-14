@@ -34,16 +34,6 @@ jobs:
         cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
         npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
-    # https://github.com/JCMais/node-libcurl#building-on-linux
-    - name: Linux dependencies
-      if: matrix.os == 'ubuntu-latest'
-      run: sudo apt-get install python libcurl4-openssl-dev build-essential
-    # https://github.com/JCMais/node-libcurl#building-on-linux
-    - name: Windows dependencies
-      if: matrix.os == 'windows-latest'
-      run: |
-        npm install --global --production --verbose windows-build-tools@4.0.0
-        cinst nasm
     - name: Install & bootstrap
       run: |
         yarn config set unsafe-perm true
@@ -60,7 +50,7 @@ jobs:
         cd $HOME/install
         npm set registry=http://0.0.0.0:4873
         npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --use-npm
+        npx @vendure/create@ci test-app --ci --use-npm --log-level info
     - name: Server smoke tests
       run: |
         cd $HOME/install/test-app
