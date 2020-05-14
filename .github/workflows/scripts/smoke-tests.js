@@ -62,7 +62,7 @@ async function runTests() {
     assertEquals(result2.data.login, { user: { id: '1' } });
 
     console.log(`All tests passed!`);
-    process.exit(1);
+    process.exit(0);
 }
 
 function gqlRequest(url, body) {
