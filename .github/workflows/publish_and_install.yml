@@ -42,7 +42,7 @@ jobs:
     - name: Windows dependencies
       if: matrix.os == 'windows-latest'
       run: |
-        npm install --global --production windows-build-tools
+        npm install --global --production --verbose windows-build-tools
         cinst nasm
     - name: Install & bootstrap
       run: |
