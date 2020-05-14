@@ -26,27 +26,43 @@ jobs:
         os: [ubuntu-latest]
         node-version: [12.x]
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    # - name: Install & bootstrap
-    #   run: |
-    #     yarn install
-    #     yarn bootstrap
-      env:
-        CI: true
-    # - name: Install Verdaccio
-    #   run: |
-    #     npm install -g verdaccio
-    #     mkdir -p $HOME/.config/verdaccio
-    #     cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
-    #     verdaccio --config $HOME/.config/verdaccio/config.yaml &
+    - name: Install Verdaccio
+      run: |
+        npm install -g verdaccio
+        npm install -g verdaccio-auth-memory
+        npm install -g verdaccio-memory
+        npm install -g npm-auth-to-token@1.0.0
+        tmp_registry_log=`mktemp`
+        mkdir -p $HOME/.config/verdaccio
+        cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
+        nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
+        npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
+    - name: Install & bootstrap
+        run: |
+          yarn config set unsafe-perm true
+          yarn install
+          yarn bootstrap
+        env:
+          CI: true
     - name: Publish to Verdaccio
-      uses: ./.github/actions/publish
-      with:
-        args: -d
+      run: |
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://0.0.0.0:4873
+    - name: Install via @vendure/create
+      run: |
+        mkdir -p $HOME/install
+        cd $HOME/install
+        npm dist-tag ls @vendure/create
+        npx @vendure/create@ci test-app --ci --use-npm
+
+    # - name: Publish to Verdaccio
+    #   uses: ./.github/actions/publish
+    #   with:
+    #     args: -d
     # - name: Publish to Verdaccio
     #   run: |
     #     npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
