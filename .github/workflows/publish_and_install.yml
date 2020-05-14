@@ -61,6 +61,6 @@ jobs:
         npx @vendure/create@ci test-app --ci --use-npm
     - name: Server smoke tests
       run: |
-        cd test-app
+        cd $HOME/install/test-app
         npm run start &
         node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
