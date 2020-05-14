@@ -1,7 +1,4 @@
 name: Publish & Install
-# Temporarily disabled this workflow because the last step (installing from Verdaccio) is flaky and
-# randomly failing despite numerous attempts to stabilize. Therefore this is not useful at
-# the moment.
 on:
   push:
     branches:
@@ -9,22 +6,14 @@ on:
   pull_request:
     branches:
     - master
-# on:
-#   deployment
 jobs:
   publish_install:
     runs-on: ${{ matrix.os }}
-    # services:
-    #   verdaccio:
-    #     image: verdaccio/verdaccio:4
-    #     ports:
-    #       - 4873
-    #     volumes:
-    #       - /.github/workflows/verdaccio:/verdaccio/conf
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        node-version: [12.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [12.x, 14.x]
+      fail-fast: false
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}

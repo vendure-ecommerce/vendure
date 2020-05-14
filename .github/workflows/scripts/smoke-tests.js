@@ -4,6 +4,10 @@ const healthUrl = 'http://localhost:3000/health';
 const shopUrl = 'http://localhost:3000/shop-api';
 const adminUrl = 'http://localhost:3000/admin-api';
 
+/**
+ * This script is run as part of the "publish & install" workflow, and performs some very simple
+ * tests of the Vendure API to make sure it is running and responding in the expected way.
+ */
 awaitServerStartup()
     .then(() => runTests())
     .catch((e) => {
