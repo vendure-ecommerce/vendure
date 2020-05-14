@@ -19,6 +19,8 @@ jobs:
         image: verdaccio/verdaccio:4
         ports:
           - 4873
+        volumes:
+          - ./.github/workflows/verdaccio:/verdaccio/conf
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -29,10 +31,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install & bootstrap
-      run: |
-        yarn install
-        yarn bootstrap
+    # - name: Install & bootstrap
+    #   run: |
+    #     yarn install
+    #     yarn bootstrap
       env:
         CI: true
     # - name: Install Verdaccio
