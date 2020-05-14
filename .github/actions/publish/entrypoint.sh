@@ -16,4 +16,6 @@ sh -c "nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_regis
 sh -c "npm-auth-to-token -u test -p test -e test@test.com -r $local_registry"
 # Run publish command
 sh -c "cd /github/workspace"
+sh -c "yarn install"
+sh -c "yarn bootstrap"
 sh -c "yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish \"*\" --yes --dist-tag ci --registry$local_registry"
