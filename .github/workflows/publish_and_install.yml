@@ -34,6 +34,9 @@ jobs:
         cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
         npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
+    - name: Windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: npm install -g @angular/cli
     - name: Install & bootstrap
       run: |
         yarn config set unsafe-perm true
