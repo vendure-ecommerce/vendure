@@ -28,9 +28,9 @@ function awaitServerStartup() {
                 //
             }
             attempts++;
-            if (attempts < 15) {
-                console.log('Server not yet available, waiting 500ms...');
-                setTimeout(poll, 500);
+            if (attempts < 30) {
+                console.log('Server not yet available, waiting 1s...');
+                setTimeout(poll, 1000);
             } else {
                 reject('Unable to establish connection to Vendure server!');
             }
