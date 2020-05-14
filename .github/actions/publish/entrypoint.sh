@@ -14,8 +14,12 @@ sh -c "nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_regis
 # grep -q 'http address' <(tail -f $tmp_registry_log)
 # login so we can publish packages
 sh -c "npm-auth-to-token -u test -p test -e test@test.com -r $local_registry"
-# Run publish command
+
 sh -c "cd /github/workspace"
+
+# https://stackoverflow.com/a/19132229/772859
+sh -c "yarn config set unsafe-perm true"
+
 sh -c "yarn install"
 sh -c "yarn bootstrap"
 sh -c "yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish \"*\" --yes --dist-tag ci --registry $local_registry"
