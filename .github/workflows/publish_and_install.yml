@@ -38,10 +38,16 @@ jobs:
     - name: Linux dependencies
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install python libcurl4-openssl-dev build-essential
+    # https://github.com/JCMais/node-libcurl#building-on-linux
+    - name: Windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: |
+        npm install --global --production windows-build-tools
+        cinst nasm
     - name: Install & bootstrap
       run: |
         yarn config set unsafe-perm true
-        yarn install
+        yarn install --network-timeout 1000000
         yarn bootstrap
       env:
         CI: true
