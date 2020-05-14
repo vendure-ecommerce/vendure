@@ -36,7 +36,7 @@ jobs:
         npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
     # https://github.com/JCMais/node-libcurl#building-on-linux
     - name: Linux dependencies
-      if: matrix.os == "ubuntu-latest"
+      if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install python libcurl4-openssl-dev build-essential
     - name: Install & bootstrap
       run: |
