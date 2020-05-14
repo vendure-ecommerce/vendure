@@ -35,10 +35,10 @@
     "@types/node-fetch": "^2.5.4",
     "@vendure/common": "^0.12.1",
     "faker": "^4.1.0",
+    "form-data": "^3.0.0",
     "graphql": "^14.5.8",
     "graphql-tag": "^2.10.1",
     "node-fetch": "^2.6.0",
-    "node-libcurl": "^2.0.2",
     "sql.js": "1.1.0"
   },
   "devDependencies": {
