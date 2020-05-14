@@ -14,13 +14,13 @@ on:
 jobs:
   publish_install:
     runs-on: ${{ matrix.os }}
-    services:
-      verdaccio:
-        image: verdaccio/verdaccio:4
-        ports:
-          - 4873
-        volumes:
-          - ./.github/workflows/verdaccio:/verdaccio/conf
+    # services:
+    #   verdaccio:
+    #     image: verdaccio/verdaccio:4
+    #     ports:
+    #       - 4873
+    #     volumes:
+    #       - /.github/workflows/verdaccio:/verdaccio/conf
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -44,14 +44,18 @@ jobs:
     #     cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
     #     verdaccio --config $HOME/.config/verdaccio/config.yaml &
     - name: Publish to Verdaccio
-      run: |
-        npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
-        npm set //127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
-        npm set registry=http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/
-        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}
-    - name: Install via @vendure/create
-      run: |
-        mkdir -p $HOME/install
-        cd $HOME/install
-        npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --use-npm
+      uses: ./.github/actions/publish
+      with:
+        args: -d
+    # - name: Publish to Verdaccio
+    #   run: |
+    #     npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
+    #     npm set //127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
+    #     npm set registry=http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/
+    #     yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}
+    # - name: Install via @vendure/create
+    #   run: |
+    #     mkdir -p $HOME/install
+    #     cd $HOME/install
+    #     npm dist-tag ls @vendure/create
+    #     npx @vendure/create@ci test-app --ci --use-npm
