@@ -59,20 +59,8 @@ jobs:
         npm set registry=http://0.0.0.0:4873
         npm dist-tag ls @vendure/create
         npx @vendure/create@ci test-app --ci --use-npm
-
-    # - name: Publish to Verdaccio
-    #   uses: ./.github/actions/publish
-    #   with:
-    #     args: -d
-    # - name: Publish to Verdaccio
-    #   run: |
-    #     npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
-    #     npm set //127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
-    #     npm set registry=http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}/
-    #     yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://127.0.0.1:${{ job.services.verdaccio.ports['4873'] }}
-    # - name: Install via @vendure/create
-    #   run: |
-    #     mkdir -p $HOME/install
-    #     cd $HOME/install
-    #     npm dist-tag ls @vendure/create
-    #     npx @vendure/create@ci test-app --ci --use-npm
+    - name: Server smoke tests
+      run: |
+        cd test-app
+        npm run start &
+        node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests
