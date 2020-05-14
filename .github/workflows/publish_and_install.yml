@@ -43,12 +43,12 @@ jobs:
         nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
         npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
     - name: Install & bootstrap
-        run: |
-          yarn config set unsafe-perm true
-          yarn install
-          yarn bootstrap
-        env:
-          CI: true
+      run: |
+        yarn config set unsafe-perm true
+        yarn install
+        yarn bootstrap
+      env:
+        CI: true
     - name: Publish to Verdaccio
       run: |
         yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://0.0.0.0:4873
