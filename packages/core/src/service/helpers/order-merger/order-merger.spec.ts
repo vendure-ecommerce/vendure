@@ -2,7 +2,7 @@ import { Test } from '@nestjs/testing';
 
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
-import { MergeOrdersStrategy } from '../../../config/order-merge-strategy/merge-orders-strategy';
+import { MergeOrdersStrategy } from '../../../config/order/merge-orders-strategy';
 import { Order } from '../../../entity/order/order.entity';
 import { createOrderFromLines } from '../../../testing/order-test-utils';
 
