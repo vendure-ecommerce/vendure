@@ -25,6 +25,7 @@ export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
  * TODO: Remove this and use the new init() method to inject providers where needed.
  *
  * @docsCategory promotions
+ * @docsPage promotion-condition
  */
 export interface PromotionUtils {
     /**
@@ -41,6 +42,7 @@ export interface PromotionUtils {
  * A function which checks whether or not a given {@link Order} satisfies the {@link PromotionCondition}.
  *
  * @docsCategory promotions
+ * @docsPage promotion-condition
  */
 export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
     order: Order,
@@ -61,6 +63,7 @@ export interface PromotionConditionConfig<T extends PromotionConditionArgs>
  * `true` if the Order satisfies the condition, or `false` if it does not.
  *
  * @docsCategory promotions
+ * @docsPage promotion-condition
  */
 export class PromotionCondition<T extends PromotionConditionArgs = {}> extends ConfigurableOperationDef<T> {
     readonly priorityValue: number;

@@ -12,6 +12,7 @@ import { defaultCollectionFilters } from './collection/default-collection-filter
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
+import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
@@ -83,6 +84,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     orderOptions: {
         orderItemsLimit: 999,
+        priceCalculationStrategy: new DefaultPriceCalculationStrategy(),
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: {},

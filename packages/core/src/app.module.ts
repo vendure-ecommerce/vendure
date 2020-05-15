@@ -131,7 +131,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
         } = this.configService.assetOptions;
         const { taxCalculationStrategy, taxZoneStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        const { mergeStrategy } = this.configService.orderOptions;
+        const { mergeStrategy, priceCalculationStrategy } = this.configService.orderOptions;
         const { entityIdStrategy } = this.configService;
         return [
             assetNamingStrategy,
@@ -142,6 +142,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             jobQueueStrategy,
             mergeStrategy,
             entityIdStrategy,
+            priceCalculationStrategy,
         ];
     }
 

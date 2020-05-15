@@ -17,12 +17,29 @@ import { PromotionUtils } from './promotion-condition';
 export type PromotionActionArgType = ConfigArgSubset<'int' | 'facetValueIds'>;
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
+/**
+ * @description
+ * The function which is used by a PromotionItemAction to calculate the
+ * discount on the OrderItem.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
 export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
     utils: PromotionUtils,
 ) => number | Promise<number>;
+
+/**
+ * @description
+ * The function which is used by a PromotionOrderAction to calculate the
+ * discount on the Order.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
 export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
@@ -33,10 +50,32 @@ export interface PromotionActionConfig<T extends PromotionActionArgs>
     extends ConfigurableOperationDefOptions<T> {
     priorityValue?: number;
 }
+
+/**
+ * @description
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
 export interface PromotionItemActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
+    /**
+     * @description
+     * The function which contains the promotion calculation logic.
+     */
     execute: ExecutePromotionItemActionFn<T>;
 }
+
+/**
+ * @description
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
 export interface PromotionOrderActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
+    /**
+     * @description
+     * The function which contains the promotion calculation logic.
+     */
     execute: ExecutePromotionOrderActionFn<T>;
 }
 
@@ -45,6 +84,7 @@ export interface PromotionOrderActionConfig<T extends PromotionActionArgs> exten
  * An abstract class which is extended by {@link PromotionItemAction} and {@link PromotionOrderAction}.
  *
  * @docsCategory promotions
+ * @docsPage promotion-action
  */
 export abstract class PromotionAction<T extends PromotionActionArgs = {}> extends ConfigurableOperationDef<
     T
@@ -75,6 +115,7 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}> extend
  * ```
  *
  * @docsCategory promotions
+ * @docsPage promotion-action
  */
 export class PromotionItemAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionItemActionFn<T>;
@@ -107,6 +148,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
  * ```
  *
  * @docsCategory promotions
+ * @docsPage promotion-action
  */
 export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionOrderActionFn<T>;

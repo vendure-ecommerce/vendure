@@ -21,6 +21,7 @@ import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
+import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
@@ -238,6 +239,14 @@ export interface OrderOptions {
      * @default 999
      */
     orderItemsLimit?: number;
+    /**
+     * @description
+     * Defines the logic used to calculate the unit price of an OrderItem when adding an
+     * item to an Order.
+     *
+     * @default DefaultPriceCalculationStrategy
+     */
+    priceCalculationStrategy?: PriceCalculationStrategy;
     /**
      * @description
      * Defines custom states and transition logic for the order process state machine.
