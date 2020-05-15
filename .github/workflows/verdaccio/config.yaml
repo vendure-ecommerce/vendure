@@ -1,7 +1,4 @@
 #
-# This is the default config file. It allows all users to do anything,
-# so don't use it on production systems.
-#
 # Look here for more config file examples:
 # https://github.com/verdaccio/verdaccio/tree/master/conf
 #
@@ -28,8 +25,17 @@ uplinks:
   npmjs:
     url: https://registry.npmjs.org/
     timeout: 10m
-    max_fails: 20
+    fail_timeout: 10m
     cache: false
+    max_fails: 40
+    maxage: 30m
+    # See https://github.com/verdaccio/verdaccio/issues/1329
+    # Attempting to make install from Verdaccio more resilient in CI
+    agent_options:
+      keepAlive: true
+      maxSockets: 40
+      maxFreeSockets: 10
+
 
 packages:
   '@*/*':
