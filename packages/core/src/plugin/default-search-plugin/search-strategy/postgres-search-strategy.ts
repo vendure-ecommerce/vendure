@@ -1,12 +1,12 @@
 import { SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
 import { Brackets, Connection, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
+import { fieldsToSelect } from './search-strategy-common';
 import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
@@ -81,7 +81,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then((res) => res.map((r) => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -101,7 +101,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
             .setParameters(innerQb.getParameters());
-        return totalItemsQb.getRawOne().then(res => res.total);
+        return totalItemsQb.getRawOne().then((res) => res.total);
     }
 
     private applyTermAndFilters(
@@ -130,7 +130,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 'score',
             )
                 .andWhere(
-                    new Brackets(qb1 => {
+                    new Brackets((qb1) => {
                         qb1.where('to_tsvector(si.sku) @@ to_tsquery(:term)')
                             .orWhere('to_tsvector(si.productName) @@ to_tsquery(:term)')
                             .orWhere('to_tsvector(si.productVariantName) @@ to_tsquery(:term)')
@@ -164,30 +164,8 @@ export class PostgresSearchStrategy implements SearchStrategy {
      * "MIN" function in this case to all other columns than the productId.
      */
     private createPostgresSelect(groupByProduct: boolean): string {
-        return [
-            'sku',
-            'enabled',
-            'slug',
-            'price',
-            'priceWithTax',
-            'productVariantId',
-            'languageCode',
-            'productId',
-            'productName',
-            'productVariantName',
-            'description',
-            'facetIds',
-            'facetValueIds',
-            'collectionIds',
-            'channelIds',
-            'productAssetId',
-            'productPreview',
-            'productPreviewFocalPoint',
-            'productVariantAssetId',
-            'productVariantPreview',
-            'productVariantPreviewFocalPoint',
-        ]
-            .map(col => {
+        return fieldsToSelect
+            .map((col) => {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
                 if (groupByProduct && col !== 'productId') {
