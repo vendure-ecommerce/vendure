@@ -24,6 +24,7 @@ export class AssetFileInputComponent implements OnInit {
      * drop zone. Defaults to `body`.
      */
     @Input() dropZoneTarget = 'body';
+    @Input() uploading = false;
     @Output() selectFiles = new EventEmitter<File[]>();
     dragging = false;
     overDropZone = false;
@@ -64,7 +65,7 @@ export class AssetFileInputComponent implements OnInit {
         this.dragging = false;
         this.overDropZone = false;
         const files = Array.from(event.dataTransfer ? event.dataTransfer.items : [])
-            .map(i => i.getAsFile())
+            .map((i) => i.getAsFile())
             .filter(notNullOrUndefined);
         this.selectFiles.emit(files);
     }

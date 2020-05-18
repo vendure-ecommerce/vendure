@@ -14,7 +14,7 @@ import {
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { PaginationInstance } from 'ngx-pagination';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
-import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
+import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-asset-list',
@@ -24,6 +24,7 @@ import { debounceTime, map, switchMap, takeUntil } from 'rxjs/operators';
 export class AssetListComponent extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
     implements OnInit {
     searchTerm = new FormControl('');
+    uploading = false;
     paginationConfig$: Observable<PaginationInstance>;
 
     constructor(
@@ -36,7 +37,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.product.getAssetList(...args),
-            data => data.assets,
+            (data) => data.assets,
             (skip, take) => ({
                 options: {
                     skip,
@@ -66,24 +67,28 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
 
     filesSelected(files: File[]) {
         if (files.length) {
-            this.dataService.product.createAssets(files).subscribe(res => {
-                super.refresh();
-                this.notificationService.success(_('asset.notify-create-assets-success'), {
-                    count: files.length,
+            this.uploading = true;
+            this.dataService.product
+                .createAssets(files)
+                .pipe(finalize(() => (this.uploading = false)))
+                .subscribe((res) => {
+                    super.refresh();
+                    this.notificationService.success(_('asset.notify-create-assets-success'), {
+                        count: files.length,
+                    });
                 });
-            });
         }
     }
 
     deleteAsset(asset: Asset) {
         this.showModalAndDelete(asset.id)
             .pipe(
-                switchMap(response => {
+                switchMap((response) => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(asset.id, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
+                            map((r) => r.result === DeletionResult.DELETED),
                         );
                     }
                 }),
@@ -95,7 +100,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                     });
                     this.refresh();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Asset',
                     });
@@ -114,8 +119,8 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap(res => (res ? this.dataService.product.deleteAsset(assetId, !!message) : EMPTY)),
-                map(res => res.deleteAsset),
+                switchMap((res) => (res ? this.dataService.product.deleteAsset(assetId, !!message) : EMPTY)),
+                map((res) => res.deleteAsset),
             );
     }
 }
