@@ -15,8 +15,8 @@ import { TestServerOptions } from './types';
  * @docsCategory testing
  */
 export class TestServer {
-    private app: INestApplication;
-    private worker?: INestMicroservice;
+    public app: INestApplication;
+    public worker?: INestMicroservice;
 
     constructor(private vendureConfig: Required<VendureConfig>) {}
 
