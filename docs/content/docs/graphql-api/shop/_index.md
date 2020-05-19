@@ -10,4 +10,4 @@ The Shop API is used by storefront applications. It provides all the necessary q
 
 {{% alert %}}
 Explore the interactive GraphQL Shop API at [demo.vendure.io/shop-api](https://demo.vendure.io/shop-api)
-{{% /alert %}}
+{{< /alert >}}

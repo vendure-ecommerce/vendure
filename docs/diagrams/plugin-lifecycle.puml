@@ -1,0 +1,31 @@
+@startuml
+!include theme.puml
+title Vendure Plugin Lifecycle
+hide footbox
+skinparam SequenceBoxBorderColor #efefef
+skinparam SequenceDividerBorderThickness 1
+skinparam BoxPadding 100
+participant VendurePlugin #13b7f3
+box "Vendure Server" #efefef
+participant "Server (NestApplication)" as NestApplication
+participant "Worker (NestMicroservice)" as NestMicroservice
+end box
+
+VendurePlugin -> NestApplication: static beforeVendureBootstrap
+VendurePlugin -> NestMicroservice: static beforeVendureWorkerBootstrap
+||50||
+== Nestjs onModuleInit ==
+VendurePlugin -> NestApplication: onVendureBootstrap
+VendurePlugin -> NestMicroservice: onVendureWorkerBootstrap
+== Nestjs onApplicationBootstrap ==
+||50||
+note over NestApplication, NestMicroservice #ccffcc: Vendure server running...
+||50||
+note over NestApplication, NestMicroservice #ffcccc: Termination signal received
+== Nestjs onModuleDestroy ==
+VendurePlugin -> NestApplication: onVendureClose
+VendurePlugin -> NestMicroservice: onVendureWorkerClose
+== Nestjs beforeApplicationShutdown ==
+== Nestjs onApplicationShutdown ==
+
+@enduml

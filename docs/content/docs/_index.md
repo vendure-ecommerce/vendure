@@ -5,9 +5,9 @@ weight: 0
 
 # Vendure Documentation
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 **Note**: Vendure is currently in beta and as such, the information and APIs documented here are subject to change.
-{{% /alert %}}
+{{< /alert >}}
 
 ## What is Vendure?
 

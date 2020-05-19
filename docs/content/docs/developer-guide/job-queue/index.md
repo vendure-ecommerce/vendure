@@ -38,8 +38,8 @@ It is also possible to implement your own JobQueueStrategy to enable other persi
 
 If you create a [Vendure plugin]({{< relref "/docs/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "plugin-examples" >}}#using-the-jobqueueservice) for a detailed annotated example.
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
 Note: The [JobQueueService]({{< relref "job-queue-service" >}}) combines well with the [WorkerService]({{< relref "worker-service" >}}).
 
 A real example of this can be seen in the [EmailPlugin source](https://github.com/vendure-ecommerce/vendure/blob/07e1958f1ad1766e6fd3dae80f526bb688c0288e/packages/email-plugin/src/plugin.ts#L201-L210)
-{{% /alert %}}
+{{< /alert >}}

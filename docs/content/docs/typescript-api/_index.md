@@ -10,4 +10,4 @@ The Vendure TypeScript API is used when configuring the server (via the [`Vendur
 
 {{% alert %}}
 All documentation in this section is auto-generated from the TypeScript source of the Vendure server.
-{{% /alert %}}
+{{< /alert >}}

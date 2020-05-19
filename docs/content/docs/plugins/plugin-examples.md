@@ -1,6 +1,6 @@
 ---
 title: "Plugin Examples"
-weight: 3
+weight: 4
 showtoc: true
 ---
  
@@ -8,9 +8,9 @@ showtoc: true
 
 Here are some simplified examples of plugins which serve to illustrate what can be done with Vendure plugins. *Note: implementation details are skipped in these examples for the sake of brevity. A complete example with explanation can be found in [Writing A Vendure Plugin]({{< relref "writing-a-vendure-plugin" >}}).*
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
-{{% /alert %}}
+{{< /alert >}}
 
 ## Modifying the VendureConfig
 
@@ -88,9 +88,9 @@ class TopSellersResolver {
 
 }
 ```
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   **Note:** The `@Ctx` decorator gives you access to [the `RequestContext`]({{< relref "request-context" >}}), which is an object containing useful information about the current request - active user, current channel etc.
-{{% /alert %}}
+{{< /alert >}}
 ```TypeScript
 // top-sellers.service.ts
 import { Injectable } from '@nestjs/common';
@@ -159,9 +159,9 @@ import { ProductsController } from './products.controller';
 export class RestPlugin {}
 ```
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   **Note:** [The `PluginCommonModule`]({{< relref "plugin-common-module" >}}) should be imported to gain access to Vendure core providers - in this case it is required in order to be able to inject `ProductService` into our controller.
-{{% /alert %}}
+{{< /alert >}}
 
 Side note: since this uses no Vendure-specific metadata, it could also be written using the Nestjs `@Module()` decorator rather than the `@VendurePlugin()` decorator.
 

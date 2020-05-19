@@ -7,9 +7,9 @@ weight: 2
 
 This is a complete example of how to implement a simple plugin step-by-step.
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
-{{% /alert %}}
+{{< /alert >}}
 
 ## Example: RandomCatPlugin
 
@@ -61,12 +61,12 @@ export class CatFetcher {
 
 {{% alert %}}
 The `@Injectable()` decorator is part of the underlying [Nest framework](https://nestjs.com/), and allows us to make use of Nest's powerful dependency injection features. In this case, we'll be able to inject the `CatFetcher` service into the resolver which we will soon create.
-{{% /alert %}}
+{{< /alert >}}
 
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 To use decorators with TypeScript, you must set the "emitDecoratorMetadata" and "experimentalDecorators" compiler options to `true` in your tsconfig.json file.
-{{% /alert %}}
+{{< /alert >}}
 
 ### Step 3: Define the new mutation
 

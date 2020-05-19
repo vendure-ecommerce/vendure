@@ -10,4 +10,4 @@ The Admin API is primarily used by the included Admin UI web app to perform admi
 
 {{% alert %}}
 Explore the interactive GraphQL Admin API at [demo.vendure.io/admin-api](https://demo.vendure.io/admin-api)
-{{% /alert %}}
+{{< /alert >}}

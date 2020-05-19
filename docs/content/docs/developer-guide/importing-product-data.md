@@ -54,9 +54,9 @@ If you have [CustomFields]({{< relref "customizing-models" >}}) defined on your 
 * `product:<customFieldName>`: The value of this column will populate `Product.customFields[customFieldName]`. 
 * `variant:<customFieldName>`: The value of this column will populate `ProductVariant.customFields[customFieldName]`. 
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   For a real example, see the [products.csv file used to populate the Vendure demo data](https://github.com/vendure-ecommerce/vendure/blob/master/packages/core/mock-data/data-sources/products.csv)
-{{% /alert %}}
+{{< /alert >}}
 
 ## Initial Data
 

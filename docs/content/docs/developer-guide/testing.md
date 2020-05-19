@@ -9,9 +9,9 @@ Vendure plugins allow you to extend all aspects of the standard Vendure server. 
 
 The `@vendure/testing` package gives you some simple but powerful tooling for creating end-to-end tests for your custom Vendure code.
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
   For a working example of a Vendure plugin with e2e testing, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
-{{% /alert %}}
+{{< /alert >}}
 
 ## Usage
 
@@ -42,9 +42,9 @@ registerInitializer('postgres', new PostgresInitializer());
 registerInitializer('mysql', new MysqlInitializer());
 ```
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
 Note re. the `sqliteDataDir`: The first time this test suite is run with the `SqljsInitializer`, the populated data will be saved into an SQLite file, stored in the directory specified by this constructor arg. On subsequent runs of the test suite, the data-population step will be skipped and the initial data directly loaded from the SQLite file. This method of caching significantly speeds up the e2e test runs. All the .sqlite files created in the `sqliteDataDir` can safely be deleted at any time.
-{{% /alert %}}
+{{< /alert >}}
 
 ### Create a test environment
 
@@ -66,9 +66,9 @@ describe('my plugin', () => {
 
 Notice that we pass a [`VendureConfig`]({{< relref "vendure-config" >}}) object into the `createTestEnvironment` function. The testing package provides a special [`testConfig`]({{< relref "test-config" >}}) which is pre-configured for e2e tests, but any aspect can be overridden for your tests. Here we are configuring the server to load the plugin under test, `MyPlugin`. 
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 **Note**: If you need to deeply merge in some custom configuration, use the [`mergeConfig` function]({{< relref "merge-config" >}}) which is provided by `@vendure/core`.
-{{% /alert %}}
+{{< /alert >}}
 
 ### Initialize the server
 

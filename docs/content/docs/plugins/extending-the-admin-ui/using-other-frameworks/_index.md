@@ -7,9 +7,9 @@ weight: 1
 
 Although the Admin UI is an Angular app, it is possible to create UI extensions using any web technology - React, Vue, plain JavaScript, etc.
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
 For working examples of a UI extensions built with **Vue** and **React**, see the [real-world-vendure ui extensions](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/ui-extensions)
-{{% /alert %}}
+{{< /alert >}}
 
 There is still a small amount of Angular "glue code" needed to let the compiler know how to integrate your extension, so let's take a look at how this is done.
 
@@ -128,9 +128,9 @@ The `compileUiExtensions()` function returns a `compile()` function which will b
 
 Next, these source files will be run through the Angular compiler, the output of which will be visible in the console.
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 **Note:** The first time the compiler is run, an additional step ([compatibility compiler](https://angular.io/guide/ivy#ivy-and-libraries)) is run to make sure all dependencies work with the latest version of Angular. This step can take up to a few minutes.
-{{% /alert %}}
+{{< /alert >}}
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/react-ui` and you should see the default Create React App demo page:
 
