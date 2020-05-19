@@ -1,7 +1,5 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import {
-    BeforeVendureBootstrap,
-    BeforeVendureWorkerBootstrap,
     OnVendureBootstrap,
     OnVendureClose,
     OnVendureWorkerBootstrap,
@@ -9,13 +7,7 @@ import {
 } from '@vendure/core';
 
 export class TestPluginWithAllLifecycleHooks
-    implements
-        BeforeVendureBootstrap,
-        BeforeVendureWorkerBootstrap,
-        OnVendureBootstrap,
-        OnVendureWorkerBootstrap,
-        OnVendureClose,
-        OnVendureWorkerClose {
+    implements OnVendureBootstrap, OnVendureWorkerBootstrap, OnVendureClose, OnVendureWorkerClose {
     private static onConstructorFn: any;
     private static onBeforeBootstrapFn: any;
     private static onBeforeWorkerBootstrapFn: any;
