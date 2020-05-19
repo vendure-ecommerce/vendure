@@ -1,4 +1,7 @@
+import { INestApplication, INestMicroservice } from '@nestjs/common';
 import {
+    BeforeVendureBootstrap,
+    BeforeVendureWorkerBootstrap,
     OnVendureBootstrap,
     OnVendureClose,
     OnVendureWorkerBootstrap,
@@ -6,8 +9,16 @@ import {
 } from '@vendure/core';
 
 export class TestPluginWithAllLifecycleHooks
-    implements OnVendureBootstrap, OnVendureWorkerBootstrap, OnVendureClose, OnVendureWorkerClose {
+    implements
+        BeforeVendureBootstrap,
+        BeforeVendureWorkerBootstrap,
+        OnVendureBootstrap,
+        OnVendureWorkerBootstrap,
+        OnVendureClose,
+        OnVendureWorkerClose {
     private static onConstructorFn: any;
+    private static onBeforeBootstrapFn: any;
+    private static onBeforeWorkerBootstrapFn: any;
     private static onBootstrapFn: any;
     private static onWorkerBootstrapFn: any;
     private static onCloseFn: any;
@@ -15,12 +26,16 @@ export class TestPluginWithAllLifecycleHooks
 
     static init(
         constructorFn: any,
+        beforeBootstrapFn: any,
+        beforeWorkerBootstrapFn: any,
         bootstrapFn: any,
         workerBootstrapFn: any,
         closeFn: any,
         workerCloseFn: any,
     ) {
         this.onConstructorFn = constructorFn;
+        this.onBeforeBootstrapFn = beforeBootstrapFn;
+        this.onBeforeWorkerBootstrapFn = beforeWorkerBootstrapFn;
         this.onBootstrapFn = bootstrapFn;
         this.onWorkerBootstrapFn = workerBootstrapFn;
         this.onCloseFn = closeFn;
@@ -30,6 +45,14 @@ export class TestPluginWithAllLifecycleHooks
 
     constructor() {
         TestPluginWithAllLifecycleHooks.onConstructorFn();
+    }
+
+    static beforeVendureBootstrap(app: INestApplication): void | Promise<void> {
+        TestPluginWithAllLifecycleHooks.onBeforeBootstrapFn(app);
+    }
+
+    static beforeVendureWorkerBootstrap(app: INestMicroservice): void | Promise<void> {
+        TestPluginWithAllLifecycleHooks.onBeforeWorkerBootstrapFn(app);
     }
 
     onVendureBootstrap(): void | Promise<void> {

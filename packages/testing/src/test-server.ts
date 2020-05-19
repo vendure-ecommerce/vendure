@@ -1,7 +1,11 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DefaultLogger, Logger, VendureConfig } from '@vendure/core';
-import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
+import {
+    preBootstrapConfig,
+    runBeforeBootstrapHooks,
+    runBeforeWorkerBootstrapHooks,
+} from '@vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -71,7 +75,7 @@ export class TestServer {
      */
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
-        await new Promise(resolve => global.setTimeout(resolve, 500));
+        await new Promise((resolve) => global.setTimeout(resolve, 500));
         await this.app.close();
         if (this.worker) {
             await this.worker.close();
@@ -134,6 +138,7 @@ export class TestServer {
                 logger: new Logger(),
             });
             let worker: INestMicroservice | undefined;
+            await runBeforeBootstrapHooks(config, app);
             await app.listen(config.apiOptions.port);
             if (config.workerOptions.runInMainProcess) {
                 const workerModule = await import('@vendure/core/dist/worker/worker.module');
@@ -142,6 +147,7 @@ export class TestServer {
                     logger: new Logger(),
                     options: config.workerOptions.options,
                 });
+                await runBeforeWorkerBootstrapHooks(config, worker);
                 await worker.listenAsync();
             }
             DefaultLogger.restoreOriginalLogLevel();

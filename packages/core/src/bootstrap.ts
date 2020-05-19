@@ -16,6 +16,7 @@ import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
+import { BeforeVendureBootstrap, BeforeVendureWorkerBootstrap } from './plugin/vendure-plugin';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -51,6 +52,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
+    await runBeforeBootstrapHooks(config, app);
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
     if (config.workerOptions.runInMainProcess) {
@@ -101,7 +103,7 @@ export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promi
 }
 
 async function bootstrapWorkerInternal(
-    vendureConfig: ReadOnlyRequired<VendureConfig>,
+    vendureConfig: Readonly<RuntimeVendureConfig>,
 ): Promise<INestMicroservice> {
     const config = disableSynchronize(vendureConfig);
     if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
@@ -120,7 +122,7 @@ async function bootstrapWorkerInternal(
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
-
+    await runBeforeWorkerBootstrapHooks(config, workerApp);
     // A work-around to correctly handle errors when attempting to start the
     // microservice server listening.
     // See https://github.com/nestjs/nest/issues/2777
@@ -196,7 +198,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // Check to ensure that no plugins are defining entities with names
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
-        if (allEntities.find(e => e.name === pluginEntity.name)) {
+        if (allEntities.find((e) => e.name === pluginEntity.name)) {
             throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
@@ -221,12 +223,41 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
             } else if (typeof exposedHeaders === 'string') {
                 exposedHeadersWithAuthKey = exposedHeaders
                     .split(',')
-                    .map(x => x.trim())
+                    .map((x) => x.trim())
                     .concat(authTokenHeaderKey);
             } else {
                 exposedHeadersWithAuthKey = exposedHeaders.concat(authTokenHeaderKey);
             }
             corsOptions.exposedHeaders = exposedHeadersWithAuthKey;
+        }
+    }
+}
+
+export async function runBeforeBootstrapHooks(config: Readonly<RuntimeVendureConfig>, app: INestApplication) {
+    function hasBeforeBootstrapHook(
+        plugin: any,
+    ): plugin is { beforeVendureBootstrap: BeforeVendureBootstrap } {
+        return typeof plugin.beforeVendureBootstrap === 'function';
+    }
+    for (const plugin of config.plugins) {
+        if (hasBeforeBootstrapHook(plugin)) {
+            await plugin.beforeVendureBootstrap(app);
+        }
+    }
+}
+
+export async function runBeforeWorkerBootstrapHooks(
+    config: Readonly<RuntimeVendureConfig>,
+    worker: INestMicroservice,
+) {
+    function hasBeforeBootstrapHook(
+        plugin: any,
+    ): plugin is { beforeVendureWorkerBootstrap: BeforeVendureWorkerBootstrap } {
+        return typeof plugin.beforeVendureWorkerBootstrap === 'function';
+    }
+    for (const plugin of config.plugins) {
+        if (hasBeforeBootstrapHook(plugin)) {
+            await plugin.beforeVendureWorkerBootstrap(worker);
         }
     }
 }
@@ -273,25 +304,25 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
     const title = `Vendure server (v${version}) now running on port ${port}`;
-    const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
+    const maxLineLength = Math.max(title.length, ...columnarGreetings.map((l) => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
     Logger.info(`=`.repeat(maxLineLength));
     Logger.info(title.padStart(title.length + titlePadLength));
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
-    columnarGreetings.forEach(line => Logger.info(line));
+    columnarGreetings.forEach((line) => Logger.info(line));
     Logger.info(`=`.repeat(maxLineLength));
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
-    const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
-    return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
+    const columnWidth = Math.max(...lines.map((l) => l[0].length)) + 2;
+    return lines.map((l) => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
 
 /**
  * Fix race condition when modifying DB
  * See: https://github.com/vendure-ecommerce/vendure/issues/152
  */
-function disableSynchronize(userConfig: ReadOnlyRequired<VendureConfig>): ReadOnlyRequired<VendureConfig> {
+function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonly<RuntimeVendureConfig> {
     const config = { ...userConfig };
     config.dbConnectionOptions = {
         ...userConfig.dbConnectionOptions,
@@ -311,7 +342,7 @@ function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
         'middleware',
         'apolloServerPlugins',
     ];
-    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
+    const deprecatedOptionsUsed = deprecatedApiOptions.filter((option) => config.hasOwnProperty(option));
     if (deprecatedOptionsUsed.length) {
         throw new Error(
             `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +
