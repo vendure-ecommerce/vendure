@@ -272,8 +272,7 @@ function closeWorkerOnAppClose(app: INestApplication, worker: INestMicroservice)
     const appPrototype = Object.getPrototypeOf(app);
     const appClose = appPrototype.close.bind(app);
     appPrototype.close = async () => {
-        await worker.close();
-        await appClose();
+        return Promise.all([appClose(), worker.close()]);
     };
 }
 
