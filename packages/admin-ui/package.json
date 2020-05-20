@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node scripts/set-version.js && ng serve",
-    "build:app": "ng build --prod",
+    "build:app": "yarn ng build --prod",
     "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && yarn ng build vendure-admin-lib --prod && node scripts/compile-styles.js",
     "watch": "ng build --watch=true",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
