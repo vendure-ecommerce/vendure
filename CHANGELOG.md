@@ -1,3 +1,7 @@
+## <small>0.12.4 (2020-05-20)</small>
+Fixes broken publish of admin-ui-plugin
+
+
 ## <small>0.12.3 (2020-05-20)</small>
 
 

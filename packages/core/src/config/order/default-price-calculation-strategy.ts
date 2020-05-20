@@ -6,6 +6,8 @@ import { CalculatedPrice, PriceCalculationStrategy } from './price-calculation-s
  * @description
  * The default {@link PriceCalculationStrategy}, which simply passes through the price of
  * the ProductVariant without performing any calculations
+ *
+ * @docsCategory orders
  */
 export class DefaultPriceCalculationStrategy implements PriceCalculationStrategy {
     calculateUnitPrice(productVariant: ProductVariant): CalculatedPrice | Promise<CalculatedPrice> {

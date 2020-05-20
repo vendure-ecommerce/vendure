@@ -5,7 +5,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
  * @description
  * The result of the price calculation from the {@link PriceCalculationStrategy}.
  *
- * @docsCateogory Orders
+ * @docsCategory Orders
  */
 export type CalculatedPrice = {
     price: number;
@@ -45,7 +45,7 @@ export type CalculatedPrice = {
  * * A product-configurator where e.g. various finishes, colors, and materials can be selected and stored
  *   as OrderLine custom fields.
  *
- * @docsCateogory Orders
+ * @docsCategory Orders
  */
 export interface PriceCalculationStrategy extends InjectableStrategy {
     /**
