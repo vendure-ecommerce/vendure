@@ -14,10 +14,11 @@ const buildProcess = spawn('yarn', ['run', 'build:app'], {
     stdio: 'inherit',
 });
 
-buildProcess.on('close', code => {
+buildProcess.on('close', (code) => {
     if (code === 0) {
         fs.copySync(path.join(__dirname, '../admin-ui/dist'), compiledUiDir);
     } else {
         console.log('Could not build!');
+        process.exitCode = 1;
     }
 });
