@@ -32,6 +32,7 @@ import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
 import { CustomerEntityResolver } from './resolvers/entity/customer-entity.resolver';
+import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-entity.resolver';
 import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
@@ -90,6 +91,7 @@ const shopResolvers = [
 export const entityResolvers = [
     CollectionEntityResolver,
     CustomerEntityResolver,
+    CustomerGroupEntityResolver,
     FulfillmentEntityResolver,
     OrderEntityResolver,
     OrderLineEntityResolver,

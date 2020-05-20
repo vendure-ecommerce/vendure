@@ -962,6 +962,38 @@ export type CustomerGroup = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  customers: CustomerList;
+};
+
+
+export type CustomerGroupCustomersArgs = {
+  options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerGroupFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+   __typename?: 'CustomerGroupList';
+  items: Array<CustomerGroup>;
+  totalItems: Scalars['Int'];
+};
+
+export type CustomerGroupListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerGroupSortParameter>;
+  filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
+export type CustomerGroupSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
 };
 
 export type CustomerList = PaginatedList & {
@@ -2864,7 +2896,7 @@ export type Query = {
   country?: Maybe<Country>;
   customer?: Maybe<Customer>;
   customerGroup?: Maybe<CustomerGroup>;
-  customerGroups: Array<CustomerGroup>;
+  customerGroups: CustomerGroupList;
   customers: CustomerList;
   facet?: Maybe<Facet>;
   facets: FacetList;
@@ -2960,6 +2992,11 @@ export type QueryCustomerArgs = {
 
 export type QueryCustomerGroupArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryCustomerGroupsArgs = {
+  options?: Maybe<CustomerGroupListOptions>;
 };
 
 

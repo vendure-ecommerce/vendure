@@ -24,6 +24,7 @@
     "create-fulfillment-items-already-fulfilled": "One or more OrderItems have already been fulfilled",
     "create-fulfillment-orders-must-be-settled": "One or more OrderItems belong to an Order which is in an invalid state",
     "create-fulfillment-nothing-to-fulfill": "Nothing to fulfill",
+    "customer-does-not-belong-to-customer-group": "Customer does not belong to this CustomerGroup",
     "default-channel-not-found":  "Default channel not found",
     "email-address-must-be-unique": "The email address must be unique",
     "email-address-not-available": "This email address is not available",

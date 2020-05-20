@@ -142,13 +142,16 @@ const result: IntrospectionResultData = {
                         name: 'HistoryEntryList',
                     },
                     {
+                        name: 'CustomerList',
+                    },
+                    {
                         name: 'CollectionList',
                     },
                     {
                         name: 'CountryList',
                     },
                     {
-                        name: 'CustomerList',
+                        name: 'CustomerGroupList',
                     },
                     {
                         name: 'FacetList',

@@ -19,6 +19,6 @@ export class CustomerGroup extends VendureEntity {
 
     @Column() name: string;
 
-    @ManyToMany(type => Customer)
+    @ManyToMany((type) => Customer, (customer) => customer.groups)
     customers: Customer[];
 }

@@ -953,6 +953,37 @@ export type CustomerGroup = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    customers: CustomerList;
+};
+
+export type CustomerGroupCustomersArgs = {
+    options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerGroupFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    name?: Maybe<StringOperators>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+    __typename?: 'CustomerGroupList';
+    items: Array<CustomerGroup>;
+    totalItems: Scalars['Int'];
+};
+
+export type CustomerGroupListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<CustomerGroupSortParameter>;
+    filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
+export type CustomerGroupSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
 };
 
 export type CustomerList = PaginatedList & {
@@ -1777,6 +1808,8 @@ export type Mutation = {
     createCustomerGroup: CustomerGroup;
     /** Update an existing CustomerGroup */
     updateCustomerGroup: CustomerGroup;
+    /** Delete a CustomerGroup */
+    deleteCustomerGroup: DeletionResponse;
     /** Add Customers to a CustomerGroup */
     addCustomersToGroup: CustomerGroup;
     /** Remove Customers from a CustomerGroup */
@@ -1963,6 +1996,10 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationUpdateCustomerGroupArgs = {
     input: UpdateCustomerGroupInput;
+};
+
+export type MutationDeleteCustomerGroupArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationAddCustomersToGroupArgs = {
@@ -2747,7 +2784,7 @@ export type Query = {
     collectionFilters: Array<ConfigurableOperationDefinition>;
     countries: CountryList;
     country?: Maybe<Country>;
-    customerGroups: Array<CustomerGroup>;
+    customerGroups: CustomerGroupList;
     customerGroup?: Maybe<CustomerGroup>;
     customers: CustomerList;
     customer?: Maybe<Customer>;
@@ -2822,6 +2859,10 @@ export type QueryCountriesArgs = {
 
 export type QueryCountryArgs = {
     id: Scalars['ID'];
+};
+
+export type QueryCustomerGroupsArgs = {
+    options?: Maybe<CustomerGroupListOptions>;
 };
 
 export type QueryCustomerGroupArgs = {
@@ -3791,6 +3832,79 @@ export type CreateCountryMutationVariables = {
 
 export type CreateCountryMutation = { __typename?: 'Mutation' } & {
     createCountry: { __typename?: 'Country' } & CountryFragment;
+};
+
+export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
+        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+            };
+    };
+
+export type CreateCustomerGroupMutationVariables = {
+    input: CreateCustomerGroupInput;
+};
+
+export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type UpdateCustomerGroupMutationVariables = {
+    input: UpdateCustomerGroupInput;
+};
+
+export type UpdateCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    updateCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type DeleteCustomerGroupMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    deleteCustomerGroup: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type GetCustomerGroupsQueryVariables = {
+    options?: Maybe<CustomerGroupListOptions>;
+};
+
+export type GetCustomerGroupsQuery = { __typename?: 'Query' } & {
+    customerGroups: { __typename?: 'CustomerGroupList' } & Pick<CustomerGroupList, 'totalItems'> & {
+            items: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+        };
+};
+
+export type GetCustomerGroupQueryVariables = {
+    id: Scalars['ID'];
+    options?: Maybe<CustomerListOptions>;
+};
+
+export type GetCustomerGroupQuery = { __typename?: 'Query' } & {
+    customerGroup?: Maybe<
+        { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
+                customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+                        items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+                    };
+            }
+    >;
+};
+
+export type AddCustomersToGroupMutationVariables = {
+    groupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type AddCustomersToGroupMutation = { __typename?: 'Mutation' } & {
+    addCustomersToGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type RemoveCustomersFromGroupMutationVariables = {
+    groupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
+    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
 };
 
 export type DeleteCustomerAddressMutationVariables = {
@@ -5644,6 +5758,59 @@ export namespace CreateCountry {
     export type Variables = CreateCountryMutationVariables;
     export type Mutation = CreateCountryMutation;
     export type CreateCountry = CountryFragment;
+}
+
+export namespace CustomerGroup {
+    export type Fragment = CustomerGroupFragment;
+    export type Customers = CustomerGroupFragment['customers'];
+    export type Items = NonNullable<CustomerGroupFragment['customers']['items'][0]>;
+}
+
+export namespace CreateCustomerGroup {
+    export type Variables = CreateCustomerGroupMutationVariables;
+    export type Mutation = CreateCustomerGroupMutation;
+    export type CreateCustomerGroup = CustomerGroupFragment;
+}
+
+export namespace UpdateCustomerGroup {
+    export type Variables = UpdateCustomerGroupMutationVariables;
+    export type Mutation = UpdateCustomerGroupMutation;
+    export type UpdateCustomerGroup = CustomerGroupFragment;
+}
+
+export namespace DeleteCustomerGroup {
+    export type Variables = DeleteCustomerGroupMutationVariables;
+    export type Mutation = DeleteCustomerGroupMutation;
+    export type DeleteCustomerGroup = DeleteCustomerGroupMutation['deleteCustomerGroup'];
+}
+
+export namespace GetCustomerGroups {
+    export type Variables = GetCustomerGroupsQueryVariables;
+    export type Query = GetCustomerGroupsQuery;
+    export type CustomerGroups = GetCustomerGroupsQuery['customerGroups'];
+    export type Items = NonNullable<GetCustomerGroupsQuery['customerGroups']['items'][0]>;
+}
+
+export namespace GetCustomerGroup {
+    export type Variables = GetCustomerGroupQueryVariables;
+    export type Query = GetCustomerGroupQuery;
+    export type CustomerGroup = NonNullable<GetCustomerGroupQuery['customerGroup']>;
+    export type Customers = NonNullable<GetCustomerGroupQuery['customerGroup']>['customers'];
+    export type Items = NonNullable<
+        NonNullable<GetCustomerGroupQuery['customerGroup']>['customers']['items'][0]
+    >;
+}
+
+export namespace AddCustomersToGroup {
+    export type Variables = AddCustomersToGroupMutationVariables;
+    export type Mutation = AddCustomersToGroupMutation;
+    export type AddCustomersToGroup = CustomerGroupFragment;
+}
+
+export namespace RemoveCustomersFromGroup {
+    export type Variables = RemoveCustomersFromGroupMutationVariables;
+    export type Mutation = RemoveCustomersFromGroupMutation;
+    export type RemoveCustomersFromGroup = CustomerGroupFragment;
 }
 
 export namespace DeleteCustomerAddress {

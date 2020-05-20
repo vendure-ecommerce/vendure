@@ -954,6 +954,38 @@ export type CustomerGroup = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  customers: CustomerList;
+};
+
+
+export type CustomerGroupCustomersArgs = {
+  options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerGroupFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+   __typename?: 'CustomerGroupList';
+  items: Array<CustomerGroup>;
+  totalItems: Scalars['Int'];
+};
+
+export type CustomerGroupListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerGroupSortParameter>;
+  filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
+export type CustomerGroupSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
 };
 
 export type CustomerList = PaginatedList & {
@@ -1774,6 +1806,8 @@ export type Mutation = {
   createCustomerGroup: CustomerGroup;
   /** Update an existing CustomerGroup */
   updateCustomerGroup: CustomerGroup;
+  /** Delete a CustomerGroup */
+  deleteCustomerGroup: DeletionResponse;
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   /** Remove Customers from a CustomerGroup */
@@ -1979,6 +2013,11 @@ export type MutationCreateCustomerGroupArgs = {
 
 export type MutationUpdateCustomerGroupArgs = {
   input: UpdateCustomerGroupInput;
+};
+
+
+export type MutationDeleteCustomerGroupArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -2823,7 +2862,7 @@ export type Query = {
   collectionFilters: Array<ConfigurableOperationDefinition>;
   countries: CountryList;
   country?: Maybe<Country>;
-  customerGroups: Array<CustomerGroup>;
+  customerGroups: CustomerGroupList;
   customerGroup?: Maybe<CustomerGroup>;
   customers: CustomerList;
   customer?: Maybe<Customer>;
@@ -2907,6 +2946,11 @@ export type QueryCountriesArgs = {
 
 export type QueryCountryArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryCustomerGroupsArgs = {
+  options?: Maybe<CustomerGroupListOptions>;
 };
 
 

@@ -40,26 +40,20 @@ export class Customer extends VendureEntity implements HasCustomFields, SoftDele
     @Column()
     emailAddress: string;
 
-    @ManyToMany(type => CustomerGroup)
+    @ManyToMany((type) => CustomerGroup, (group) => group.customers)
     @JoinTable()
     groups: CustomerGroup[];
 
-    @OneToMany(
-        type => Address,
-        address => address.customer,
-    )
+    @OneToMany((type) => Address, (address) => address.customer)
     addresses: Address[];
 
-    @OneToMany(
-        type => Order,
-        order => order.customer,
-    )
+    @OneToMany((type) => Order, (order) => order.customer)
     orders: Order[];
 
-    @OneToOne(type => User, { eager: true })
+    @OneToOne((type) => User, { eager: true })
     @JoinColumn()
     user?: User;
 
-    @Column(type => CustomCustomerFields)
+    @Column((type) => CustomCustomerFields)
     customFields: CustomCustomerFields;
 }

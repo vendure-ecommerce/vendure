@@ -661,18 +661,51 @@ export type CustomerOrdersArgs = {
     options?: Maybe<OrderListOptions>;
 };
 
+export type CustomerFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    title?: Maybe<StringOperators>;
+    firstName?: Maybe<StringOperators>;
+    lastName?: Maybe<StringOperators>;
+    phoneNumber?: Maybe<StringOperators>;
+    emailAddress?: Maybe<StringOperators>;
+};
+
 export type CustomerGroup = Node & {
     __typename?: 'CustomerGroup';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    customers: CustomerList;
+};
+
+export type CustomerGroupCustomersArgs = {
+    options?: Maybe<CustomerListOptions>;
 };
 
 export type CustomerList = PaginatedList & {
     __typename?: 'CustomerList';
     items: Array<Customer>;
     totalItems: Scalars['Int'];
+};
+
+export type CustomerListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<CustomerSortParameter>;
+    filter?: Maybe<CustomerFilterParameter>;
+};
+
+export type CustomerSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    title?: Maybe<SortOrder>;
+    firstName?: Maybe<SortOrder>;
+    lastName?: Maybe<SortOrder>;
+    phoneNumber?: Maybe<SortOrder>;
+    emailAddress?: Maybe<SortOrder>;
 };
 
 export type CustomField = {
@@ -1322,7 +1355,7 @@ export type Mutation = {
     removeOrderLine?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
-     * third argument 'customFields' will be available.
+     * third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
      */
     adjustOrderLine?: Maybe<Order>;
     /** Applies the given coupon code to the active Order */
