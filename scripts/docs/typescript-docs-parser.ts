@@ -389,11 +389,10 @@ export class TypescriptDocsParser {
     }
 
     /**
-     * Cleans up a JSDoc "@example" block by removing leading whitespace and asterisk (TypeScript has an open issue
-     * wherein the asterisks are not stripped as they should be, see https://github.com/Microsoft/TypeScript/issues/23517)
+     * Ensure all the code examples use the unix-style line separators.
      */
     private formatExampleCode(example: string = ''): string {
-        return '\n\n*Example*\n\n' + example.replace(/\n\s+\*\s/g, '\n');
+        return '\n\n*Example*\n\n' + example.replace(/\r/g, '\n');
     }
 
     private kebabCase<T extends string | undefined>(input: T): T {

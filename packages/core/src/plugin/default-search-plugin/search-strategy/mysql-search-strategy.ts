@@ -7,6 +7,7 @@ import { RequestContext } from '../../../api/common/request-context';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
+import { fieldsToSelect } from './search-strategy-common';
 import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-utils';
 
 /**
@@ -47,7 +48,10 @@ export class MysqlSearchStrategy implements SearchStrategy {
         const take = input.take || 25;
         const skip = input.skip || 0;
         const sort = input.sort;
-        const qb = this.connection.getRepository(SearchIndexItem).createQueryBuilder('si');
+        const qb = this.connection
+            .getRepository(SearchIndexItem)
+            .createQueryBuilder('si')
+            .select(this.createMysqlsSelect(!!input.groupByProduct));
         if (input.groupByProduct) {
             qb.addSelect('MIN(price)', 'minPrice')
                 .addSelect('MAX(price)', 'maxPrice')
@@ -75,13 +79,16 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then((res) => res.map((r) => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
         const innerQb = this.applyTermAndFilters(
             ctx,
-            this.connection.getRepository(SearchIndexItem).createQueryBuilder('si'),
+            this.connection
+                .getRepository(SearchIndexItem)
+                .createQueryBuilder('si')
+                .select(this.createMysqlsSelect(!!input.groupByProduct)),
             input,
         );
         if (enabledOnly) {
@@ -93,7 +100,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
             .setParameters(innerQb.getParameters());
-        return totalItemsQb.getRawOne().then(res => res.total);
+        return totalItemsQb.getRawOne().then((res) => res.total);
     }
 
     private applyTermAndFilters(
@@ -115,7 +122,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                     'score',
                 )
                 .andWhere(
-                    new Brackets(qb1 => {
+                    new Brackets((qb1) => {
                         qb1.where('sku LIKE :like_term')
                             .orWhere('MATCH (productName) AGAINST (:term)')
                             .orWhere('MATCH (productVariantName) AGAINST (:term)')
@@ -140,5 +147,34 @@ export class MysqlSearchStrategy implements SearchStrategy {
             qb.addSelect('BIT_OR(enabled)', 'productEnabled');
         }
         return qb;
+    }
+    /**
+     * When a select statement includes a GROUP BY clause,
+     * then all selected columns must be aggregated. So we just apply the
+     * "MIN" function in this case to all other columns than the productId.
+     */
+    private createMysqlsSelect(groupByProduct: boolean): string {
+        return fieldsToSelect
+            .map((col) => {
+                const qualifiedName = `si.${col}`;
+                const alias = `si_${col}`;
+                if (groupByProduct && col !== 'productId') {
+                    if (
+                        col === 'facetIds' ||
+                        col === 'facetValueIds' ||
+                        col === 'collectionIds' ||
+                        col === 'channelIds'
+                    ) {
+                        return `GROUP_CONCAT(${qualifiedName}) as "${alias}"`;
+                    } else if (col === 'enabled') {
+                        return `MAX(${qualifiedName}) as "${alias}"`;
+                    } else {
+                        return `MIN(${qualifiedName}) as "${alias}"`;
+                    }
+                } else {
+                    return `${qualifiedName} as "${alias}"`;
+                }
+            })
+            .join(', ');
     }
 }

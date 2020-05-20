@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { INestApplication, INestMicroservice, Module } from '@nestjs/common';
 import { MODULE_METADATA } from '@nestjs/common/constants';
 import { ModuleMetadata } from '@nestjs/common/interfaces';
 import { pick } from '@vendure/common/lib/pick';
@@ -138,6 +138,28 @@ export function VendurePlugin(pluginMetadata: VendurePluginMetadata): ClassDecor
         Module(nestModuleMetadata)(target);
     };
 }
+
+/**
+ * @description
+ * A plugin which implements a static `beforeVendureBootstrap` method with this type can define logic to run
+ * before the Vendure server (and the underlying Nestjs application) is bootstrapped. This is called
+ * _after_ the Nestjs application has been created, but _before_ the `app.listen()` method is invoked.
+ *
+ * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
+ */
+export type BeforeVendureBootstrap = (app: INestApplication) => void | Promise<void>;
+
+/**
+ * @description
+ * A plugin which implements a static `beforeVendureWorkerBootstrap` method with this type can define logic to run
+ * before the Vendure worker (and the underlying Nestjs microservice) is bootstrapped. This is called
+ * _after_ the Nestjs microservice has been created, but _before_ the `microservice.listen()` method is invoked.
+ *
+ * @docsCategory plugin
+ * @docsPage Plugin Lifecycle Methods
+ */
+export type BeforeVendureWorkerBootstrap = (app: INestMicroservice) => void | Promise<void>;
 
 /**
  * @description

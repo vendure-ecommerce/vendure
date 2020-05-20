@@ -18,6 +18,8 @@ import { TestProcessContextPlugin } from './fixtures/test-plugins/with-worker-co
 describe('Plugins', () => {
     const bootstrapMockFn = jest.fn();
     const onConstructorFn = jest.fn();
+    const beforeBootstrapFn = jest.fn();
+    const beforeWorkerBootstrapFn = jest.fn();
     const onBootstrapFn = jest.fn();
     const onWorkerBootstrapFn = jest.fn();
     const onCloseFn = jest.fn();
@@ -28,6 +30,8 @@ describe('Plugins', () => {
         plugins: [
             TestPluginWithAllLifecycleHooks.init(
                 onConstructorFn,
+                beforeBootstrapFn,
+                beforeWorkerBootstrapFn,
                 onBootstrapFn,
                 onWorkerBootstrapFn,
                 onCloseFn,
@@ -57,6 +61,16 @@ describe('Plugins', () => {
 
     it('constructs one instance for each process', () => {
         expect(onConstructorFn).toHaveBeenCalledTimes(2);
+    });
+
+    it('calls beforeVendureBootstrap', () => {
+        expect(beforeBootstrapFn).toHaveBeenCalledTimes(1);
+        expect(beforeBootstrapFn).toHaveBeenCalledWith(server.app);
+    });
+
+    it('calls beforeVendureWorkerBootstrap', () => {
+        expect(beforeWorkerBootstrapFn).toHaveBeenCalledTimes(1);
+        expect(beforeWorkerBootstrapFn).toHaveBeenCalledWith(server.worker);
     });
 
     it('calls onVendureBootstrap', () => {

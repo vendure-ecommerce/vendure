@@ -8,9 +8,9 @@ showtoc: true
 
 This is an overview of the GraphQL Shop API, which is used when implementing a storefront application with Vendure. 
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 This guide only lists some of the more common operations you'll need for your storefront. Please consult [the Shop API reference]({{< relref "/docs/graphql-api/shop" >}}) for a complete guide.
-{{% /alert %}}
+{{< /alert >}}
 
 ## Universal Parameters
 

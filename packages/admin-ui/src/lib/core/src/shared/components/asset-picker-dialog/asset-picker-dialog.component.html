@@ -3,6 +3,7 @@
         {{ 'asset.select-assets' | translate }}
         <vdr-asset-file-input
             (selectFiles)="createAssets($event)"
+            [uploading]="uploading"
             dropZoneTarget=".modal-content"
         ></vdr-asset-file-input>
     </div>

@@ -12,8 +12,9 @@ import { defaultCollectionFilters } from './collection/default-collection-filter
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
-import { MergeOrdersStrategy } from './order-merge-strategy/merge-orders-strategy';
-import { UseGuestStrategy } from './order-merge-strategy/use-guest-strategy';
+import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
+import { MergeOrdersStrategy } from './order/merge-orders-strategy';
+import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
@@ -83,6 +84,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     orderOptions: {
         orderItemsLimit: 999,
+        priceCalculationStrategy: new DefaultPriceCalculationStrategy(),
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: {},

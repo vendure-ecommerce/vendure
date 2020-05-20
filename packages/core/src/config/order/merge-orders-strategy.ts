@@ -25,6 +25,6 @@ export class MergeOrdersStrategy implements OrderMergeStrategy {
     }
 
     private findCorrespondingLine(existingOrder: Order, guestLine: OrderLine): OrderLine | undefined {
-        return existingOrder.lines.find(line => line.productVariant.id === guestLine.productVariant.id);
+        return existingOrder.lines.find((line) => line.productVariant.id === guestLine.productVariant.id);
     }
 }

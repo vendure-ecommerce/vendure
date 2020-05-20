@@ -9,9 +9,9 @@ When creating a plugin, you may wish to extend the Admin UI in order to expose a
 
 This is possible by defining [AdminUiExtensions]({{< ref "admin-ui-extension" >}}). 
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
 For a complete working example of a Vendure plugin which extends the Admin UI, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
-{{% /alert %}}
+{{< /alert >}}
 
 ## How It Works
 

@@ -81,6 +81,15 @@ export const SEARCH_PRODUCTS_SHOP = gql`
                 productVariantPreview
                 sku
                 collectionIds
+                price {
+                    ... on SinglePrice {
+                        value
+                    }
+                    ... on PriceRange {
+                        min
+                        max
+                    }
+                }
             }
         }
     }

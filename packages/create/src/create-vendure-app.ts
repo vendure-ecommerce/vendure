@@ -248,6 +248,8 @@ async function createApp(
                     } else {
                         app = await populate(bootstrapFn, initialDataPath);
                     }
+                    // Pause to ensure the worker jobs have time to complete.
+                    await new Promise((resolve) => setTimeout(resolve, isCi ? 10000 : 2000));
                     await app.close();
                 } catch (e) {
                     console.log(e);

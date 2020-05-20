@@ -21,7 +21,8 @@
     "update-focal-point": "Update point",
     "update-focal-point-error": "Could not update focal point",
     "update-focal-point-success": "Updated focal point",
-    "upload-assets": "Upload assets"
+    "upload-assets": "Upload assets",
+    "uploading": "Uploading..."
   },
   "breadcrumb": {
     "administrators": "Administrators",
@@ -665,7 +666,6 @@
     "job-error": "Job error",
     "job-queue-name": "Queue name",
     "job-result": "Job result",
-    "job-state": "Job state",
-    "jobs-in-progress": "{ count } {count, plural, one {job} other {jobs}} in progress"
+    "job-state": "Job state"
   }
 }

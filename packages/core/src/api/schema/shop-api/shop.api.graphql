@@ -20,7 +20,7 @@ type Mutation {
     "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
     addItemToOrder(productVariantId: ID!, quantity: Int!): Order
     removeOrderLine(orderLineId: ID!): Order
-    "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
+    "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
     adjustOrderLine(orderLineId: ID!, quantity: Int): Order
     "Applies the given coupon code to the active Order"
     applyCouponCode(couponCode: String!): Order

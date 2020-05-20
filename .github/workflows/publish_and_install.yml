@@ -1,50 +1,61 @@
 name: Publish & Install
-# Temporarily disabled this workflow because the last step (installing from Verdaccio) is flaky and
-# randomly failing despite numerous attempts to stabilize. Therefore this is not useful at
-# the moment.
-# on:
-#   push:
-#     branches:
-#     - master
-#   pull_request:
-#     branches:
-#     - master
 on:
-  deployment
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+defaults:
+  run:
+    shell: bash
 jobs:
   publish_install:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-latest]
-        node-version: [10.x, 12.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [12.x, 14.x]
+      fail-fast: false
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: Install & bootstrap
-      run: |
-        yarn install
-        yarn bootstrap
-      env:
-        CI: true
     - name: Install Verdaccio
       run: |
         npm install -g verdaccio
+        npm install -g verdaccio-auth-memory
+        npm install -g verdaccio-memory
+        npm install -g npm-auth-to-token@1.0.0
+        tmp_registry_log=`mktemp`
         mkdir -p $HOME/.config/verdaccio
         cp -v ./.github/workflows/verdaccio/config.yaml $HOME/.config/verdaccio/config.yaml
-        verdaccio --config $HOME/.config/verdaccio/config.yaml &
+        nohup verdaccio --config $HOME/.config/verdaccio/config.yaml &>$tmp_registry_log &
+        npm-auth-to-token -u test -p test -e test@test.com -r http://0.0.0.0:4873
+    - name: Windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: npm install -g @angular/cli
+    - name: Install & bootstrap
+      run: |
+        yarn config set unsafe-perm true
+        yarn install --network-timeout 1000000
+        yarn bootstrap
+      env:
+        CI: true
     - name: Publish to Verdaccio
       run: |
-        npm set //registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}
-        npm set //localhost:4873/:_authToken=${{ secrets.VERDACCIO_AUTH_TOKEN }}
-        npm set registry=http://localhost:4873/
-        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://localhost:4873/
+        yarn lerna publish prepatch --preid ci --no-push --no-git-tag-version --no-commit-hooks --force-publish "*" --yes --dist-tag ci --registry http://0.0.0.0:4873
     - name: Install via @vendure/create
       run: |
         mkdir -p $HOME/install
         cd $HOME/install
+        npm set registry=http://0.0.0.0:4873
         npm dist-tag ls @vendure/create
-        npx @vendure/create@ci test-app --ci --use-npm
+        npx @vendure/create@ci test-app --ci --use-npm --log-level info
+    - name: Server smoke tests
+      run: |
+        cd $HOME/install/test-app
+        npm run start &
+        node $GITHUB_WORKSPACE/.github/workflows/scripts/smoke-tests

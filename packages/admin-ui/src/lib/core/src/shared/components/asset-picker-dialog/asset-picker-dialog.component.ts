@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { PaginationInstance } from 'ngx-pagination';
 import { Observable, Subject } from 'rxjs';
-import { debounceTime, map, takeUntil, tap } from 'rxjs/operators';
+import { debounceTime, finalize, map, takeUntil, tap } from 'rxjs/operators';
 
 import { Asset, GetAssetList, SortOrder } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
@@ -31,6 +31,7 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
     resolveWith: (result?: Asset[]) => void;
     selection: Asset[] = [];
     searchTerm = new FormControl('');
+    uploading = false;
     private listQuery: QueryResult<GetAssetList.Query, GetAssetList.Variables>;
     private destroy$ = new Subject<void>();
 
@@ -39,15 +40,12 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
     ngOnInit() {
         this.listQuery = this.dataService.product.getAssetList(this.paginationConfig.itemsPerPage, 0);
         this.assets$ = this.listQuery.stream$.pipe(
-            tap(result => (this.paginationConfig.totalItems = result.assets.totalItems)),
-            map(result => result.assets.items),
+            tap((result) => (this.paginationConfig.totalItems = result.assets.totalItems)),
+            map((result) => result.assets.items),
         );
         this.searchTerm.valueChanges
-            .pipe(
-                debounceTime(250),
-                takeUntil(this.destroy$),
-            )
-            .subscribe(searchTerm => {
+            .pipe(debounceTime(250), takeUntil(this.destroy$))
+            .subscribe((searchTerm) => {
                 this.fetchPage(
                     this.paginationConfig.currentPage,
                     this.paginationConfig.itemsPerPage,
@@ -89,16 +87,20 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
 
     createAssets(files: File[]) {
         if (files.length) {
-            this.dataService.product.createAssets(files).subscribe(res => {
-                this.fetchPage(
-                    this.paginationConfig.currentPage,
-                    this.paginationConfig.itemsPerPage,
-                    this.searchTerm.value,
-                );
-                this.notificationService.success(_('asset.notify-create-assets-success'), {
-                    count: files.length,
+            this.uploading = true;
+            this.dataService.product
+                .createAssets(files)
+                .pipe(finalize(() => (this.uploading = false)))
+                .subscribe((res) => {
+                    this.fetchPage(
+                        this.paginationConfig.currentPage,
+                        this.paginationConfig.itemsPerPage,
+                        this.searchTerm.value,
+                    );
+                    this.notificationService.success(_('asset.notify-create-assets-success'), {
+                        count: files.length,
+                    });
                 });
-            });
         }
     }
 

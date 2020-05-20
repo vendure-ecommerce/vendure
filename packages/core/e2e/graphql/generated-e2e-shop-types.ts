@@ -2323,7 +2323,11 @@ export type SearchProductsShopQuery = { __typename?: 'Query' } & {
                     | 'productVariantPreview'
                     | 'sku'
                     | 'collectionIds'
-                >
+                > & {
+                        price:
+                            | ({ __typename?: 'PriceRange' } & Pick<PriceRange, 'min' | 'max'>)
+                            | ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>);
+                    }
             >;
         };
 };
@@ -2655,6 +2659,10 @@ export type RemoveCouponCodeMutation = { __typename?: 'Mutation' } & {
     removeCouponCode?: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
+type DiscriminateUnion<T, U> = T extends U ? T : never;
+
+type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
+
 export namespace TestOrderFragment {
     export type Fragment = TestOrderFragmentFragment;
     export type Adjustments = NonNullable<TestOrderFragmentFragment['adjustments'][0]>;
@@ -2685,6 +2693,15 @@ export namespace SearchProductsShop {
     export type Query = SearchProductsShopQuery;
     export type Search = SearchProductsShopQuery['search'];
     export type Items = NonNullable<SearchProductsShopQuery['search']['items'][0]>;
+    export type Price = NonNullable<SearchProductsShopQuery['search']['items'][0]>['price'];
+    export type SinglePriceInlineFragment = DiscriminateUnion<
+        RequireField<NonNullable<SearchProductsShopQuery['search']['items'][0]>['price'], '__typename'>,
+        { __typename: 'SinglePrice' }
+    >;
+    export type PriceRangeInlineFragment = DiscriminateUnion<
+        RequireField<NonNullable<SearchProductsShopQuery['search']['items'][0]>['price'], '__typename'>,
+        { __typename: 'PriceRange' }
+    >;
 }
 
 export namespace Register {

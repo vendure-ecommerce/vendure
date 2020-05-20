@@ -22,25 +22,25 @@ The recommended way to get started with Vendure is by using the [@vendure/create
 npx @vendure/create my-app
 ```
 
-{{% alert primary %}}
+{{< alert primary >}}
 [npx](https://medium.com/@maybekatz/introducing-npx-an-npm-package-runner-55f7d4bd282b) comes with npm 5.2+ and higher.
-{{% /alert %}}
+{{< /alert >}}
 {{% /tab %}}
 {{% tab "npm init" %}}
 ```sh
 npm init @vendure my-app
 ```
-{{% alert primary %}}
+{{< alert primary >}}
 `npm init <initializer>` is available in npm 6+
-{{% /alert %}}
+{{< /alert >}}
 {{% /tab %}}
 {{% tab "yarn create" %}}
 ```sh
 yarn create @vendure my-app
 ```
-{{% alert primary %}}
+{{< alert primary >}}
 `yarn create` is available in Yarn 0.25+
-{{% /alert %}}
+{{< /alert >}}
 {{% /tab %}}
 
 *For other installation options see the [@vendure/create documentation](https://github.com/vendure-ecommerce/vendure/blob/master/packages/create/README.md).*
@@ -63,12 +63,12 @@ Assuming the default config settings, you can now access:
 * The Vendure Shop GraphQL API: [http://localhost:3000/shop-api](http://localhost:3000/shop-api)
 * The Vendure Admin UI: [http://localhost:3000/admin](http://localhost:3000/admin)
 
-{{% alert primary %}}
+{{< alert primary >}}
 Log in with the superadmin credentials:
 
 * **username**: superadmin
 * **password**: superadmin
-{{% /alert %}}
+{{< /alert >}}
 
 ## Next Steps
 

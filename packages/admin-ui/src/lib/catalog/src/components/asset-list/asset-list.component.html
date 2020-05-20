@@ -12,6 +12,7 @@
         <vdr-action-bar-items locationId="asset-list"></vdr-action-bar-items>
         <vdr-asset-file-input
             (selectFiles)="filesSelected($event)"
+            [uploading]="uploading"
             dropZoneTarget=".content-area"
         ></vdr-asset-file-input>
     </vdr-ab-right>

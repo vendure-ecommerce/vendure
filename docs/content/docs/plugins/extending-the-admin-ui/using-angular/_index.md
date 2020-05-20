@@ -7,9 +7,9 @@ weight: 0
 
 Writing your UI extensions with Angular results in the best-optimized and most seamless UI extensions, since you can re-use shared components exported by the `@vendure/admin-ui/core` library, and the Angular framework itself is already present in the app.
 
-{{% alert warning %}}
+{{< alert warning >}}
 **Note:** an understanding of [Angular](https://angular.io/) is necessary for successfully working with Angular-based UI extensions. Try [Angular's "Getting Started" guide](https://angular.io/start) to learn more.
-{{% /alert %}}
+{{< /alert >}}
 
 ## 1. Install `@vendure/ui-devkit`
 
@@ -66,10 +66,10 @@ import { GreeterComponent } from './greeter.component';
 export class GreeterModule {}
 ```
 
-{{% alert "primary" %}}
+{{< alert "primary" >}}
 **Note:** The `SharedModule` should, in general, always be imported by your extension modules. It provides the basic Angular
 directives and other common functionality that any extension would require.
-{{% /alert %}}
+{{< /alert >}}
 
 ## 4. Pass the extension to the `compileUiExtensions` function
 
@@ -110,9 +110,9 @@ The `compileUiExtensions()` function returns a `compile()` function which will b
 
 Next, these source files will be run through the Angular compiler, the output of which will be visible in the console.
 
-{{% alert "warning" %}}
+{{< alert "warning" >}}
 **Note:** The first time the compiler is run, an additional step ([compatibility compiler](https://angular.io/guide/ivy#ivy-and-libraries)) is run to make sure all dependencies work with the latest version of Angular. This step can take up to a few minutes.
-{{% /alert %}}
+{{< /alert >}}
 
 Now go to the Admin UI app in your browser and log in. You should now be able to manually enter the URL `http://localhost:3000/admin/extensions/greet` and you should see the component with the "Hello!" header:
 

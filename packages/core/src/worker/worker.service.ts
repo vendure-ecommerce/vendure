@@ -28,9 +28,9 @@ export class WorkerService implements OnModuleDestroy {
         // The rather convoluted logic here is required in order to prevent more than
         // one connection being opened in the event that the `send` method is called multiple
         // times in the same event loop tick.
-        // On the first invokation, the first path is taken, which establishes the single
-        // connection (implicit in the first call to ClientProxt.send()). All subsequent
-        // invokations take the second code path.
+        // On the first invocation, the first path is taken, which establishes the single
+        // connection (implicit in the first call to ClientProxy.send()). All subsequent
+        // invocations take the second code path.
         if (!this.pendingConnection && this.initialConnection.value === false) {
             this.pendingConnection = true;
             return this.client
@@ -43,7 +43,7 @@ export class WorkerService implements OnModuleDestroy {
                 );
         } else {
             return this.initialConnection.pipe(
-                filter(val => val),
+                filter((val) => val),
                 take(1),
                 mergeMap(() => {
                     return this.client.send<R, T>(
