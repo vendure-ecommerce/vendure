@@ -1,6 +1,6 @@
 {
   "name": "dev-server",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -14,7 +14,7 @@
     "load-test:100k": "node -r ts-node/register load-testing/run-load-test.ts 100000"
   },
   "dependencies": {
-    "@vendure/admin-ui-plugin": "^0.12.3",
+    "@vendure/admin-ui-plugin": "^0.12.4",
     "@vendure/asset-server-plugin": "^0.12.3",
     "@vendure/common": "^0.12.3",
     "@vendure/core": "^0.12.3",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@types/csv-stringify": "^3.1.0",
     "@vendure/testing": "^0.12.3",
-    "@vendure/ui-devkit": "^0.12.3",
+    "@vendure/ui-devkit": "^0.12.4",
     "concurrently": "^5.0.0",
     "csv-stringify": "^5.3.3"
   }
