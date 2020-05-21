@@ -31,7 +31,10 @@ import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
-import { CustomerEntityResolver } from './resolvers/entity/customer-entity.resolver';
+import {
+    CustomerAdminEntityResolver,
+    CustomerEntityResolver,
+} from './resolvers/entity/customer-entity.resolver';
 import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-entity.resolver';
 import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
@@ -103,7 +106,11 @@ export const entityResolvers = [
     RoleEntityResolver,
 ];
 
-export const adminEntityResolvers = [ProductVariantAdminEntityResolver, ProductAdminEntityResolver];
+export const adminEntityResolvers = [
+    CustomerAdminEntityResolver,
+    ProductVariantAdminEntityResolver,
+    ProductAdminEntityResolver,
+];
 
 /**
  * The internal module containing some shared providers used by more than

@@ -927,6 +927,7 @@ export type CurrentUserChannelInput = {
 
 export type Customer = Node & {
    __typename?: 'Customer';
+  groups: Array<CustomerGroup>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];

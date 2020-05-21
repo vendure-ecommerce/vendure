@@ -20,6 +20,7 @@ import {
     GetCustomerGroup,
     GetCustomerGroups,
     GetCustomerList,
+    GetCustomerWithGroups,
     RemoveCustomersFromGroup,
     UpdateCustomerGroup,
 } from './graphql/generated-e2e-admin-types';
@@ -138,6 +139,17 @@ describe('CustomerGroup resolver', () => {
             { id: customers[2].id },
             { id: customers[3].id },
         ]);
+    });
+
+    it('customer.groups field resolver', async () => {
+        const { customer } = await adminClient.query<
+            GetCustomerWithGroups.Query,
+            GetCustomerWithGroups.Variables
+        >(GET_CUSTOMER_WITH_GROUPS, {
+            id: customers[0].id,
+        });
+
+        expect(customer?.groups).toEqual([{ id: 'T_1', name: 'group 1 updated' }]);
     });
 
     it(
@@ -267,4 +279,16 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
         }
     }
     ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const GET_CUSTOMER_WITH_GROUPS = gql`
+    query GetCustomerWithGroups($id: ID!) {
+        customer(id: $id) {
+            id
+            groups {
+                id
+                name
+            }
+        }
+    }
 `;

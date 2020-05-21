@@ -67,6 +67,9 @@ const result: IntrospectionResultData = {
                         name: 'Customer',
                     },
                     {
+                        name: 'CustomerGroup',
+                    },
+                    {
                         name: 'Address',
                     },
                     {
@@ -95,9 +98,6 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'TaxCategory',
-                    },
-                    {
-                        name: 'CustomerGroup',
                     },
                     {
                         name: 'ProductOption',
@@ -136,13 +136,13 @@ const result: IntrospectionResultData = {
                         name: 'ProductVariantList',
                     },
                     {
+                        name: 'CustomerList',
+                    },
+                    {
                         name: 'OrderList',
                     },
                     {
                         name: 'HistoryEntryList',
-                    },
-                    {
-                        name: 'CustomerList',
                     },
                     {
                         name: 'CollectionList',

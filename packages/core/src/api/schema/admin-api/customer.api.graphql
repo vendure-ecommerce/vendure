@@ -23,6 +23,10 @@ type Mutation {
     deleteCustomerAddress(id: ID!): Boolean!
 }
 
+type Customer implements Node {
+    groups: [CustomerGroup!]!
+}
+
 input UpdateCustomerInput {
     id: ID!
     title: String

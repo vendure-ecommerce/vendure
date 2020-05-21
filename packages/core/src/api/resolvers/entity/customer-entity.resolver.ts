@@ -56,3 +56,16 @@ export class CustomerEntityResolver {
         return this.userService.getUserByEmailAddress(customer.emailAddress);
     }
 }
+
+@Resolver('Customer')
+export class CustomerAdminEntityResolver {
+    constructor(private customerService: CustomerService) {}
+
+    @ResolveField()
+    groups(@Ctx() ctx: RequestContext, @Parent() customer: Customer) {
+        if (customer.groups) {
+            return customer.groups;
+        }
+        return this.customerService.getCustomerGroups(customer.id);
+    }
+}

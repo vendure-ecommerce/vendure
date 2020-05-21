@@ -919,6 +919,7 @@ export type CurrentUserChannel = {
 
 export type Customer = Node & {
     __typename?: 'Customer';
+    groups: Array<CustomerGroup>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3907,6 +3908,18 @@ export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
     removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
 };
 
+export type GetCustomerWithGroupsQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetCustomerWithGroupsQuery = { __typename?: 'Query' } & {
+    customer?: Maybe<
+        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                groups: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+            }
+    >;
+};
+
 export type DeleteCustomerAddressMutationVariables = {
     id: Scalars['ID'];
 };
@@ -5811,6 +5824,13 @@ export namespace RemoveCustomersFromGroup {
     export type Variables = RemoveCustomersFromGroupMutationVariables;
     export type Mutation = RemoveCustomersFromGroupMutation;
     export type RemoveCustomersFromGroup = CustomerGroupFragment;
+}
+
+export namespace GetCustomerWithGroups {
+    export type Variables = GetCustomerWithGroupsQueryVariables;
+    export type Query = GetCustomerWithGroupsQuery;
+    export type Customer = NonNullable<GetCustomerWithGroupsQuery['customer']>;
+    export type Groups = NonNullable<NonNullable<GetCustomerWithGroupsQuery['customer']>['groups'][0]>;
 }
 
 export namespace DeleteCustomerAddress {
