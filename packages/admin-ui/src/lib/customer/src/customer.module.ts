@@ -10,6 +10,7 @@ import { CustomerGroupListComponent } from './components/customer-group-list/cus
 import { CustomerGroupMemberListComponent } from './components/customer-group-member-list/customer-group-member-list.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerStatusLabelComponent } from './components/customer-status-label/customer-status-label.component';
+import { SelectCustomerGroupDialogComponent } from './components/select-customer-group-dialog/select-customer-group-dialog.component';
 import { customerRoutes } from './customer.routes';
 
 @NgModule({
@@ -23,6 +24,7 @@ import { customerRoutes } from './customer.routes';
         CustomerGroupDetailDialogComponent,
         AddCustomerToGroupDialogComponent,
         CustomerGroupMemberListComponent,
+        SelectCustomerGroupDialogComponent,
     ],
     exports: [AddressCardComponent],
 })

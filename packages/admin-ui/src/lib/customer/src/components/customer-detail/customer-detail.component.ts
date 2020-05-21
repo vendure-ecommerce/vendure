@@ -2,23 +2,26 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
+    BaseDetailComponent,
     CreateAddressInput,
     CreateCustomerInput,
     Customer,
     CustomFieldConfig,
+    DataService,
     GetAvailableCountries,
     GetCustomer,
     GetCustomerQuery,
+    ModalService,
+    NotificationService,
+    ServerConfigService,
     UpdateCustomerInput,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { forkJoin, Observable, Subject } from 'rxjs';
-import { filter, map, merge, mergeMap, shareReplay, take } from 'rxjs/operators';
+import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
+import { concatMap, filter, map, merge, mergeMap, shareReplay, switchMap, take } from 'rxjs/operators';
+
+import { SelectCustomerGroupDialogComponent } from '../select-customer-group-dialog/select-customer-group-dialog.component';
 
 type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
 
@@ -49,6 +52,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         private changeDetector: ChangeDetectorRef,
         private formBuilder: FormBuilder,
         protected dataService: DataService,
+        private modalService: ModalService,
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
@@ -243,6 +247,53 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             );
     }
 
+    addToGroup() {
+        this.modalService
+            .fromComponent(SelectCustomerGroupDialogComponent, {
+                size: 'md',
+            })
+            .pipe(
+                switchMap((groupIds) => (groupIds ? from(groupIds) : EMPTY)),
+                concatMap((groupId) => this.dataService.customer.addCustomersToGroup(groupId, [this.id])),
+            )
+            .subscribe({
+                next: (res) => {
+                    this.notificationService.success(_(`customer.add-customers-to-group-success`), {
+                        customerCount: 1,
+                        groupName: res.addCustomersToGroup.name,
+                    });
+                },
+                complete: () => {
+                    this.dataService.customer.getCustomer(this.id, { take: 0 }).single$.subscribe();
+                },
+            });
+    }
+
+    removeFromGroup(group: GetCustomer.Groups) {
+        this.modalService
+            .dialog({
+                title: _('customer.confirm-remove-customer-from-group'),
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap((response) =>
+                    response
+                        ? this.dataService.customer.removeCustomersFromGroup(group.id, [this.id])
+                        : EMPTY,
+                ),
+                switchMap(() => this.dataService.customer.getCustomer(this.id, { take: 0 }).single$),
+            )
+            .subscribe((result) => {
+                this.notificationService.success(_(`customer.remove-customers-from-group-success`), {
+                    customerCount: 1,
+                    groupName: group.name,
+                });
+            });
+    }
+
     protected setFormValues(entity: Customer.Fragment): void {
         const customerGroup = this.detailForm.get('customer');
         if (customerGroup) {
@@ -283,6 +334,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 }
             }
         }
+        this.changeDetector.markForCheck();
     }
 
     /**

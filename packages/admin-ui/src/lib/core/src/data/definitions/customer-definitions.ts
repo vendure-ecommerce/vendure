@@ -71,6 +71,10 @@ export const GET_CUSTOMER = gql`
     query GetCustomer($id: ID!, $orderListOptions: OrderListOptions) {
         customer(id: $id) {
             ...Customer
+            groups {
+                id
+                name
+            }
             orders(options: $orderListOptions) {
                 items {
                     id

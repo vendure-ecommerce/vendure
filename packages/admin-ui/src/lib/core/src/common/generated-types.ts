@@ -4272,7 +4272,10 @@ export type GetCustomerQuery = (
   { __typename?: 'Query' }
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
-    & { orders: (
+    & { groups: Array<(
+      { __typename?: 'CustomerGroup' }
+      & Pick<CustomerGroup, 'id' | 'name'>
+    )>, orders: (
       { __typename?: 'OrderList' }
       & Pick<OrderList, 'totalItems'>
       & { items: Array<(
@@ -6787,6 +6790,7 @@ export namespace GetCustomer {
   export type Variables = GetCustomerQueryVariables;
   export type Query = GetCustomerQuery;
   export type Customer = CustomerFragment;
+  export type Groups = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['groups'][0]>);
   export type Orders = (NonNullable<GetCustomerQuery['customer']>)['orders'];
   export type Items = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']['items'][0]>);
 }
