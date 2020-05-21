@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CreateZoneInput, DataService, Dialog, UpdateZoneInput } from '@vendure/admin-ui/core';
+import { Dialog } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-zone-detail-dialog',
@@ -10,7 +10,6 @@ import { CreateZoneInput, DataService, Dialog, UpdateZoneInput } from '@vendure/
 export class ZoneDetailDialogComponent implements Dialog<string> {
     zone: { id?: string; name: string };
     resolveWith: (result?: string) => void;
-    constructor(private dataService: DataService) {}
 
     cancel() {
         this.resolveWith();

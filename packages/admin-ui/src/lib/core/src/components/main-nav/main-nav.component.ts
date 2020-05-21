@@ -79,6 +79,12 @@ export class MainNavComponent implements OnInit {
                         routerLink: ['/customer', 'customers'],
                         icon: 'user',
                     },
+                    {
+                        id: 'customer-groups',
+                        label: _('nav.customer-groups'),
+                        routerLink: ['/customer', 'groups'],
+                        icon: 'users',
+                    },
                 ],
             },
             {
@@ -180,7 +186,7 @@ export class MainNavComponent implements OnInit {
                         statusBadge: this.jobQueueService.activeJobs$.pipe(
                             startWith([]),
                             map(
-                                jobs =>
+                                (jobs) =>
                                     ({
                                         type: jobs.length === 0 ? 'none' : 'info',
                                         propagateToSection: jobs.length > 0,
@@ -194,7 +200,7 @@ export class MainNavComponent implements OnInit {
                         routerLink: ['/system', 'system-status'],
                         icon: 'rack-server',
                         statusBadge: this.healthCheckService.status$.pipe(
-                            map(status => ({
+                            map((status) => ({
                                 type: status === 'ok' ? 'success' : 'error',
                                 propagateToSection: status === 'error',
                             })),

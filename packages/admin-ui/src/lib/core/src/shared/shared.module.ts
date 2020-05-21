@@ -41,6 +41,7 @@ import { DropdownItemDirective } from './components/dropdown/dropdown-item.direc
 import { DropdownMenuComponent } from './components/dropdown/dropdown-menu.component';
 import { DropdownTriggerDirective } from './components/dropdown/dropdown-trigger.directive';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
+import { EmptyPlaceholderComponent } from './components/empty-placeholder/empty-placeholder.component';
 import { EntityInfoComponent } from './components/entity-info/entity-info.component';
 import { ExtensionHostComponent } from './components/extension-host/extension-host.component';
 import { FacetValueChipComponent } from './components/facet-value-chip/facet-value-chip.component';
@@ -164,6 +165,7 @@ const DECLARATIONS = [
     ExternalImageDialogComponent,
     TimeAgoPipe,
     DurationPipe,
+    EmptyPlaceholderComponent,
 ];
 
 @NgModule({

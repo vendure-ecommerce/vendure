@@ -51,6 +51,8 @@ export const GET_CUSTOMER_LIST = gql`
         customers(options: $options) {
             items {
                 id
+                createdAt
+                updatedAt
                 title
                 firstName
                 lastName
@@ -119,4 +121,93 @@ export const UPDATE_CUSTOMER_ADDRESS = gql`
         }
     }
     ${ADDRESS_FRAGMENT}
+`;
+
+export const CREATE_CUSTOMER_GROUP = gql`
+    mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
+        createCustomerGroup(input: $input) {
+            id
+            createdAt
+            updatedAt
+            name
+        }
+    }
+`;
+
+export const UPDATE_CUSTOMER_GROUP = gql`
+    mutation UpdateCustomerGroup($input: UpdateCustomerGroupInput!) {
+        updateCustomerGroup(input: $input) {
+            id
+            createdAt
+            updatedAt
+            name
+        }
+    }
+`;
+
+export const DELETE_CUSTOMER_GROUP = gql`
+    mutation DeleteCustomerGroup($id: ID!) {
+        deleteCustomerGroup(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const GET_CUSTOMER_GROUPS = gql`
+    query GetCustomerGroups($options: CustomerGroupListOptions) {
+        customerGroups(options: $options) {
+            items {
+                id
+                createdAt
+                updatedAt
+                name
+            }
+            totalItems
+        }
+    }
+`;
+
+export const GET_CUSTOMER_GROUP_WITH_CUSTOMERS = gql`
+    query GetCustomerGroupWithCustomers($id: ID!, $options: CustomerListOptions) {
+        customerGroup(id: $id) {
+            id
+            createdAt
+            updatedAt
+            name
+            customers(options: $options) {
+                items {
+                    id
+                    createdAt
+                    updatedAt
+                    emailAddress
+                    firstName
+                    lastName
+                }
+                totalItems
+            }
+        }
+    }
+`;
+
+export const ADD_CUSTOMERS_TO_GROUP = gql`
+    mutation AddCustomersToGroup($groupId: ID!, $customerIds: [ID!]!) {
+        addCustomersToGroup(customerGroupId: $groupId, customerIds: $customerIds) {
+            id
+            createdAt
+            updatedAt
+            name
+        }
+    }
+`;
+
+export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
+    mutation RemoveCustomersFromGroup($groupId: ID!, $customerIds: [ID!]!) {
+        removeCustomersFromGroup(customerGroupId: $groupId, customerIds: $customerIds) {
+            id
+            createdAt
+            updatedAt
+            name
+        }
+    }
 `;

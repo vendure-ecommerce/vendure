@@ -1839,6 +1839,8 @@ export type Mutation = {
   deleteCustomer: DeletionResponse;
   /** Update an existing Address */
   deleteCustomerAddress: Scalars['Boolean'];
+  /** Delete a CustomerGroup */
+  deleteCustomerGroup: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
@@ -2098,6 +2100,11 @@ export type MutationDeleteCustomerArgs = {
 
 
 export type MutationDeleteCustomerAddressArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCustomerGroupArgs = {
   id: Scalars['ID'];
 };
 
@@ -4245,7 +4252,7 @@ export type GetCustomerListQuery = (
     & Pick<CustomerList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Customer' }
-      & Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
+      & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
       & { user?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'verified'>
@@ -4327,6 +4334,112 @@ export type UpdateCustomerAddressMutation = (
   & { updateCustomerAddress: (
     { __typename?: 'Address' }
     & AddressFragment
+  ) }
+);
+
+export type CreateCustomerGroupMutationVariables = {
+  input: CreateCustomerGroupInput;
+};
+
+
+export type CreateCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { createCustomerGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type UpdateCustomerGroupMutationVariables = {
+  input: UpdateCustomerGroupInput;
+};
+
+
+export type UpdateCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomerGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type DeleteCustomerGroupMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomerGroup: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
+export type GetCustomerGroupsQueryVariables = {
+  options?: Maybe<CustomerGroupListOptions>;
+};
+
+
+export type GetCustomerGroupsQuery = (
+  { __typename?: 'Query' }
+  & { customerGroups: (
+    { __typename?: 'CustomerGroupList' }
+    & Pick<CustomerGroupList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'CustomerGroup' }
+      & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    )> }
+  ) }
+);
+
+export type GetCustomerGroupWithCustomersQueryVariables = {
+  id: Scalars['ID'];
+  options?: Maybe<CustomerListOptions>;
+};
+
+
+export type GetCustomerGroupWithCustomersQuery = (
+  { __typename?: 'Query' }
+  & { customerGroup?: Maybe<(
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & { customers: (
+      { __typename?: 'CustomerList' }
+      & Pick<CustomerList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'Customer' }
+        & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'emailAddress' | 'firstName' | 'lastName'>
+      )> }
+    ) }
+  )> }
+);
+
+export type AddCustomersToGroupMutationVariables = {
+  groupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
+};
+
+
+export type AddCustomersToGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { addCustomersToGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type RemoveCustomersFromGroupMutationVariables = {
+  groupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
+};
+
+
+export type RemoveCustomersFromGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { removeCustomersFromGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
   ) }
 );
 
@@ -6699,6 +6812,51 @@ export namespace UpdateCustomerAddress {
   export type Variables = UpdateCustomerAddressMutationVariables;
   export type Mutation = UpdateCustomerAddressMutation;
   export type UpdateCustomerAddress = AddressFragment;
+}
+
+export namespace CreateCustomerGroup {
+  export type Variables = CreateCustomerGroupMutationVariables;
+  export type Mutation = CreateCustomerGroupMutation;
+  export type CreateCustomerGroup = CreateCustomerGroupMutation['createCustomerGroup'];
+}
+
+export namespace UpdateCustomerGroup {
+  export type Variables = UpdateCustomerGroupMutationVariables;
+  export type Mutation = UpdateCustomerGroupMutation;
+  export type UpdateCustomerGroup = UpdateCustomerGroupMutation['updateCustomerGroup'];
+}
+
+export namespace DeleteCustomerGroup {
+  export type Variables = DeleteCustomerGroupMutationVariables;
+  export type Mutation = DeleteCustomerGroupMutation;
+  export type DeleteCustomerGroup = DeleteCustomerGroupMutation['deleteCustomerGroup'];
+}
+
+export namespace GetCustomerGroups {
+  export type Variables = GetCustomerGroupsQueryVariables;
+  export type Query = GetCustomerGroupsQuery;
+  export type CustomerGroups = GetCustomerGroupsQuery['customerGroups'];
+  export type Items = (NonNullable<GetCustomerGroupsQuery['customerGroups']['items'][0]>);
+}
+
+export namespace GetCustomerGroupWithCustomers {
+  export type Variables = GetCustomerGroupWithCustomersQueryVariables;
+  export type Query = GetCustomerGroupWithCustomersQuery;
+  export type CustomerGroup = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>);
+  export type Customers = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers'];
+  export type Items = (NonNullable<(NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers']['items'][0]>);
+}
+
+export namespace AddCustomersToGroup {
+  export type Variables = AddCustomersToGroupMutationVariables;
+  export type Mutation = AddCustomersToGroupMutation;
+  export type AddCustomersToGroup = AddCustomersToGroupMutation['addCustomersToGroup'];
+}
+
+export namespace RemoveCustomersFromGroup {
+  export type Variables = RemoveCustomersFromGroupMutationVariables;
+  export type Mutation = RemoveCustomersFromGroupMutation;
+  export type RemoveCustomersFromGroup = RemoveCustomersFromGroupMutation['removeCustomersFromGroup'];
 }
 
 export namespace FacetValue {

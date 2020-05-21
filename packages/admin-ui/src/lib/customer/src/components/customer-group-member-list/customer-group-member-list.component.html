@@ -1,0 +1,37 @@
+<input
+    type="text"
+    name="searchTerm"
+    [formControl]="filterTermControl"
+    [placeholder]="'customer.search-customers-by-email' | translate"
+    class="clr-input search-input"
+/>
+
+<vdr-data-table
+    [items]="members"
+    [itemsPerPage]="membersItemsPerPage$ | async"
+    [totalItems]="totalItems"
+    [currentPage]="membersCurrentPage$ | async"
+    (pageChange)="setContentsPageNumber($event)"
+    (itemsPerPageChange)="setContentsItemsPerPage($event)"
+    [allSelected]="areAllSelected()"
+    [isRowSelectedFn]="('UpdateCustomer' | hasPermission) && isMemberSelected"
+    (rowSelectChange)="toggleSelectMember($event)"
+    (allSelectChange)="toggleSelectAll()"
+>
+    <vdr-dt-column [expand]="true">{{ 'customer.name' | translate }}</vdr-dt-column>
+    <vdr-dt-column [expand]="true">{{ 'customer.email-address' | translate }}</vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
+    <ng-template let-customer="item">
+        <td class="left align-middle">
+            {{ customer.title }} {{ customer.firstName }} {{ customer.lastName }}
+        </td>
+        <td class="left align-middle">{{ customer.emailAddress }}</td>
+        <td class="right align-middle">
+            <vdr-table-row-action
+                iconShape="edit"
+                [label]="'common.edit' | translate"
+                [linkTo]="['/customer', 'customers', customer.id]"
+            ></vdr-table-row-action>
+        </td>
+    </ng-template>
+</vdr-data-table>

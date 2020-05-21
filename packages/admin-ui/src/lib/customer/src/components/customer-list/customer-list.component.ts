@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SortOrder } from '@vendure/common/lib/generated-shop-types';
-import { debounceTime, takeUntil } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { GetCustomerList } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
+import { SortOrder } from '@vendure/common/lib/generated-shop-types';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-customer-list',
@@ -20,7 +19,7 @@ export class CustomerListComponent extends BaseListComponent<GetCustomerList.Que
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.customer.getCustomerList(...args),
-            data => data.customers,
+            (data) => data.customers,
             (skip, take) => ({
                 options: {
                     skip,
@@ -41,10 +40,7 @@ export class CustomerListComponent extends BaseListComponent<GetCustomerList.Que
     ngOnInit() {
         super.ngOnInit();
         this.searchTerm.valueChanges
-            .pipe(
-                debounceTime(250),
-                takeUntil(this.destroy$),
-            )
+            .pipe(debounceTime(250), takeUntil(this.destroy$))
             .subscribe(() => this.refresh());
     }
 }

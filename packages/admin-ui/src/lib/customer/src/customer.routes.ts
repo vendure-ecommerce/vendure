@@ -1,8 +1,14 @@
 import { Route } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { CanDeactivateDetailGuard, createResolveData, Customer, detailBreadcrumb } from '@vendure/admin-ui/core';
+import {
+    CanDeactivateDetailGuard,
+    createResolveData,
+    Customer,
+    detailBreadcrumb,
+} from '@vendure/admin-ui/core';
 
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
+import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
 import { CustomerListComponent } from './components/customer-list/customer-list.component';
 import { CustomerResolver } from './providers/routing/customer-resolver';
 
@@ -24,6 +30,13 @@ export const customerRoutes: Route[] = [
             breadcrumb: customerBreadcrumb,
         },
     },
+    {
+        path: 'groups',
+        component: CustomerGroupListComponent,
+        data: {
+            breadcrumb: _('breadcrumb.customer-groups'),
+        },
+    },
 ];
 
 export function customerBreadcrumb(data: any, params: any) {
@@ -31,7 +44,7 @@ export function customerBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.customers',
-        getName: customer => `${customer.firstName} ${customer.lastName}`,
+        getName: (customer) => `${customer.firstName} ${customer.lastName}`,
         route: 'customers',
     });
 }
