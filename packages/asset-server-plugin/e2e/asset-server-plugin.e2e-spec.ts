@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { DefaultLogger, LogLevel, mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import fs from 'fs-extra';
@@ -6,7 +7,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import { AssetServerPlugin } from '../src/plugin';
 
 import { CreateAssets, DeleteAsset, DeletionResult } from './graphql/generated-e2e-asset-server-plugin-types';
@@ -62,8 +63,8 @@ describe('AssetServerPlugin', () => {
         const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
-            mapVariables: filePaths => ({
-                input: filePaths.map(p => ({ file: null })),
+            mapVariables: (filePaths) => ({
+                input: filePaths.map((p) => ({ file: null })),
             }),
         });
 
@@ -180,6 +181,57 @@ describe('AssetServerPlugin', () => {
 
             expect(fs.existsSync(sourceFilePath)).toBe(false);
             expect(fs.existsSync(previewFilePath)).toBe(false);
+        });
+    });
+
+    describe('MIME type detection', () => {
+        let testImages: CreateAssets.CreateAssets[] = [];
+
+        async function testMimeTypeOfAssetWithExt(ext: string, expectedMimeType: string) {
+            const testImage = testImages.find((i) => i.source.endsWith(ext))!;
+            const result = await fetch(testImage.source);
+            const contentType = result.headers.get('Content-Type');
+
+            expect(contentType).toBe(expectedMimeType);
+        }
+
+        beforeAll(async () => {
+            const formats = ['gif', 'jpg', 'png', 'svg', 'tiff', 'webp'];
+
+            const filesToUpload = formats.map((ext) => path.join(__dirname, `fixtures/assets/test.${ext}`));
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: (filePaths) => ({
+                    input: filePaths.map((p) => ({ file: null })),
+                }),
+            });
+
+            testImages = createAssets;
+        });
+
+        it('gif', async () => {
+            await testMimeTypeOfAssetWithExt('gif', 'image/gif');
+        });
+
+        it('jpg', async () => {
+            await testMimeTypeOfAssetWithExt('jpg', 'image/jpeg');
+        });
+
+        it('png', async () => {
+            await testMimeTypeOfAssetWithExt('png', 'image/png');
+        });
+
+        it('svg', async () => {
+            await testMimeTypeOfAssetWithExt('svg', 'image/svg+xml');
+        });
+
+        it('tiff', async () => {
+            await testMimeTypeOfAssetWithExt('tiff', 'image/tiff');
+        });
+
+        it('webp', async () => {
+            await testMimeTypeOfAssetWithExt('webp', 'image/webp');
         });
     });
 });

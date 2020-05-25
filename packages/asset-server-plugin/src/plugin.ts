@@ -125,7 +125,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  */
 @VendurePlugin({
     imports: [PluginCommonModule, TerminusModule],
-    configuration: config => AssetServerPlugin.configure(config),
+    configuration: (config) => AssetServerPlugin.configure(config),
 })
 export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private server: Server;
@@ -177,7 +177,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     onVendureBootstrap(): void | Promise<void> {
         if (AssetServerPlugin.options.presets) {
             for (const preset of AssetServerPlugin.options.presets) {
-                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
+                const existingIndex = this.presets.findIndex((p) => p.name === preset.name);
                 if (-1 < existingIndex) {
                     this.presets.splice(existingIndex, 1, preset);
                 } else {
@@ -194,7 +194,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
 
     /** @internal */
     onVendureClose(): Promise<void> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             this.server.close(() => resolve());
         });
     }
@@ -292,7 +292,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
             const height = h || '';
             imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}`);
         } else if (preset) {
-            if (this.presets && !!this.presets.find(p => p.name === preset)) {
+            if (this.presets && !!this.presets.find((p) => p.name === preset)) {
                 imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}`);
             }
         }
@@ -305,9 +305,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     private md5(input: string): string {
-        return createHash('md5')
-            .update(input)
-            .digest('hex');
+        return createHash('md5').update(input).digest('hex');
     }
 
     private addSuffix(fileName: string, suffix: string): string {
@@ -323,18 +321,18 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private getMimeType(fileName: string): string | undefined {
         const ext = path.extname(fileName);
         switch (ext) {
-            case 'jpg':
-            case 'jpeg':
+            case '.jpg':
+            case '.jpeg':
                 return 'image/jpeg';
-            case 'png':
+            case '.png':
                 return 'image/png';
-            case 'gif':
+            case '.gif':
                 return 'image/gif';
-            case 'svg':
+            case '.svg':
                 return 'image/svg+xml';
-            case 'tiff':
+            case '.tiff':
                 return 'image/tiff';
-            case 'webp':
+            case '.webp':
                 return 'image/webp';
         }
     }
