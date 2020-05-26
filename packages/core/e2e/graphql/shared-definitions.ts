@@ -375,3 +375,21 @@ export const UPDATE_CHANNEL = gql`
         }
     }
 `;
+
+export const GET_CUSTOMER_HISTORY = gql`
+    query GetCustomerHistory($id: ID!, $options: HistoryEntryListOptions) {
+        customer(id: $id) {
+            id
+            history(options: $options) {
+                items {
+                    id
+                    administrator {
+                        id
+                    }
+                    type
+                    data
+                }
+            }
+        }
+    }
+`;

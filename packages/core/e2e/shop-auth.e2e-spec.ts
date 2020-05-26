@@ -24,6 +24,8 @@ import {
     CreateAdministrator,
     CreateRole,
     GetCustomer,
+    GetCustomerHistory,
+    HistoryEntryType,
     Permission,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -36,7 +38,12 @@ import {
     UpdateEmailAddress,
     Verify,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, GET_CUSTOMER } from './graphql/shared-definitions';
+import {
+    CREATE_ADMINISTRATOR,
+    CREATE_ROLE,
+    GET_CUSTOMER,
+    GET_CUSTOMER_HISTORY,
+} from './graphql/shared-definitions';
 import {
     GET_ACTIVE_CUSTOMER,
     REFRESH_TOKEN,
@@ -61,16 +68,16 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(PasswordResetEvent).subscribe(event => {
+        this.eventBus.ofType(PasswordResetEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe(event => {
+        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(IdentifierChangeEvent).subscribe(event => {
+        this.eventBus.ofType(IdentifierChangeEvent).subscribe((event) => {
             sendEmailFn(event);
         });
     }
@@ -100,6 +107,7 @@ describe('Shop auth & accounts', () => {
         const password = 'password';
         const emailAddress = 'test1@test.com';
         let verificationToken: string;
+        let newCustomerId: string;
 
         beforeEach(() => {
             sendEmailFn = jest.fn();
@@ -140,7 +148,7 @@ describe('Shop auth & accounts', () => {
         });
 
         it('issues a new token if attempting to register a second time', async () => {
-            const sendEmail = new Promise<string>(resolve => {
+            const sendEmail = new Promise<string>((resolve) => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
                     resolve(event.user.verificationToken!);
                 });
@@ -164,7 +172,7 @@ describe('Shop auth & accounts', () => {
         });
 
         it('refreshCustomerVerification issues a new token', async () => {
-            const sendEmail = new Promise<string>(resolve => {
+            const sendEmail = new Promise<string>((resolve) => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
                     resolve(event.user.verificationToken!);
                 });
@@ -223,6 +231,8 @@ describe('Shop auth & accounts', () => {
             });
 
             expect(result.verifyCustomerAccount.user.identifier).toBe('test1@test.com');
+            const { activeCustomer } = await shopClient.query<GetActiveCustomer.Query>(GET_ACTIVE_CUSTOMER);
+            newCustomerId = activeCustomer!.id;
         });
 
         it('registration silently fails if attempting to register an email already verified', async () => {
@@ -250,6 +260,31 @@ describe('Shop auth & accounts', () => {
                 `Verification token not recognized`,
             ),
         );
+
+        it('customer history contains entries for registration & verification', async () => {
+            const { customer } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, {
+                id: newCustomerId,
+            });
+
+            expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    data: {},
+                },
+                {
+                    // second entry because we register twice above
+                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    data: {},
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_VERIFIED,
+                    data: {},
+                },
+            ]);
+        });
     });
 
     describe('password reset', () => {
@@ -320,6 +355,30 @@ describe('Shop auth & accounts', () => {
 
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
             expect(loginResult.user.identifier).toBe(customer.emailAddress);
+        });
+
+        it('customer history for password reset', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        // skip CUSTOMER_ADDRESS_CREATED entry
+                        skip: 1,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                    data: {},
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                    data: {},
+                },
+            ]);
         });
     });
 
@@ -456,6 +515,29 @@ describe('Shop auth & accounts', () => {
                 expect(getErrorCode(err)).toBe('UNAUTHORIZED');
             }
         });
+
+        it('customer history for email update', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        skip: 3,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
+                    data: {},
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
+                    data: {},
+                },
+            ]);
+        });
     });
 
     async function assertRequestAllowed<V>(operation: DocumentNode, variables?: V) {
@@ -499,9 +581,7 @@ describe('Shop auth & accounts', () => {
 
         const role = roleResult.createRole;
 
-        const identifier = `${code}@${Math.random()
-            .toString(16)
-            .substr(2, 8)}`;
+        const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
         const password = `test`;
 
         const adminResult = await shopClient.query<
@@ -528,7 +608,7 @@ describe('Shop auth & accounts', () => {
      * A "sleep" function which allows the sendEmailFn time to get called.
      */
     function waitForSendEmailFn() {
-        return new Promise(resolve => setTimeout(resolve, 10));
+        return new Promise((resolve) => setTimeout(resolve, 10));
     }
 });
 
@@ -578,7 +658,7 @@ describe('Expiring tokens', () => {
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(verificationToken).toBeDefined();
 
-            await new Promise(resolve => setTimeout(resolve, 3));
+            await new Promise((resolve) => setTimeout(resolve, 3));
 
             return shopClient.query(VERIFY_EMAIL, {
                 password: 'test',
@@ -609,7 +689,7 @@ describe('Expiring tokens', () => {
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(passwordResetToken).toBeDefined();
 
-            await new Promise(resolve => setTimeout(resolve, 3));
+            await new Promise((resolve) => setTimeout(resolve, 3));
 
             return shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(RESET_PASSWORD, {
                 password: 'test',
@@ -744,7 +824,7 @@ describe('Updating email address without email verification', () => {
 });
 
 function getVerificationTokenPromise(): Promise<string> {
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve) => {
         sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
             resolve(event.user.verificationToken);
         });
@@ -752,7 +832,7 @@ function getVerificationTokenPromise(): Promise<string> {
 }
 
 function getPasswordResetTokenPromise(): Promise<string> {
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve) => {
         sendEmailFn.mockImplementation((event: PasswordResetEvent) => {
             resolve(event.user.passwordResetToken);
         });
@@ -763,7 +843,7 @@ function getEmailUpdateTokenPromise(): Promise<{
     identifierChangeToken: string | null;
     pendingIdentifier: string | null;
 }> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         sendEmailFn.mockImplementation((event: IdentifierChangeRequestEvent) => {
             resolve(pick(event.user, ['identifierChangeToken', 'pendingIdentifier']));
         });

@@ -1,12 +1,20 @@
 /* tslint:disable:no-non-null-assertion */
+import { pick } from '@vendure/common/lib/pick';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
+import { skip } from 'rxjs/operators';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { AttemptLogin, GetCustomer, GetCustomerIds } from './graphql/generated-e2e-admin-types';
+import {
+    AttemptLogin,
+    GetCustomer,
+    GetCustomerHistory,
+    GetCustomerIds,
+    HistoryEntryType,
+} from './graphql/generated-e2e-admin-types';
 import {
     CreateAddressInput,
     CreateAddressShop,
@@ -17,7 +25,7 @@ import {
     UpdateCustomerInput,
     UpdatePassword,
 } from './graphql/generated-e2e-shop-types';
-import { ATTEMPT_LOGIN, GET_CUSTOMER } from './graphql/shared-definitions';
+import { ATTEMPT_LOGIN, GET_CUSTOMER, GET_CUSTOMER_HISTORY } from './graphql/shared-definitions';
 import {
     CREATE_ADDRESS,
     DELETE_ADDRESS,
@@ -149,6 +157,28 @@ describe('Shop customers', () => {
             addressId = createCustomerAddress.id;
         });
 
+        it('customer history for CUSTOMER_ADDRESS_CREATED', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        // skip populated CUSTOMER_ADDRESS_CREATED entry
+                        skip: 1,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
+                    data: {
+                        address: '1 Test Street, United Kingdom',
+                    },
+                },
+            ]);
+        });
+
         it('updateCustomerAddress works', async () => {
             const input: UpdateAddressInput = {
                 id: addressId,
@@ -162,6 +192,27 @@ describe('Shop customers', () => {
 
             expect(result.updateCustomerAddress.streetLine1).toEqual('5 Test Street');
             expect(result.updateCustomerAddress.country.code).toEqual('AT');
+        });
+
+        it('customer history for CUSTOMER_ADDRESS_UPDATED', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                { id: customer.id, options: { skip: 2 } },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_ADDRESS_UPDATED,
+                    data: {
+                        address: '5 Test Street, Austria',
+                        input: {
+                            id: addressId,
+                            streetLine1: '5 Test Street',
+                            countryCode: 'AT',
+                        },
+                    },
+                },
+            ]);
         });
 
         it(
@@ -185,6 +236,22 @@ describe('Shop customers', () => {
             );
 
             expect(result.deleteCustomerAddress).toBe(true);
+        });
+
+        it('customer history for CUSTOMER_ADDRESS_DELETED', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                { id: customer.id, options: { skip: 3 } },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_ADDRESS_DELETED,
+                    data: {
+                        address: '5 Test Street, Austria',
+                    },
+                },
+            ]);
         });
 
         it(
@@ -218,6 +285,20 @@ describe('Shop customers', () => {
             // Log out and log in with new password
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'test2');
             expect(loginResult.user.identifier).toBe(customer.emailAddress);
+        });
+
+        it('customer history for CUSTOMER_PASSWORD_UPDATED', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                { id: customer.id, options: { skip: 4 } },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_UPDATED,
+                    data: {},
+                },
+            ]);
         });
     });
 });

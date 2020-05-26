@@ -4,6 +4,7 @@
     "cancel-order-lines-nothing-to-cancel": "Nothing to cancel",
     "cancel-order-lines-quantity-too-high": "Quantity to cancel is greater than existing OrderLine quantity",
     "cannot-delete-role": "The role '{ roleCode }' cannot be deleted",
+    "cannot-locate-customer-for-user": "Cannot locate a Customer for the user",
     "cannot-modify-role": "The role '{ roleCode }' cannot be modified",
     "cannot-create-sales-for-active-order": "Cannot create a Sale for an Order which is still active",
     "cannot-move-collection-into-self": "Cannot move a Collection into itself",

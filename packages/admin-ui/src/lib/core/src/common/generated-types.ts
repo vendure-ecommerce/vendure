@@ -14,6 +14,12 @@ export type Scalars = {
 };
 
 
+export type AddNoteToCustomerInput = {
+  id: Scalars['ID'];
+  note: Scalars['String'];
+  isPublic: Scalars['Boolean'];
+};
+
 export type AddNoteToOrderInput = {
   id: Scalars['ID'];
   note: Scalars['String'];
@@ -928,6 +934,7 @@ export type CurrentUserChannelInput = {
 export type Customer = Node & {
    __typename?: 'Customer';
   groups: Array<CustomerGroup>;
+  history: HistoryEntryList;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -940,6 +947,11 @@ export type Customer = Node & {
   orders: OrderList;
   user?: Maybe<User>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+
+export type CustomerHistoryArgs = {
+  options?: Maybe<HistoryEntryListOptions>;
 };
 
 
@@ -1269,6 +1281,19 @@ export type HistoryEntrySortParameter = {
 };
 
 export enum HistoryEntryType {
+  CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
+  CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
+  CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
+  CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
+  CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
+  CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
+  CUSTOMER_ORDER_PLACED = 'CUSTOMER_ORDER_PLACED',
+  CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
+  CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
+  CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
+  CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
+  CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
+  CUSTOMER_NOTE = 'CUSTOMER_NOTE',
   ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
   ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
   ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
@@ -1781,6 +1806,7 @@ export type Mutation = {
   addCustomersToGroup: CustomerGroup;
   /** Add members to a Zone */
   addMembersToZone: Zone;
+  addNoteToCustomer: Customer;
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
@@ -1942,6 +1968,11 @@ export type MutationAddCustomersToGroupArgs = {
 export type MutationAddMembersToZoneArgs = {
   zoneId: Scalars['ID'];
   memberIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationAddNoteToCustomerArgs = {
+  input: AddNoteToCustomerInput;
 };
 
 

@@ -70,6 +70,9 @@ const result: IntrospectionResultData = {
                         name: 'CustomerGroup',
                     },
                     {
+                        name: 'HistoryEntry',
+                    },
+                    {
                         name: 'Address',
                     },
                     {
@@ -83,9 +86,6 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'ShippingMethod',
-                    },
-                    {
-                        name: 'HistoryEntry',
                     },
                     {
                         name: 'Cancellation',
@@ -139,10 +139,10 @@ const result: IntrospectionResultData = {
                         name: 'CustomerList',
                     },
                     {
-                        name: 'OrderList',
+                        name: 'HistoryEntryList',
                     },
                     {
-                        name: 'HistoryEntryList',
+                        name: 'OrderList',
                     },
                     {
                         name: 'CollectionList',

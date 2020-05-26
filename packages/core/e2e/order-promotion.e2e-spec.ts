@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
     atLeastNWithFacets,
@@ -161,9 +162,8 @@ describe('Promotions applied to Orders', () => {
         it('order history records application', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items).toEqual([
+            expect(activeOrder!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -199,9 +199,8 @@ describe('Promotions applied to Orders', () => {
         it('order history records removal', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items).toEqual([
+            expect(activeOrder!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -209,7 +208,6 @@ describe('Promotions applied to Orders', () => {
                     },
                 },
                 {
-                    id: 'T_2',
                     type: HistoryEntryType.ORDER_COUPON_REMOVED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -226,9 +224,8 @@ describe('Promotions applied to Orders', () => {
                 couponCode: 'NOT_THERE',
             });
 
-            expect(removeCouponCode!.history.items).toEqual([
+            expect(removeCouponCode!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -236,7 +233,6 @@ describe('Promotions applied to Orders', () => {
                     },
                 },
                 {
-                    id: 'T_2',
                     type: HistoryEntryType.ORDER_COUPON_REMOVED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -644,7 +640,7 @@ describe('Promotions applied to Orders', () => {
     function getVariantBySlug(
         slug: 'item-1' | 'item-12' | 'item-60' | 'item-sale-1' | 'item-sale-12',
     ): GetPromoProducts.Variants {
-        return products.find(p => p.slug === slug)!.variants[0];
+        return products.find((p) => p.slug === slug)!.variants[0];
     }
 
     async function deletePromotion(promotionId: string) {

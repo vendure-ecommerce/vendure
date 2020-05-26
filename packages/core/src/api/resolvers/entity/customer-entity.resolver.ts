@@ -1,11 +1,12 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { QueryOrdersArgs } from '@vendure/common/lib/generated-types';
+import { HistoryEntryListOptions, QueryOrdersArgs, SortOrder } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { CustomerService } from '../../../service/services/customer.service';
+import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { UserService } from '../../../service/services/user.service';
 import { ApiType } from '../../common/get-api-type';
@@ -59,7 +60,7 @@ export class CustomerEntityResolver {
 
 @Resolver('Customer')
 export class CustomerAdminEntityResolver {
-    constructor(private customerService: CustomerService) {}
+    constructor(private customerService: CustomerService, private historyService: HistoryService) {}
 
     @ResolveField()
     groups(@Ctx() ctx: RequestContext, @Parent() customer: Customer) {
@@ -67,5 +68,15 @@ export class CustomerAdminEntityResolver {
             return customer.groups;
         }
         return this.customerService.getCustomerGroups(customer.id);
+    }
+
+    @ResolveField()
+    async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: any) {
+        const publicOnly = apiType === 'shop';
+        const options: HistoryEntryListOptions = { ...args.options };
+        if (!options.sort) {
+            options.sort = { createdAt: SortOrder.ASC };
+        }
+        return this.historyService.getHistoryForCustomer(order.id, publicOnly, options);
     }
 }

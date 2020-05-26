@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { HistoryEntryListOptions, HistoryEntryType } from '@vendure/common/lib/generated-types';
+import {
+    HistoryEntryListOptions,
+    HistoryEntryType,
+    UpdateAddressInput,
+    UpdateCustomerInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
-import { Connection, FindConditions } from 'typeorm';
+import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { CustomerHistoryEntry } from '../../entity/history-entry/customer-history-entry.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderHistoryEntry } from '../../entity/history-entry/order-history-entry.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -13,6 +19,32 @@ import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
 
 import { AdministratorService } from './administrator.service';
+
+export type CustomerHistoryEntryData = {
+    [HistoryEntryType.CUSTOMER_REGISTERED]: {};
+    [HistoryEntryType.CUSTOMER_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_DETAIL_UPDATED]: {
+        input: UpdateCustomerInput;
+    };
+    [HistoryEntryType.CUSTOMER_ADDRESS_CREATED]: {
+        address: string;
+    };
+    [HistoryEntryType.CUSTOMER_ADDRESS_UPDATED]: {
+        address: string;
+        input: UpdateAddressInput;
+    };
+    [HistoryEntryType.CUSTOMER_ADDRESS_DELETED]: {
+        address: string;
+    };
+    [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: {};
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: {};
+    [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED]: {};
+    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_NOTE]: {
+        note: string;
+    };
+};
 
 export type OrderHistoryEntryData = {
     [HistoryEntryType.ORDER_STATE_TRANSITION]: {
@@ -48,6 +80,13 @@ export type OrderHistoryEntryData = {
         couponCode: string;
     };
 };
+
+export interface CreateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryEntryData> {
+    customerId: ID;
+    ctx: RequestContext;
+    type: T;
+    data: CustomerHistoryEntryData[T];
+}
 
 export interface CreateOrderHistoryEntryArgs<T extends keyof OrderHistoryEntryData> {
     orderId: ID;
@@ -103,5 +142,43 @@ export class HistoryService {
             administrator,
         });
         return this.connection.getRepository(OrderHistoryEntry).save(entry);
+    }
+
+    async getHistoryForCustomer(
+        customerId: ID,
+        publicOnly: boolean,
+        options?: HistoryEntryListOptions,
+    ): Promise<PaginatedList<CustomerHistoryEntry>> {
+        return this.listQueryBuilder
+            .build((HistoryEntry as any) as Type<CustomerHistoryEntry>, options, {
+                where: {
+                    customer: { id: customerId } as any,
+                    ...(publicOnly ? { isPublic: true } : {}),
+                },
+                relations: ['administrator'],
+            })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
+    }
+
+    async createHistoryEntryForCustomer<T extends keyof CustomerHistoryEntryData>(
+        args: CreateCustomerHistoryEntryArgs<T>,
+        isPublic = false,
+    ): Promise<CustomerHistoryEntry> {
+        const { ctx, data, customerId, type } = args;
+        const administrator = ctx.activeUserId
+            ? await this.administratorService.findOneByUserId(ctx.activeUserId)
+            : undefined;
+        const entry = new CustomerHistoryEntry({
+            type,
+            isPublic,
+            data: data as any,
+            customer: { id: customerId },
+            administrator,
+        });
+        return this.connection.getRepository(CustomerHistoryEntry).save(entry);
     }
 }

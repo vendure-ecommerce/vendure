@@ -1,6 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
+    MutationAddNoteToCustomerArgs,
+    MutationAddNoteToOrderArgs,
     MutationCreateCustomerAddressArgs,
     MutationCreateCustomerArgs,
     MutationDeleteCustomerAddressArgs,
@@ -81,12 +83,18 @@ export class CustomerResolver {
         @Args() args: MutationDeleteCustomerAddressArgs,
     ): Promise<boolean> {
         const { id } = args;
-        return this.customerService.deleteAddress(id);
+        return this.customerService.deleteAddress(ctx, id);
     }
 
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomer(@Args() args: MutationDeleteCustomerArgs): Promise<DeletionResponse> {
         return this.customerService.softDelete(args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async addNoteToCustomer(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToCustomerArgs) {
+        return this.customerService.addNoteToCustomer(ctx, args.input);
     }
 }
