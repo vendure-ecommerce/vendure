@@ -46,7 +46,7 @@
         </clr-toggle-wrapper>
     </vdr-form-field>
 
-    <div class="clr-row" formGroupName="configArgs" *ngIf="(entity$ | async)?.configArgs?.length">
+    <div class="clr-row" formGroupName="configArgs" *ngIf="(entity$ | async)?.configArgs?.length && configArgsIsPopulated()">
         <div class="clr-col">
             <label>{{ 'settings.payment-method-config-options' | translate }}</label>
             <section class="form-block" *ngFor="let arg of (entity$ | async)?.configArgs">
