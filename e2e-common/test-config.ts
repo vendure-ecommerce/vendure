@@ -67,7 +67,7 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'mysql',
-                host: process.env.CI ? '127.0.0.1' : '192.168.99.100',
+                host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_MYSQL_PORT || 3306) : 3306,
                 username: 'root',
                 password: '',
