@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild,
+} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DataService } from '../../../data/providers/data.service';
+import { NgSelectComponent } from '@ng-select/ng-select';
 
 import { FacetValue, FacetWithValues } from '../../../common/generated-types';
 import { flattenFacetValues } from '../../../common/utilities/flatten-facet-values';
+import { DataService } from '../../../data/providers/data.service';
 
 export type FacetValueSeletorItem = {
     name: string;
@@ -30,6 +39,8 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
     @Input() facets: FacetWithValues.Fragment[];
     @Input() readonly = false;
 
+    @ViewChild(NgSelectComponent) private ngSelect: NgSelectComponent;
+
     facetValues: FacetValueSeletorItem[] = [];
     onChangeFn: (val: any) => void;
     onTouchFn: () => void;
@@ -45,9 +56,9 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         if (this.readonly) {
             return;
         }
-        this.selectedValuesChange.emit(selected.map(s => s.value));
+        this.selectedValuesChange.emit(selected.map((s) => s.value));
         if (this.onChangeFn) {
-            this.onChangeFn(JSON.stringify(selected.map(s => s.id)));
+            this.onChangeFn(JSON.stringify(selected.map((s) => s.id)));
         }
     }
 
@@ -63,6 +74,10 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         this.disabled = isDisabled;
     }
 
+    focus() {
+        this.ngSelect.focus();
+    }
+
     writeValue(obj: string | FacetValue.Fragment[] | null): void {
         if (typeof obj === 'string') {
             try {
@@ -73,7 +88,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
                 throw err;
             }
         } else if (obj) {
-            this.value = obj.map(fv => fv.id);
+            this.value = obj.map((fv) => fv.id);
         }
     }
 
@@ -84,5 +99,5 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
             id: facetValue.id,
             value: facetValue,
         };
-    }
+    };
 }

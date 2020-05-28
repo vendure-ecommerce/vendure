@@ -21,7 +21,7 @@ import {
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { combineLatest, EMPTY, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { map, mapTo, mergeMap, switchMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-facet-detail',
@@ -130,6 +130,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
                     ) as CreateFacetInput;
                     return this.dataService.facet.createFacet(newFacet);
                 }),
+                switchMap((data) => this.dataService.facet.getAllFacets(true).single$.pipe(mapTo(data))),
             )
             .subscribe(
                 (data) => {
@@ -192,6 +193,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
 
                     return forkJoin(updateOperations);
                 }),
+                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
             )
             .subscribe(
                 () => {

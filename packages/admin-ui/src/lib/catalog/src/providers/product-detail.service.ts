@@ -2,21 +2,20 @@ import { Injectable } from '@angular/core';
 import {
     CreateProductInput,
     CreateProductVariantInput,
+    DataService,
     DeletionResult,
     FacetWithValues,
     LanguageCode,
-    ProductOptionGroup,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { map, mergeMap, shareReplay, switchMap } from 'rxjs/operators';
 
 import { CreateProductVariantsConfig } from '../components/generate-product-variants/generate-product-variants.component';
 
@@ -28,30 +27,16 @@ import { CreateProductVariantsConfig } from '../components/generate-product-vari
     providedIn: 'root',
 })
 export class ProductDetailService {
-    private facetsSubject = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
-
     constructor(private dataService: DataService) {}
 
     getFacets(): Observable<FacetWithValues.Fragment[]> {
-        let skipValue = 0;
-        if (this.facetsSubject.value.length === 0) {
-            this.dataService.facet
-                .getFacets(9999999, 0)
-                .mapSingle(data => data.facets.items)
-                .subscribe(items => this.facetsSubject.next(items));
-            skipValue = 1;
-        }
-
-        return this.facetsSubject.pipe(
-            skip(skipValue),
-            shareReplay(1),
-        );
+        return this.dataService.facet.getAllFacets().mapSingle((data) => data.facets.items);
     }
 
     getTaxCategories() {
         return this.dataService.settings
             .getTaxCategories()
-            .mapSingle(data => data.taxCategories)
+            .mapSingle((data) => data.taxCategories)
             .pipe(shareReplay(1));
     }
 
@@ -61,14 +46,14 @@ export class ProductDetailService {
         languageCode: LanguageCode,
     ) {
         const createProduct$ = this.dataService.product.createProduct(input);
-        const nonEmptyOptionGroups = createVariantsConfig.groups.filter(g => 0 < g.values.length);
+        const nonEmptyOptionGroups = createVariantsConfig.groups.filter((g) => 0 < g.values.length);
         const createOptionGroups$ = this.createProductOptionGroups(nonEmptyOptionGroups, languageCode);
 
         return forkJoin(createProduct$, createOptionGroups$).pipe(
             mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
-                          optionGroups.map(optionGroup => {
+                          optionGroups.map((optionGroup) => {
                               return this.dataService.product.addOptionGroupToProduct({
                                   productId: createProduct.id,
                                   optionGroupId: optionGroup.id,
@@ -83,10 +68,10 @@ export class ProductDetailService {
                 );
             }),
             mergeMap(({ createProduct, optionGroups }) => {
-                const variants = createVariantsConfig.variants.map(v => {
+                const variants = createVariantsConfig.variants.map((v) => {
                     const optionIds = optionGroups.length
                         ? v.optionValues.map((optionName, index) => {
-                              const option = optionGroups[index].options.find(o => o.name === optionName);
+                              const option = optionGroups[index].options.find((o) => o.name === optionName);
                               if (!option) {
                                   throw new Error(
                                       `Could not find a matching ProductOption "${optionName}" when creating variant`,
@@ -100,7 +85,7 @@ export class ProductDetailService {
                         optionIds,
                     };
                 });
-                const options = optionGroups.map(og => og.options).reduce((flat, o) => [...flat, ...o], []);
+                const options = optionGroups.map((og) => og.options).reduce((flat, o) => [...flat, ...o], []);
                 return this.createProductVariants(createProduct, variants, options, languageCode);
             }),
         );
@@ -109,17 +94,17 @@ export class ProductDetailService {
     createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
         return groups.length
             ? forkJoin(
-                  groups.map(c => {
+                  groups.map((c) => {
                       return this.dataService.product
                           .createProductOptionGroups({
                               code: normalizeString(c.name, '-'),
                               translations: [{ languageCode, name: c.name }],
-                              options: c.values.map(v => ({
+                              options: c.values.map((v) => ({
                                   code: normalizeString(v, '-'),
                                   translations: [{ languageCode, name: v }],
                               })),
                           })
-                          .pipe(map(data => data.createProductOptionGroup));
+                          .pipe(map((data) => data.createProductOptionGroup));
                   }),
               )
             : of([]);
@@ -131,12 +116,12 @@ export class ProductDetailService {
         options: Array<{ id: string; name: string }>,
         languageCode: LanguageCode,
     ) {
-        const variants: CreateProductVariantInput[] = variantData.map(v => {
+        const variants: CreateProductVariantInput[] = variantData.map((v) => {
             const name = options.length
                 ? `${product.name} ${v.optionIds
-                      .map(id => options.find(o => o.id === id))
+                      .map((id) => options.find((o) => o.id === id))
                       .filter(notNullOrUndefined)
-                      .map(o => o.name)
+                      .map((o) => o.name)
                       .join(' ')}`
                 : product.name;
             return {
@@ -178,7 +163,7 @@ export class ProductDetailService {
 
     deleteProductVariant(id: string, productId: string) {
         return this.dataService.product.deleteProductVariant(id).pipe(
-            switchMap(result => {
+            switchMap((result) => {
                 if (result.deleteProductVariant.result === DeletionResult.DELETED) {
                     return this.dataService.product.getProduct(productId).single$;
                 } else {

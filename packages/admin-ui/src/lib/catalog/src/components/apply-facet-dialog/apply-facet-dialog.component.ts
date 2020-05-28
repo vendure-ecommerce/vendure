@@ -1,7 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-
-import { FacetValue, FacetWithValues } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ViewChild,
+} from '@angular/core';
+import { Dialog, FacetValue, FacetValueSelectorComponent, FacetWithValues } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-apply-facet-dialog',
@@ -9,11 +13,18 @@ import { Dialog } from '@vendure/admin-ui/core';
     styleUrls: ['./apply-facet-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ApplyFacetDialogComponent implements Dialog<FacetValue[]> {
+export class ApplyFacetDialogComponent implements Dialog<FacetValue[]>, AfterViewInit {
+    @ViewChild(FacetValueSelectorComponent) private selector: FacetValueSelectorComponent;
     resolveWith: (result?: FacetValue[]) => void;
     selectedValues: FacetValue[] = [];
     // Provided by caller
     facets: FacetWithValues.Fragment[];
+
+    constructor(private changeDetector: ChangeDetectorRef) {}
+
+    ngAfterViewInit() {
+        setTimeout(() => this.selector.focus(), 0);
+    }
 
     selectValues() {
         this.resolveWith(this.selectedValues);

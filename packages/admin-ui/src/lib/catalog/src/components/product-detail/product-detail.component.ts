@@ -314,6 +314,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             mergeMap((facets) =>
                 this.modalService.fromComponent(ApplyFacetDialogComponent, {
                     size: 'md',
+                    closable: true,
                     locals: { facets },
                 }),
             ),
