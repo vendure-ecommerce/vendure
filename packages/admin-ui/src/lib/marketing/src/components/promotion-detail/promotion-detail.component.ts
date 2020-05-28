@@ -64,7 +64,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     ngOnInit() {
         this.init();
         this.facets$ = this.dataService.facet
-            .getFacets(9999999, 0)
+            .getAllFacets()
             .mapSingle((data) => data.facets.items)
             .pipe(shareReplay(1));
 
