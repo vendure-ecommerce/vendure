@@ -1,3 +1,4 @@
+import { pick } from '@vendure/common/lib/pick';
 import {
     AccountRegistrationEvent,
     EventBus,
@@ -19,13 +20,15 @@ import {
     DeleteCustomerGroup,
     GetCustomerGroup,
     GetCustomerGroups,
+    GetCustomerHistory,
     GetCustomerList,
     GetCustomerWithGroups,
+    HistoryEntryType,
     RemoveCustomersFromGroup,
     UpdateCustomerGroup,
 } from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
@@ -64,6 +67,27 @@ describe('CustomerGroup resolver', () => {
         expect(createCustomerGroup.customers.items.sort(sortById)).toEqual([
             { id: customers[0].id },
             { id: customers[1].id },
+        ]);
+    });
+
+    it('history entry for CUSTOMER_ADDED_TO_GROUP after group created', async () => {
+        const { customer } = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+            GET_CUSTOMER_HISTORY,
+            {
+                id: customers[0].id,
+                options: {
+                    skip: 1,
+                },
+            },
+        );
+
+        expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.CUSTOMER_ADDED_TO_GROUP,
+                data: {
+                    groupName: 'group 1',
+                },
+            },
         ]);
     });
 
@@ -141,6 +165,50 @@ describe('CustomerGroup resolver', () => {
         ]);
     });
 
+    it('history entry for CUSTOMER_ADDED_TO_GROUP not duplicated', async () => {
+        const { customer } = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+            GET_CUSTOMER_HISTORY,
+            {
+                id: customers[0].id,
+                options: {
+                    filter: {
+                        type: { eq: HistoryEntryType.CUSTOMER_ADDED_TO_GROUP },
+                    },
+                },
+            },
+        );
+
+        expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.CUSTOMER_ADDED_TO_GROUP,
+                data: {
+                    groupName: 'group 1',
+                },
+            },
+        ]);
+    });
+
+    it('history entry for CUSTOMER_ADDED_TO_GROUP after customer added', async () => {
+        const { customer } = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+            GET_CUSTOMER_HISTORY,
+            {
+                id: customers[2].id,
+                options: {
+                    skip: 1,
+                },
+            },
+        );
+
+        expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.CUSTOMER_ADDED_TO_GROUP,
+                data: {
+                    groupName: 'group 1 updated',
+                },
+            },
+        ]);
+    });
+
     it('customer.groups field resolver', async () => {
         const { customer } = await adminClient.query<
             GetCustomerWithGroups.Query,
@@ -177,6 +245,27 @@ describe('CustomerGroup resolver', () => {
         expect(removeCustomersFromGroup.customers.items.sort(sortById)).toEqual([
             { id: customers[0].id },
             { id: customers[2].id },
+        ]);
+    });
+
+    it('history entry for CUSTOMER_REMOVED_FROM_GROUP', async () => {
+        const { customer } = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+            GET_CUSTOMER_HISTORY,
+            {
+                id: customers[1].id,
+                options: {
+                    skip: 2,
+                },
+            },
+        );
+
+        expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.CUSTOMER_REMOVED_FROM_GROUP,
+                data: {
+                    groupName: 'group 1 updated',
+                },
+            },
         ]);
     });
 

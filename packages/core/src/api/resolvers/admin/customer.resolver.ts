@@ -51,9 +51,12 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async updateCustomer(@Args() args: MutationUpdateCustomerArgs): Promise<Customer> {
+    async updateCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateCustomerArgs,
+    ): Promise<Customer> {
         const { input } = args;
-        return this.customerService.update(input);
+        return this.customerService.update(ctx, input);
     }
 
     @Mutation()

@@ -42,8 +42,11 @@ export class CustomerGroupResolver {
 
     @Mutation()
     @Allow(Permission.CreateCustomer)
-    async createCustomerGroup(@Args() args: MutationCreateCustomerGroupArgs): Promise<CustomerGroup> {
-        return this.customerGroupService.create(args.input);
+    async createCustomerGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateCustomerGroupArgs,
+    ): Promise<CustomerGroup> {
+        return this.customerGroupService.create(ctx, args.input);
     }
 
     @Mutation()
@@ -60,15 +63,19 @@ export class CustomerGroupResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async addCustomersToGroup(@Args() args: MutationAddCustomersToGroupArgs): Promise<CustomerGroup> {
-        return this.customerGroupService.addCustomersToGroup(args);
+    async addCustomersToGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAddCustomersToGroupArgs,
+    ): Promise<CustomerGroup> {
+        return this.customerGroupService.addCustomersToGroup(ctx, args);
     }
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async removeCustomersFromGroup(
+        @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveCustomersFromGroupArgs,
     ): Promise<CustomerGroup> {
-        return this.customerGroupService.removeCustomersFromGroup(args);
+        return this.customerGroupService.removeCustomersFromGroup(ctx, args);
     }
 }

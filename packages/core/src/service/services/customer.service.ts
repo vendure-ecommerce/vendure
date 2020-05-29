@@ -27,7 +27,6 @@ import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { Order } from '../../entity/order/order.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
@@ -135,7 +134,24 @@ export class CustomerService {
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
-        return this.connection.getRepository(Customer).save(customer);
+        const createdCustomer = await await this.connection.getRepository(Customer).save(customer);
+
+        await this.historyService.createHistoryEntryForCustomer({
+            ctx,
+            customerId: createdCustomer.id,
+            type: HistoryEntryType.CUSTOMER_REGISTERED,
+            data: {},
+        });
+
+        if (customer.user?.verified) {
+            await this.historyService.createHistoryEntryForCustomer({
+                ctx,
+                customerId: createdCustomer.id,
+                type: HistoryEntryType.CUSTOMER_VERIFIED,
+                data: {},
+            });
+        }
+        return createdCustomer;
     }
 
     async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
@@ -247,7 +263,7 @@ export class CustomerService {
             await this.historyService.createHistoryEntryForCustomer({
                 customerId: customer.id,
                 ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
                 data: {},
             });
             return customer;
@@ -271,11 +287,15 @@ export class CustomerService {
         if (!customer) {
             return false;
         }
+        const oldEmailAddress = customer.emailAddress;
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
             type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
-            data: {},
+            data: {
+                oldEmailAddress,
+                newEmailAddress,
+            },
         });
         if (this.configService.authOptions.requireVerification) {
             user.pendingIdentifier = newEmailAddress;
@@ -293,7 +313,10 @@ export class CustomerService {
                 customerId: customer.id,
                 ctx,
                 type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
-                data: {},
+                data: {
+                    oldEmailAddress,
+                    newEmailAddress,
+                },
             });
             return true;
         }
@@ -315,15 +338,26 @@ export class CustomerService {
             customerId: customer.id,
             ctx,
             type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
-            data: {},
+            data: {
+                oldEmailAddress: oldIdentifier,
+                newEmailAddress: customer.emailAddress,
+            },
         });
         return true;
     }
 
-    async update(input: UpdateCustomerInput): Promise<Customer> {
+    async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(Customer).save(customer, { reload: false });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
+            data: {
+                input,
+            },
+        });
         return assertFound(this.findOne(customer.id));
     }
 
@@ -438,7 +472,7 @@ export class CustomerService {
         };
     }
 
-    async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput): Promise<Order> {
+    async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
         await this.historyService.createHistoryEntryForCustomer(
             {

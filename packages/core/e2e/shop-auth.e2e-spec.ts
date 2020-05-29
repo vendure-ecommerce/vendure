@@ -375,7 +375,7 @@ describe('Shop auth & accounts', () => {
                     data: {},
                 },
                 {
-                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
                     data: {},
                 },
             ]);
@@ -530,11 +530,17 @@ describe('Shop auth & accounts', () => {
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
-                    data: {},
+                    data: {
+                        newEmailAddress: 'new@address.com',
+                        oldEmailAddress: 'hayden.zieme12@hotmail.com',
+                    },
                 },
                 {
                     type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
-                    data: {},
+                    data: {
+                        newEmailAddress: 'new@address.com',
+                        oldEmailAddress: 'hayden.zieme12@hotmail.com',
+                    },
                 },
             ]);
         });

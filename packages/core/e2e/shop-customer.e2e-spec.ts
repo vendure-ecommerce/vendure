@@ -137,6 +137,28 @@ describe('Shop customers', () => {
             expect(result.updateCustomer.firstName).toBe('xyz');
         });
 
+        it('customer history for CUSTOMER_DETAIL_UPDATED', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        // skip populated CUSTOMER_ADDRESS_CREATED entry
+                        skip: 1,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
+                    data: {
+                        input: { firstName: 'xyz', id: 'T_1' },
+                    },
+                },
+            ]);
+        });
+
         it('createCustomerAddress works', async () => {
             const input: CreateAddressInput = {
                 streetLine1: '1 Test Street',
@@ -163,8 +185,8 @@ describe('Shop customers', () => {
                 {
                     id: customer.id,
                     options: {
-                        // skip populated CUSTOMER_ADDRESS_CREATED entry
-                        skip: 1,
+                        // skip populated CUSTOMER_ADDRESS_CREATED, CUSTOMER_DETAIL_UPDATED entries
+                        skip: 2,
                     },
                 },
             );
@@ -197,7 +219,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_ADDRESS_UPDATED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 2 } },
+                { id: customer.id, options: { skip: 3 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
@@ -241,7 +263,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_ADDRESS_DELETED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 3 } },
+                { id: customer.id, options: { skip: 4 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
@@ -290,7 +312,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_PASSWORD_UPDATED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 4 } },
+                { id: customer.id, options: { skip: 5 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([

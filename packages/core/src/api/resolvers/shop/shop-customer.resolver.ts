@@ -50,7 +50,7 @@ export class ShopCustomerResolver {
         @Args() args: MutationUpdateCustomerArgs,
     ): Promise<Customer> {
         const customer = await this.getCustomerForOwner(ctx);
-        return this.customerService.update({
+        return this.customerService.update(ctx, {
             id: customer.id,
             ...args.input,
         });

@@ -29,6 +29,12 @@ export type CustomerHistoryEntryData = {
     [HistoryEntryType.CUSTOMER_ADDRESS_CREATED]: {
         address: string;
     };
+    [HistoryEntryType.CUSTOMER_ADDED_TO_GROUP]: {
+        groupName: string;
+    };
+    [HistoryEntryType.CUSTOMER_REMOVED_FROM_GROUP]: {
+        groupName: string;
+    };
     [HistoryEntryType.CUSTOMER_ADDRESS_UPDATED]: {
         address: string;
         input: UpdateAddressInput;
@@ -39,8 +45,14 @@ export type CustomerHistoryEntryData = {
     [HistoryEntryType.CUSTOMER_PASSWORD_UPDATED]: {};
     [HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED]: {};
     [HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED]: {};
-    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED]: {};
-    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED]: {
+        oldEmailAddress: string;
+        newEmailAddress: string;
+    };
+    [HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED]: {
+        oldEmailAddress: string;
+        newEmailAddress: string;
+    };
     [HistoryEntryType.CUSTOMER_NOTE]: {
         note: string;
     };
