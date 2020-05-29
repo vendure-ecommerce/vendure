@@ -51,6 +51,7 @@ import { FormFieldControlDirective } from './components/form-field/form-field-co
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
 import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+import { HistoryEntryDetailComponent } from './components/history-entry-detail/history-entry-detail.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
@@ -168,6 +169,7 @@ const DECLARATIONS = [
     DurationPipe,
     EmptyPlaceholderComponent,
     TimelineEntryComponent,
+    HistoryEntryDetailComponent,
 ];
 
 @NgModule({

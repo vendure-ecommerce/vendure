@@ -1,5 +1,6 @@
 import {
     AddCustomersToGroup,
+    AddNoteToCustomer,
     CreateAddressInput,
     CreateCustomer,
     CreateCustomerAddress,
@@ -12,7 +13,9 @@ import {
     GetCustomer,
     GetCustomerGroups,
     GetCustomerGroupWithCustomers,
+    GetCustomerHistory,
     GetCustomerList,
+    HistoryEntryListOptions,
     OrderListOptions,
     RemoveCustomersFromGroup,
     UpdateAddressInput,
@@ -24,6 +27,7 @@ import {
 } from '../../common/generated-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
+    ADD_NOTE_TO_CUSTOMER,
     CREATE_CUSTOMER,
     CREATE_CUSTOMER_ADDRESS,
     CREATE_CUSTOMER_GROUP,
@@ -31,6 +35,7 @@ import {
     GET_CUSTOMER,
     GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
     GET_CUSTOMER_GROUPS,
+    GET_CUSTOMER_HISTORY,
     GET_CUSTOMER_LIST,
     REMOVE_CUSTOMERS_FROM_GROUP,
     UPDATE_CUSTOMER,
@@ -172,5 +177,28 @@ export class CustomerDataService {
             groupId,
             customerIds,
         });
+    }
+
+    getCustomerHistory(id: string, options?: HistoryEntryListOptions) {
+        return this.baseDataService.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+            GET_CUSTOMER_HISTORY,
+            {
+                id,
+                options,
+            },
+        );
+    }
+
+    addNoteToCustomer(customerId: string, note: string) {
+        return this.baseDataService.mutate<AddNoteToCustomer.Mutation, AddNoteToCustomer.Variables>(
+            ADD_NOTE_TO_CUSTOMER,
+            {
+                input: {
+                    note,
+                    isPublic: false,
+                    id: customerId,
+                },
+            },
+        );
     }
 }

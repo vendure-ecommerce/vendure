@@ -119,6 +119,9 @@
 }
 
 .warning {
+    .timeline, .timeline .custom-icon {
+        color: $color-warning-400;
+    }
     .timeline:after {
         background-color: $color-warning-200;
         border: 1px solid $color-warning-400;

@@ -141,3 +141,8 @@
         </vdr-data-table>
     </div>
 </div>
+<div class="clr-row" *ngIf="!(isNew$ | async)">
+    <div class="clr-col-md-6">
+        <vdr-customer-history [customer]="entity$ | async" [history]="history$ | async" (addNote)="addNoteToCustomer($event)"></vdr-customer-history>
+    </div>
+</div>

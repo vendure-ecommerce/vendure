@@ -215,3 +215,34 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
         }
     }
 `;
+
+export const GET_CUSTOMER_HISTORY = gql`
+    query GetCustomerHistory($id: ID!, $options: HistoryEntryListOptions) {
+        customer(id: $id) {
+            id
+            history(options: $options) {
+                totalItems
+                items {
+                    id
+                    type
+                    createdAt
+                    isPublic
+                    administrator {
+                        id
+                        firstName
+                        lastName
+                    }
+                    data
+                }
+            }
+        }
+    }
+`;
+
+export const ADD_NOTE_TO_CUSTOMER = gql`
+    mutation AddNoteToCustomer($input: AddNoteToCustomerInput!) {
+        addNoteToCustomer(input: $input) {
+            id
+        }
+    }
+`;

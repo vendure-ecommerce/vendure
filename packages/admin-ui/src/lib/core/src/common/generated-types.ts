@@ -1284,10 +1284,11 @@ export enum HistoryEntryType {
   CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
   CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
   CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
+  CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
+  CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
   CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
   CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
   CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
-  CUSTOMER_ORDER_PLACED = 'CUSTOMER_ORDER_PLACED',
   CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
   CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
   CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
@@ -4478,6 +4479,45 @@ export type RemoveCustomersFromGroupMutation = (
   ) }
 );
 
+export type GetCustomerHistoryQueryVariables = {
+  id: Scalars['ID'];
+  options?: Maybe<HistoryEntryListOptions>;
+};
+
+
+export type GetCustomerHistoryQuery = (
+  { __typename?: 'Query' }
+  & { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+    & { history: (
+      { __typename?: 'HistoryEntryList' }
+      & Pick<HistoryEntryList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'HistoryEntry' }
+        & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'isPublic' | 'data'>
+        & { administrator?: Maybe<(
+          { __typename?: 'Administrator' }
+          & Pick<Administrator, 'id' | 'firstName' | 'lastName'>
+        )> }
+      )> }
+    ) }
+  )> }
+);
+
+export type AddNoteToCustomerMutationVariables = {
+  input: AddNoteToCustomerInput;
+};
+
+
+export type AddNoteToCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { addNoteToCustomer: (
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+  ) }
+);
+
 export type FacetValueFragment = (
   { __typename?: 'FacetValue' }
   & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
@@ -6893,6 +6933,21 @@ export namespace RemoveCustomersFromGroup {
   export type Variables = RemoveCustomersFromGroupMutationVariables;
   export type Mutation = RemoveCustomersFromGroupMutation;
   export type RemoveCustomersFromGroup = RemoveCustomersFromGroupMutation['removeCustomersFromGroup'];
+}
+
+export namespace GetCustomerHistory {
+  export type Variables = GetCustomerHistoryQueryVariables;
+  export type Query = GetCustomerHistoryQuery;
+  export type Customer = (NonNullable<GetCustomerHistoryQuery['customer']>);
+  export type History = (NonNullable<GetCustomerHistoryQuery['customer']>)['history'];
+  export type Items = (NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>);
+  export type Administrator = (NonNullable<(NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>)['administrator']>);
+}
+
+export namespace AddNoteToCustomer {
+  export type Variables = AddNoteToCustomerMutationVariables;
+  export type Mutation = AddNoteToCustomerMutation;
+  export type AddNoteToCustomer = AddNoteToCustomerMutation['addNoteToCustomer'];
 }
 
 export namespace FacetValue {

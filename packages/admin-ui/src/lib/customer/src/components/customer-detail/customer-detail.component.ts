@@ -11,15 +11,27 @@ import {
     DataService,
     GetAvailableCountries,
     GetCustomer,
+    GetCustomerHistory,
     GetCustomerQuery,
     ModalService,
     NotificationService,
     ServerConfigService,
+    SortOrder,
     UpdateCustomerInput,
 } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
-import { concatMap, filter, map, merge, mergeMap, shareReplay, switchMap, take } from 'rxjs/operators';
+import {
+    concatMap,
+    filter,
+    map,
+    merge,
+    mergeMap,
+    shareReplay,
+    startWith,
+    switchMap,
+    take,
+} from 'rxjs/operators';
 
 import { SelectCustomerGroupDialogComponent } from '../select-customer-group-dialog/select-customer-group-dialog.component';
 
@@ -38,6 +50,8 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
     availableCountries$: Observable<GetAvailableCountries.Items[]>;
     orders$: Observable<GetCustomer.Items[]>;
     ordersCount$: Observable<number>;
+    history$: Observable<GetCustomerHistory.Items[] | undefined>;
+    fetchHistory = new Subject<void>();
     defaultShippingAddressId: string;
     defaultBillingAddressId: string;
     addressDefaultsUpdated = false;
@@ -84,6 +98,18 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         const customerWithUpdates$ = this.entity$.pipe(merge(this.orderListUpdates$));
         this.orders$ = customerWithUpdates$.pipe(map((customer) => customer.orders.items));
         this.ordersCount$ = this.entity$.pipe(map((customer) => customer.orders.totalItems));
+        this.history$ = this.fetchHistory.pipe(
+            startWith(null),
+            switchMap(() => {
+                return this.dataService.customer
+                    .getCustomerHistory(this.id, {
+                        sort: {
+                            createdAt: SortOrder.DESC,
+                        },
+                    })
+                    .mapStream((data) => data.customer?.history.items);
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -238,6 +264,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     this.detailForm.markAsPristine();
                     this.addressDefaultsUpdated = false;
                     this.changeDetector.markForCheck();
+                    this.fetchHistory.next();
                 },
                 (err) => {
                     this.notificationService.error(_('common.notify-update-error'), {
@@ -265,6 +292,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 },
                 complete: () => {
                     this.dataService.customer.getCustomer(this.id, { take: 0 }).single$.subscribe();
+                    this.fetchHistory.next();
                 },
             });
     }
@@ -291,7 +319,12 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     customerCount: 1,
                     groupName: group.name,
                 });
+                this.fetchHistory.next();
             });
+    }
+
+    addNoteToCustomer({ note }: { note: string }) {
+        this.dataService.customer.addNoteToCustomer(this.id, note).subscribe(() => this.fetchHistory.next());
     }
 
     protected setFormValues(entity: Customer.Fragment): void {
