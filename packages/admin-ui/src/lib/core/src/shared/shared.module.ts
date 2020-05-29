@@ -67,6 +67,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
 import { DisabledDirective } from './directives/disabled.directive';
 import { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
@@ -166,6 +167,7 @@ const DECLARATIONS = [
     TimeAgoPipe,
     DurationPipe,
     EmptyPlaceholderComponent,
+    TimelineEntryComponent,
 ];
 
 @NgModule({

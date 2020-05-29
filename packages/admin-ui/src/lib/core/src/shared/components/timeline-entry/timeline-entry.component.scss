@@ -1,0 +1,126 @@
+@import "variables";
+
+.entry {
+    display: flex;
+}
+.timeline {
+    border-left: 2px solid $color-primary-100;
+    padding-bottom: 24px;
+    position: relative;
+
+    &:before {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 10px;
+        left: -2px;
+        border-left: 2px solid $color-primary-100;
+    }
+    &:after {
+        content: '';
+        display: block;
+        border-radius: 50%;
+        width: 8px;
+        height: 8px;
+        background-color: $color-grey-200;
+        border: 1px solid $color-grey-400;
+        position: absolute;
+        left: -5px;
+        top: 4px;
+    }
+
+    .custom-icon {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        left: -17px;
+        top: -4px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: $color-primary-600;
+        background-color: $color-grey-100;
+        border: 1px solid $color-grey-300;
+        display: none;
+    }
+}
+.entry.has-custom-icon {
+    .timeline:after {
+        display: none;
+    }
+    .custom-icon {
+        display: flex;
+    }
+}
+.entry.last {
+    .timeline {
+        border-left-color: transparent;
+    }
+}
+
+.entry-body {
+    flex: 1;
+    padding-bottom: 24px;
+    padding-left: 12px;
+    line-height: 16px;
+    margin-left: 12px;
+    color: $color-grey-500;
+}
+
+.featured-entry {
+    .title {
+        color: $color-grey-800;
+        font-size: 16px;
+        line-height: 26px;
+        background-color: hotpink;
+    }
+    .note-text {
+        color: $color-grey-800;
+        white-space: pre-wrap;
+    }
+}
+
+.detail {
+    display: flex;
+    color: $color-grey-400;
+    font-size: 12px;
+    .time {
+    }
+    .name {
+        margin-left: 12px;
+    }
+}
+
+
+.muted {
+    .timeline, .timeline .custom-icon {
+        color: $color-grey-400;
+    }
+}
+
+.success {
+    .timeline, .timeline .custom-icon {
+        color: $color-success-400;
+    }
+    .timeline:after {
+        background-color: $color-success-200;
+        border: 1px solid $color-success-400;
+    }
+}
+
+.error {
+    .timeline, .timeline .custom-icon {
+        color: $color-error-400;
+    }
+    .timeline:after {
+        background-color: $color-error-200;
+        border: 1px solid $color-error-400;
+    }
+}
+
+.warning {
+    .timeline:after {
+        background-color: $color-warning-200;
+        border: 1px solid $color-warning-400;
+    }
+}

@@ -33,7 +33,7 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
-    history$: Observable<GetOrderHistory.Items[] | null | undefined>;
+    history$: Observable<GetOrderHistory.Items[] | undefined>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
     orderLineCustomFields: CustomFieldConfig[];
@@ -72,7 +72,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream((data) => data.order && data.order.history.items);
+                    .mapStream((data) => data.order?.history.items);
             }),
         );
     }

@@ -1,93 +1,50 @@
 <h4>{{ 'order.order-history' | translate }}</h4>
 <div class="entry-list">
-    <div class="entry has-custom-icon">
-        <div class="timeline">
-            <div class="custom-icon">
-                <clr-icon shape="note" size="24" class="compose-note"></clr-icon>
-            </div>
+    <vdr-timeline-entry iconShape="note" displayType="muted">
+        <div class="note-entry">
+            <textarea [(ngModel)]="note" name="note" class="note"></textarea>
+            <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
+                {{ 'order.add-note' | translate }}
+            </button>
         </div>
-        <div class="entry-body">
-            <div class="note-entry">
-                <textarea [(ngModel)]="note" name="note" class="note"></textarea>
-                <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
-                    {{ 'order.add-note' | translate }}
-                </button>
-            </div>
-            <div class="visibility-select">
-                <clr-checkbox-wrapper>
-                    <input type="checkbox" clrCheckbox [(ngModel)]="noteIsPrivate" />
-                    <label>{{ 'order.note-is-private' | translate }}</label>
-                </clr-checkbox-wrapper>
-                <span *ngIf="noteIsPrivate" class="private">
-                    {{ 'order.note-only-visible-to-administrators' | translate }}
-                </span>
-                <span *ngIf="!noteIsPrivate" class="public">
-                    {{ 'order.note-visible-to-customer' | translate }}
-                </span>
-            </div>
+        <div class="visibility-select">
+            <clr-checkbox-wrapper>
+                <input type="checkbox" clrCheckbox [(ngModel)]="noteIsPrivate" />
+                <label>{{ 'order.note-is-private' | translate }}</label>
+            </clr-checkbox-wrapper>
+            <span *ngIf="noteIsPrivate" class="private">
+                {{ 'order.note-only-visible-to-administrators' | translate }}
+            </span>
+            <span *ngIf="!noteIsPrivate" class="public">
+                {{ 'order.note-visible-to-customer' | translate }}
+            </span>
         </div>
-    </div>
-    <div
+    </vdr-timeline-entry>
+    <vdr-timeline-entry
         *ngFor="let entry of history"
-        [ngClass]="getClassForEntry(entry)"
-        [class.has-custom-icon]="!!getTimelineIcon(entry)"
-        class="entry"
+        [displayType]="getDisplayType(entry)"
+        [iconShape]="getTimelineIcon(entry)"
+        [createdAt]="entry.createdAt"
+        [name]="getName(entry)"
+        [featured]="isFeatured(entry)"
     >
-        <div class="timeline">
-            <div class="custom-icon">
-                <clr-icon
-                    *ngIf="getTimelineIcon(entry) === 'complete'"
-                    shape="success-standard"
-                    size="24"
-                    class="complete is-solid"
-                ></clr-icon>
-                <clr-icon *ngIf="getTimelineIcon(entry) === 'fulfillment'" shape="truck" size="24"></clr-icon>
-                <clr-icon
-                    *ngIf="getTimelineIcon(entry) === 'payment'"
-                    shape="credit-card"
-                    size="24"
-                ></clr-icon>
-                <clr-icon
-                    *ngIf="getTimelineIcon(entry) === 'cancelled'"
-                    shape="ban"
-                    size="24"
-                    class="cancelled"
-                ></clr-icon>
-                <clr-icon *ngIf="getTimelineIcon(entry) === 'note'" shape="note" size="24"></clr-icon>
-            </div>
-        </div>
-        <div class="entry-body" [ngSwitch]="entry.type">
-            <div class="detail">
-                <div class="time">
-                    {{ entry.createdAt | date: 'short' }}
-                </div>
-                <div class="name">
-                    {{ getName(entry) }}
-                </div>
-            </div>
+        <ng-container [ngSwitch]="entry.type">
             <ng-container *ngSwitchCase="type.ORDER_STATE_TRANSITION">
-                <div class="featured-entry" *ngIf="entry.data.to === 'Fulfilled'">
-                    <div class="title">
-                        {{ 'order.history-order-fulfilled' | translate }}
-                    </div>
+                <div class="title" *ngIf="entry.data.to === 'Fulfilled'">
+                    {{ 'order.history-order-fulfilled' | translate }}
                 </div>
-                <div class="featured-entry" *ngIf="entry.data.to === 'Cancelled'">
-                    <div class="title">
-                        {{ 'order.history-order-cancelled' | translate }}
-                    </div>
+                <div class="title" *ngIf="entry.data.to === 'Cancelled'">
+                    {{ 'order.history-order-cancelled' | translate }}
                 </div>
                 <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Fulfilled'">
                     {{
-                    'order.history-order-transition'
-                        | translate: { from: entry.data.from, to: entry.data.to }
+                        'order.history-order-transition'
+                            | translate: { from: entry.data.from, to: entry.data.to }
                     }}
                 </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_PAYMENT_TRANSITION">
-                <div
-                    class="featured-entry"
-                    *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition"
-                >
+                <ng-container *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition">
                     <div class="title">
                         {{ 'order.history-payment-settled' | translate }}
                     </div>
@@ -98,19 +55,19 @@
                             [currencyCode]="order.currencyCode"
                         ></vdr-payment-detail>
                     </vdr-history-entry-detail>
-                </div>
+                </ng-container>
                 <ng-template #regularPaymentTransition>
                     {{
-                    'order.history-payment-transition'
-                        | translate
-                        : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
+                        'order.history-payment-transition'
+                            | translate
+                                : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
                     }}
                 </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_REFUND_TRANSITION">
                 {{
-                'order.history-refund-transition'
-                    | translate: { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
+                    'order.history-refund-transition'
+                        | translate: { from: entry.data.from, to: entry.data.to, id: entry.data.refundId }
                 }}
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_CANCELLATION">
@@ -125,26 +82,26 @@
                 </vdr-history-entry-detail>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_FULLFILLMENT">
-                <div class="featured-entry">
-                    <div class="title">
-                        {{ 'order.history-fulfillment-created' | translate }}
-                    </div>
-                    {{ 'order.tracking-code' | translate }}: {{ getFullfillment(entry)?.trackingCode }}
-                    <vdr-history-entry-detail *ngIf="getFullfillment(entry) as fulfillment">
-                        <vdr-fulfillment-detail
-                            [fulfillmentId]="fulfillment.id"
-                            [order]="order"
-                        ></vdr-fulfillment-detail>
-                    </vdr-history-entry-detail>
+                <div class="title">
+                    {{ 'order.history-fulfillment-created' | translate }}
                 </div>
+                {{ 'order.tracking-code' | translate }}: {{ getFullfillment(entry)?.trackingCode }}
+                <vdr-history-entry-detail *ngIf="getFullfillment(entry) as fulfillment">
+                    <vdr-fulfillment-detail
+                        [fulfillmentId]="fulfillment.id"
+                        [order]="order"
+                    ></vdr-fulfillment-detail>
+                </vdr-history-entry-detail>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_NOTE">
-                <div class="featured-entry">
-                    <div class="note-text">
-                        <span *ngIf="entry.isPublic" class="note-visibility public">{{ 'common.public' | translate }}</span>
-                        <span *ngIf="!entry.isPublic" class="note-visibility private">{{ 'common.private' | translate }}</span>
-                        {{ entry.data.note }}
-                    </div>
+                <div class="note-text">
+                    <span *ngIf="entry.isPublic" class="note-visibility public">{{
+                        'common.public' | translate
+                    }}</span>
+                    <span *ngIf="!entry.isPublic" class="note-visibility private">{{
+                        'common.private' | translate
+                    }}</span>
+                    {{ entry.data.note }}
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_COUPON_APPLIED">
@@ -152,15 +109,16 @@
                 <vdr-chip>
                     <a [routerLink]="['/marketing', 'promotions', entry.data.promotionId]">{{
                         entry.data.couponCode
-                        }}</a>
+                    }}</a>
                 </vdr-chip>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_COUPON_REMOVED">
                 {{ 'order.history-coupon-code-removed' | translate }}:
                 <vdr-chip
-                ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
+                    ><span class="cancelled-coupon-code">{{ entry.data.couponCode }}</span></vdr-chip
                 >
             </ng-container>
-        </div>
-    </div>
+        </ng-container>
+    </vdr-timeline-entry>
+    <vdr-timeline-entry [isLast]="true"></vdr-timeline-entry>
 </div>
