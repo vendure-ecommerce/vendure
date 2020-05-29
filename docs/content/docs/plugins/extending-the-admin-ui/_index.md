@@ -59,11 +59,15 @@ Although the examples so far all use the `compileUiExtensions` function in conju
 ```TypeScript
 // compile-admin-ui.ts
 import { compileUiExtensions } from '@vendure/ui-devkit/compiler';
+import * as path from 'path';
 
 compileUiExtensions({
-  outputPath: path.join(__dirname, 'admin-ui'),
-  extensions: [/* ... */],
-}).compile();
+    outputPath: path.join(__dirname, 'admin-ui'),
+    extensions: [/* ... */],
+}).compile?.().then(() => {
+    process.exit(0);
+});
+
 ```
 
 This can then be run from the command line:
