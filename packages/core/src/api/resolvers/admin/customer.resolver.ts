@@ -7,8 +7,10 @@ import {
     MutationCreateCustomerArgs,
     MutationDeleteCustomerAddressArgs,
     MutationDeleteCustomerArgs,
+    MutationDeleteCustomerNoteArgs,
     MutationUpdateCustomerAddressArgs,
     MutationUpdateCustomerArgs,
+    MutationUpdateCustomerNoteArgs,
     Permission,
     QueryCustomerArgs,
     QueryCustomersArgs,
@@ -99,5 +101,16 @@ export class CustomerResolver {
     @Allow(Permission.UpdateCustomer)
     async addNoteToCustomer(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToCustomerArgs) {
         return this.customerService.addNoteToCustomer(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async updateCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateCustomerNoteArgs) {
+        return this.customerService.updateCustomerNote(ctx, args.input);
+    }
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async deleteCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteCustomerNoteArgs) {
+        return this.customerService.deleteCustomerNote(ctx, args.id);
     }
 }

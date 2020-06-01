@@ -1853,6 +1853,8 @@ export type Mutation = {
     /** Update an existing Address */
     deleteCustomerAddress: Scalars['Boolean'];
     addNoteToCustomer: Customer;
+    updateCustomerNote: HistoryEntry;
+    deleteCustomerNote: DeletionResponse;
     /** Create a new Facet */
     createFacet: Facet;
     /** Update an existing Facet */
@@ -1875,6 +1877,8 @@ export type Mutation = {
     refundOrder: Refund;
     settleRefund: Refund;
     addNoteToOrder: Order;
+    updateOrderNote: HistoryEntry;
+    deleteOrderNote: DeletionResponse;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -2069,6 +2073,14 @@ export type MutationAddNoteToCustomerArgs = {
     input: AddNoteToCustomerInput;
 };
 
+export type MutationUpdateCustomerNoteArgs = {
+    input: UpdateCustomerNoteInput;
+};
+
+export type MutationDeleteCustomerNoteArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateFacetArgs = {
     input: CreateFacetInput;
 };
@@ -2130,6 +2142,14 @@ export type MutationSettleRefundArgs = {
 
 export type MutationAddNoteToOrderArgs = {
     input: AddNoteToOrderInput;
+};
+
+export type MutationUpdateOrderNoteArgs = {
+    input: UpdateOrderNoteInput;
+};
+
+export type MutationDeleteOrderNoteArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -3463,6 +3483,11 @@ export type UpdateCustomerInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerNoteInput = {
+    noteId: Scalars['ID'];
+    note: Scalars['String'];
+};
+
 export type UpdateFacetInput = {
     id: Scalars['ID'];
     isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3482,6 +3507,12 @@ export type UpdateGlobalSettingsInput = {
     availableLanguages?: Maybe<Array<LanguageCode>>;
     trackInventory?: Maybe<Scalars['Boolean']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderNoteInput = {
+    noteId: Scalars['ID'];
+    note?: Maybe<Scalars['String']>;
+    isPublic?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdatePaymentMethodInput = {
@@ -4049,6 +4080,22 @@ export type AddNoteToCustomerMutationVariables = {
 
 export type AddNoteToCustomerMutation = { __typename?: 'Mutation' } & {
     addNoteToCustomer: { __typename?: 'Customer' } & CustomerFragment;
+};
+
+export type UpdateCustomerNoteMutationVariables = {
+    input: UpdateCustomerNoteInput;
+};
+
+export type UpdateCustomerNoteMutation = { __typename?: 'Mutation' } & {
+    updateCustomerNote: { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
+};
+
+export type DeleteCustomerNoteMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteCustomerNoteMutation = { __typename?: 'Mutation' } & {
+    deleteCustomerNote: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type ReindexMutationVariables = {};
@@ -4887,15 +4934,15 @@ export type GetCustomerHistoryQueryVariables = {
 export type GetCustomerHistoryQuery = { __typename?: 'Query' } & {
     customer?: Maybe<
         { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                history: { __typename?: 'HistoryEntryList' } & {
-                    items: Array<
-                        { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                                administrator?: Maybe<
-                                    { __typename?: 'Administrator' } & Pick<Administrator, 'id'>
-                                >;
-                            }
-                    >;
-                };
+                history: { __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & {
+                        items: Array<
+                            { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
+                                    administrator?: Maybe<
+                                        { __typename?: 'Administrator' } & Pick<Administrator, 'id'>
+                                    >;
+                                }
+                        >;
+                    };
             }
     >;
 };
@@ -5080,6 +5127,22 @@ export type AddNoteToOrderMutationVariables = {
 
 export type AddNoteToOrderMutation = { __typename?: 'Mutation' } & {
     addNoteToOrder: { __typename?: 'Order' } & Pick<Order, 'id'>;
+};
+
+export type UpdateOrderNoteMutationVariables = {
+    input: UpdateOrderNoteInput;
+};
+
+export type UpdateOrderNoteMutation = { __typename?: 'Mutation' } & {
+    updateOrderNote: { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
+};
+
+export type DeleteOrderNoteMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteOrderNoteMutation = { __typename?: 'Mutation' } & {
+    deleteOrderNote: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type ProductOptionGroupFragment = { __typename?: 'ProductOptionGroup' } & Pick<
@@ -5950,6 +6013,18 @@ export namespace AddNoteToCustomer {
     export type AddNoteToCustomer = CustomerFragment;
 }
 
+export namespace UpdateCustomerNote {
+    export type Variables = UpdateCustomerNoteMutationVariables;
+    export type Mutation = UpdateCustomerNoteMutation;
+    export type UpdateCustomerNote = UpdateCustomerNoteMutation['updateCustomerNote'];
+}
+
+export namespace DeleteCustomerNote {
+    export type Variables = DeleteCustomerNoteMutationVariables;
+    export type Mutation = DeleteCustomerNoteMutation;
+    export type DeleteCustomerNote = DeleteCustomerNoteMutation['deleteCustomerNote'];
+}
+
 export namespace Reindex {
     export type Variables = ReindexMutationVariables;
     export type Mutation = ReindexMutation;
@@ -6620,6 +6695,18 @@ export namespace AddNoteToOrder {
     export type Variables = AddNoteToOrderMutationVariables;
     export type Mutation = AddNoteToOrderMutation;
     export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+}
+
+export namespace UpdateOrderNote {
+    export type Variables = UpdateOrderNoteMutationVariables;
+    export type Mutation = UpdateOrderNoteMutation;
+    export type UpdateOrderNote = UpdateOrderNoteMutation['updateOrderNote'];
+}
+
+export namespace DeleteOrderNote {
+    export type Variables = DeleteOrderNoteMutationVariables;
+    export type Mutation = DeleteOrderNoteMutation;
+    export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
 }
 
 export namespace ProductOptionGroup {

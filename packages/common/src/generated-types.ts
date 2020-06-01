@@ -1852,6 +1852,8 @@ export type Mutation = {
   /** Update an existing Address */
   deleteCustomerAddress: Scalars['Boolean'];
   addNoteToCustomer: Customer;
+  updateCustomerNote: HistoryEntry;
+  deleteCustomerNote: DeletionResponse;
   /** Create a new Facet */
   createFacet: Facet;
   /** Update an existing Facet */
@@ -1874,6 +1876,8 @@ export type Mutation = {
   refundOrder: Refund;
   settleRefund: Refund;
   addNoteToOrder: Order;
+  updateOrderNote: HistoryEntry;
+  deleteOrderNote: DeletionResponse;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Create a new ProductOptionGroup */
@@ -2098,6 +2102,16 @@ export type MutationAddNoteToCustomerArgs = {
 };
 
 
+export type MutationUpdateCustomerNoteArgs = {
+  input: UpdateCustomerNoteInput;
+};
+
+
+export type MutationDeleteCustomerNoteArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationCreateFacetArgs = {
   input: CreateFacetInput;
 };
@@ -2173,6 +2187,16 @@ export type MutationSettleRefundArgs = {
 
 export type MutationAddNoteToOrderArgs = {
   input: AddNoteToOrderInput;
+};
+
+
+export type MutationUpdateOrderNoteArgs = {
+  input: UpdateOrderNoteInput;
+};
+
+
+export type MutationDeleteOrderNoteArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -3579,6 +3603,11 @@ export type UpdateCustomerInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerNoteInput = {
+  noteId: Scalars['ID'];
+  note: Scalars['String'];
+};
+
 export type UpdateFacetInput = {
   id: Scalars['ID'];
   isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3598,6 +3627,12 @@ export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderNoteInput = {
+  noteId: Scalars['ID'];
+  note?: Maybe<Scalars['String']>;
+  isPublic?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdatePaymentMethodInput = {

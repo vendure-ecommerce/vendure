@@ -17,6 +17,7 @@ import {
     AddNoteToOrder,
     CancelOrder,
     CreateFulfillment,
+    DeleteOrderNote,
     GetCustomerList,
     GetOrder,
     GetOrderFulfillmentItems,
@@ -32,9 +33,10 @@ import {
     SettlePayment,
     SettleRefund,
     StockMovementType,
+    UpdateOrderNote,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
@@ -103,7 +105,7 @@ describe('Orders resolver', () => {
 
     it('orders', async () => {
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map(o => o.id)).toEqual(['T_1', 'T_2']);
+        expect(result.orders.items.map((o) => o.id)).toEqual(['T_1', 'T_2']);
     });
 
     it('order', async () => {
@@ -237,7 +239,7 @@ describe('Orders resolver', () => {
                     CREATE_FULFILLMENT,
                     {
                         input: {
-                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
                             method: 'Test',
                         },
                     },
@@ -275,7 +277,7 @@ describe('Orders resolver', () => {
                     CREATE_FULFILLMENT,
                     {
                         input: {
-                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
                             method: 'Test',
                         },
                     },
@@ -295,7 +297,7 @@ describe('Orders resolver', () => {
                 CreateFulfillment.Variables
             >(CREATE_FULFILLMENT, {
                 input: {
-                    lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                     method: 'Test1',
                     trackingCode: '111',
                 },
@@ -317,10 +319,10 @@ describe('Orders resolver', () => {
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
             expect(
                 result.order!.lines[1].items.filter(
-                    i => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
+                    (i) => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
                 ).length,
             ).toBe(1);
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(2);
+            expect(result.order!.lines[1].items.filter((i) => i.fulfillment == null).length).toBe(2);
         });
 
         it('creates a second partial fulfillment', async () => {
@@ -345,8 +347,8 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
             expect(result.order!.state).toBe('PartiallyFulfilled');
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment != null).length).toBe(2);
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(1);
+            expect(result.order!.lines[1].items.filter((i) => i.fulfillment != null).length).toBe(2);
+            expect(result.order!.lines[1].items.filter((i) => i.fulfillment == null).length).toBe(1);
         });
 
         it(
@@ -383,7 +385,7 @@ describe('Orders resolver', () => {
                 (items, line) => [...items, ...line.items],
                 [] as OrderItemFragment[],
             );
-            const unfulfilledItem = order!.lines[1].items.find(i => i.fulfillment == null)!;
+            const unfulfilledItem = order!.lines[1].items.find((i) => i.fulfillment == null)!;
 
             const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
@@ -594,8 +596,11 @@ describe('Orders resolver', () => {
                     },
                 },
             );
-            expect(cancelOrder.lines.map(l => l.items.map(pick(['id', 'cancelled'])))).toEqual([
-                [{ id: 'T_11', cancelled: true }, { id: 'T_12', cancelled: true }],
+            expect(cancelOrder.lines.map((l) => l.items.map(pick(['id', 'cancelled'])))).toEqual([
+                [
+                    { id: 'T_11', cancelled: true },
+                    { id: 'T_12', cancelled: true },
+                ],
             ]);
             const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: testOrder.orderId,
@@ -661,7 +666,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                     },
                 });
             }, 'Cannot cancel OrderLines from an Order in the "AddingItems" state'),
@@ -678,7 +683,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                     },
                 });
             }, 'Cannot cancel OrderLines from an Order in the "ArrangingPayment" state'),
@@ -708,7 +713,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
                     },
                 });
             }, 'Nothing to cancel'),
@@ -740,7 +745,7 @@ describe('Orders resolver', () => {
                 {
                     input: {
                         orderId,
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                         reason: 'cancel reason 1',
                     },
                 },
@@ -784,7 +789,7 @@ describe('Orders resolver', () => {
             await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                 input: {
                     orderId,
-                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                     reason: 'cancel reason 2',
                 },
             });
@@ -900,7 +905,7 @@ describe('Orders resolver', () => {
 
                 await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
                     input: {
-                        lines: order.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
                         shipping: 0,
                         adjustment: 0,
                         paymentId,
@@ -926,7 +931,7 @@ describe('Orders resolver', () => {
 
                 await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
                     input: {
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
                         shipping: 0,
                         adjustment: 0,
                         paymentId,
@@ -965,7 +970,7 @@ describe('Orders resolver', () => {
                     REFUND_ORDER,
                     {
                         input: {
-                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
                             shipping: 100,
                             adjustment: 0,
                             paymentId: 'T_1',
@@ -983,7 +988,7 @@ describe('Orders resolver', () => {
                 REFUND_ORDER,
                 {
                     input: {
-                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
                         shipping: order!.shipping,
                         adjustment: 0,
                         reason: 'foo',
@@ -1010,7 +1015,7 @@ describe('Orders resolver', () => {
                     REFUND_ORDER,
                     {
                         input: {
-                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
                             shipping: order!.shipping,
                             adjustment: 0,
                             paymentId,
@@ -1098,6 +1103,7 @@ describe('Orders resolver', () => {
 
     describe('order notes', () => {
         let orderId: string;
+        let firstNoteId: string;
 
         beforeAll(async () => {
             const result = await createTestOrder(
@@ -1142,6 +1148,8 @@ describe('Orders resolver', () => {
                     },
                 },
             ]);
+
+            firstNoteId = order!.history.items[0].id;
 
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
@@ -1191,6 +1199,45 @@ describe('Orders resolver', () => {
                     },
                 },
             ]);
+        });
+
+        it('update note', async () => {
+            const { updateOrderNote } = await adminClient.query<
+                UpdateOrderNote.Mutation,
+                UpdateOrderNote.Variables
+            >(UPDATE_ORDER_NOTE, {
+                input: {
+                    noteId: firstNoteId,
+                    note: 'An updated note',
+                },
+            });
+
+            expect(updateOrderNote.data).toEqual({
+                note: 'An updated note',
+            });
+        });
+
+        it('delete note', async () => {
+            const { order: before } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, { id: orderId });
+            expect(before?.history.totalItems).toBe(2);
+
+            const { deleteOrderNote } = await adminClient.query<
+                DeleteOrderNote.Mutation,
+                DeleteOrderNote.Variables
+            >(DELETE_ORDER_NOTE, {
+                id: firstNoteId,
+            });
+
+            expect(deleteOrderNote.result).toBe(DeletionResult.DELETED);
+
+            const { order: after } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, { id: orderId });
+            expect(after?.history.totalItems).toBe(1);
         });
     });
 });
@@ -1390,6 +1437,25 @@ export const ADD_NOTE_TO_ORDER = gql`
     mutation AddNoteToOrder($input: AddNoteToOrderInput!) {
         addNoteToOrder(input: $input) {
             id
+        }
+    }
+`;
+
+export const UPDATE_ORDER_NOTE = gql`
+    mutation UpdateOrderNote($input: UpdateOrderNoteInput!) {
+        updateOrderNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_ORDER_NOTE = gql`
+    mutation DeleteOrderNote($id: ID!) {
+        deleteOrderNote(id: $id) {
+            result
+            message
         }
     }
 `;

@@ -23,6 +23,7 @@ import {
     CreateCustomer,
     DeleteCustomer,
     DeleteCustomerAddress,
+    DeleteCustomerNote,
     DeletionResult,
     GetCustomer,
     GetCustomerHistory,
@@ -31,6 +32,7 @@ import {
     GetCustomerWithUser,
     UpdateAddress,
     UpdateCustomer,
+    UpdateCustomerNote,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
 import { GET_CUSTOMER, GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
@@ -497,6 +499,8 @@ describe('Customer resolver', () => {
     });
 
     describe('customer notes', () => {
+        let noteId: string;
+
         it('addNoteToCustomer', async () => {
             const { addNoteToCustomer } = await adminClient.query<
                 AddNoteToCustomer.Mutation,
@@ -531,6 +535,47 @@ describe('Customer resolver', () => {
                     },
                 },
             ]);
+
+            noteId = customer?.history.items[0].id!;
+        });
+
+        it('update note', async () => {
+            const { updateCustomerNote } = await adminClient.query<
+                UpdateCustomerNote.Mutation,
+                UpdateCustomerNote.Variables
+            >(UPDATE_CUSTOMER_NOTE, {
+                input: {
+                    noteId,
+                    note: 'An updated note',
+                },
+            });
+
+            expect(updateCustomerNote.data).toEqual({
+                note: 'An updated note',
+            });
+        });
+
+        it('delete note', async () => {
+            const { customer: before } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
+            const historyCount = before?.history.totalItems!;
+
+            const { deleteCustomerNote } = await adminClient.query<
+                DeleteCustomerNote.Mutation,
+                DeleteCustomerNote.Variables
+            >(DELETE_CUSTOMER_NOTE, {
+                id: noteId,
+            });
+
+            expect(deleteCustomerNote.result).toBe(DeletionResult.DELETED);
+
+            const { customer: after } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
+            expect(after?.history.totalItems).toBe(historyCount - 1);
         });
     });
 });
@@ -630,4 +675,23 @@ const ADD_NOTE_TO_CUSTOMER = gql`
         }
     }
     ${CUSTOMER_FRAGMENT}
+`;
+
+export const UPDATE_CUSTOMER_NOTE = gql`
+    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
+        updateCustomerNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_CUSTOMER_NOTE = gql`
+    mutation DeleteCustomerNote($id: ID!) {
+        deleteCustomerNote(id: $id) {
+            result
+            message
+        }
+    }
 `;

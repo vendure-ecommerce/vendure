@@ -23,6 +23,8 @@ type Mutation {
     deleteCustomerAddress(id: ID!): Boolean!
 
     addNoteToCustomer(input: AddNoteToCustomerInput!): Customer!
+    updateCustomerNote(input: UpdateCustomerNoteInput!): HistoryEntry!
+    deleteCustomerNote(id: ID!): DeletionResponse!
 }
 
 type Customer implements Node {
@@ -48,3 +50,9 @@ input AddNoteToCustomerInput {
     note: String!
     isPublic: Boolean!
 }
+
+input UpdateCustomerNoteInput {
+    noteId: ID!
+    note: String!
+}
+

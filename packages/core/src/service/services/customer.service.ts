@@ -10,6 +10,7 @@ import {
     HistoryEntryType,
     UpdateAddressInput,
     UpdateCustomerInput,
+    UpdateCustomerNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
@@ -27,6 +28,7 @@ import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
@@ -486,6 +488,29 @@ export class CustomerService {
             input.isPublic,
         );
         return customer;
+    }
+
+    async updateCustomerNote(ctx: RequestContext, input: UpdateCustomerNoteInput): Promise<HistoryEntry> {
+        return this.historyService.updateCustomerHistoryEntry(ctx, {
+            type: HistoryEntryType.CUSTOMER_NOTE,
+            data: input.note ? { note: input.note } : undefined,
+            ctx,
+            entryId: input.noteId,
+        });
+    }
+
+    async deleteCustomerNote(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        try {
+            await this.historyService.deleteCustomerHistoryEntry(id);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        } catch (e) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: e.message,
+            };
+        }
     }
 
     private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {

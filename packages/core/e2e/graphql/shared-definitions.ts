@@ -381,6 +381,7 @@ export const GET_CUSTOMER_HISTORY = gql`
         customer(id: $id) {
             id
             history(options: $options) {
+                totalItems
                 items {
                     id
                     administrator {

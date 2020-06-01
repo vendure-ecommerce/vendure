@@ -1869,10 +1869,12 @@ export type Mutation = {
   deleteCustomerAddress: Scalars['Boolean'];
   /** Delete a CustomerGroup */
   deleteCustomerGroup: DeletionResponse;
+  deleteCustomerNote: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
+  deleteOrderNote: DeletionResponse;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
   /** Delete a ProductVariant */
@@ -1930,11 +1932,13 @@ export type Mutation = {
   updateCustomerAddress: Address;
   /** Update an existing CustomerGroup */
   updateCustomerGroup: CustomerGroup;
+  updateCustomerNote: HistoryEntry;
   /** Update an existing Facet */
   updateFacet: Facet;
   /** Update one or more FacetValues */
   updateFacetValues: Array<FacetValue>;
   updateGlobalSettings: GlobalSettings;
+  updateOrderNote: HistoryEntry;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Update an existing Product */
@@ -2142,6 +2146,11 @@ export type MutationDeleteCustomerGroupArgs = {
 };
 
 
+export type MutationDeleteCustomerNoteArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   id: Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
@@ -2151,6 +2160,11 @@ export type MutationDeleteFacetArgs = {
 export type MutationDeleteFacetValuesArgs = {
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteOrderNoteArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -2315,6 +2329,11 @@ export type MutationUpdateCustomerGroupArgs = {
 };
 
 
+export type MutationUpdateCustomerNoteArgs = {
+  input: UpdateCustomerNoteInput;
+};
+
+
 export type MutationUpdateFacetArgs = {
   input: UpdateFacetInput;
 };
@@ -2327,6 +2346,11 @@ export type MutationUpdateFacetValuesArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
   input: UpdateGlobalSettingsInput;
+};
+
+
+export type MutationUpdateOrderNoteArgs = {
+  input: UpdateOrderNoteInput;
 };
 
 
@@ -3627,6 +3651,11 @@ export type UpdateCustomerInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerNoteInput = {
+  noteId: Scalars['ID'];
+  note: Scalars['String'];
+};
+
 export type UpdateFacetInput = {
   id: Scalars['ID'];
   isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3646,6 +3675,12 @@ export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderNoteInput = {
+  noteId: Scalars['ID'];
+  note?: Maybe<Scalars['String']>;
+  isPublic?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdatePaymentMethodInput = {

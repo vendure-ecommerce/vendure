@@ -4,12 +4,15 @@ import {
     AddNoteToOrderInput,
     CancelOrderInput,
     CreateAddressInput,
+    DeletionResponse,
+    DeletionResult,
     FulfillOrderInput,
     HistoryEntryType,
     OrderLineInput,
     RefundOrderInput,
     SettleRefundInput,
     ShippingMethodQuote,
+    UpdateOrderNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
@@ -29,6 +32,7 @@ import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Customer } from '../../entity/customer/customer.entity';
 import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
+import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -710,6 +714,30 @@ export class OrderService {
             input.isPublic,
         );
         return order;
+    }
+
+    async updateOrderNote(ctx: RequestContext, input: UpdateOrderNoteInput): Promise<HistoryEntry> {
+        return this.historyService.updateOrderHistoryEntry(ctx, {
+            type: HistoryEntryType.ORDER_NOTE,
+            data: input.note ? { note: input.note } : undefined,
+            isPublic: input.isPublic ?? undefined,
+            ctx,
+            entryId: input.noteId,
+        });
+    }
+
+    async deleteOrderNote(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        try {
+            await this.historyService.deleteOrderHistoryEntry(id);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        } catch (e) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: e.message,
+            };
+        }
     }
 
     /**
