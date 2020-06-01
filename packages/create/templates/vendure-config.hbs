@@ -67,6 +67,10 @@ const path = require('path');
         {{/if}}
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
+    superadminCredentials: {
+        identifier: '{{ superadminIdentifier }}',
+        password: '{{ superadminPassword }}',
+    },
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },

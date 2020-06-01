@@ -9,6 +9,8 @@ export interface UserResponses {
     configSource: string;
     migrationSource: string;
     readmeSource: string;
+    superadminIdentifier: string;
+    superadminPassword: string;
 }
 
 export type CliLogLevel = 'silent' | 'info' | 'verbose';
