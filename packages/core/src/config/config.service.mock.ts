@@ -1,3 +1,5 @@
+import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
+
 import { VendureEntity } from '../entity/base/base.entity';
 import { MockClass } from '../testing/testing-types';
 
@@ -32,6 +34,10 @@ export class MockConfigService implements MockClass<ConfigService> {
     uploadMaxFileSize = 1024;
     dbConnectionOptions = {};
     shippingOptions = {};
+    superadminCredentials = {
+        identifier: SUPER_ADMIN_USER_IDENTIFIER,
+        password: SUPER_ADMIN_USER_PASSWORD,
+    };
     promotionOptions = {
         promotionConditions: [],
         promotionActions: [],

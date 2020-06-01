@@ -1,6 +1,10 @@
 import { Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
+import {
+    DEFAULT_AUTH_TOKEN_HEADER_KEY,
+    SUPER_ADMIN_USER_IDENTIFIER,
+    SUPER_ADMIN_USER_PASSWORD,
+} from '@vendure/common/lib/shared-constants';
 
 import { generatePublicId } from '../common/generate-public-id';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
@@ -81,6 +85,10 @@ export const defaultConfig: RuntimeVendureConfig = {
     shippingOptions: {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
+    },
+    superadminCredentials: {
+        identifier: SUPER_ADMIN_USER_IDENTIFIER,
+        password: SUPER_ADMIN_USER_PASSWORD,
     },
     orderOptions: {
         orderItemsLimit: 999,

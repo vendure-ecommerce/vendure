@@ -406,6 +406,23 @@ export interface ShippingOptions {
 }
 
 /**
+ * @docsCategory superadmin
+ */
+export interface SuperadminCredentials {
+    /**
+     * @description
+     * The identifier to be used to create a superadmin account
+     */
+    identifier: string;
+
+    /**
+     * @description
+     * The password to be used to create a superadmin account
+     */
+    password: string;
+}
+
+/**
  * @description
  * Defines payment-related options in the {@link VendureConfig}.
  *
@@ -631,6 +648,11 @@ export interface VendureConfig {
      * Configures the available checkers and calculators for ShippingMethods.
      */
     shippingOptions?: ShippingOptions;
+    /**
+     * @description
+     * Configures the credentials to be used to create a superadmin
+     */
+    superadminCredentials?: SuperadminCredentials;
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.
