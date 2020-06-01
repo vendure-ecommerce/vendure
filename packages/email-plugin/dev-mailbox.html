@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Vendure Development Inbox</title>
     <style>
         body {
@@ -37,7 +37,9 @@
             display: flex;
             justify-content: flex-end;
         }
-        input, select, button {
+        input,
+        select,
+        button {
             padding: 6px;
             border-radius: 3px;
             border: 1px solid #0b384b;
@@ -108,27 +110,28 @@
     <h1 class="heading">Vendure Dev Mailbox</h1>
     <div class="generate-controls">
         <select id="type-selector"></select>
-        <input id="language-code" value="en" type="text">
+        <input id="language-code" value="en" type="text" />
         <button id="generate-test">Generate test</button>
     </div>
 </div>
 <div class="content">
-    <div class="list">
-    </div>
-    <div class="detail">
-
-    </div>
+    <div class="list"></div>
+    <div class="detail"></div>
 </div>
 <script>
     let selectedId = '';
+    const normalizePath = (endpoint) => {
+        const pathname = location.pathname;
+        return pathname.endsWith('/') ? `${pathname}${endpoint}` : `${pathname}/${endpoint}`;
+    };
     refreshInbox();
     setInterval(refreshInbox, 5000);
 
     const typeSelect = document.querySelector('#type-selector');
-    fetch('./types')
-        .then(res => res.json())
-        .then(res => {
-            res.forEach(type => {
+    fetch(normalizePath('types'))
+        .then((res) => res.json())
+        .then((res) => {
+            res.forEach((type) => {
                 const option = document.createElement('option');
                 option.value = type;
                 option.text = type;
@@ -138,24 +141,24 @@
 
     const languageCodeInput = document.querySelector('#language-code');
     const generateTestButton = document.querySelector('#generate-test');
-    generateTestButton.addEventListener('click', e => {
-        fetch(`./generate/${typeSelect.value}/${languageCodeInput.value}`)
-            .then(() => new Promise(resolve => setTimeout(resolve, 500)))
+    generateTestButton.addEventListener('click', (e) => {
+        fetch(normalizePath(`generate/${typeSelect.value}/${languageCodeInput.value}`))
+            .then(() => new Promise((resolve) => setTimeout(resolve, 500)))
             .then(() => refreshInbox());
     });
 
     const list = document.querySelector('.list');
 
     function refreshInbox() {
-        fetch('./list')
-            .then(res => res.json())
-            .then(res => renderList(res));
+        fetch(normalizePath('list'))
+            .then((res) => res.json())
+            .then((res) => renderList(res));
     }
 
     function renderList(items) {
         const list = document.querySelector('.list');
         list.innerHTML = '';
-        const rows = items.forEach(item => {
+        const rows = items.forEach((item) => {
             const row = document.createElement('div');
             row.classList.add('row');
             row.dataset.id = item.fileName;
@@ -168,9 +171,9 @@
 
             row.addEventListener('click', (e) => {
                 selectedId = item.fileName;
-                fetch('./item/' + item.fileName)
-                    .then(res => res.json())
-                    .then(res => renderEmail(res))
+                fetch(normalizePath('item/' + item.fileName))
+                    .then((res) => res.json())
+                    .then((res) => renderEmail(res))
                     .then(() => highlightSelectedRow());
             });
             list.appendChild(row);
@@ -179,7 +182,7 @@
     }
 
     function highlightSelectedRow() {
-        document.querySelectorAll('.list .row').forEach(row => {
+        document.querySelectorAll('.list .row').forEach((row) => {
             row.classList.remove('selected');
             if (row.dataset.id === selectedId) {
                 row.classList.add('selected');
@@ -189,24 +192,24 @@
 
     function renderEmail(email) {
         const content = `
-            <div class="metadata">
-                <table>
-                    <tr>
-                        <td>Recipient:</td>
-                        <td>${email.recipient}</td>
-                    </tr>
-                    <tr>
-                        <td>Subject:</td>
-                        <td>${email.subject}</td>
-                    </tr>
-                    <tr>
-                        <td>Date:</td>
-                        <td>${new Date().toLocaleString()}</td>
-                    </tr>
-                </table>
-            </div>
-            <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
-        `;
+    <div class="metadata">
+        <table>
+            <tr>
+                <td>Recipient:</td>
+                <td>${email.recipient}</td>
+            </tr>
+            <tr>
+                <td>Subject:</td>
+                <td>${email.subject}</td>
+            </tr>
+            <tr>
+                <td>Date:</td>
+                <td>${new Date().toLocaleString()}</td>
+            </tr>
+        </table>
+    </div>
+    <iframe srcdoc="${email.body.replace(/"/g, '&quot;')}"></iframe>
+`;
 
         document.querySelector('.detail').innerHTML = content;
     }
