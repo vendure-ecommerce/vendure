@@ -109,7 +109,7 @@ export class AdministratorService {
      * no longer be possible.
      */
     private async ensureSuperAdminExists() {
-        const { superadminCredentials } = this.configService;
+        const { superadminCredentials } = this.configService.authOptions;
 
         const superAdminUser = await this.connection.getRepository(User).findOne({
             where: {

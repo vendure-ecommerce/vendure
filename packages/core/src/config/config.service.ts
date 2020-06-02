@@ -79,10 +79,6 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.shippingOptions;
     }
 
-    get superadminCredentials(): SuperadminCredentials {
-        return this.activeConfig.superadminCredentials;
-    }
-
     get orderOptions(): Required<OrderOptions> {
         return this.activeConfig.orderOptions as Required<OrderOptions>;
     }

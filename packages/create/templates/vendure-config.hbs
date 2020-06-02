@@ -45,6 +45,10 @@ const path = require('path');
     },
     authOptions: {
         sessionSecret: '{{ sessionSecret }}',
+        superadminCredentials: {
+            identifier: '{{ superadminIdentifier }}',
+            password: '{{ superadminPassword }}',
+        },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
@@ -66,10 +70,6 @@ const path = require('path');
         password: '{{ dbPassword }}',
         {{/if}}
         migrations: [path.join(__dirname, '../migrations/*.ts')],
-    },
-    superadminCredentials: {
-        identifier: '{{ superadminIdentifier }}',
-        password: '{{ superadminPassword }}',
     },
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],

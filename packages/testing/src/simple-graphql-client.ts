@@ -146,10 +146,10 @@ export class SimpleGraphQLClient {
      * Logs in as the SuperAdmin user.
      */
     async asSuperAdmin() {
-        const { superadminCredentials } = this.vendureConfig;
+        const { superadminCredentials } = this.vendureConfig.authOptions;
         await this.asUserWithCredentials(
-            superadminCredentials.identifier ?? SUPER_ADMIN_USER_IDENTIFIER,
-            superadminCredentials.password ?? SUPER_ADMIN_USER_PASSWORD,
+            superadminCredentials?.identifier ?? SUPER_ADMIN_USER_IDENTIFIER,
+            superadminCredentials?.password ?? SUPER_ADMIN_USER_PASSWORD,
         );
     }
 

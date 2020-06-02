@@ -218,6 +218,11 @@ export interface AuthOptions {
      * @default '7d'
      */
     verificationTokenDuration?: string | number;
+    /**
+     * @description
+     * Configures the credentials to be used to create a superadmin
+     */
+    superadminCredentials?: SuperadminCredentials;
 }
 
 /**
@@ -648,11 +653,6 @@ export interface VendureConfig {
      * Configures the available checkers and calculators for ShippingMethods.
      */
     shippingOptions?: ShippingOptions;
-    /**
-     * @description
-     * Configures the credentials to be used to create a superadmin
-     */
-    superadminCredentials?: SuperadminCredentials;
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.

@@ -62,6 +62,10 @@ export const defaultConfig: RuntimeVendureConfig = {
         sessionDuration: '7d',
         requireVerification: true,
         verificationTokenDuration: '7d',
+        superadminCredentials: {
+            identifier: SUPER_ADMIN_USER_IDENTIFIER,
+            password: SUPER_ADMIN_USER_PASSWORD,
+        },
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -85,10 +89,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     shippingOptions: {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
-    },
-    superadminCredentials: {
-        identifier: SUPER_ADMIN_USER_IDENTIFIER,
-        password: SUPER_ADMIN_USER_PASSWORD,
     },
     orderOptions: {
         orderItemsLimit: 999,
