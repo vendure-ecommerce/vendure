@@ -93,7 +93,7 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
             {
                 type: 'text',
                 name: 'superadminPassword',
-                message: 'WWhat password do you want to use for the superadmin user?',
+                message: 'What password do you want to use for the superadmin user?',
                 initial: SUPER_ADMIN_USER_PASSWORD,
             },
         ],
