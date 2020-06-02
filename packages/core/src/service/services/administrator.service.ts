@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
-import { SUPER_ADMIN_USER_IDENTIFIER, SUPER_ADMIN_USER_PASSWORD } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
+import { ConfigService } from '../../config';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -20,6 +20,7 @@ import { UserService } from './user.service';
 export class AdministratorService {
     constructor(
         @InjectConnection() private connection: Connection,
+        private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private passwordCipher: PasswordCiper,
         private userService: UserService,
@@ -108,17 +109,19 @@ export class AdministratorService {
      * no longer be possible.
      */
     private async ensureSuperAdminExists() {
+        const { superadminCredentials } = this.configService.authOptions;
+
         const superAdminUser = await this.connection.getRepository(User).findOne({
             where: {
-                identifier: SUPER_ADMIN_USER_IDENTIFIER,
+                identifier: superadminCredentials.identifier,
             },
         });
 
         if (!superAdminUser) {
             const superAdminRole = await this.roleService.getSuperAdminRole();
             const administrator = await this.create({
-                emailAddress: SUPER_ADMIN_USER_IDENTIFIER,
-                password: SUPER_ADMIN_USER_PASSWORD,
+                emailAddress: superadminCredentials.identifier,
+                password: superadminCredentials.password,
                 firstName: 'Super',
                 lastName: 'Admin',
                 roleIds: [superAdminRole.id as string],

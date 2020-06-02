@@ -218,6 +218,11 @@ export interface AuthOptions {
      * @default '7d'
      */
     verificationTokenDuration?: string | number;
+    /**
+     * @description
+     * Configures the credentials to be used to create a superadmin
+     */
+    superadminCredentials?: SuperadminCredentials;
 }
 
 /**
@@ -403,6 +408,23 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
+}
+
+/**
+ * @docsCategory superadmin
+ */
+export interface SuperadminCredentials {
+    /**
+     * @description
+     * The identifier to be used to create a superadmin account
+     */
+    identifier: string;
+
+    /**
+     * @description
+     * The password to be used to create a superadmin account
+     */
+    password: string;
 }
 
 /**
