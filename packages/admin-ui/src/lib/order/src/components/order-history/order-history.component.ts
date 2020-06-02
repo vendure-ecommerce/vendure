@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
     GetOrderHistory,
+    HistoryEntry,
     HistoryEntryType,
     OrderDetail,
     OrderDetailFragment,
@@ -17,6 +18,8 @@ export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
     @Input() history: GetOrderHistory.Items[];
     @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
+    @Output() updateNote = new EventEmitter<HistoryEntry>();
+    @Output() deleteNote = new EventEmitter<HistoryEntry>();
     note = '';
     noteIsPrivate = true;
     readonly type = HistoryEntryType;

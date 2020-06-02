@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, HistoryEntry } from '@vendure/admin-ui/core';
 import {
     AdjustmentType,
     CustomFieldConfig,
@@ -16,9 +16,10 @@ import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
 import { omit } from '@vendure/common/lib/omit';
-import { Observable, of, Subject } from 'rxjs';
-import { startWith, switchMap, take } from 'rxjs/operators';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { map, startWith, switchMap, take } from 'rxjs/operators';
 
+import { EditNoteDialogComponent } from '../../../../core/src/shared/components/edit-note-dialog/edit-note-dialog.component';
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
@@ -123,6 +124,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                     this.notificationService.error(_('order.settle-payment-error'));
                 }
                 this.dataService.order.getOrder(this.id).single$.subscribe();
+                this.fetchHistory.next();
             }
         });
     }
@@ -204,7 +206,59 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
             })
             .pipe(switchMap((result) => this.refetchOrder(result)))
             .subscribe((result) => {
-                this.notificationService.success(_('order.add-note-success'));
+                this.notificationService.success(_('common.notify-create-success'), {
+                    entity: 'Note',
+                });
+            });
+    }
+
+    updateNote(entry: HistoryEntry) {
+        this.modalService
+            .fromComponent(EditNoteDialogComponent, {
+                closable: true,
+                locals: {
+                    displayPrivacyControls: true,
+                    note: entry.data.note,
+                    noteIsPrivate: !entry.isPublic,
+                },
+            })
+            .pipe(
+                switchMap((result) => {
+                    if (result) {
+                        return this.dataService.order.updateOrderNote({
+                            noteId: entry.id,
+                            isPublic: !result.isPrivate,
+                            note: result.note,
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+            )
+            .subscribe((result) => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-update-success'), {
+                    entity: 'Note',
+                });
+            });
+    }
+
+    deleteNote(entry: HistoryEntry) {
+        return this.modalService
+            .dialog({
+                title: _('common.confirm-delete-note'),
+                body: entry.data.note,
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(switchMap((res) => (res ? this.dataService.order.deleteOrderNote(entry.id) : EMPTY)))
+            .subscribe(() => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-delete-success'), {
+                    entity: 'Note',
+                });
             });
     }
 

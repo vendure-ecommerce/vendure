@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Customer, GetCustomerHistory, HistoryEntryType, TimelineDisplayType } from '@vendure/admin-ui/core';
+import {
+    Customer,
+    GetCustomerHistory,
+    HistoryEntry,
+    HistoryEntryType,
+    TimelineDisplayType,
+} from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-customer-history',
@@ -11,6 +17,8 @@ export class CustomerHistoryComponent {
     @Input() customer: Customer.Fragment;
     @Input() history: GetCustomerHistory.Items[];
     @Output() addNote = new EventEmitter<{ note: string }>();
+    @Output() updateNote = new EventEmitter<HistoryEntry>();
+    @Output() deleteNote = new EventEmitter<HistoryEntry>();
     note = '';
     readonly type = HistoryEntryType;
 

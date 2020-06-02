@@ -4,7 +4,7 @@
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
-                {{ 'order.add-note' | translate }}
+                {{ 'common.add-note' | translate }}
             </button>
         </div>
         <div class="visibility-select">
@@ -94,14 +94,43 @@
                 </vdr-history-entry-detail>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_NOTE">
-                <div class="note-text">
-                    <span *ngIf="entry.isPublic" class="note-visibility public">{{
-                        'common.public' | translate
-                    }}</span>
-                    <span *ngIf="!entry.isPublic" class="note-visibility private">{{
-                        'common.private' | translate
-                    }}</span>
-                    {{ entry.data.note }}
+                <div class="flex">
+                    <div class="note-text">
+                        <span *ngIf="entry.isPublic" class="note-visibility public">{{
+                            'common.public' | translate
+                        }}</span>
+                        <span *ngIf="!entry.isPublic" class="note-visibility private">{{
+                            'common.private' | translate
+                        }}</span>
+                        {{ entry.data.note }}
+                    </div>
+                    <div class="flex-spacer"></div>
+                    <vdr-dropdown>
+                        <button class="icon-button" vdrDropdownTrigger>
+                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="updateNote.emit(entry)"
+                                [disabled]="!('UpdateOrder' | hasPermission)"
+                            >
+                                <clr-icon shape="edit"></clr-icon>
+                                {{ 'common.edit' | translate }}
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="deleteNote.emit(entry)"
+                                [disabled]="!('UpdateOrder' | hasPermission)"
+                            >
+                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                {{ 'common.delete' | translate }}
+                            </button>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_COUPON_APPLIED">

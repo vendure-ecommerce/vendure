@@ -268,3 +268,22 @@ export const ADD_NOTE_TO_ORDER = gql`
         }
     }
 `;
+
+export const UPDATE_ORDER_NOTE = gql`
+    mutation UpdateOrderNote($input: UpdateOrderNoteInput!) {
+        updateOrderNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_ORDER_NOTE = gql`
+    mutation DeleteOrderNote($id: ID!) {
+        deleteOrderNote(id: $id) {
+            result
+            message
+        }
+    }
+`;

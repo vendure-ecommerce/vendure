@@ -25,7 +25,6 @@
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_DETAIL_UPDATED">
-
                 <div class="flex">
                     {{ 'customer.history-customer-detail-updated' | translate }}
                     <vdr-history-entry-detail>
@@ -34,10 +33,16 @@
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_ADDED_TO_GROUP">
-                {{ 'customer.history-customer-added-to-group' | translate: { groupName: entry.data.groupName } }}
+                {{
+                    'customer.history-customer-added-to-group'
+                        | translate: { groupName: entry.data.groupName }
+                }}
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_REMOVED_FROM_GROUP">
-                {{ 'customer.history-customer-removed-from-group' | translate: { groupName: entry.data.groupName } }}
+                {{
+                    'customer.history-customer-removed-from-group'
+                        | translate: { groupName: entry.data.groupName }
+                }}
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_ADDRESS_CREATED">
                 {{ 'customer.history-customer-address-created' | translate }}
@@ -94,8 +99,37 @@
                 </div>
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_NOTE">
-                <div class="note-text">
-                    {{ entry.data.note }}
+                <div class="flex">
+                    <div class="note-text">
+                        {{ entry.data.note }}
+                    </div>
+                    <div class="flex-spacer"></div>
+                    <vdr-dropdown>
+                        <button class="icon-button" vdrDropdownTrigger>
+                            <clr-icon shape="ellipsis-vertical"></clr-icon>
+                        </button>
+                        <vdr-dropdown-menu vdrPosition="bottom-right">
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="updateNote.emit(entry)"
+                                [disabled]="!('UpdateOrder' | hasPermission)"
+                            >
+                                <clr-icon shape="edit"></clr-icon>
+                                {{ 'common.edit' | translate }}
+                            </button>
+                            <div class="dropdown-divider"></div>
+                            <button
+                                class="button"
+                                vdrDropdownItem
+                                (click)="deleteNote.emit(entry)"
+                                [disabled]="!('UpdateOrder' | hasPermission)"
+                            >
+                                <clr-icon shape="trash" class="is-danger"></clr-icon>
+                                {{ 'common.delete' | translate }}
+                            </button>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
                 </div>
             </ng-container>
         </ng-container>

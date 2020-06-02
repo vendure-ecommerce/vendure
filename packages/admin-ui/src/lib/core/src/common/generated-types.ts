@@ -4553,6 +4553,32 @@ export type AddNoteToCustomerMutation = (
   ) }
 );
 
+export type UpdateCustomerNoteMutationVariables = {
+  input: UpdateCustomerNoteInput;
+};
+
+
+export type UpdateCustomerNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomerNote: (
+    { __typename?: 'HistoryEntry' }
+    & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>
+  ) }
+);
+
+export type DeleteCustomerNoteMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomerNote: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
 export type FacetValueFragment = (
   { __typename?: 'FacetValue' }
   & Pick<FacetValue, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
@@ -4907,6 +4933,32 @@ export type AddNoteToOrderMutation = (
   & { addNoteToOrder: (
     { __typename?: 'Order' }
     & Pick<Order, 'id'>
+  ) }
+);
+
+export type UpdateOrderNoteMutationVariables = {
+  input: UpdateOrderNoteInput;
+};
+
+
+export type UpdateOrderNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { updateOrderNote: (
+    { __typename?: 'HistoryEntry' }
+    & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>
+  ) }
+);
+
+export type DeleteOrderNoteMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteOrderNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteOrderNote: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
   ) }
 );
 
@@ -6985,6 +7037,18 @@ export namespace AddNoteToCustomer {
   export type AddNoteToCustomer = AddNoteToCustomerMutation['addNoteToCustomer'];
 }
 
+export namespace UpdateCustomerNote {
+  export type Variables = UpdateCustomerNoteMutationVariables;
+  export type Mutation = UpdateCustomerNoteMutation;
+  export type UpdateCustomerNote = UpdateCustomerNoteMutation['updateCustomerNote'];
+}
+
+export namespace DeleteCustomerNote {
+  export type Variables = DeleteCustomerNoteMutationVariables;
+  export type Mutation = DeleteCustomerNoteMutation;
+  export type DeleteCustomerNote = DeleteCustomerNoteMutation['deleteCustomerNote'];
+}
+
 export namespace FacetValue {
   export type Fragment = FacetValueFragment;
   export type Translations = (NonNullable<FacetValueFragment['translations'][0]>);
@@ -7146,6 +7210,18 @@ export namespace AddNoteToOrder {
   export type Variables = AddNoteToOrderMutationVariables;
   export type Mutation = AddNoteToOrderMutation;
   export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+}
+
+export namespace UpdateOrderNote {
+  export type Variables = UpdateOrderNoteMutationVariables;
+  export type Mutation = UpdateOrderNoteMutation;
+  export type UpdateOrderNote = UpdateOrderNoteMutation['updateOrderNote'];
+}
+
+export namespace DeleteOrderNote {
+  export type Variables = DeleteOrderNoteMutationVariables;
+  export type Mutation = DeleteOrderNoteMutation;
+  export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
 }
 
 export namespace Asset {

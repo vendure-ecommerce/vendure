@@ -13,6 +13,7 @@ import {
     GetCustomer,
     GetCustomerHistory,
     GetCustomerQuery,
+    HistoryEntry,
     ModalService,
     NotificationService,
     ServerConfigService,
@@ -33,6 +34,7 @@ import {
     take,
 } from 'rxjs/operators';
 
+import { EditNoteDialogComponent } from '../../../../core/src/shared/components/edit-note-dialog/edit-note-dialog.component';
 import { SelectCustomerGroupDialogComponent } from '../select-customer-group-dialog/select-customer-group-dialog.component';
 
 type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
@@ -324,7 +326,60 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
     }
 
     addNoteToCustomer({ note }: { note: string }) {
-        this.dataService.customer.addNoteToCustomer(this.id, note).subscribe(() => this.fetchHistory.next());
+        this.dataService.customer.addNoteToCustomer(this.id, note).subscribe(() => {
+            this.fetchHistory.next();
+            this.notificationService.success(_('common.notify-create-success'), {
+                entity: 'Note',
+            });
+        });
+    }
+
+    updateNote(entry: HistoryEntry) {
+        this.modalService
+            .fromComponent(EditNoteDialogComponent, {
+                closable: true,
+                locals: {
+                    displayPrivacyControls: false,
+                    note: entry.data.note,
+                },
+            })
+            .pipe(
+                switchMap((result) => {
+                    if (result) {
+                        return this.dataService.customer.updateCustomerNote({
+                            noteId: entry.id,
+                            note: result.note,
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+            )
+            .subscribe((result) => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-update-success'), {
+                    entity: 'Note',
+                });
+            });
+    }
+
+    deleteNote(entry: HistoryEntry) {
+        return this.modalService
+            .dialog({
+                title: _('common.confirm-delete-note'),
+                body: entry.data.note,
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(switchMap((res) => (res ? this.dataService.customer.deleteCustomerNote(entry.id) : EMPTY)))
+            .subscribe(() => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-delete-success'), {
+                    entity: 'Note',
+                });
+            });
     }
 
     protected setFormValues(entity: Customer.Fragment): void {

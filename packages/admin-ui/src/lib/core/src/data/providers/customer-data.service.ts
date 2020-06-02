@@ -10,6 +10,7 @@ import {
     CustomerGroupListOptions,
     CustomerListOptions,
     DeleteCustomerGroup,
+    DeleteCustomerNote,
     GetCustomer,
     GetCustomerGroups,
     GetCustomerGroupWithCustomers,
@@ -24,6 +25,8 @@ import {
     UpdateCustomerGroup,
     UpdateCustomerGroupInput,
     UpdateCustomerInput,
+    UpdateCustomerNote,
+    UpdateCustomerNoteInput,
 } from '../../common/generated-types';
 import {
     ADD_CUSTOMERS_TO_GROUP,
@@ -32,6 +35,7 @@ import {
     CREATE_CUSTOMER_ADDRESS,
     CREATE_CUSTOMER_GROUP,
     DELETE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER_NOTE,
     GET_CUSTOMER,
     GET_CUSTOMER_GROUP_WITH_CUSTOMERS,
     GET_CUSTOMER_GROUPS,
@@ -41,6 +45,7 @@ import {
     UPDATE_CUSTOMER,
     UPDATE_CUSTOMER_ADDRESS,
     UPDATE_CUSTOMER_GROUP,
+    UPDATE_CUSTOMER_NOTE,
 } from '../definitions/customer-definitions';
 
 import { BaseDataService } from './base-data.service';
@@ -198,6 +203,24 @@ export class CustomerDataService {
                     isPublic: false,
                     id: customerId,
                 },
+            },
+        );
+    }
+
+    updateCustomerNote(input: UpdateCustomerNoteInput) {
+        return this.baseDataService.mutate<UpdateCustomerNote.Mutation, UpdateCustomerNote.Variables>(
+            UPDATE_CUSTOMER_NOTE,
+            {
+                input,
+            },
+        );
+    }
+
+    deleteCustomerNote(id: string) {
+        return this.baseDataService.mutate<DeleteCustomerNote.Mutation, DeleteCustomerNote.Variables>(
+            DELETE_CUSTOMER_NOTE,
+            {
+                id,
             },
         );
     }

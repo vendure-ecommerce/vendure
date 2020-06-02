@@ -246,3 +246,22 @@ export const ADD_NOTE_TO_CUSTOMER = gql`
         }
     }
 `;
+
+export const UPDATE_CUSTOMER_NOTE = gql`
+    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
+        updateCustomerNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_CUSTOMER_NOTE = gql`
+    mutation DeleteCustomerNote($id: ID!) {
+        deleteCustomerNote(id: $id) {
+            result
+            message
+        }
+    }
+`;
