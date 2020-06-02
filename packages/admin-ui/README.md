@@ -33,6 +33,13 @@ Translation keys are automatically extracted by running:
 ```
 yarn extract-translations
 ```
-This will add any new translation keys to the default language file located in [`./src/lib/static/i18n-messages/en.json`](./src/lib/static/i18n-messages/en.json).
+This scan the source files for any translation keys, and add them to each of the translation files located in [`./src/lib/static/i18n-messages/`](./src/lib/static/i18n-messages/).
 
-To extract translations into other language, run the same command as specified in the `extract-translations` npm script, but substitute the "en" in "en.json" with the [ISO 639-1 2-character language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for that language.
+A report is generated for each language detailing what percentage of the translation tokens are translated into that language:
+
+```text
+Extracting translation tokens for "src\lib\static\i18n-messages\de.json"
+de: 592 of 650 tokens translated (91%)
+```
+
+To add support for a new language, create a new empty json file (`{}`) in the `i18n-messages` directory named `<languageCode>.json`, where `languageCode` is one of the supported codes as given in the [LanguageCode enum type](../core/src/api/schema/common/language-code.graphql), then run `yarn extract-translations`

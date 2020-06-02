@@ -10,7 +10,7 @@
     "watch": "ng build --watch=true",
     "test": "ng test --watch=false --browsers=ChromeHeadlessCI --progress=false",
     "lint": "tslint --fix",
-    "extract-translations": "ngx-translate-extract --input ./src --output ./src/lib/static/i18n-messages/en.json --clean --sort --format namespaced-json --format-indentation \"  \" -m _",
+    "extract-translations": "node scripts/extract-translations.js",
     "ngcc": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points"
   },
   "publishConfig": {
@@ -79,6 +79,7 @@
     "@types/prosemirror-state": "^1.2.3",
     "@types/prosemirror-view": "^1.11.2",
     "codelyzer": "^5.2.2",
+    "cross-spawn": "^7.0.3",
     "fs-extra": "^9.0.0",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.1",
