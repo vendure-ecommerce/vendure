@@ -145,6 +145,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             emailAddress: formValue.emailAddress,
             firstName: formValue.firstName,
             lastName: formValue.lastName,
+            phoneNumber: formValue.phoneNumber,
         };
         this.dataService.customer.createCustomer(customer, formValue.password).subscribe(
             (data) => {
@@ -187,6 +188,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                             emailAddress: formValue.emailAddress,
                             firstName: formValue.firstName,
                             lastName: formValue.lastName,
+                            phoneNumber: formValue.phoneNumber,
                         };
                         saveOperations.push(this.dataService.customer.updateCustomer(customer));
                     }
