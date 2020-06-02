@@ -65,6 +65,7 @@
     "confirm-delete-collection": "Delete collection?",
     "confirm-delete-collection-and-children-body": "Deleting this collection will also delete all child collections",
     "confirm-delete-country": "Delete country?",
+    "confirm-delete-customer": "Delete customer?",
     "confirm-delete-facet": "Delete facet?",
     "confirm-delete-facet-value": "Delete facet value?",
     "confirm-delete-product": "Delete product?",

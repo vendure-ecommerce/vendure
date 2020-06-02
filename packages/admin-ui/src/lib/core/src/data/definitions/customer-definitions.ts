@@ -109,6 +109,15 @@ export const UPDATE_CUSTOMER = gql`
     ${CUSTOMER_FRAGMENT}
 `;
 
+export const DELETE_CUSTOMER = gql`
+    mutation DeleteCustomer($id: ID!) {
+        deleteCustomer(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const CREATE_CUSTOMER_ADDRESS = gql`
     mutation CreateCustomerAddress($customerId: ID!, $input: CreateAddressInput!) {
         createCustomerAddress(customerId: $customerId, input: $input) {

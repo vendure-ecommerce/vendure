@@ -47,6 +47,13 @@
         <input id="lastName" type="text" formControlName="lastName" />
     </vdr-form-field>
     <vdr-form-field
+        [label]="'customer.phone-number' | translate"
+        for="phoneNumber"
+        [readOnlyToggle]="!(isNew$ | async)"
+    >
+        <input id="phoneNumber" type="text" formControlName="phoneNumber" />
+    </vdr-form-field>
+    <vdr-form-field
         [label]="'customer.email-address' | translate"
         for="emailAddress"
         [readOnlyToggle]="!(isNew$ | async)"

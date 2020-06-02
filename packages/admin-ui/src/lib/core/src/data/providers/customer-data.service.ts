@@ -9,6 +9,7 @@ import {
     CreateCustomerInput,
     CustomerGroupListOptions,
     CustomerListOptions,
+    DeleteCustomer,
     DeleteCustomerGroup,
     DeleteCustomerNote,
     GetCustomer,
@@ -34,6 +35,7 @@ import {
     CREATE_CUSTOMER,
     CREATE_CUSTOMER_ADDRESS,
     CREATE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER,
     DELETE_CUSTOMER_GROUP,
     DELETE_CUSTOMER_NOTE,
     GET_CUSTOMER,
@@ -98,6 +100,13 @@ export class CustomerDataService {
             {
                 input,
             },
+        );
+    }
+
+    deleteCustomer(id: string) {
+        return this.baseDataService.mutate<DeleteCustomer.Mutation, DeleteCustomer.Variables>(
+            DELETE_CUSTOMER,
+            { id },
         );
     }
 

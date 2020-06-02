@@ -296,7 +296,7 @@ export class FacetDetailComponent extends BaseDetailComponent<FacetWithValues.Fr
 
         const currentValuesFormArray = this.detailForm.get('values') as FormArray;
         currentValuesFormArray.clear();
-        this.values = facet.values;
+        this.values = [...facet.values];
         facet.values.forEach((value, i) => {
             const valueTranslation =
                 value.translations && value.translations.find((t) => t.languageCode === languageCode);
