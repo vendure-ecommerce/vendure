@@ -4266,6 +4266,19 @@ export type UpdateCustomerMutation = (
   ) }
 );
 
+export type DeleteCustomerMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomer: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
 export type CreateCustomerAddressMutationVariables = {
   customerId: Scalars['ID'];
   input: CreateAddressInput;
@@ -6650,6 +6663,12 @@ export namespace UpdateCustomer {
   export type Variables = UpdateCustomerMutationVariables;
   export type Mutation = UpdateCustomerMutation;
   export type UpdateCustomer = CustomerFragment;
+}
+
+export namespace DeleteCustomer {
+  export type Variables = DeleteCustomerMutationVariables;
+  export type Mutation = DeleteCustomerMutation;
+  export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
 }
 
 export namespace CreateCustomerAddress {
