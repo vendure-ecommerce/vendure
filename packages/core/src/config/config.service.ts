@@ -21,6 +21,7 @@ import {
     PromotionOptions,
     RuntimeVendureConfig,
     ShippingOptions,
+    SuperadminCredentials,
     TaxOptions,
     VendureConfig,
     WorkerOptions,
@@ -57,7 +58,7 @@ export class ConfigService implements VendureConfig {
     get defaultLanguageCode(): LanguageCode {
         return this.activeConfig.defaultLanguageCode;
     }
-    
+
     get entityIdStrategy(): EntityIdStrategy {
         return this.activeConfig.entityIdStrategy;
     }

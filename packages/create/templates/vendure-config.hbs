@@ -45,6 +45,10 @@ const path = require('path');
     },
     authOptions: {
         sessionSecret: '{{ sessionSecret }}',
+        superadminCredentials: {
+            identifier: '{{ superadminIdentifier }}',
+            password: '{{ superadminPassword }}',
+        },
     },
     dbConnectionOptions: {
         type: '{{ dbType }}',
