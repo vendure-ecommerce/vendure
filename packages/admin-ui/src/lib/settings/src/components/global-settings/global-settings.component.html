@@ -26,10 +26,10 @@
                 <span class="ng-value-icon left" (click)="clear.call(null, item)" aria-hidden="true">
                     ×
                 </span>
-                <span class="ng-value-label">{{ 'lang.' + item | translate }} ({{ item | uppercase }})</span>
+                <span class="ng-value-label">{{ 'lang.' + item | translate }} ({{ item }})</span>
             </ng-template>
             <ng-template ng-option-tmp let-item="item">
-                {{ 'lang.' + item | translate }} ({{ item | uppercase }})
+                {{ 'lang.' + item | translate }} ({{ item }})
             </ng-template>
         </ng-select>
     </vdr-form-field>

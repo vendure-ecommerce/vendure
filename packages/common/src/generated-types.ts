@@ -1390,15 +1390,14 @@ export enum JobState {
 
 /**
  * @description
- * ISO 639-1 language code
+ * Languages in the form of a ISO 639-1 language code with optional
+ * region or script modifier (e.g. de_AT). The selection available is based
+ * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
+ * and includes the major spoken languages of the world and any widely-used variants.
  * 
  * @docsCategory common
  */
 export enum LanguageCode {
-  /** Afar */
-  aa = 'aa',
-  /** Abkhazian */
-  ab = 'ab',
   /** Afrikaans */
   af = 'af',
   /** Akan */
@@ -1409,34 +1408,20 @@ export enum LanguageCode {
   am = 'am',
   /** Arabic */
   ar = 'ar',
-  /** Aragonese */
-  an = 'an',
   /** Armenian */
   hy = 'hy',
   /** Assamese */
   as = 'as',
-  /** Avaric */
-  av = 'av',
-  /** Avestan */
-  ae = 'ae',
-  /** Aymara */
-  ay = 'ay',
   /** Azerbaijani */
   az = 'az',
-  /** Bashkir */
-  ba = 'ba',
   /** Bambara */
   bm = 'bm',
+  /** Bangla */
+  bn = 'bn',
   /** Basque */
   eu = 'eu',
   /** Belarusian */
   be = 'be',
-  /** Bengali */
-  bn = 'bn',
-  /** Bihari languages */
-  bh = 'bh',
-  /** Bislama */
-  bi = 'bi',
   /** Bosnian */
   bs = 'bs',
   /** Breton */
@@ -1445,36 +1430,44 @@ export enum LanguageCode {
   bg = 'bg',
   /** Burmese */
   my = 'my',
-  /** Catalan; Valencian */
+  /** Catalan */
   ca = 'ca',
-  /** Chamorro */
-  ch = 'ch',
   /** Chechen */
   ce = 'ce',
   /** Chinese */
   zh = 'zh',
-  /** Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic */
+  /** Simplified Chinese */
+  zh_Hans = 'zh_Hans',
+  /** Traditional Chinese */
+  zh_Hant = 'zh_Hant',
+  /** Church Slavic */
   cu = 'cu',
-  /** Chuvash */
-  cv = 'cv',
   /** Cornish */
   kw = 'kw',
   /** Corsican */
   co = 'co',
-  /** Cree */
-  cr = 'cr',
+  /** Croatian */
+  hr = 'hr',
   /** Czech */
   cs = 'cs',
   /** Danish */
   da = 'da',
-  /** Divehi; Dhivehi; Maldivian */
-  dv = 'dv',
-  /** Dutch; Flemish */
+  /** Dutch */
   nl = 'nl',
+  /** Flemish */
+  nl_BE = 'nl_BE',
   /** Dzongkha */
   dz = 'dz',
   /** English */
   en = 'en',
+  /** Australian English */
+  en_AU = 'en_AU',
+  /** Canadian English */
+  en_CA = 'en_CA',
+  /** British English */
+  en_GB = 'en_GB',
+  /** American English */
+  en_US = 'en_US',
   /** Esperanto */
   eo = 'eo',
   /** Estonian */
@@ -1483,274 +1476,232 @@ export enum LanguageCode {
   ee = 'ee',
   /** Faroese */
   fo = 'fo',
-  /** Fijian */
-  fj = 'fj',
   /** Finnish */
   fi = 'fi',
   /** French */
   fr = 'fr',
-  /** Western Frisian */
-  fy = 'fy',
+  /** Canadian French */
+  fr_CA = 'fr_CA',
+  /** Swiss French */
+  fr_CH = 'fr_CH',
   /** Fulah */
   ff = 'ff',
+  /** Galician */
+  gl = 'gl',
+  /** Ganda */
+  lg = 'lg',
   /** Georgian */
   ka = 'ka',
   /** German */
   de = 'de',
-  /** Gaelic; Scottish Gaelic */
-  gd = 'gd',
-  /** Irish */
-  ga = 'ga',
-  /** Galician */
-  gl = 'gl',
-  /** Manx */
-  gv = 'gv',
-  /** Greek, Modern (1453-) */
+  /** Austrian German */
+  de_AT = 'de_AT',
+  /** Swiss High German */
+  de_CH = 'de_CH',
+  /** Greek */
   el = 'el',
-  /** Guarani */
-  gn = 'gn',
   /** Gujarati */
   gu = 'gu',
-  /** Haitian; Haitian Creole */
+  /** Haitian Creole */
   ht = 'ht',
   /** Hausa */
   ha = 'ha',
   /** Hebrew */
   he = 'he',
-  /** Herero */
-  hz = 'hz',
   /** Hindi */
   hi = 'hi',
-  /** Hiri Motu */
-  ho = 'ho',
-  /** Croatian */
-  hr = 'hr',
   /** Hungarian */
   hu = 'hu',
-  /** Igbo */
-  ig = 'ig',
   /** Icelandic */
   is = 'is',
-  /** Ido */
-  io = 'io',
-  /** Sichuan Yi; Nuosu */
-  ii = 'ii',
-  /** Inuktitut */
-  iu = 'iu',
-  /** Interlingue; Occidental */
-  ie = 'ie',
-  /** Interlingua (International Auxiliary Language Association) */
-  ia = 'ia',
+  /** Igbo */
+  ig = 'ig',
   /** Indonesian */
   id = 'id',
-  /** Inupiaq */
-  ik = 'ik',
+  /** Interlingua */
+  ia = 'ia',
+  /** Irish */
+  ga = 'ga',
   /** Italian */
   it = 'it',
-  /** Javanese */
-  jv = 'jv',
   /** Japanese */
   ja = 'ja',
-  /** Kalaallisut; Greenlandic */
+  /** Javanese */
+  jv = 'jv',
+  /** Kalaallisut */
   kl = 'kl',
   /** Kannada */
   kn = 'kn',
   /** Kashmiri */
   ks = 'ks',
-  /** Kanuri */
-  kr = 'kr',
   /** Kazakh */
   kk = 'kk',
-  /** Central Khmer */
+  /** Khmer */
   km = 'km',
-  /** Kikuyu; Gikuyu */
+  /** Kikuyu */
   ki = 'ki',
   /** Kinyarwanda */
   rw = 'rw',
-  /** Kirghiz; Kyrgyz */
-  ky = 'ky',
-  /** Komi */
-  kv = 'kv',
-  /** Kongo */
-  kg = 'kg',
   /** Korean */
   ko = 'ko',
-  /** Kuanyama; Kwanyama */
-  kj = 'kj',
   /** Kurdish */
   ku = 'ku',
+  /** Kyrgyz */
+  ky = 'ky',
   /** Lao */
   lo = 'lo',
   /** Latin */
   la = 'la',
   /** Latvian */
   lv = 'lv',
-  /** Limburgan; Limburger; Limburgish */
-  li = 'li',
   /** Lingala */
   ln = 'ln',
   /** Lithuanian */
   lt = 'lt',
-  /** Luxembourgish; Letzeburgesch */
-  lb = 'lb',
   /** Luba-Katanga */
   lu = 'lu',
-  /** Ganda */
-  lg = 'lg',
+  /** Luxembourgish */
+  lb = 'lb',
   /** Macedonian */
   mk = 'mk',
-  /** Marshallese */
-  mh = 'mh',
+  /** Malagasy */
+  mg = 'mg',
+  /** Malay */
+  ms = 'ms',
   /** Malayalam */
   ml = 'ml',
+  /** Maltese */
+  mt = 'mt',
+  /** Manx */
+  gv = 'gv',
   /** Maori */
   mi = 'mi',
   /** Marathi */
   mr = 'mr',
-  /** Malay */
-  ms = 'ms',
-  /** Malagasy */
-  mg = 'mg',
-  /** Maltese */
-  mt = 'mt',
   /** Mongolian */
   mn = 'mn',
-  /** Nauru */
-  na = 'na',
-  /** Navajo; Navaho */
-  nv = 'nv',
-  /** Ndebele, South; South Ndebele */
-  nr = 'nr',
-  /** Ndebele, North; North Ndebele */
-  nd = 'nd',
-  /** Ndonga */
-  ng = 'ng',
   /** Nepali */
   ne = 'ne',
-  /** Norwegian Nynorsk; Nynorsk, Norwegian */
-  nn = 'nn',
-  /** Bokmål, Norwegian; Norwegian Bokmål */
+  /** North Ndebele */
+  nd = 'nd',
+  /** Northern Sami */
+  se = 'se',
+  /** Norwegian Bokmål */
   nb = 'nb',
-  /** Norwegian */
-  no = 'no',
-  /** Chichewa; Chewa; Nyanja */
+  /** Norwegian Nynorsk */
+  nn = 'nn',
+  /** Nyanja */
   ny = 'ny',
-  /** Occitan (post 1500); Provençal */
-  oc = 'oc',
-  /** Ojibwa */
-  oj = 'oj',
-  /** Oriya */
+  /** Odia */
   or = 'or',
   /** Oromo */
   om = 'om',
-  /** Ossetian; Ossetic */
+  /** Ossetic */
   os = 'os',
-  /** Panjabi; Punjabi */
-  pa = 'pa',
+  /** Pashto */
+  ps = 'ps',
   /** Persian */
   fa = 'fa',
-  /** Pali */
-  pi = 'pi',
+  /** Dari */
+  fa_AF = 'fa_AF',
   /** Polish */
   pl = 'pl',
   /** Portuguese */
   pt = 'pt',
-  /** Pushto; Pashto */
-  ps = 'ps',
+  /** Brazilian Portuguese */
+  pt_BR = 'pt_BR',
+  /** European Portuguese */
+  pt_PT = 'pt_PT',
+  /** Punjabi */
+  pa = 'pa',
   /** Quechua */
   qu = 'qu',
+  /** Romanian */
+  ro = 'ro',
+  /** Moldavian */
+  ro_MD = 'ro_MD',
   /** Romansh */
   rm = 'rm',
-  /** Romanian; Moldavian; Moldovan */
-  ro = 'ro',
   /** Rundi */
   rn = 'rn',
   /** Russian */
   ru = 'ru',
+  /** Samoan */
+  sm = 'sm',
   /** Sango */
   sg = 'sg',
   /** Sanskrit */
   sa = 'sa',
-  /** Sinhala; Sinhalese */
+  /** Scottish Gaelic */
+  gd = 'gd',
+  /** Serbian */
+  sr = 'sr',
+  /** Shona */
+  sn = 'sn',
+  /** Sichuan Yi */
+  ii = 'ii',
+  /** Sindhi */
+  sd = 'sd',
+  /** Sinhala */
   si = 'si',
   /** Slovak */
   sk = 'sk',
   /** Slovenian */
   sl = 'sl',
-  /** Northern Sami */
-  se = 'se',
-  /** Samoan */
-  sm = 'sm',
-  /** Shona */
-  sn = 'sn',
-  /** Sindhi */
-  sd = 'sd',
   /** Somali */
   so = 'so',
-  /** Sotho, Southern */
+  /** Southern Sotho */
   st = 'st',
-  /** Spanish; Castilian */
+  /** Spanish */
   es = 'es',
-  /** Sardinian */
-  sc = 'sc',
-  /** Serbian */
-  sr = 'sr',
-  /** Swati */
-  ss = 'ss',
+  /** European Spanish */
+  es_ES = 'es_ES',
+  /** Mexican Spanish */
+  es_MX = 'es_MX',
   /** Sundanese */
   su = 'su',
   /** Swahili */
   sw = 'sw',
+  /** Congo Swahili */
+  sw_CD = 'sw_CD',
   /** Swedish */
   sv = 'sv',
-  /** Tahitian */
-  ty = 'ty',
+  /** Tajik */
+  tg = 'tg',
   /** Tamil */
   ta = 'ta',
   /** Tatar */
   tt = 'tt',
   /** Telugu */
   te = 'te',
-  /** Tajik */
-  tg = 'tg',
-  /** Tagalog */
-  tl = 'tl',
   /** Thai */
   th = 'th',
   /** Tibetan */
   bo = 'bo',
   /** Tigrinya */
   ti = 'ti',
-  /** Tonga (Tonga Islands) */
+  /** Tongan */
   to = 'to',
-  /** Tswana */
-  tn = 'tn',
-  /** Tsonga */
-  ts = 'ts',
-  /** Turkmen */
-  tk = 'tk',
   /** Turkish */
   tr = 'tr',
-  /** Twi */
-  tw = 'tw',
-  /** Uighur; Uyghur */
-  ug = 'ug',
+  /** Turkmen */
+  tk = 'tk',
   /** Ukrainian */
   uk = 'uk',
   /** Urdu */
   ur = 'ur',
+  /** Uyghur */
+  ug = 'ug',
   /** Uzbek */
   uz = 'uz',
-  /** Venda */
-  ve = 've',
   /** Vietnamese */
   vi = 'vi',
   /** Volapük */
   vo = 'vo',
   /** Welsh */
   cy = 'cy',
-  /** Walloon */
-  wa = 'wa',
+  /** Western Frisian */
+  fy = 'fy',
   /** Wolof */
   wo = 'wo',
   /** Xhosa */
@@ -1759,8 +1710,6 @@ export enum LanguageCode {
   yi = 'yi',
   /** Yoruba */
   yo = 'yo',
-  /** Zhuang; Chuang */
-  za = 'za',
   /** Zulu */
   zu = 'zu'
 }
