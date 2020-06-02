@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Dialog } from '@vendure/admin-ui/core';
+
+import { Dialog } from '../../../providers/modal/modal.service';
 
 @Component({
     selector: 'vdr-edit-note-dialog',
