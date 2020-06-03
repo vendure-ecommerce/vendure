@@ -565,6 +565,7 @@ describe('Elasticsearch plugin', () => {
                                 languageCode: LanguageCode.en,
                                 name: 'Photo',
                                 description: '',
+                                slug: 'photo',
                             },
                         ],
                         filters: [

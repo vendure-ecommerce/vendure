@@ -9,7 +9,6 @@ import {
     RemoveProductsFromChannelInput,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
-import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
@@ -26,6 +25,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -55,6 +55,7 @@ export class ProductService {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
+        private slugValidator: SlugValidator,
     ) {}
 
     async findAll(
@@ -123,7 +124,7 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
-        await this.validateSlugs(input);
+        await this.slugValidator.validateSlugs(input, ProductTranslation);
         const product = await this.translatableSaver.create({
             input,
             entityType: Product,
@@ -143,7 +144,7 @@ export class ProductService {
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         await getEntityOrThrow(this.connection, Product, input.id);
-        await this.validateSlugs(input);
+        await this.slugValidator.validateSlugs(input, ProductTranslation);
         const product = await this.translatableSaver.update({
             input,
             entityType: Product,
@@ -199,7 +200,10 @@ export class ProductService {
             }
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
-        return this.findByIds(ctx, productsWithVariants.map(p => p.id));
+        return this.findByIds(
+            ctx,
+            productsWithVariants.map(p => p.id),
+        );
     }
 
     async removeProductsFromChannel(
@@ -222,7 +226,10 @@ export class ProductService {
             await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
-        return this.findByIds(ctx, products.map(p => p.id));
+        return this.findByIds(
+            ctx,
+            products.map(p => p.id),
+        );
     }
 
     async addOptionGroupToProduct(
@@ -277,43 +284,5 @@ export class ProductService {
             throw new EntityNotFoundError('Product', productId);
         }
         return product;
-    }
-
-    /**
-     * Normalizes the slug to be URL-safe, and ensures it is unique for the given languageCode.
-     */
-    private async validateSlugs<T extends CreateProductInput | UpdateProductInput>(input: T): Promise<T> {
-        if (input.translations) {
-            for (const t of input.translations) {
-                if (t.slug) {
-                    t.slug = normalizeString(t.slug, '-');
-                    let match: ProductTranslation | undefined;
-                    let suffix = 1;
-                    const alreadySuffixed = /-\d+$/;
-                    do {
-                        const qb = this.connection
-                            .getRepository(ProductTranslation)
-                            .createQueryBuilder('translation')
-                            .where(`translation.slug = :slug`, { slug: t.slug })
-                            .andWhere(`translation.languageCode = :languageCode`, {
-                                languageCode: t.languageCode,
-                            });
-                        if ((input as UpdateProductInput).id) {
-                            qb.andWhere(`translation.base != :id`, { id: (input as UpdateProductInput).id });
-                        }
-                        match = await qb.getOne();
-                        if (match) {
-                            suffix++;
-                            if (alreadySuffixed.test(t.slug)) {
-                                t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
-                            } else {
-                                t.slug = `${t.slug}-${suffix}`;
-                            }
-                        }
-                    } while (match);
-                }
-            }
-        }
-        return input;
     }
 }

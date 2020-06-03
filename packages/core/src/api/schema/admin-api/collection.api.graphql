@@ -31,10 +31,18 @@ input MoveCollectionInput {
     index: Int!
 }
 
-input CollectionTranslationInput {
+input CreateCollectionTranslationInput {
+    languageCode: LanguageCode!
+    name: String!
+    slug: String!
+    description: String!
+}
+
+input UpdateCollectionTranslationInput {
     id: ID
     languageCode: LanguageCode!
     name: String
+    slug: String
     description: String
 }
 
@@ -44,7 +52,7 @@ input CreateCollectionInput {
     assetIds: [ID!]
     parentId: ID
     filters: [ConfigurableOperationInput!]!
-    translations: [CollectionTranslationInput!]!
+    translations: [CreateCollectionTranslationInput!]!
 }
 
 input UpdateCollectionInput {
@@ -54,5 +62,5 @@ input UpdateCollectionInput {
     parentId: ID
     assetIds: [ID!]
     filters: [ConfigurableOperationInput!]
-    translations: [CollectionTranslationInput!]
+    translations: [UpdateCollectionTranslationInput!]
 }

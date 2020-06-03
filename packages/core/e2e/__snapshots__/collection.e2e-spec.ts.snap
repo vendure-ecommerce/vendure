@@ -58,12 +58,14 @@ Object {
     "id": "T_1",
     "name": "__root_collection__",
   },
+  "slug": "electronics",
   "translations": Array [
     Object {
       "description": "",
       "id": "T_3",
       "languageCode": "en",
       "name": "Electronics",
+      "slug": "electronics",
     },
   ],
 }
@@ -127,12 +129,14 @@ Object {
     "id": "T_4",
     "name": "Computers",
   },
+  "slug": "apple-stuff",
   "translations": Array [
     Object {
       "description": "Apple stuff ",
       "id": "T_5",
       "languageCode": "en",
       "name": "Pear",
+      "slug": "apple-stuff",
     },
   ],
 }

@@ -128,7 +128,12 @@ describe('Collection resolver', () => {
                             },
                         ],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Electronics', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Electronics',
+                                description: '',
+                                slug: 'electronics',
+                            },
                         ],
                     },
                 },
@@ -145,7 +150,14 @@ describe('Collection resolver', () => {
                 {
                     input: {
                         parentId: electronicsCollection.id,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Computers', description: '' }],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Computers',
+                                description: '',
+                                slug: 'computers',
+                            },
+                        ],
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -176,7 +188,9 @@ describe('Collection resolver', () => {
                 {
                     input: {
                         parentId: computersCollection.id,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Pear', description: '' }],
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Pear', description: '', slug: 'pear' },
+                        ],
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -200,6 +214,71 @@ describe('Collection resolver', () => {
             pearCollection = result.createCollection;
             expect(pearCollection.parent!.name).toBe(computersCollection.name);
         });
+
+        it('slug is normalized to be url-safe', async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Accessories',
+                            description: '',
+                            slug: 'Accessories!',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'Zubehör',
+                            description: '',
+                            slug: 'Zubehör!',
+                        },
+                    ],
+                    filters: [],
+                },
+            });
+
+            expect(createCollection.slug).toBe('accessories');
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.en)?.slug).toBe(
+                'accessories',
+            );
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
+                'zubehor',
+            );
+        });
+
+        it('create with duplicate slug is renamed to be unique', async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Accessories',
+                            description: '',
+                            slug: 'Accessories',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'Zubehör',
+                            description: '',
+                            slug: 'Zubehör',
+                        },
+                    ],
+                    filters: [],
+                },
+            });
+
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.en)?.slug).toBe(
+                'accessories-2',
+            );
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
+                'zubehor-2',
+            );
+        });
     });
 
     describe('updateCollection', () => {
@@ -212,7 +291,9 @@ describe('Collection resolver', () => {
                     id: pearCollection.id,
                     assetIds: [assets[1].id, assets[2].id],
                     featuredAssetId: assets[1].id,
-                    translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
+                    translations: [
+                        { languageCode: LanguageCode.en, description: 'Apple stuff ', slug: 'apple-stuff' },
+                    ],
                 },
             });
 
@@ -484,7 +565,12 @@ describe('Collection resolver', () => {
                             },
                         ],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Delete Me Parent', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Delete Me Parent',
+                                description: '',
+                                slug: 'delete-me-parent',
+                            },
                         ],
                         assetIds: ['T_1'],
                     },
@@ -498,7 +584,12 @@ describe('Collection resolver', () => {
                     input: {
                         filters: [],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Delete Me Child', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Delete Me Child',
+                                description: '',
+                                slug: 'delete-me-child',
+                            },
                         ],
                         parentId: collectionToDeleteParent.id,
                         assetIds: ['T_2'],
@@ -548,8 +639,8 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_6', name: 'Delete Me Parent' },
-                { id: 'T_7', name: 'Delete Me Child' },
+                { id: 'T_8', name: 'Delete Me Parent' },
+                { id: 'T_9', name: 'Delete Me Child' },
             ]);
         });
 
@@ -607,7 +698,9 @@ describe('Collection resolver', () => {
                 CreateCollectionSelectVariants.Variables
             >(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
-                    translations: [{ languageCode: LanguageCode.en, name: 'Empty', description: '' }],
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'Empty', description: '', slug: 'empty' },
+                    ],
                     filters: [],
                 } as CreateCollectionInput,
             });
@@ -682,7 +775,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Photo AND Pear', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Photo AND Pear',
+                                description: '',
+                                slug: 'photo-and-pear',
+                            },
                         ],
                         filters: [
                             {
@@ -724,7 +822,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Photo OR Pear', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Photo OR Pear',
+                                description: '',
+                                slug: 'photo-or-pear',
+                            },
                         ],
                         filters: [
                             {
@@ -781,6 +884,7 @@ describe('Collection resolver', () => {
                                 languageCode: LanguageCode.en,
                                 name: 'Bell OR Pear Computers',
                                 description: '',
+                                slug: 'bell-or-pear',
                             },
                         ],
                         filters: [
@@ -833,7 +937,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: `${operator} ${term}`, description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: `${operator} ${term}`,
+                                description: '',
+                                slug: `${operator} ${term}`,
+                            },
                         ],
                         filters: [
                             {
@@ -1062,7 +1171,12 @@ describe('Collection resolver', () => {
                 input: {
                     parentId: electronicsCollection.id,
                     translations: [
-                        { languageCode: LanguageCode.en, name: 'pear electronics', description: '' },
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'pear electronics',
+                            description: '',
+                            slug: 'pear-electronics',
+                        },
                     ],
                     filters: [
                         {
@@ -1113,11 +1227,11 @@ describe('Collection resolver', () => {
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_9', name: 'Photo AND Pear' },
-                { id: 'T_10', name: 'Photo OR Pear' },
-                { id: 'T_12', name: 'contains camera' },
-                { id: 'T_14', name: 'endsWith camera' },
-                { id: 'T_16', name: 'pear electronics' },
+                { id: 'T_11', name: 'Photo AND Pear' },
+                { id: 'T_12', name: 'Photo OR Pear' },
+                { id: 'T_14', name: 'contains camera' },
+                { id: 'T_16', name: 'endsWith camera' },
+                { id: 'T_18', name: 'pear electronics' },
             ]);
         });
     });

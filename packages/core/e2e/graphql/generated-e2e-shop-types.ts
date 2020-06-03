@@ -142,6 +142,7 @@ export type Collection = Node & {
     updatedAt: Scalars['DateTime'];
     languageCode?: Maybe<LanguageCode>;
     name: Scalars['String'];
+    slug: Scalars['String'];
     breadcrumbs: Array<CollectionBreadcrumb>;
     position: Scalars['Int'];
     description: Scalars['String'];
@@ -170,6 +171,7 @@ export type CollectionFilterParameter = {
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
+    slug?: Maybe<StringOperators>;
     position?: Maybe<NumberOperators>;
     description?: Maybe<StringOperators>;
 };
@@ -192,6 +194,7 @@ export type CollectionSortParameter = {
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
+    slug?: Maybe<SortOrder>;
     position?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
 };
@@ -203,6 +206,7 @@ export type CollectionTranslation = {
     updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     name: Scalars['String'];
+    slug: Scalars['String'];
     description: Scalars['String'];
 };
 

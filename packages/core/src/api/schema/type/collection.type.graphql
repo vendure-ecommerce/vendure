@@ -4,6 +4,7 @@ type Collection implements Node {
     updatedAt: DateTime!
     languageCode: LanguageCode
     name: String!
+    slug: String!
     breadcrumbs: [CollectionBreadcrumb!]!
     position: Int!
     description: String!
@@ -27,6 +28,7 @@ type CollectionTranslation {
     updatedAt: DateTime!
     languageCode: LanguageCode!
     name: String!
+    slug: String!
     description: String!
 }
 

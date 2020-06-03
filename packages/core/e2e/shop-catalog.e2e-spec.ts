@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateCollection,
@@ -258,7 +258,14 @@ describe('Shop catalog', () => {
                             ],
                         },
                     ],
-                    translations: [{ languageCode: LanguageCode.en, name: 'My Collection', description: '' }],
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'My Collection',
+                            description: '',
+                            slug: 'my-collection',
+                        },
+                    ],
                 },
             });
             collection = createCollection;

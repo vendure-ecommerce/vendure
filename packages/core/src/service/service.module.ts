@@ -18,6 +18,7 @@ import { PaymentStateMachine } from './helpers/payment-state-machine/payment-sta
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from './helpers/shipping-configuration/shipping-configuration';
+import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
@@ -94,6 +95,7 @@ const helpers = [
     VerificationTokenGenerator,
     RefundStateMachine,
     ShippingConfiguration,
+    SlugValidator,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];

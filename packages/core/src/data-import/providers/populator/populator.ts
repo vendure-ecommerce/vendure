@@ -67,6 +67,7 @@ export class Populator {
                         languageCode: ctx.languageCode,
                         name: collectionDef.name,
                         description: collectionDef.description || '',
+                        slug: collectionDef.slug ?? collectionDef.name,
                     },
                 ],
                 isPrivate: collectionDef.private || false,

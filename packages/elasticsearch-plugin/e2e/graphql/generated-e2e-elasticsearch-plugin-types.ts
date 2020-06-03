@@ -226,6 +226,7 @@ export type Collection = Node & {
     updatedAt: Scalars['DateTime'];
     languageCode?: Maybe<LanguageCode>;
     name: Scalars['String'];
+    slug: Scalars['String'];
     breadcrumbs: Array<CollectionBreadcrumb>;
     position: Scalars['Int'];
     description: Scalars['String'];
@@ -255,6 +256,7 @@ export type CollectionFilterParameter = {
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
+    slug?: Maybe<StringOperators>;
     position?: Maybe<NumberOperators>;
     description?: Maybe<StringOperators>;
 };
@@ -277,6 +279,7 @@ export type CollectionSortParameter = {
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
+    slug?: Maybe<SortOrder>;
     position?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
 };
@@ -288,15 +291,8 @@ export type CollectionTranslation = {
     updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     name: Scalars['String'];
+    slug: Scalars['String'];
     description: Scalars['String'];
-};
-
-export type CollectionTranslationInput = {
-    id?: Maybe<Scalars['ID']>;
-    languageCode: LanguageCode;
-    name?: Maybe<Scalars['String']>;
-    description?: Maybe<Scalars['String']>;
-    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArg = {
@@ -450,8 +446,15 @@ export type CreateCollectionInput = {
     assetIds?: Maybe<Array<Scalars['ID']>>;
     parentId?: Maybe<Scalars['ID']>;
     filters: Array<ConfigurableOperationInput>;
-    translations: Array<CollectionTranslationInput>;
+    translations: Array<CreateCollectionTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateCollectionTranslationInput = {
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    slug: Scalars['String'];
+    description: Scalars['String'];
 };
 
 export type CreateCountryInput = {
@@ -3406,8 +3409,16 @@ export type UpdateCollectionInput = {
     parentId?: Maybe<Scalars['ID']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     filters?: Maybe<Array<ConfigurableOperationInput>>;
-    translations?: Maybe<Array<CollectionTranslationInput>>;
+    translations?: Maybe<Array<UpdateCollectionTranslationInput>>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateCollectionTranslationInput = {
+    id?: Maybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: Maybe<Scalars['String']>;
+    slug?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
 };
 
 export type UpdateCountryInput = {
