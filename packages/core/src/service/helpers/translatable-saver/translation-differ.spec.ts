@@ -58,13 +58,13 @@ describe('TranslationUpdater', () => {
         it('correctly marks translations for addition', async () => {
             const updated: Array<TranslationInput<Product>> = [
                 {
-                    languageCode: LanguageCode.aa,
+                    languageCode: LanguageCode.af,
                     name: '',
                     slug: '',
                     description: '',
                 },
                 {
-                    languageCode: LanguageCode.za,
+                    languageCode: LanguageCode.zh,
                     name: '',
                     slug: '',
                     description: '',
@@ -86,7 +86,7 @@ describe('TranslationUpdater', () => {
                     description: '',
                 },
                 {
-                    languageCode: LanguageCode.za,
+                    languageCode: LanguageCode.zh,
                     name: '',
                     slug: '',
                     description: '',
