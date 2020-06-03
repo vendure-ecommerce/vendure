@@ -42,4 +42,8 @@ Extracting translation tokens for "src\lib\static\i18n-messages\de.json"
 de: 592 of 650 tokens translated (91%)
 ```
 
+This report data is also saved to the [i18n-coverage.json](./i18n-coverage.json) file.
+
 To add support for a new language, create a new empty json file (`{}`) in the `i18n-messages` directory named `<languageCode>.json`, where `languageCode` is one of the supported codes as given in the [LanguageCode enum type](../core/src/api/schema/common/language-code.graphql), then run `yarn extract-translations`
+
+

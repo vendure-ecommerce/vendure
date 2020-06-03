@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 const spawn = require('cross-spawn');
+const { exec } = require('child_process');
 
 const MESSAGES_DIR = path.join(__dirname, '../src/lib/static/i18n-messages');
 
@@ -14,8 +15,16 @@ extractTranslations().then(
     },
 );
 
+/**
+ * Extracts translation tokens into the i18n-messages files found in the MESSAGES_DIR.
+ */
 async function extractTranslations() {
     const locales = fs.readdirSync(MESSAGES_DIR).map((file) => path.basename(file).replace('.json', ''));
+    const report = {
+        generatedOn: new Date().toISOString(),
+        lastCommit: await getLastGitCommitHash(),
+        translationStatus: {},
+    };
     for (const locale of locales) {
         const outputPath = path.join(
             path.relative(path.join(__dirname, '..'), MESSAGES_DIR),
@@ -28,10 +37,16 @@ async function extractTranslations() {
             const { tokenCount, translatedCount, percentage } = getStatsForLocale(locale);
             console.log(`${locale}: ${translatedCount} of ${tokenCount} tokens translated (${percentage}%)`);
             console.log('');
+
+            report.translationStatus[locale] = { tokenCount, translatedCount, percentage };
         } catch (e) {
             console.log(e);
         }
     }
+
+    const reportFile = path.join(__dirname, '../i18n-coverage.json');
+    fs.writeFileSync(reportFile, JSON.stringify(report, null, 2), 'utf-8');
+    console.log(`Report saved to "${reportFile}"`);
 }
 
 function runExtraction(locale) {
@@ -85,4 +100,16 @@ function getNgxTranslateExtractCommand(locale) {
         `-m`,
         `_`,
     ];
+}
+
+function getLastGitCommitHash() {
+    return new Promise((resolve, reject) => {
+        exec('git rev-parse HEAD', (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.replace('\n', ''));
+            }
+        });
+    });
 }
