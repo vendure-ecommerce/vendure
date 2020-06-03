@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { DEFAULT_APP_PATH, defaultAvailableLanguages, defaultLanguage, loggerCtx } from './constants';
+import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
 
 /**
  * @description
@@ -109,7 +109,7 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [],
-    configuration: (config) => AdminUiPlugin.configure(config),
+    configuration: config => AdminUiPlugin.configure(config),
 })
 export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     private static options: AdminUiPluginOptions;
@@ -226,7 +226,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     async onVendureClose(): Promise<void> {
         if (this.server) {
-            await new Promise((resolve) => this.server.close(() => resolve()));
+            await new Promise(resolve => this.server.close(() => resolve()));
         }
     }
 
@@ -262,42 +262,47 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
      * the server admin API.
      */
     private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
-        /**
-         * It might be that the ui-devkit compiler has not yet copied the config
-         * file to the expected location (perticularly when running in watch mode),
-         * so polling is used to check multiple times with a delay.
-         */
-        async function pollForConfigFile() {
-            let configFileContent: string;
-            const maxRetries = 5;
-            const retryDelay = 200;
-            let attempts = 0;
-            return new Promise<string>(async function checkForFile(resolve, reject) {
-                if (attempts >= maxRetries) {
-                    reject();
-                }
-                try {
-                    Logger.verbose(`Checking for config file: ${adminUiConfigPath}`, loggerCtx);
-                    configFileContent = await fs.readFile(adminUiConfigPath, 'utf-8');
-                    resolve(configFileContent);
-                } catch (e) {
-                    attempts++;
-                    Logger.verbose(
-                        `Unable to locate config file: ${adminUiConfigPath} (attempt ${attempts})`,
-                        loggerCtx,
-                    );
-                    setTimeout(pollForConfigFile, retryDelay, resolve, reject);
-                }
-            });
+        try {
+            const content = await this.pollForConfigFile(adminUiConfigPath);
+        } catch (e) {
+            Logger.error(e.message, loggerCtx);
+            throw e;
         }
-
-        const content = await pollForConfigFile();
         try {
             await fs.writeFile(adminUiConfigPath, JSON.stringify(config, null, 2));
         } catch (e) {
             throw new Error('[AdminUiPlugin] Could not write vendure-ui-config.json file:\n' + e.message);
         }
         Logger.verbose(`Applied configuration to vendure-ui-config.json file`, loggerCtx);
+    }
+
+    /**
+     * It might be that the ui-devkit compiler has not yet copied the config
+     * file to the expected location (particularly when running in watch mode),
+     * so polling is used to check multiple times with a delay.
+     */
+    private async pollForConfigFile(adminUiConfigPath: string) {
+        const maxRetries = 10;
+        const retryDelay = 200;
+        let attempts = 0;
+
+        const pause = () => new Promise(resolve => setTimeout(resolve, retryDelay));
+
+        while (attempts < maxRetries) {
+            try {
+                Logger.verbose(`Checking for config file: ${adminUiConfigPath}`, loggerCtx);
+                const configFileContent = await fs.readFile(adminUiConfigPath, 'utf-8');
+                return configFileContent;
+            } catch (e) {
+                attempts++;
+                Logger.verbose(
+                    `Unable to locate config file: ${adminUiConfigPath} (attempt ${attempts})`,
+                    loggerCtx,
+                );
+            }
+            await pause();
+        }
+        throw new Error(`Unable to locate config file: ${adminUiConfigPath}`);
     }
 
     private static isDevModeApp(
