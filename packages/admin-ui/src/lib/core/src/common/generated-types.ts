@@ -2905,6 +2905,7 @@ export type Query = {
   assets: AssetList;
   channel?: Maybe<Channel>;
   channels: Array<Channel>;
+  /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
   collection?: Maybe<Collection>;
   collectionFilters: Array<ConfigurableOperationDefinition>;
   collections: CollectionList;
@@ -2982,7 +2983,8 @@ export type QueryChannelArgs = {
 
 
 export type QueryCollectionArgs = {
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 

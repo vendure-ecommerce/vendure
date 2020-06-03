@@ -455,6 +455,7 @@ export type CreateCollectionTranslationInput = {
     name: Scalars['String'];
     slug: Scalars['String'];
     description: Scalars['String'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateCountryInput = {
@@ -2783,6 +2784,7 @@ export type Query = {
     channel?: Maybe<Channel>;
     activeChannel: Channel;
     collections: CollectionList;
+    /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
     collection?: Maybe<Collection>;
     collectionFilters: Array<ConfigurableOperationDefinition>;
     countries: CountryList;
@@ -2853,7 +2855,8 @@ export type QueryCollectionsArgs = {
 };
 
 export type QueryCollectionArgs = {
-    id: Scalars['ID'];
+    id?: Maybe<Scalars['ID']>;
+    slug?: Maybe<Scalars['String']>;
 };
 
 export type QueryCountriesArgs = {
@@ -3419,6 +3422,7 @@ export type UpdateCollectionTranslationInput = {
     name?: Maybe<Scalars['String']>;
     slug?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCountryInput = {

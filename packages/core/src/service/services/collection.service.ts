@@ -129,6 +129,21 @@ export class CollectionService implements OnModuleInit {
         return translateDeep(collection, ctx.languageCode, ['parent']);
     }
 
+    async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {
+        const translation = await this.connection.getRepository(CollectionTranslation).findOne({
+            relations: ['base'],
+            where: {
+                languageCode: ctx.languageCode,
+                slug,
+            },
+        });
+
+        if (!translation) {
+            return;
+        }
+        return this.findOne(ctx, translation.base.id);
+    }
+
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.configService.catalogOptions.collectionFilters.map(x =>
             configurableDefToOperation(ctx, x),

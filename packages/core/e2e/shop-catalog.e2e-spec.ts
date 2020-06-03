@@ -291,6 +291,14 @@ describe('Shop catalog', () => {
             ]);
         });
 
+        it('collection by slug', async () => {
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { slug: collection.slug });
+            expect(result.collection?.id).toBe(collection.id);
+        });
+
         it('omits variants from disabled products', async () => {
             await adminClient.query<DisableProduct.Mutation, DisableProduct.Variables>(DISABLE_PRODUCT, {
                 id: 'T_17',
@@ -393,8 +401,9 @@ const DISABLE_PRODUCT = gql`
 `;
 
 const GET_COLLECTION_VARIANTS = gql`
-    query GetCollectionVariants($id: ID!) {
-        collection(id: $id) {
+    query GetCollectionVariants($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
+            id
             productVariants {
                 items {
                     id

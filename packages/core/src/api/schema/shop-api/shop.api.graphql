@@ -4,7 +4,7 @@ type Query {
     activeOrder: Order
     availableCountries: [Country!]!
     collections(options: CollectionListOptions): CollectionList!
-    collection(id: ID!): Collection
+    collection(id: ID, slug: String): Collection
     eligibleShippingMethods: [ShippingMethodQuote!]!
     me: CurrentUser
     nextOrderStates: [String!]!

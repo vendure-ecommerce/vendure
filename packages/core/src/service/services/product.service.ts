@@ -112,6 +112,7 @@ export class ProductService {
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
         const translation = await this.connection.getRepository(ProductTranslation).findOne({
+            relations: ['base'],
             where: {
                 languageCode: ctx.languageCode,
                 slug,
@@ -120,7 +121,7 @@ export class ProductService {
         if (!translation) {
             return;
         }
-        return this.findOne(ctx, translation.baseId);
+        return this.findOne(ctx, translation.base.id);
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {

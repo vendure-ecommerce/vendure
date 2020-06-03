@@ -331,7 +331,7 @@ describe('Collection resolver', () => {
         });
     });
 
-    it('collection query', async () => {
+    it('collection by id', async () => {
         const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
         });
@@ -341,6 +341,34 @@ describe('Collection resolver', () => {
         }
         expect(result.collection.id).toBe(computersCollection.id);
     });
+
+    it('collection by slug', async () => {
+        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            slug: computersCollection.slug,
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.id).toBe(computersCollection.id);
+    });
+
+    it(
+        'throws if neither id nor slug provided',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {});
+        }, 'Either the Collection id or slug must be provided'),
+    );
+
+    it(
+        'throws if id and slug do not refer to the same Product',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+                id: computersCollection.id,
+                slug: pearCollection.slug,
+            });
+        }, 'The provided id and slug refer to different Collections'),
+    );
 
     it('parent field', async () => {
         const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
@@ -1266,8 +1294,8 @@ describe('Collection resolver', () => {
 });
 
 export const GET_COLLECTION = gql`
-    query GetCollection($id: ID!) {
-        collection(id: $id) {
+    query GetCollection($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
             ...Collection
             productVariants {
                 items {

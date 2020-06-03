@@ -1928,7 +1928,8 @@ export type QueryCollectionsArgs = {
 };
 
 export type QueryCollectionArgs = {
-    id: Scalars['ID'];
+    id?: Maybe<Scalars['ID']>;
+    slug?: Maybe<Scalars['String']>;
 };
 
 export type QueryOrderArgs = {

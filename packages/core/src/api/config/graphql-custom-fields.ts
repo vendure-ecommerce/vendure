@@ -130,23 +130,32 @@ export function addGraphQLCustomFields(
                 `;
         }
 
-        if (writeableLocaleStringFields && schema.getType(`${entityName}TranslationInput`)) {
-            if (writeableLocaleStringFields.length) {
-                customFieldTypeDefs += `
-                    input ${entityName}TranslationCustomFieldsInput {
-                        ${mapToFields(writeableLocaleStringFields, getGraphQlType)}
-                    }
+        if (writeableLocaleStringFields) {
+            const translationInputs = [
+                `${entityName}TranslationInput`,
+                `Create${entityName}TranslationInput`,
+                `Update${entityName}TranslationInput`,
+            ];
+            for (const inputName of translationInputs) {
+                if (schema.getType(inputName)) {
+                    if (writeableLocaleStringFields.length) {
+                        customFieldTypeDefs += `
+                            input ${inputName}CustomFields {
+                                ${mapToFields(writeableLocaleStringFields, getGraphQlType)}
+                            }
 
-                    extend input ${entityName}TranslationInput {
-                        customFields: ${entityName}TranslationCustomFieldsInput
+                            extend input ${inputName} {
+                                customFields: ${inputName}CustomFields
+                            }
+                        `;
+                    } else {
+                        customFieldTypeDefs += `
+                            extend input ${inputName} {
+                                customFields: JSON
+                            }
+                        `;
                     }
-                `;
-            } else {
-                customFieldTypeDefs += `
-                    extend input ${entityName}TranslationInput {
-                        customFields: JSON
-                    }
-                `;
+                }
             }
         }
     }

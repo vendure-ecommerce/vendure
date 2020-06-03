@@ -12,6 +12,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
@@ -56,7 +57,19 @@ export class CollectionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
     ): Promise<Translated<Collection> | undefined> {
-        return this.collectionService.findOne(ctx, args.id).then(this.encodeFilters);
+        let collection: Translated<Collection> | undefined;
+        if (args.id) {
+            collection = await this.collectionService.findOne(ctx, args.id);
+            if (args.slug && collection && collection.slug !== args.slug) {
+                throw new UserInputError(`error.collection-id-slug-mismatch`);
+            }
+        } else if (args.slug) {
+            collection = await this.collectionService.findOneBySlug(ctx, args.slug);
+        } else {
+            throw new UserInputError(`error.collection-id-or-slug-must-be-provided`);
+        }
+
+        return this.encodeFilters(collection);
     }
 
     @Mutation()

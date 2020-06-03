@@ -88,7 +88,17 @@ export class ShopProductsResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCollectionArgs,
     ): Promise<Translated<Collection> | undefined> {
-        const collection = await this.collectionService.findOne(ctx, args.id);
+        let collection: Translated<Collection> | undefined;
+        if (args.id) {
+            collection = await this.collectionService.findOne(ctx, args.id);
+            if (args.slug && collection && collection.slug !== args.slug) {
+                throw new UserInputError(`error.collection-id-slug-mismatch`);
+            }
+        } else if (args.slug) {
+            collection = await this.collectionService.findOneBySlug(ctx, args.slug);
+        } else {
+            throw new UserInputError(`error.collection-id-or-slug-must-be-provided`);
+        }
         if (collection && collection.isPrivate) {
             return;
         }
