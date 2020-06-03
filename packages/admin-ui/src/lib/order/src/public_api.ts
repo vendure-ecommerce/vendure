@@ -2,7 +2,6 @@
 export * from './components/cancel-order-dialog/cancel-order-dialog.component';
 export * from './components/fulfill-order-dialog/fulfill-order-dialog.component';
 export * from './components/fulfillment-detail/fulfillment-detail.component';
-export * from '../../core/src/shared/components/history-entry-detail/history-entry-detail.component';
 export * from './components/line-fulfillment/line-fulfillment.component';
 export * from './components/line-refunds/line-refunds.component';
 export * from './components/order-custom-fields-card/order-custom-fields-card.component';

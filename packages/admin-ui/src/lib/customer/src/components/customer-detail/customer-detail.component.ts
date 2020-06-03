@@ -9,6 +9,7 @@ import {
     Customer,
     CustomFieldConfig,
     DataService,
+    EditNoteDialogComponent,
     GetAvailableCountries,
     GetCustomer,
     GetCustomerHistory,
@@ -34,7 +35,6 @@ import {
     take,
 } from 'rxjs/operators';
 
-import { EditNoteDialogComponent } from '../../../../core/src/shared/components/edit-note-dialog/edit-note-dialog.component';
 import { SelectCustomerGroupDialogComponent } from '../select-customer-group-dialog/select-customer-group-dialog.component';
 
 type CustomerWithOrders = NonNullable<GetCustomerQuery['customer']>;
@@ -94,12 +94,12 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         this.init();
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
-            .mapSingle((result) => result.countries.items)
+            .mapSingle(result => result.countries.items)
             .pipe(shareReplay(1));
 
         const customerWithUpdates$ = this.entity$.pipe(merge(this.orderListUpdates$));
-        this.orders$ = customerWithUpdates$.pipe(map((customer) => customer.orders.items));
-        this.ordersCount$ = this.entity$.pipe(map((customer) => customer.orders.totalItems));
+        this.orders$ = customerWithUpdates$.pipe(map(customer => customer.orders.items));
+        this.ordersCount$ = this.entity$.pipe(map(customer => customer.orders.totalItems));
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
             switchMap(() => {
@@ -109,7 +109,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream((data) => data.customer?.history.items);
+                    .mapStream(data => data.customer?.history.items);
             }),
         );
     }
@@ -180,7 +180,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             phoneNumber: formValue.phoneNumber,
         };
         this.dataService.customer.createCustomer(customer, formValue.password).subscribe(
-            (data) => {
+            data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Customer',
                 });
@@ -197,7 +197,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createCustomer.id], { relativeTo: this.route });
             },
-            (err) => {
+            err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Customer',
                 });
@@ -261,7 +261,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Customer',
                     });
@@ -270,7 +270,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     this.changeDetector.markForCheck();
                     this.fetchHistory.next();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Customer',
                     });
@@ -284,11 +284,11 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 size: 'md',
             })
             .pipe(
-                switchMap((groupIds) => (groupIds ? from(groupIds) : EMPTY)),
-                concatMap((groupId) => this.dataService.customer.addCustomersToGroup(groupId, [this.id])),
+                switchMap(groupIds => (groupIds ? from(groupIds) : EMPTY)),
+                concatMap(groupId => this.dataService.customer.addCustomersToGroup(groupId, [this.id])),
             )
             .subscribe({
-                next: (res) => {
+                next: res => {
                     this.notificationService.success(_(`customer.add-customers-to-group-success`), {
                         customerCount: 1,
                         groupName: res.addCustomersToGroup.name,
@@ -311,14 +311,14 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 ],
             })
             .pipe(
-                switchMap((response) =>
+                switchMap(response =>
                     response
                         ? this.dataService.customer.removeCustomersFromGroup(group.id, [this.id])
                         : EMPTY,
                 ),
                 switchMap(() => this.dataService.customer.getCustomer(this.id, { take: 0 }).single$),
             )
-            .subscribe((result) => {
+            .subscribe(result => {
                 this.notificationService.success(_(`customer.remove-customers-from-group-success`), {
                     customerCount: 1,
                     groupName: group.name,
@@ -346,7 +346,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 },
             })
             .pipe(
-                switchMap((result) => {
+                switchMap(result => {
                     if (result) {
                         return this.dataService.customer.updateCustomerNote({
                             noteId: entry.id,
@@ -357,7 +357,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     }
                 }),
             )
-            .subscribe((result) => {
+            .subscribe(result => {
                 this.fetchHistory.next();
                 this.notificationService.success(_('common.notify-update-success'), {
                     entity: 'Note',
@@ -375,7 +375,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })
-            .pipe(switchMap((res) => (res ? this.dataService.customer.deleteCustomerNote(entry.id) : EMPTY)))
+            .pipe(switchMap(res => (res ? this.dataService.customer.deleteCustomerNote(entry.id) : EMPTY)))
             .subscribe(() => {
                 this.fetchHistory.next();
                 this.notificationService.success(_('common.notify-delete-success'), {
@@ -437,9 +437,9 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 skip: (this.currentOrdersPage - 1) * this.ordersPerPage,
             })
             .single$.pipe(
-                map((data) => data.customer),
+                map(data => data.customer),
                 filter(notNullOrUndefined),
             )
-            .subscribe((result) => this.orderListUpdates$.next(result));
+            .subscribe(result => this.orderListUpdates$.next(result));
     }
 }

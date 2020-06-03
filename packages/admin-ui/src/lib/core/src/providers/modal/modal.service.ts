@@ -3,9 +3,9 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { from, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { OverlayHostService } from '../../providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../shared/components/modal-dialog/modal-dialog.component';
 import { SimpleDialogComponent } from '../../shared/components/simple-dialog/simple-dialog.component';
+import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 /**
  * Any component intended to be used with the ModalService.fromComponent() method must implement
@@ -113,13 +113,13 @@ export class ModalService {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
 
         return from(this.overlayHostService.getHostView()).pipe(
-            mergeMap((hostView) => {
+            mergeMap(hostView => {
                 const modalComponentRef = hostView.createComponent(modalFactory);
                 const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
                 modalInstance.childComponentType = component;
                 modalInstance.options = options;
 
-                return new Observable<R>((subscriber) => {
+                return new Observable<R>(subscriber => {
                     modalInstance.closeModal = (result: R) => {
                         modalComponentRef.destroy();
                         subscriber.next(result);
