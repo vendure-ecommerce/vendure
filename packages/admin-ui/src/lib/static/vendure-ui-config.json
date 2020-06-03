@@ -5,5 +5,5 @@
   "tokenMethod": "cookie",
   "authTokenHeaderKey": "vendure-auth-token",
   "defaultLanguage": "en",
-  "availableLanguages": ["en", "es", "zh_CN","zh_TW", "pl", "de"]
+  "availableLanguages": ["en", "es", "zh", "pl", "de"]
 }
