@@ -73,7 +73,7 @@ describe('EmailPlugin', () => {
             .setFrom('"test from" <noreply@test.com>')
             .setRecipient(() => 'test@test.com')
             .setSubject('Hello')
-            .setTemplateVars((event) => ({ subjectVar: 'foo' }));
+            .setTemplateVars(event => ({ subjectVar: 'foo' }));
 
         await initPluginWithHandlers([handler]);
 
@@ -93,7 +93,7 @@ describe('EmailPlugin', () => {
         it('single filter', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter((event) => event.shouldSend === true)
+                .filter(event => event.shouldSend === true)
                 .setRecipient(() => 'test@test.com')
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('test subject');
@@ -112,8 +112,8 @@ describe('EmailPlugin', () => {
         it('multiple filters', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter((event) => event.shouldSend === true)
-                .filter((event) => !!event.ctx.activeUserId)
+                .filter(event => event.shouldSend === true)
+                .filter(event => !!event.ctx.activeUserId)
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('test subject');
@@ -134,8 +134,8 @@ describe('EmailPlugin', () => {
         it('with .loadData() after .filter()', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .filter((event) => event.shouldSend === true)
-                .loadData((context) => Promise.resolve('loaded data'))
+                .filter(event => event.shouldSend === true)
+                .loadData(context => Promise.resolve('loaded data'))
                 .setRecipient(() => 'test@test.com')
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('test subject');
@@ -164,7 +164,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello {{ subjectVar }}')
-                .setTemplateVars((event) => ({ subjectVar: 'foo' }));
+                .setTemplateVars(event => ({ subjectVar: 'foo' }));
 
             await initPluginWithHandlers([handler]);
 
@@ -179,7 +179,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars((event) => ({ testVar: 'this is the test var' }));
+                .setTemplateVars(event => ({ testVar: 'this is the test var' }));
 
             await initPluginWithHandlers([handler]);
 
@@ -199,7 +199,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars((event) => ({ order: new Order({ subTotal: 123 }) }));
+                .setTemplateVars(event => ({ order: new Order({ subTotal: 123 }) }));
 
             await initPluginWithHandlers([handler]);
 
@@ -238,6 +238,23 @@ describe('EmailPlugin', () => {
             eventBus.publish(new MockEvent(ctx, true));
             await pause();
             expect(onSend.mock.calls[0][0].from).toBe('"test from baz" <noreply@test.com>');
+        });
+
+        // Test fix for https://github.com/vendure-ecommerce/vendure/issues/363
+        it('does not escape HTML chars when interpolating "from"', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('{{ globalFrom }}')
+                .setRecipient(() => 'Test <test@test.com>')
+                .setSubject('Hello');
+
+            await initPluginWithHandlers([handler], {
+                globalTemplateVars: { globalFrom: 'Test <test@test.com>' },
+            });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].from).toBe('Test <test@test.com>');
         });
 
         it('globalTemplateVars available in setTemplateVars method', async () => {
@@ -285,7 +302,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars((event) => ({ myDate: new Date('2020-01-01T10:00:00.000Z'), myPrice: 0 }));
+                .setTemplateVars(event => ({ myDate: new Date('2020-01-01T10:00:00.000Z'), myPrice: 0 }));
 
             await initPluginWithHandlers([handler]);
 
@@ -300,7 +317,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setRecipient(() => 'test@test.com')
                 .setSubject('Hello')
-                .setTemplateVars((event) => ({ myDate: new Date(), myPrice: 123 }));
+                .setTemplateVars(event => ({ myDate: new Date(), myPrice: 123 }));
 
             await initPluginWithHandlers([handler]);
 
@@ -357,7 +374,7 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ testData }}!')
                 .setRecipient(() => 'test@test.com')
-                .setTemplateVars((event) => ({ testData: event.data }));
+                .setTemplateVars(event => ({ testData: event.data }));
 
             await initPluginWithHandlers([handler]);
 
@@ -385,7 +402,7 @@ describe('EmailPlugin', () => {
                     const service = inject(MockService);
                     return service.someAsyncMethod();
                 })
-                .setTemplateVars((event) => ({ testData: event.data }));
+                .setTemplateVars(event => ({ testData: event.data }));
 
             await initPluginWithHandlers([handler]);
 
@@ -459,7 +476,7 @@ describe('EmailPlugin', () => {
     });
 });
 
-const pause = () => new Promise((resolve) => setTimeout(resolve, 100));
+const pause = () => new Promise(resolve => setTimeout(resolve, 100));
 
 class MockEvent extends VendureEvent {
     constructor(public ctx: RequestContext, public shouldSend: boolean) {

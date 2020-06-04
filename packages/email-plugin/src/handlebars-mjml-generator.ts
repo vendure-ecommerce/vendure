@@ -18,7 +18,7 @@ export class HandlebarsMjmlGenerator implements EmailGenerator {
     }
 
     generate(from: string, subject: string, template: string, templateVars: any) {
-        const compiledFrom = Handlebars.compile(from);
+        const compiledFrom = Handlebars.compile(from, { noEscape: true });
         const compiledSubject = Handlebars.compile(subject);
         const compiledTemplate = Handlebars.compile(template);
         // We enable prototype properties here, aware of the security implications
