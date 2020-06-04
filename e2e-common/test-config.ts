@@ -60,8 +60,8 @@ function getDbConfig(): ConnectionOptions {
                 type: 'postgres',
                 host: '127.0.0.1',
                 port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
-                username: 'postgres',
-                password: 'Be70',
+                username: 'admin',
+                password: 'secret',
             };
         case 'mysql':
             return {
