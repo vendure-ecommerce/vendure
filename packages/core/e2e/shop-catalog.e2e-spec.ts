@@ -132,7 +132,7 @@ describe('Shop catalog', () => {
                     GET_PRODUCT_SIMPLE,
                     {},
                 );
-            }, 'Either the product id or slug must be provided'),
+            }, 'Either the Product id or slug must be provided'),
         );
 
         it('product returns null for disabled product', async () => {

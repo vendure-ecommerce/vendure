@@ -12,7 +12,7 @@ import cu from 'i18next-icu/locale-data/cu';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AddCustomersToGroup,
@@ -76,7 +76,7 @@ describe('CustomerGroup resolver', () => {
             {
                 id: customers[0].id,
                 options: {
-                    skip: 1,
+                    skip: 3,
                 },
             },
         );
@@ -194,7 +194,7 @@ describe('CustomerGroup resolver', () => {
             {
                 id: customers[2].id,
                 options: {
-                    skip: 1,
+                    skip: 3,
                 },
             },
         );
@@ -254,7 +254,7 @@ describe('CustomerGroup resolver', () => {
             {
                 id: customers[1].id,
                 options: {
-                    skip: 2,
+                    skip: 4,
                 },
             },
         );

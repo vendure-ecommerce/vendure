@@ -6,7 +6,7 @@ import path from 'path';
 import { skip } from 'rxjs/operators';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AttemptLogin,
@@ -144,7 +144,7 @@ describe('Shop customers', () => {
                     id: customer.id,
                     options: {
                         // skip populated CUSTOMER_ADDRESS_CREATED entry
-                        skip: 1,
+                        skip: 3,
                     },
                 },
             );
@@ -186,7 +186,7 @@ describe('Shop customers', () => {
                     id: customer.id,
                     options: {
                         // skip populated CUSTOMER_ADDRESS_CREATED, CUSTOMER_DETAIL_UPDATED entries
-                        skip: 2,
+                        skip: 4,
                     },
                 },
             );
@@ -219,7 +219,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_ADDRESS_UPDATED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 3 } },
+                { id: customer.id, options: { skip: 5 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
@@ -263,7 +263,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_ADDRESS_DELETED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 4 } },
+                { id: customer.id, options: { skip: 6 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
@@ -312,7 +312,7 @@ describe('Shop customers', () => {
         it('customer history for CUSTOMER_PASSWORD_UPDATED', async () => {
             const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
                 GET_CUSTOMER_HISTORY,
-                { id: customer.id, options: { skip: 5 } },
+                { id: customer.id, options: { skip: 7 } },
             );
 
             expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
