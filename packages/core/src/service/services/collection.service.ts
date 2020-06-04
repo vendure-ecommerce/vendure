@@ -151,6 +151,8 @@ export class CollectionService implements OnModuleInit {
     }
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
+        const parentIdSelect =
+            this.connection.options.type === 'postgres' ? '"child"."parentId"' : 'child.parentId';
         const parent = await this.connection
             .getRepository(Collection)
             .createQueryBuilder('collection')
@@ -159,7 +161,7 @@ export class CollectionService implements OnModuleInit {
                 qb =>
                     `collection.id = ${qb
                         .subQuery()
-                        .select('child.parentId')
+                        .select(parentIdSelect)
                         .from(Collection, 'child')
                         .where('child.id = :id', { id: collectionId })
                         .getQuery()}`,

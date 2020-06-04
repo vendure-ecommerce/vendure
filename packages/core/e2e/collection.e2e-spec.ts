@@ -32,6 +32,7 @@ import {
     GetCollectionsWithAssets,
     GetFacetValues,
     GetProductCollections,
+    GetProductCollectionsWithParent,
     GetProductsWithVariantIds,
     LanguageCode,
     MoveCollection,
@@ -50,6 +51,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
+import { sortById } from './utils/test-order-utils';
 
 describe('Collection resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -379,6 +381,44 @@ describe('Collection resolver', () => {
             return;
         }
         expect(result.collection.parent!.name).toBe('Electronics');
+    });
+
+    // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
+    it('parent field resolved by CollectionEntityResolver', async () => {
+        const { product } = await adminClient.query<
+            GetProductCollectionsWithParent.Query,
+            GetProductCollectionsWithParent.Variables
+        >(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
+            id: 'T_1',
+        });
+
+        expect(product?.collections.length).toBe(3);
+        expect(product?.collections.sort(sortById)).toEqual([
+            {
+                id: 'T_3',
+                name: 'Electronics',
+                parent: {
+                    id: 'T_1',
+                    name: '__root_collection__',
+                },
+            },
+            {
+                id: 'T_4',
+                name: 'Computers',
+                parent: {
+                    id: 'T_3',
+                    name: 'Electronics',
+                },
+            },
+            {
+                id: 'T_5',
+                name: 'Pear',
+                parent: {
+                    id: 'T_4',
+                    name: 'Computers',
+                },
+            },
+        ]);
     });
 
     it('children field', async () => {
@@ -1419,6 +1459,22 @@ const GET_PRODUCT_COLLECTIONS = gql`
             collections {
                 id
                 name
+            }
+        }
+    }
+`;
+
+const GET_PRODUCT_COLLECTIONS_WITH_PARENT = gql`
+    query GetProductCollectionsWithParent($id: ID!) {
+        product(id: $id) {
+            id
+            collections {
+                id
+                name
+                parent {
+                    id
+                    name
+                }
             }
         }
     }

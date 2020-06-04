@@ -3837,6 +3837,22 @@ export type GetProductCollectionsQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type GetProductCollectionsWithParentQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetProductCollectionsWithParentQuery = { __typename?: 'Query' } & {
+    product?: Maybe<
+        { __typename?: 'Product' } & Pick<Product, 'id'> & {
+                collections: Array<
+                    { __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'> & {
+                            parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
+                        }
+                >;
+            }
+    >;
+};
+
 export type DeleteCountryMutationVariables = {
     id: Scalars['ID'];
 };
@@ -5840,6 +5856,18 @@ export namespace GetProductCollections {
     export type Product = NonNullable<GetProductCollectionsQuery['product']>;
     export type Collections = NonNullable<
         NonNullable<GetProductCollectionsQuery['product']>['collections'][0]
+    >;
+}
+
+export namespace GetProductCollectionsWithParent {
+    export type Variables = GetProductCollectionsWithParentQueryVariables;
+    export type Query = GetProductCollectionsWithParentQuery;
+    export type Product = NonNullable<GetProductCollectionsWithParentQuery['product']>;
+    export type Collections = NonNullable<
+        NonNullable<GetProductCollectionsWithParentQuery['product']>['collections'][0]
+    >;
+    export type Parent = NonNullable<
+        NonNullable<NonNullable<GetProductCollectionsWithParentQuery['product']>['collections'][0]>['parent']
     >;
 }
 
