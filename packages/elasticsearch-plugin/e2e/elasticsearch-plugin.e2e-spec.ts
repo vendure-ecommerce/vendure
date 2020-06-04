@@ -36,7 +36,7 @@ import {
     UpdateProductVariants,
     UpdateTaxRate,
 } from '../../core/e2e/graphql/generated-e2e-admin-types';
-import { SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
+import { LogicalOperator, SearchProductsShop } from '../../core/e2e/graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
@@ -159,12 +159,13 @@ describe('Elasticsearch plugin', () => {
         ]);
     }
 
-    async function testMatchFacetValueIds(client: SimpleGraphQLClient) {
+    async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
                     facetValueIds: ['T_1', 'T_2'],
+                    facetValueOperator: LogicalOperator.AND,
                     groupByProduct: true,
                     sort: {
                         name: SortOrder.ASC,
@@ -178,6 +179,38 @@ describe('Elasticsearch plugin', () => {
             'Gaming PC',
             'Hard Drive',
             'Laptop',
+            'USB Cable',
+        ]);
+    }
+
+    async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    facetValueIds: ['T_1', 'T_5'],
+                    facetValueOperator: LogicalOperator.OR,
+                    groupByProduct: true,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                    take: 20,
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Bonsai Tree',
+            'Camera Lens',
+            'Clacky Keyboard',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Instant Camera',
+            'Laptop',
+            'Orchid',
+            'SLR Camera',
+            'Spiky Cactus',
+            'Tripod',
             'USB Cable',
         ]);
     }
@@ -254,7 +287,9 @@ describe('Elasticsearch plugin', () => {
 
         it('matches search term', () => testMatchSearchTerm(shopClient));
 
-        it('matches by facetValueId', () => testMatchFacetValueIds(shopClient));
+        it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(shopClient));
+
+        it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
@@ -404,7 +439,9 @@ describe('Elasticsearch plugin', () => {
 
         it('matches search term', () => testMatchSearchTerm(adminClient));
 
-        it('matches by facetValueId', () => testMatchFacetValueIds(adminClient));
+        it('matches by facetValueId with AND operator', () => testMatchFacetIdsAnd(adminClient));
+
+        it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(adminClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 

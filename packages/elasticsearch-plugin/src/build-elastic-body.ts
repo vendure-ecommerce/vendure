@@ -1,4 +1,4 @@
-import { PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, PriceRange, SortOrder } from '@vendure/common/lib/generated-types';
 import { DeepRequired, ID } from '@vendure/core';
 
 import { SearchConfig } from './options';
@@ -16,6 +16,7 @@ export function buildElasticBody(
     const {
         term,
         facetValueIds,
+        facetValueOperator,
         collectionId,
         groupByProduct,
         skip,
@@ -48,9 +49,12 @@ export function buildElasticBody(
     }
     if (facetValueIds && facetValueIds.length) {
         ensureBoolFilterExists(query);
-        query.bool.filter = query.bool.filter.concat(
-            facetValueIds.map(id => ({ term: { facetValueIds: id } })),
-        );
+        const operator = facetValueOperator === LogicalOperator.AND ? 'must' : 'should';
+        query.bool.filter = query.bool.filter.concat([
+            {
+                bool: { [operator]: facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
+            },
+        ]);
     }
     if (collectionId) {
         ensureBoolFilterExists(query);

@@ -1736,6 +1736,11 @@ export type LocalizedString = {
     value: Scalars['String'];
 };
 
+export enum LogicalOperator {
+    AND = 'AND',
+    OR = 'OR',
+}
+
 export type LoginResult = {
     __typename?: 'LoginResult';
     user: CurrentUser;
@@ -3085,6 +3090,7 @@ export type Sale = Node &
 export type SearchInput = {
     term?: Maybe<Scalars['String']>;
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
+    facetValueOperator?: Maybe<LogicalOperator>;
     collectionId?: Maybe<Scalars['ID']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
