@@ -36,7 +36,7 @@ import {
     UpdateProductVariants,
     UpdateTaxRate,
 } from './graphql/generated-e2e-admin-types';
-import { SearchProductsShop } from './graphql/generated-e2e-shop-types';
+import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
@@ -123,12 +123,13 @@ describe('Default search plugin', () => {
         ]);
     }
 
-    async function testMatchFacetIds(client: SimpleGraphQLClient) {
+    async function testMatchFacetIdsAnd(client: SimpleGraphQLClient) {
         const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
             SEARCH_PRODUCTS_SHOP,
             {
                 input: {
                     facetValueIds: ['T_1', 'T_2'],
+                    facetValueOperator: LogicalOperator.AND,
                     groupByProduct: true,
                 },
             },
@@ -140,6 +141,34 @@ describe('Default search plugin', () => {
             'Hard Drive',
             'Clacky Keyboard',
             'USB Cable',
+        ]);
+    }
+
+    async function testMatchFacetIdsOr(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    facetValueIds: ['T_1', 'T_5'],
+                    facetValueOperator: LogicalOperator.OR,
+                    groupByProduct: true,
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Laptop',
+            'Curvy Monitor',
+            'Gaming PC',
+            'Hard Drive',
+            'Clacky Keyboard',
+            'USB Cable',
+            'Instant Camera',
+            'Camera Lens',
+            'Tripod',
+            'Slr Camera',
+            'Spiky Cactus',
+            'Orchid',
+            'Bonsai Tree',
         ]);
     }
 
@@ -219,7 +248,9 @@ describe('Default search plugin', () => {
 
         it('matches search term', () => testMatchSearchTerm(shopClient));
 
-        it('matches by facetId', () => testMatchFacetIds(shopClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(shopClient));
+
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
 
@@ -369,7 +400,9 @@ describe('Default search plugin', () => {
 
         it('matches search term', () => testMatchSearchTerm(adminClient));
 
-        it('matches by facetId', () => testMatchFacetIds(adminClient));
+        it('matches by facetId with AND operator', () => testMatchFacetIdsAnd(adminClient));
+
+        it('matches by facetId with OR operator', () => testMatchFacetIdsOr(adminClient));
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 

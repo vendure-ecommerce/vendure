@@ -1,4 +1,4 @@
-import { SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Brackets, Connection, SelectQueryBuilder } from 'typeorm';
@@ -105,7 +105,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -129,13 +129,21 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 )
                 .setParameters({ term, like_term: `%${term}%` });
         }
-        if (facetValueIds) {
-            for (const id of facetValueIds) {
-                const placeholder = '_' + id;
-                qb.andWhere(`(',' || facetValueIds || ',') LIKE :${placeholder}`, {
-                    [placeholder]: `%,${id},%`,
-                });
-            }
+        if (facetValueIds?.length) {
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    for (const id of facetValueIds) {
+                        const placeholder = '_' + id;
+                        const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;
+                        const params = { [placeholder]: `%,${id},%` };
+                        if (facetValueOperator === LogicalOperator.AND) {
+                            qb1.andWhere(clause, params);
+                        } else {
+                            qb1.orWhere(clause, params);
+                        }
+                    }
+                }),
+            );
         }
         if (collectionId) {
             qb.andWhere(`(',' || collectionIds || ',') LIKE :collectionId`, {
