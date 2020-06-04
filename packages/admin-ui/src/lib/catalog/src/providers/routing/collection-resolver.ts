@@ -19,6 +19,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 updatedAt: '',
                 languageCode: getDefaultUiLanguage(),
                 name: '',
+                slug: '',
                 isPrivate: false,
                 description: '',
                 featuredAsset: null,
@@ -28,7 +29,7 @@ export class CollectionResolver extends BaseEntityResolver<Collection.Fragment> 
                 parent: {} as any,
                 children: null,
             },
-            (id) => dataService.collection.getCollection(id).mapStream((data) => data.collection),
+            id => dataService.collection.getCollection(id).mapStream(data => data.collection),
         );
     }
 }

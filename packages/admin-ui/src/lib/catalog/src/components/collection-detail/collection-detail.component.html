@@ -56,6 +56,20 @@
                     type="text"
                     formControlName="name"
                     [readonly]="!('UpdateCatalog' | hasPermission)"
+                    (input)="updateSlug($event.target.value)"
+                />
+            </vdr-form-field>
+            <vdr-form-field
+                [label]="'catalog.slug' | translate"
+                for="slug"
+                [errors]="{ pattern: ('catalog.slug-pattern-error' | translate) }"
+            >
+                <input
+                    id="slug"
+                    type="text"
+                    formControlName="slug"
+                    [readonly]="!('UpdateCatalog' | hasPermission)"
+                    pattern="[a-z0-9_-]+"
                 />
             </vdr-form-field>
             <vdr-rich-text-editor

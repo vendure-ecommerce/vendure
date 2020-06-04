@@ -27,6 +27,7 @@ import {
     ServerConfigService,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
 
@@ -63,6 +64,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
+            slug: '',
             description: '',
             visible: false,
             filters: this.formBuilder.array([]),
@@ -76,15 +78,15 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.init();
         this.facets$ = this.dataService.facet
             .getAllFacets()
-            .mapSingle((data) => data.facets.items)
+            .mapSingle(data => data.facets.items)
             .pipe(shareReplay(1));
 
-        this.dataService.collection.getCollectionFilters().single$.subscribe((res) => {
+        this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
         this.activeChannel$ = this.dataService.settings
             .getActiveChannel()
-            .mapStream((data) => data.activeChannel);
+            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy() {
@@ -92,7 +94,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     }
 
     getFilterDefinition(filter: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
-        return this.allFilters.find((f) => f.code === filter.code);
+        return this.allFilters.find(f => f.code === filter.code);
     }
 
     customFieldIsSet(name: string): boolean {
@@ -103,9 +105,23 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         return !!Object.values(this.assetChanges).length;
     }
 
+    /**
+     * If creating a new product, automatically generate the slug based on the collection name.
+     */
+    updateSlug(nameValue: string) {
+        this.isNew$.pipe(take(1)).subscribe(isNew => {
+            if (isNew) {
+                const slugControl = this.detailForm.get(['slug']);
+                if (slugControl && slugControl.pristine) {
+                    slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+                }
+            }
+        });
+    }
+
     addFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex((o) => o.code === collectionFilter.code);
+        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
         if (index === -1) {
             const argsHash = collectionFilter.args.reduce(
                 (output, arg) => ({
@@ -126,7 +142,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     removeFilter(collectionFilter: ConfigurableOperation) {
         const filtersArray = this.detailForm.get('filters') as FormArray;
-        const index = filtersArray.value.findIndex((o) => o.code === collectionFilter.code);
+        const index = filtersArray.value.findIndex(o => o.code === collectionFilter.code);
         if (index !== -1) {
             filtersArray.removeAt(index);
             this.filters.splice(index, 1);
@@ -154,7 +170,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-create-success'), {
                         entity: 'Collection',
                     });
@@ -163,7 +179,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     this.changeDetector.markForCheck();
                     this.router.navigate(['../', data.createCollection.id], { relativeTo: this.route });
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-create-error'), {
                         entity: 'Collection',
                     });
@@ -194,7 +210,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     });
                     this.contentsComponent.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Collection',
                     });
@@ -210,15 +226,16 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
      * Sets the values of the form on changes to the category or current language.
      */
     protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = entity.translations.find((t) => t.languageCode === languageCode);
+        const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
+            slug: currentTranslation ? currentTranslation.slug : '',
             description: currentTranslation ? currentTranslation.description : '',
             visible: !entity.isPrivate,
         });
 
-        entity.filters.forEach((f) => this.addFilter(f));
+        entity.filters.forEach(f => this.addFilter(f));
 
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get(['customFields']) as FormGroup;
@@ -254,6 +271,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             defaultTranslation: {
                 languageCode,
                 name: category.name || '',
+                slug: category.slug || '',
                 description: category.description || '',
             },
         });

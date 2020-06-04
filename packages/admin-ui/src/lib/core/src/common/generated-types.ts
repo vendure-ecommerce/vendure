@@ -456,6 +456,7 @@ export type CreateCollectionTranslationInput = {
   name: Scalars['String'];
   slug: Scalars['String'];
   description: Scalars['String'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateCountryInput = {
@@ -592,7 +593,7 @@ export type CreateZoneInput = {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -1387,7 +1388,7 @@ export type JobSortParameter = {
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -1405,7 +1406,7 @@ export enum JobState {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -2580,7 +2581,7 @@ export type PaymentMethodSortParameter = {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -3589,6 +3590,7 @@ export type UpdateCollectionTranslationInput = {
   name?: Maybe<Scalars['String']>;
   slug?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCountryInput = {
@@ -4116,7 +4118,7 @@ export type GetCollectionFiltersQuery = (
 
 export type CollectionFragment = (
   { __typename?: 'Collection' }
-  & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'description' | 'isPrivate' | 'languageCode'>
+  & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'slug' | 'description' | 'isPrivate' | 'languageCode'>
   & { featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & AssetFragment
@@ -4128,7 +4130,7 @@ export type CollectionFragment = (
     & ConfigurableOperationFragment
   )>, translations: Array<(
     { __typename?: 'CollectionTranslation' }
-    & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>
+    & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>
   )>, parent?: Maybe<(
     { __typename?: 'Collection' }
     & Pick<Collection, 'id' | 'name'>
@@ -4150,7 +4152,7 @@ export type GetCollectionListQuery = (
     & Pick<CollectionList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Collection' }
-      & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate'>
+      & Pick<Collection, 'id' | 'name' | 'slug' | 'description' | 'isPrivate'>
       & { featuredAsset?: Maybe<(
         { __typename?: 'Asset' }
         & AssetFragment
