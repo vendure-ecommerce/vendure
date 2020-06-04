@@ -1,13 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { JobState, SearchInput, SearchProducts } from '@vendure/admin-ui/core';
-import { BaseListComponent } from '@vendure/admin-ui/core';
-import { JobQueueService } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
-import { EMPTY, Observable, of } from 'rxjs';
+import {
+    BaseListComponent,
+    DataService,
+    JobQueueService,
+    JobState,
+    LogicalOperator,
+    ModalService,
+    NotificationService,
+    SearchInput,
+    SearchProducts,
+} from '@vendure/admin-ui/core';
+import { EMPTY, Observable } from 'rxjs';
 import { delay, map, switchMap, take, takeUntil, withLatestFrom } from 'rxjs/operators';
 
 import { ProductSearchInputComponent } from '../product-search-input/product-search-input.component';
@@ -46,6 +51,7 @@ export class ProductListComponent
                     take,
                     term: this.searchTerm,
                     facetValueIds: this.facetValueIds,
+                    facetValueOperator: LogicalOperator.AND,
                     groupByProduct: this.groupByProduct,
                 } as SearchInput,
             }),
@@ -71,15 +77,9 @@ export class ProductListComponent
             this.productSearchInput.setFacetValues(ids);
         });
 
-        this.facetValues$
-            .pipe(
-                take(1),
-                delay(100),
-                withLatestFrom(fvids$),
-            )
-            .subscribe(([__, ids]) => {
-                this.productSearchInput.setFacetValues(ids);
-            });
+        this.facetValues$.pipe(take(1), delay(100), withLatestFrom(fvids$)).subscribe(([__, ids]) => {
+            this.productSearchInput.setFacetValues(ids);
+        });
     }
 
     setSearchTerm(term: string) {
