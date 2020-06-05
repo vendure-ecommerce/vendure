@@ -300,6 +300,8 @@ describe('Collection resolver', () => {
             });
 
             expect(updateCollection).toMatchSnapshot();
+
+            pearCollection = updateCollection;
         });
 
         it('updating existing assets', async () => {
@@ -445,10 +447,14 @@ describe('Collection resolver', () => {
             return;
         }
         expect(result.collection.breadcrumbs).toEqual([
-            { id: 'T_1', name: ROOT_COLLECTION_NAME },
-            { id: electronicsCollection.id, name: electronicsCollection.name },
-            { id: computersCollection.id, name: computersCollection.name },
-            { id: pearCollection.id, name: pearCollection.name },
+            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+            {
+                id: electronicsCollection.id,
+                name: electronicsCollection.name,
+                slug: electronicsCollection.slug,
+            },
+            { id: computersCollection.id, name: computersCollection.name, slug: computersCollection.slug },
+            { id: pearCollection.id, name: pearCollection.name, slug: pearCollection.slug },
         ]);
     });
 
@@ -463,7 +469,9 @@ describe('Collection resolver', () => {
             fail(`did not return the collection`);
             return;
         }
-        expect(result.collection.breadcrumbs).toEqual([{ id: 'T_1', name: ROOT_COLLECTION_NAME }]);
+        expect(result.collection.breadcrumbs).toEqual([
+            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+        ]);
     });
 
     it('collections.assets', async () => {
@@ -1423,6 +1431,7 @@ const GET_COLLECTION_BREADCRUMBS = gql`
             breadcrumbs {
                 id
                 name
+                slug
             }
         }
     }

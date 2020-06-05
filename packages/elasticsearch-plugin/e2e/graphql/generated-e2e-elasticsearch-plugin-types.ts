@@ -248,6 +248,7 @@ export type CollectionBreadcrumb = {
     __typename?: 'CollectionBreadcrumb';
     id: Scalars['ID'];
     name: Scalars['String'];
+    slug: Scalars['String'];
 };
 
 export type CollectionFilterParameter = {
@@ -2289,6 +2290,7 @@ export type Order = Node & {
     /** Order-level adjustments to the order total, such as discounts from promotions */
     adjustments: Array<Adjustment>;
     couponCodes: Array<Scalars['String']>;
+    /** Promotions applied to the order. Only gets populated after the payment process has completed. */
     promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;

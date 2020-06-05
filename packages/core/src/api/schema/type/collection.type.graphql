@@ -20,6 +20,7 @@ type Collection implements Node {
 type CollectionBreadcrumb {
     id: ID!
     name: String!
+    slug: String!
 }
 
 type CollectionTranslation {

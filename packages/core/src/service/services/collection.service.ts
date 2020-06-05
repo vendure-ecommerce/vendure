@@ -181,9 +181,9 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Array<{ name: string; id: ID }>> {
         const rootCollection = await this.getRootCollection(ctx);
         if (idsAreEqual(collection.id, rootCollection.id)) {
-            return [pick(rootCollection, ['id', 'name'])];
+            return [pick(rootCollection, ['id', 'name', 'slug'])];
         }
-        const pickProps = pick(['id', 'name']);
+        const pickProps = pick(['id', 'name', 'slug']);
         const ancestors = await this.getAncestors(collection.id, ctx);
         return [pickProps(rootCollection), ...ancestors.map(pickProps), pickProps(collection)];
     }
