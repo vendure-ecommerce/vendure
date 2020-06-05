@@ -2277,6 +2277,12 @@ export type TestOrderFragmentFragment = { __typename?: 'Order' } & Pick<
         lines: Array<
             { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                     productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
+                    adjustments: Array<
+                        { __typename?: 'Adjustment' } & Pick<
+                            Adjustment,
+                            'adjustmentSource' | 'amount' | 'description' | 'type'
+                        >
+                    >;
                 }
         >;
         shippingMethod?: Maybe<
@@ -2303,6 +2309,12 @@ export type AddItemToOrderMutation = { __typename?: 'Mutation' } & {
                 lines: Array<
                     { __typename?: 'OrderLine' } & Pick<OrderLine, 'id' | 'quantity'> & {
                             productVariant: { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'>;
+                            adjustments: Array<
+                                { __typename?: 'Adjustment' } & Pick<
+                                    Adjustment,
+                                    'adjustmentSource' | 'amount' | 'description' | 'type'
+                                >
+                            >;
                         }
                 >;
                 adjustments: Array<
@@ -2677,6 +2689,9 @@ export namespace TestOrderFragment {
     export type Adjustments = NonNullable<TestOrderFragmentFragment['adjustments'][0]>;
     export type Lines = NonNullable<TestOrderFragmentFragment['lines'][0]>;
     export type ProductVariant = NonNullable<TestOrderFragmentFragment['lines'][0]>['productVariant'];
+    export type _Adjustments = NonNullable<
+        NonNullable<TestOrderFragmentFragment['lines'][0]>['adjustments'][0]
+    >;
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
     export type User = NonNullable<NonNullable<TestOrderFragmentFragment['customer']>['user']>;
@@ -2693,6 +2708,9 @@ export namespace AddItemToOrder {
         NonNullable<AddItemToOrderMutation['addItemToOrder']>['lines'][0]
     >['productVariant'];
     export type Adjustments = NonNullable<
+        NonNullable<NonNullable<AddItemToOrderMutation['addItemToOrder']>['lines'][0]>['adjustments'][0]
+    >;
+    export type _Adjustments = NonNullable<
         NonNullable<AddItemToOrderMutation['addItemToOrder']>['adjustments'][0]
     >;
 }

@@ -62,7 +62,7 @@ export class OrderCalculator {
                 activeTaxZone,
                 this.createTaxRateGetter(activeTaxZone),
             );
-            updatedOrderLine.activeItems.forEach((item) => updatedOrderItems.add(item));
+            updatedOrderLine.activeItems.forEach(item => updatedOrderItems.add(item));
         }
         order.clearAdjustments();
         this.calculateOrderTotals(order);
@@ -75,7 +75,7 @@ export class OrderCalculator {
             // Then test and apply promotions
             const totalBeforePromotions = order.total;
             const itemsModifiedByPromotions = await this.applyPromotions(order, promotions);
-            itemsModifiedByPromotions.forEach((item) => updatedOrderItems.add(item));
+            itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
 
             if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
                 // Finally, re-calculate taxes because the promotions may have
@@ -158,37 +158,58 @@ export class OrderCalculator {
         return updatedItems;
     }
 
+    /**
+     * Applies promotions to OrderItems. This is a quite complex function, due to the inherent complexity
+     * of applying the promotions, and also due to added complexity in the name of performance
+     * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
+     */
     private async applyOrderItemPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+        // The naive implementation updates *every* OrderItem after this function is run.
+        // However, on a very large order with hundreds or thousands of OrderItems, this results in
+        // very poor performance. E.g. updating a single quantity of an OrderLine results in saving
+        // all 1000 (for example) OrderItems to the DB.
+        // The solution is to try to be smart about tracking exactly which OrderItems have changed,
+        // so that we only update those.
         const updatedOrderItems = new Set<OrderItem>();
 
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, (p) => p.test(order, utils));
+            const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
+
+            const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
+            if (forceUpdateItems) {
+                // This OrderLine contains Promotion adjustments for Promotions that are no longer
+                // applicable. So we know for sure we will need to update these OrderItems in the
+                // DB. Therefore add them to the `updatedOrderItems` set.
+                line.clearAdjustments(AdjustmentType.PROMOTION);
+                line.items.forEach(i => updatedOrderItems.add(i));
+            }
 
             for (const promotion of applicablePromotions) {
                 let priceAdjusted = false;
+                // We need to test the promotion *again*, even though we've tested them for the line.
+                // This is because the previous Promotions may have adjusted the Order in such a way
+                // as to render later promotions no longer applicable.
                 if (await promotion.test(order, utils)) {
                     for (const item of line.items) {
                         const itemHasPromotions =
                             item.pendingAdjustments &&
-                            !!item.pendingAdjustments.find((a) => a.type === AdjustmentType.PROMOTION);
+                            !!item.pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
                         if (itemHasPromotions) {
                             item.clearAdjustments(AdjustmentType.PROMOTION);
                         }
-                        if (applicablePromotions) {
-                            const adjustment = await promotion.apply({
-                                orderItem: item,
-                                orderLine: line,
-                                utils,
-                            });
-                            if (adjustment) {
-                                item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
-                                priceAdjusted = true;
-                                updatedOrderItems.add(item);
-                            } else if (itemHasPromotions) {
-                                updatedOrderItems.add(item);
-                            }
+                        const adjustment = await promotion.apply({
+                            orderItem: item,
+                            orderLine: line,
+                            utils,
+                        });
+                        if (adjustment) {
+                            item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+                            priceAdjusted = true;
+                            updatedOrderItems.add(item);
+                        } else if (itemHasPromotions) {
+                            updatedOrderItems.add(item);
                         }
                     }
                     if (priceAdjusted) {
@@ -197,13 +218,41 @@ export class OrderCalculator {
                     }
                 }
             }
+            if (forceUpdateItems) {
+                // If we are forcing an update, we need to ensure that totals get
+                // re-calculated *even if* there are no applicable promotions (i.e.
+                // the other call to `this.calculateOrderTotals()` inside the `for...of`
+                // loop was never invoked).
+                this.calculateOrderTotals(order);
+            }
         }
         return Array.from(updatedOrderItems.values());
     }
 
+    /**
+     * An OrderLine may have promotion adjustments from Promotions which are no longer applicable.
+     * For example, a coupon code might have caused a discount to be applied, and now that code has
+     * been removed from the order. The adjustment will still be there on each OrderItem it was applied
+     * to, even though that Promotion is no longer found in the `applicablePromotions` array.
+     *
+     * We need to know about this because it means that all OrderItems in the OrderLine must be
+     * updated.
+     */
+    private orderLineHasInapplicablePromotions(applicablePromotions: Promotion[], line: OrderLine) {
+        const applicablePromotionIds = applicablePromotions.map(p => p.getSourceId());
+
+        const linePromotionIds = line.adjustments
+            .filter(a => a.type === AdjustmentType.PROMOTION)
+            .map(a => a.adjustmentSource);
+        const hasPromotionsThatAreNoLongerApplicable = !linePromotionIds.every(id =>
+            applicablePromotionIds.includes(id),
+        );
+        return hasPromotionsThatAreNoLongerApplicable;
+    }
+
     private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
         order.clearAdjustments(AdjustmentType.PROMOTION);
-        const applicableOrderPromotions = await filterAsync(promotions, (p) => p.test(order, utils));
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
@@ -224,7 +273,7 @@ export class OrderCalculator {
         const currentShippingMethod = order.shippingMethod;
         if (results && results.length && currentShippingMethod) {
             let selected: { method: ShippingMethod; result: ShippingCalculationResult } | undefined;
-            selected = results.find((r) => idsAreEqual(r.method.id, currentShippingMethod.id));
+            selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
             if (!selected) {
                 selected = results[0];
             }
@@ -269,7 +318,7 @@ export class OrderCalculator {
                 }
                 const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
                 return facetValueIds.reduce(
-                    (result, id) => result && !!allFacetValues.find((fv) => idsAreEqual(fv.id, id)),
+                    (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
                     true as boolean,
                 );
             },
