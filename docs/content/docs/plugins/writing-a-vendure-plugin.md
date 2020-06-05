@@ -221,7 +221,7 @@ import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import gql from 'graphql-tag';
 import http from 'http';
-import { Allow, Ctx, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
+import { Allow, Ctx, PluginCommonModule, ProductService, RequestContext, VendureConfig, VendurePlugin } from '@vendure/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 const schemaExtension = gql`
