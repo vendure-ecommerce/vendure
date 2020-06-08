@@ -16,6 +16,12 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
     findOptions?: FindManyOptions<T>,
     eager = true,
 ) {
+    //the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
+    //breaks if the array is empty
+    if(ids.length === 0){
+        return Promise.resolve([]);
+    }
+    
     const qb = connection.getRepository(entity).createQueryBuilder('product');
     FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, findOptions);
     if (eager) {
@@ -24,6 +30,7 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
     }
     return qb
         .leftJoin('product.channels', 'channel')
+        .andWhere("product.id IN (:...ids)", { ids })
         .andWhere('channel.id = :channelId', { channelId })
         .getMany();
 }
