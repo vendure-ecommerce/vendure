@@ -25,6 +25,7 @@ import {
 import {
     AddItemToOrder,
     AdjustItemQuantity,
+    AdjustmentType,
     ApplyCouponCode,
     GetActiveOrder,
     GetOrderPromotionsByCode,
@@ -436,6 +437,72 @@ describe('Promotions applied to Orders', () => {
 
             await deletePromotion(promotion.id);
         });
+
+        it('multiple promotions simultaneously', async () => {
+            const { facets } = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
+            const saleFacetValue = facets.items[0].values[0];
+            const promotion1 = await createPromotion({
+                enabled: true,
+                name: 'item promo',
+                couponCode: 'CODE1',
+                conditions: [],
+                actions: [
+                    {
+                        code: discountOnItemWithFacets.code,
+                        arguments: [
+                            { name: 'discount', type: 'int', value: '50' },
+                            { name: 'facets', type: 'facetValueIds', value: `["${saleFacetValue.id}"]` },
+                        ],
+                    },
+                ],
+            });
+            const promotion2 = await createPromotion({
+                enabled: true,
+                name: 'order promo',
+                couponCode: 'CODE2',
+                conditions: [],
+                actions: [
+                    {
+                        code: orderPercentageDiscount.code,
+                        arguments: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+            });
+
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-sale-12').id,
+                quantity: 1,
+            });
+
+            // Apply the OrderItem-level promo
+            const { applyCouponCode: apply1 } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: 'CODE1',
+            });
+
+            expect(apply1?.lines[0].adjustments.length).toBe(2);
+            expect(
+                apply1?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+            ).toBe('item promo');
+            expect(apply1?.adjustments.length).toBe(0);
+
+            // Apply the Order-level promo
+            const { applyCouponCode: apply2 } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: 'CODE2',
+            });
+
+            expect(apply2?.lines[0].adjustments.length).toBe(2);
+            expect(
+                apply2?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+            ).toBe('item promo');
+            expect(apply2?.adjustments.length).toBe(1);
+            expect(apply2?.adjustments[0].description).toBe('order promo');
+        });
     });
 
     describe('per-customer usage limit', () => {
@@ -513,8 +580,8 @@ describe('Promotions applied to Orders', () => {
                 >(GET_ORDER_PROMOTIONS_BY_CODE, {
                     code: orderCode,
                 });
-                expect(orderByCode!.promotions.map(pick(['id', 'name']))).toEqual([
-                    { id: 'T_9', name: 'Free with test coupon' },
+                expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
+                    { name: 'Free with test coupon' },
                 ]);
             });
 
