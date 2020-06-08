@@ -1,7 +1,7 @@
-import { DeepRequired, Product, ProductVariant } from '@vendure/core';
+import { DeepRequired, ID, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
-import { CustomMapping } from './types';
+import { CustomMapping, ElasticSearchInput } from './types';
 
 /**
  * @description
@@ -188,6 +188,50 @@ export interface SearchConfig {
      * ```
      */
     priceRangeBucketInterval?: number;
+    /**
+     * @description
+     * This config option allows the the modification of the whole (already built) search query. This allows
+     * for e.g. wildcard / fuzzy searches on the index.
+     *
+     * @example
+     * ```TypeScript
+     * mapQuery: (query, input, searchConfig, channelId, enabledOnly){
+     *     if(query.bool.must){
+     *         delete query.bool.must;
+     *     }
+     *     query.bool.should = [
+     *         {
+     *             query_string: {
+     *                 query: "*" + term + "*",
+     *                 fields: [
+     *                     `productName^${searchConfig.boostFields.productName}`,
+     *                     `productVariantName^${searchConfig.boostFields.productVariantName}`,
+     *                 ]
+     *             }
+     *         },
+     *         {
+     *             multi_match: {
+     *                 query: term,
+     *                 type: searchConfig.multiMatchType,
+     *                 fields: [
+     *                     `description^${searchConfig.boostFields.description}`,
+     *                     `sku^${searchConfig.boostFields.sku}`,
+     *                 ],
+     *             },
+     *         },
+     *     ];
+     *
+     *     return query;
+     * }
+     * ```
+     */
+    mapQuery?: (
+        query: any,
+        input: ElasticSearchInput,
+        searchConfig: DeepRequired<SearchConfig>,
+        channelId: ID,
+        enabledOnly: boolean,
+    ) => any;
 }
 
 /**
@@ -246,6 +290,7 @@ export const defaultOptions: DeepRequired<ElasticsearchOptions> = {
             sku: 1,
         },
         priceRangeBucketInterval: 1000,
+        mapQuery: (query) => query,
     },
     customProductMappings: {},
     customProductVariantMappings: {},

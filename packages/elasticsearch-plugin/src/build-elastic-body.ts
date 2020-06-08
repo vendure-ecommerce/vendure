@@ -88,7 +88,9 @@ export function buildElasticBody(
         }
     }
     return {
-        query,
+        query: searchConfig.mapQuery
+            ? searchConfig.mapQuery(query, input, searchConfig, channelId, enabledOnly)
+            : query,
         sort: sortArray,
         from: skip || 0,
         size: take || 10,
