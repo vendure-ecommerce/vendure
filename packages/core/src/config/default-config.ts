@@ -80,7 +80,6 @@ export const defaultConfig: RuntimeVendureConfig = {
     dbConnectionOptions: {
         timezone: 'Z',
         type: 'mysql',
-        logger: new TypeOrmLogger(),
     },
     promotionOptions: {
         promotionConditions: defaultPromotionConditions,

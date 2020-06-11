@@ -1,8 +1,10 @@
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConnectionOptions } from 'typeorm';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
+import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
@@ -158,7 +160,12 @@ export class ServiceModule {
             defaultTypeOrmModule = TypeOrmModule.forRootAsync({
                 imports: [ConfigModule],
                 useFactory: (configService: ConfigService) => {
-                    return configService.dbConnectionOptions;
+                    const { dbConnectionOptions } = configService;
+                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
+                    return {
+                        ...dbConnectionOptions,
+                        logger,
+                    };
                 },
                 inject: [ConfigService],
             });
@@ -175,17 +182,20 @@ export class ServiceModule {
                 imports: [ConfigModule],
                 useFactory: (configService: ConfigService) => {
                     const { dbConnectionOptions, workerOptions } = configService;
+                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
                     if (workerOptions.runInMainProcess) {
                         // When running in the main process, we can re-use the existing
                         // default connection.
                         return {
                             ...dbConnectionOptions,
+                            logger,
                             name: 'default',
                             keepConnectionAlive: true,
                         };
                     } else {
                         return {
                             ...dbConnectionOptions,
+                            logger,
                         };
                     }
                 },
@@ -204,5 +214,13 @@ export class ServiceModule {
             module: ServiceModule,
             imports: [TypeOrmModule.forFeature()],
         };
+    }
+
+    static getTypeOrmLogger(dbConnectionOptions: ConnectionOptions) {
+        if (!dbConnectionOptions.logger) {
+            return new TypeOrmLogger(dbConnectionOptions.logging);
+        } else {
+            return dbConnectionOptions.logger;
+        }
     }
 }

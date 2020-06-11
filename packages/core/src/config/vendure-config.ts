@@ -656,6 +656,8 @@ export interface VendureConfig {
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.
+     * Note that the logging of SQL queries is controlled separately by the
+     * `dbConnectionOptions.logging` property.
      *
      * @default DefaultLogger
      */
