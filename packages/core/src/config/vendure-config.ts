@@ -300,7 +300,7 @@ export interface OrderProcessOptions<T extends string> {
      * state transitions.
      *
      */
-    transtitions?: Partial<Transitions<T | OrderState>>;
+    transitions?: Partial<Transitions<T | OrderState>>;
     /**
      * @description
      * Define logic to run before a state tranition takes place. Returning
@@ -566,7 +566,8 @@ export interface JobQueueOptions {
 export interface VendureConfig {
     /**
      * @description
-     *
+     * Configuration for the GraphQL APIs, including hostname, port, CORS settings,
+     * middleware etc.
      */
     apiOptions: ApiOptions;
     /**
