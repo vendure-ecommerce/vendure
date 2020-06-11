@@ -10,6 +10,7 @@ export * from './events/identifier-change-event';
 export * from './events/identifier-change-request-event';
 export * from './events/login-event';
 export * from './events/order-state-transition-event';
+export * from './events/payment-state-transition-event';
 export * from './events/password-reset-event';
 export * from './events/product-channel-event';
 export * from './events/product-event';
