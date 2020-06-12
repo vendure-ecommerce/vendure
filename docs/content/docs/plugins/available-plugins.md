@@ -16,5 +16,7 @@ The Vendure monorepo contains a number of "core" plugins - that is, commonly-use
 
 ## Third-party plugins
 
-Have you created a Vendure plugin that you'd like to share? Contact us and we can list it here!
+Have you created a Vendure plugin that you'd like to share? Contact us and we can list it here! 
+
+For now, you'll find some community plugins in [these GitHub search results](https://github.com/search?q=vendure+-user%3Avendure-ecommerce&type=Repositories).
  

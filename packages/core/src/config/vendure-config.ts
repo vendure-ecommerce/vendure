@@ -595,6 +595,8 @@ export interface VendureConfig {
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.
+     * See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
+     * full description of all available options.
      */
     dbConnectionOptions: ConnectionOptions;
     /**
