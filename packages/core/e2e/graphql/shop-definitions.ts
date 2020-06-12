@@ -20,6 +20,12 @@ export const TEST_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
+            adjustments {
+                adjustmentSource
+                amount
+                description
+                type
+            }
         }
         shipping
         shippingMethod {
@@ -57,6 +63,12 @@ export const ADD_ITEM_TO_ORDER = gql`
                 quantity
                 productVariant {
                     id
+                }
+                adjustments {
+                    adjustmentSource
+                    amount
+                    description
+                    type
                 }
             }
             adjustments {

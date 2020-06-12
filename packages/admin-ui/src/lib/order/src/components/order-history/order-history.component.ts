@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-
 import {
     GetOrderHistory,
+    HistoryEntry,
     HistoryEntryType,
     OrderDetail,
     OrderDetailFragment,
+    TimelineDisplayType,
 } from '@vendure/admin-ui/core';
 
 @Component({
@@ -17,15 +18,23 @@ export class OrderHistoryComponent {
     @Input() order: OrderDetailFragment;
     @Input() history: GetOrderHistory.Items[];
     @Output() addNote = new EventEmitter<{ note: string; isPublic: boolean }>();
+    @Output() updateNote = new EventEmitter<HistoryEntry>();
+    @Output() deleteNote = new EventEmitter<HistoryEntry>();
     note = '';
     noteIsPrivate = true;
     readonly type = HistoryEntryType;
 
-    getClassForEntry(entry: GetOrderHistory.Items): 'success' | 'error' | 'warning' | undefined {
-        if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
-            if (entry.data.to === 'Settled') {
+    getDisplayType(entry: GetOrderHistory.Items): TimelineDisplayType {
+        if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
+            if (entry.data.to === 'Fulfilled') {
                 return 'success';
-            } else if (entry.data.to === 'Declined') {
+            }
+            if (entry.data.to === 'Cancelled') {
+                return 'error';
+            }
+        }
+        if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
+            if (entry.data.to === 'Declined') {
                 return 'error';
             }
         }
@@ -35,27 +44,45 @@ export class OrderHistoryComponent {
         if (entry.type === HistoryEntryType.ORDER_REFUND_TRANSITION) {
             return 'warning';
         }
+        return 'default';
     }
 
-    getTimelineIcon(
-        entry: GetOrderHistory.Items,
-    ): 'complete' | 'note' | 'fulfillment' | 'payment' | 'cancelled' | undefined {
+    getTimelineIcon(entry: GetOrderHistory.Items) {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
             if (entry.data.to === 'Fulfilled') {
-                return 'complete';
+                return ['success-standard', 'is-solid'];
             }
             if (entry.data.to === 'Cancelled') {
-                return 'cancelled';
+                return 'ban';
             }
         }
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION && entry.data.to === 'Settled') {
-            return 'payment';
+            return 'credit-card';
         }
         if (entry.type === HistoryEntryType.ORDER_NOTE) {
             return 'note';
         }
         if (entry.type === HistoryEntryType.ORDER_FULLFILLMENT) {
-            return 'fulfillment';
+            return 'truck';
+        }
+    }
+
+    isFeatured(entry: GetOrderHistory.Items): boolean {
+        switch (entry.type) {
+            case HistoryEntryType.ORDER_STATE_TRANSITION: {
+                return (
+                    entry.data.to === 'Fulfilled' ||
+                    entry.data.to === 'Cancelled' ||
+                    entry.data.to === 'Settled'
+                );
+            }
+            case HistoryEntryType.ORDER_PAYMENT_TRANSITION:
+                return entry.data.to === 'Settled';
+            case HistoryEntryType.ORDER_FULLFILLMENT:
+            case HistoryEntryType.ORDER_NOTE:
+                return true;
+            default:
+                return false;
         }
     }
 

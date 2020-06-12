@@ -85,13 +85,13 @@ export class OrderStateMachine {
 
     private initConfig(): StateMachineConfig<OrderState, OrderTransitionData> {
         const {
-            transtitions,
+            transitions,
             onTransitionStart,
             onTransitionEnd,
             onTransitionError,
         } = this.configService.orderOptions.process;
 
-        const allTransitions = this.mergeTransitionDefinitions(orderStateTransitions, transtitions);
+        const allTransitions = this.mergeTransitionDefinitions(orderStateTransitions, transitions);
 
         return {
             transitions: allTransitions,

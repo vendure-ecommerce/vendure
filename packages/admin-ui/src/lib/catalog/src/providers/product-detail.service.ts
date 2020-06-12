@@ -2,21 +2,20 @@ import { Injectable } from '@angular/core';
 import {
     CreateProductInput,
     CreateProductVariantInput,
+    DataService,
     DeletionResult,
     FacetWithValues,
     LanguageCode,
-    ProductOptionGroup,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { BehaviorSubject, forkJoin, Observable, of, throwError } from 'rxjs';
-import { map, mergeMap, shareReplay, skip, switchMap } from 'rxjs/operators';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { map, mergeMap, shareReplay, switchMap } from 'rxjs/operators';
 
 import { CreateProductVariantsConfig } from '../components/generate-product-variants/generate-product-variants.component';
 
@@ -28,24 +27,10 @@ import { CreateProductVariantsConfig } from '../components/generate-product-vari
     providedIn: 'root',
 })
 export class ProductDetailService {
-    private facetsSubject = new BehaviorSubject<FacetWithValues.Fragment[]>([]);
-
     constructor(private dataService: DataService) {}
 
     getFacets(): Observable<FacetWithValues.Fragment[]> {
-        let skipValue = 0;
-        if (this.facetsSubject.value.length === 0) {
-            this.dataService.facet
-                .getFacets(9999999, 0)
-                .mapSingle(data => data.facets.items)
-                .subscribe(items => this.facetsSubject.next(items));
-            skipValue = 1;
-        }
-
-        return this.facetsSubject.pipe(
-            skip(skipValue),
-            shareReplay(1),
-        );
+        return this.dataService.facet.getAllFacets().mapSingle(data => data.facets.items);
     }
 
     getTaxCategories() {

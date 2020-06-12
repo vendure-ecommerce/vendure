@@ -218,6 +218,8 @@
                 [order]="order"
                 [history]="history$ | async"
                 (addNote)="addNote($event)"
+                (updateNote)="updateNote($event)"
+                (deleteNote)="deleteNote($event)"
             ></vdr-order-history>
         </div>
         <div class="clr-col-lg-4 order-cards">

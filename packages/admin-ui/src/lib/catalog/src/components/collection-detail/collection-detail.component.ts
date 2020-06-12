@@ -27,6 +27,7 @@ import {
     ServerConfigService,
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
+import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { combineLatest, Observable } from 'rxjs';
 import { mergeMap, shareReplay, take } from 'rxjs/operators';
 
@@ -63,6 +64,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
         this.customFields = this.getCustomFieldConfig('Collection');
         this.detailForm = this.formBuilder.group({
             name: ['', Validators.required],
+            slug: '',
             description: '',
             visible: false,
             filters: this.formBuilder.array([]),
@@ -75,7 +77,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     ngOnInit() {
         this.init();
         this.facets$ = this.dataService.facet
-            .getFacets(9999999, 0)
+            .getAllFacets()
             .mapSingle(data => data.facets.items)
             .pipe(shareReplay(1));
 
@@ -101,6 +103,20 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     assetsChanged(): boolean {
         return !!Object.values(this.assetChanges).length;
+    }
+
+    /**
+     * If creating a new product, automatically generate the slug based on the collection name.
+     */
+    updateSlug(nameValue: string) {
+        this.isNew$.pipe(take(1)).subscribe(isNew => {
+            if (isNew) {
+                const slugControl = this.detailForm.get(['slug']);
+                if (slugControl && slugControl.pristine) {
+                    slugControl.setValue(normalizeString(`${nameValue}`, '-'));
+                }
+            }
+        });
     }
 
     addFilter(collectionFilter: ConfigurableOperation) {
@@ -214,6 +230,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
+            slug: currentTranslation ? currentTranslation.slug : '',
             description: currentTranslation ? currentTranslation.description : '',
             visible: !entity.isPrivate,
         });
@@ -254,6 +271,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             defaultTranslation: {
                 languageCode,
                 name: category.name || '',
+                slug: category.slug || '',
                 description: category.description || '',
             },
         });

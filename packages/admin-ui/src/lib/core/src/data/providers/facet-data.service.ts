@@ -39,6 +39,14 @@ export class FacetDataService {
         });
     }
 
+    getAllFacets(refresh: boolean = false) {
+        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(
+            GET_FACET_LIST,
+            {},
+            refresh ? 'network-only' : 'cache-first',
+        );
+    }
+
     getFacet(id: string) {
         return this.baseDataService.query<GetFacetWithValues.Query, GetFacetWithValues.Variables>(
             GET_FACET_WITH_VALUES,

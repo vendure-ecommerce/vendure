@@ -1,4 +1,4 @@
-import { SortOrder } from '@vendure/common/lib/generated-types';
+import { LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
 import { DeepRequired } from '@vendure/core';
 
 import { buildElasticBody } from './build-elastic-body';
@@ -27,11 +27,42 @@ describe('buildElasticBody()', () => {
         });
     });
 
-    it('facetValueIds', () => {
-        const result = buildElasticBody({ facetValueIds: ['1', '2'] }, searchConfig, CHANNEL_ID);
+    it('facetValueIds AND', () => {
+        const result = buildElasticBody(
+            { facetValueIds: ['1', '2'], facetValueOperator: LogicalOperator.AND },
+            searchConfig,
+            CHANNEL_ID,
+        );
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM, { term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                filter: [
+                    CHANNEL_ID_TERM,
+                    {
+                        bool: {
+                            must: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                ],
+            },
+        });
+    });
+
+    it('facetValueIds OR', () => {
+        const result = buildElasticBody(
+            { facetValueIds: ['1', '2'], facetValueOperator: LogicalOperator.OR },
+            searchConfig,
+            CHANNEL_ID,
+        );
+        expect(result.query).toEqual({
+            bool: {
+                filter: [
+                    CHANNEL_ID_TERM,
+                    {
+                        bool: {
+                            should: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
+                        },
+                    },
+                ],
             },
         });
     });
@@ -126,8 +157,11 @@ describe('buildElasticBody()', () => {
                     ],
                     filter: [
                         CHANNEL_ID_TERM,
-                        { term: { facetValueIds: '6' } },
-                        { term: { facetValueIds: '7' } },
+                        {
+                            bool: {
+                                should: [{ term: { facetValueIds: '6' } }, { term: { facetValueIds: '7' } }],
+                            },
+                        },
                         { term: { collectionIds: '42' } },
                         { term: { enabled: true } },
                     ],
@@ -308,7 +342,11 @@ describe('buildElasticBody()', () => {
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
-                        { term: { facetValueIds: '5' } },
+                        {
+                            bool: {
+                                should: [{ term: { facetValueIds: '5' } }],
+                            },
+                        },
                         { term: { collectionIds: '3' } },
                         {
                             range: {

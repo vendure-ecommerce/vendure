@@ -23,6 +23,7 @@ export type CollectionFilterDefinition = FacetValueCollectionFilterDefinition;
 export interface CollectionDefinition {
     name: string;
     description?: string;
+    slug?: string;
     private?: boolean;
     filters?: CollectionFilterDefinition[];
     parentName?: string;

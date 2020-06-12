@@ -240,6 +240,23 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].from).toBe('"test from baz" <noreply@test.com>');
         });
 
+        // Test fix for https://github.com/vendure-ecommerce/vendure/issues/363
+        it('does not escape HTML chars when interpolating "from"', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('{{ globalFrom }}')
+                .setRecipient(() => 'Test <test@test.com>')
+                .setSubject('Hello');
+
+            await initPluginWithHandlers([handler], {
+                globalTemplateVars: { globalFrom: 'Test <test@test.com>' },
+            });
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].from).toBe('Test <test@test.com>');
+        });
+
         it('globalTemplateVars available in setTemplateVars method', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)

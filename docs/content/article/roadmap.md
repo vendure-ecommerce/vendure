@@ -9,7 +9,6 @@ showtoc: false
 Here is a list of some of the main outstanding tasks that are planned for the v1.0 release, at which point Vendure will come out of beta:
 
 * Complete the Channels implementation
-* Customer groups
 * Back order handling
 * Administrator creation & editing of orders
 * Custom authentication support

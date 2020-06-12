@@ -87,7 +87,7 @@ export class PaymentMethodService {
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(Payment).save(payment, { reload: false });
         this.eventBus.publish(
-            new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, payment.order),
+            new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
         return payment;
     }

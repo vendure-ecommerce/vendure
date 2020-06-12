@@ -160,6 +160,7 @@ export const COLLECTION_FRAGMENT = gql`
     fragment Collection on Collection {
         id
         name
+        slug
         description
         isPrivate
         languageCode
@@ -176,6 +177,7 @@ export const COLLECTION_FRAGMENT = gql`
             id
             languageCode
             name
+            slug
             description
         }
         parent {

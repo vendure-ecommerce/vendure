@@ -58,20 +58,6 @@ export class AssetService {
         return this.connection.getRepository(Asset).findOne(id);
     }
 
-    /**
-     * Locates an Asset by the filename of the source file. If "exact" is set to false, filename will
-     * be looked up without the extension and with a "%" wildcard at the end. This is useful for finding
-     * files that may have been automatically renamed with a suffix by the AssetNamingStrategy.
-     */
-    findByFileName(fileName: string, exact: boolean = true): Promise<Asset | undefined> {
-        const source = exact ? fileName : Like(path.basename(fileName, path.extname(fileName)) + '%');
-        return this.connection.getRepository(Asset).findOne({
-            where: {
-                source,
-            },
-        });
-    }
-
     findAll(options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
         return this.listQueryBuilder
             .build(Asset, options)

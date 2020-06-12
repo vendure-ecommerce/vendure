@@ -55,7 +55,8 @@ jobs:
       postgres:
         image: postgres:12
         env:
-          POSTGRES_PASSWORD: Be70
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: secret
         ports:
           - 5432
         options: --health-cmd=pg_isready --health-interval=10s --health-timeout=5s --health-retries=3

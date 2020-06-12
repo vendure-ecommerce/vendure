@@ -1,12 +1,16 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     DeletionResponse,
+    MutationAddNoteToCustomerArgs,
+    MutationAddNoteToOrderArgs,
     MutationCreateCustomerAddressArgs,
     MutationCreateCustomerArgs,
     MutationDeleteCustomerAddressArgs,
     MutationDeleteCustomerArgs,
+    MutationDeleteCustomerNoteArgs,
     MutationUpdateCustomerAddressArgs,
     MutationUpdateCustomerArgs,
+    MutationUpdateCustomerNoteArgs,
     Permission,
     QueryCustomerArgs,
     QueryCustomersArgs,
@@ -49,9 +53,12 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async updateCustomer(@Args() args: MutationUpdateCustomerArgs): Promise<Customer> {
+    async updateCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateCustomerArgs,
+    ): Promise<Customer> {
         const { input } = args;
-        return this.customerService.update(input);
+        return this.customerService.update(ctx, input);
     }
 
     @Mutation()
@@ -81,12 +88,29 @@ export class CustomerResolver {
         @Args() args: MutationDeleteCustomerAddressArgs,
     ): Promise<boolean> {
         const { id } = args;
-        return this.customerService.deleteAddress(id);
+        return this.customerService.deleteAddress(ctx, id);
     }
 
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomer(@Args() args: MutationDeleteCustomerArgs): Promise<DeletionResponse> {
         return this.customerService.softDelete(args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async addNoteToCustomer(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToCustomerArgs) {
+        return this.customerService.addNoteToCustomer(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async updateCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateCustomerNoteArgs) {
+        return this.customerService.updateCustomerNote(ctx, args.input);
+    }
+    @Mutation()
+    @Allow(Permission.UpdateCustomer)
+    async deleteCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteCustomerNoteArgs) {
+        return this.customerService.deleteCustomerNote(ctx, args.id);
     }
 }

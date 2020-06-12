@@ -12,7 +12,7 @@
                 (click)="languageCodeChange.emit(code)"
                 vdrDropdownItem
             >
-                {{ 'lang.' + code | translate }}
+                {{ 'lang.' + code | translate }} <span class="code">{{ code }}</span>
             </button>
         </vdr-dropdown-menu>
     </vdr-dropdown>

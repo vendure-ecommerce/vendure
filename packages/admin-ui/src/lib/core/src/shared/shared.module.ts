@@ -41,6 +41,8 @@ import { DropdownItemDirective } from './components/dropdown/dropdown-item.direc
 import { DropdownMenuComponent } from './components/dropdown/dropdown-menu.component';
 import { DropdownTriggerDirective } from './components/dropdown/dropdown-trigger.directive';
 import { DropdownComponent } from './components/dropdown/dropdown.component';
+import { EditNoteDialogComponent } from './components/edit-note-dialog/edit-note-dialog.component';
+import { EmptyPlaceholderComponent } from './components/empty-placeholder/empty-placeholder.component';
 import { EntityInfoComponent } from './components/entity-info/entity-info.component';
 import { ExtensionHostComponent } from './components/extension-host/extension-host.component';
 import { FacetValueChipComponent } from './components/facet-value-chip/facet-value-chip.component';
@@ -50,6 +52,7 @@ import { FormFieldControlDirective } from './components/form-field/form-field-co
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
 import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+import { HistoryEntryDetailComponent } from './components/history-entry-detail/history-entry-detail.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
@@ -66,6 +69,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
 import { DisabledDirective } from './directives/disabled.directive';
 import { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
@@ -164,6 +168,10 @@ const DECLARATIONS = [
     ExternalImageDialogComponent,
     TimeAgoPipe,
     DurationPipe,
+    EmptyPlaceholderComponent,
+    TimelineEntryComponent,
+    HistoryEntryDetailComponent,
+    EditNoteDialogComponent,
 ];
 
 @NgModule({

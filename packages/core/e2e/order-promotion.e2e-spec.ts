@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
     atLeastNWithFacets,
@@ -11,7 +12,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
@@ -24,6 +25,7 @@ import {
 import {
     AddItemToOrder,
     AdjustItemQuantity,
+    AdjustmentType,
     ApplyCouponCode,
     GetActiveOrder,
     GetOrderPromotionsByCode,
@@ -161,9 +163,8 @@ describe('Promotions applied to Orders', () => {
         it('order history records application', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items).toEqual([
+            expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -199,9 +200,8 @@ describe('Promotions applied to Orders', () => {
         it('order history records removal', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items).toEqual([
+            expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -209,7 +209,6 @@ describe('Promotions applied to Orders', () => {
                     },
                 },
                 {
-                    id: 'T_2',
                     type: HistoryEntryType.ORDER_COUPON_REMOVED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -226,9 +225,8 @@ describe('Promotions applied to Orders', () => {
                 couponCode: 'NOT_THERE',
             });
 
-            expect(removeCouponCode!.history.items).toEqual([
+            expect(removeCouponCode!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
-                    id: 'T_1',
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -236,7 +234,6 @@ describe('Promotions applied to Orders', () => {
                     },
                 },
                 {
-                    id: 'T_2',
                     type: HistoryEntryType.ORDER_COUPON_REMOVED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -411,6 +408,7 @@ describe('Promotions applied to Orders', () => {
                 quantity: 2,
             });
             expect(addItemToOrder!.adjustments.length).toBe(0);
+            expect(addItemToOrder!.lines[2].adjustments.length).toBe(2); // 2x tax
             expect(addItemToOrder!.total).toBe(2640);
 
             const { applyCouponCode } = await shopClient.query<
@@ -421,8 +419,89 @@ describe('Promotions applied to Orders', () => {
             });
 
             expect(applyCouponCode!.total).toBe(1920);
+            expect(applyCouponCode!.lines[2].adjustments.length).toBe(4); // 2x tax, 2x promotion
+
+            const { removeCouponCode } = await shopClient.query<
+                RemoveCouponCode.Mutation,
+                RemoveCouponCode.Variables
+            >(REMOVE_COUPON_CODE, {
+                couponCode,
+            });
+
+            expect(removeCouponCode!.lines[2].adjustments.length).toBe(2); // 2x tax
+            expect(removeCouponCode!.total).toBe(2640);
+
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            expect(activeOrder!.lines[2].adjustments.length).toBe(2); // 2x tax
+            expect(activeOrder!.total).toBe(2640);
 
             await deletePromotion(promotion.id);
+        });
+
+        it('multiple promotions simultaneously', async () => {
+            const { facets } = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
+            const saleFacetValue = facets.items[0].values[0];
+            const promotion1 = await createPromotion({
+                enabled: true,
+                name: 'item promo',
+                couponCode: 'CODE1',
+                conditions: [],
+                actions: [
+                    {
+                        code: discountOnItemWithFacets.code,
+                        arguments: [
+                            { name: 'discount', type: 'int', value: '50' },
+                            { name: 'facets', type: 'facetValueIds', value: `["${saleFacetValue.id}"]` },
+                        ],
+                    },
+                ],
+            });
+            const promotion2 = await createPromotion({
+                enabled: true,
+                name: 'order promo',
+                couponCode: 'CODE2',
+                conditions: [],
+                actions: [
+                    {
+                        code: orderPercentageDiscount.code,
+                        arguments: [{ name: 'discount', type: 'int', value: '50' }],
+                    },
+                ],
+            });
+
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-sale-12').id,
+                quantity: 1,
+            });
+
+            // Apply the OrderItem-level promo
+            const { applyCouponCode: apply1 } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: 'CODE1',
+            });
+
+            expect(apply1?.lines[0].adjustments.length).toBe(2);
+            expect(
+                apply1?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+            ).toBe('item promo');
+            expect(apply1?.adjustments.length).toBe(0);
+
+            // Apply the Order-level promo
+            const { applyCouponCode: apply2 } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: 'CODE2',
+            });
+
+            expect(apply2?.lines[0].adjustments.length).toBe(2);
+            expect(
+                apply2?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+            ).toBe('item promo');
+            expect(apply2?.adjustments.length).toBe(1);
+            expect(apply2?.adjustments[0].description).toBe('order promo');
         });
     });
 
@@ -501,8 +580,8 @@ describe('Promotions applied to Orders', () => {
                 >(GET_ORDER_PROMOTIONS_BY_CODE, {
                     code: orderCode,
                 });
-                expect(orderByCode!.promotions.map(pick(['id', 'name']))).toEqual([
-                    { id: 'T_9', name: 'Free with test coupon' },
+                expect(orderByCode!.promotions.map(pick(['name']))).toEqual([
+                    { name: 'Free with test coupon' },
                 ]);
             });
 

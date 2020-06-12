@@ -1,14 +1,13 @@
 """
 @description
-ISO 639-1 language code
+Languages in the form of a ISO 639-1 language code with optional
+region or script modifier (e.g. de_AT). The selection available is based
+on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
+and includes the major spoken languages of the world and any widely-used variants.
 
 @docsCategory common
 """
 enum LanguageCode {
-    "Afar"
-    aa
-    "Abkhazian"
-    ab
     "Afrikaans"
     af
     "Akan"
@@ -19,34 +18,20 @@ enum LanguageCode {
     am
     "Arabic"
     ar
-    "Aragonese"
-    an
     "Armenian"
     hy
     "Assamese"
     as
-    "Avaric"
-    av
-    "Avestan"
-    ae
-    "Aymara"
-    ay
     "Azerbaijani"
     az
-    "Bashkir"
-    ba
     "Bambara"
     bm
+    "Bangla"
+    bn
     "Basque"
     eu
     "Belarusian"
     be
-    "Bengali"
-    bn
-    "Bihari languages"
-    bh
-    "Bislama"
-    bi
     "Bosnian"
     bs
     "Breton"
@@ -55,36 +40,44 @@ enum LanguageCode {
     bg
     "Burmese"
     my
-    "Catalan; Valencian"
+    "Catalan"
     ca
-    "Chamorro"
-    ch
     "Chechen"
     ce
     "Chinese"
     zh
-    "Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic"
+    "Simplified Chinese"
+    zh_Hans
+    "Traditional Chinese"
+    zh_Hant
+    "Church Slavic"
     cu
-    "Chuvash"
-    cv
     "Cornish"
     kw
     "Corsican"
     co
-    "Cree"
-    cr
+    "Croatian"
+    hr
     "Czech"
     cs
     "Danish"
     da
-    "Divehi; Dhivehi; Maldivian"
-    dv
-    "Dutch; Flemish"
+    "Dutch"
     nl
+    "Flemish"
+    nl_BE
     "Dzongkha"
     dz
     "English"
     en
+    "Australian English"
+    en_AU
+    "Canadian English"
+    en_CA
+    "British English"
+    en_GB
+    "American English"
+    en_US
     "Esperanto"
     eo
     "Estonian"
@@ -93,274 +86,232 @@ enum LanguageCode {
     ee
     "Faroese"
     fo
-    "Fijian"
-    fj
     "Finnish"
     fi
     "French"
     fr
-    "Western Frisian"
-    fy
+    "Canadian French"
+    fr_CA
+    "Swiss French"
+    fr_CH
     "Fulah"
     ff
+    "Galician"
+    gl
+    "Ganda"
+    lg
     "Georgian"
     ka
     "German"
     de
-    "Gaelic; Scottish Gaelic"
-    gd
-    "Irish"
-    ga
-    "Galician"
-    gl
-    "Manx"
-    gv
-    "Greek, Modern (1453-)"
+    "Austrian German"
+    de_AT
+    "Swiss High German"
+    de_CH
+    "Greek"
     el
-    "Guarani"
-    gn
     "Gujarati"
     gu
-    "Haitian; Haitian Creole"
+    "Haitian Creole"
     ht
     "Hausa"
     ha
     "Hebrew"
     he
-    "Herero"
-    hz
     "Hindi"
     hi
-    "Hiri Motu"
-    ho
-    "Croatian"
-    hr
     "Hungarian"
     hu
-    "Igbo"
-    ig
     "Icelandic"
     is
-    "Ido"
-    io
-    "Sichuan Yi; Nuosu"
-    ii
-    "Inuktitut"
-    iu
-    "Interlingue; Occidental"
-    ie
-    "Interlingua (International Auxiliary Language Association)"
-    ia
+    "Igbo"
+    ig
     "Indonesian"
     id
-    "Inupiaq"
-    ik
+    "Interlingua"
+    ia
+    "Irish"
+    ga
     "Italian"
     it
-    "Javanese"
-    jv
     "Japanese"
     ja
-    "Kalaallisut; Greenlandic"
+    "Javanese"
+    jv
+    "Kalaallisut"
     kl
     "Kannada"
     kn
     "Kashmiri"
     ks
-    "Kanuri"
-    kr
     "Kazakh"
     kk
-    "Central Khmer"
+    "Khmer"
     km
-    "Kikuyu; Gikuyu"
+    "Kikuyu"
     ki
     "Kinyarwanda"
     rw
-    "Kirghiz; Kyrgyz"
-    ky
-    "Komi"
-    kv
-    "Kongo"
-    kg
     "Korean"
     ko
-    "Kuanyama; Kwanyama"
-    kj
     "Kurdish"
     ku
+    "Kyrgyz"
+    ky
     "Lao"
     lo
     "Latin"
     la
     "Latvian"
     lv
-    "Limburgan; Limburger; Limburgish"
-    li
     "Lingala"
     ln
     "Lithuanian"
     lt
-    "Luxembourgish; Letzeburgesch"
-    lb
     "Luba-Katanga"
     lu
-    "Ganda"
-    lg
+    "Luxembourgish"
+    lb
     "Macedonian"
     mk
-    "Marshallese"
-    mh
+    "Malagasy"
+    mg
+    "Malay"
+    ms
     "Malayalam"
     ml
+    "Maltese"
+    mt
+    "Manx"
+    gv
     "Maori"
     mi
     "Marathi"
     mr
-    "Malay"
-    ms
-    "Malagasy"
-    mg
-    "Maltese"
-    mt
     "Mongolian"
     mn
-    "Nauru"
-    na
-    "Navajo; Navaho"
-    nv
-    "Ndebele, South; South Ndebele"
-    nr
-    "Ndebele, North; North Ndebele"
-    nd
-    "Ndonga"
-    ng
     "Nepali"
     ne
-    "Norwegian Nynorsk; Nynorsk, Norwegian"
-    nn
-    "Bokmål, Norwegian; Norwegian Bokmål"
+    "North Ndebele"
+    nd
+    "Northern Sami"
+    se
+    "Norwegian Bokmål"
     nb
-    "Norwegian"
-    no
-    "Chichewa; Chewa; Nyanja"
+    "Norwegian Nynorsk"
+    nn
+    "Nyanja"
     ny
-    "Occitan (post 1500); Provençal"
-    oc
-    "Ojibwa"
-    oj
-    "Oriya"
+    "Odia"
     or
     "Oromo"
     om
-    "Ossetian; Ossetic"
+    "Ossetic"
     os
-    "Panjabi; Punjabi"
-    pa
+    "Pashto"
+    ps
     "Persian"
     fa
-    "Pali"
-    pi
+    "Dari"
+    fa_AF
     "Polish"
     pl
     "Portuguese"
     pt
-    "Pushto; Pashto"
-    ps
+    "Brazilian Portuguese"
+    pt_BR
+    "European Portuguese"
+    pt_PT
+    "Punjabi"
+    pa
     "Quechua"
     qu
+    "Romanian"
+    ro
+    "Moldavian"
+    ro_MD
     "Romansh"
     rm
-    "Romanian; Moldavian; Moldovan"
-    ro
     "Rundi"
     rn
     "Russian"
     ru
+    "Samoan"
+    sm
     "Sango"
     sg
     "Sanskrit"
     sa
-    "Sinhala; Sinhalese"
+    "Scottish Gaelic"
+    gd
+    "Serbian"
+    sr
+    "Shona"
+    sn
+    "Sichuan Yi"
+    ii
+    "Sindhi"
+    sd
+    "Sinhala"
     si
     "Slovak"
     sk
     "Slovenian"
     sl
-    "Northern Sami"
-    se
-    "Samoan"
-    sm
-    "Shona"
-    sn
-    "Sindhi"
-    sd
     "Somali"
     so
-    "Sotho, Southern"
+    "Southern Sotho"
     st
-    "Spanish; Castilian"
+    "Spanish"
     es
-    "Sardinian"
-    sc
-    "Serbian"
-    sr
-    "Swati"
-    ss
+    "European Spanish"
+    es_ES
+    "Mexican Spanish"
+    es_MX
     "Sundanese"
     su
     "Swahili"
     sw
+    "Congo Swahili"
+    sw_CD
     "Swedish"
     sv
-    "Tahitian"
-    ty
+    "Tajik"
+    tg
     "Tamil"
     ta
     "Tatar"
     tt
     "Telugu"
     te
-    "Tajik"
-    tg
-    "Tagalog"
-    tl
     "Thai"
     th
     "Tibetan"
     bo
     "Tigrinya"
     ti
-    "Tonga (Tonga Islands)"
+    "Tongan"
     to
-    "Tswana"
-    tn
-    "Tsonga"
-    ts
-    "Turkmen"
-    tk
     "Turkish"
     tr
-    "Twi"
-    tw
-    "Uighur; Uyghur"
-    ug
+    "Turkmen"
+    tk
     "Ukrainian"
     uk
     "Urdu"
     ur
+    "Uyghur"
+    ug
     "Uzbek"
     uz
-    "Venda"
-    ve
     "Vietnamese"
     vi
     "Volapük"
     vo
     "Welsh"
     cy
-    "Walloon"
-    wa
+    "Western Frisian"
+    fy
     "Wolof"
     wo
     "Xhosa"
@@ -369,8 +320,6 @@ enum LanguageCode {
     yi
     "Yoruba"
     yo
-    "Zhuang; Chuang"
-    za
     "Zulu"
     zu
 }

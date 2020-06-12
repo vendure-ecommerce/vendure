@@ -2,10 +2,12 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
+    MutationDeleteOrderNoteArgs,
     MutationFulfillOrderArgs,
     MutationRefundOrderArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
+    MutationUpdateOrderNoteArgs,
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
@@ -69,5 +71,17 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async addNoteToOrder(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToOrderArgs) {
         return this.orderService.addNoteToOrder(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async updateOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateOrderNoteArgs) {
+        return this.orderService.updateOrderNote(ctx, args.input);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async deleteOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteOrderNoteArgs) {
+        return this.orderService.deleteOrderNote(ctx, args.id);
     }
 }

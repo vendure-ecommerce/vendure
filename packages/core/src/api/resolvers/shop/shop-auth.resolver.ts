@@ -12,6 +12,7 @@ import {
     MutationVerifyCustomerAccountArgs,
     Permission,
 } from '@vendure/common/lib/generated-shop-types';
+import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import {
@@ -23,6 +24,7 @@ import { ConfigService } from '../../../config/config.service';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
+import { HistoryService } from '../../../service/services/history.service';
 import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
@@ -37,6 +39,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         administratorService: AdministratorService,
         configService: ConfigService,
         protected customerService: CustomerService,
+        protected historyService: HistoryService,
     ) {
         super(authService, userService, administratorService, configService);
     }
@@ -85,7 +88,11 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ) {
-        const customer = await this.customerService.verifyCustomerEmailAddress(args.token, args.password);
+        const customer = await this.customerService.verifyCustomerEmailAddress(
+            ctx,
+            args.token,
+            args.password,
+        );
         if (customer && customer.user) {
             return super.createAuthenticatedSession(
                 ctx,
@@ -126,7 +133,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('res') res: Response,
     ) {
         const { token, password } = args;
-        const customer = await this.customerService.resetPassword(token, password);
+        const customer = await this.customerService.resetPassword(ctx, token, password);
         if (customer && customer.user) {
             return super.createAuthenticatedSession(
                 ctx,
@@ -149,7 +156,19 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerPasswordArgs,
     ): Promise<boolean> {
-        return super.updatePassword(ctx, args.currentPassword, args.newPassword);
+        const result = await super.updatePassword(ctx, args.currentPassword, args.newPassword);
+        if (result && ctx.activeUserId) {
+            const customer = await this.customerService.findOneByUserId(ctx.activeUserId);
+            if (customer) {
+                await this.historyService.createHistoryEntryForCustomer({
+                    ctx,
+                    customerId: customer.id,
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_UPDATED,
+                    data: {},
+                });
+            }
+        }
+        return result;
     }
 
     @Mutation()

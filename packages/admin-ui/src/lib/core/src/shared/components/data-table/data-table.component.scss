@@ -22,14 +22,3 @@ thead th {
     justify-content: space-between;
     margin-top: 6px;
 }
-
-.empty-state {
-    text-align: center;
-    padding: 60px;
-    color: $color-grey-400;
-
-    .empty-label {
-        margin-top: 12px;
-        font-size: 22px;
-    }
-}

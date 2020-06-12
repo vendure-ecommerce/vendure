@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     failsToSettlePaymentMethod,
@@ -17,6 +17,7 @@ import {
     AddNoteToOrder,
     CancelOrder,
     CreateFulfillment,
+    DeleteOrderNote,
     GetCustomerList,
     GetOrder,
     GetOrderFulfillmentItems,
@@ -32,9 +33,10 @@ import {
     SettlePayment,
     SettleRefund,
     StockMovementType,
+    UpdateOrderNote,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
@@ -595,7 +597,10 @@ describe('Orders resolver', () => {
                 },
             );
             expect(cancelOrder.lines.map(l => l.items.map(pick(['id', 'cancelled'])))).toEqual([
-                [{ id: 'T_11', cancelled: true }, { id: 'T_12', cancelled: true }],
+                [
+                    { id: 'T_11', cancelled: true },
+                    { id: 'T_12', cancelled: true },
+                ],
             ]);
             const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: testOrder.orderId,
@@ -1098,6 +1103,7 @@ describe('Orders resolver', () => {
 
     describe('order notes', () => {
         let orderId: string;
+        let firstNoteId: string;
 
         beforeAll(async () => {
             const result = await createTestOrder(
@@ -1142,6 +1148,8 @@ describe('Orders resolver', () => {
                     },
                 },
             ]);
+
+            firstNoteId = order!.history.items[0].id;
 
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
@@ -1191,6 +1199,45 @@ describe('Orders resolver', () => {
                     },
                 },
             ]);
+        });
+
+        it('update note', async () => {
+            const { updateOrderNote } = await adminClient.query<
+                UpdateOrderNote.Mutation,
+                UpdateOrderNote.Variables
+            >(UPDATE_ORDER_NOTE, {
+                input: {
+                    noteId: firstNoteId,
+                    note: 'An updated note',
+                },
+            });
+
+            expect(updateOrderNote.data).toEqual({
+                note: 'An updated note',
+            });
+        });
+
+        it('delete note', async () => {
+            const { order: before } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, { id: orderId });
+            expect(before?.history.totalItems).toBe(2);
+
+            const { deleteOrderNote } = await adminClient.query<
+                DeleteOrderNote.Mutation,
+                DeleteOrderNote.Variables
+            >(DELETE_ORDER_NOTE, {
+                id: firstNoteId,
+            });
+
+            expect(deleteOrderNote.result).toBe(DeletionResult.DELETED);
+
+            const { order: after } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, { id: orderId });
+            expect(after?.history.totalItems).toBe(1);
         });
     });
 });
@@ -1390,6 +1437,25 @@ export const ADD_NOTE_TO_ORDER = gql`
     mutation AddNoteToOrder($input: AddNoteToOrderInput!) {
         addNoteToOrder(input: $input) {
             id
+        }
+    }
+`;
+
+export const UPDATE_ORDER_NOTE = gql`
+    mutation UpdateOrderNote($input: UpdateOrderNoteInput!) {
+        updateOrderNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_ORDER_NOTE = gql`
+    mutation DeleteOrderNote($id: ID!) {
+        deleteOrderNote(id: $id) {
+            result
+            message
         }
     }
 `;

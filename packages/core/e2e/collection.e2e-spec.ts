@@ -32,6 +32,7 @@ import {
     GetCollectionsWithAssets,
     GetFacetValues,
     GetProductCollections,
+    GetProductCollectionsWithParent,
     GetProductsWithVariantIds,
     LanguageCode,
     MoveCollection,
@@ -50,6 +51,7 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { awaitRunningJobs } from './utils/await-running-jobs';
+import { sortById } from './utils/test-order-utils';
 
 describe('Collection resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -128,7 +130,12 @@ describe('Collection resolver', () => {
                             },
                         ],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Electronics', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Electronics',
+                                description: '',
+                                slug: 'electronics',
+                            },
                         ],
                     },
                 },
@@ -145,7 +152,14 @@ describe('Collection resolver', () => {
                 {
                     input: {
                         parentId: electronicsCollection.id,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Computers', description: '' }],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Computers',
+                                description: '',
+                                slug: 'computers',
+                            },
+                        ],
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -176,7 +190,9 @@ describe('Collection resolver', () => {
                 {
                     input: {
                         parentId: computersCollection.id,
-                        translations: [{ languageCode: LanguageCode.en, name: 'Pear', description: '' }],
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'Pear', description: '', slug: 'pear' },
+                        ],
                         filters: [
                             {
                                 code: facetValueCollectionFilter.code,
@@ -200,6 +216,71 @@ describe('Collection resolver', () => {
             pearCollection = result.createCollection;
             expect(pearCollection.parent!.name).toBe(computersCollection.name);
         });
+
+        it('slug is normalized to be url-safe', async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Accessories',
+                            description: '',
+                            slug: 'Accessories!',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'Zubehör',
+                            description: '',
+                            slug: 'Zubehör!',
+                        },
+                    ],
+                    filters: [],
+                },
+            });
+
+            expect(createCollection.slug).toBe('accessories');
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.en)?.slug).toBe(
+                'accessories',
+            );
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
+                'zubehor',
+            );
+        });
+
+        it('create with duplicate slug is renamed to be unique', async () => {
+            const { createCollection } = await adminClient.query<
+                CreateCollection.Mutation,
+                CreateCollection.Variables
+            >(CREATE_COLLECTION, {
+                input: {
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'Accessories',
+                            description: '',
+                            slug: 'Accessories',
+                        },
+                        {
+                            languageCode: LanguageCode.de,
+                            name: 'Zubehör',
+                            description: '',
+                            slug: 'Zubehör',
+                        },
+                    ],
+                    filters: [],
+                },
+            });
+
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.en)?.slug).toBe(
+                'accessories-2',
+            );
+            expect(createCollection.translations.find(t => t.languageCode === LanguageCode.de)?.slug).toBe(
+                'zubehor-2',
+            );
+        });
     });
 
     describe('updateCollection', () => {
@@ -212,11 +293,15 @@ describe('Collection resolver', () => {
                     id: pearCollection.id,
                     assetIds: [assets[1].id, assets[2].id],
                     featuredAssetId: assets[1].id,
-                    translations: [{ languageCode: LanguageCode.en, description: 'Apple stuff ' }],
+                    translations: [
+                        { languageCode: LanguageCode.en, description: 'Apple stuff ', slug: 'apple-stuff' },
+                    ],
                 },
             });
 
             expect(updateCollection).toMatchSnapshot();
+
+            pearCollection = updateCollection;
         });
 
         it('updating existing assets', async () => {
@@ -250,7 +335,7 @@ describe('Collection resolver', () => {
         });
     });
 
-    it('collection query', async () => {
+    it('collection by id', async () => {
         const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
         });
@@ -261,6 +346,34 @@ describe('Collection resolver', () => {
         expect(result.collection.id).toBe(computersCollection.id);
     });
 
+    it('collection by slug', async () => {
+        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+            slug: computersCollection.slug,
+        });
+        if (!result.collection) {
+            fail(`did not return the collection`);
+            return;
+        }
+        expect(result.collection.id).toBe(computersCollection.id);
+    });
+
+    it(
+        'throws if neither id nor slug provided',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {});
+        }, 'Either the Collection id or slug must be provided'),
+    );
+
+    it(
+        'throws if id and slug do not refer to the same Product',
+        assertThrowsWithMessage(async () => {
+            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+                id: computersCollection.id,
+                slug: pearCollection.slug,
+            });
+        }, 'The provided id and slug refer to different Collections'),
+    );
+
     it('parent field', async () => {
         const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
             id: computersCollection.id,
@@ -270,6 +383,44 @@ describe('Collection resolver', () => {
             return;
         }
         expect(result.collection.parent!.name).toBe('Electronics');
+    });
+
+    // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
+    it('parent field resolved by CollectionEntityResolver', async () => {
+        const { product } = await adminClient.query<
+            GetProductCollectionsWithParent.Query,
+            GetProductCollectionsWithParent.Variables
+        >(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
+            id: 'T_1',
+        });
+
+        expect(product?.collections.length).toBe(3);
+        expect(product?.collections.sort(sortById)).toEqual([
+            {
+                id: 'T_3',
+                name: 'Electronics',
+                parent: {
+                    id: 'T_1',
+                    name: '__root_collection__',
+                },
+            },
+            {
+                id: 'T_4',
+                name: 'Computers',
+                parent: {
+                    id: 'T_3',
+                    name: 'Electronics',
+                },
+            },
+            {
+                id: 'T_5',
+                name: 'Pear',
+                parent: {
+                    id: 'T_4',
+                    name: 'Computers',
+                },
+            },
+        ]);
     });
 
     it('children field', async () => {
@@ -296,10 +447,14 @@ describe('Collection resolver', () => {
             return;
         }
         expect(result.collection.breadcrumbs).toEqual([
-            { id: 'T_1', name: ROOT_COLLECTION_NAME },
-            { id: electronicsCollection.id, name: electronicsCollection.name },
-            { id: computersCollection.id, name: computersCollection.name },
-            { id: pearCollection.id, name: pearCollection.name },
+            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+            {
+                id: electronicsCollection.id,
+                name: electronicsCollection.name,
+                slug: electronicsCollection.slug,
+            },
+            { id: computersCollection.id, name: computersCollection.name, slug: computersCollection.slug },
+            { id: pearCollection.id, name: pearCollection.name, slug: pearCollection.slug },
         ]);
     });
 
@@ -314,7 +469,9 @@ describe('Collection resolver', () => {
             fail(`did not return the collection`);
             return;
         }
-        expect(result.collection.breadcrumbs).toEqual([{ id: 'T_1', name: ROOT_COLLECTION_NAME }]);
+        expect(result.collection.breadcrumbs).toEqual([
+            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+        ]);
     });
 
     it('collections.assets', async () => {
@@ -484,7 +641,12 @@ describe('Collection resolver', () => {
                             },
                         ],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Delete Me Parent', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Delete Me Parent',
+                                description: '',
+                                slug: 'delete-me-parent',
+                            },
                         ],
                         assetIds: ['T_1'],
                     },
@@ -498,7 +660,12 @@ describe('Collection resolver', () => {
                     input: {
                         filters: [],
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Delete Me Child', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Delete Me Child',
+                                description: '',
+                                slug: 'delete-me-child',
+                            },
                         ],
                         parentId: collectionToDeleteParent.id,
                         assetIds: ['T_2'],
@@ -548,8 +715,8 @@ describe('Collection resolver', () => {
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_4', name: 'Computers' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_6', name: 'Delete Me Parent' },
-                { id: 'T_7', name: 'Delete Me Child' },
+                { id: 'T_8', name: 'Delete Me Parent' },
+                { id: 'T_9', name: 'Delete Me Child' },
             ]);
         });
 
@@ -607,7 +774,9 @@ describe('Collection resolver', () => {
                 CreateCollectionSelectVariants.Variables
             >(CREATE_COLLECTION_SELECT_VARIANTS, {
                 input: {
-                    translations: [{ languageCode: LanguageCode.en, name: 'Empty', description: '' }],
+                    translations: [
+                        { languageCode: LanguageCode.en, name: 'Empty', description: '', slug: 'empty' },
+                    ],
                     filters: [],
                 } as CreateCollectionInput,
             });
@@ -682,7 +851,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Photo AND Pear', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Photo AND Pear',
+                                description: '',
+                                slug: 'photo-and-pear',
+                            },
                         ],
                         filters: [
                             {
@@ -724,7 +898,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION_SELECT_VARIANTS, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: 'Photo OR Pear', description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Photo OR Pear',
+                                description: '',
+                                slug: 'photo-or-pear',
+                            },
                         ],
                         filters: [
                             {
@@ -781,6 +960,7 @@ describe('Collection resolver', () => {
                                 languageCode: LanguageCode.en,
                                 name: 'Bell OR Pear Computers',
                                 description: '',
+                                slug: 'bell-or-pear',
                             },
                         ],
                         filters: [
@@ -833,7 +1013,12 @@ describe('Collection resolver', () => {
                 >(CREATE_COLLECTION, {
                     input: {
                         translations: [
-                            { languageCode: LanguageCode.en, name: `${operator} ${term}`, description: '' },
+                            {
+                                languageCode: LanguageCode.en,
+                                name: `${operator} ${term}`,
+                                description: '',
+                                slug: `${operator} ${term}`,
+                            },
                         ],
                         filters: [
                             {
@@ -1062,7 +1247,12 @@ describe('Collection resolver', () => {
                 input: {
                     parentId: electronicsCollection.id,
                     translations: [
-                        { languageCode: LanguageCode.en, name: 'pear electronics', description: '' },
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'pear electronics',
+                            description: '',
+                            slug: 'pear-electronics',
+                        },
                     ],
                     filters: [
                         {
@@ -1113,11 +1303,11 @@ describe('Collection resolver', () => {
             expect(result.products.items[0].collections).toEqual([
                 { id: 'T_3', name: 'Electronics' },
                 { id: 'T_5', name: 'Pear' },
-                { id: 'T_9', name: 'Photo AND Pear' },
-                { id: 'T_10', name: 'Photo OR Pear' },
-                { id: 'T_12', name: 'contains camera' },
-                { id: 'T_14', name: 'endsWith camera' },
-                { id: 'T_16', name: 'pear electronics' },
+                { id: 'T_11', name: 'Photo AND Pear' },
+                { id: 'T_12', name: 'Photo OR Pear' },
+                { id: 'T_14', name: 'contains camera' },
+                { id: 'T_16', name: 'endsWith camera' },
+                { id: 'T_18', name: 'pear electronics' },
             ]);
         });
     });
@@ -1152,8 +1342,8 @@ describe('Collection resolver', () => {
 });
 
 export const GET_COLLECTION = gql`
-    query GetCollection($id: ID!) {
-        collection(id: $id) {
+    query GetCollection($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
             ...Collection
             productVariants {
                 items {
@@ -1241,6 +1431,7 @@ const GET_COLLECTION_BREADCRUMBS = gql`
             breadcrumbs {
                 id
                 name
+                slug
             }
         }
     }
@@ -1277,6 +1468,22 @@ const GET_PRODUCT_COLLECTIONS = gql`
             collections {
                 id
                 name
+            }
+        }
+    }
+`;
+
+const GET_PRODUCT_COLLECTIONS_WITH_PARENT = gql`
+    query GetProductCollectionsWithParent($id: ID!) {
+        product(id: $id) {
+            id
+            collections {
+                id
+                name
+                parent {
+                    id
+                    name
+                }
             }
         }
     }

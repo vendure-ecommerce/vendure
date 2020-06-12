@@ -1,0 +1,19 @@
+@import "variables";
+
+.visibility-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    .public {
+        color: $color-warning-500;
+    }
+    .private {
+        color: $color-success-500;
+    }
+}
+textarea.note {
+    width: 100%;
+    height: 72px;
+    border-radius: 3px;
+    margin-right: 6px;
+}

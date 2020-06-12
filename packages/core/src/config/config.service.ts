@@ -21,6 +21,7 @@ import {
     PromotionOptions,
     RuntimeVendureConfig,
     ShippingOptions,
+    SuperadminCredentials,
     TaxOptions,
     VendureConfig,
     WorkerOptions,

@@ -54,18 +54,30 @@ export class Collection extends VendureEntity
 
     description: LocaleString;
 
-    @OneToMany(type => CollectionTranslation, translation => translation.base, { eager: true })
+    slug: LocaleString;
+
+    @OneToMany(
+        type => CollectionTranslation,
+        translation => translation.base,
+        { eager: true },
+    )
     translations: Array<Translation<Collection>>;
 
     @ManyToOne(type => Asset)
     featuredAsset: Asset;
 
-    @OneToMany(type => CollectionAsset, collectionAsset => collectionAsset.collection)
+    @OneToMany(
+        type => CollectionAsset,
+        collectionAsset => collectionAsset.collection,
+    )
     assets: CollectionAsset[];
 
     @Column('simple-json') filters: ConfigurableOperation[];
 
-    @ManyToMany(type => ProductVariant, productVariant => productVariant.collections)
+    @ManyToMany(
+        type => ProductVariant,
+        productVariant => productVariant.collections,
+    )
     @JoinTable()
     productVariants: ProductVariant[];
 

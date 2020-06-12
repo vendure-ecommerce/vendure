@@ -218,6 +218,11 @@ export interface AuthOptions {
      * @default '7d'
      */
     verificationTokenDuration?: string | number;
+    /**
+     * @description
+     * Configures the credentials to be used to create a superadmin
+     */
+    superadminCredentials?: SuperadminCredentials;
 }
 
 /**
@@ -295,7 +300,7 @@ export interface OrderProcessOptions<T extends string> {
      * state transitions.
      *
      */
-    transtitions?: Partial<Transitions<T | OrderState>>;
+    transitions?: Partial<Transitions<T | OrderState>>;
     /**
      * @description
      * Define logic to run before a state tranition takes place. Returning
@@ -403,6 +408,23 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
+}
+
+/**
+ * @docsCategory superadmin
+ */
+export interface SuperadminCredentials {
+    /**
+     * @description
+     * The identifier to be used to create a superadmin account
+     */
+    identifier: string;
+
+    /**
+     * @description
+     * The password to be used to create a superadmin account
+     */
+    password: string;
 }
 
 /**
@@ -544,7 +566,8 @@ export interface JobQueueOptions {
 export interface VendureConfig {
     /**
      * @description
-     *
+     * Configuration for the GraphQL APIs, including hostname, port, CORS settings,
+     * middleware etc.
      */
     apiOptions: ApiOptions;
     /**
@@ -572,6 +595,8 @@ export interface VendureConfig {
     /**
      * @description
      * The connection options used by TypeORM to connect to the database.
+     * See the [TypeORM documentation](https://typeorm.io/#/connection-options) for a
+     * full description of all available options.
      */
     dbConnectionOptions: ConnectionOptions;
     /**
@@ -634,6 +659,8 @@ export interface VendureConfig {
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.
+     * Note that the logging of SQL queries is controlled separately by the
+     * `dbConnectionOptions.logging` property.
      *
      * @default DefaultLogger
      */

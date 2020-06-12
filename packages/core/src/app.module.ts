@@ -4,10 +4,8 @@ import {
     NestModule,
     OnApplicationBootstrap,
     OnApplicationShutdown,
-    OnModuleInit,
 } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import cookieSession = require('cookie-session');
 import { RequestHandler } from 'express';
 
 import { ApiModule } from './api/api.module';
@@ -52,15 +50,6 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             { handler: i18nextHandler, route: adminApiPath },
             { handler: i18nextHandler, route: shopApiPath },
         ];
-        if (this.configService.authOptions.tokenMethod === 'cookie') {
-            const cookieHandler = cookieSession({
-                name: 'session',
-                secret: this.configService.authOptions.sessionSecret,
-                httpOnly: true,
-            });
-            defaultMiddleware.push({ handler: cookieHandler, route: adminApiPath });
-            defaultMiddleware.push({ handler: cookieHandler, route: shopApiPath });
-        }
         const allMiddleware = defaultMiddleware.concat(middleware);
         const middlewareByRoute = this.groupMiddlewareByRoute(allMiddleware);
         for (const [route, handlers] of Object.entries(middlewareByRoute)) {

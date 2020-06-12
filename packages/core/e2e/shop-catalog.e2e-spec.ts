@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateCollection,
@@ -132,7 +132,7 @@ describe('Shop catalog', () => {
                     GET_PRODUCT_SIMPLE,
                     {},
                 );
-            }, 'Either the product id or slug must be provided'),
+            }, 'Either the Product id or slug must be provided'),
         );
 
         it('product returns null for disabled product', async () => {
@@ -258,7 +258,14 @@ describe('Shop catalog', () => {
                             ],
                         },
                     ],
-                    translations: [{ languageCode: LanguageCode.en, name: 'My Collection', description: '' }],
+                    translations: [
+                        {
+                            languageCode: LanguageCode.en,
+                            name: 'My Collection',
+                            description: '',
+                            slug: 'my-collection',
+                        },
+                    ],
                 },
             });
             collection = createCollection;
@@ -282,6 +289,14 @@ describe('Shop catalog', () => {
                 { id: 'T_30', name: 'Running Shoe Size 44' },
                 { id: 'T_31', name: 'Running Shoe Size 46' },
             ]);
+        });
+
+        it('collection by slug', async () => {
+            const result = await shopClient.query<
+                GetCollectionVariants.Query,
+                GetCollectionVariants.Variables
+            >(GET_COLLECTION_VARIANTS, { slug: collection.slug });
+            expect(result.collection?.id).toBe(collection.id);
         });
 
         it('omits variants from disabled products', async () => {
@@ -386,8 +401,9 @@ const DISABLE_PRODUCT = gql`
 `;
 
 const GET_COLLECTION_VARIANTS = gql`
-    query GetCollectionVariants($id: ID!) {
-        collection(id: $id) {
+    query GetCollectionVariants($id: ID, $slug: String) {
+        collection(id: $id, slug: $slug) {
+            id
             productVariants {
                 items {
                     id

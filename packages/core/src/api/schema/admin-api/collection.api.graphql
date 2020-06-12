@@ -1,6 +1,7 @@
 type Query {
     collections(options: CollectionListOptions): CollectionList!
-    collection(id: ID!): Collection
+    "Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result."
+    collection(id: ID, slug: String): Collection
     collectionFilters: [ConfigurableOperationDefinition!]!
 }
 
@@ -31,10 +32,18 @@ input MoveCollectionInput {
     index: Int!
 }
 
-input CollectionTranslationInput {
+input CreateCollectionTranslationInput {
+    languageCode: LanguageCode!
+    name: String!
+    slug: String!
+    description: String!
+}
+
+input UpdateCollectionTranslationInput {
     id: ID
     languageCode: LanguageCode!
     name: String
+    slug: String
     description: String
 }
 
@@ -44,7 +53,7 @@ input CreateCollectionInput {
     assetIds: [ID!]
     parentId: ID
     filters: [ConfigurableOperationInput!]!
-    translations: [CollectionTranslationInput!]!
+    translations: [CreateCollectionTranslationInput!]!
 }
 
 input UpdateCollectionInput {
@@ -54,5 +63,5 @@ input UpdateCollectionInput {
     parentId: ID
     assetIds: [ID!]
     filters: [ConfigurableOperationInput!]
-    translations: [CollectionTranslationInput!]
+    translations: [UpdateCollectionTranslationInput!]
 }

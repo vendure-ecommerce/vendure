@@ -3,9 +3,9 @@ import { Type } from '@vendure/common/lib/shared-types';
 import { from, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { OverlayHostService } from '../../providers/overlay-host/overlay-host.service';
 import { ModalDialogComponent } from '../../shared/components/modal-dialog/modal-dialog.component';
 import { SimpleDialogComponent } from '../../shared/components/simple-dialog/simple-dialog.component';
+import { OverlayHostService } from '../overlay-host/overlay-host.service';
 
 /**
  * Any component intended to be used with the ModalService.fromComponent() method must implement
@@ -41,6 +41,8 @@ export interface DialogConfig<T> {
 export interface ModalOptions<T> {
     /** Sets the width of the dialog */
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    /** Sets the vertical alignment of the dialog */
+    verticalAlign?: 'top' | 'center' | 'bottom';
     /**
      * When true, the "x" icon is shown
      * and clicking it or the mask will close the dialog

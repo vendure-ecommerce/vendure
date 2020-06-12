@@ -49,6 +49,14 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         return arg.type as any;
     }
 
+    configArgsIsPopulated(): boolean {
+        const configArgsGroup = this.detailForm.get('configArgs') as FormGroup | undefined;
+        if (!configArgsGroup) {
+            return false;
+        }
+        return 0 < Object.keys(configArgsGroup.controls).length;
+    }
+
     save() {
         this.entity$
             .pipe(
@@ -100,6 +108,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                 }
             }
         }
+        this.changeDetector.markForCheck();
     }
 
     private parseArgValue(arg: ConfigArg): string | number | boolean {

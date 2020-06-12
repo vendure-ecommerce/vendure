@@ -146,13 +146,13 @@ type ProductTranslationCustomFields {
   shortName: String
 }
 
-input ProductTranslationCustomFieldsInput {
-  shortName: String
-}
-
 input ProductTranslationInput {
   id: ID
-  customFields: ProductTranslationCustomFieldsInput
+  customFields: ProductTranslationInputCustomFields
+}
+
+input ProductTranslationInputCustomFields {
+  shortName: String
 }
 "
 `;

@@ -1,5 +1,6 @@
 import { JobState } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { isClassInstance, isObject } from '@vendure/common/lib/shared-utils';
 
 import { JobConfig, JobData } from './types';
 
@@ -98,7 +99,7 @@ export class Job<T extends JobData<T> = any> {
 
     constructor(config: JobConfig<T>) {
         this.queueName = config.queueName;
-        this._data = config.data;
+        this._data = this.ensureDataIsSerializable(config.data);
         this.id = config.id || null;
         this._state = config.state || JobState.PENDING;
         this.retries = config.retries || 0;
@@ -187,5 +188,43 @@ export class Job<T extends JobData<T> = any> {
         for (const listener of this.eventListeners[eventType]) {
             listener(this);
         }
+    }
+
+    /**
+     * All data in a job must be serializable. This method handles certain problem cases such as when
+     * the data is a class instance with getters. Even though technically the "data" object should
+     * already be serializable per the TS type, in practice data can slip through due to loss of
+     * type safety.
+     */
+    private ensureDataIsSerializable(data: any, output?: any): any {
+        if (data instanceof Date) {
+            return data.toISOString();
+        } else if (isObject(data)) {
+            if (!output) {
+                output = {};
+            }
+            for (const key of Object.keys(data)) {
+                output[key] = this.ensureDataIsSerializable((data as any)[key]);
+            }
+            if (isClassInstance(data)) {
+                const descriptors = Object.getOwnPropertyDescriptors(Object.getPrototypeOf(data));
+                for (const name of Object.keys(descriptors)) {
+                    const descriptor = descriptors[name];
+                    if (typeof descriptor.get === 'function') {
+                        output[name] = (data as any)[name];
+                    }
+                }
+            }
+        } else if (Array.isArray(data)) {
+            if (!output) {
+                output = [];
+            }
+            data.forEach((item, i) => {
+                output[i] = this.ensureDataIsSerializable(item);
+            });
+        } else {
+            return data;
+        }
+        return output;
     }
 }

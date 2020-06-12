@@ -67,6 +67,15 @@ describe('simpleDeepClone()', () => {
         expect(result).not.toBe(target);
         expect(result.a).toBe(target.a);
     });
+
+    it('clone does not share references with original', () => {
+        const original = { user: { name: 'mike' } };
+        const clone = simpleDeepClone(original);
+
+        original.user.name = 'pete';
+
+        expect(clone.user.name).toEqual('mike');
+    });
 });
 
 class Foo {}

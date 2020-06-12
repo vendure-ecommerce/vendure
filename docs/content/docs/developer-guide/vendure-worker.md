@@ -35,7 +35,7 @@ Internally, the Worker is an instance of a [NestJS microservice](https://docs.ne
 
 ## Running on the main process
 
-There is an option `runInMainProcess` which, if set to `true` will cause the Worker to be bootstrapped along with the main application, without the need for a separate process running `bootstrapWorker`. This is mainly used for testing and development, and is not advised for production use, since it negates the benefits of running long tasks off of the main process.
+There is an option `runInMainProcess` which, if set to `true` will cause the Worker to be bootstrapped along with the main application, without the need for a separate process running `bootstrapWorker`. This is mainly used for testing and automated tasks, and is not advised for production use, since it negates the benefits of running long tasks off of the main process.
 
 ## Running custom code on the worker
 

@@ -2,23 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import {
+    AddNoteToCustomerInput,
     CreateAddressInput,
     CreateCustomerInput,
     DeletionResponse,
     DeletionResult,
+    HistoryEntryType,
     UpdateAddressInput,
     UpdateCustomerInput,
+    UpdateCustomerNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { EntityNotFoundError, IllegalOperationError, UserInputError } from '../../common/error/errors';
+import {
+    EntityNotFoundError,
+    IllegalOperationError,
+    InternalServerError,
+    UserInputError,
+} from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
+import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AccountRegistrationEvent } from '../../event-bus/events/account-registration-event';
@@ -26,11 +36,13 @@ import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { addressToLine } from '../helpers/utils/address-to-line';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
+import { HistoryService } from './history.service';
 import { UserService } from './user.service';
 
 @Injectable()
@@ -42,6 +54,7 @@ export class CustomerService {
         private countryService: CountryService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
+        private historyService: HistoryService,
     ) {}
 
     findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
@@ -72,12 +85,23 @@ export class CustomerService {
             .leftJoinAndSelect('country.translations', 'countryTranslation')
             .where('address.customer = :id', { id: customerId })
             .getMany()
-            .then((addresses) => {
-                addresses.forEach((address) => {
+            .then(addresses => {
+                addresses.forEach(address => {
                     address.country = translateDeep(address.country, ctx.languageCode);
                 });
                 return addresses;
             });
+    }
+
+    async getCustomerGroups(customerId: ID): Promise<CustomerGroup[]> {
+        const customerWithGroups = await this.connection
+            .getRepository(Customer)
+            .findOne(customerId, { relations: ['groups'] });
+        if (customerWithGroups) {
+            return customerWithGroups.groups;
+        } else {
+            return [];
+        }
     }
 
     async create(ctx: RequestContext, input: CreateCustomerInput, password?: string): Promise<Customer> {
@@ -112,7 +136,24 @@ export class CustomerService {
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
-        return this.connection.getRepository(Customer).save(customer);
+        const createdCustomer = await await this.connection.getRepository(Customer).save(customer);
+
+        await this.historyService.createHistoryEntryForCustomer({
+            ctx,
+            customerId: createdCustomer.id,
+            type: HistoryEntryType.CUSTOMER_REGISTERED,
+            data: {},
+        });
+
+        if (customer.user?.verified) {
+            await this.historyService.createHistoryEntryForCustomer({
+                ctx,
+                customerId: createdCustomer.id,
+                type: HistoryEntryType.CUSTOMER_VERIFIED,
+                data: {},
+            });
+        }
+        return createdCustomer;
     }
 
     async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
@@ -136,6 +177,12 @@ export class CustomerService {
             firstName: input.firstName || '',
             lastName: input.lastName || '',
         });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_REGISTERED,
+            data: {},
+        });
         if (!user) {
             user = await this.userService.createCustomerUser(input.emailAddress, input.password || undefined);
         } else if (!user.verified) {
@@ -145,6 +192,13 @@ export class CustomerService {
         await this.connection.getRepository(Customer).save(customer, { reload: false });
         if (!user.verified) {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, user));
+        } else {
+            await this.historyService.createHistoryEntryForCustomer({
+                customerId: customer.id,
+                ctx,
+                type: HistoryEntryType.CUSTOMER_VERIFIED,
+                data: {},
+            });
         }
         return true;
     }
@@ -160,11 +214,22 @@ export class CustomerService {
     }
 
     async verifyCustomerEmailAddress(
+        ctx: RequestContext,
         verificationToken: string,
         password: string,
     ): Promise<Customer | undefined> {
         const user = await this.userService.verifyUserByToken(verificationToken, password);
         if (user) {
+            const customer = await this.findOneByUserId(user.id);
+            if (!customer) {
+                throw new InternalServerError('error.cannot-locate-customer-for-user');
+            }
+            await this.historyService.createHistoryEntryForCustomer({
+                customerId: customer.id,
+                ctx,
+                type: HistoryEntryType.CUSTOMER_VERIFIED,
+                data: {},
+            });
             return this.findOneByUserId(user.id);
         }
     }
@@ -173,13 +238,37 @@ export class CustomerService {
         const user = await this.userService.setPasswordResetToken(emailAddress);
         if (user) {
             this.eventBus.publish(new PasswordResetEvent(ctx, user));
+            const customer = await this.findOneByUserId(user.id);
+            if (!customer) {
+                throw new InternalServerError('error.cannot-locate-customer-for-user');
+            }
+            await this.historyService.createHistoryEntryForCustomer({
+                customerId: customer.id,
+                ctx,
+                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                data: {},
+            });
         }
     }
 
-    async resetPassword(passwordResetToken: string, password: string): Promise<Customer | undefined> {
+    async resetPassword(
+        ctx: RequestContext,
+        passwordResetToken: string,
+        password: string,
+    ): Promise<Customer | undefined> {
         const user = await this.userService.resetPasswordByToken(passwordResetToken, password);
         if (user) {
-            return this.findOneByUserId(user.id);
+            const customer = await this.findOneByUserId(user.id);
+            if (!customer) {
+                throw new InternalServerError('error.cannot-locate-customer-for-user');
+            }
+            await this.historyService.createHistoryEntryForCustomer({
+                customerId: customer.id,
+                ctx,
+                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
+                data: {},
+            });
+            return customer;
         }
     }
 
@@ -196,22 +285,41 @@ export class CustomerService {
         if (!user) {
             return false;
         }
+        const customer = await this.findOneByUserId(user.id);
+        if (!customer) {
+            return false;
+        }
+        const oldEmailAddress = customer.emailAddress;
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
+            data: {
+                oldEmailAddress,
+                newEmailAddress,
+            },
+        });
         if (this.configService.authOptions.requireVerification) {
             user.pendingIdentifier = newEmailAddress;
             await this.userService.setIdentifierChangeToken(user);
             this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
             return true;
         } else {
-            const customer = await this.findOneByUserId(user.id);
-            if (!customer) {
-                return false;
-            }
             const oldIdentifier = user.identifier;
             user.identifier = newEmailAddress;
             customer.emailAddress = newEmailAddress;
             await this.connection.getRepository(User).save(user, { reload: false });
             await this.connection.getRepository(Customer).save(customer, { reload: false });
             this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
+            await this.historyService.createHistoryEntryForCustomer({
+                customerId: customer.id,
+                ctx,
+                type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
+                data: {
+                    oldEmailAddress,
+                    newEmailAddress,
+                },
+            });
             return true;
         }
     }
@@ -228,13 +336,30 @@ export class CustomerService {
         this.eventBus.publish(new IdentifierChangeEvent(ctx, user, oldIdentifier));
         customer.emailAddress = user.identifier;
         await this.connection.getRepository(Customer).save(customer, { reload: false });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
+            data: {
+                oldEmailAddress: oldIdentifier,
+                newEmailAddress: customer.emailAddress,
+            },
+        });
         return true;
     }
 
-    async update(input: UpdateCustomerInput): Promise<Customer> {
+    async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
         const customer = await getEntityOrThrow(this.connection, Customer, input.id);
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(Customer).save(customer, { reload: false });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
+            data: {
+                input,
+            },
+        });
         return assertFound(this.findOne(customer.id));
     }
 
@@ -287,27 +412,54 @@ export class CustomerService {
         customer.addresses.push(createdAddress);
         await this.connection.manager.save(customer, { reload: false });
         await this.enforceSingleDefaultAddress(createdAddress.id, input);
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_ADDRESS_CREATED,
+            data: { address: addressToLine(createdAddress) },
+        });
         return createdAddress;
     }
 
     async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
         const address = await getEntityOrThrow(this.connection, Address, input.id, {
-            relations: ['country'],
+            relations: ['customer', 'country'],
         });
         if (input.countryCode && input.countryCode !== address.country.code) {
             address.country = await this.countryService.findOneByCode(ctx, input.countryCode);
         } else {
             address.country = translateDeep(address.country, ctx.languageCode);
         }
-        const updatedAddress = patchEntity(address, input);
-        await this.connection.getRepository(Address).save(updatedAddress, { reload: false });
+        let updatedAddress = patchEntity(address, input);
+        updatedAddress = await this.connection.getRepository(Address).save(updatedAddress);
         await this.enforceSingleDefaultAddress(input.id, input);
+
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: address.customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_ADDRESS_UPDATED,
+            data: {
+                address: addressToLine(updatedAddress),
+                input,
+            },
+        });
         return updatedAddress;
     }
 
-    async deleteAddress(id: ID): Promise<boolean> {
-        const address = await getEntityOrThrow(this.connection, Address, id);
+    async deleteAddress(ctx: RequestContext, id: ID): Promise<boolean> {
+        const address = await getEntityOrThrow(this.connection, Address, id, {
+            relations: ['customer', 'country'],
+        });
+        address.country = translateDeep(address.country, ctx.languageCode);
         await this.reassignDefaultsForDeletedAddress(address);
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: address.customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_ADDRESS_DELETED,
+            data: {
+                address: addressToLine(address),
+            },
+        });
         await this.connection.getRepository(Address).remove(address);
         return true;
     }
@@ -322,14 +474,53 @@ export class CustomerService {
         };
     }
 
+    async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput): Promise<Customer> {
+        const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        await this.historyService.createHistoryEntryForCustomer(
+            {
+                ctx,
+                customerId: customer.id,
+                type: HistoryEntryType.CUSTOMER_NOTE,
+                data: {
+                    note: input.note,
+                },
+            },
+            input.isPublic,
+        );
+        return customer;
+    }
+
+    async updateCustomerNote(ctx: RequestContext, input: UpdateCustomerNoteInput): Promise<HistoryEntry> {
+        return this.historyService.updateCustomerHistoryEntry(ctx, {
+            type: HistoryEntryType.CUSTOMER_NOTE,
+            data: input.note ? { note: input.note } : undefined,
+            ctx,
+            entryId: input.noteId,
+        });
+    }
+
+    async deleteCustomerNote(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        try {
+            await this.historyService.deleteCustomerHistoryEntry(id);
+            return {
+                result: DeletionResult.DELETED,
+            };
+        } catch (e) {
+            return {
+                result: DeletionResult.NOT_DELETED,
+                message: e.message,
+            };
+        }
+    }
+
     private async enforceSingleDefaultAddress(addressId: ID, input: CreateAddressInput | UpdateAddressInput) {
         const result = await this.connection
             .getRepository(Address)
             .findOne(addressId, { relations: ['customer', 'customer.addresses'] });
         if (result) {
             const customerAddressIds = result.customer.addresses
-                .map((a) => a.id)
-                .filter((id) => !idsAreEqual(id, addressId)) as string[];
+                .map(a => a.id)
+                .filter(id => !idsAreEqual(id, addressId)) as string[];
 
             if (customerAddressIds.length) {
                 if (input.defaultBillingAddress === true) {
@@ -362,7 +553,7 @@ export class CustomerService {
             const customerAddresses = result.customer.addresses;
             if (1 < customerAddresses.length) {
                 const otherAddresses = customerAddresses
-                    .filter((address) => !idsAreEqual(address.id, addressToDelete.id))
+                    .filter(address => !idsAreEqual(address.id, addressToDelete.id))
                     .sort((a, b) => (a.id < b.id ? -1 : 1));
                 if (addressToDelete.defaultShippingAddress) {
                     otherAddresses[0].defaultShippingAddress = true;

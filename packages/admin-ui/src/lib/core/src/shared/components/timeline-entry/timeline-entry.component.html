@@ -1,0 +1,25 @@
+<div [ngClass]="displayType" [class.has-custom-icon]="!!iconShape" class="entry" [class.last]="isLast === true">
+    <div class="timeline">
+        <div class="custom-icon">
+            <clr-icon
+                *ngIf="iconShape"
+                [attr.shape]="getIconShape()"
+                [ngClass]="getIconClass()"
+                size="24"
+            ></clr-icon>
+        </div>
+    </div>
+    <div class="entry-body">
+        <div class="detail">
+            <div class="time">
+                {{ createdAt | date: 'short' }}
+            </div>
+            <div class="name">
+                {{ name }}
+            </div>
+        </div>
+        <div [class.featured-entry]="featured">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</div>

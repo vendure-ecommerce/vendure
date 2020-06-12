@@ -18,12 +18,14 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateAdministrator,
     CreateRole,
     GetCustomer,
+    GetCustomerHistory,
+    HistoryEntryType,
     Permission,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -36,7 +38,12 @@ import {
     UpdateEmailAddress,
     Verify,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_ADMINISTRATOR, CREATE_ROLE, GET_CUSTOMER } from './graphql/shared-definitions';
+import {
+    CREATE_ADMINISTRATOR,
+    CREATE_ROLE,
+    GET_CUSTOMER,
+    GET_CUSTOMER_HISTORY,
+} from './graphql/shared-definitions';
 import {
     GET_ACTIVE_CUSTOMER,
     REFRESH_TOKEN,
@@ -100,6 +107,7 @@ describe('Shop auth & accounts', () => {
         const password = 'password';
         const emailAddress = 'test1@test.com';
         let verificationToken: string;
+        let newCustomerId: string;
 
         beforeEach(() => {
             sendEmailFn = jest.fn();
@@ -223,6 +231,8 @@ describe('Shop auth & accounts', () => {
             });
 
             expect(result.verifyCustomerAccount.user.identifier).toBe('test1@test.com');
+            const { activeCustomer } = await shopClient.query<GetActiveCustomer.Query>(GET_ACTIVE_CUSTOMER);
+            newCustomerId = activeCustomer!.id;
         });
 
         it('registration silently fails if attempting to register an email already verified', async () => {
@@ -250,6 +260,31 @@ describe('Shop auth & accounts', () => {
                 `Verification token not recognized`,
             ),
         );
+
+        it('customer history contains entries for registration & verification', async () => {
+            const { customer } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, {
+                id: newCustomerId,
+            });
+
+            expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    data: {},
+                },
+                {
+                    // second entry because we register twice above
+                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    data: {},
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_VERIFIED,
+                    data: {},
+                },
+            ]);
+        });
     });
 
     describe('password reset', () => {
@@ -320,6 +355,30 @@ describe('Shop auth & accounts', () => {
 
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
             expect(loginResult.user.identifier).toBe(customer.emailAddress);
+        });
+
+        it('customer history for password reset', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        // skip CUSTOMER_ADDRESS_CREATED entry
+                        skip: 3,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_REQUESTED,
+                    data: {},
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
+                    data: {},
+                },
+            ]);
         });
     });
 
@@ -455,6 +514,35 @@ describe('Shop auth & accounts', () => {
             } catch (err) {
                 expect(getErrorCode(err)).toBe('UNAUTHORIZED');
             }
+        });
+
+        it('customer history for email update', async () => {
+            const result = await adminClient.query<GetCustomerHistory.Query, GetCustomerHistory.Variables>(
+                GET_CUSTOMER_HISTORY,
+                {
+                    id: customer.id,
+                    options: {
+                        skip: 5,
+                    },
+                },
+            );
+
+            expect(result.customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_REQUESTED,
+                    data: {
+                        newEmailAddress: 'new@address.com',
+                        oldEmailAddress: 'hayden.zieme12@hotmail.com',
+                    },
+                },
+                {
+                    type: HistoryEntryType.CUSTOMER_EMAIL_UPDATE_VERIFIED,
+                    data: {
+                        newEmailAddress: 'new@address.com',
+                        oldEmailAddress: 'hayden.zieme12@hotmail.com',
+                    },
+                },
+            ]);
         });
     });
 

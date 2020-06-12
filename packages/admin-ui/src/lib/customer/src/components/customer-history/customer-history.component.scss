@@ -1,0 +1,34 @@
+@import "variables";
+
+.entry-list {
+    margin-top: 24px;
+    margin-left: 24px;
+    margin-right: 12px;
+}
+
+.note-entry {
+    display: flex;
+    align-items: center;
+    .note {
+        flex: 1;
+    }
+
+    button {
+        margin: 0;
+    }
+}
+textarea.note {
+    flex: 1;
+    height: 36px;
+    border-radius: 3px;
+    margin-right: 6px;
+}
+.note-text {
+    color: $color-grey-800;
+    white-space: pre-wrap;
+}
+
+.address-string {
+    font-size: smaller;
+    color: $color-grey-500;
+}

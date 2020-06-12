@@ -1,8 +1,10 @@
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConnectionOptions } from 'typeorm';
 
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
+import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
@@ -18,6 +20,7 @@ import { PaymentStateMachine } from './helpers/payment-state-machine/payment-sta
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from './helpers/shipping-configuration/shipping-configuration';
+import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
@@ -94,6 +97,7 @@ const helpers = [
     VerificationTokenGenerator,
     RefundStateMachine,
     ShippingConfiguration,
+    SlugValidator,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];
@@ -156,7 +160,12 @@ export class ServiceModule {
             defaultTypeOrmModule = TypeOrmModule.forRootAsync({
                 imports: [ConfigModule],
                 useFactory: (configService: ConfigService) => {
-                    return configService.dbConnectionOptions;
+                    const { dbConnectionOptions } = configService;
+                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
+                    return {
+                        ...dbConnectionOptions,
+                        logger,
+                    };
                 },
                 inject: [ConfigService],
             });
@@ -173,17 +182,20 @@ export class ServiceModule {
                 imports: [ConfigModule],
                 useFactory: (configService: ConfigService) => {
                     const { dbConnectionOptions, workerOptions } = configService;
+                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
                     if (workerOptions.runInMainProcess) {
                         // When running in the main process, we can re-use the existing
                         // default connection.
                         return {
                             ...dbConnectionOptions,
+                            logger,
                             name: 'default',
                             keepConnectionAlive: true,
                         };
                     } else {
                         return {
                             ...dbConnectionOptions,
+                            logger,
                         };
                     }
                 },
@@ -202,5 +214,13 @@ export class ServiceModule {
             module: ServiceModule,
             imports: [TypeOrmModule.forFeature()],
         };
+    }
+
+    static getTypeOrmLogger(dbConnectionOptions: ConnectionOptions) {
+        if (!dbConnectionOptions.logger) {
+            return new TypeOrmLogger(dbConnectionOptions.logging);
+        } else {
+            return dbConnectionOptions.logger;
+        }
     }
 }

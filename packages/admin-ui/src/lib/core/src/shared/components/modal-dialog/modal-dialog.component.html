@@ -3,6 +3,7 @@
     (clrModalOpenChange)="modalOpenChange($event)"
     [clrModalClosable]="options?.closable"
     [clrModalSize]="options?.size"
+    [ngClass]="'modal-valign-' + (options?.verticalAlign || 'center')"
 >
     <h3 class="modal-title"><ng-container *ngTemplateOutlet="(titleTemplateRef$ | async)"></ng-container></h3>
     <div class="modal-body">

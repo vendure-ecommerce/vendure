@@ -1,5 +1,7 @@
 import { OnModuleInit } from '@nestjs/common';
+import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
+import { pick } from '@vendure/common/lib/pick';
 import {
     AccountRegistrationEvent,
     EventBus,
@@ -12,24 +14,28 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
+    AddNoteToCustomer,
     CreateAddress,
     CreateCustomer,
     DeleteCustomer,
     DeleteCustomerAddress,
+    DeleteCustomerNote,
     DeletionResult,
     GetCustomer,
+    GetCustomerHistory,
     GetCustomerList,
     GetCustomerOrders,
     GetCustomerWithUser,
     UpdateAddress,
     UpdateCustomer,
+    UpdateCustomerNote,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { GET_CUSTOMER, GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -46,7 +52,7 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
         });
     }
@@ -164,7 +170,7 @@ describe('Customer resolver', () => {
             });
 
             expect(result.customer!.addresses!.length).toBe(2);
-            firstCustomerAddressIds = result.customer!.addresses!.map((a) => a.id).sort();
+            firstCustomerAddressIds = result.customer!.addresses!.map(a => a.id).sort();
         });
 
         it('updateCustomerAddress updates the country', async () => {
@@ -203,7 +209,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress = result2.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[1],
+                a => a.id !== firstCustomerAddressIds[1],
             )[0]!;
             expect(otherAddress.defaultShippingAddress).toBe(false);
             expect(otherAddress.defaultBillingAddress).toBe(false);
@@ -227,7 +233,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress2 = result4.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[0],
+                a => a.id !== firstCustomerAddressIds[0],
             )[0]!;
             expect(otherAddress2.defaultShippingAddress).toBe(false);
             expect(otherAddress2.defaultBillingAddress).toBe(false);
@@ -330,10 +336,10 @@ describe('Customer resolver', () => {
             );
             expect(customer!.addresses!.length).toBe(2);
             const defaultAddress = customer!.addresses!.filter(
-                (a) => a.defaultBillingAddress && a.defaultShippingAddress,
+                a => a.defaultBillingAddress && a.defaultShippingAddress,
             );
             const otherAddress = customer!.addresses!.filter(
-                (a) => !a.defaultBillingAddress && !a.defaultShippingAddress,
+                a => !a.defaultBillingAddress && !a.defaultShippingAddress,
             );
             expect(defaultAddress.length).toBe(1);
             expect(otherAddress.length).toBe(1);
@@ -442,7 +448,7 @@ describe('Customer resolver', () => {
                 GET_CUSTOMER_LIST,
             );
 
-            expect(result.customers.items.map((c) => c.id).includes(thirdCustomer.id)).toBe(false);
+            expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
         });
 
         it(
@@ -489,6 +495,87 @@ describe('Customer resolver', () => {
             expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
             expect(createCustomer.firstName).toBe('Reusing Email');
             expect(createCustomer.user?.identifier).toBe(thirdCustomer.emailAddress);
+        });
+    });
+
+    describe('customer notes', () => {
+        let noteId: string;
+
+        it('addNoteToCustomer', async () => {
+            const { addNoteToCustomer } = await adminClient.query<
+                AddNoteToCustomer.Mutation,
+                AddNoteToCustomer.Variables
+            >(ADD_NOTE_TO_CUSTOMER, {
+                input: {
+                    id: firstCustomer.id,
+                    isPublic: false,
+                    note: 'Test note',
+                },
+            });
+
+            const { customer } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, {
+                id: firstCustomer.id,
+                options: {
+                    filter: {
+                        type: {
+                            eq: HistoryEntryType.CUSTOMER_NOTE,
+                        },
+                    },
+                },
+            });
+
+            expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_NOTE,
+                    data: {
+                        note: 'Test note',
+                    },
+                },
+            ]);
+
+            noteId = customer?.history.items[0].id!;
+        });
+
+        it('update note', async () => {
+            const { updateCustomerNote } = await adminClient.query<
+                UpdateCustomerNote.Mutation,
+                UpdateCustomerNote.Variables
+            >(UPDATE_CUSTOMER_NOTE, {
+                input: {
+                    noteId,
+                    note: 'An updated note',
+                },
+            });
+
+            expect(updateCustomerNote.data).toEqual({
+                note: 'An updated note',
+            });
+        });
+
+        it('delete note', async () => {
+            const { customer: before } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
+            const historyCount = before?.history.totalItems!;
+
+            const { deleteCustomerNote } = await adminClient.query<
+                DeleteCustomerNote.Mutation,
+                DeleteCustomerNote.Variables
+            >(DELETE_CUSTOMER_NOTE, {
+                id: noteId,
+            });
+
+            expect(deleteCustomerNote.result).toBe(DeletionResult.DELETED);
+
+            const { customer: after } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, { id: firstCustomer.id });
+            expect(after?.history.totalItems).toBe(historyCount - 1);
         });
     });
 });
@@ -577,6 +664,34 @@ const DELETE_CUSTOMER = gql`
     mutation DeleteCustomer($id: ID!) {
         deleteCustomer(id: $id) {
             result
+        }
+    }
+`;
+
+const ADD_NOTE_TO_CUSTOMER = gql`
+    mutation AddNoteToCustomer($input: AddNoteToCustomerInput!) {
+        addNoteToCustomer(input: $input) {
+            ...Customer
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
+`;
+
+export const UPDATE_CUSTOMER_NOTE = gql`
+    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
+        updateCustomerNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_CUSTOMER_NOTE = gql`
+    mutation DeleteCustomerNote($id: ID!) {
+        deleteCustomerNote(id: $id) {
+            result
+            message
         }
     }
 `;

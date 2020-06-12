@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AddOptionGroupToProduct,
@@ -249,7 +249,7 @@ describe('Product resolver', () => {
                     GET_PRODUCT_SIMPLE,
                     {},
                 );
-            }, 'Either the product id or slug must be provided'),
+            }, 'Either the Product id or slug must be provided'),
         );
 
         it(

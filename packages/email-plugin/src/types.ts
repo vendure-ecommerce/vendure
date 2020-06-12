@@ -164,6 +164,28 @@ export interface SMTPTransportOptions {
      * Defines preferred authentication method, e.g. ‘PLAIN’
      */
     authMethod?: string;
+    /**
+     * @description
+     * If true, uses the configured {@link VendureLogger} to log messages from Nodemailer as it interacts with
+     * the SMTP server.
+     *
+     * @default false
+     */
+    logging?: boolean;
+    /**
+     * @description
+     * If set to true, then logs SMTP traffic without message content.
+     *
+     * @default false
+     */
+    transactionLog?: boolean;
+    /**
+     * @description
+     * If set to true, then logs SMTP traffic and message content, otherwise logs only transaction events.
+     *
+     * @default false
+     */
+    debug?: boolean;
 }
 
 /**

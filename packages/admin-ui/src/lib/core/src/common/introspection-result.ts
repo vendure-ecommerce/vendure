@@ -67,6 +67,12 @@ const result: IntrospectionResultData = {
                         name: 'Customer',
                     },
                     {
+                        name: 'CustomerGroup',
+                    },
+                    {
+                        name: 'HistoryEntry',
+                    },
+                    {
                         name: 'Address',
                     },
                     {
@@ -82,9 +88,6 @@ const result: IntrospectionResultData = {
                         name: 'ShippingMethod',
                     },
                     {
-                        name: 'HistoryEntry',
-                    },
-                    {
                         name: 'Cancellation',
                     },
                     {
@@ -95,9 +98,6 @@ const result: IntrospectionResultData = {
                     },
                     {
                         name: 'TaxCategory',
-                    },
-                    {
-                        name: 'CustomerGroup',
                     },
                     {
                         name: 'ProductOption',
@@ -136,10 +136,13 @@ const result: IntrospectionResultData = {
                         name: 'ProductVariantList',
                     },
                     {
-                        name: 'OrderList',
+                        name: 'CustomerList',
                     },
                     {
                         name: 'HistoryEntryList',
+                    },
+                    {
+                        name: 'OrderList',
                     },
                     {
                         name: 'CollectionList',
@@ -148,7 +151,7 @@ const result: IntrospectionResultData = {
                         name: 'CountryList',
                     },
                     {
-                        name: 'CustomerList',
+                        name: 'CustomerGroupList',
                     },
                     {
                         name: 'FacetList',

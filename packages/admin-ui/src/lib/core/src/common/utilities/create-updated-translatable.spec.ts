@@ -34,21 +34,21 @@ describe('createUpdatedTranslatable()', () => {
 
     it('creates new translation if the specified translation does not exist', () => {
         const formValue = {
-            name: 'New Name AA',
+            name: 'New Name AF',
         };
         const result = createUpdatedTranslatable({
             translatable: product,
             updatedFields: formValue,
-            languageCode: LanguageCode.aa,
+            languageCode: LanguageCode.af,
             defaultTranslation: {
-                languageCode: LanguageCode.aa,
+                languageCode: LanguageCode.af,
                 name: product.name || '',
             },
         });
 
         expect(result.translations[2]).toEqual({
-            languageCode: LanguageCode.aa,
-            name: 'New Name AA',
+            languageCode: LanguageCode.af,
+            name: 'New Name AF',
         });
     });
 

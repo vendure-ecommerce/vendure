@@ -117,9 +117,15 @@ input DateOperators {
     between: DateRange
 }
 
+enum LogicalOperator {
+    AND
+    OR
+}
+
 input SearchInput {
     term: String
     facetValueIds: [ID!]
+    facetValueOperator: LogicalOperator
     collectionId: ID
     groupByProduct: Boolean
     take: Int

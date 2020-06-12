@@ -14,6 +14,12 @@ export type Scalars = {
 };
 
 
+export type AddNoteToCustomerInput = {
+  id: Scalars['ID'];
+  note: Scalars['String'];
+  isPublic: Scalars['Boolean'];
+};
+
 export type AddNoteToOrderInput = {
   id: Scalars['ID'];
   note: Scalars['String'];
@@ -220,6 +226,7 @@ export type Collection = Node & {
   updatedAt: Scalars['DateTime'];
   languageCode?: Maybe<LanguageCode>;
   name: Scalars['String'];
+  slug: Scalars['String'];
   breadcrumbs: Array<CollectionBreadcrumb>;
   position: Scalars['Int'];
   description: Scalars['String'];
@@ -242,6 +249,7 @@ export type CollectionBreadcrumb = {
    __typename?: 'CollectionBreadcrumb';
   id: Scalars['ID'];
   name: Scalars['String'];
+  slug: Scalars['String'];
 };
 
 export type CollectionFilterParameter = {
@@ -250,6 +258,7 @@ export type CollectionFilterParameter = {
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
   position?: Maybe<NumberOperators>;
   description?: Maybe<StringOperators>;
 };
@@ -272,6 +281,7 @@ export type CollectionSortParameter = {
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
   position?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
 };
@@ -283,15 +293,8 @@ export type CollectionTranslation = {
   updatedAt: Scalars['DateTime'];
   languageCode: LanguageCode;
   name: Scalars['String'];
+  slug: Scalars['String'];
   description: Scalars['String'];
-};
-
-export type CollectionTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArg = {
@@ -445,7 +448,15 @@ export type CreateCollectionInput = {
   assetIds?: Maybe<Array<Scalars['ID']>>;
   parentId?: Maybe<Scalars['ID']>;
   filters: Array<ConfigurableOperationInput>;
-  translations: Array<CollectionTranslationInput>;
+  translations: Array<CreateCollectionTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateCollectionTranslationInput = {
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  description: Scalars['String'];
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -927,6 +938,8 @@ export type CurrentUserChannelInput = {
 
 export type Customer = Node & {
    __typename?: 'Customer';
+  groups: Array<CustomerGroup>;
+  history: HistoryEntryList;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -939,6 +952,11 @@ export type Customer = Node & {
   orders: OrderList;
   user?: Maybe<User>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+
+export type CustomerHistoryArgs = {
+  options?: Maybe<HistoryEntryListOptions>;
 };
 
 
@@ -962,6 +980,38 @@ export type CustomerGroup = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  customers: CustomerList;
+};
+
+
+export type CustomerGroupCustomersArgs = {
+  options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerGroupFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+   __typename?: 'CustomerGroupList';
+  items: Array<CustomerGroup>;
+  totalItems: Scalars['Int'];
+};
+
+export type CustomerGroupListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerGroupSortParameter>;
+  filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
+export type CustomerGroupSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
 };
 
 export type CustomerList = PaginatedList & {
@@ -1236,6 +1286,20 @@ export type HistoryEntrySortParameter = {
 };
 
 export enum HistoryEntryType {
+  CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
+  CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
+  CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
+  CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
+  CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
+  CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
+  CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
+  CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
+  CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
+  CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
+  CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
+  CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
+  CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
+  CUSTOMER_NOTE = 'CUSTOMER_NOTE',
   ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
   ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
   ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
@@ -1339,48 +1403,33 @@ export enum JobState {
 
 /**
  * @description
- * ISO 639-1 language code
+ * Languages in the form of a ISO 639-1 language code with optional
+ * region or script modifier (e.g. de_AT). The selection available is based
+ * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
+ * and includes the major spoken languages of the world and any widely-used variants.
  * 
  * @docsCategory common
  */
 export enum LanguageCode {
-  /** Afar */
-  aa = 'aa',
-  /** Abkhazian */
-  ab = 'ab',
-  /** Avestan */
-  ae = 'ae',
   /** Afrikaans */
   af = 'af',
   /** Akan */
   ak = 'ak',
   /** Amharic */
   am = 'am',
-  /** Aragonese */
-  an = 'an',
   /** Arabic */
   ar = 'ar',
   /** Assamese */
   as = 'as',
-  /** Avaric */
-  av = 'av',
-  /** Aymara */
-  ay = 'ay',
   /** Azerbaijani */
   az = 'az',
-  /** Bashkir */
-  ba = 'ba',
   /** Belarusian */
   be = 'be',
   /** Bulgarian */
   bg = 'bg',
-  /** Bihari languages */
-  bh = 'bh',
-  /** Bislama */
-  bi = 'bi',
   /** Bambara */
   bm = 'bm',
-  /** Bengali */
+  /** Bangla */
   bn = 'bn',
   /** Tibetan */
   bo = 'bo',
@@ -1388,68 +1437,78 @@ export enum LanguageCode {
   br = 'br',
   /** Bosnian */
   bs = 'bs',
-  /** Catalan; Valencian */
+  /** Catalan */
   ca = 'ca',
   /** Chechen */
   ce = 'ce',
-  /** Chamorro */
-  ch = 'ch',
   /** Corsican */
   co = 'co',
-  /** Cree */
-  cr = 'cr',
   /** Czech */
   cs = 'cs',
-  /** Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic */
+  /** Church Slavic */
   cu = 'cu',
-  /** Chuvash */
-  cv = 'cv',
   /** Welsh */
   cy = 'cy',
   /** Danish */
   da = 'da',
   /** German */
   de = 'de',
-  /** Divehi; Dhivehi; Maldivian */
-  dv = 'dv',
+  /** Austrian German */
+  de_AT = 'de_AT',
+  /** Swiss High German */
+  de_CH = 'de_CH',
   /** Dzongkha */
   dz = 'dz',
   /** Ewe */
   ee = 'ee',
-  /** Greek, Modern (1453-) */
+  /** Greek */
   el = 'el',
   /** English */
   en = 'en',
+  /** Australian English */
+  en_AU = 'en_AU',
+  /** Canadian English */
+  en_CA = 'en_CA',
+  /** British English */
+  en_GB = 'en_GB',
+  /** American English */
+  en_US = 'en_US',
   /** Esperanto */
   eo = 'eo',
-  /** Spanish; Castilian */
+  /** Spanish */
   es = 'es',
+  /** European Spanish */
+  es_ES = 'es_ES',
+  /** Mexican Spanish */
+  es_MX = 'es_MX',
   /** Estonian */
   et = 'et',
   /** Basque */
   eu = 'eu',
   /** Persian */
   fa = 'fa',
+  /** Dari */
+  fa_AF = 'fa_AF',
   /** Fulah */
   ff = 'ff',
   /** Finnish */
   fi = 'fi',
-  /** Fijian */
-  fj = 'fj',
   /** Faroese */
   fo = 'fo',
   /** French */
   fr = 'fr',
+  /** Canadian French */
+  fr_CA = 'fr_CA',
+  /** Swiss French */
+  fr_CH = 'fr_CH',
   /** Western Frisian */
   fy = 'fy',
   /** Irish */
   ga = 'ga',
-  /** Gaelic; Scottish Gaelic */
+  /** Scottish Gaelic */
   gd = 'gd',
   /** Galician */
   gl = 'gl',
-  /** Guarani */
-  gn = 'gn',
   /** Gujarati */
   gu = 'gu',
   /** Manx */
@@ -1460,80 +1519,58 @@ export enum LanguageCode {
   he = 'he',
   /** Hindi */
   hi = 'hi',
-  /** Hiri Motu */
-  ho = 'ho',
   /** Croatian */
   hr = 'hr',
-  /** Haitian; Haitian Creole */
+  /** Haitian Creole */
   ht = 'ht',
   /** Hungarian */
   hu = 'hu',
   /** Armenian */
   hy = 'hy',
-  /** Herero */
-  hz = 'hz',
-  /** Interlingua (International Auxiliary Language Association) */
+  /** Interlingua */
   ia = 'ia',
   /** Indonesian */
   id = 'id',
-  /** Interlingue; Occidental */
-  ie = 'ie',
   /** Igbo */
   ig = 'ig',
-  /** Sichuan Yi; Nuosu */
+  /** Sichuan Yi */
   ii = 'ii',
-  /** Inupiaq */
-  ik = 'ik',
-  /** Ido */
-  io = 'io',
   /** Icelandic */
   is = 'is',
   /** Italian */
   it = 'it',
-  /** Inuktitut */
-  iu = 'iu',
   /** Japanese */
   ja = 'ja',
   /** Javanese */
   jv = 'jv',
   /** Georgian */
   ka = 'ka',
-  /** Kongo */
-  kg = 'kg',
-  /** Kikuyu; Gikuyu */
+  /** Kikuyu */
   ki = 'ki',
-  /** Kuanyama; Kwanyama */
-  kj = 'kj',
   /** Kazakh */
   kk = 'kk',
-  /** Kalaallisut; Greenlandic */
+  /** Kalaallisut */
   kl = 'kl',
-  /** Central Khmer */
+  /** Khmer */
   km = 'km',
   /** Kannada */
   kn = 'kn',
   /** Korean */
   ko = 'ko',
-  /** Kanuri */
-  kr = 'kr',
   /** Kashmiri */
   ks = 'ks',
   /** Kurdish */
   ku = 'ku',
-  /** Komi */
-  kv = 'kv',
   /** Cornish */
   kw = 'kw',
-  /** Kirghiz; Kyrgyz */
+  /** Kyrgyz */
   ky = 'ky',
   /** Latin */
   la = 'la',
-  /** Luxembourgish; Letzeburgesch */
+  /** Luxembourgish */
   lb = 'lb',
   /** Ganda */
   lg = 'lg',
-  /** Limburgan; Limburger; Limburgish */
-  li = 'li',
   /** Lingala */
   ln = 'ln',
   /** Lao */
@@ -1546,8 +1583,6 @@ export enum LanguageCode {
   lv = 'lv',
   /** Malagasy */
   mg = 'mg',
-  /** Marshallese */
-  mh = 'mh',
   /** Maori */
   mi = 'mi',
   /** Macedonian */
@@ -1564,71 +1599,61 @@ export enum LanguageCode {
   mt = 'mt',
   /** Burmese */
   my = 'my',
-  /** Nauru */
-  na = 'na',
-  /** Bokmål, Norwegian; Norwegian Bokmål */
+  /** Norwegian Bokmål */
   nb = 'nb',
-  /** Ndebele, North; North Ndebele */
+  /** North Ndebele */
   nd = 'nd',
   /** Nepali */
   ne = 'ne',
-  /** Ndonga */
-  ng = 'ng',
-  /** Dutch; Flemish */
+  /** Dutch */
   nl = 'nl',
-  /** Norwegian Nynorsk; Nynorsk, Norwegian */
+  /** Flemish */
+  nl_BE = 'nl_BE',
+  /** Norwegian Nynorsk */
   nn = 'nn',
-  /** Norwegian */
-  no = 'no',
-  /** Ndebele, South; South Ndebele */
-  nr = 'nr',
-  /** Navajo; Navaho */
-  nv = 'nv',
-  /** Chichewa; Chewa; Nyanja */
+  /** Nyanja */
   ny = 'ny',
-  /** Occitan (post 1500); Provençal */
-  oc = 'oc',
-  /** Ojibwa */
-  oj = 'oj',
   /** Oromo */
   om = 'om',
-  /** Oriya */
+  /** Odia */
   or = 'or',
-  /** Ossetian; Ossetic */
+  /** Ossetic */
   os = 'os',
-  /** Panjabi; Punjabi */
+  /** Punjabi */
   pa = 'pa',
-  /** Pali */
-  pi = 'pi',
   /** Polish */
   pl = 'pl',
-  /** Pushto; Pashto */
+  /** Pashto */
   ps = 'ps',
   /** Portuguese */
   pt = 'pt',
+  /** Brazilian Portuguese */
+  pt_BR = 'pt_BR',
+  /** European Portuguese */
+  pt_PT = 'pt_PT',
   /** Quechua */
   qu = 'qu',
   /** Romansh */
   rm = 'rm',
   /** Rundi */
   rn = 'rn',
-  /** Romanian; Moldavian; Moldovan */
+  /** Romanian */
   ro = 'ro',
+  /** Moldavian */
+  ro_MD = 'ro_MD',
   /** Russian */
   ru = 'ru',
   /** Kinyarwanda */
   rw = 'rw',
   /** Sanskrit */
   sa = 'sa',
-  /** Sardinian */
-  sc = 'sc',
   /** Sindhi */
   sd = 'sd',
   /** Northern Sami */
   se = 'se',
   /** Sango */
   sg = 'sg',
-  /** Sinhala; Sinhalese */
+  /** Sinhala */
   si = 'si',
   /** Slovak */
   sk = 'sk',
@@ -1644,9 +1669,7 @@ export enum LanguageCode {
   sq = 'sq',
   /** Serbian */
   sr = 'sr',
-  /** Swati */
-  ss = 'ss',
-  /** Sotho, Southern */
+  /** Southern Sotho */
   st = 'st',
   /** Sundanese */
   su = 'su',
@@ -1654,6 +1677,8 @@ export enum LanguageCode {
   sv = 'sv',
   /** Swahili */
   sw = 'sw',
+  /** Congo Swahili */
+  sw_CD = 'sw_CD',
   /** Tamil */
   ta = 'ta',
   /** Telugu */
@@ -1666,23 +1691,13 @@ export enum LanguageCode {
   ti = 'ti',
   /** Turkmen */
   tk = 'tk',
-  /** Tagalog */
-  tl = 'tl',
-  /** Tswana */
-  tn = 'tn',
-  /** Tonga (Tonga Islands) */
+  /** Tongan */
   to = 'to',
   /** Turkish */
   tr = 'tr',
-  /** Tsonga */
-  ts = 'ts',
   /** Tatar */
   tt = 'tt',
-  /** Twi */
-  tw = 'tw',
-  /** Tahitian */
-  ty = 'ty',
-  /** Uighur; Uyghur */
+  /** Uyghur */
   ug = 'ug',
   /** Ukrainian */
   uk = 'uk',
@@ -1690,14 +1705,10 @@ export enum LanguageCode {
   ur = 'ur',
   /** Uzbek */
   uz = 'uz',
-  /** Venda */
-  ve = 've',
   /** Vietnamese */
   vi = 'vi',
   /** Volapük */
   vo = 'vo',
-  /** Walloon */
-  wa = 'wa',
   /** Wolof */
   wo = 'wo',
   /** Xhosa */
@@ -1706,10 +1717,12 @@ export enum LanguageCode {
   yi = 'yi',
   /** Yoruba */
   yo = 'yo',
-  /** Zhuang; Chuang */
-  za = 'za',
   /** Chinese */
   zh = 'zh',
+  /** Simplified Chinese */
+  zh_Hans = 'zh_Hans',
+  /** Traditional Chinese */
+  zh_Hant = 'zh_Hant',
   /** Zulu */
   zu = 'zu'
 }
@@ -1731,6 +1744,11 @@ export type LocalizedString = {
   value: Scalars['String'];
 };
 
+export enum LogicalOperator {
+  AND = 'AND',
+  OR = 'OR'
+}
+
 export type LoginResult = {
    __typename?: 'LoginResult';
   user: CurrentUser;
@@ -1748,6 +1766,7 @@ export type Mutation = {
   addCustomersToGroup: CustomerGroup;
   /** Add members to a Zone */
   addMembersToZone: Zone;
+  addNoteToCustomer: Customer;
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
@@ -1807,10 +1826,14 @@ export type Mutation = {
   deleteCustomer: DeletionResponse;
   /** Update an existing Address */
   deleteCustomerAddress: Scalars['Boolean'];
+  /** Delete a CustomerGroup */
+  deleteCustomerGroup: DeletionResponse;
+  deleteCustomerNote: DeletionResponse;
   /** Delete an existing Facet */
   deleteFacet: DeletionResponse;
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
+  deleteOrderNote: DeletionResponse;
   /** Delete a Product */
   deleteProduct: DeletionResponse;
   /** Delete a ProductVariant */
@@ -1868,11 +1891,13 @@ export type Mutation = {
   updateCustomerAddress: Address;
   /** Update an existing CustomerGroup */
   updateCustomerGroup: CustomerGroup;
+  updateCustomerNote: HistoryEntry;
   /** Update an existing Facet */
   updateFacet: Facet;
   /** Update one or more FacetValues */
   updateFacetValues: Array<FacetValue>;
   updateGlobalSettings: GlobalSettings;
+  updateOrderNote: HistoryEntry;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Update an existing Product */
@@ -1907,6 +1932,11 @@ export type MutationAddCustomersToGroupArgs = {
 export type MutationAddMembersToZoneArgs = {
   zoneId: Scalars['ID'];
   memberIds: Array<Scalars['ID']>;
+};
+
+
+export type MutationAddNoteToCustomerArgs = {
+  input: AddNoteToCustomerInput;
 };
 
 
@@ -2070,6 +2100,16 @@ export type MutationDeleteCustomerAddressArgs = {
 };
 
 
+export type MutationDeleteCustomerGroupArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteCustomerNoteArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationDeleteFacetArgs = {
   id: Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
@@ -2079,6 +2119,11 @@ export type MutationDeleteFacetArgs = {
 export type MutationDeleteFacetValuesArgs = {
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteOrderNoteArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -2243,6 +2288,11 @@ export type MutationUpdateCustomerGroupArgs = {
 };
 
 
+export type MutationUpdateCustomerNoteArgs = {
+  input: UpdateCustomerNoteInput;
+};
+
+
 export type MutationUpdateFacetArgs = {
   input: UpdateFacetInput;
 };
@@ -2255,6 +2305,11 @@ export type MutationUpdateFacetValuesArgs = {
 
 export type MutationUpdateGlobalSettingsArgs = {
   input: UpdateGlobalSettingsInput;
+};
+
+
+export type MutationUpdateOrderNoteArgs = {
+  input: UpdateOrderNoteInput;
 };
 
 
@@ -2357,6 +2412,7 @@ export type Order = Node & {
   /** Order-level adjustments to the order total, such as discounts from promotions */
   adjustments: Array<Adjustment>;
   couponCodes: Array<Scalars['String']>;
+  /** Promotions applied to the order. Only gets populated after the payment process has completed. */
   promotions: Array<Promotion>;
   payments?: Maybe<Array<Payment>>;
   fulfillments?: Maybe<Array<Fulfillment>>;
@@ -2857,6 +2913,7 @@ export type Query = {
   assets: AssetList;
   channel?: Maybe<Channel>;
   channels: Array<Channel>;
+  /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
   collection?: Maybe<Collection>;
   collectionFilters: Array<ConfigurableOperationDefinition>;
   collections: CollectionList;
@@ -2864,7 +2921,7 @@ export type Query = {
   country?: Maybe<Country>;
   customer?: Maybe<Customer>;
   customerGroup?: Maybe<CustomerGroup>;
-  customerGroups: Array<CustomerGroup>;
+  customerGroups: CustomerGroupList;
   customers: CustomerList;
   facet?: Maybe<Facet>;
   facets: FacetList;
@@ -2934,7 +2991,8 @@ export type QueryChannelArgs = {
 
 
 export type QueryCollectionArgs = {
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
 
@@ -2960,6 +3018,11 @@ export type QueryCustomerArgs = {
 
 export type QueryCustomerGroupArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryCustomerGroupsArgs = {
+  options?: Maybe<CustomerGroupListOptions>;
 };
 
 
@@ -3193,6 +3256,7 @@ export type Sale = Node & StockMovement & {
 export type SearchInput = {
   term?: Maybe<Scalars['String']>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueOperator?: Maybe<LogicalOperator>;
   collectionId?: Maybe<Scalars['ID']>;
   groupByProduct?: Maybe<Scalars['Boolean']>;
   take?: Maybe<Scalars['Int']>;
@@ -3524,7 +3588,16 @@ export type UpdateCollectionInput = {
   parentId?: Maybe<Scalars['ID']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   filters?: Maybe<Array<ConfigurableOperationInput>>;
-  translations?: Maybe<Array<CollectionTranslationInput>>;
+  translations?: Maybe<Array<UpdateCollectionTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateCollectionTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -3550,6 +3623,11 @@ export type UpdateCustomerInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerNoteInput = {
+  noteId: Scalars['ID'];
+  note: Scalars['String'];
+};
+
 export type UpdateFacetInput = {
   id: Scalars['ID'];
   isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3569,6 +3647,12 @@ export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderNoteInput = {
+  noteId: Scalars['ID'];
+  note?: Maybe<Scalars['String']>;
+  isPublic?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdatePaymentMethodInput = {
@@ -4042,7 +4126,7 @@ export type GetCollectionFiltersQuery = (
 
 export type CollectionFragment = (
   { __typename?: 'Collection' }
-  & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'description' | 'isPrivate' | 'languageCode'>
+  & Pick<Collection, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'slug' | 'description' | 'isPrivate' | 'languageCode'>
   & { featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & AssetFragment
@@ -4054,7 +4138,7 @@ export type CollectionFragment = (
     & ConfigurableOperationFragment
   )>, translations: Array<(
     { __typename?: 'CollectionTranslation' }
-    & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'description'>
+    & Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>
   )>, parent?: Maybe<(
     { __typename?: 'Collection' }
     & Pick<Collection, 'id' | 'name'>
@@ -4076,7 +4160,7 @@ export type GetCollectionListQuery = (
     & Pick<CollectionList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Collection' }
-      & Pick<Collection, 'id' | 'name' | 'description' | 'isPrivate'>
+      & Pick<Collection, 'id' | 'name' | 'slug' | 'description' | 'isPrivate'>
       & { featuredAsset?: Maybe<(
         { __typename?: 'Asset' }
         & AssetFragment
@@ -4208,7 +4292,7 @@ export type GetCustomerListQuery = (
     & Pick<CustomerList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Customer' }
-      & Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
+      & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'title' | 'firstName' | 'lastName' | 'emailAddress'>
       & { user?: Maybe<(
         { __typename?: 'User' }
         & Pick<User, 'id' | 'verified'>
@@ -4227,7 +4311,10 @@ export type GetCustomerQuery = (
   { __typename?: 'Query' }
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
-    & { orders: (
+    & { groups: Array<(
+      { __typename?: 'CustomerGroup' }
+      & Pick<CustomerGroup, 'id' | 'name'>
+    )>, orders: (
       { __typename?: 'OrderList' }
       & Pick<OrderList, 'totalItems'>
       & { items: Array<(
@@ -4266,6 +4353,19 @@ export type UpdateCustomerMutation = (
   ) }
 );
 
+export type DeleteCustomerMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomer: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
 export type CreateCustomerAddressMutationVariables = {
   customerId: Scalars['ID'];
   input: CreateAddressInput;
@@ -4290,6 +4390,177 @@ export type UpdateCustomerAddressMutation = (
   & { updateCustomerAddress: (
     { __typename?: 'Address' }
     & AddressFragment
+  ) }
+);
+
+export type CreateCustomerGroupMutationVariables = {
+  input: CreateCustomerGroupInput;
+};
+
+
+export type CreateCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { createCustomerGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type UpdateCustomerGroupMutationVariables = {
+  input: UpdateCustomerGroupInput;
+};
+
+
+export type UpdateCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomerGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type DeleteCustomerGroupMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomerGroup: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
+export type GetCustomerGroupsQueryVariables = {
+  options?: Maybe<CustomerGroupListOptions>;
+};
+
+
+export type GetCustomerGroupsQuery = (
+  { __typename?: 'Query' }
+  & { customerGroups: (
+    { __typename?: 'CustomerGroupList' }
+    & Pick<CustomerGroupList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'CustomerGroup' }
+      & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    )> }
+  ) }
+);
+
+export type GetCustomerGroupWithCustomersQueryVariables = {
+  id: Scalars['ID'];
+  options?: Maybe<CustomerListOptions>;
+};
+
+
+export type GetCustomerGroupWithCustomersQuery = (
+  { __typename?: 'Query' }
+  & { customerGroup?: Maybe<(
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+    & { customers: (
+      { __typename?: 'CustomerList' }
+      & Pick<CustomerList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'Customer' }
+        & Pick<Customer, 'id' | 'createdAt' | 'updatedAt' | 'emailAddress' | 'firstName' | 'lastName'>
+      )> }
+    ) }
+  )> }
+);
+
+export type AddCustomersToGroupMutationVariables = {
+  groupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
+};
+
+
+export type AddCustomersToGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { addCustomersToGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type RemoveCustomersFromGroupMutationVariables = {
+  groupId: Scalars['ID'];
+  customerIds: Array<Scalars['ID']>;
+};
+
+
+export type RemoveCustomersFromGroupMutation = (
+  { __typename?: 'Mutation' }
+  & { removeCustomersFromGroup: (
+    { __typename?: 'CustomerGroup' }
+    & Pick<CustomerGroup, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  ) }
+);
+
+export type GetCustomerHistoryQueryVariables = {
+  id: Scalars['ID'];
+  options?: Maybe<HistoryEntryListOptions>;
+};
+
+
+export type GetCustomerHistoryQuery = (
+  { __typename?: 'Query' }
+  & { customer?: Maybe<(
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+    & { history: (
+      { __typename?: 'HistoryEntryList' }
+      & Pick<HistoryEntryList, 'totalItems'>
+      & { items: Array<(
+        { __typename?: 'HistoryEntry' }
+        & Pick<HistoryEntry, 'id' | 'type' | 'createdAt' | 'isPublic' | 'data'>
+        & { administrator?: Maybe<(
+          { __typename?: 'Administrator' }
+          & Pick<Administrator, 'id' | 'firstName' | 'lastName'>
+        )> }
+      )> }
+    ) }
+  )> }
+);
+
+export type AddNoteToCustomerMutationVariables = {
+  input: AddNoteToCustomerInput;
+};
+
+
+export type AddNoteToCustomerMutation = (
+  { __typename?: 'Mutation' }
+  & { addNoteToCustomer: (
+    { __typename?: 'Customer' }
+    & Pick<Customer, 'id'>
+  ) }
+);
+
+export type UpdateCustomerNoteMutationVariables = {
+  input: UpdateCustomerNoteInput;
+};
+
+
+export type UpdateCustomerNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { updateCustomerNote: (
+    { __typename?: 'HistoryEntry' }
+    & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>
+  ) }
+);
+
+export type DeleteCustomerNoteMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteCustomerNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteCustomerNote: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
   ) }
 );
 
@@ -4647,6 +4918,32 @@ export type AddNoteToOrderMutation = (
   & { addNoteToOrder: (
     { __typename?: 'Order' }
     & Pick<Order, 'id'>
+  ) }
+);
+
+export type UpdateOrderNoteMutationVariables = {
+  input: UpdateOrderNoteInput;
+};
+
+
+export type UpdateOrderNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { updateOrderNote: (
+    { __typename?: 'HistoryEntry' }
+    & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>
+  ) }
+);
+
+export type DeleteOrderNoteMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteOrderNoteMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteOrderNote: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
   ) }
 );
 
@@ -6636,6 +6933,7 @@ export namespace GetCustomer {
   export type Variables = GetCustomerQueryVariables;
   export type Query = GetCustomerQuery;
   export type Customer = CustomerFragment;
+  export type Groups = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['groups'][0]>);
   export type Orders = (NonNullable<GetCustomerQuery['customer']>)['orders'];
   export type Items = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']['items'][0]>);
 }
@@ -6652,6 +6950,12 @@ export namespace UpdateCustomer {
   export type UpdateCustomer = CustomerFragment;
 }
 
+export namespace DeleteCustomer {
+  export type Variables = DeleteCustomerMutationVariables;
+  export type Mutation = DeleteCustomerMutation;
+  export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
+}
+
 export namespace CreateCustomerAddress {
   export type Variables = CreateCustomerAddressMutationVariables;
   export type Mutation = CreateCustomerAddressMutation;
@@ -6662,6 +6966,78 @@ export namespace UpdateCustomerAddress {
   export type Variables = UpdateCustomerAddressMutationVariables;
   export type Mutation = UpdateCustomerAddressMutation;
   export type UpdateCustomerAddress = AddressFragment;
+}
+
+export namespace CreateCustomerGroup {
+  export type Variables = CreateCustomerGroupMutationVariables;
+  export type Mutation = CreateCustomerGroupMutation;
+  export type CreateCustomerGroup = CreateCustomerGroupMutation['createCustomerGroup'];
+}
+
+export namespace UpdateCustomerGroup {
+  export type Variables = UpdateCustomerGroupMutationVariables;
+  export type Mutation = UpdateCustomerGroupMutation;
+  export type UpdateCustomerGroup = UpdateCustomerGroupMutation['updateCustomerGroup'];
+}
+
+export namespace DeleteCustomerGroup {
+  export type Variables = DeleteCustomerGroupMutationVariables;
+  export type Mutation = DeleteCustomerGroupMutation;
+  export type DeleteCustomerGroup = DeleteCustomerGroupMutation['deleteCustomerGroup'];
+}
+
+export namespace GetCustomerGroups {
+  export type Variables = GetCustomerGroupsQueryVariables;
+  export type Query = GetCustomerGroupsQuery;
+  export type CustomerGroups = GetCustomerGroupsQuery['customerGroups'];
+  export type Items = (NonNullable<GetCustomerGroupsQuery['customerGroups']['items'][0]>);
+}
+
+export namespace GetCustomerGroupWithCustomers {
+  export type Variables = GetCustomerGroupWithCustomersQueryVariables;
+  export type Query = GetCustomerGroupWithCustomersQuery;
+  export type CustomerGroup = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>);
+  export type Customers = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers'];
+  export type Items = (NonNullable<(NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers']['items'][0]>);
+}
+
+export namespace AddCustomersToGroup {
+  export type Variables = AddCustomersToGroupMutationVariables;
+  export type Mutation = AddCustomersToGroupMutation;
+  export type AddCustomersToGroup = AddCustomersToGroupMutation['addCustomersToGroup'];
+}
+
+export namespace RemoveCustomersFromGroup {
+  export type Variables = RemoveCustomersFromGroupMutationVariables;
+  export type Mutation = RemoveCustomersFromGroupMutation;
+  export type RemoveCustomersFromGroup = RemoveCustomersFromGroupMutation['removeCustomersFromGroup'];
+}
+
+export namespace GetCustomerHistory {
+  export type Variables = GetCustomerHistoryQueryVariables;
+  export type Query = GetCustomerHistoryQuery;
+  export type Customer = (NonNullable<GetCustomerHistoryQuery['customer']>);
+  export type History = (NonNullable<GetCustomerHistoryQuery['customer']>)['history'];
+  export type Items = (NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>);
+  export type Administrator = (NonNullable<(NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>)['administrator']>);
+}
+
+export namespace AddNoteToCustomer {
+  export type Variables = AddNoteToCustomerMutationVariables;
+  export type Mutation = AddNoteToCustomerMutation;
+  export type AddNoteToCustomer = AddNoteToCustomerMutation['addNoteToCustomer'];
+}
+
+export namespace UpdateCustomerNote {
+  export type Variables = UpdateCustomerNoteMutationVariables;
+  export type Mutation = UpdateCustomerNoteMutation;
+  export type UpdateCustomerNote = UpdateCustomerNoteMutation['updateCustomerNote'];
+}
+
+export namespace DeleteCustomerNote {
+  export type Variables = DeleteCustomerNoteMutationVariables;
+  export type Mutation = DeleteCustomerNoteMutation;
+  export type DeleteCustomerNote = DeleteCustomerNoteMutation['deleteCustomerNote'];
 }
 
 export namespace FacetValue {
@@ -6825,6 +7201,18 @@ export namespace AddNoteToOrder {
   export type Variables = AddNoteToOrderMutationVariables;
   export type Mutation = AddNoteToOrderMutation;
   export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+}
+
+export namespace UpdateOrderNote {
+  export type Variables = UpdateOrderNoteMutationVariables;
+  export type Mutation = UpdateOrderNoteMutation;
+  export type UpdateOrderNote = UpdateOrderNoteMutation['updateOrderNote'];
+}
+
+export namespace DeleteOrderNote {
+  export type Variables = DeleteOrderNoteMutationVariables;
+  export type Mutation = DeleteOrderNoteMutation;
+  export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
 }
 
 export namespace Asset {

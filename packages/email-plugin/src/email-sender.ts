@@ -1,13 +1,17 @@
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { Logger } from '@vendure/core';
 import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';
 import SendmailTransport from 'nodemailer/lib/sendmail-transport';
+import { LoggerLevel } from 'nodemailer/lib/shared';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import path from 'path';
 import { Stream } from 'stream';
+import { format } from 'util';
 
+import { loggerCtx } from './constants';
 import { EmailDetails, EmailTransportOptions, SendmailTransportOptions, SMTPTransportOptions } from './types';
 
 export type StreamTransportInfo = {
@@ -59,6 +63,7 @@ export class EmailSender {
 
     private getSmtpTransport(options: SMTPTransportOptions) {
         if (!this._smtpTransport) {
+            (options as any).logger = options.logging ? this.createLogger() : false;
             this._smtpTransport = createTransport(options);
         }
         return this._smtpTransport;
@@ -109,5 +114,39 @@ export class EmailSender {
                 writeStream.on('error', reject);
             });
         });
+    }
+
+    /**
+     * Adapts the VendureLogger to work with the bunyan-compatible logger format
+     * used by Nodemailer.
+     */
+    private createLogger() {
+        function formatError(args: [object, string, ...string[]]) {
+            const [ctx, message, ...params] = args;
+            return format(message, ...params);
+        }
+        return {
+            level(level: LoggerLevel) {
+                /* noop */
+            },
+            trace(...params: any) {
+                Logger.debug(formatError(params), loggerCtx);
+            },
+            debug(...params: any) {
+                Logger.verbose(formatError(params), loggerCtx);
+            },
+            info(...params: any) {
+                Logger.info(formatError(params), loggerCtx);
+            },
+            warn(...params: any) {
+                Logger.warn(formatError(params), loggerCtx);
+            },
+            error(...params: any) {
+                Logger.error(formatError(params), loggerCtx);
+            },
+            fatal(...params: any) {
+                Logger.error(formatError(params), loggerCtx);
+            },
+        };
     }
 }

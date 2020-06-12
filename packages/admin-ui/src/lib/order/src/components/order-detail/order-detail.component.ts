@@ -2,21 +2,23 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
 import {
     AdjustmentType,
+    BaseDetailComponent,
     CustomFieldConfig,
+    DataService,
+    EditNoteDialogComponent,
     GetOrderHistory,
+    HistoryEntry,
+    ModalService,
+    NotificationService,
     Order,
     OrderDetail,
+    ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
 import { omit } from '@vendure/common/lib/omit';
-import { Observable, of, Subject } from 'rxjs';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
 import { startWith, switchMap, take } from 'rxjs/operators';
 
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
@@ -33,7 +35,7 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
 export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
-    history$: Observable<GetOrderHistory.Items[] | null | undefined>;
+    history$: Observable<GetOrderHistory.Items[] | undefined>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
     orderLineCustomFields: CustomFieldConfig[];
@@ -72,7 +74,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                             createdAt: SortOrder.DESC,
                         },
                     })
-                    .mapStream(data => data.order && data.order.history.items);
+                    .mapStream(data => data.order?.history.items);
             }),
         );
     }
@@ -123,6 +125,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                     this.notificationService.error(_('order.settle-payment-error'));
                 }
                 this.dataService.order.getOrder(this.id).single$.subscribe();
+                this.fetchHistory.next();
             }
         });
     }
@@ -204,7 +207,59 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
             })
             .pipe(switchMap(result => this.refetchOrder(result)))
             .subscribe(result => {
-                this.notificationService.success(_('order.add-note-success'));
+                this.notificationService.success(_('common.notify-create-success'), {
+                    entity: 'Note',
+                });
+            });
+    }
+
+    updateNote(entry: HistoryEntry) {
+        this.modalService
+            .fromComponent(EditNoteDialogComponent, {
+                closable: true,
+                locals: {
+                    displayPrivacyControls: true,
+                    note: entry.data.note,
+                    noteIsPrivate: !entry.isPublic,
+                },
+            })
+            .pipe(
+                switchMap(result => {
+                    if (result) {
+                        return this.dataService.order.updateOrderNote({
+                            noteId: entry.id,
+                            isPublic: !result.isPrivate,
+                            note: result.note,
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+            )
+            .subscribe(result => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-update-success'), {
+                    entity: 'Note',
+                });
+            });
+    }
+
+    deleteNote(entry: HistoryEntry) {
+        return this.modalService
+            .dialog({
+                title: _('common.confirm-delete-note'),
+                body: entry.data.note,
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'danger', label: _('common.delete'), returnValue: true },
+                ],
+            })
+            .pipe(switchMap(res => (res ? this.dataService.order.deleteOrderNote(entry.id) : EMPTY)))
+            .subscribe(() => {
+                this.fetchHistory.next();
+                this.notificationService.success(_('common.notify-delete-success'), {
+                    entity: 'Note',
+                });
             });
     }
 
