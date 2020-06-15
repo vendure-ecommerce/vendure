@@ -4,7 +4,7 @@ date: 2020-06-12T12:00:00
 draft: false
 author: "Michael Bromley"
 images: 
-    - "/blog/2020/06/announcing-vendure-v0.13.0/vendure-0.13.0-banner-01.jpg"
+    - "/blog/2020/06/vendure-v0.13.0-the-customer-is-always-right/vendure-0.13.0-banner-01.jpg"
 ---
 
 The formula of a successful e-commerce business contains many ingredients, but one is more important than all others: the customer. To that end, we're *very* excited to announce the release of version 0.13.0 of Vendure!
