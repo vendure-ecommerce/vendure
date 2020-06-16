@@ -13,8 +13,8 @@ services:
     labels:
       kompose.service.type: nodeport
     ports:
-      - '80:80'
-      - '443:443'
+      - '8081:8080'
+      - '44301:8443'
     depends_on:
       - mariadb
     volumes:
