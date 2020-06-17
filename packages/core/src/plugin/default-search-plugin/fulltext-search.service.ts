@@ -86,7 +86,7 @@ export class FulltextSearchService {
     }
 
     /**
-     * Sets the SearchStrategy appropriate to th configured database type.
+     * Sets the SearchStrategy appropriate to the configured database type.
      */
     private setSearchStrategy() {
         switch (this.connection.options.type) {
@@ -99,6 +99,7 @@ export class FulltextSearchService {
                 this.searchStrategy = new SqliteSearchStrategy(this.connection);
                 break;
             case 'postgres':
+            case 'cockroachdb':
                 this.searchStrategy = new PostgresSearchStrategy(this.connection);
                 break;
             default:

@@ -104,6 +104,18 @@ function getDbConfig(): ConnectionOptions {
                 password: 'secret',
                 database: 'vendure-dev',
             };
+        case 'cockroachdb':
+            console.log('Using cockroachdb connection');
+            return {
+                synchronize: true,
+                type: 'cockroachdb',
+                host: '127.0.0.1',
+                port: 26257,
+                username: 'root',
+                password: '',
+                database: 'vendure-dev',
+                logging: true,
+            };
         case 'sqlite':
             console.log('Using sqlite connection');
             return {

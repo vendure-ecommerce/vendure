@@ -1,5 +1,14 @@
 version: '3.7'
 services:
+  cockroachdb:
+    image: 'cockroachdb/cockroach:latest'
+    restart: always
+    command: start --insecure
+    ports:
+      - '26257:26257'
+      - '8082:8080'
+    volumes:
+      - cockroachdb_data:/var/lib/cockroachdb/data
   mariadb:
     image: 'bitnami/mariadb:latest'
     environment:
@@ -45,6 +54,8 @@ services:
     links:
       - "postgres:pgsql-server"
 volumes:
+  cockroachdb_data:
+    driver: local
   postgres_data:
     driver: local
   pgadmin_data:
