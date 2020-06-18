@@ -16,7 +16,7 @@ import { Logger, RuntimeVendureConfig, VendureConfig } from '../config';
  * // running some service which we want to access via the `/my-plugin/`
  * // route of the main Vendure server.
  * \@VendurePlugin({
- *   configure: (config: Required<VendureConfig>) => {
+ *   configuration: (config: Required<VendureConfig>) => {
  *       config.apiOptions.middleware.push({
  *           handler: createProxyHandler({
  *               label: 'Admin UI',

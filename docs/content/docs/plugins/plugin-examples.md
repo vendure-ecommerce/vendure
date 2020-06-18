@@ -20,7 +20,7 @@ This example shows how to modify the VendureConfig, in this case by adding a cus
 import { VendurePlugin } from '@vendure/core';
 
 @VendurePlugin({
-  configure: config => {
+  configuration: config => {
     config.customFields.Product.push({
       name: 'rating',
       type: 'float',
@@ -342,7 +342,7 @@ import { ProductVideoResolver } from './product-video.resolver'
     `,
     resolvers: [ProductVideoResolver]
   },
-  configure: config => {
+  configuration: config => {
     config.customFields.Product.push({
       name: 'videoUrl',
       type: 'string',
