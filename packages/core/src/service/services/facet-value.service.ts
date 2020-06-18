@@ -36,9 +36,7 @@ export class FacetValueService {
             .find(FacetValue, {
                 relations: ['facet'],
             })
-            .then((facetValues) =>
-                facetValues.map((facetValue) => translateDeep(facetValue, lang, ['facet'])),
-            );
+            .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang, ['facet'])));
     }
 
     findOne(id: ID, lang: LanguageCode): Promise<Translated<FacetValue> | undefined> {
@@ -46,7 +44,7 @@ export class FacetValueService {
             .findOne(FacetValue, id, {
                 relations: ['facet'],
             })
-            .then((facetValue) => facetValue && translateDeep(facetValue, lang, ['facet']));
+            .then(facetValue => facetValue && translateDeep(facetValue, lang, ['facet']));
     }
 
     findByIds(ids: ID[]): Promise<FacetValue[]>;
@@ -56,12 +54,23 @@ export class FacetValueService {
             .getRepository(FacetValue)
             .findByIds(ids, { relations: ['facet'] });
         if (lang) {
-            return facetValues.then((values) =>
-                values.map((facetValue) => translateDeep(facetValue, lang, ['facet'])),
+            return facetValues.then(values =>
+                values.map(facetValue => translateDeep(facetValue, lang, ['facet'])),
             );
         } else {
             return facetValues;
         }
+    }
+
+    findByFacetId(id: ID, lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
+        return this.connection
+            .getRepository(FacetValue)
+            .find({
+                where: {
+                    facet: { id },
+                },
+            })
+            .then(values => values.map(facetValue => translateDeep(facetValue, lang)));
     }
 
     async create(
@@ -72,7 +81,7 @@ export class FacetValueService {
             input,
             entityType: FacetValue,
             translationType: FacetValueTranslation,
-            beforeSave: (fv) => (fv.facet = facet),
+            beforeSave: fv => (fv.facet = facet),
         });
         return assertFound(this.findOne(facetValue.id, this.configService.defaultLanguageCode));
     }

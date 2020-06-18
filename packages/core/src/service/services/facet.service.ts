@@ -44,7 +44,7 @@ export class FacetService {
             .build(Facet, options, { relations })
             .getManyAndCount()
             .then(([facets, totalItems]) => {
-                const items = facets.map((facet) =>
+                const items = facets.map(facet =>
                     translateDeep(facet, lang, ['values', ['values', 'facet']]),
                 );
                 return {
@@ -59,7 +59,7 @@ export class FacetService {
 
         return this.connection.manager
             .findOne(Facet, facetId, { relations })
-            .then((facet) => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
+            .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
     findByCode(facetCode: string, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
@@ -72,7 +72,20 @@ export class FacetService {
                 },
                 relations,
             })
-            .then((facet) => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
+            .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
+    }
+
+    async findByFacetValueId(id: ID, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
+        const facet = await this.connection
+            .getRepository(Facet)
+            .createQueryBuilder('facet')
+            .leftJoinAndSelect('facet.translations', 'translations')
+            .leftJoin('facet.values', 'facetValue')
+            .where('facetValue.id = :id', { id })
+            .getOne();
+        if (facet) {
+            return translateDeep(facet, lang);
+        }
     }
 
     async create(input: CreateFacetInput): Promise<Translated<Facet>> {
@@ -98,7 +111,7 @@ export class FacetService {
         let productCount = 0;
         let variantCount = 0;
         if (facet.values.length) {
-            const counts = await this.facetValueService.checkFacetValueUsage(facet.values.map((fv) => fv.id));
+            const counts = await this.facetValueService.checkFacetValueUsage(facet.values.map(fv => fv.id));
             productCount = counts.productCount;
             variantCount = counts.variantCount;
         }

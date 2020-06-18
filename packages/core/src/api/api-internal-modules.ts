@@ -36,6 +36,8 @@ import {
     CustomerEntityResolver,
 } from './resolvers/entity/customer-entity.resolver';
 import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-entity.resolver';
+import { FacetEntityResolver } from './resolvers/entity/facet-entity.resolver';
+import { FacetValueEntityResolver } from './resolvers/entity/facet-value-entity.resolver';
 import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
@@ -95,6 +97,8 @@ export const entityResolvers = [
     CollectionEntityResolver,
     CustomerEntityResolver,
     CustomerGroupEntityResolver,
+    FacetEntityResolver,
+    FacetValueEntityResolver,
     FulfillmentEntityResolver,
     OrderEntityResolver,
     OrderLineEntityResolver,
