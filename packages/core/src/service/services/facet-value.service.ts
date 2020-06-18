@@ -62,6 +62,17 @@ export class FacetValueService {
         }
     }
 
+    findByFacetId(id: ID, lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
+        return this.connection
+            .getRepository(FacetValue)
+            .find({
+                where: {
+                    facet: { id },
+                },
+            })
+            .then(values => values.map(facetValue => translateDeep(facetValue, lang)));
+    }
+
     async create(
         facet: Facet,
         input: CreateFacetValueInput | CreateFacetValueWithFacetInput,

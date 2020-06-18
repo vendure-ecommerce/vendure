@@ -75,6 +75,19 @@ export class FacetService {
             .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 
+    async findByFacetValueId(id: ID, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
+        const facet = await this.connection
+            .getRepository(Facet)
+            .createQueryBuilder('facet')
+            .leftJoinAndSelect('facet.translations', 'translations')
+            .leftJoin('facet.values', 'facetValue')
+            .where('facetValue.id = :id', { id })
+            .getOne();
+        if (facet) {
+            return translateDeep(facet, lang);
+        }
+    }
+
     async create(input: CreateFacetInput): Promise<Translated<Facet>> {
         const facet = await this.translatableSaver.create({
             input,
