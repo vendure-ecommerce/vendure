@@ -150,7 +150,7 @@ describe('Shop auth & accounts', () => {
         it('issues a new token if attempting to register a second time', async () => {
             const sendEmail = new Promise<string>(resolve => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
-                    resolve(event.user.verificationToken!);
+                    resolve(event.user.getNativeAuthenticationMethod().verificationToken!);
                 });
             });
             const input: RegisterCustomerInput = {
@@ -174,7 +174,7 @@ describe('Shop auth & accounts', () => {
         it('refreshCustomerVerification issues a new token', async () => {
             const sendEmail = new Promise<string>(resolve => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
-                    resolve(event.user.verificationToken!);
+                    resolve(event.user.getNativeAuthenticationMethod().verificationToken!);
                 });
             });
             const result = await shopClient.query<RefreshToken.Mutation, RefreshToken.Variables>(
@@ -834,7 +834,7 @@ describe('Updating email address without email verification', () => {
 function getVerificationTokenPromise(): Promise<string> {
     return new Promise<any>(resolve => {
         sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
-            resolve(event.user.verificationToken);
+            resolve(event.user.getNativeAuthenticationMethod().verificationToken);
         });
     });
 }
@@ -842,7 +842,7 @@ function getVerificationTokenPromise(): Promise<string> {
 function getPasswordResetTokenPromise(): Promise<string> {
     return new Promise<any>(resolve => {
         sendEmailFn.mockImplementation((event: PasswordResetEvent) => {
-            resolve(event.user.passwordResetToken);
+            resolve(event.user.getNativeAuthenticationMethod().passwordResetToken);
         });
     });
 }
@@ -853,7 +853,12 @@ function getEmailUpdateTokenPromise(): Promise<{
 }> {
     return new Promise(resolve => {
         sendEmailFn.mockImplementation((event: IdentifierChangeRequestEvent) => {
-            resolve(pick(event.user, ['identifierChangeToken', 'pendingIdentifier']));
+            resolve(
+                pick(event.user.getNativeAuthenticationMethod(), [
+                    'identifierChangeToken',
+                    'pendingIdentifier',
+                ]),
+            );
         });
     });
 }

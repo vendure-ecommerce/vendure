@@ -1,9 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
-import { GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
@@ -11,7 +9,7 @@ import { Session } from '../../entity/session/session.entity';
 import { AuthService } from '../../service/services/auth.service';
 import { extractAuthToken } from '../common/extract-auth-token';
 import { parseContext } from '../common/parse-context';
-import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
+import { RequestContextService, REQUEST_CONTEXT_KEY } from '../common/request-context.service';
 import { setAuthToken } from '../common/set-auth-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 

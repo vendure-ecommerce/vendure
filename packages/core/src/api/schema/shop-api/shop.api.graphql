@@ -32,6 +32,7 @@ type Mutation {
     addPaymentToOrder(input: PaymentInput!): Order
     setCustomerForOrder(input: CreateCustomerInput!): Order
     login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    authenticate(method: String!, data: JSON!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
     "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
     refreshCustomerVerification(emailAddress: String!): Boolean!

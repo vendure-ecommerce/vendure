@@ -12,6 +12,7 @@ import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strat
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './collection/default-collection-filters';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
@@ -66,6 +67,8 @@ export const defaultConfig: RuntimeVendureConfig = {
             identifier: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         },
+        shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
+        adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,

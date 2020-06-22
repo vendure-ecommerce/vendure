@@ -5,8 +5,14 @@ import crypto from 'crypto';
 import ms from 'ms';
 import { Connection } from 'typeorm';
 
+import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';
-import { NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
+import { InternalServerError, NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
+import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
+import {
+    NativeAuthenticationStrategy,
+    NATIVE_AUTH_STRATEGY_NAME,
+} from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { Order } from '../../entity/order/order.entity';
 import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
@@ -43,12 +49,17 @@ export class AuthService {
      */
     async authenticate(
         ctx: RequestContext,
-        identifier: string,
-        password: string,
+        apiType: ApiType,
+        authenticationMethod: string,
+        authenticationData: any,
     ): Promise<AuthenticatedSession> {
-        this.eventBus.publish(new AttemptedLoginEvent(ctx, identifier));
-        const user = await this.getUserFromIdentifier(identifier);
-        await this.verifyUserPassword(user.id, password);
+        this.eventBus.publish(new AttemptedLoginEvent(ctx, authenticationMethod));
+        const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
+        const user = await authenticationStrategy.authenticate(ctx, authenticationData);
+        if (!user) {
+            throw new UnauthorizedError();
+        }
+
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
@@ -66,11 +77,11 @@ export class AuthService {
      * Verify the provided password against the one we have for the given user.
      */
     async verifyUserPassword(userId: ID, password: string): Promise<boolean> {
-        const user = await this.connection.getRepository(User).findOne(userId, { select: ['passwordHash'] });
-        if (!user) {
-            throw new UnauthorizedError();
-        }
-        const passwordMatches = await this.passwordCipher.check(password, user.passwordHash);
+        const nativeAuthenticationStrategy = this.getAuthenticationStrategy(
+            'shop',
+            NATIVE_AUTH_STRATEGY_NAME,
+        );
+        const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(userId, password);
         if (!passwordMatches) {
             throw new UnauthorizedError();
         }
@@ -175,17 +186,6 @@ export class AuthService {
         });
     }
 
-    private async getUserFromIdentifier(identifier: string): Promise<User> {
-        const user = await this.connection.getRepository(User).findOne({
-            where: { identifier },
-            relations: ['roles', 'roles.channels'],
-        });
-        if (!user) {
-            throw new UnauthorizedError();
-        }
-        return user;
-    }
-
     /**
      * Generates a random session token.
      */
@@ -220,5 +220,23 @@ export class AuthService {
      */
     private getExpiryDate(timeToExpireInMs: number): Date {
         return new Date(Date.now() + timeToExpireInMs);
+    }
+
+    private getAuthenticationStrategy(
+        apiType: ApiType,
+        method: typeof NATIVE_AUTH_STRATEGY_NAME,
+    ): NativeAuthenticationStrategy;
+    private getAuthenticationStrategy(apiType: ApiType, method: string): AuthenticationStrategy;
+    private getAuthenticationStrategy(apiType: ApiType, method: string): AuthenticationStrategy {
+        const { authOptions } = this.configService;
+        const strategies =
+            apiType === 'admin'
+                ? authOptions.adminAuthenticationStrategy
+                : authOptions.shopAuthenticationStrategy;
+        const match = strategies.find(s => s.name === method);
+        if (!match) {
+            throw new InternalServerError('error.unrecognized-authentication-strategy', { name: method });
+        }
+        return match;
     }
 }

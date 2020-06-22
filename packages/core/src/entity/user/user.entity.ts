@@ -1,8 +1,11 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
+import { InternalServerError } from '../../common/error/errors';
 import { SoftDeletable } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
+import { AuthenticationMethod } from '../authentication-method/authentication-method.entity';
+import { NativeAuthenticationMethod } from '../authentication-method/native-authentication-method.entity';
 import { VendureEntity } from '../base/base.entity';
 import { CustomUserFields } from '../custom-entity-fields';
 import { Role } from '../role/role.entity';
@@ -26,33 +29,14 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
     @Column()
     identifier: string;
 
-    @Column({ select: false }) passwordHash: string;
+    @OneToMany(
+        type => AuthenticationMethod,
+        method => method.user,
+    )
+    authenticationMethods: AuthenticationMethod[];
 
     @Column({ default: false })
     verified: boolean;
-
-    @Column({ type: 'varchar', nullable: true })
-    verificationToken: string | null;
-
-    @Column({ type: 'varchar', nullable: true })
-    passwordResetToken: string | null;
-
-    /**
-     * @description
-     * A token issued when a User requests to change their identifier (typically
-     * an email address)
-     */
-    @Column({ type: 'varchar', nullable: true })
-    identifierChangeToken: string | null;
-
-    /**
-     * @description
-     * When a request has been made to change the User's identifier, the new identifier
-     * will be stored here until it has been verified, after which it will
-     * replace the current value of the `identifier` field.
-     */
-    @Column({ type: 'varchar', nullable: true })
-    pendingIdentifier: string | null;
 
     @ManyToMany(type => Role)
     @JoinTable()
@@ -63,4 +47,17 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
 
     @Column(type => CustomUserFields)
     customFields: CustomUserFields;
+
+    getNativeAuthenticationMethod(): NativeAuthenticationMethod {
+        if (!this.authenticationMethods) {
+            throw new InternalServerError('error.user-authentication-methods-not-loaded');
+        }
+        const match = this.authenticationMethods.find(
+            (m): m is NativeAuthenticationMethod => m instanceof NativeAuthenticationMethod,
+        );
+        if (!match) {
+            throw new InternalServerError('error.native-authentication-methods-not-found');
+        }
+        return match;
+    }
 }

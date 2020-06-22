@@ -8,6 +8,7 @@ import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { Administrator } from '../../entity/administrator/administrator.entity';
+import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
@@ -75,7 +76,12 @@ export class AdministratorService {
         await this.connection.manager.save(administrator, { reload: false });
 
         if (input.password) {
-            administrator.user.passwordHash = await this.passwordCipher.hash(input.password);
+            const user = await this.userService.getUserById(administrator.user.id);
+            if (user) {
+                const nativeAuthMethod = user.getNativeAuthenticationMethod();
+                nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
+                await this.connection.manager.save(nativeAuthMethod);
+            }
         }
         if (input.roleIds) {
             administrator.user.roles = [];

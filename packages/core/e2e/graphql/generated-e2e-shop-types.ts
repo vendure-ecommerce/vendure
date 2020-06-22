@@ -1341,6 +1341,7 @@ export type Mutation = {
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;
     login: LoginResult;
+    authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /**
      * Regenerate and send a verification token for a new Customer registration. Only
@@ -1427,6 +1428,12 @@ export type MutationSetCustomerForOrderArgs = {
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationAuthenticateArgs = {
+    method: Scalars['String'];
+    data: Scalars['JSON'];
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 

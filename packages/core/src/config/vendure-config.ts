@@ -15,6 +15,7 @@ import { OrderState } from '../service/helpers/order-state-machine/order-state';
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
@@ -223,6 +224,8 @@ export interface AuthOptions {
      * Configures the credentials to be used to create a superadmin
      */
     superadminCredentials?: SuperadminCredentials;
+    shopAuthenticationStrategy?: AuthenticationStrategy[];
+    adminAuthenticationStrategy?: AuthenticationStrategy[];
 }
 
 /**

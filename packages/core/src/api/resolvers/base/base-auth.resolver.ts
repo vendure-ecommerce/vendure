@@ -1,3 +1,4 @@
+import { MutationAuthenticateArgs } from '@vendure/common/lib/generated-shop-types';
 import {
     CurrentUser,
     CurrentUserChannel,
@@ -8,6 +9,7 @@ import { unique } from '@vendure/common/lib/unique';
 import { Request, Response } from 'express';
 
 import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
@@ -38,7 +40,13 @@ export class BaseAuthResolver {
         res: Response,
         apiType: ApiType,
     ): Promise<LoginResult> {
-        return await this.createAuthenticatedSession(ctx, args, req, res, apiType);
+        return await this.createAuthenticatedSession(
+            ctx,
+            { method: NATIVE_AUTH_STRATEGY_NAME, data: args },
+            req,
+            res,
+            apiType,
+        );
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
@@ -80,12 +88,12 @@ export class BaseAuthResolver {
      */
     protected async createAuthenticatedSession(
         ctx: RequestContext,
-        args: MutationLoginArgs,
+        args: MutationAuthenticateArgs, // TODO: generate types
         req: Request,
         res: Response,
-        apiType?: ApiType,
+        apiType: ApiType,
     ) {
-        const session = await this.authService.authenticate(ctx, args.username, args.password);
+        const session = await this.authService.authenticate(ctx, apiType, args.method, args.data);
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(session.user.id);
             if (!administrator) {
