@@ -1771,7 +1771,9 @@ export type Mutation = {
     updateAsset: Asset;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
+    /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
     login: LoginResult;
+    authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
     createChannel: Channel;
@@ -1941,6 +1943,11 @@ export type MutationDeleteAssetArgs = {
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationAuthenticateArgs = {
+    input: AuthenticationInput;
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
@@ -3681,6 +3688,24 @@ export type GetCustomerCountQueryVariables = {};
 
 export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
+};
+
+export type AuthenticateMutationVariables = {
+    input: AuthenticationInput;
+};
+
+export type AuthenticateMutation = { __typename?: 'Mutation' } & {
+    authenticate: { __typename?: 'LoginResult' } & {
+        user: { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'>;
+    };
+};
+
+export type GetCustomersQueryVariables = {};
+
+export type GetCustomersQuery = { __typename?: 'Query' } & {
+    customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+            items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'emailAddress'>>;
+        };
 };
 
 export type GetChannelsQueryVariables = {};
@@ -5745,6 +5770,20 @@ export namespace GetCustomerCount {
     export type Variables = GetCustomerCountQueryVariables;
     export type Query = GetCustomerCountQuery;
     export type Customers = GetCustomerCountQuery['customers'];
+}
+
+export namespace Authenticate {
+    export type Variables = AuthenticateMutationVariables;
+    export type Mutation = AuthenticateMutation;
+    export type Authenticate = AuthenticateMutation['authenticate'];
+    export type User = AuthenticateMutation['authenticate']['user'];
+}
+
+export namespace GetCustomers {
+    export type Variables = GetCustomersQueryVariables;
+    export type Query = GetCustomersQuery;
+    export type Customers = GetCustomersQuery['customers'];
+    export type Items = NonNullable<GetCustomersQuery['customers']['items'][0]>;
 }
 
 export namespace GetChannels {
