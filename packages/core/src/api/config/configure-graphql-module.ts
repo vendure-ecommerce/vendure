@@ -20,6 +20,7 @@ import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
+import { generateAuthenticationTypes } from './generate-auth-types';
 import { generateListOptions } from './generate-list-options';
 import {
     addGraphQLCustomFields,
@@ -160,6 +161,10 @@ async function createGraphQLOptions(
         // See https://github.com/nestjs/graphql/issues/336
         const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
         const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
+        const authStrategies =
+            apiType === 'shop'
+                ? configService.authOptions.shopAuthenticationStrategy
+                : configService.authOptions.adminAuthenticationStrategy;
         let schema = buildSchema(typeDefs);
 
         getPluginAPIExtensions(configService.plugins, apiType)
@@ -170,6 +175,7 @@ async function createGraphQLOptions(
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        schema = generateAuthenticationTypes(schema, authStrategies);
 
         return printSchema(schema);
     }

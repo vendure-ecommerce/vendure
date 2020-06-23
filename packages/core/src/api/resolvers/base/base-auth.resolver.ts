@@ -42,7 +42,9 @@ export class BaseAuthResolver {
     ): Promise<LoginResult> {
         return await this.createAuthenticatedSession(
             ctx,
-            { method: NATIVE_AUTH_STRATEGY_NAME, data: args },
+            {
+                input: { [NATIVE_AUTH_STRATEGY_NAME]: args },
+            },
             req,
             res,
             apiType,
@@ -88,12 +90,13 @@ export class BaseAuthResolver {
      */
     protected async createAuthenticatedSession(
         ctx: RequestContext,
-        args: MutationAuthenticateArgs, // TODO: generate types
+        args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
         apiType: ApiType,
     ) {
-        const session = await this.authService.authenticate(ctx, apiType, args.method, args.data);
+        const [method, data] = Object.entries(args.input)[0];
+        const session = await this.authService.authenticate(ctx, apiType, method, data);
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(session.user.id);
             if (!administrator) {

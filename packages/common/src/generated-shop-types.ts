@@ -95,6 +95,10 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export type AuthenticationInput = {
+    native?: Maybe<NativeAuthInput>;
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -1340,6 +1344,7 @@ export type Mutation = {
     setOrderShippingMethod?: Maybe<Order>;
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;
+    /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
     login: LoginResult;
     authenticate: LoginResult;
     logout: Scalars['Boolean'];
@@ -1432,8 +1437,7 @@ export type MutationLoginArgs = {
 };
 
 export type MutationAuthenticateArgs = {
-    method: Scalars['String'];
-    data: Scalars['JSON'];
+    input: AuthenticationInput;
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1486,6 +1490,11 @@ export type MutationRequestPasswordResetArgs = {
 
 export type MutationResetPasswordArgs = {
     token: Scalars['String'];
+    password: Scalars['String'];
+};
+
+export type NativeAuthInput = {
+    username: Scalars['String'];
     password: Scalars['String'];
 };
 

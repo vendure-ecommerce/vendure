@@ -31,8 +31,8 @@ type Mutation {
     setOrderShippingMethod(shippingMethodId: ID!): Order
     addPaymentToOrder(input: PaymentInput!): Order
     setCustomerForOrder(input: CreateCustomerInput!): Order
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
-    authenticate(method: String!, data: JSON!, rememberMe: Boolean): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): LoginResult! @deprecated(reason: "Use `authenticate` mutation with the 'native' strategy instead.")
+    authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
     "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
     refreshCustomerVerification(emailAddress: String!): Boolean!
@@ -67,6 +67,9 @@ type Mutation {
     "Resets a Customer's password based on the provided token"
     resetPassword(token: String!, password: String!): LoginResult!
 }
+
+# Populated at run-time
+input AuthenticationInput
 
 input RegisterCustomerInput {
     emailAddress: String!

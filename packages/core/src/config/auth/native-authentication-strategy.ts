@@ -1,5 +1,8 @@
 import { ExecutionContext } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
+import { isObject } from '@vendure/common/lib/shared-utils';
+import { DocumentNode } from 'graphql';
+import gql from 'graphql-tag';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -30,6 +33,23 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
         this.passwordCipher = injector.get(PasswordCiper);
     }
 
+    /*validateData(data: unknown): data is NativeAuthenticationData {
+        return (
+            isObject(data) &&
+            typeof (data as any).username === 'string' &&
+            typeof (data as any).password === 'string'
+        );
+    }*/
+
+    defineInputType(): DocumentNode {
+        return gql`
+            input NativeAuthInput {
+                username: String!
+                password: String!
+            }
+        `;
+    }
+
     async authenticate(ctx: RequestContext, data: NativeAuthenticationData): Promise<User | false> {
         const user = await this.getUserFromIdentifier(data.username);
         const passwordMatch = await this.verifyUserPassword(user.id, data.password);
@@ -37,10 +57,6 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
             return false;
         }
         return user;
-    }
-
-    deauthenticate(user: User): Promise<void> {
-        return Promise.resolve(undefined);
     }
 
     private async getUserFromIdentifier(identifier: string): Promise<User> {

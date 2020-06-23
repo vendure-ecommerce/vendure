@@ -170,6 +170,10 @@ export type AssignProductsToChannelInput = {
   priceFactor?: Maybe<Scalars['Float']>;
 };
 
+export type AuthenticationInput = {
+  native?: Maybe<NativeAuthInput>;
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
@@ -2335,6 +2339,11 @@ export type MutationAddMembersToZoneArgs = {
 export type MutationRemoveMembersFromZoneArgs = {
   zoneId: Scalars['ID'];
   memberIds: Array<Scalars['ID']>;
+};
+
+export type NativeAuthInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Node = {
