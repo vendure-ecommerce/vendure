@@ -224,7 +224,19 @@ export interface AuthOptions {
      * Configures the credentials to be used to create a superadmin
      */
     superadminCredentials?: SuperadminCredentials;
+    /**
+     * @description
+     * Configures one or more AuthenticationStrategies which defines how authentication
+     * is handled in the Shop API.
+     * @default NativeAuthenticationStrategy
+     */
     shopAuthenticationStrategy?: AuthenticationStrategy[];
+    /**
+     * @description
+     * Configures one or more AuthenticationStrategy which defines how authentication
+     * is handled in the Admin API.
+     * @default NativeAuthenticationStrategy
+     */
     adminAuthenticationStrategy?: AuthenticationStrategy[];
 }
 
@@ -414,18 +426,24 @@ export interface ShippingOptions {
 }
 
 /**
- * @docsCategory superadmin
+ * @description
+ * These credentials will be used to create the Superadmin user & administrator
+ * when Vendure first bootstraps.
+ *
+ * @docsCategory auth
  */
 export interface SuperadminCredentials {
     /**
      * @description
      * The identifier to be used to create a superadmin account
+     * @default 'superadmin'
      */
     identifier: string;
 
     /**
      * @description
      * The password to be used to create a superadmin account
+     * @default 'superadmin'
      */
     password: string;
 }

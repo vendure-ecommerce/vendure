@@ -1771,7 +1771,9 @@ export type Mutation = {
     updateAsset: Asset;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
+    /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
     login: LoginResult;
+    authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
     createChannel: Channel;
@@ -1941,6 +1943,11 @@ export type MutationDeleteAssetArgs = {
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationAuthenticateArgs = {
+    input: AuthenticationInput;
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 

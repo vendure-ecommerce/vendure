@@ -2,6 +2,8 @@ export * from './asset-naming-strategy/asset-naming-strategy';
 export * from './asset-naming-strategy/default-asset-naming-strategy';
 export * from './asset-preview-strategy/asset-preview-strategy';
 export * from './asset-storage-strategy/asset-storage-strategy';
+export * from './auth/authentication-strategy';
+export * from './auth/native-authentication-strategy';
 export * from './collection/collection-filter';
 export * from './collection/default-collection-filters';
 export * from './config.module';

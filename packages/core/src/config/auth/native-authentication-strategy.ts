@@ -1,6 +1,4 @@
-import { ExecutionContext } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
-import { isObject } from '@vendure/common/lib/shared-utils';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
 import { Connection } from 'typeorm';
@@ -8,7 +6,6 @@ import { Connection } from 'typeorm';
 import { RequestContext } from '../../api/common/request-context';
 import { UnauthorizedError } from '../../common/error/errors';
 import { Injector } from '../../common/injector';
-import { AuthenticationMethod } from '../../entity/authentication-method/authentication-method.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../../service/helpers/password-cipher/password-ciper';
@@ -22,6 +19,14 @@ export interface NativeAuthenticationData {
 
 export const NATIVE_AUTH_STRATEGY_NAME = 'native';
 
+/**
+ * @description
+ * This strategy implements a username/password credential-based authentication, with the credentials
+ * being stored in the Vendure database. This is the default method of authentication, and it is advised
+ * to keep it configured unless there is a specific reason not to.
+ *
+ * @docsCategory auth
+ */
 export class NativeAuthenticationStrategy implements AuthenticationStrategy<NativeAuthenticationData> {
     readonly name = NATIVE_AUTH_STRATEGY_NAME;
 
@@ -32,14 +37,6 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
         this.connection = injector.getConnection();
         this.passwordCipher = injector.get(PasswordCiper);
     }
-
-    /*validateData(data: unknown): data is NativeAuthenticationData {
-        return (
-            isObject(data) &&
-            typeof (data as any).username === 'string' &&
-            typeof (data as any).password === 'string'
-        );
-    }*/
 
     defineInputType(): DocumentNode {
         return gql`
