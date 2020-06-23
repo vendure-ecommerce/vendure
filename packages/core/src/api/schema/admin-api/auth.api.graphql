@@ -3,6 +3,10 @@ type Query {
 }
 
 type Mutation {
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): LoginResult! @deprecated(reason: "Use `authenticate` mutation with the 'native' strategy instead.")
+    authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
 }
+
+# Populated at run-time
+input AuthenticationInput

@@ -59,6 +59,16 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedError();
         }
+        if (!user.roles || !user.roles[0]?.channels) {
+            const userWithRoles = await this.connection
+                .getRepository(User)
+                .createQueryBuilder('user')
+                .leftJoinAndSelect('user.roles', 'role')
+                .leftJoinAndSelect('role.channels', 'channel')
+                .where('user.id = :userId', { userId: user.id })
+                .getOne();
+            user.roles = userWithRoles?.roles || [];
+        }
 
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();

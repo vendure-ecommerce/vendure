@@ -1,5 +1,10 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { LoginResult, MutationLoginArgs, Permission } from '@vendure/common/lib/generated-types';
+import {
+    LoginResult,
+    MutationAuthenticateArgs,
+    MutationLoginArgs,
+    Permission,
+} from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
 import { ConfigService } from '../../../config/config.service';
@@ -33,6 +38,17 @@ export class AuthResolver extends BaseAuthResolver {
         @Context('res') res: Response,
     ): Promise<LoginResult> {
         return super.login(args, ctx, req, res, 'admin');
+    }
+
+    @Mutation()
+    @Allow(Permission.Public)
+    authenticate(
+        @Args() args: MutationAuthenticateArgs,
+        @Ctx() ctx: RequestContext,
+        @Context('req') req: Request,
+        @Context('res') res: Response,
+    ): Promise<LoginResult> {
+        return this.createAuthenticatedSession(ctx, args, req, res, 'shop');
     }
 
     @Mutation()
