@@ -6,23 +6,30 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { NativeAuthenticationStrategy } from '../src/config/auth/native-authentication-strategy';
 
 import { TestAuthenticationStrategy, VALID_AUTH_TOKEN } from './fixtures/test-authentication-strategies';
 import {
     Authenticate,
     GetCustomerHistory,
     GetCustomers,
+    GetCustomerUserAuth,
     HistoryEntryType,
     Me,
 } from './graphql/generated-e2e-admin-types';
+import { Register } from './graphql/generated-e2e-shop-types';
 import { GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
+import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('AuthenticationStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             authOptions: {
-                shopAuthenticationStrategy: [new TestAuthenticationStrategy()],
+                shopAuthenticationStrategy: [
+                    new NativeAuthenticationStrategy(),
+                    new TestAuthenticationStrategy(),
+                ],
             },
         }),
     );
@@ -108,6 +115,18 @@ describe('AuthenticationStrategy', () => {
             ]);
         });
 
+        it('user authenticationMethod populated', async () => {
+            const { customer } = await adminClient.query<
+                GetCustomerUserAuth.Query,
+                GetCustomerUserAuth.Variables
+            >(GET_CUSTOMER_USER_AUTH, {
+                id: newCustomerId,
+            });
+
+            expect(customer?.user?.authenticationMethods.length).toBe(1);
+            expect(customer?.user?.authenticationMethods[0].strategy).toBe('test_strategy');
+        });
+
         it('creates authenticated session', async () => {
             const { me } = await shopClient.query<Me.Query>(ME);
 
@@ -136,6 +155,47 @@ describe('AuthenticationStrategy', () => {
                 userData.email,
             ]);
         });
+
+        it('registerCustomerAccount with external email', async () => {
+            const { registerCustomerAccount } = await shopClient.query<Register.Mutation, Register.Variables>(
+                REGISTER_ACCOUNT,
+                {
+                    input: {
+                        emailAddress: userData.email,
+                    },
+                },
+            );
+
+            expect(registerCustomerAccount).toBe(true);
+            const { customer } = await adminClient.query<
+                GetCustomerUserAuth.Query,
+                GetCustomerUserAuth.Variables
+            >(GET_CUSTOMER_USER_AUTH, {
+                id: newCustomerId,
+            });
+
+            expect(customer?.user?.authenticationMethods.length).toBe(2);
+            expect(customer?.user?.authenticationMethods[1].strategy).toBe('native');
+
+            const { customer: customer2 } = await adminClient.query<
+                GetCustomerHistory.Query,
+                GetCustomerHistory.Variables
+            >(GET_CUSTOMER_HISTORY, {
+                id: newCustomerId,
+                options: {
+                    skip: 2,
+                },
+            });
+
+            expect(customer2?.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.CUSTOMER_REGISTERED,
+                    data: {
+                        strategy: 'native',
+                    },
+                },
+            ]);
+        });
     });
 });
 
@@ -157,6 +217,22 @@ const GET_CUSTOMERS = gql`
             items {
                 id
                 emailAddress
+            }
+        }
+    }
+`;
+
+const GET_CUSTOMER_USER_AUTH = gql`
+    query GetCustomerUserAuth($id: ID!) {
+        customer(id: $id) {
+            id
+            user {
+                id
+                verified
+                authenticationMethods {
+                    id
+                    strategy
+                }
             }
         }
     }

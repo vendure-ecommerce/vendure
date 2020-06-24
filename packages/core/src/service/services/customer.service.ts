@@ -27,6 +27,7 @@ import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/ut
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
+import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -170,15 +171,21 @@ export class CustomerService {
             }
         }
         let user = await this.userService.getUserByEmailAddress(input.emailAddress);
+        const hasNativeAuthMethod = !!user?.authenticationMethods.find(
+            m => m instanceof NativeAuthenticationMethod,
+        );
         if (user && user.verified) {
-            // If the user has already been verified, do nothing
-            return false;
+            if (hasNativeAuthMethod) {
+                // If the user has already been verified and has already
+                // registered with the native authentication strategy, do nothing.
+                return false;
+            }
         }
         const customer = await this.createOrUpdate({
             emailAddress: input.emailAddress,
-            title: input.title || '',
-            firstName: input.firstName || '',
-            lastName: input.lastName || '',
+            title: input.title || undefined,
+            firstName: input.firstName || undefined,
+            lastName: input.lastName || undefined,
         });
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
@@ -190,7 +197,15 @@ export class CustomerService {
         });
         if (!user) {
             user = await this.userService.createCustomerUser(input.emailAddress, input.password || undefined);
-        } else if (!user.verified) {
+        }
+        if (!hasNativeAuthMethod) {
+            user = await this.userService.addNativeAuthenticationMethod(
+                user,
+                input.emailAddress,
+                input.password || undefined,
+            );
+        }
+        if (!user.verified) {
             user = await this.userService.setVerificationToken(user);
         }
         customer.user = user;

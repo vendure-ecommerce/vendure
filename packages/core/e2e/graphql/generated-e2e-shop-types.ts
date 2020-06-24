@@ -97,6 +97,15 @@ export enum AssetType {
 
 export type AuthenticationInput = {
     native?: Maybe<NativeAuthInput>;
+    google?: Maybe<GoogleAuthInput>;
+};
+
+export type AuthenticationMethod = Node & {
+    __typename?: 'AuthenticationMethod';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    strategy: Scalars['String'];
 };
 
 export type BooleanCustomFieldConfig = CustomField & {
@@ -885,6 +894,10 @@ export type GlobalSettings = {
     trackInventory: Scalars['Boolean'];
     serverConfig: ServerConfig;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type GoogleAuthInput = {
+    token: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {
@@ -2267,7 +2280,8 @@ export type User = Node & {
     identifier: Scalars['String'];
     verified: Scalars['Boolean'];
     roles: Array<Role>;
-    lastLogin?: Maybe<Scalars['String']>;
+    lastLogin?: Maybe<Scalars['DateTime']>;
+    authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 

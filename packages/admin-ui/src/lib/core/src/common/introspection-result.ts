@@ -37,6 +37,9 @@ const result: IntrospectionResultData = {
                         name: 'Role',
                     },
                     {
+                        name: 'AuthenticationMethod',
+                    },
+                    {
                         name: 'Asset',
                     },
                     {

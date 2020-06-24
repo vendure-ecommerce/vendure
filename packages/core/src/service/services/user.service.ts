@@ -40,6 +40,7 @@ export class UserService {
         return this.connection.getRepository(User).findOne({
             where: {
                 identifier: emailAddress,
+                deletedAt: null,
             },
             relations: ['roles', 'roles.channels', 'authenticationMethods'],
         });
@@ -47,6 +48,13 @@ export class UserService {
 
     async createCustomerUser(identifier: string, password?: string): Promise<User> {
         const user = new User();
+        user.identifier = identifier;
+        const customerRole = await this.roleService.getCustomerRole();
+        user.roles = [customerRole];
+        return this.connection.manager.save(this.addNativeAuthenticationMethod(user, identifier, password));
+    }
+
+    async addNativeAuthenticationMethod(user: User, identifier: string, password?: string): Promise<User> {
         const authenticationMethod = new NativeAuthenticationMethod();
         if (this.configService.authOptions.requireVerification) {
             authenticationMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
@@ -59,13 +67,10 @@ export class UserService {
         } else {
             authenticationMethod.passwordHash = '';
         }
-        user.identifier = identifier;
         authenticationMethod.identifier = identifier;
         await this.connection.manager.save(authenticationMethod);
-        const customerRole = await this.roleService.getCustomerRole();
-        user.roles = [customerRole];
-        user.authenticationMethods = [authenticationMethod];
-        return this.connection.manager.save(user);
+        user.authenticationMethods = [...(user.authenticationMethods ?? []), authenticationMethod];
+        return user;
     }
 
     async createAdminUser(identifier: string, password: string): Promise<User> {

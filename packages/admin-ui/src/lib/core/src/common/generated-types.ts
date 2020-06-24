@@ -175,6 +175,14 @@ export type AuthenticationInput = {
   native?: Maybe<NativeAuthInput>;
 };
 
+export type AuthenticationMethod = Node & {
+   __typename?: 'AuthenticationMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
@@ -598,7 +606,7 @@ export type CreateZoneInput = {
 /**
  * @description
  * ISO 4217 currency code
- *
+ * 
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -1393,7 +1401,7 @@ export type JobSortParameter = {
 /**
  * @description
  * The state of a Job in the JobQueue
- *
+ * 
  * @docsCategory common
  */
 export enum JobState {
@@ -1411,7 +1419,7 @@ export enum JobState {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- *
+ * 
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -2605,7 +2613,7 @@ export type PaymentMethodSortParameter = {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- *
+ * 
  * @docsCategory common
  */
 export enum Permission {
@@ -3775,7 +3783,8 @@ export type User = Node & {
   identifier: Scalars['String'];
   verified: Scalars['Boolean'];
   roles: Array<Role>;
-  lastLogin?: Maybe<Scalars['String']>;
+  lastLogin?: Maybe<Scalars['DateTime']>;
+  authenticationMethods: Array<AuthenticationMethod>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 

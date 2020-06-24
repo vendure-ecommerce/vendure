@@ -174,6 +174,14 @@ export type AuthenticationInput = {
     native?: Maybe<NativeAuthInput>;
 };
 
+export type AuthenticationMethod = Node & {
+    __typename?: 'AuthenticationMethod';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -3605,7 +3613,8 @@ export type User = Node & {
     identifier: Scalars['String'];
     verified: Scalars['Boolean'];
     roles: Array<Role>;
-    lastLogin?: Maybe<Scalars['String']>;
+    lastLogin?: Maybe<Scalars['DateTime']>;
+    authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -3706,6 +3715,27 @@ export type GetCustomersQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
             items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'emailAddress'>>;
         };
+};
+
+export type GetCustomerUserAuthQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetCustomerUserAuthQuery = { __typename?: 'Query' } & {
+    customer?: Maybe<
+        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                user?: Maybe<
+                    { __typename?: 'User' } & Pick<User, 'id' | 'verified'> & {
+                            authenticationMethods: Array<
+                                { __typename?: 'AuthenticationMethod' } & Pick<
+                                    AuthenticationMethod,
+                                    'id' | 'strategy'
+                                >
+                            >;
+                        }
+                >;
+            }
+    >;
 };
 
 export type GetChannelsQueryVariables = {};
@@ -5784,6 +5814,16 @@ export namespace GetCustomers {
     export type Query = GetCustomersQuery;
     export type Customers = GetCustomersQuery['customers'];
     export type Items = NonNullable<GetCustomersQuery['customers']['items'][0]>;
+}
+
+export namespace GetCustomerUserAuth {
+    export type Variables = GetCustomerUserAuthQueryVariables;
+    export type Query = GetCustomerUserAuthQuery;
+    export type Customer = NonNullable<GetCustomerUserAuthQuery['customer']>;
+    export type User = NonNullable<NonNullable<GetCustomerUserAuthQuery['customer']>['user']>;
+    export type AuthenticationMethods = NonNullable<
+        NonNullable<NonNullable<GetCustomerUserAuthQuery['customer']>['user']>['authenticationMethods'][0]
+    >;
 }
 
 export namespace GetChannels {

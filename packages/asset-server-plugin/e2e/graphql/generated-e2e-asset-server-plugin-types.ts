@@ -174,6 +174,14 @@ export type AuthenticationInput = {
     native?: Maybe<NativeAuthInput>;
 };
 
+export type AuthenticationMethod = Node & {
+    __typename?: 'AuthenticationMethod';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -3605,7 +3613,8 @@ export type User = Node & {
     identifier: Scalars['String'];
     verified: Scalars['Boolean'];
     roles: Array<Role>;
-    lastLogin?: Maybe<Scalars['String']>;
+    lastLogin?: Maybe<Scalars['DateTime']>;
+    authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
