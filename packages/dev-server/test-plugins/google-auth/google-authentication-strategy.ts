@@ -1,17 +1,13 @@
 import {
     AuthenticationStrategy,
-    Customer,
-    ExternalAuthenticationMethod,
+    ExternalAuthenticationService,
     Injector,
     RequestContext,
-    RoleService,
     User,
 } from '@vendure/core';
 import { OAuth2Client } from 'google-auth-library';
-import { TokenPayload } from 'google-auth-library/build/src/auth/loginticket';
 import { DocumentNode } from 'graphql';
 import gql from 'graphql-tag';
-import { Connection } from 'typeorm';
 
 export type GoogleAuthData = {
     token: string;
@@ -20,16 +16,14 @@ export type GoogleAuthData = {
 export class GoogleAuthenticationStrategy implements AuthenticationStrategy<GoogleAuthData> {
     readonly name = 'google';
     private client: OAuth2Client;
-    private connection: Connection;
-    private roleService: RoleService;
+    private externalAuthenticationService: ExternalAuthenticationService;
 
     constructor(private clientId: string) {
         this.client = new OAuth2Client(clientId);
     }
 
     init(injector: Injector) {
-        this.connection = injector.getConnection();
-        this.roleService = injector.get(RoleService);
+        this.externalAuthenticationService = injector.get(ExternalAuthenticationService);
     }
 
     defineInputType(): DocumentNode {
@@ -49,50 +43,20 @@ export class GoogleAuthenticationStrategy implements AuthenticationStrategy<Goog
             audience: this.clientId,
         });
         const payload = ticket.getPayload();
-        if (!payload) {
+        if (!payload || !payload.email) {
             return false;
         }
-
-        const user = await this.connection
-            .getRepository(User)
-            .createQueryBuilder('user')
-            .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
-            .where('authMethod.externalIdentifier = :sub', { sub: payload.sub })
-            .getOne();
-
+        const user = await this.externalAuthenticationService.findUser(this.name, payload.sub);
         if (user) {
             return user;
         }
-        return this.createNewCustomerAndUser(payload);
-    }
-
-    private async createNewCustomerAndUser(data: TokenPayload) {
-        const customerRole = await this.roleService.getCustomerRole();
-        const newUser = new User({
-            identifier: data.email,
-            roles: [customerRole],
-            verified: data.email_verified || false,
+        return this.externalAuthenticationService.createCustomerAndUser(ctx, {
+            strategy: this.name,
+            externalIdentifier: payload.sub,
+            verified: payload.email_verified || false,
+            emailAddress: payload.email,
+            firstName: payload.given_name,
+            lastName: payload.family_name,
         });
-
-        const authMethod = await this.connection.manager.save(
-            new ExternalAuthenticationMethod({
-                externalIdentifier: data.sub,
-                provider: this.name,
-            }),
-        );
-
-        newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.manager.save(newUser);
-
-        const customer = await this.connection.manager.save(
-            new Customer({
-                emailAddress: data.email,
-                firstName: data.given_name,
-                lastName: data.family_name,
-                user: savedUser,
-            }),
-        );
-
-        return savedUser;
     }
 }

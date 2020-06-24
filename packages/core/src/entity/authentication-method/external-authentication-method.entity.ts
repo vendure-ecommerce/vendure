@@ -10,7 +10,7 @@ export class ExternalAuthenticationMethod extends AuthenticationMethod {
     }
 
     @Column()
-    provider: string;
+    strategy: string;
 
     @Column()
     externalIdentifier: string;
