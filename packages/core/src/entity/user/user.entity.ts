@@ -42,8 +42,8 @@ export class User extends VendureEntity implements HasCustomFields, SoftDeletabl
     @JoinTable()
     roles: Role[];
 
-    @Column({ nullable: true })
-    lastLogin: string;
+    @Column({ type: Date, nullable: true })
+    lastLogin: Date | null;
 
     @Column(type => CustomUserFields)
     customFields: CustomUserFields;
