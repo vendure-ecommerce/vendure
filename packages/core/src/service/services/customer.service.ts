@@ -24,6 +24,7 @@ import {
 } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
@@ -140,7 +141,9 @@ export class CustomerService {
             ctx,
             customerId: createdCustomer.id,
             type: HistoryEntryType.CUSTOMER_REGISTERED,
-            data: {},
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
         });
 
         if (customer.user?.verified) {
@@ -148,7 +151,9 @@ export class CustomerService {
                 ctx,
                 customerId: createdCustomer.id,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
         }
         return createdCustomer;
@@ -179,7 +184,9 @@ export class CustomerService {
             customerId: customer.id,
             ctx,
             type: HistoryEntryType.CUSTOMER_REGISTERED,
-            data: {},
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
         });
         if (!user) {
             user = await this.userService.createCustomerUser(input.emailAddress, input.password || undefined);
@@ -195,7 +202,9 @@ export class CustomerService {
                 customerId: customer.id,
                 ctx,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
         }
         return true;
@@ -226,7 +235,9 @@ export class CustomerService {
                 customerId: customer.id,
                 ctx,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
             return this.findOneByUserId(user.id);
         }

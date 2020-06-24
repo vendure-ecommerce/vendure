@@ -23,8 +23,12 @@ import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { AdministratorService } from './administrator.service';
 
 export type CustomerHistoryEntryData = {
-    [HistoryEntryType.CUSTOMER_REGISTERED]: {};
-    [HistoryEntryType.CUSTOMER_VERIFIED]: {};
+    [HistoryEntryType.CUSTOMER_REGISTERED]: {
+        strategy: string;
+    };
+    [HistoryEntryType.CUSTOMER_VERIFIED]: {
+        strategy: string;
+    };
     [HistoryEntryType.CUSTOMER_DETAIL_UPDATED]: {
         input: UpdateCustomerInput;
     };

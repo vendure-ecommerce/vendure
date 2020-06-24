@@ -272,16 +272,22 @@ describe('Shop auth & accounts', () => {
             expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.CUSTOMER_REGISTERED,
-                    data: {},
+                    data: {
+                        strategy: 'native',
+                    },
                 },
                 {
                     // second entry because we register twice above
                     type: HistoryEntryType.CUSTOMER_REGISTERED,
-                    data: {},
+                    data: {
+                        strategy: 'native',
+                    },
                 },
                 {
                     type: HistoryEntryType.CUSTOMER_VERIFIED,
-                    data: {},
+                    data: {
+                        strategy: 'native',
+                    },
                 },
             ]);
         });
