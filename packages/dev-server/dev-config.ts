@@ -15,6 +15,8 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
+import { GoogleAuthPlugin } from './test-plugins/google-auth/google-auth-plugin';
+
 /**
  * Config settings used during development
  */
@@ -38,6 +40,7 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
+        tokenMethod: 'bearer',
         sessionSecret: 'some-secret',
         requireVerification: true,
     },
@@ -61,6 +64,11 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        GoogleAuthPlugin.init({
+            // See https://developers.google.com/identity/sign-in/web/sign-in
+            // for details on how to obtain a client id
+            clientId: '<< google client id >>',
+        }),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
