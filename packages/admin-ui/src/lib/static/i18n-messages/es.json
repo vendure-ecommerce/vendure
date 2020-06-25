@@ -240,6 +240,8 @@
     "history-customer-registered": "",
     "history-customer-removed-from-group": "",
     "history-customer-verified": "",
+    "history-using-external-auth-strategy": "",
+    "history-using-native-auth-strategy": "",
     "last-name": "Apellidos",
     "name": "Nombre",
     "new-email-address": "",

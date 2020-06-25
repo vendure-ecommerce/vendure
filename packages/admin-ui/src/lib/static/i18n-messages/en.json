@@ -240,6 +240,8 @@
     "history-customer-registered": "Customer registered",
     "history-customer-removed-from-group": "Customer removed from group \"{ groupName }\"",
     "history-customer-verified": "Customer verified",
+    "history-using-external-auth-strategy": "using { strategy }",
+    "history-using-native-auth-strategy": "using email address",
     "last-name": "Last name",
     "name": "Name",
     "new-email-address": "New email address",

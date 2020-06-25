@@ -67,12 +67,11 @@
     color: $color-grey-500;
 }
 
-.featured-entry {
+.featured-entry ::ng-deep {
     .title {
         color: $color-grey-800;
         font-size: 16px;
         line-height: 26px;
-        background-color: hotpink;
     }
     .note-text {
         color: $color-grey-800;
