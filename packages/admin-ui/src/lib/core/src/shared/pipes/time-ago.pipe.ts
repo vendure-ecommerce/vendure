@@ -22,7 +22,8 @@ export class TimeAgoPipe implements PipeTransform {
             [60, _('datetime.ago-seconds')],
             [3600, _('datetime.ago-minutes')],
             [86400, _('datetime.ago-hours')],
-            [Number.MAX_SAFE_INTEGER, _('datetime.ago-days')],
+            [31536000, _('datetime.ago-days')],
+            [Number.MAX_SAFE_INTEGER, _('datetime.ago-years')],
         ];
 
         let lastUpperBound = 1;

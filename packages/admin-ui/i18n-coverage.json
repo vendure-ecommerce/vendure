@@ -1,34 +1,34 @@
 {
-  "generatedOn": "2020-06-25T08:48:13.322Z",
-  "lastCommit": "96f923a0a1d0b8d3ac575dce30148f9d75360069",
+  "generatedOn": "2020-06-25T09:38:44.987Z",
+  "lastCommit": "bdfc43d36aba9241598a3d5ce121a0399d44c990",
   "translationStatus": {
     "de": {
-      "tokenCount": 652,
+      "tokenCount": 654,
       "translatedCount": 609,
       "percentage": 93
     },
     "en": {
-      "tokenCount": 652,
-      "translatedCount": 651,
+      "tokenCount": 654,
+      "translatedCount": 652,
       "percentage": 100
     },
     "es": {
-      "tokenCount": 652,
+      "tokenCount": 654,
       "translatedCount": 467,
-      "percentage": 72
+      "percentage": 71
     },
     "pl": {
-      "tokenCount": 652,
+      "tokenCount": 654,
       "translatedCount": 566,
       "percentage": 87
     },
     "zh_Hans": {
-      "tokenCount": 652,
+      "tokenCount": 654,
       "translatedCount": 550,
       "percentage": 84
     },
     "zh_Hant": {
-      "tokenCount": 652,
+      "tokenCount": 654,
       "translatedCount": 550,
       "percentage": 84
     }
