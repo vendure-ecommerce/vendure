@@ -20,7 +20,11 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
 
             switch (logLevel) {
                 case LogLevel.Error:
-                    Logger.error(message, undefined, exception.stack);
+                    Logger.error(
+                        JSON.stringify({ message, variables: exception.variables }, null, 2),
+                        undefined,
+                        exception.stack,
+                    );
                     break;
                 case LogLevel.Warn:
                     Logger.warn(message);
