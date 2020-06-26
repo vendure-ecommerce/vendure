@@ -8,8 +8,8 @@ import { User } from '../user/user.entity';
 
 /**
  * @description
- * A Session is created when a user makes a request to the API. A Session can be an AnonymousSession
- * in the case of un-authenticated users, otherwise it is an AuthenticatedSession.
+ * A Session is created when a user makes a request to restricted API operations. A Session can be an {@link AnonymousSession}
+ * in the case of un-authenticated users, otherwise it is an {@link AuthenticatedSession}.
  *
  * @docsCategory entities
  */

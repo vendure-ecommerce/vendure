@@ -79,7 +79,7 @@ export class AuthService {
         }
         user.lastLogin = new Date();
         await this.connection.manager.save(user, { reload: false });
-        const session = await this.createNewAuthenticatedSession(ctx, user);
+        const session = await this.createNewAuthenticatedSession(ctx, user, authenticationStrategy);
         const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
         this.eventBus.publish(new LoginEvent(ctx, user));
         return newSession;
@@ -167,12 +167,20 @@ export class AuthService {
     /**
      * Deletes all sessions for the user associated with the given session token.
      */
-    async deleteSessionByToken(ctx: RequestContext, token: string): Promise<void> {
+    async destroyAuthenticatedSession(ctx: RequestContext, token: string): Promise<void> {
         const session = await this.connection.getRepository(AuthenticatedSession).findOne({
             where: { token },
-            relations: ['user'],
+            relations: ['user', 'user.authenticationMethods'],
         });
+
         if (session) {
+            const authenticationStrategy = this.getAuthenticationStrategy(
+                ctx.apiType,
+                session.authenticationStrategy,
+            );
+            if (typeof authenticationStrategy.onLogOut === 'function') {
+                await authenticationStrategy.onLogOut(session.user);
+            }
             this.eventBus.publish(new LogoutEvent(ctx));
             return this.deleteSessionsByUser(session.user);
         }
@@ -181,6 +189,7 @@ export class AuthService {
     private async createNewAuthenticatedSession(
         ctx: RequestContext,
         user: User,
+        authenticationStrategy: AuthenticationStrategy,
     ): Promise<AuthenticatedSession> {
         const token = await this.generateSessionToken();
         const guestOrder =
@@ -193,6 +202,7 @@ export class AuthService {
             token,
             user,
             activeOrder,
+            authenticationStrategy: authenticationStrategy.name,
             expires: this.getExpiryDate(this.sessionDurationInMs),
             invalidated: false,
         });

@@ -51,7 +51,9 @@ export class UserService {
         user.identifier = identifier;
         const customerRole = await this.roleService.getCustomerRole();
         user.roles = [customerRole];
-        return this.connection.manager.save(this.addNativeAuthenticationMethod(user, identifier, password));
+        return this.connection.manager.save(
+            await this.addNativeAuthenticationMethod(user, identifier, password),
+        );
     }
 
     async addNativeAuthenticationMethod(user: User, identifier: string, password?: string): Promise<User> {

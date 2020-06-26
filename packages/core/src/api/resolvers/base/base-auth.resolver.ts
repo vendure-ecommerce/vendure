@@ -38,7 +38,6 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         req: Request,
         res: Response,
-        apiType: ApiType,
     ): Promise<LoginResult> {
         return await this.createAuthenticatedSession(
             ctx,
@@ -47,7 +46,6 @@ export class BaseAuthResolver {
             },
             req,
             res,
-            apiType,
         );
     }
 
@@ -56,7 +54,7 @@ export class BaseAuthResolver {
         if (!token) {
             return false;
         }
-        await this.authService.deleteSessionByToken(ctx, token);
+        await this.authService.destroyAuthenticatedSession(ctx, token);
         setAuthToken({
             req,
             res,
@@ -93,9 +91,9 @@ export class BaseAuthResolver {
         args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
-        apiType: ApiType,
     ) {
         const [method, data] = Object.entries(args.input)[0];
+        const { apiType } = ctx;
         const session = await this.authService.authenticate(ctx, apiType, method, data);
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(session.user.id);

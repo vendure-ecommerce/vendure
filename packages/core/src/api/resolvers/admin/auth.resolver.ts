@@ -37,7 +37,7 @@ export class AuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return super.login(args, ctx, req, res, 'admin');
+        return super.login(args, ctx, req, res);
     }
 
     @Mutation()
@@ -48,7 +48,7 @@ export class AuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return this.createAuthenticatedSession(ctx, args, req, res, 'shop');
+        return this.createAuthenticatedSession(ctx, args, req, res);
     }
 
     @Mutation()

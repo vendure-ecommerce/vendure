@@ -62,7 +62,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('res') res: Response,
     ): Promise<LoginResult> {
         this.requireNativeAuthStrategy();
-        return super.login(args, ctx, req, res, 'shop');
+        return super.login(args, ctx, req, res);
     }
 
     @Mutation()
@@ -73,7 +73,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return this.createAuthenticatedSession(ctx, args, req, res, 'shop');
+        return this.createAuthenticatedSession(ctx, args, req, res);
     }
 
     @Mutation()
@@ -129,7 +129,6 @@ export class ShopAuthResolver extends BaseAuthResolver {
                 },
                 req,
                 res,
-                'shop',
             );
         } else {
             throw new VerificationTokenError();
@@ -176,7 +175,6 @@ export class ShopAuthResolver extends BaseAuthResolver {
                 },
                 req,
                 res,
-                'shop',
             );
         } else {
             throw new PasswordResetTokenError();
