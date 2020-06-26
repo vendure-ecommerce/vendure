@@ -254,6 +254,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             ),
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
+            loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
         };
     }
 
