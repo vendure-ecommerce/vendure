@@ -132,7 +132,7 @@ export const config: VendureConfig = {
 
 ### Configuring authentication
 
-Authentication settings are configured with [`VendureConfig.authOptions`]({{< relref "auth-options" >}}). The most important setting here is whether the storefront client will use cookies or bearer tokens to manage user sessions. For more detail on this topic, see [the Authentication & Sessions guide]({{< relref "authentication-and-sessions" >}}).
+Authentication settings are configured with [`VendureConfig.authOptions`]({{< relref "auth-options" >}}). The most important setting here is whether the storefront client will use cookies or bearer tokens to manage user sessions. For more detail on this topic, see [the Managing Sessions guide]({{< relref "managing-sessions" >}}).
 
 The username and default password of the superadmin user can also be specified here. In production, it is advisable to use environment variables for these settings.
 

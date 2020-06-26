@@ -9,13 +9,14 @@ import { User } from '../../entity/user/user.entity';
  * An AuthenticationStrategy defines how a User (which can be a Customer in the Shop API or
  * and Administrator in the Admin API) may be authenticated.
  *
+ * Real-world examples can be found in the [Authentication guide](/docs/developer-guide/authentication/).
+ *
  * @docsCategory auth
  */
 export interface AuthenticationStrategy<Data = unknown> extends InjectableStrategy {
     /**
      * @description
-     * The `name` property is used to create the `AuthenticationMethod` GraphQL enum
-     * used by the `authenticate` mutation.
+     * The name of the strategy, for example `'facebook'`, `'google'`, `'keycloak'`.
      */
     readonly name: string;
 
@@ -26,7 +27,9 @@ export interface AuthenticationStrategy<Data = unknown> extends InjectableStrate
      * of the strategy. The shape of the input object should match the generic `Data`
      * type argument.
      *
+     * @example
      * For example, given the following:
+     *
      * ```TypeScript
      * defineInputType() {
      *   return gql`
@@ -58,14 +61,15 @@ export interface AuthenticationStrategy<Data = unknown> extends InjectableStrate
     /**
      * @description
      * Used to authenticate a user with the authentication provider. This method
-     * will
+     * will implement the provider-specific authentication logic, and should resolve to either a
+     * {@link User} object on success, or `false` on failure.
      */
     authenticate(ctx: RequestContext, data: Data): Promise<User | false>;
 
     /**
      * @description
      * Called when a user logs out, and may perform any required tasks
-     * related to the user logging out.
+     * related to the user logging out with the external provider.
      */
     onLogOut?(user: User): Promise<void>;
 }

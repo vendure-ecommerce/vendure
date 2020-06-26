@@ -31,7 +31,7 @@ There are a couple of query parameters which are valid for all GraphQL operation
 
 ## Order flow
 
-*See the [Order Workflow guide]({{< relref "/docs/developer-guide/order-workflow" >}}) for a detailed explanation of how Orders are handled in Vendure.*
+*See the [Order Workflow guide]({{< relref "order-workflow" >}}) for a detailed explanation of how Orders are handled in Vendure.*
 
 * {{< shop-api-operation operation="activeOrder" type="query" >}} returns the currently-active Order for the session.
 * {{< shop-api-operation operation="addItemToOrder" type="mutation" >}} adds an item to the order. The first time it is called will also create a new Order for the session.
