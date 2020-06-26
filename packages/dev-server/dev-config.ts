@@ -15,8 +15,6 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
-import { GoogleAuthPlugin } from './test-plugins/google-auth/google-auth-plugin';
-
 /**
  * Config settings used during development
  */
@@ -40,7 +38,7 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
-        tokenMethod: 'bearer',
+        tokenMethod: 'cookie',
         sessionSecret: 'some-secret',
         requireVerification: true,
     },
@@ -64,11 +62,6 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
-        GoogleAuthPlugin.init({
-            // See https://developers.google.com/identity/sign-in/web/sign-in
-            // for details on how to obtain a client id
-            clientId: '<< google client id >>',
-        }),
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
@@ -131,7 +124,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mysql',
                 host: '127.0.0.1',
                 port: 3306,

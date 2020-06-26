@@ -27,7 +27,6 @@
     "@vendure/testing": "^0.13.0",
     "@vendure/ui-devkit": "^0.13.0",
     "concurrently": "^5.0.0",
-    "csv-stringify": "^5.3.3",
-    "google-auth-library": "^6.0.2"
+    "csv-stringify": "^5.3.3"
   }
 }
