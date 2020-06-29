@@ -512,15 +512,11 @@ export type CreateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type CreateProductOptionGroupCustomFieldsInput = {
-  linkUrl?: Maybe<Scalars['String']>;
-};
-
 export type CreateProductOptionGroupInput = {
   code: Scalars['String'];
   translations: Array<ProductOptionGroupTranslationInput>;
   options: Array<CreateGroupOptionInput>;
-  customFields?: Maybe<CreateProductOptionGroupCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateProductOptionInput = {
@@ -2664,12 +2660,7 @@ export type ProductOptionGroup = Node & {
   name: Scalars['String'];
   options: Array<ProductOption>;
   translations: Array<ProductOptionGroupTranslation>;
-  customFields?: Maybe<ProductOptionGroupCustomFields>;
-};
-
-export type ProductOptionGroupCustomFields = {
-   __typename?: 'ProductOptionGroupCustomFields';
-  linkUrl?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -3633,15 +3624,11 @@ export type UpdateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type UpdateProductOptionGroupCustomFieldsInput = {
-  linkUrl?: Maybe<Scalars['String']>;
-};
-
 export type UpdateProductOptionGroupInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<UpdateProductOptionGroupCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateProductOptionInput = {

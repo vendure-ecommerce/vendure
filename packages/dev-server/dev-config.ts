@@ -51,42 +51,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        /*Product: [
-            { name: 'rating', type: 'float', readonly: true },
-            { name: 'markup', type: 'float', internal: true },
-        ],*/
-        ProductOptionGroup: [
-            {
-                name: 'linkUrl',
-                type: 'string',
-            },
-        ],
-        ProductOption: [
-            /*{
-                name: 'colorHex',
-                description: [
-                    {
-                        languageCode: LanguageCode.en,
-                        value: 'Color',
-                    },
-                    {
-                        languageCode: LanguageCode.pt_BR,
-                        value: 'Cor',
-                    },
-                ],
-                type: 'string',
-                nullable: true,
-                public: true,
-                pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
-                length: 7,
-            },
-            {
-                name: 'colorName',
-                type: 'localeString',
-            },*/
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

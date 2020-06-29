@@ -1781,12 +1781,7 @@ export type ProductOptionGroup = Node & {
     name: Scalars['String'];
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
-    customFields?: Maybe<ProductOptionGroupCustomFields>;
-};
-
-export type ProductOptionGroupCustomFields = {
-    __typename?: 'ProductOptionGroupCustomFields';
-    linkUrl?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroupTranslation = {
