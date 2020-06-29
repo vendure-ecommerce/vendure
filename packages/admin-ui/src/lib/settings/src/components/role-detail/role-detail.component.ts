@@ -52,6 +52,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     ngOnInit() {
         this.init();
         this.role$ = this.entity$;
+        // setTimeout(() => this.changeDetector.markForCheck(), 2000);
     }
 
     ngOnDestroy(): void {
@@ -134,6 +135,10 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         for (const permission of Object.keys(this.permissions)) {
             this.permissions[permission] = role.permissions.includes(permission as Permission);
         }
+        // This was required to get the channel selector component to
+        // correctly display its contents. A while spent debugging the root
+        // cause did not yield a solution, therefore this next line.
+        this.changeDetector.detectChanges();
     }
 
     private getSelectedPermissions(): Permission[] {
