@@ -63,7 +63,7 @@ export const devConfig: VendureConfig = {
             },
         ],
         ProductOption: [
-            {
+            /*{
                 name: 'colorHex',
                 description: [
                     {
@@ -84,7 +84,7 @@ export const devConfig: VendureConfig = {
             {
                 name: 'colorName',
                 type: 'localeString',
-            },
+            },*/
         ],
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),

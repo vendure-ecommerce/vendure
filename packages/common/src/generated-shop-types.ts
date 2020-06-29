@@ -1768,12 +1768,7 @@ export type ProductOption = Node & {
     name: Scalars['String'];
     groupId: Scalars['ID'];
     translations: Array<ProductOptionTranslation>;
-    customFields?: Maybe<ProductOptionCustomFields>;
-};
-
-export type ProductOptionCustomFields = {
-    __typename?: 'ProductOptionCustomFields';
-    colorHex?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroup = Node & {
@@ -1993,6 +1988,7 @@ export type RegisterCustomerInput = {
     title?: Maybe<Scalars['String']>;
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
+    phoneNumber?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
 };
 

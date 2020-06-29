@@ -18,13 +18,14 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     CreateAdministrator,
     CreateRole,
     GetCustomer,
     GetCustomerHistory,
+    GetCustomerList,
     HistoryEntryType,
     Permission,
 } from './graphql/generated-e2e-admin-types';
@@ -43,6 +44,7 @@ import {
     CREATE_ROLE,
     GET_CUSTOMER,
     GET_CUSTOMER_HISTORY,
+    GET_CUSTOMER_LIST,
 } from './graphql/shared-definitions';
 import {
     GET_ACTIVE_CUSTOMER,
@@ -68,16 +70,16 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(PasswordResetEvent).subscribe(event => {
+        this.eventBus.ofType(PasswordResetEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe(event => {
+        this.eventBus.ofType(IdentifierChangeRequestEvent).subscribe((event) => {
             sendEmailFn(event);
         });
-        this.eventBus.ofType(IdentifierChangeEvent).subscribe(event => {
+        this.eventBus.ofType(IdentifierChangeEvent).subscribe((event) => {
             sendEmailFn(event);
         });
     }
@@ -134,6 +136,7 @@ describe('Shop auth & accounts', () => {
             const input: RegisterCustomerInput = {
                 firstName: 'Sean',
                 lastName: 'Tester',
+                phoneNumber: '123456',
                 emailAddress,
             };
             const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
@@ -145,10 +148,27 @@ describe('Shop auth & accounts', () => {
             expect(result.registerCustomerAccount).toBe(true);
             expect(sendEmailFn).toHaveBeenCalled();
             expect(verificationToken).toBeDefined();
+
+            const { customers } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
+                GET_CUSTOMER_LIST,
+                {
+                    options: {
+                        filter: {
+                            emailAddress: {
+                                eq: emailAddress,
+                            },
+                        },
+                    },
+                },
+            );
+
+            expect(
+                pick(customers.items[0], ['firstName', 'lastName', 'emailAddress', 'phoneNumber']),
+            ).toEqual(input);
         });
 
         it('issues a new token if attempting to register a second time', async () => {
-            const sendEmail = new Promise<string>(resolve => {
+            const sendEmail = new Promise<string>((resolve) => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
                     resolve(event.user.verificationToken!);
                 });
@@ -172,7 +192,7 @@ describe('Shop auth & accounts', () => {
         });
 
         it('refreshCustomerVerification issues a new token', async () => {
-            const sendEmail = new Promise<string>(resolve => {
+            const sendEmail = new Promise<string>((resolve) => {
                 sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
                     resolve(event.user.verificationToken!);
                 });
@@ -587,9 +607,7 @@ describe('Shop auth & accounts', () => {
 
         const role = roleResult.createRole;
 
-        const identifier = `${code}@${Math.random()
-            .toString(16)
-            .substr(2, 8)}`;
+        const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
         const password = `test`;
 
         const adminResult = await shopClient.query<
@@ -616,7 +634,7 @@ describe('Shop auth & accounts', () => {
      * A "sleep" function which allows the sendEmailFn time to get called.
      */
     function waitForSendEmailFn() {
-        return new Promise(resolve => setTimeout(resolve, 10));
+        return new Promise((resolve) => setTimeout(resolve, 10));
     }
 });
 
@@ -666,7 +684,7 @@ describe('Expiring tokens', () => {
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(verificationToken).toBeDefined();
 
-            await new Promise(resolve => setTimeout(resolve, 3));
+            await new Promise((resolve) => setTimeout(resolve, 3));
 
             return shopClient.query(VERIFY_EMAIL, {
                 password: 'test',
@@ -697,7 +715,7 @@ describe('Expiring tokens', () => {
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
             expect(passwordResetToken).toBeDefined();
 
-            await new Promise(resolve => setTimeout(resolve, 3));
+            await new Promise((resolve) => setTimeout(resolve, 3));
 
             return shopClient.query<ResetPassword.Mutation, ResetPassword.Variables>(RESET_PASSWORD, {
                 password: 'test',
@@ -832,7 +850,7 @@ describe('Updating email address without email verification', () => {
 });
 
 function getVerificationTokenPromise(): Promise<string> {
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve) => {
         sendEmailFn.mockImplementation((event: AccountRegistrationEvent) => {
             resolve(event.user.verificationToken);
         });
@@ -840,7 +858,7 @@ function getVerificationTokenPromise(): Promise<string> {
 }
 
 function getPasswordResetTokenPromise(): Promise<string> {
-    return new Promise<any>(resolve => {
+    return new Promise<any>((resolve) => {
         sendEmailFn.mockImplementation((event: PasswordResetEvent) => {
             resolve(event.user.passwordResetToken);
         });
@@ -851,7 +869,7 @@ function getEmailUpdateTokenPromise(): Promise<{
     identifierChangeToken: string | null;
     pendingIdentifier: string | null;
 }> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         sendEmailFn.mockImplementation((event: IdentifierChangeRequestEvent) => {
             resolve(pick(event.user, ['identifierChangeToken', 'pendingIdentifier']));
         });

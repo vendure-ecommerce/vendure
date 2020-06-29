@@ -124,6 +124,7 @@ export const GET_CUSTOMER_LIST = gql`
                 firstName
                 lastName
                 emailAddress
+                phoneNumber
                 user {
                     id
                     verified
