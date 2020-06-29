@@ -1768,7 +1768,12 @@ export type ProductOption = Node & {
     name: Scalars['String'];
     groupId: Scalars['ID'];
     translations: Array<ProductOptionTranslation>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<ProductOptionCustomFields>;
+};
+
+export type ProductOptionCustomFields = {
+    __typename?: 'ProductOptionCustomFields';
+    colorHex?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroup = Node & {
@@ -1781,7 +1786,12 @@ export type ProductOptionGroup = Node & {
     name: Scalars['String'];
     options: Array<ProductOption>;
     translations: Array<ProductOptionGroupTranslation>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<ProductOptionGroupCustomFields>;
+};
+
+export type ProductOptionGroupCustomFields = {
+    __typename?: 'ProductOptionGroupCustomFields';
+    linkUrl?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroupTranslation = {

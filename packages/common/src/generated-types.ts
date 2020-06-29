@@ -512,18 +512,26 @@ export type CreateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type CreateProductOptionCustomFieldsInput = {
+  colorHex?: Maybe<Scalars['String']>;
+};
+
+export type CreateProductOptionGroupCustomFieldsInput = {
+  linkUrl?: Maybe<Scalars['String']>;
+};
+
 export type CreateProductOptionGroupInput = {
   code: Scalars['String'];
   translations: Array<ProductOptionGroupTranslationInput>;
   options: Array<CreateGroupOptionInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductOptionGroupCustomFieldsInput>;
 };
 
 export type CreateProductOptionInput = {
   productOptionGroupId: Scalars['ID'];
   code: Scalars['String'];
   translations: Array<ProductOptionGroupTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductOptionCustomFieldsInput>;
 };
 
 export type CreateProductVariantInput = {
@@ -2647,7 +2655,12 @@ export type ProductOption = Node & {
   name: Scalars['String'];
   groupId: Scalars['ID'];
   translations: Array<ProductOptionTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductOptionCustomFields>;
+};
+
+export type ProductOptionCustomFields = {
+   __typename?: 'ProductOptionCustomFields';
+  colorHex?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroup = Node & {
@@ -2660,7 +2673,12 @@ export type ProductOptionGroup = Node & {
   name: Scalars['String'];
   options: Array<ProductOption>;
   translations: Array<ProductOptionGroupTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductOptionGroupCustomFields>;
+};
+
+export type ProductOptionGroupCustomFields = {
+   __typename?: 'ProductOptionGroupCustomFields';
+  linkUrl?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -3624,18 +3642,26 @@ export type UpdateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateProductOptionCustomFieldsInput = {
+  colorHex?: Maybe<Scalars['String']>;
+};
+
+export type UpdateProductOptionGroupCustomFieldsInput = {
+  linkUrl?: Maybe<Scalars['String']>;
+};
+
 export type UpdateProductOptionGroupInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductOptionGroupCustomFieldsInput>;
 };
 
 export type UpdateProductOptionInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductOptionCustomFieldsInput>;
 };
 
 export type UpdateProductVariantInput = {

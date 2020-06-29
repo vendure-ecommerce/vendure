@@ -513,18 +513,26 @@ export type CreateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type CreateProductOptionCustomFieldsInput = {
+  colorHex?: Maybe<Scalars['String']>;
+};
+
+export type CreateProductOptionGroupCustomFieldsInput = {
+  linkUrl?: Maybe<Scalars['String']>;
+};
+
 export type CreateProductOptionGroupInput = {
   code: Scalars['String'];
   translations: Array<ProductOptionGroupTranslationInput>;
   options: Array<CreateGroupOptionInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductOptionGroupCustomFieldsInput>;
 };
 
 export type CreateProductOptionInput = {
   productOptionGroupId: Scalars['ID'];
   code: Scalars['String'];
   translations: Array<ProductOptionGroupTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateProductOptionCustomFieldsInput>;
 };
 
 export type CreateProductVariantInput = {
@@ -2687,7 +2695,12 @@ export type ProductOption = Node & {
   name: Scalars['String'];
   groupId: Scalars['ID'];
   translations: Array<ProductOptionTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductOptionCustomFields>;
+};
+
+export type ProductOptionCustomFields = {
+   __typename?: 'ProductOptionCustomFields';
+  colorHex?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroup = Node & {
@@ -2700,7 +2713,12 @@ export type ProductOptionGroup = Node & {
   name: Scalars['String'];
   options: Array<ProductOption>;
   translations: Array<ProductOptionGroupTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<ProductOptionGroupCustomFields>;
+};
+
+export type ProductOptionGroupCustomFields = {
+   __typename?: 'ProductOptionGroupCustomFields';
+  linkUrl?: Maybe<Scalars['String']>;
 };
 
 export type ProductOptionGroupTranslation = {
@@ -3672,18 +3690,26 @@ export type UpdateProductInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateProductOptionCustomFieldsInput = {
+  colorHex?: Maybe<Scalars['String']>;
+};
+
+export type UpdateProductOptionGroupCustomFieldsInput = {
+  linkUrl?: Maybe<Scalars['String']>;
+};
+
 export type UpdateProductOptionGroupInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductOptionGroupCustomFieldsInput>;
 };
 
 export type UpdateProductOptionInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
   translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateProductOptionCustomFieldsInput>;
 };
 
 export type UpdateProductVariantInput = {
@@ -4956,6 +4982,24 @@ export type AssetFragment = (
   )> }
 );
 
+export type ProductOptionGroupFragment = (
+  { __typename?: 'ProductOptionGroup' }
+  & Pick<ProductOptionGroup, 'id' | 'code' | 'languageCode' | 'name'>
+  & { translations: Array<(
+    { __typename?: 'ProductOptionGroupTranslation' }
+    & Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>
+  )> }
+);
+
+export type ProductOptionFragment = (
+  { __typename?: 'ProductOption' }
+  & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'>
+  & { translations: Array<(
+    { __typename?: 'ProductOptionTranslation' }
+    & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>
+  )> }
+);
+
 export type ProductVariantFragment = (
   { __typename?: 'ProductVariant' }
   & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'>
@@ -4967,11 +5011,7 @@ export type ProductVariantFragment = (
     & Pick<TaxCategory, 'id' | 'name'>
   ), options: Array<(
     { __typename?: 'ProductOption' }
-    & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'>
-    & { translations: Array<(
-      { __typename?: 'ProductOptionTranslation' }
-      & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>
-    )> }
+    & ProductOptionFragment
   )>, facetValues: Array<(
     { __typename?: 'FacetValue' }
     & Pick<FacetValue, 'id' | 'code' | 'name'>
@@ -5005,7 +5045,7 @@ export type ProductWithVariantsFragment = (
     & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>
   )>, optionGroups: Array<(
     { __typename?: 'ProductOptionGroup' }
-    & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>
+    & ProductOptionGroupFragment
   )>, variants: Array<(
     { __typename?: 'ProductVariant' }
     & ProductVariantFragment
@@ -5022,7 +5062,7 @@ export type ProductWithVariantsFragment = (
   )> }
 );
 
-export type ProductOptionGroupFragment = (
+export type ProductOptionGroupWithOptionsFragment = (
   { __typename?: 'ProductOptionGroup' }
   & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
   & { translations: Array<(
@@ -5112,7 +5152,7 @@ export type CreateProductOptionGroupMutation = (
   { __typename?: 'Mutation' }
   & { createProductOptionGroup: (
     { __typename?: 'ProductOptionGroup' }
-    & ProductOptionGroupFragment
+    & ProductOptionGroupWithOptionsFragment
   ) }
 );
 
@@ -5125,7 +5165,7 @@ export type GetProductOptionGroupQuery = (
   { __typename?: 'Query' }
   & { productOptionGroup?: Maybe<(
     { __typename?: 'ProductOptionGroup' }
-    & ProductOptionGroupFragment
+    & ProductOptionGroupWithOptionsFragment
   )> }
 );
 
@@ -5359,7 +5399,7 @@ export type UpdateProductOptionMutation = (
   { __typename?: 'Mutation' }
   & { updateProductOption: (
     { __typename?: 'ProductOption' }
-    & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name'>
+    & ProductOptionFragment
   ) }
 );
 
@@ -5391,7 +5431,7 @@ export type GetProductVariantOptionsQuery = (
       & Pick<ProductOptionGroup, 'id' | 'name' | 'code'>
       & { options: Array<(
         { __typename?: 'ProductOption' }
-        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>
+        & ProductOptionFragment
       )> }
     )>, variants: Array<(
       { __typename?: 'ProductVariant' }
@@ -7220,17 +7260,26 @@ export namespace Asset {
   export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
 }
 
+export namespace ProductOptionGroup {
+  export type Fragment = ProductOptionGroupFragment;
+  export type Translations = (NonNullable<ProductOptionGroupFragment['translations'][0]>);
+}
+
+export namespace ProductOption {
+  export type Fragment = ProductOptionFragment;
+  export type Translations = (NonNullable<ProductOptionFragment['translations'][0]>);
+}
+
 export namespace ProductVariant {
   export type Fragment = ProductVariantFragment;
   export type TaxRateApplied = ProductVariantFragment['taxRateApplied'];
   export type TaxCategory = ProductVariantFragment['taxCategory'];
-  export type Options = (NonNullable<ProductVariantFragment['options'][0]>);
-  export type Translations = (NonNullable<(NonNullable<ProductVariantFragment['options'][0]>)['translations'][0]>);
+  export type Options = ProductOptionFragment;
   export type FacetValues = (NonNullable<ProductVariantFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductVariantFragment['facetValues'][0]>)['facet'];
   export type FeaturedAsset = AssetFragment;
   export type Assets = AssetFragment;
-  export type _Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
+  export type Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
 }
 
 export namespace ProductWithVariants {
@@ -7238,18 +7287,18 @@ export namespace ProductWithVariants {
   export type FeaturedAsset = AssetFragment;
   export type Assets = AssetFragment;
   export type Translations = (NonNullable<ProductWithVariantsFragment['translations'][0]>);
-  export type OptionGroups = (NonNullable<ProductWithVariantsFragment['optionGroups'][0]>);
+  export type OptionGroups = ProductOptionGroupFragment;
   export type Variants = ProductVariantFragment;
   export type FacetValues = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
   export type Channels = (NonNullable<ProductWithVariantsFragment['channels'][0]>);
 }
 
-export namespace ProductOptionGroup {
-  export type Fragment = ProductOptionGroupFragment;
-  export type Translations = (NonNullable<ProductOptionGroupFragment['translations'][0]>);
-  export type Options = (NonNullable<ProductOptionGroupFragment['options'][0]>);
-  export type _Translations = (NonNullable<(NonNullable<ProductOptionGroupFragment['options'][0]>)['translations'][0]>);
+export namespace ProductOptionGroupWithOptions {
+  export type Fragment = ProductOptionGroupWithOptionsFragment;
+  export type Translations = (NonNullable<ProductOptionGroupWithOptionsFragment['translations'][0]>);
+  export type Options = (NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>);
+  export type _Translations = (NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>)['translations'][0]>);
 }
 
 export namespace UpdateProduct {
@@ -7285,13 +7334,13 @@ export namespace UpdateProductVariants {
 export namespace CreateProductOptionGroup {
   export type Variables = CreateProductOptionGroupMutationVariables;
   export type Mutation = CreateProductOptionGroupMutation;
-  export type CreateProductOptionGroup = ProductOptionGroupFragment;
+  export type CreateProductOptionGroup = ProductOptionGroupWithOptionsFragment;
 }
 
 export namespace GetProductOptionGroup {
   export type Variables = GetProductOptionGroupQueryVariables;
   export type Query = GetProductOptionGroupQuery;
-  export type ProductOptionGroup = ProductOptionGroupFragment;
+  export type ProductOptionGroup = ProductOptionGroupWithOptionsFragment;
 }
 
 export namespace AddOptionToGroup {
@@ -7385,7 +7434,7 @@ export namespace SearchProducts {
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
-  export type UpdateProductOption = UpdateProductOptionMutation['updateProductOption'];
+  export type UpdateProductOption = ProductOptionFragment;
 }
 
 export namespace DeleteProductVariant {
@@ -7399,7 +7448,7 @@ export namespace GetProductVariantOptions {
   export type Query = GetProductVariantOptionsQuery;
   export type Product = (NonNullable<GetProductVariantOptionsQuery['product']>);
   export type OptionGroups = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>);
-  export type Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>)['options'][0]>);
+  export type Options = ProductOptionFragment;
   export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
   export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
 }

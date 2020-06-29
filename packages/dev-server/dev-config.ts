@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -55,6 +56,36 @@ export const devConfig: VendureConfig = {
             { name: 'rating', type: 'float', readonly: true },
             { name: 'markup', type: 'float', internal: true },
         ],*/
+        ProductOptionGroup: [
+            {
+                name: 'linkUrl',
+                type: 'string',
+            },
+        ],
+        ProductOption: [
+            {
+                name: 'colorHex',
+                description: [
+                    {
+                        languageCode: LanguageCode.en,
+                        value: 'Color',
+                    },
+                    {
+                        languageCode: LanguageCode.pt_BR,
+                        value: 'Cor',
+                    },
+                ],
+                type: 'string',
+                nullable: true,
+                public: true,
+                pattern: '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+                length: 7,
+            },
+            {
+                name: 'colorName',
+                type: 'localeString',
+            },
+        ],
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
