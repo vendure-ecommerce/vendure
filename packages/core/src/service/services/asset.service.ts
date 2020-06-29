@@ -68,7 +68,9 @@ export class AssetService {
             }));
     }
 
-    async getFeaturedAsset<T extends EntityWithAssets>(entity: T): Promise<Asset | undefined> {
+    async getFeaturedAsset<T extends Omit<EntityWithAssets, 'assets'>>(
+        entity: T,
+    ): Promise<Asset | undefined> {
         const entityType = Object.getPrototypeOf(entity).constructor;
         const entityWithFeaturedAsset = await this.connection
             .getRepository<EntityWithAssets>(entityType)
@@ -89,7 +91,7 @@ export class AssetService {
                 });
             assets = (entityWithAssets && entityWithAssets.assets) || [];
         }
-        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
+        return assets.sort((a, b) => a.position - b.position).map((a) => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
@@ -119,7 +121,7 @@ export class AssetService {
         if (assetIds && assetIds.length) {
             const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
             const sortedAssets = assetIds
-                .map(id => assets.find(a => idsAreEqual(a.id, id)))
+                .map((id) => assets.find((a) => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
             await this.removeExistingOrderableAssets(entity);
             entity.assets = await this.createOrderableAssets(entity, sortedAssets);
@@ -295,7 +297,7 @@ export class AssetService {
     private getOrderableAssetType(entity: EntityWithAssets): Type<OrderableAsset> {
         const assetRelation = this.connection
             .getRepository(entity.constructor)
-            .metadata.relations.find(r => r.propertyName === 'assets');
+            .metadata.relations.find((r) => r.propertyName === 'assets');
         if (!assetRelation || typeof assetRelation.type === 'string') {
             throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }

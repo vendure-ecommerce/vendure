@@ -144,7 +144,13 @@ export class OrderService {
     ): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: ['lines', 'lines.productVariant', 'lines.productVariant.options', 'customer'],
+                relations: [
+                    'lines',
+                    'lines.items',
+                    'lines.productVariant',
+                    'lines.productVariant.options',
+                    'customer',
+                ],
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
