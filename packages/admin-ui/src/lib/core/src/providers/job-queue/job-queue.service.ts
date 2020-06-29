@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { EMPTY, interval, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/operators';
 
-import { JobInfoFragment, JobState } from '../../common/generated-types';
+import { JobInfoFragment, JobState, Permission } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 
 @Injectable({
@@ -61,12 +61,14 @@ export class JobQueueService implements OnDestroy {
     checkForJobs(delay: number = 1000) {
         timer(delay)
             .pipe(
-                switchMap(() =>
-                    this.dataService.client.userStatus().mapSingle((data) => data.userStatus.isLoggedIn),
-                ),
-                switchMap((isLoggedIn) =>
-                    isLoggedIn ? this.dataService.settings.getRunningJobs().single$ : EMPTY,
-                ),
+                switchMap(() => this.dataService.client.userStatus().mapSingle((data) => data.userStatus)),
+                switchMap((userStatus) => {
+                    if (userStatus.permissions.includes(Permission.ReadSettings) && userStatus.isLoggedIn) {
+                        return this.dataService.settings.getRunningJobs().single$;
+                    } else {
+                        return EMPTY;
+                    }
+                }),
             )
             .subscribe((data) => data.jobs.items.forEach((job) => this.updateJob$.next(job)));
     }
