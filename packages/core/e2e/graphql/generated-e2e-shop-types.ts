@@ -1336,7 +1336,10 @@ export type Mutation = {
     /** Removes the given coupon code from the active Order */
     removeCouponCode?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
+    /** Sets the shipping address for this order */
     setOrderShippingAddress?: Maybe<Order>;
+    /** Sets the billing address for this order */
+    setOrderBillingAddress?: Maybe<Order>;
     setOrderShippingMethod?: Maybe<Order>;
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;
@@ -1409,6 +1412,10 @@ export type MutationTransitionOrderToStateArgs = {
 };
 
 export type MutationSetOrderShippingAddressArgs = {
+    input: CreateAddressInput;
+};
+
+export type MutationSetOrderBillingAddressArgs = {
     input: CreateAddressInput;
 };
 
@@ -2587,6 +2594,31 @@ export type SetShippingAddressMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
+export type SetBillingAddressMutationVariables = {
+    input: CreateAddressInput;
+};
+
+export type SetBillingAddressMutation = { __typename?: 'Mutation' } & {
+    setOrderBillingAddress?: Maybe<
+        { __typename?: 'Order' } & {
+            billingAddress?: Maybe<
+                { __typename?: 'OrderAddress' } & Pick<
+                    OrderAddress,
+                    | 'fullName'
+                    | 'company'
+                    | 'streetLine1'
+                    | 'streetLine2'
+                    | 'city'
+                    | 'province'
+                    | 'postalCode'
+                    | 'country'
+                    | 'phoneNumber'
+                >
+            >;
+        }
+    >;
+};
+
 export type AddPaymentToOrderMutationVariables = {
     input: PaymentInput;
 };
@@ -2882,6 +2914,15 @@ export namespace SetShippingAddress {
     export type SetOrderShippingAddress = NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>;
     export type ShippingAddress = NonNullable<
         NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>['shippingAddress']
+    >;
+}
+
+export namespace SetBillingAddress {
+    export type Variables = SetBillingAddressMutationVariables;
+    export type Mutation = SetBillingAddressMutation;
+    export type SetOrderBillingAddress = NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>;
+    export type BillingAddress = NonNullable<
+        NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>['billingAddress']
     >;
 }
 

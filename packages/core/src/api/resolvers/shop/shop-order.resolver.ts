@@ -6,6 +6,7 @@ import {
     MutationApplyCouponCodeArgs,
     MutationRemoveOrderLineArgs,
     MutationSetCustomerForOrderArgs,
+    MutationSetOrderBillingAddressArgs,
     MutationSetOrderShippingAddressArgs,
     MutationSetOrderShippingMethodArgs,
     MutationTransitionOrderToStateArgs,
@@ -55,7 +56,7 @@ export class ShopOrderResolver {
                 skip: 0,
                 take: 99999,
             })
-            .then(data => data.items);
+            .then((data) => data.items);
     }
 
     @Query()
@@ -130,6 +131,22 @@ export class ShopOrderResolver {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingAddress(ctx, sessionOrder.id, args.input);
+            } else {
+                return;
+            }
+        }
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async setOrderBillingAddress(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSetOrderBillingAddressArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.setBillingAddress(ctx, sessionOrder.id, args.input);
             } else {
                 return;
             }

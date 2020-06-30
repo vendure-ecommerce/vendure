@@ -324,6 +324,24 @@ export const SET_SHIPPING_ADDRESS = gql`
     }
 `;
 
+export const SET_BILLING_ADDRESS = gql`
+    mutation SetBillingAddress($input: CreateAddressInput!) {
+        setOrderBillingAddress(input: $input) {
+            billingAddress {
+                fullName
+                company
+                streetLine1
+                streetLine2
+                city
+                province
+                postalCode
+                country
+                phoneNumber
+            }
+        }
+    }
+`;
+
 export const ADD_PAYMENT = gql`
     mutation AddPaymentToOrder($input: PaymentInput!) {
         addPaymentToOrder(input: $input) {
