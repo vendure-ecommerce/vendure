@@ -183,9 +183,10 @@ export class CustomerService {
         }
         const customer = await this.createOrUpdate({
             emailAddress: input.emailAddress,
-            title: input.title || undefined,
-            firstName: input.firstName || undefined,
-            lastName: input.lastName || undefined,
+            title: input.title || '',
+            firstName: input.firstName || '',
+            lastName: input.lastName || '',
+            phoneNumber: input.phoneNumber || '',
         });
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
