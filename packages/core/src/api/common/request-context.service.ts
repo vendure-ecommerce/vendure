@@ -73,10 +73,6 @@ export class RequestContextService {
         );
     }
 
-    private isAuthenticatedSession(session?: Session): session is AuthenticatedSession {
-        return !!session && !!(session as AuthenticatedSession).user;
-    }
-
     private userHasRequiredPermissionsOnChannel(
         permissions: Permission[] = [],
         channel?: Channel,
@@ -86,7 +82,7 @@ export class RequestContextService {
             return false;
         }
         const permissionsOnChannel = user.roles
-            .filter(role => role.channels.find(c => idsAreEqual(c.id, channel.id)))
+            .filter((role) => role.channels.find((c) => idsAreEqual(c.id, channel.id)))
             .reduce((output, role) => [...output, ...role.permissions], [] as Permission[]);
         return this.arraysIntersect(permissions, permissionsOnChannel);
     }

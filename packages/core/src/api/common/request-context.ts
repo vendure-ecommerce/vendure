@@ -112,16 +112,9 @@ export class RequestContext {
     }
 
     get activeUserId(): ID | undefined {
-        const user = this.activeUser;
-        if (user) {
-            return user.id;
-        }
-    }
-
-    get activeUser(): User | undefined {
         if (this.session) {
             if (this.isAuthenticatedSession(this.session)) {
-                return this.session.user;
+                return this.session.user.id;
             }
         }
     }

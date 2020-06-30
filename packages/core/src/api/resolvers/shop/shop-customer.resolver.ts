@@ -22,24 +22,9 @@ export class ShopCustomerResolver {
     @Query()
     @Allow(Permission.Owner)
     async activeCustomer(@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
-        const user = ctx.activeUser;
-        if (user) {
-            const customer = await this.customerService.findOneByUserId(user.id);
-            if (customer) {
-                return customer;
-            }
-            // the user is not a Customer, so it must
-            // be an administrator. In this case we need to return
-            // a "dummy" Customer for the admin user.
-            return new Customer({
-                id: user.id,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-                firstName: '[admin]',
-                lastName: user.identifier,
-                emailAddress: 'admin@vendure.io',
-                addresses: [],
-            });
+        const userId = ctx.activeUserId;
+        if (userId) {
+            return this.customerService.findOneByUserId(userId);
         }
     }
 

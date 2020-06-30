@@ -100,10 +100,5 @@ describe('RequestContext', () => {
             const result = RequestContext.deserialize(ctxObject);
             expect(result.session).toEqual(original.session);
         });
-
-        it('activeUser', () => {
-            const result = RequestContext.deserialize(ctxObject);
-            expect(result.activeUser).toEqual(original.activeUser);
-        });
     });
 });
