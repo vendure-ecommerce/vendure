@@ -1,7 +1,9 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    DeletionResponse,
     MutationAssignRoleToAdministratorArgs,
     MutationCreateAdministratorArgs,
+    MutationDeleteAdministratorArgs,
     MutationUpdateAdministratorArgs,
     Permission,
     QueryAdministratorArgs,
@@ -47,5 +49,12 @@ export class AdministratorResolver {
     @Allow(Permission.UpdateAdministrator)
     assignRoleToAdministrator(@Args() args: MutationAssignRoleToAdministratorArgs): Promise<Administrator> {
         return this.administratorService.assignRole(args.administratorId, args.roleId);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteAdministrator)
+    deleteAdministrator(@Args() args: MutationDeleteAdministratorArgs): Promise<DeletionResponse> {
+        const { id } = args;
+        return this.administratorService.softDelete(id);
     }
 }

@@ -1771,6 +1771,8 @@ export type Mutation = {
     createAdministrator: Administrator;
     /** Update an existing Administrator */
     updateAdministrator: Administrator;
+    /** Delete an Administrator */
+    deleteAdministrator: DeletionResponse;
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
     /** Create a new Asset */
@@ -1928,6 +1930,10 @@ export type MutationCreateAdministratorArgs = {
 
 export type MutationUpdateAdministratorArgs = {
     input: UpdateAdministratorInput;
+};
+
+export type MutationDeleteAdministratorArgs = {
+    id: Scalars['ID'];
 };
 
 export type MutationAssignRoleToAdministratorArgs = {
@@ -3651,6 +3657,14 @@ export type UpdateAdministratorMutationVariables = {
 
 export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
     updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
+};
+
+export type DeleteAdministratorMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteAdministratorMutation = { __typename?: 'Mutation' } & {
+    deleteAdministrator: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
 };
 
 export type Q1QueryVariables = {};
@@ -5763,6 +5777,12 @@ export namespace UpdateAdministrator {
     export type Variables = UpdateAdministratorMutationVariables;
     export type Mutation = UpdateAdministratorMutation;
     export type UpdateAdministrator = AdministratorFragment;
+}
+
+export namespace DeleteAdministrator {
+    export type Variables = DeleteAdministratorMutationVariables;
+    export type Mutation = DeleteAdministratorMutation;
+    export type DeleteAdministrator = DeleteAdministratorMutation['deleteAdministrator'];
 }
 
 export namespace Q1 {

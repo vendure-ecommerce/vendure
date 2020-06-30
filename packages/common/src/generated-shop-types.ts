@@ -97,7 +97,6 @@ export enum AssetType {
 
 export type AuthenticationInput = {
     native?: Maybe<NativeAuthInput>;
-    google?: Maybe<GoogleAuthInput>;
 };
 
 export type AuthenticationMethod = Node & {
@@ -894,10 +893,6 @@ export type GlobalSettings = {
     trackInventory: Scalars['Boolean'];
     serverConfig: ServerConfig;
     customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type GoogleAuthInput = {
-    token: Scalars['String'];
 };
 
 export type HistoryEntry = Node & {

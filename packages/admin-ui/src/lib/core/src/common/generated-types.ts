@@ -1827,6 +1827,8 @@ export type Mutation = {
   createTaxRate: TaxRate;
   /** Create a new Zone */
   createZone: Zone;
+  /** Delete an Administrator */
+  deleteAdministrator: DeletionResponse;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
   /** Delete a Channel */
@@ -2086,6 +2088,11 @@ export type MutationCreateTaxRateArgs = {
 
 export type MutationCreateZoneArgs = {
   input: CreateZoneInput;
+};
+
+
+export type MutationDeleteAdministratorArgs = {
+  id: Scalars['ID'];
 };
 
 

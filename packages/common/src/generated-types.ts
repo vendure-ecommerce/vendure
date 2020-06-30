@@ -1770,6 +1770,8 @@ export type Mutation = {
   createAdministrator: Administrator;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
+  /** Delete an Administrator */
+  deleteAdministrator: DeletionResponse;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
   /** Create a new Asset */
@@ -1929,6 +1931,11 @@ export type MutationCreateAdministratorArgs = {
 
 export type MutationUpdateAdministratorArgs = {
   input: UpdateAdministratorInput;
+};
+
+
+export type MutationDeleteAdministratorArgs = {
+  id: Scalars['ID'];
 };
 
 
