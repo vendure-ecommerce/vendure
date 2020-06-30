@@ -512,6 +512,7 @@
   "order": {
     "add-note": "",
     "amount": "Precio",
+    "billing-address": "",
     "cancel": "",
     "cancel-order": "",
     "cancel-reason-customer-request": "",

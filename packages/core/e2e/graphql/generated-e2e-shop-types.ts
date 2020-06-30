@@ -1340,6 +1340,7 @@ export type Mutation = {
     setOrderShippingAddress?: Maybe<Order>;
     /** Sets the billing address for this order */
     setOrderBillingAddress?: Maybe<Order>;
+    /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
     setOrderShippingMethod?: Maybe<Order>;
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;

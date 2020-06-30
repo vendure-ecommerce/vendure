@@ -512,6 +512,7 @@
   "order": {
     "add-note": "添加备注",
     "amount": "金额",
+    "billing-address": "",
     "cancel": "取消",
     "cancel-order": "取消订单",
     "cancel-reason-customer-request": "客户要求",

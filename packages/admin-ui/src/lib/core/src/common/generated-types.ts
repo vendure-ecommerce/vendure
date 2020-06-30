@@ -4708,7 +4708,7 @@ export type RefundFragment = (
   & Pick<Refund, 'id' | 'state' | 'items' | 'shipping' | 'adjustment' | 'transactionId' | 'paymentId'>
 );
 
-export type ShippingAddressFragment = (
+export type OrderAddressFragment = (
   { __typename?: 'OrderAddress' }
   & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'phoneNumber'>
 );
@@ -4769,7 +4769,10 @@ export type OrderDetailFragment = (
     & Pick<ShippingMethod, 'id' | 'code' | 'description'>
   )>, shippingAddress?: Maybe<(
     { __typename?: 'OrderAddress' }
-    & ShippingAddressFragment
+    & OrderAddressFragment
+  )>, billingAddress?: Maybe<(
+    { __typename?: 'OrderAddress' }
+    & OrderAddressFragment
   )>, payments?: Maybe<Array<(
     { __typename?: 'Payment' }
     & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
@@ -7123,8 +7126,8 @@ export namespace Refund {
   export type Fragment = RefundFragment;
 }
 
-export namespace ShippingAddress {
-  export type Fragment = ShippingAddressFragment;
+export namespace OrderAddress {
+  export type Fragment = OrderAddressFragment;
 }
 
 export namespace Order {
@@ -7152,7 +7155,8 @@ export namespace OrderDetail {
   export type Adjustments = AdjustmentFragment;
   export type Promotions = (NonNullable<OrderDetailFragment['promotions'][0]>);
   export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
-  export type ShippingAddress = ShippingAddressFragment;
+  export type ShippingAddress = OrderAddressFragment;
+  export type BillingAddress = OrderAddressFragment;
   export type Payments = (NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>);
   export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>);
   export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);

@@ -512,6 +512,7 @@
   "order": {
     "add-note": "Notiz hinzufügen",
     "amount": "Betrag",
+    "billing-address": "",
     "cancel": "Abbrechen",
     "cancel-order": "Bestellung stornieren",
     "cancel-reason-customer-request": "Kundenanfrage",

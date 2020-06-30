@@ -512,6 +512,7 @@
   "order": {
     "add-note": "Add note",
     "amount": "Amount",
+    "billing-address": "Billing address",
     "cancel": "Cancel",
     "cancel-order": "Cancel Order",
     "cancel-reason-customer-request": "Customer request",
