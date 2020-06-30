@@ -20,6 +20,35 @@ export const ASSET_FRAGMENT = gql`
     }
 `;
 
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        code
+        languageCode
+        name
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
+export const PRODUCT_OPTION_FRAGMENT = gql`
+    fragment ProductOption on ProductOption {
+        id
+        code
+        languageCode
+        name
+        groupId
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
 export const PRODUCT_VARIANT_FRAGMENT = gql`
     fragment ProductVariant on ProductVariant {
         id
@@ -45,16 +74,7 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         }
         sku
         options {
-            id
-            code
-            languageCode
-            name
-            groupId
-            translations {
-                id
-                languageCode
-                name
-            }
+            ...ProductOption
         }
         facetValues {
             id
@@ -77,6 +97,7 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             name
         }
     }
+    ${PRODUCT_OPTION_FRAGMENT}
     ${ASSET_FRAGMENT}
 `;
 
@@ -104,10 +125,7 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             description
         }
         optionGroups {
-            id
-            languageCode
-            code
-            name
+            ...ProductOptionGroup
         }
         variants {
             ...ProductVariant
@@ -126,12 +144,13 @@ export const PRODUCT_WITH_VARIANTS_FRAGMENT = gql`
             code
         }
     }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
     ${PRODUCT_VARIANT_FRAGMENT}
     ${ASSET_FRAGMENT}
 `;
 
-export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
-    fragment ProductOptionGroup on ProductOptionGroup {
+export const PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT = gql`
+    fragment ProductOptionGroupWithOptions on ProductOptionGroup {
         id
         createdAt
         updatedAt
@@ -202,19 +221,19 @@ export const UPDATE_PRODUCT_VARIANTS = gql`
 export const CREATE_PRODUCT_OPTION_GROUP = gql`
     mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
         createProductOptionGroup(input: $input) {
-            ...ProductOptionGroup
+            ...ProductOptionGroupWithOptions
         }
     }
-    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+    ${PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT}
 `;
 
 export const GET_PRODUCT_OPTION_GROUP = gql`
     query GetProductOptionGroup($id: ID!) {
         productOptionGroup(id: $id) {
-            ...ProductOptionGroup
+            ...ProductOptionGroupWithOptions
         }
     }
-    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+    ${PRODUCT_OPTION_GROUP_WITH_OPTIONS_FRAGMENT}
 `;
 
 export const ADD_OPTION_TO_GROUP = gql`
@@ -426,13 +445,10 @@ export const SEARCH_PRODUCTS = gql`
 export const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {
-            id
-            createdAt
-            updatedAt
-            code
-            name
+            ...ProductOption
         }
     }
+    ${PRODUCT_OPTION_FRAGMENT}
 `;
 
 export const DELETE_PRODUCT_VARIANT = gql`
@@ -456,11 +472,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
                 name
                 code
                 options {
-                    id
-                    createdAt
-                    updatedAt
-                    name
-                    code
+                    ...ProductOption
                 }
             }
             variants {
@@ -484,6 +496,7 @@ export const GET_PRODUCT_VARIANT_OPTIONS = gql`
             }
         }
     }
+    ${PRODUCT_OPTION_FRAGMENT}
 `;
 
 export const ASSIGN_PRODUCTS_TO_CHANNEL = gql`

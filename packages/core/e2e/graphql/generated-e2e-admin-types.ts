@@ -4758,7 +4758,7 @@ export type GetCustomerListQuery = { __typename?: 'Query' } & {
             items: Array<
                 { __typename?: 'Customer' } & Pick<
                     Customer,
-                    'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
+                    'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber'
                 > & { user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'verified'>> }
             >;
         };

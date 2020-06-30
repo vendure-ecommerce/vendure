@@ -240,7 +240,7 @@ export class ProductDataService {
         return this.baseDataService.mutate<UpdateProductOption.Mutation, UpdateProductOption.Variables>(
             UPDATE_PRODUCT_OPTION,
             {
-                input: pick(input, ['id', 'code', 'translations']),
+                input: pick(input, ['id', 'code', 'translations', 'customFields']),
             },
         );
     }

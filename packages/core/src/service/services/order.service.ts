@@ -144,7 +144,13 @@ export class OrderService {
     ): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: ['lines', 'lines.productVariant', 'lines.productVariant.options', 'customer'],
+                relations: [
+                    'lines',
+                    'lines.items',
+                    'lines.productVariant',
+                    'lines.productVariant.options',
+                    'customer',
+                ],
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
@@ -362,6 +368,13 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         order.shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
+        return this.connection.getRepository(Order).save(order);
+    }
+
+    async setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const country = await this.countryService.findOneByCode(ctx, input.countryCode);
+        order.billingAddress = { ...input, countryCode: input.countryCode, country: country.name };
         return this.connection.getRepository(Order).save(order);
     }
 

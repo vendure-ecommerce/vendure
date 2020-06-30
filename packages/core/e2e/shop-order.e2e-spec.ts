@@ -32,6 +32,7 @@ import {
     GetOrderByCode,
     GetShippingMethods,
     RemoveItemFromOrder,
+    SetBillingAddress,
     SetCustomerForOrder,
     SetShippingAddress,
     SetShippingMethod,
@@ -57,6 +58,7 @@ import {
     GET_NEXT_STATES,
     GET_ORDER_BY_CODE,
     REMOVE_ITEM_FROM_ORDER,
+    SET_BILLING_ADDRESS,
     SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
@@ -370,6 +372,38 @@ describe('Shop orders', () => {
             });
 
             expect(setOrderShippingAddress!.shippingAddress).toEqual({
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                country: 'United States of America',
+                phoneNumber: '4444444',
+            });
+        });
+
+        it('setOrderBillingAddress sets billing address', async () => {
+            const address: CreateAddressInput = {
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                countryCode: 'US',
+                phoneNumber: '4444444',
+            };
+            const { setOrderBillingAddress } = await shopClient.query<
+                SetBillingAddress.Mutation,
+                SetBillingAddress.Variables
+            >(SET_BILLING_ADDRESS, {
+                input: address,
+            });
+
+            expect(setOrderBillingAddress!.billingAddress).toEqual({
                 fullName: 'name',
                 company: 'company',
                 streetLine1: '12 the street',

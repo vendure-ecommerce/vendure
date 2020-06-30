@@ -1353,7 +1353,11 @@ export type Mutation = {
     /** Removes the given coupon code from the active Order */
     removeCouponCode?: Maybe<Order>;
     transitionOrderToState?: Maybe<Order>;
+    /** Sets the shipping address for this order */
     setOrderShippingAddress?: Maybe<Order>;
+    /** Sets the billing address for this order */
+    setOrderBillingAddress?: Maybe<Order>;
+    /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
     setOrderShippingMethod?: Maybe<Order>;
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;
@@ -1428,6 +1432,10 @@ export type MutationTransitionOrderToStateArgs = {
 };
 
 export type MutationSetOrderShippingAddressArgs = {
+    input: CreateAddressInput;
+};
+
+export type MutationSetOrderBillingAddressArgs = {
     input: CreateAddressInput;
 };
 
@@ -2012,6 +2020,7 @@ export type RegisterCustomerInput = {
     title?: Maybe<Scalars['String']>;
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
+    phoneNumber?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
 };
 

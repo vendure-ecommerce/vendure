@@ -87,8 +87,8 @@ export class CustomerService {
             .leftJoinAndSelect('country.translations', 'countryTranslation')
             .where('address.customer = :id', { id: customerId })
             .getMany()
-            .then(addresses => {
-                addresses.forEach(address => {
+            .then((addresses) => {
+                addresses.forEach((address) => {
                     address.country = translateDeep(address.country, ctx.languageCode);
                 });
                 return addresses;
@@ -172,7 +172,7 @@ export class CustomerService {
         }
         let user = await this.userService.getUserByEmailAddress(input.emailAddress);
         const hasNativeAuthMethod = !!user?.authenticationMethods.find(
-            m => m instanceof NativeAuthenticationMethod,
+            (m) => m instanceof NativeAuthenticationMethod,
         );
         if (user && user.verified) {
             if (hasNativeAuthMethod) {
@@ -543,8 +543,8 @@ export class CustomerService {
             .findOne(addressId, { relations: ['customer', 'customer.addresses'] });
         if (result) {
             const customerAddressIds = result.customer.addresses
-                .map(a => a.id)
-                .filter(id => !idsAreEqual(id, addressId)) as string[];
+                .map((a) => a.id)
+                .filter((id) => !idsAreEqual(id, addressId)) as string[];
 
             if (customerAddressIds.length) {
                 if (input.defaultBillingAddress === true) {
@@ -577,7 +577,7 @@ export class CustomerService {
             const customerAddresses = result.customer.addresses;
             if (1 < customerAddresses.length) {
                 const otherAddresses = customerAddresses
-                    .filter(address => !idsAreEqual(address.id, addressToDelete.id))
+                    .filter((address) => !idsAreEqual(address.id, addressToDelete.id))
                     .sort((a, b) => (a.id < b.id ? -1 : 1));
                 if (addressToDelete.defaultShippingAddress) {
                     otherAddresses[0].defaultShippingAddress = true;

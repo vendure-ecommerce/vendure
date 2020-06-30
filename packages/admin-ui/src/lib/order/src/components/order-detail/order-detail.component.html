@@ -234,10 +234,14 @@
                 <div class="card-block">
                     <div class="card-text">
                         <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
-                        <h6 *ngIf="getShippingAddressLines(order.shippingAddress).length">
+                        <h6 *ngIf="getOrderAddressLines(order.shippingAddress).length">
                             {{ 'order.shipping-address' | translate }}
                         </h6>
                         <vdr-formatted-address [address]="order.shippingAddress"></vdr-formatted-address>
+                        <h6 *ngIf="getOrderAddressLines(order.billingAddress).length">
+                            {{ 'order.billing-address' | translate }}
+                        </h6>
+                        <vdr-formatted-address [address]="order.billingAddress"></vdr-formatted-address>
                     </div>
                 </div>
             </div>

@@ -208,6 +208,8 @@
                         [productVariantsFormArray]="detailForm.get('variants')"
                         [taxCategories]="taxCategories$ | async"
                         [customFields]="customVariantFields"
+                        [customOptionFields]="customOptionFields"
+                        [activeLanguage]="languageCode$ | async"
                         (assetChange)="variantAssetChange($event)"
                         (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"

@@ -27,7 +27,11 @@ type Mutation {
     "Removes the given coupon code from the active Order"
     removeCouponCode(couponCode: String!): Order
     transitionOrderToState(state: String!): Order
+    "Sets the shipping address for this order"
     setOrderShippingAddress(input: CreateAddressInput!): Order
+    "Sets the billing address for this order"
+    setOrderBillingAddress(input: CreateAddressInput!): Order
+    "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
     setOrderShippingMethod(shippingMethodId: ID!): Order
     addPaymentToOrder(input: PaymentInput!): Order
     setCustomerForOrder(input: CreateCustomerInput!): Order
@@ -76,6 +80,7 @@ input RegisterCustomerInput {
     title: String
     firstName: String
     lastName: String
+    phoneNumber: String
     password: String
 }
 

@@ -2,9 +2,9 @@
     <div
         class="variant-container card"
         *ngFor="let variant of variants; let i = index"
-        [class.disabled]="!formArray.get([i, 'enabled'])!.value"
+        [class.disabled]="!formArray.get([i, 'enabled'])?.value"
     >
-        <ng-container [formGroup]="formArray.at(i)">
+        <ng-container *ngIf="formArray.at(i)" [formGroup]="formArray.at(i)">
             <div class="card-block header-row">
                 <div class="details">
                     <vdr-title-input class="sku" [readonly]="!('UpdateCatalog' | hasPermission)">
@@ -145,7 +145,7 @@
                                 [icon]="('UpdateCatalog' | hasPermission) && 'pencil'"
                             >
                                 <span class="option-group-name">{{ optionGroupName(option.groupId) }}</span>
-                                {{ option.name }}
+                                {{ optionName(option) }}
                             </vdr-chip>
                         </div>
                     </div>

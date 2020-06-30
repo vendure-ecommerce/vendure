@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -51,12 +52,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        /*Product: [
-            { name: 'rating', type: 'float', readonly: true },
-            { name: 'markup', type: 'float', internal: true },
-        ],*/
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

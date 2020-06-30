@@ -76,6 +76,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     taxCategories$: Observable<TaxCategory.Fragment[]>;
     customFields: CustomFieldConfig[];
     customVariantFields: CustomFieldConfig[];
+    customOptionGroupFields: CustomFieldConfig[];
+    customOptionFields: CustomFieldConfig[];
     detailForm: FormGroup;
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
@@ -101,6 +103,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         super(route, router, serverConfigService, dataService);
         this.customFields = this.getCustomFieldConfig('Product');
         this.customVariantFields = this.getCustomFieldConfig('ProductVariant');
+        this.customOptionGroupFields = this.getCustomFieldConfig('ProductOptionGroup');
+        this.customOptionFields = this.getCustomFieldConfig('ProductOption');
         this.detailForm = this.formBuilder.group({
             product: this.formBuilder.group({
                 enabled: true,
@@ -156,7 +160,8 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     }
 
     navigateToTab(tabName: TabName) {
-        this.router.navigate(['./', { tab: tabName }], {
+        this.router.navigate(['./', { ...this.route.snapshot.params, tab: tabName }], {
+            queryParamsHandling: 'merge',
             relativeTo: this.route,
             state: {
                 [IGNORE_CAN_DEACTIVATE_GUARD]: true,

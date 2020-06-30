@@ -21,8 +21,8 @@ export const REFUND_FRAGMENT = gql`
     }
 `;
 
-export const SHIPPING_ADDRESS_FRAGMENT = gql`
-    fragment ShippingAddress on OrderAddress {
+export const ORDER_ADDRESS_FRAGMENT = gql`
+    fragment OrderAddress on OrderAddress {
         fullName
         company
         streetLine1
@@ -130,7 +130,10 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             description
         }
         shippingAddress {
-            ...ShippingAddress
+            ...OrderAddress
+        }
+        billingAddress {
+            ...OrderAddress
         }
         payments {
             id
@@ -163,7 +166,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         total
     }
     ${ADJUSTMENT_FRAGMENT}
-    ${SHIPPING_ADDRESS_FRAGMENT}
+    ${ORDER_ADDRESS_FRAGMENT}
     ${FULFILLMENT_FRAGMENT}
     ${ORDER_LINE_FRAGMENT}
 `;

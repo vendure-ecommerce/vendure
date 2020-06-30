@@ -1,19 +1,19 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { DeactivateAware } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { ModalService } from '@vendure/admin-ui/core';
-import { getDefaultUiLanguage } from '@vendure/admin-ui/core';
 import {
     CreateProductOptionGroup,
     CreateProductOptionInput,
     CurrencyCode,
+    DataService,
+    DeactivateAware,
+    getDefaultUiLanguage,
     GetProductVariantOptions,
     LanguageCode,
-    ProductOptionGroupFragment,
+    ModalService,
+    NotificationService,
+    ProductOptionGroupWithOptionsFragment,
 } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
@@ -290,7 +290,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         }
     }
 
-    private fetchOptionGroups(groupsIds: string[]): Observable<ProductOptionGroupFragment[]> {
+    private fetchOptionGroups(groupsIds: string[]): Observable<ProductOptionGroupWithOptionsFragment[]> {
         return forkJoin(
             groupsIds.map((id) =>
                 this.dataService.product
@@ -301,7 +301,7 @@ export class ProductVariantsEditorComponent implements OnInit, DeactivateAware {
         );
     }
 
-    private createNewProductVariants(groups: ProductOptionGroupFragment[]) {
+    private createNewProductVariants(groups: ProductOptionGroupWithOptionsFragment[]) {
         const options = groups
             .filter(notNullOrUndefined)
             .map((og) => og.options)

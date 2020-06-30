@@ -11,7 +11,7 @@ import { DataService } from '../../../data/providers/data.service';
     selector: 'vdr-channel-assignment-control',
     templateUrl: './channel-assignment-control.component.html',
     styleUrls: ['./channel-assignment-control.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
+    changeDetection: ChangeDetectionStrategy.Default,
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
@@ -37,7 +37,7 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
             .userStatus()
             .single$.pipe(
                 map(({ userStatus }) =>
-                    userStatus.channels.filter(c =>
+                    userStatus.channels.filter((c) =>
                         this.includeDefaultChannel ? true : c.code !== DEFAULT_CHANNEL_CODE,
                     ),
                 ),
@@ -70,7 +70,7 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
 
     valueChanged(value: CurrentUserChannel[] | CurrentUserChannel | undefined) {
         if (Array.isArray(value)) {
-            this.onChange(value.map(c => c.id));
+            this.onChange(value.map((c) => c.id));
         } else {
             this.onChange([value ? value.id : undefined]);
         }
