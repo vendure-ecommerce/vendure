@@ -60,6 +60,7 @@
     "collection-contents": "系列產品",
     "confirm-adding-options-delete-default-body": "新增規格到此產品會引致包含此規格的產品被移除，確認繼續吗?",
     "confirm-adding-options-delete-default-title": "確認移除產品規格嗎?",
+    "confirm-delete-administrator": "",
     "confirm-delete-asset": "",
     "confirm-delete-channel": "確認移除渠道?",
     "confirm-delete-collection": "確認移除商品系列吗?",

@@ -3899,6 +3899,19 @@ export type UpdateAdministratorMutation = (
   ) }
 );
 
+export type DeleteAdministratorMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteAdministratorMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteAdministrator: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
+  ) }
+);
+
 export type GetRolesQueryVariables = {
   options?: Maybe<RoleListOptions>;
 };
@@ -6773,6 +6786,12 @@ export namespace UpdateAdministrator {
   export type Variables = UpdateAdministratorMutationVariables;
   export type Mutation = UpdateAdministratorMutation;
   export type UpdateAdministrator = AdministratorFragment;
+}
+
+export namespace DeleteAdministrator {
+  export type Variables = DeleteAdministratorMutationVariables;
+  export type Mutation = DeleteAdministratorMutation;
+  export type DeleteAdministrator = DeleteAdministratorMutation['deleteAdministrator'];
 }
 
 export namespace GetRoles {
