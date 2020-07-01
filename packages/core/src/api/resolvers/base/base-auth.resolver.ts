@@ -1,11 +1,10 @@
-import { MutationAuthenticateArgs } from '@vendure/common/lib/generated-shop-types';
 import {
     CurrentUser,
     CurrentUserChannel,
     LoginResult,
+    MutationAuthenticateArgs,
     MutationLoginArgs,
 } from '@vendure/common/lib/generated-types';
-import { unique } from '@vendure/common/lib/unique';
 import { Request, Response } from 'express';
 
 import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
@@ -16,10 +15,10 @@ import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-u
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
-import { extractAuthToken } from '../../common/extract-auth-token';
+import { extractSessionToken } from '../../common/extract-session-token';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
-import { setAuthToken } from '../../common/set-auth-token';
+import { setSessionToken } from '../../common/set-session-token';
 
 export class BaseAuthResolver {
     constructor(
@@ -50,17 +49,17 @@ export class BaseAuthResolver {
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
-        const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
+        const token = extractSessionToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;
         }
         await this.authService.destroyAuthenticatedSession(ctx, token);
-        setAuthToken({
+        setSessionToken({
             req,
             res,
             authOptions: this.configService.authOptions,
             rememberMe: false,
-            authToken: '',
+            sessionToken: '',
         });
         return true;
     }
@@ -101,12 +100,12 @@ export class BaseAuthResolver {
                 throw new UnauthorizedError();
             }
         }
-        setAuthToken({
+        setSessionToken({
             req,
             res,
             authOptions: this.configService.authOptions,
             rememberMe: args.rememberMe || false,
-            authToken: session.token,
+            sessionToken: session.token,
         });
         return {
             user: this.publiclyAccessibleUser(session.user),

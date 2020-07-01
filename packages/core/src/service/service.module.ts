@@ -47,6 +47,7 @@ import { ProductService } from './services/product.service';
 import { PromotionService } from './services/promotion.service';
 import { RoleService } from './services/role.service';
 import { SearchService } from './services/search.service';
+import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
 import { TaxCategoryService } from './services/tax-category.service';
@@ -77,6 +78,7 @@ const services = [
     PromotionService,
     RoleService,
     SearchService,
+    SessionService,
     ShippingMethodService,
     StockMovementService,
     TaxCategoryService,

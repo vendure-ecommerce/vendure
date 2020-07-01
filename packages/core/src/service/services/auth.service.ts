@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
-import crypto from 'crypto';
-import ms from 'ms';
 import { Connection } from 'typeorm';
 
 import { ApiType } from '../../api/common/get-api-type';
@@ -10,39 +8,30 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError, NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
-    NativeAuthenticationStrategy,
     NATIVE_AUTH_STRATEGY_NAME,
+    NativeAuthenticationStrategy,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
-import { Order } from '../../entity/order/order.entity';
-import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
-import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
-import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 
-import { OrderService } from './order.service';
+import { SessionService } from './session.service';
 
 /**
  * The AuthService manages both authenticated and anonymous Sessions.
  */
 @Injectable()
 export class AuthService {
-    private readonly sessionDurationInMs: number;
-
     constructor(
         @InjectConnection() private connection: Connection,
-        private passwordCipher: PasswordCiper,
         private configService: ConfigService,
-        private orderService: OrderService,
+        private sessionService: SessionService,
         private eventBus: EventBus,
-    ) {
-        this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration as string);
-    }
+    ) {}
 
     /**
      * Authenticates a user's credentials and if okay, creates a new session.
@@ -73,16 +62,19 @@ export class AuthService {
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
-
-        if (ctx.session && ctx.session.activeOrder) {
-            await this.deleteSessionsByActiveOrder(ctx.session && ctx.session.activeOrder);
+        await this.sessionService.deleteSessionsByUser(user);
+        if (ctx.session && ctx.session.activeOrderId) {
+            await this.sessionService.deleteSessionsByActiveOrderId(ctx.session.activeOrderId);
         }
         user.lastLogin = new Date();
         await this.connection.manager.save(user, { reload: false });
-        const session = await this.createNewAuthenticatedSession(ctx, user, authenticationStrategy);
-        const newSession = await this.connection.getRepository(AuthenticatedSession).save(session);
+        const session = await this.sessionService.createNewAuthenticatedSession(
+            ctx,
+            user,
+            authenticationStrategy,
+        );
         this.eventBus.publish(new LoginEvent(ctx, user));
-        return newSession;
+        return session;
     }
 
     /**
@@ -101,75 +93,11 @@ export class AuthService {
     }
 
     /**
-     * Create an anonymous session.
-     */
-    async createAnonymousSession(): Promise<AnonymousSession> {
-        const token = await this.generateSessionToken();
-        const anonymousSessionDurationInMs = ms('1y');
-        const session = new AnonymousSession({
-            token,
-            expires: this.getExpiryDate(anonymousSessionDurationInMs),
-            invalidated: false,
-        });
-        // save the new session
-        const newSession = await this.connection.getRepository(AnonymousSession).save(session);
-        return newSession;
-    }
-
-    /**
-     * Looks for a valid session with the given token and returns one if found.
-     */
-    async validateSession(token: string): Promise<Session | undefined> {
-        const session = await this.connection
-            .getRepository(Session)
-            .createQueryBuilder('session')
-            .leftJoinAndSelect('session.activeOrder', 'activeOrder')
-            .leftJoinAndSelect('session.user', 'user')
-            .leftJoinAndSelect('user.roles', 'roles')
-            .leftJoinAndSelect('roles.channels', 'channels')
-            .where('session.token = :token', { token })
-            .andWhere('session.invalidated = false')
-            .getOne();
-
-        if (session && session.expires > new Date()) {
-            await this.updateSessionExpiry(session);
-            return session;
-        }
-    }
-
-    async setActiveOrder<T extends Session>(session: T, order: Order): Promise<T> {
-        session.activeOrder = order;
-        return this.connection.getRepository(Session).save(session);
-    }
-
-    async unsetActiveOrder<T extends Session>(session: T): Promise<T> {
-        if (session.activeOrder) {
-            session.activeOrder = null;
-            return this.connection.getRepository(Session).save(session);
-        }
-        return session;
-    }
-
-    /**
-     * Deletes all existing sessions for the given user.
-     */
-    async deleteSessionsByUser(user: User): Promise<void> {
-        await this.connection.getRepository(AuthenticatedSession).delete({ user });
-    }
-
-    /**
-     * Deletes all existing sessions with the given activeOrder.
-     */
-    async deleteSessionsByActiveOrder(activeOrder: Order): Promise<void> {
-        await this.connection.getRepository(Session).delete({ activeOrder });
-    }
-
-    /**
      * Deletes all sessions for the user associated with the given session token.
      */
-    async destroyAuthenticatedSession(ctx: RequestContext, token: string): Promise<void> {
+    async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string): Promise<void> {
         const session = await this.connection.getRepository(AuthenticatedSession).findOne({
-            where: { token },
+            where: { token: sessionToken },
             relations: ['user', 'user.authenticationMethods'],
         });
 
@@ -182,66 +110,8 @@ export class AuthService {
                 await authenticationStrategy.onLogOut(session.user);
             }
             this.eventBus.publish(new LogoutEvent(ctx));
-            return this.deleteSessionsByUser(session.user);
+            return this.sessionService.deleteSessionsByUser(session.user);
         }
-    }
-
-    private async createNewAuthenticatedSession(
-        ctx: RequestContext,
-        user: User,
-        authenticationStrategy: AuthenticationStrategy,
-    ): Promise<AuthenticatedSession> {
-        const token = await this.generateSessionToken();
-        const guestOrder =
-            ctx.session && ctx.session.activeOrder
-                ? await this.orderService.findOne(ctx, ctx.session.activeOrder.id)
-                : undefined;
-        const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
-        const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
-        return new AuthenticatedSession({
-            token,
-            user,
-            activeOrder,
-            authenticationStrategy: authenticationStrategy.name,
-            expires: this.getExpiryDate(this.sessionDurationInMs),
-            invalidated: false,
-        });
-    }
-
-    /**
-     * Generates a random session token.
-     */
-    private generateSessionToken(): Promise<string> {
-        return new Promise((resolve, reject) => {
-            crypto.randomBytes(32, (err, buf) => {
-                if (err) {
-                    reject(err);
-                }
-                resolve(buf.toString('hex'));
-            });
-        });
-    }
-
-    /**
-     * If we are over half way to the current session's expiry date, then we update it.
-     *
-     * This ensures that the session will not expire when in active use, but prevents us from
-     * needing to run an update query on *every* request.
-     */
-    private async updateSessionExpiry(session: Session) {
-        const now = new Date().getTime();
-        if (session.expires.getTime() - now < this.sessionDurationInMs / 2) {
-            await this.connection
-                .getRepository(Session)
-                .update({ id: session.id }, { expires: this.getExpiryDate(this.sessionDurationInMs) });
-        }
-    }
-
-    /**
-     * Returns a future expiry date according timeToExpireInMs in the future.
-     */
-    private getExpiryDate(timeToExpireInMs: number): Date {
-        return new Date(Date.now() + timeToExpireInMs);
     }
 
     private getAuthenticationStrategy(
@@ -255,7 +125,7 @@ export class AuthService {
             apiType === 'admin'
                 ? authOptions.adminAuthenticationStrategy
                 : authOptions.shopAuthenticationStrategy;
-        const match = strategies.find(s => s.name === method);
+        const match = strategies.find((s) => s.name === method);
         if (!match) {
             throw new InternalServerError('error.unrecognized-authentication-strategy', { name: method });
         }

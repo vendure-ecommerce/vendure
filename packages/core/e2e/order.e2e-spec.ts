@@ -45,7 +45,7 @@ import {
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({

@@ -25,9 +25,9 @@ import { Country } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { CountryService } from '../../../service';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
-import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
 import { OrderService } from '../../../service/services/order.service';
+import { SessionService } from '../../../service/services/session.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
@@ -37,7 +37,7 @@ export class ShopOrderResolver {
     constructor(
         private orderService: OrderService,
         private customerService: CustomerService,
-        private authService: AuthService,
+        private sessionService: SessionService,
         private countryService: CountryService,
     ) {}
 
@@ -291,13 +291,8 @@ export class ShopOrderResolver {
                         }
                     }
                 }
-                if (
-                    order.active === false &&
-                    ctx.session &&
-                    ctx.session.activeOrder &&
-                    ctx.session.activeOrder.id === sessionOrder.id
-                ) {
-                    await this.authService.unsetActiveOrder(ctx.session);
+                if (order.active === false && ctx.session?.activeOrderId === sessionOrder.id) {
+                    await this.sessionService.unsetActiveOrder(ctx.session);
                 }
                 return order;
             }
@@ -325,16 +320,18 @@ export class ShopOrderResolver {
         if (!ctx.session) {
             throw new InternalServerError(`error.no-active-session`);
         }
-        let order = ctx.session.activeOrder;
+        let order = ctx.session.activeOrderId
+            ? await this.orderService.findOne(ctx, ctx.session.activeOrderId)
+            : undefined;
         if (order && order.active === false) {
             // edge case where an inactive order may not have been
             // removed from the session, i.e. the regular process was interrupted
-            await this.authService.unsetActiveOrder(ctx.session);
-            order = null;
+            await this.sessionService.unsetActiveOrder(ctx.session);
+            order = undefined;
         }
         if (!order) {
             if (ctx.activeUserId) {
-                order = (await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId)) || null;
+                order = await this.orderService.getActiveOrderForUser(ctx, ctx.activeUserId);
             }
 
             if (!order && createIfNotExists) {
@@ -342,7 +339,7 @@ export class ShopOrderResolver {
             }
 
             if (order) {
-                await this.authService.setActiveOrder(ctx.session, order);
+                await this.sessionService.setActiveOrder(ctx.session, order);
             }
         }
         return order || undefined;

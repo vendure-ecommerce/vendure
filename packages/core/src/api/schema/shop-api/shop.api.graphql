@@ -35,7 +35,9 @@ type Mutation {
     setOrderShippingMethod(shippingMethodId: ID!): Order
     addPaymentToOrder(input: PaymentInput!): Order
     setCustomerForOrder(input: CreateCustomerInput!): Order
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult! @deprecated(reason: "Use `authenticate` mutation with the 'native' strategy instead.")
+    "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
+    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    "Authenticates the user using a named authentication strategy"
     authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
     logout: Boolean!
     "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."

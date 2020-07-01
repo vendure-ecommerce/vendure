@@ -22,6 +22,7 @@ import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
+import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultTaxCalculationStrategy } from './tax/default-tax-calculation-strategy';
@@ -60,7 +61,9 @@ export const defaultConfig: RuntimeVendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: 'session-secret',
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
-        sessionDuration: '7d',
+        sessionDuration: '1y',
+        sessionCacheStrategy: new InMemorySessionCacheStrategy(),
+        sessionCacheTTL: 300,
         requireVerification: true,
         verificationTokenDuration: '7d',
         superadminCredentials: {

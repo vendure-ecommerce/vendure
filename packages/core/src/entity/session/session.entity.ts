@@ -1,8 +1,9 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
 import { Customer } from '../customer/customer.entity';
+import { EntityId } from '../entity-id.decorator';
 import { Order } from '../order/order.entity';
 import { User } from '../user/user.entity';
 
@@ -24,6 +25,9 @@ export abstract class Session extends VendureEntity {
 
     @Column() invalidated: boolean;
 
-    @ManyToOne(type => Order)
+    @EntityId({ nullable: true })
+    activeOrderId?: ID;
+
+    @ManyToOne((type) => Order)
     activeOrder: Order | null;
 }

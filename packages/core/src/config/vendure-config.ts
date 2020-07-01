@@ -26,6 +26,7 @@ import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
+import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
@@ -137,7 +138,7 @@ export interface ApiOptions {
 
 /**
  * @description
- * The AuthOptions define how authentication is managed.
+ * The AuthOptions define how authentication and authorization is managed.
  *
  * @docsCategory auth
  * */
@@ -189,15 +190,33 @@ export interface AuthOptions {
     authTokenHeaderKey?: string;
     /**
      * @description
-     * Session duration, i.e. the time which must elapse from the last authenticted request
+     * Session duration, i.e. the time which must elapse from the last authenticated request
      * after which the user must re-authenticate.
      *
      * Expressed as a string describing a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
-     * @default '7d'
+     * @default '1y'
      */
     sessionDuration?: string | number;
+    /**
+     * @description
+     * This strategy defines how sessions will be cached. By default, sessions are cached using a simple
+     * in-memory caching strategy which is suitable for development and low-traffic, single-instance
+     * deployments.
+     *
+     * @default InMemorySessionCacheStrategy
+     */
+    sessionCacheStrategy?: SessionCacheStrategy;
+    /**
+     * @description
+     * The "time to live" of a given item in the session cache. This determines the length of time (in seconds)
+     * that a cache entry is kept before being considered "stale" and being replaced with fresh data
+     * taken from the database.
+     *
+     * @default 300
+     */
+    sessionCacheTTL?: number;
     /**
      * @description
      * Determines whether new User accounts require verification of their email address.

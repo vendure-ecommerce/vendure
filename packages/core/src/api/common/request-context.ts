@@ -2,18 +2,13 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID, JsonCompatible } from '@vendure/common/lib/shared-types';
 import { TFunction } from 'i18next';
 
+import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
-import { AnonymousSession } from '../../entity/session/anonymous-session.entity';
-import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
-import { Session } from '../../entity/session/session.entity';
-import { User } from '../../entity/user/user.entity';
 
 import { ApiType } from './get-api-type';
 
 export type SerializedRequestContext = {
-    _session: JsonCompatible<Session> & {
-        user: JsonCompatible<User>;
-    };
+    _session: JsonCompatible<Required<CachedSession>>;
     _apiType: ApiType;
     _channel: JsonCompatible<Channel>;
     _languageCode: LanguageCode;
@@ -31,7 +26,7 @@ export type SerializedRequestContext = {
 export class RequestContext {
     private readonly _languageCode: LanguageCode;
     private readonly _channel: Channel;
-    private readonly _session?: Session;
+    private readonly _session?: CachedSession;
     private readonly _isAuthorized: boolean;
     private readonly _authorizedAsOwnerOnly: boolean;
     private readonly _translationFn: TFunction;
@@ -43,7 +38,7 @@ export class RequestContext {
     constructor(options: {
         apiType: ApiType;
         channel: Channel;
-        session?: Session;
+        session?: CachedSession;
         languageCode?: LanguageCode;
         isAuthorized: boolean;
         authorizedAsOwnerOnly: boolean;
@@ -65,22 +60,10 @@ export class RequestContext {
      * a JSON serialization - deserialization operation.
      */
     static deserialize(ctxObject: SerializedRequestContext): RequestContext {
-        let session: Session | undefined;
-        if (ctxObject._session) {
-            if (ctxObject._session.user) {
-                const user = new User(ctxObject._session.user);
-                session = new AuthenticatedSession({
-                    ...ctxObject._session,
-                    user,
-                });
-            } else {
-                session = new AnonymousSession(ctxObject._session);
-            }
-        }
         return new RequestContext({
             apiType: ctxObject._apiType,
             channel: new Channel(ctxObject._channel),
-            session,
+            session: ctxObject._session,
             languageCode: ctxObject._languageCode,
             isAuthorized: ctxObject._isAuthorized,
             authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
@@ -107,16 +90,12 @@ export class RequestContext {
         return this._languageCode;
     }
 
-    get session(): Session | undefined {
+    get session(): CachedSession | undefined {
         return this._session;
     }
 
     get activeUserId(): ID | undefined {
-        if (this.session) {
-            if (this.isAuthenticatedSession(this.session)) {
-                return this.session.user.id;
-            }
-        }
+        return this.session?.user?.id;
     }
 
     /**
@@ -146,9 +125,5 @@ export class RequestContext {
         } catch (e) {
             return `Translation format error: ${e.message}). Original key: ${key}`;
         }
-    }
-
-    private isAuthenticatedSession(session: Session): session is AuthenticatedSession {
-        return session.hasOwnProperty('user');
     }
 }
