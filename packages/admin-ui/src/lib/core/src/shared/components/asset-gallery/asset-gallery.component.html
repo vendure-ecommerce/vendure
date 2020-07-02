@@ -7,7 +7,7 @@
     >
         <div class="card-img">
             <div class="selected-checkbox"><clr-icon shape="check-circle" size="32"></clr-icon></div>
-            <img [src]="asset | assetPreview:'thumb'" />
+            <img [src]="asset | assetPreview: 'thumb'" />
         </div>
         <div class="detail">
             <vdr-entity-info
@@ -34,20 +34,20 @@
         </div>
         <div class="card-block details" *ngIf="selection.length >= 1">
             <div class="name">{{ lastSelected().name }}</div>
-            <div>
-                {{ 'asset.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}
-            </div>
-            <div>
-                <button (click)="previewAsset(lastSelected())" class="btn btn-link">
-                    <clr-icon shape="eye"></clr-icon> {{ 'asset.preview' | translate }}
-                </button>
-            </div>
-            <div>
-                <a [routerLink]="['./', lastSelected().id]" class="btn btn-link">
-                    <clr-icon shape="pencil"></clr-icon> {{ 'common.edit' | translate }}
-                </a>
-            </div>
-            <div *ngIf="selection.length === 1 && canDelete">
+            <div>{{ 'asset.original-asset-size' | translate }}: {{ lastSelected().fileSize | filesize }}</div>
+            <ng-container *ngIf="selection.length === 1">
+                <div>
+                    <button (click)="previewAsset(lastSelected())" class="btn btn-link">
+                        <clr-icon shape="eye"></clr-icon> {{ 'asset.preview' | translate }}
+                    </button>
+                </div>
+                <div>
+                    <a [routerLink]="['./', lastSelected().id]" class="btn btn-link">
+                        <clr-icon shape="pencil"></clr-icon> {{ 'common.edit' | translate }}
+                    </a>
+                </div>
+            </ng-container>
+            <div *ngIf="canDelete">
                 <button (click)="deleteAsset.emit(lastSelected())" class="btn btn-link">
                     <clr-icon shape="trash" class="is-danger"></clr-icon> {{ 'common.delete' | translate }}
                 </button>
@@ -56,15 +56,9 @@
     </div>
     <div class="card stack" [class.visible]="selection.length > 1"></div>
     <div class="selection-count" [class.visible]="selection.length > 1">
-        <clr-tooltip>
-            <div clrTooltipTrigger class="trigger">
-                {{ 'asset.assets-selected-count' | translate: { count: selection.length } }}
-            </div>
-            <clr-tooltip-content vdrPosition="top-left" clrSize="lg">
-                <ul>
-                    <li *ngFor="let asset of selection">{{ asset.name }}</li>
-                </ul>
-            </clr-tooltip-content>
-        </clr-tooltip>
+        {{ 'asset.assets-selected-count' | translate: { count: selection.length } }}
+        <ul>
+            <li *ngFor="let asset of selection">{{ asset.name }}</li>
+        </ul>
     </div>
 </div>
