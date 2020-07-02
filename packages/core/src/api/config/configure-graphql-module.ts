@@ -24,6 +24,7 @@ import { generateListOptions } from './generate-list-options';
 import {
     addGraphQLCustomFields,
     addOrderLineCustomFieldsInput,
+    addRegisterCustomerCustomFieldsInput,
     addServerConfigCustomFields,
 } from './graphql-custom-fields';
 
@@ -158,18 +159,21 @@ async function createGraphQLOptions(
         const customFields = configService.customFields;
         // Paths must be normalized to use forward-slash separators.
         // See https://github.com/nestjs/graphql/issues/336
-        const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
+        const normalizedPaths = options.typePaths.map((p) => p.split(path.sep).join('/'));
         const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
         let schema = buildSchema(typeDefs);
 
         getPluginAPIExtensions(configService.plugins, apiType)
-            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
+            .map((e) => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
-            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+            .forEach((documentNode) => (schema = extendSchema(schema, documentNode)));
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        if (apiType === 'shop') {
+            schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
+        }
 
         return printSchema(schema);
     }

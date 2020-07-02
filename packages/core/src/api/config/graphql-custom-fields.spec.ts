@@ -2,7 +2,11 @@ import { printSchema } from 'graphql';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
-import { addGraphQLCustomFields, addOrderLineCustomFieldsInput } from './graphql-custom-fields';
+import {
+    addGraphQLCustomFields,
+    addOrderLineCustomFieldsInput,
+    addRegisterCustomerCustomFieldsInput,
+} from './graphql-custom-fields';
 
 describe('addGraphQLCustomFields()', () => {
     it('uses JSON scalar if no custom fields defined', () => {
@@ -43,7 +47,10 @@ describe('addGraphQLCustomFields()', () => {
                     }
                 `;
         const customFieldConfig: CustomFields = {
-            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
@@ -60,7 +67,10 @@ describe('addGraphQLCustomFields()', () => {
                     }
                 `;
         const customFieldConfig: CustomFields = {
-            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
@@ -77,7 +87,10 @@ describe('addGraphQLCustomFields()', () => {
                     }
                 `;
         const customFieldConfig: CustomFields = {
-            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
@@ -102,7 +115,10 @@ describe('addGraphQLCustomFields()', () => {
                     }
                 `;
         const customFieldConfig: CustomFields = {
-            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
@@ -124,7 +140,10 @@ describe('addGraphQLCustomFields()', () => {
                     }
                 `;
         const customFieldConfig: CustomFields = {
-            Product: [{ name: 'available', type: 'boolean' }, { name: 'shortName', type: 'localeString' }],
+            Product: [
+                { name: 'available', type: 'boolean' },
+                { name: 'shortName', type: 'localeString' },
+            ],
         };
         const result = addGraphQLCustomFields(input, customFieldConfig, false);
         expect(printSchema(result)).toMatchSnapshot();
@@ -187,7 +206,6 @@ describe('addGraphQLCustomFields()', () => {
 });
 
 describe('addOrderLineCustomFieldsInput()', () => {
-
     it('Modifies the schema when the addItemToOrder & adjustOrderLine mutation is present', () => {
         const input = `
             type Mutation {
@@ -214,6 +232,33 @@ describe('addOrderLineCustomFieldsInput()', () => {
             { name: 'message', type: 'string' },
         ];
         const result = addOrderLineCustomFieldsInput(input, customFieldConfig);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
+});
+
+describe('addRegisterCustomerCustomFieldsInput()', () => {
+    it('add public writable custom fields to RegisterCustomerInput', () => {
+        const input = `
+            input RegisterCustomerInput {
+                emailAddress: String!
+                title: String
+                firstName: String
+                lastName: String
+                phoneNumber: String
+                password: String
+            }
+
+            type Mutation {
+                registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
+            }
+        `;
+        const customFieldConfig: CustomFieldConfig[] = [
+            { name: 'isB2B', type: 'boolean', nullable: false },
+            { name: 'message', type: 'string' },
+            { name: 'rating', type: 'int', public: false },
+            { name: 'dbRef', type: 'int', internal: true },
+        ];
+        const result = addRegisterCustomerCustomFieldsInput(input, customFieldConfig);
         expect(printSchema(result)).toMatchSnapshot();
     });
 });
