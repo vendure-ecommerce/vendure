@@ -15,5 +15,6 @@ export class SimpleDialogComponent implements Dialog<any> {
     resolveWith: (result?: any) => void;
     title = '';
     body = '';
+    translationVars = {};
     buttons: Array<DialogButtonConfig<any>> = [];
 }

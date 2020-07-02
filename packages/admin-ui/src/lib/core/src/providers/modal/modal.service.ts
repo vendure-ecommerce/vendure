@@ -32,6 +32,7 @@ export interface DialogButtonConfig<T> {
 export interface DialogConfig<T> {
     title: string;
     body?: string;
+    translationVars?: { [key: string]: string | number };
     buttons: Array<DialogButtonConfig<T>>;
 }
 
@@ -113,13 +114,13 @@ export class ModalService {
         const modalFactory = this.componentFactoryResolver.resolveComponentFactory(ModalDialogComponent);
 
         return from(this.overlayHostService.getHostView()).pipe(
-            mergeMap(hostView => {
+            mergeMap((hostView) => {
                 const modalComponentRef = hostView.createComponent(modalFactory);
                 const modalInstance: ModalDialogComponent<any> = modalComponentRef.instance;
                 modalInstance.childComponentType = component;
                 modalInstance.options = options;
 
-                return new Observable<R>(subscriber => {
+                return new Observable<R>((subscriber) => {
                     modalInstance.closeModal = (result: R) => {
                         modalComponentRef.destroy();
                         subscriber.next(result);

@@ -13,7 +13,7 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
     CreateProductVariants,
-    DeleteAsset,
+    DeleteAssets,
     DeleteProduct,
     DeleteProductVariant,
     GetAsset,
@@ -46,7 +46,7 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
-    DELETE_ASSET,
+    DELETE_ASSETS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
     GET_ASSET,
@@ -284,9 +284,9 @@ export class ProductDataService {
         });
     }
 
-    deleteAsset(id: string, force: boolean) {
-        return this.baseDataService.mutate<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
-            id,
+    deleteAssets(ids: string[], force: boolean) {
+        return this.baseDataService.mutate<DeleteAssets.Mutation, DeleteAssets.Variables>(DELETE_ASSETS, {
+            ids,
             force,
         });
     }

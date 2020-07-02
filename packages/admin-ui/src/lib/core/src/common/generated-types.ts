@@ -1816,6 +1816,8 @@ export type Mutation = {
   createZone: Zone;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
+  /** Delete multiple Assets */
+  deleteAssets: DeletionResponse;
   /** Delete a Channel */
   deleteChannel: DeletionResponse;
   /** Delete a Collection and all of its descendants */
@@ -2071,6 +2073,12 @@ export type MutationCreateZoneArgs = {
 
 export type MutationDeleteAssetArgs = {
   id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteAssetsArgs = {
+  ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
 
@@ -5310,15 +5318,15 @@ export type UpdateAssetMutation = (
   ) }
 );
 
-export type DeleteAssetMutationVariables = {
-  id: Scalars['ID'];
+export type DeleteAssetsMutationVariables = {
+  ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
 
 
-export type DeleteAssetMutation = (
+export type DeleteAssetsMutation = (
   { __typename?: 'Mutation' }
-  & { deleteAsset: (
+  & { deleteAssets: (
     { __typename?: 'DeletionResponse' }
     & Pick<DeletionResponse, 'result' | 'message'>
   ) }
@@ -7389,10 +7397,10 @@ export namespace UpdateAsset {
   export type UpdateAsset = AssetFragment;
 }
 
-export namespace DeleteAsset {
-  export type Variables = DeleteAssetMutationVariables;
-  export type Mutation = DeleteAssetMutation;
-  export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
+export namespace DeleteAssets {
+  export type Variables = DeleteAssetsMutationVariables;
+  export type Mutation = DeleteAssetsMutation;
+  export type DeleteAssets = DeleteAssetsMutation['deleteAssets'];
 }
 
 export namespace SearchProducts {

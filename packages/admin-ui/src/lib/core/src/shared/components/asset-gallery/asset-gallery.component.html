@@ -48,7 +48,7 @@
                 </div>
             </ng-container>
             <div *ngIf="canDelete">
-                <button (click)="deleteAsset.emit(lastSelected())" class="btn btn-link">
+                <button (click)="deleteAssets.emit(selection)" class="btn btn-link">
                     <clr-icon shape="trash" class="is-danger"></clr-icon> {{ 'common.delete' | translate }}
                 </button>
             </div>

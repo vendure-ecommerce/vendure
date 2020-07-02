@@ -80,38 +80,42 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         }
     }
 
-    deleteAsset(asset: Asset) {
-        this.showModalAndDelete(asset.id)
+    deleteAssets(assets: Asset[]) {
+        this.showModalAndDelete(assets.map((a) => a.id))
             .pipe(
                 switchMap((response) => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
-                        return this.showModalAndDelete(asset.id, response.message || '').pipe(
-                            map((r) => r.result === DeletionResult.DELETED),
-                        );
+                        return this.showModalAndDelete(
+                            assets.map((a) => a.id),
+                            response.message || '',
+                        ).pipe(map((r) => r.result === DeletionResult.DELETED));
                     }
                 }),
             )
             .subscribe(
                 () => {
                     this.notificationService.success(_('common.notify-delete-success'), {
-                        entity: 'Asset',
+                        entity: 'Assets',
                     });
                     this.refresh();
                 },
                 (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
-                        entity: 'Asset',
+                        entity: 'Assets',
                     });
                 },
             );
     }
 
-    private showModalAndDelete(assetId: string, message?: string) {
+    private showModalAndDelete(assetIds: string[], message?: string) {
         return this.modalService
             .dialog({
-                title: _('catalog.confirm-delete-asset'),
+                title: _('catalog.confirm-delete-assets'),
+                translationVars: {
+                    count: assetIds.length,
+                },
                 body: message,
                 buttons: [
                     { type: 'secondary', label: _('common.cancel') },
@@ -119,8 +123,10 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap((res) => (res ? this.dataService.product.deleteAsset(assetId, !!message) : EMPTY)),
-                map((res) => res.deleteAsset),
+                switchMap((res) =>
+                    res ? this.dataService.product.deleteAssets(assetIds, !!message) : EMPTY,
+                ),
+                map((res) => res.deleteAssets),
             );
     }
 }

@@ -18,7 +18,7 @@ export class AssetGalleryComponent implements OnChanges {
     @Input() multiSelect = false;
     @Input() canDelete = false;
     @Output() selectionChange = new EventEmitter<Asset[]>();
-    @Output() deleteAsset = new EventEmitter<Asset>();
+    @Output() deleteAssets = new EventEmitter<Asset[]>();
 
     selection: Asset[] = [];
 
