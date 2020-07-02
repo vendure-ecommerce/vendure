@@ -5,8 +5,10 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
+    InMemorySessionCacheStrategy,
     LogLevel,
     mergeConfig,
+    NoopSessionCacheStrategy,
     VendureConfig,
 } from '@vendure/core';
 import path from 'path';
@@ -14,7 +16,7 @@ import path from 'path';
 export function getMysqlConnectionOptions(count: number) {
     return {
         type: 'mysql' as const,
-        host: '192.168.99.100',
+        host: '127.0.0.1',
         port: 3306,
         username: 'root',
         password: '',
@@ -36,6 +38,7 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
         authOptions: {
             tokenMethod,
             requireVerification: false,
+            sessionCacheStrategy: new InMemorySessionCacheStrategy(),
         },
         importExportOptions: {
             importAssetsDir: path.join(__dirname, './data-sources'),
