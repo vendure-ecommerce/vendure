@@ -44,7 +44,7 @@ export class Product extends VendureEntity
     @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany((type) => ProductAsset, (productAsset) => productAsset.product, { onDelete: 'SET NULL' })
+    @OneToMany((type) => ProductAsset, (productAsset) => productAsset.product)
     assets: ProductAsset[];
 
     @OneToMany((type) => ProductTranslation, (translation) => translation.base, { eager: true })

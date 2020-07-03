@@ -77,10 +77,12 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
      */
     taxRateApplied: TaxRate;
 
-    @ManyToOne((type) => Asset)
+    @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany((type) => ProductVariantAsset, (productVariantAsset) => productVariantAsset.productVariant)
+    @OneToMany((type) => ProductVariantAsset, (productVariantAsset) => productVariantAsset.productVariant, {
+        onDelete: 'SET NULL',
+    })
     assets: ProductVariantAsset[];
 
     @ManyToOne((type) => TaxCategory)

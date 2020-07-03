@@ -56,32 +56,22 @@ export class Collection extends VendureEntity
 
     slug: LocaleString;
 
-    @OneToMany(
-        type => CollectionTranslation,
-        translation => translation.base,
-        { eager: true },
-    )
+    @OneToMany((type) => CollectionTranslation, (translation) => translation.base, { eager: true })
     translations: Array<Translation<Collection>>;
 
-    @ManyToOne(type => Asset)
+    @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany(
-        type => CollectionAsset,
-        collectionAsset => collectionAsset.collection,
-    )
+    @OneToMany((type) => CollectionAsset, (collectionAsset) => collectionAsset.collection)
     assets: CollectionAsset[];
 
     @Column('simple-json') filters: ConfigurableOperation[];
 
-    @ManyToMany(
-        type => ProductVariant,
-        productVariant => productVariant.collections,
-    )
+    @ManyToMany((type) => ProductVariant, (productVariant) => productVariant.collections)
     @JoinTable()
     productVariants: ProductVariant[];
 
-    @Column(type => CustomCollectionFields)
+    @Column((type) => CustomCollectionFields)
     customFields: CustomCollectionFields;
 
     @TreeChildren()
@@ -90,7 +80,7 @@ export class Collection extends VendureEntity
     @TreeParent()
     parent: Collection;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 }
