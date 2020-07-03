@@ -29,7 +29,9 @@ export const emailVerificationHandler = new EmailEventListener('email-verificati
     .setRecipient((event) => event.user.identifier)
     .setFrom(`{{ fromAddress }}`)
     .setSubject(`Please verify your email address`)
-    .setTemplateVars((event) => ({ user: event.user }))
+    .setTemplateVars((event) => ({
+        verificationToken: event.user.getNativeAuthenticationMethod().verificationToken,
+    }))
     .setMockEvent(mockAccountRegistrationEvent);
 
 export const passwordResetHandler = new EmailEventListener('password-reset')
@@ -37,7 +39,9 @@ export const passwordResetHandler = new EmailEventListener('password-reset')
     .setRecipient((event) => event.user.identifier)
     .setFrom(`{{ fromAddress }}`)
     .setSubject(`Forgotten password reset`)
-    .setTemplateVars((event) => ({ user: event.user }))
+    .setTemplateVars((event) => ({
+        passwordResetToken: event.user.getNativeAuthenticationMethod().passwordResetToken,
+    }))
     .setMockEvent(mockPasswordResetEvent);
 
 export const emailAddressChangeHandler = new EmailEventListener('email-address-change')
@@ -45,7 +49,9 @@ export const emailAddressChangeHandler = new EmailEventListener('email-address-c
     .setRecipient((event) => event.user.getNativeAuthenticationMethod().pendingIdentifier!)
     .setFrom(`{{ fromAddress }}`)
     .setSubject(`Please verify your change of email address`)
-    .setTemplateVars((event) => ({ user: event.user }))
+    .setTemplateVars((event) => ({
+        identifierChangeToken: event.user.getNativeAuthenticationMethod().identifierChangeToken,
+    }))
     .setMockEvent(mockEmailAddressChangeEvent);
 
 export const defaultEmailHandlers: Array<EmailEventHandler<any, any>> = [
