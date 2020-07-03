@@ -1,6 +1,6 @@
 {
   "name": "@vendure/ui-devkit",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "A library for authoring Vendure Admin UI extensions",
   "keywords": [
     "vendure",
@@ -39,8 +39,8 @@
     "@angular/cli": "^9.0.5",
     "@angular/compiler": "^9.0.6",
     "@angular/compiler-cli": "^9.0.6",
-    "@vendure/admin-ui": "^0.13.0",
-    "@vendure/common": "^0.13.0",
+    "@vendure/admin-ui": "^0.13.1",
+    "@vendure/common": "^0.13.1",
     "chalk": "^3.0.0",
     "chokidar": "^3.3.1",
     "fs-extra": "^9.0.0",
@@ -51,7 +51,7 @@
     "@rollup/plugin-node-resolve": "^7.1.1",
     "@types/fs-extra": "^8.1.0",
     "@types/glob": "^7.1.1",
-    "@vendure/core": "^0.13.0",
+    "@vendure/core": "^0.13.1",
     "rimraf": "^3.0.0",
     "rollup": "^2.2.0",
     "rollup-plugin-terser": "^5.3.0",

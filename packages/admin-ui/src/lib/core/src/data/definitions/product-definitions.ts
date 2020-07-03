@@ -385,9 +385,9 @@ export const UPDATE_ASSET = gql`
     ${ASSET_FRAGMENT}
 `;
 
-export const DELETE_ASSET = gql`
-    mutation DeleteAsset($id: ID!, $force: Boolean) {
-        deleteAsset(id: $id, force: $force) {
+export const DELETE_ASSETS = gql`
+    mutation DeleteAssets($ids: [ID!]!, $force: Boolean) {
+        deleteAssets(ids: $ids, force: $force) {
             result
             message
         }

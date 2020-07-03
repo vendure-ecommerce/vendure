@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 :host {
     display: flex;
@@ -36,7 +36,7 @@
     border-radius: 50%;
     top: -12px;
     left: -12px;
-    box-shadow: 0px 5px 5px -4px rgba(0,0,0,0.75);
+    box-shadow: 0px 5px 5px -4px rgba(0, 0, 0, 0.75);
     transition: opacity 0.1s;
 }
 
@@ -87,18 +87,22 @@
 
     .selection-count {
         opacity: 0;
+        position: relative;
         text-align: center;
         visibility: hidden;
         transition: opacity 0.3s, visibility 0s 0.3s;
-        .trigger {
-            cursor: pointer;
-            color: $color-grey-400;
-            text-decoration: underline;
-        }
         &.visible {
             opacity: 1;
             visibility: visible;
             transition: opacity 0.3s, visibility 0s;
+        }
+        ul {
+            text-align: left;
+            list-style-type: none;
+            margin-left: 12px;
+            li {
+                font-size: 12px;
+            }
         }
     }
 

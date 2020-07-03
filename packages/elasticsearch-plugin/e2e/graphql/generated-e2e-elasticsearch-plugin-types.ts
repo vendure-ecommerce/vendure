@@ -1781,7 +1781,8 @@ export type Mutation = {
     updateAsset: Asset;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
-    /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
+    /** Delete multiple Assets */
+    deleteAssets: DeletionResponse;
     login: LoginResult;
     authenticate: LoginResult;
     logout: Scalars['Boolean'];
@@ -1951,6 +1952,11 @@ export type MutationUpdateAssetArgs = {
 
 export type MutationDeleteAssetArgs = {
     id: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationDeleteAssetsArgs = {
+    ids: Array<Scalars['ID']>;
     force?: Maybe<Scalars['Boolean']>;
 };
 

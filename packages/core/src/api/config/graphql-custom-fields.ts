@@ -32,15 +32,15 @@ export function addGraphQLCustomFields(
 
     for (const entityName of Object.keys(customFieldConfig)) {
         const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
-            config => {
+            (config) => {
                 return !config.internal && (publicOnly === true ? config.public !== false : true);
             },
         );
 
-        const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
-        const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
-        const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
-        const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
+        const localeStringFields = customEntityFields.filter((field) => field.type === 'localeString');
+        const nonLocaleStringFields = customEntityFields.filter((field) => field.type !== 'localeString');
+        const writeableLocaleStringFields = localeStringFields.filter((field) => !field.readonly);
+        const writeableNonLocaleStringFields = nonLocaleStringFields.filter((field) => !field.readonly);
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
@@ -185,6 +185,37 @@ export function addServerConfigCustomFields(
 }
 
 /**
+ * If CustomFields are defined on the Customer entity, then an extra `customFields` field is added to
+ * the `RegisterCustomerInput` so that public writable custom fields can be set when a new customer
+ * is registered.
+ */
+export function addRegisterCustomerCustomFieldsInput(
+    typeDefsOrSchema: string | GraphQLSchema,
+    customerCustomFields: CustomFieldConfig[],
+): GraphQLSchema {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    if (!customerCustomFields || customerCustomFields.length === 0) {
+        return schema;
+    }
+    const publicWritableCustomFields = customerCustomFields.filter((fieldDef) => {
+        return fieldDef.public !== false && !fieldDef.readonly && !fieldDef.internal;
+    });
+    if (publicWritableCustomFields.length < 1) {
+        return schema;
+    }
+    const customFieldTypeDefs = `
+        input RegisterCustomerCustomFieldsInput {
+            ${mapToFields(publicWritableCustomFields, getGraphQlType)}
+        }
+
+        extend input RegisterCustomerInput {
+            customFields: RegisterCustomerCustomFieldsInput
+        }
+    `;
+    return extendSchema(schema, parse(customFieldTypeDefs));
+}
+
+/**
  * If CustomFields are defined on the OrderLine entity, then an extra `customFields` argument
  * must be added to the `addItemToOrder` and `adjustOrderLine` mutations.
  */
@@ -240,7 +271,7 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
 function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
-    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
+    return fieldDefs.map((field) => `${field.name}: ${typeFn(field.type)}`).join('\n');
 }
 
 function getFilterOperator(type: CustomFieldType): string {

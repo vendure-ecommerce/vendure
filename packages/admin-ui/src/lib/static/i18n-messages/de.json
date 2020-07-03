@@ -60,6 +60,7 @@
     "collection-contents": "Inhalt der Sammlung",
     "confirm-adding-options-delete-default-body": "Das Hinzufügen von Optionen zu diesem Produkt führt dazu, dass die vorhandene Standardvariante gelöscht wird. Möchten Sie fortfahren?",
     "confirm-adding-options-delete-default-title": "Standardvariante löschen?",
+    "confirm-delete-assets": "{count} {count, plural, one {Asset} other {Assets}} löschen?",
     "confirm-delete-administrator": "",
     "confirm-delete-asset": "Asset löschen?",
     "confirm-delete-channel": "Kanal löschen?",

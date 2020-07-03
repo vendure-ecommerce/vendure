@@ -18,7 +18,7 @@ export class AssetGalleryComponent implements OnChanges {
     @Input() multiSelect = false;
     @Input() canDelete = false;
     @Output() selectionChange = new EventEmitter<Asset[]>();
-    @Output() deleteAsset = new EventEmitter<Asset>();
+    @Output() deleteAssets = new EventEmitter<Asset[]>();
 
     selection: Asset[] = [];
 
@@ -38,8 +38,17 @@ export class AssetGalleryComponent implements OnChanges {
 
     toggleSelection(event: MouseEvent, asset: Asset) {
         const index = this.selection.findIndex((a) => a.id === asset.id);
-        if (index === -1) {
-            if (this.multiSelect && event.ctrlKey) {
+        if (this.multiSelect && event.shiftKey && 1 <= this.selection.length) {
+            const lastSelection = this.selection[this.selection.length - 1];
+            const lastSelectionIndex = this.assets.findIndex((a) => a.id === lastSelection.id);
+            const currentIndex = this.assets.findIndex((a) => a.id === asset.id);
+            const start = currentIndex < lastSelectionIndex ? currentIndex : lastSelectionIndex;
+            const end = currentIndex > lastSelectionIndex ? currentIndex + 1 : lastSelectionIndex;
+            this.selection.push(
+                ...this.assets.slice(start, end).filter((a) => !this.selection.find((s) => s.id === a.id)),
+            );
+        } else if (index === -1) {
+            if (this.multiSelect && (event.ctrlKey || event.shiftKey)) {
                 this.selection.push(asset);
             } else {
                 this.selection = [asset];

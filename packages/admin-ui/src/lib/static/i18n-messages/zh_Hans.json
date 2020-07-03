@@ -62,6 +62,7 @@
     "confirm-adding-options-delete-default-title": "确认删除产品规格么?",
     "confirm-delete-administrator": "",
     "confirm-delete-asset": "",
+    "confirm-delete-assets": "",
     "confirm-delete-channel": "确认删除销售渠道?",
     "confirm-delete-collection": "确认删除商品系列吗?",
     "confirm-delete-collection-and-children-body": "删除这个系列会删除它所包含的子系列，确认删除码?",

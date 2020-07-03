@@ -181,12 +181,14 @@ export class CustomerService {
                 return false;
             }
         }
+        const customFields = (input as any).customFields;
         const customer = await this.createOrUpdate({
             emailAddress: input.emailAddress,
             title: input.title || '',
             firstName: input.firstName || '',
             lastName: input.lastName || '',
             phoneNumber: input.phoneNumber || '',
+            ...(customFields ? { customFields } : {}),
         });
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
