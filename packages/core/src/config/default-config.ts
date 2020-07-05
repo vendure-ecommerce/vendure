@@ -132,6 +132,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductOptionGroup: [],
         ProductVariant: [],
         User: [],
+        ShippingMethod: [],
     },
     plugins: [],
 };

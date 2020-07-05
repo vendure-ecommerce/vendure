@@ -4,6 +4,7 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import {
     ShippingCalculationResult,
     ShippingCalculator,
@@ -11,6 +12,7 @@ import {
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { VendureEntity } from '../base/base.entity';
 import { Channel } from '../channel/channel.entity';
+import { CustomShippingMethodFields } from '../custom-entity-fields';
 import { Order } from '../order/order.entity';
 
 /**
@@ -24,7 +26,7 @@ import { Order } from '../order/order.entity';
  * @docsCategory entities
  */
 @Entity()
-export class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletable {
+export class ShippingMethod extends VendureEntity implements ChannelAware, SoftDeletable, HasCustomFields {
     private readonly allCheckers: { [code: string]: ShippingEligibilityChecker } = {};
     private readonly allCalculators: { [code: string]: ShippingCalculator } = {};
 
@@ -47,9 +49,12 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
 
     @Column('simple-json') calculator: ConfigurableOperation;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
+
+    @Column((type) => CustomShippingMethodFields)
+    customFields: CustomShippingMethodFields;
 
     async apply(order: Order): Promise<ShippingCalculationResult | undefined> {
         const calculator = this.allCalculators[this.calculator.code];

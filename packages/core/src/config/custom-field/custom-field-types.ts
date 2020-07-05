@@ -149,6 +149,7 @@ export interface CustomFields {
     ProductOptionGroup?: CustomFieldConfig[];
     ProductVariant?: CustomFieldConfig[];
     User?: CustomFieldConfig[];
+    ShippingMethod?: CustomFieldConfig[];
 }
 
 /**
