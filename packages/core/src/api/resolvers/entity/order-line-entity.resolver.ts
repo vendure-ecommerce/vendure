@@ -1,7 +1,5 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
-import { Translated } from '../../../common/types/locale-types';
-import { assertFound } from '../../../common/utils';
 import { Asset, OrderLine, ProductVariant } from '../../../entity';
 import { AssetService, ProductVariantService } from '../../../service';
 import { RequestContext } from '../../common/request-context';
@@ -15,8 +13,11 @@ export class OrderLineEntityResolver {
     async productVariant(
         @Ctx() ctx: RequestContext,
         @Parent() orderLine: OrderLine,
-    ): Promise<Translated<ProductVariant>> {
-        return assertFound(this.productVariantService.findOne(ctx, orderLine.productVariant.id));
+    ): Promise<ProductVariant> {
+        if (orderLine.productVariant) {
+            return orderLine.productVariant;
+        }
+        return this.productVariantService.getVariantByOrderLineId(ctx, orderLine.id);
     }
 
     @ResolveField()

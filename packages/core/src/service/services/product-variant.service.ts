@@ -15,7 +15,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
+import { OrderLine, ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
@@ -61,9 +61,11 @@ export class ProductVariantService {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(productVariantId, { relations })
-            .then(result => {
+            .then((result) => {
                 if (result) {
-                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
+                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
+                        'product',
+                    ]);
                 }
             });
     }
@@ -81,8 +83,8 @@ export class ProductVariantService {
                     'featuredAsset',
                 ],
             })
-            .then(variants => {
-                return variants.map(variant =>
+            .then((variants) => {
+                return variants.map((variant) =>
                     translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
                         'options',
                         'facetValues',
@@ -112,8 +114,8 @@ export class ProductVariantService {
                     id: 'ASC',
                 },
             })
-            .then(variants =>
-                variants.map(variant => {
+            .then((variants) =>
+                variants.map((variant) => {
                     const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
                     return translateDeep(variantWithPrices, ctx.languageCode, [
                         'options',
@@ -144,7 +146,7 @@ export class ProductVariantService {
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
-            const items = variants.map(variant => {
+            const items = variants.map((variant) => {
                 const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
                 return translateDeep(variantWithPrices, ctx.languageCode);
             });
@@ -155,20 +157,39 @@ export class ProductVariantService {
         });
     }
 
+    async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
+        const { productVariant } = await getEntityOrThrow(this.connection, OrderLine, orderLineId, {
+            relations: ['productVariant'],
+        });
+        return translateDeep(productVariant, ctx.languageCode);
+    }
+
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(variantId, { relations: ['options'] })
-            .then(variant => (!variant ? [] : variant.options.map(o => translateDeep(o, ctx.languageCode))));
+            .then((variant) =>
+                !variant ? [] : variant.options.map((o) => translateDeep(o, ctx.languageCode)),
+            );
     }
 
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .getRepository(ProductVariant)
             .findOne(variantId, { relations: ['facetValues', 'facetValues.facet'] })
-            .then(variant =>
-                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+            .then((variant) =>
+                !variant ? [] : variant.facetValues.map((o) => translateDeep(o, ctx.languageCode, ['facet'])),
             );
+    }
+
+    /**
+     * Returns the Product associated with the ProductVariant. Whereas the `ProductService.findOne()`
+     * method performs a large multi-table join with all the typical data needed for a "product detail"
+     * page, this method returns on the Product itself.
+     */
+    async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
+        const product = await getEntityOrThrow(this.connection, Product, variant.productId);
+        return translateDeep(product, ctx.languageCode);
     }
 
     async create(
@@ -194,7 +215,7 @@ export class ProductVariantService {
         }
         const updatedVariants = await this.findByIds(
             ctx,
-            input.map(i => i.id),
+            input.map((i) => i.id),
         );
         this.eventBus.publish(new ProductVariantEvent(ctx, updatedVariants, 'updated'));
         return updatedVariants;
@@ -214,7 +235,7 @@ export class ProductVariantService {
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
-            beforeSave: async variant => {
+            beforeSave: async (variant) => {
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
                     const selectedOptions = await this.connection
@@ -259,7 +280,7 @@ export class ProductVariantService {
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
-            beforeSave: async updatedVariant => {
+            beforeSave: async (updatedVariant) => {
                 if (input.taxCategoryId) {
                     const taxCategory = await this.taxCategoryService.findOne(input.taxCategoryId);
                     if (taxCategory) {
@@ -331,7 +352,9 @@ export class ProductVariantService {
      * Populates the `price` field with the price for the specified channel.
      */
     applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
-        const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
+        const channelPrice = variant.productVariantPrices.find((p) =>
+            idsAreEqual(p.channelId, ctx.channelId),
+        );
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`);
         }
@@ -404,7 +427,7 @@ export class ProductVariantService {
 
         const inputOptionIds = this.sortJoin(optionIds, ',');
 
-        product.variants.forEach(variant => {
+        product.variants.forEach((variant) => {
             const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
             if (variantOptionIds === inputOptionIds) {
                 throw new UserInputError('error.product-variant-options-combination-already-exists', {
@@ -422,7 +445,7 @@ export class ProductVariantService {
 
     private sortJoin<T>(arr: T[], glue: string, prop?: keyof T): string {
         return arr
-            .map(x => (prop ? x[prop] : x))
+            .map((x) => (prop ? x[prop] : x))
             .sort()
             .join(glue);
     }

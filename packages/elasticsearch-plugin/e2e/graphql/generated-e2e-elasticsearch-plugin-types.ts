@@ -1783,7 +1783,12 @@ export type Mutation = {
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation
+     * is an alias for `authenticate({ native: { ... }})`
+     */
     login: LoginResult;
+    /** Authenticates the user using a named authentication strategy */
     authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -2684,6 +2689,7 @@ export type ProductVariant = Node & {
     trackInventory: Scalars['Boolean'];
     stockMovements: StockMovementList;
     id: Scalars['ID'];
+    product: Product;
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];

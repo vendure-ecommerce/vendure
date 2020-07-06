@@ -1786,6 +1786,7 @@ export type Mutation = {
   assignProductsToChannel: Array<Product>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
+  /** Authenticates the user using a named authentication strategy */
   authenticate: LoginResult;
   cancelOrder: Order;
   /** Create a new Administrator */
@@ -1868,7 +1869,10 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   fulfillOrder: Fulfillment;
   importProducts?: Maybe<ImportInfo>;
-  /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
+  /**
+   * Authenticates the user using the native authentication strategy. This mutation
+   * is an alias for `authenticate({ native: { ... }})`
+   */
   login: LoginResult;
   logout: Scalars['Boolean'];
   /** Move a Collection to a different parent or index */
@@ -2811,6 +2815,7 @@ export type ProductVariant = Node & {
   trackInventory: Scalars['Boolean'];
   stockMovements: StockMovementList;
   id: Scalars['ID'];
+  product: Product;
   productId: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];

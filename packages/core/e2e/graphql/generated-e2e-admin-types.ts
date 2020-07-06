@@ -1783,7 +1783,12 @@ export type Mutation = {
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation
+     * is an alias for `authenticate({ native: { ... }})`
+     */
     login: LoginResult;
+    /** Authenticates the user using a named authentication strategy */
     authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
@@ -2684,6 +2689,7 @@ export type ProductVariant = Node & {
     trackInventory: Scalars['Boolean'];
     stockMovements: StockMovementList;
     id: Scalars['ID'];
+    product: Product;
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -5406,6 +5412,10 @@ export type DeleteRoleMutation = { __typename?: 'Mutation' } & {
     deleteRole: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
 
+export type LogoutMutationVariables = {};
+
+export type LogoutMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'logout'>;
+
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
     ShippingMethod,
     'id' | 'code' | 'description'
@@ -6953,6 +6963,11 @@ export namespace DeleteRole {
     export type Variables = DeleteRoleMutationVariables;
     export type Mutation = DeleteRoleMutation;
     export type DeleteRole = DeleteRoleMutation['deleteRole'];
+}
+
+export namespace Logout {
+    export type Variables = LogoutMutationVariables;
+    export type Mutation = LogoutMutation;
 }
 
 export namespace ShippingMethod {

@@ -1356,8 +1356,12 @@ export type Mutation = {
     setOrderShippingMethod?: Maybe<Order>;
     addPaymentToOrder?: Maybe<Order>;
     setCustomerForOrder?: Maybe<Order>;
-    /** @deprecated Use `authenticate` mutation with the 'native' strategy instead. */
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation
+     * is an alias for `authenticate({ native: { ... }})`
+     */
     login: LoginResult;
+    /** Authenticates the user using a named authentication strategy */
     authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /**
@@ -1857,6 +1861,7 @@ export type ProductTranslation = {
 export type ProductVariant = Node & {
     __typename?: 'ProductVariant';
     id: Scalars['ID'];
+    product: Product;
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
