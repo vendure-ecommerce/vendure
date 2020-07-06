@@ -1803,6 +1803,7 @@ export type ProductOption = Node & {
     code: Scalars['String'];
     name: Scalars['String'];
     groupId: Scalars['ID'];
+    group: ProductOptionGroup;
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
 };

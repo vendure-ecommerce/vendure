@@ -46,6 +46,7 @@ import {
     ProductAdminEntityResolver,
     ProductEntityResolver,
 } from './resolvers/entity/product-entity.resolver';
+import { ProductOptionEntityResolver } from './resolvers/entity/product-option-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
 import {
     ProductVariantAdminEntityResolver,
@@ -105,6 +106,7 @@ export const entityResolvers = [
     OrderLineEntityResolver,
     PaymentEntityResolver,
     ProductEntityResolver,
+    ProductOptionEntityResolver,
     ProductOptionGroupEntityResolver,
     ProductVariantEntityResolver,
     RefundEntityResolver,
