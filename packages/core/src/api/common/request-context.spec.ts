@@ -1,9 +1,8 @@
 import { CurrencyCode, LanguageCode } from '@vendure/common/lib/generated-types';
 
+import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Order } from '../../entity/order/order.entity';
-import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
-import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 
@@ -13,8 +12,7 @@ describe('RequestContext', () => {
     describe('fromObject()', () => {
         let original: RequestContext;
         let ctxObject: SerializedRequestContext;
-        let session: Session;
-        let user: User;
+        let session: CachedSession;
         let channel: Channel;
         let activeOrder: Order;
         let zone: Zone;
@@ -25,16 +23,19 @@ describe('RequestContext', () => {
                 active: true,
                 code: 'ADAWDJAWD',
             });
-            user = new User({
-                id: '8833774',
-                verified: true,
-            });
-            session = new AuthenticatedSession({
+            session = {
+                cacheExpiry: Number.MAX_SAFE_INTEGER,
+                expires: new Date(),
                 id: '1234',
                 token: '2d37187e9e8fc47807fe4f58ca',
-                activeOrder,
-                user,
-            });
+                activeOrderId: '123',
+                user: {
+                    id: '8833774',
+                    identifier: 'user',
+                    verified: true,
+                    channelPermissions: [],
+                },
+            };
             zone = new Zone({
                 id: '62626',
                 name: 'Europe',

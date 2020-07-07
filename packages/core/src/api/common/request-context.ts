@@ -63,7 +63,7 @@ export class RequestContext {
         return new RequestContext({
             apiType: ctxObject._apiType,
             channel: new Channel(ctxObject._channel),
-            session: ctxObject._session,
+            session: { ...ctxObject._session, expires: new Date(ctxObject._session.expires) },
             languageCode: ctxObject._languageCode,
             isAuthorized: ctxObject._isAuthorized,
             authorizedAsOwnerOnly: ctxObject._authorizedAsOwnerOnly,
