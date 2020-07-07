@@ -47,19 +47,22 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
 
     @Column('simple-json') calculator: ConfigurableOperation;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 
     async apply(order: Order): Promise<ShippingCalculationResult | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const { price, priceWithTax, metadata } = await calculator.calculate(order, this.calculator.args);
-            return {
-                price: Math.round(price),
-                priceWithTax: Math.round(priceWithTax),
-                metadata,
-            };
+            const response = await calculator.calculate(order, this.calculator.args);
+            if (response) {
+                const { price, priceWithTax, metadata } = response;
+                return {
+                    price: Math.round(price),
+                    priceWithTax: Math.round(priceWithTax),
+                    metadata,
+                };
+            }
         }
     }
 
