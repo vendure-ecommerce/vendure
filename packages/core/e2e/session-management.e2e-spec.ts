@@ -55,7 +55,7 @@ describe('Session caching', () => {
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-minimal.csv'),
             customerCount: 1,
         });
-        await adminClient.asSuperAdmin();
+        testSessionCache.clear();
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -65,6 +65,7 @@ describe('Session caching', () => {
     it('populates the cache on login', async () => {
         setSpy.mockClear();
         expect(setSpy.mock.calls.length).toBe(0);
+        expect(testSessionCache.size).toBe(0);
 
         await adminClient.query<AttemptLogin.Mutation, AttemptLogin.Variables>(ATTEMPT_LOGIN, {
             username: SUPER_ADMIN_USER_IDENTIFIER,
@@ -99,7 +100,7 @@ describe('Session caching', () => {
 
     it('clears cache for that user on logout', async () => {
         deleteSpy.mockClear();
-
+        expect(deleteSpy.mock.calls.length).toBe(0);
         await adminClient.query(
             gql`
                 mutation Logout {
@@ -109,7 +110,7 @@ describe('Session caching', () => {
         );
 
         expect(testSessionCache.size).toBe(0);
-        expect(deleteSpy.mock.calls.length).toBe(1);
+        expect(deleteSpy.mock.calls.length).toBeGreaterThan(0);
     });
 });
 
