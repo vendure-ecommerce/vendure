@@ -757,6 +757,7 @@ export type CustomFields = {
     ProductOptionGroup: Array<CustomFieldConfig>;
     ProductVariant: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
+    ShippingMethod: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
@@ -2144,6 +2145,7 @@ export type ShippingMethod = Node & {
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodList = PaginatedList & {

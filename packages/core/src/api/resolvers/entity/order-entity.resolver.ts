@@ -61,3 +61,13 @@ export class OrderEntityResolver {
         return this.orderService.getOrderPromotions(order.id);
     }
 }
+
+@Resolver('Order')
+export class OrderAdminEntityResolver {
+    constructor(private orderService: OrderService) {}
+
+    @ResolveField()
+    async nextStates(@Parent() order: Order) {
+        return this.orderService.getNextOrderStates(order);
+    }
+}

@@ -102,6 +102,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         updatedAt
         code
         state
+        nextStates
         active
         customer {
             id
