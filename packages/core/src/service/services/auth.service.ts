@@ -62,7 +62,6 @@ export class AuthService {
         if (this.configService.authOptions.requireVerification && !user.verified) {
             throw new NotVerifiedError();
         }
-        await this.sessionService.deleteSessionsByUser(user);
         if (ctx.session && ctx.session.activeOrderId) {
             await this.sessionService.deleteSessionsByActiveOrderId(ctx.session.activeOrderId);
         }

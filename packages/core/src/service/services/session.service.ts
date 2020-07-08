@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
-import se from 'i18next-icu/locale-data/se';
 import ms from 'ms';
 import { Connection, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
@@ -109,8 +108,8 @@ export class SessionService implements EntitySubscriberInterface {
 
     async getSessionFromToken(sessionToken: string): Promise<CachedSession | undefined> {
         let serializedSession = await this.sessionCacheStrategy.get(sessionToken);
-        const stale = serializedSession && serializedSession.cacheExpiry < new Date().getTime() / 1000;
-        const expired = serializedSession && serializedSession.expires < new Date();
+        const stale = !!(serializedSession && serializedSession.cacheExpiry < new Date().getTime() / 1000);
+        const expired = !!(serializedSession && serializedSession.expires < new Date());
         if (!serializedSession || stale || expired) {
             const session = await this.findSessionByToken(sessionToken);
             if (session) {
