@@ -18,7 +18,7 @@ import {
 import { QueryCountriesArgs } from '@vendure/common/lib/generated-types';
 import ms from 'ms';
 
-import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
+import { ForbiddenError, IllegalOperationError, InternalServerError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
 import { Country } from '../../../entity';
@@ -303,6 +303,9 @@ export class ShopOrderResolver {
     @Allow(Permission.Owner)
     async setCustomerForOrder(@Ctx() ctx: RequestContext, @Args() args: MutationSetCustomerForOrderArgs) {
         if (ctx.authorizedAsOwnerOnly) {
+            if (ctx.activeUserId) {
+                throw new IllegalOperationError('error.cannot-set-customer-for-order-when-logged-in');
+            }
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 const customer = await this.customerService.createOrUpdate(args.input, true);

@@ -17,6 +17,7 @@ export * from './logger/default-logger';
 export * from './logger/noop-logger';
 export * from './logger/vendure-logger';
 export * from './merge-config';
+export * from './order/custom-order-process';
 export * from './order/order-merge-strategy';
 export * from './order/price-calculation-strategy';
 export * from './payment-method/example-payment-method-handler';

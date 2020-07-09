@@ -3,7 +3,7 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
-import { FSM, StateMachineConfig } from '../../../common/finite-state-machine';
+import { FSM, StateMachineConfig } from '../../../common/finite-state-machine/finite-state-machine';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';

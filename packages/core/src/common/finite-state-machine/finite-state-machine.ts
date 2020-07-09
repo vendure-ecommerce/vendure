@@ -1,16 +1,23 @@
 import { Observable } from 'rxjs';
 
 /**
+ * @description
  * A type which is used to define all valid transitions and transition callbacks
+ *
+ * @docsCategory StateMachine
  */
-export type Transitions<T extends string> = {
-    [S in T]: {
-        to: T[];
-    }
+export type Transitions<State extends string, Target extends string = State> = {
+    [S in State]: {
+        to: Target[];
+        mergeStrategy?: 'merge' | 'replace';
+    };
 };
 
 /**
+ * @description
  * The config object used to instantiate a new FSM instance.
+ *
+ * @docsCategory StateMachine
  */
 export type StateMachineConfig<T extends string, Data = undefined> = {
     transitions: Transitions<T>;
@@ -28,7 +35,10 @@ export type StateMachineConfig<T extends string, Data = undefined> = {
 };
 
 /**
+ * @description
  * A simple type-safe finite state machine
+ *
+ * @docsCategory StateMachine
  */
 export class FSM<T extends string, Data = any> {
     private readonly _initialState: T;
@@ -65,7 +75,7 @@ export class FSM<T extends string, Data = any> {
             if (typeof this.config.onTransitionStart === 'function') {
                 const transitionResult = this.config.onTransitionStart(this._currentState, state, data);
                 const canTransition = await (transitionResult instanceof Observable
-                    ? await transitionResult.toPromise()
+                    ? transitionResult.toPromise()
                     : transitionResult);
                 if (canTransition === false) {
                     return;

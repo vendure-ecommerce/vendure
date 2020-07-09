@@ -1,11 +1,11 @@
 import { RequestContext } from '../../../api/common/request-context';
-import { Transitions } from '../../../common/finite-state-machine';
+import { Transitions } from '../../../common/finite-state-machine/finite-state-machine';
 import { Order } from '../../../entity/order/order.entity';
 
 /**
  * @description
- * These are the default states of the Order process. They can be augmented via
- * the `transtitions` property in the {@link OrderProcessOptions}.
+ * These are the default states of the Order process. They can be augmented and
+ * modified by using the {@link OrderOptions} `process` property.
  *
  * @docsCategory orders
  */

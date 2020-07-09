@@ -689,9 +689,6 @@ export class OrderService {
 
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        if (order.customer && !idsAreEqual(order.customer.id, customer.id)) {
-            throw new IllegalOperationError(`error.order-already-has-customer`);
-        }
         order.customer = customer;
         await this.connection.getRepository(Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that

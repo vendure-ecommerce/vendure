@@ -594,6 +594,22 @@ describe('Shop orders', () => {
             expect(result2.activeOrder!.id).toBe(activeOrder.id);
         });
 
+        it(
+            'cannot setCustomerForOrder when already logged in',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
+                    SET_CUSTOMER,
+                    {
+                        input: {
+                            emailAddress: 'newperson@email.com',
+                            firstName: 'New',
+                            lastName: 'Person',
+                        },
+                    },
+                );
+            }, 'Cannot set a Customer for the Order when already logged in'),
+        );
+
         describe('shipping', () => {
             let shippingMethods: GetShippingMethods.EligibleShippingMethods[];
 

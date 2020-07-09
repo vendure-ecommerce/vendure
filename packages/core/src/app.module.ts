@@ -123,6 +123,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
         const { mergeStrategy, priceCalculationStrategy } = this.configService.orderOptions;
         const { entityIdStrategy } = this.configService;
+        const { process } = this.configService.orderOptions;
         return [
             ...adminAuthenticationStrategy,
             ...shopAuthenticationStrategy,
@@ -135,6 +136,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             mergeStrategy,
             entityIdStrategy,
             priceCalculationStrategy,
+            ...process,
         ];
     }
 

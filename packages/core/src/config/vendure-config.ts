@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
-import { Transitions } from '../common/finite-state-machine';
+import { Transitions } from '../common/finite-state-machine/finite-state-machine';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
@@ -21,6 +21,7 @@ import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
+import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
@@ -288,9 +289,12 @@ export interface OrderOptions {
     priceCalculationStrategy?: PriceCalculationStrategy;
     /**
      * @description
-     * Defines custom states and transition logic for the order process state machine.
+     * Allows the definition of custom states and transition logic for the order process state machine.
+     * Takes an array of objects implementing the {@link CustomOrderProcess} interface.
+     *
+     * @default []
      */
-    process?: OrderProcessOptions<string>;
+    process?: Array<CustomOrderProcess<string>>;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
@@ -318,43 +322,6 @@ export interface OrderOptions {
      * for codes to be unique.
      */
     generateOrderCode?: (ctx: RequestContext) => string | Promise<string>;
-}
-
-/**
- * @description
- * Defines custom states and transition logic for the order process state machine.
- *
- * @docsCategory orders
- * @docsPage OrderOptions
- */
-export interface OrderProcessOptions<T extends string> {
-    /**
-     * @description
-     * Define how the custom states fit in with the default order
-     * state transitions.
-     *
-     */
-    transitions?: Partial<Transitions<T | OrderState>>;
-    /**
-     * @description
-     * Define logic to run before a state tranition takes place. Returning
-     * false will prevent the transition from going ahead.
-     */
-    onTransitionStart?(
-        fromState: T,
-        toState: T,
-        data: { order: Order },
-    ): boolean | Promise<boolean> | Observable<boolean> | void;
-    /**
-     * @description
-     * Define logic to run after a state transition has taken place.
-     */
-    onTransitionEnd?(fromState: T, toState: T, data: { order: Order }): void;
-    /**
-     * @description
-     * Define a custom error handler function for transition errors.
-     */
-    onTransitionError?(fromState: T, toState: T, message?: string): void;
 }
 
 /**

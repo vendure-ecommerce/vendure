@@ -1,3 +1,4 @@
+export * from './finite-state-machine/finite-state-machine';
 export * from './async-queue';
 export * from './error/errors';
 export * from './injector';
