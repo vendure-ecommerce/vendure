@@ -59,7 +59,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> extends C
     calculate(
         order: Order,
         args: ConfigArg[],
-    ): ShippingCalculationResult | Promise<ShippingCalculationResult> {
+    ): ShippingCalculationResult | Promise<ShippingCalculationResult> | undefined {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
@@ -103,4 +103,4 @@ export interface ShippingCalculationResult {
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => ShippingCalculationResult | Promise<ShippingCalculationResult>;
+) => ShippingCalculationResult | Promise<ShippingCalculationResult> | undefined;
