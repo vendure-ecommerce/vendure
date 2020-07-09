@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ShippingCalculationResult } from '../../../config/shipping-method/shipping-calculator';
@@ -6,14 +7,10 @@ import { Order } from '../../../entity/order/order.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 
-type CheckEligibilityByShippingMethodResponse =
-    | {
-          method: ShippingMethod;
-          result: ShippingCalculationResult;
-      }
-    | undefined;
-
-type EligibleShippingMethod = NonNullable<CheckEligibilityByShippingMethodResponse>;
+type EligibleShippingMethod = {
+    method: ShippingMethod;
+    result: ShippingCalculationResult;
+};
 
 @Injectable()
 export class ShippingCalculator {
@@ -31,18 +28,13 @@ export class ShippingCalculator {
         );
         const eligibleMethods = await Promise.all(checkEligibilityPromises);
 
-        // Workaround to remove undefined from type: https://stackoverflow.com/a/51577579
-        const filteredEligibleMethods = eligibleMethods.filter(
-            (m): m is EligibleShippingMethod => m !== undefined,
-        );
-
-        return filteredEligibleMethods.sort((a, b) => a.result.price - b.result.price);
+        return eligibleMethods.filter(notNullOrUndefined).sort((a, b) => a.result.price - b.result.price);
     }
 
     private async checkEligibilityByShippingMethod(
         order: Order,
         method: ShippingMethod,
-    ): Promise<CheckEligibilityByShippingMethodResponse> {
+    ): Promise<EligibleShippingMethod | undefined> {
         const eligible = await method.test(order);
         if (eligible) {
             const result = await method.apply(order);
