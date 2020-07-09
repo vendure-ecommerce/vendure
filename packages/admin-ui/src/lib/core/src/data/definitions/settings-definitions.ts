@@ -574,6 +574,9 @@ export const GET_SERVER_CONFIG = gql`
                     ProductVariant {
                         ...CustomFields
                     }
+                    ShippingMethod {
+                        ...CustomFields
+                    }
                     User {
                         ...CustomFields
                     }

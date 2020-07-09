@@ -4816,7 +4816,7 @@ export type OrderLineFragment = (
 
 export type OrderDetailFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -6506,6 +6506,24 @@ export type GetServerConfigQuery = (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, ShippingMethod: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
         )>, User: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7865,6 +7883,7 @@ export namespace GetServerConfig {
   export type ProductOption = CustomFieldsFragment;
   export type ProductOptionGroup = CustomFieldsFragment;
   export type ProductVariant = CustomFieldsFragment;
+  export type ShippingMethod = CustomFieldsFragment;
   export type User = CustomFieldsFragment;
 }
 
