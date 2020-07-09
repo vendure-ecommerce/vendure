@@ -91,7 +91,7 @@ describe('Order process', () => {
     });
 
     it('CustomOrderProcess is injectable', () => {
-        expect(initSpy).toHaveBeenCalledTimes(1);
+        expect(initSpy).toHaveBeenCalled();
         expect(initSpy.mock.calls[0][0]).toBe('default');
     });
 
