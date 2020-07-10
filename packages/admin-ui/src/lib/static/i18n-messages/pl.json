@@ -61,7 +61,6 @@
     "confirm-adding-options-delete-default-body": "Dodawanie opcji spowoduje, że obecna domyślna opcja zostanie usunięta. Czy chcesz kontynuować?",
     "confirm-adding-options-delete-default-title": "Usunąć domyślny tytuł?",
     "confirm-delete-administrator": "",
-    "confirm-delete-asset": "",
     "confirm-delete-assets": "",
     "confirm-delete-channel": "Usunąć kanał?",
     "confirm-delete-collection": "Usunąć kolekcje?",
@@ -602,6 +601,8 @@
     "total": "Total",
     "tracking-code": "Numer przesyłki",
     "transaction-id": "Numer transakcji",
+    "transition-to-state": "",
+    "transitioned-to-state-success": "",
     "unfulfilled": "Unfulfilled",
     "unit-price": "Cena jednostkowa"
   },

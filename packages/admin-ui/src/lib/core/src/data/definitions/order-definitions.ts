@@ -42,6 +42,7 @@ export const ORDER_FRAGMENT = gql`
         updatedAt
         code
         state
+        nextStates
         total
         currencyCode
         customer {
@@ -290,4 +291,13 @@ export const DELETE_ORDER_NOTE = gql`
             message
         }
     }
+`;
+
+export const TRANSITION_ORDER_TO_STATE = gql`
+    mutation TransitionOrderToState($id: ID!, $state: String!) {
+        transitionOrderToState(id: $id, state: $state) {
+            ...Order
+        }
+    }
+    ${ORDER_FRAGMENT}
 `;

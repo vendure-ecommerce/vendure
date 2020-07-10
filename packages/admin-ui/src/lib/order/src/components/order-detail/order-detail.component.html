@@ -24,7 +24,7 @@
                     type="button"
                     class="btn"
                     vdrDropdownItem
-                    *ngIf="order.state !== 'Cancelled'"
+                    *ngIf="order.nextStates.includes('Cancelled')"
                     (click)="cancelOrRefund(order)"
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
@@ -37,6 +37,13 @@
                         {{ 'order.cancel-order' | translate }}
                     </ng-template>
                 </button>
+                <ng-container *ngFor="let nextState of nextStates$ | async">
+                    <div class="dropdown-divider"></div>
+                    <button type="button" class="btn" vdrDropdownItem (click)="transitionToState(nextState)">
+                        <clr-icon shape="step-forward-2"></clr-icon>
+                        {{ 'order.transition-to-state' | translate: { state: nextState } }}
+                    </button>
+                </ng-container>
             </vdr-dropdown-menu>
         </vdr-dropdown>
     </vdr-ab-right>
@@ -47,39 +54,39 @@
         <div class="clr-col-lg-8">
             <table class="order-lines table">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>{{ 'order.product-name' | translate }}</th>
-                    <th>{{ 'order.product-sku' | translate }}</th>
-                    <th>{{ 'order.unit-price' | translate }}</th>
-                    <th>{{ 'order.quantity' | translate }}</th>
-                    <ng-container *ngFor="let customField of visibileOrderLineCustomFields">
-                        <th class="order-line-custom-field">
-                            <button
-                                class="custom-field-header-button"
-                                (click)="toggleOrderLineCustomFields()"
-                                [title]="'common.hide-custom-fields' | translate"
-                            >
-                                {{ customField | customFieldLabel }}
-                            </button>
-                        </th>
-                    </ng-container>
-                    <ng-container *ngIf="showElided">
-                        <th>
-                            <button
-                                class="custom-field-header-button"
-                                (click)="toggleOrderLineCustomFields()"
-                                [title]="'common.display-custom-fields' | translate"
-                            >
-                                <clr-icon
-                                    shape="ellipsis-horizontal"
-                                    class="custom-field-ellipsis"
-                                ></clr-icon>
-                            </button>
-                        </th>
-                    </ng-container>
-                    <th>{{ 'order.total' | translate }}</th>
-                </tr>
+                    <tr>
+                        <th></th>
+                        <th>{{ 'order.product-name' | translate }}</th>
+                        <th>{{ 'order.product-sku' | translate }}</th>
+                        <th>{{ 'order.unit-price' | translate }}</th>
+                        <th>{{ 'order.quantity' | translate }}</th>
+                        <ng-container *ngFor="let customField of visibleOrderLineCustomFields">
+                            <th class="order-line-custom-field">
+                                <button
+                                    class="custom-field-header-button"
+                                    (click)="toggleOrderLineCustomFields()"
+                                    [title]="'common.hide-custom-fields' | translate"
+                                >
+                                    {{ customField | customFieldLabel }}
+                                </button>
+                            </th>
+                        </ng-container>
+                        <ng-container *ngIf="showElided">
+                            <th>
+                                <button
+                                    class="custom-field-header-button"
+                                    (click)="toggleOrderLineCustomFields()"
+                                    [title]="'common.display-custom-fields' | translate"
+                                >
+                                    <clr-icon
+                                        shape="ellipsis-horizontal"
+                                        class="custom-field-ellipsis"
+                                    ></clr-icon>
+                                </button>
+                            </th>
+                        </ng-container>
+                        <th>{{ 'order.total' | translate }}</th>
+                    </tr>
                 </thead>
                 <tr
                     *ngFor="let line of order.lines"
@@ -87,7 +94,7 @@
                     [class.is-cancelled]="line.quantity === 0"
                 >
                     <td class="align-middle thumb">
-                        <img *ngIf="line.featuredAsset" [src]="line.featuredAsset | assetPreview:'tiny'" />
+                        <img *ngIf="line.featuredAsset" [src]="line.featuredAsset | assetPreview: 'tiny'" />
                     </td>
                     <td class="align-middle name">{{ line.productVariant.name }}</td>
                     <td class="align-middle sku">{{ line.productVariant.sku }}</td>
@@ -102,13 +109,13 @@
                         <vdr-line-refunds [line]="line"></vdr-line-refunds>
                         <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
                     </td>
-                    <ng-container *ngFor="let customField of visibileOrderLineCustomFields">
+                    <ng-container *ngFor="let customField of visibleOrderLineCustomFields">
                         <td class="order-line-custom-field align-middle">
                             <ng-container [ngSwitch]="customField.type">
                                 <ng-template [ngSwitchCase]="'datetime'">
                                     <span [title]="line.customFields[customField.name]">{{
                                         line.customFields[customField.name] | date: 'short'
-                                        }}</span>
+                                    }}</span>
                                 </ng-template>
                                 <ng-template [ngSwitchCase]="'boolean'">
                                     <ng-template [ngIf]="line.customFields[customField.name] === true">
@@ -125,11 +132,11 @@
                         </td>
                     </ng-container>
                     <ng-container *ngIf="showElided"
-                    ><td class="order-line-custom-field align-middle">
-                        <clr-icon
-                            shape="ellipsis-horizontal"
-                            class="custom-field-ellipsis"
-                        ></clr-icon></td
+                        ><td class="order-line-custom-field align-middle">
+                            <clr-icon
+                                shape="ellipsis-horizontal"
+                                class="custom-field-ellipsis"
+                            ></clr-icon></td
                     ></ng-container>
                     <td class="align-middle total">
                         {{ line.totalPrice / 100 | currency: order.currencyCode }}
@@ -150,7 +157,7 @@
                                         <a
                                             class="promotion-name"
                                             [routerLink]="getPromotionLink(promotion)"
-                                        >{{ promotion.description }}</a
+                                            >{{ promotion.description }}</a
                                         >
                                         <div class="promotion-amount">
                                             {{ promotion.amount / 100 | currency: order.currencyCode }}
@@ -164,7 +171,7 @@
                 <tr class="sub-total">
                     <td class="left clr-align-middle">{{ 'order.sub-total' | translate }}</td>
                     <td></td>
-                    <td [attr.colspan]="3 + visibileOrderLineCustomFields.length"></td>
+                    <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
                         {{ order.subTotal / 100 | currency: order.currencyCode }}
@@ -175,13 +182,13 @@
                 </tr>
                 <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
                     <td
-                        [attr.colspan]="5 + visibileOrderLineCustomFields.length"
+                        [attr.colspan]="5 + visibleOrderLineCustomFields.length"
                         class="left clr-align-middle"
                     >
                         <a [routerLink]="getPromotionLink(adjustment)">{{ adjustment.description }}</a>
                         <vdr-chip *ngIf="getCouponCodeForAdjustment(order, adjustment) as couponCode">{{
                             couponCode
-                            }}</vdr-chip>
+                        }}</vdr-chip>
                     </td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
@@ -191,7 +198,7 @@
                 <tr class="shipping">
                     <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
                     <td class="clr-align-middle">{{ order.shippingMethod?.description }}</td>
-                    <td [attr.colspan]="3 + visibileOrderLineCustomFields.length"></td>
+                    <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
                         {{ order.shippingWithTax / 100 | currency: order.currencyCode }}
@@ -203,7 +210,7 @@
                 <tr class="total">
                     <td class="left clr-align-middle">{{ 'order.total' | translate }}</td>
                     <td></td>
-                    <td [attr.colspan]="3 + visibileOrderLineCustomFields.length"></td>
+                    <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
                         {{ order.total / 100 | currency: order.currencyCode }}

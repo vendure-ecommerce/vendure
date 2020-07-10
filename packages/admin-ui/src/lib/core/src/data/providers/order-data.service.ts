@@ -15,6 +15,7 @@ import {
     SettlePayment,
     SettleRefund,
     SettleRefundInput,
+    TransitionOrderToState,
     UpdateOrderNote,
     UpdateOrderNoteInput,
 } from '../../common/generated-types';
@@ -29,6 +30,7 @@ import {
     REFUND_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
+    TRANSITION_ORDER_TO_STATE,
     UPDATE_ORDER_NOTE,
 } from '../definitions/order-definitions';
 
@@ -116,6 +118,16 @@ export class OrderDataService {
             DELETE_ORDER_NOTE,
             {
                 id,
+            },
+        );
+    }
+
+    transitionToState(id: string, state: string) {
+        return this.baseDataService.mutate<TransitionOrderToState.Mutation, TransitionOrderToState.Variables>(
+            TRANSITION_ORDER_TO_STATE,
+            {
+                id,
+                state,
             },
         );
     }

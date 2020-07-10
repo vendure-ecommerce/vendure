@@ -601,6 +601,8 @@
     "total": "Total",
     "tracking-code": "",
     "transaction-id": "ID de transacción",
+    "transition-to-state": "",
+    "transitioned-to-state-success": "",
     "unfulfilled": "",
     "unit-price": "Precio unitario"
   },

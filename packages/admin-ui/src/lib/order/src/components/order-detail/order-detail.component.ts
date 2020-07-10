@@ -19,7 +19,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { omit } from '@vendure/common/lib/omit';
 import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { startWith, switchMap, take } from 'rxjs/operators';
+import { map, startWith, switchMap, take } from 'rxjs/operators';
 
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
@@ -36,10 +36,20 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
     history$: Observable<GetOrderHistory.Items[] | undefined>;
+    nextStates$: Observable<string[]>;
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
     orderLineCustomFields: CustomFieldConfig[];
     orderLineCustomFieldsVisible = false;
+    private readonly defaultStates = [
+        'AddingItems',
+        'ArrangingPayment',
+        'PaymentAuthorized',
+        'PaymentSettled',
+        'PartiallyFulfilled',
+        'Fulfilled',
+        'Cancelled',
+    ];
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -52,7 +62,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         super(route, router, serverConfigService, dataService);
     }
 
-    get visibileOrderLineCustomFields(): CustomFieldConfig[] {
+    get visibleOrderLineCustomFields(): CustomFieldConfig[] {
         return this.orderLineCustomFieldsVisible ? this.orderLineCustomFields : [];
     }
 
@@ -77,6 +87,14 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                     .mapStream((data) => data.order?.history.items);
             }),
         );
+        this.nextStates$ = this.entity$.pipe(
+            map((order) => {
+                const isInCustomState = !this.defaultStates.includes(order.state);
+                return isInCustomState
+                    ? order.nextStates
+                    : order.nextStates.filter((s) => !this.defaultStates.includes(s));
+            }),
+        );
     }
 
     ngOnDestroy() {
@@ -94,6 +112,13 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     getPromotionLink(promotion: OrderDetail.Adjustments): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
+    }
+
+    transitionToState(state: string) {
+        this.dataService.order.transitionToState(this.id, state).subscribe((val) => {
+            this.notificationService.success(_('order.transitioned-to-state-success'), { state });
+            this.fetchHistory.next();
+        });
     }
 
     getCouponCodeForAdjustment(

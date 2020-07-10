@@ -1899,6 +1899,7 @@ export type Mutation = {
   setUiLanguage?: Maybe<LanguageCode>;
   settlePayment: Payment;
   settleRefund: Refund;
+  transitionOrderToState?: Maybe<Order>;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
   /** Update an existing Asset */
@@ -2286,6 +2287,12 @@ export type MutationSettlePaymentArgs = {
 
 export type MutationSettleRefundArgs = {
   input: SettleRefundInput;
+};
+
+
+export type MutationTransitionOrderToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
 };
 
 
@@ -4780,7 +4787,7 @@ export type OrderAddressFragment = (
 
 export type OrderFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'total' | 'currencyCode'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -5013,6 +5020,20 @@ export type DeleteOrderNoteMutation = (
     { __typename?: 'DeletionResponse' }
     & Pick<DeletionResponse, 'result' | 'message'>
   ) }
+);
+
+export type TransitionOrderToStateMutationVariables = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type TransitionOrderToStateMutation = (
+  { __typename?: 'Mutation' }
+  & { transitionOrderToState?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderFragment
+  )> }
 );
 
 export type AssetFragment = (
@@ -7320,6 +7341,12 @@ export namespace DeleteOrderNote {
   export type Variables = DeleteOrderNoteMutationVariables;
   export type Mutation = DeleteOrderNoteMutation;
   export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
+}
+
+export namespace TransitionOrderToState {
+  export type Variables = TransitionOrderToStateMutationVariables;
+  export type Mutation = TransitionOrderToStateMutation;
+  export type TransitionOrderToState = OrderFragment;
 }
 
 export namespace Asset {

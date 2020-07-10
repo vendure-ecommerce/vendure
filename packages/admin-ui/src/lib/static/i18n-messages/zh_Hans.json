@@ -61,7 +61,6 @@
     "confirm-adding-options-delete-default-body": "添加新规格到此产品会导致含此规格的产品被删除，确认继续吗?",
     "confirm-adding-options-delete-default-title": "确认删除产品规格么?",
     "confirm-delete-administrator": "",
-    "confirm-delete-asset": "",
     "confirm-delete-assets": "",
     "confirm-delete-channel": "确认删除销售渠道?",
     "confirm-delete-collection": "确认删除商品系列吗?",
@@ -602,6 +601,8 @@
     "total": "总计金额",
     "tracking-code": "物流码",
     "transaction-id": "交易ID",
+    "transition-to-state": "",
+    "transitioned-to-state-success": "",
     "unfulfilled": "未配货",
     "unit-price": "单价"
   },

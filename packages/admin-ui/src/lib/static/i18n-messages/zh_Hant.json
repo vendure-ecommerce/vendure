@@ -61,7 +61,6 @@
     "confirm-adding-options-delete-default-body": "新增規格到此產品會引致包含此規格的產品被移除，確認繼續吗?",
     "confirm-adding-options-delete-default-title": "確認移除產品規格嗎?",
     "confirm-delete-administrator": "",
-    "confirm-delete-asset": "",
     "confirm-delete-assets": "",
     "confirm-delete-channel": "確認移除渠道?",
     "confirm-delete-collection": "確認移除商品系列吗?",
@@ -602,6 +601,8 @@
     "total": "總計金額",
     "tracking-code": "物流碼",
     "transaction-id": "交易編號",
+    "transition-to-state": "",
+    "transitioned-to-state-success": "",
     "unfulfilled": "未配貨",
     "unit-price": "單價"
   },
