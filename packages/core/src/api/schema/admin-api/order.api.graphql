@@ -12,6 +12,7 @@ type Mutation {
     addNoteToOrder(input: AddNoteToOrderInput!): Order!
     updateOrderNote(input: UpdateOrderNoteInput!): HistoryEntry!
     deleteOrderNote(id: ID!): DeletionResponse!
+    transitionOrderToState(id: ID!, state: String!): Order
 }
 
 type Order {

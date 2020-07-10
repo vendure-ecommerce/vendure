@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { from } from 'rxjs';
+import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -11,10 +14,18 @@ import {
 import { mergeTransitionDefinitions } from '../../../common/finite-state-machine/merge-transition-definitions';
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { ConfigService } from '../../../config/config.service';
+import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
+import { getEntityOrThrow } from '../utils/get-entity-or-throw';
+import {
+    orderItemsAreAllCancelled,
+    orderItemsAreFulfilled,
+    orderItemsArePartiallyFulfilled,
+    orderTotalIsCovered,
+} from '../utils/order-utils';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
 
@@ -24,6 +35,7 @@ export class OrderStateMachine {
     private readonly initialState: OrderState = 'AddingItems';
 
     constructor(
+        @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private stockMovementService: StockMovementService,
         private historyService: HistoryService,
@@ -54,13 +66,40 @@ export class OrderStateMachine {
     /**
      * Specific business logic to be executed on Order state transitions.
      */
-    private onTransitionStart(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
+    private async onTransitionStart(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         if (toState === 'ArrangingPayment') {
             if (data.order.lines.length === 0) {
                 return `error.cannot-transition-to-payment-when-order-is-empty`;
             }
             if (!data.order.customer) {
                 return `error.cannot-transition-to-payment-without-customer`;
+            }
+        }
+        if (toState === 'PaymentAuthorized' && !orderTotalIsCovered(data.order, 'Authorized')) {
+            return `error.cannot-transition-without-authorized-payments`;
+        }
+        if (toState === 'PaymentSettled' && !orderTotalIsCovered(data.order, 'Settled')) {
+            return `error.cannot-transition-without-settled-payments`;
+        }
+        if (toState === 'Cancelled' && fromState !== 'AddingItems' && fromState !== 'ArrangingPayment') {
+            if (!orderItemsAreAllCancelled(data.order)) {
+                return `error.cannot-transition-unless-all-cancelled`;
+            }
+        }
+        if (toState === 'PartiallyFulfilled') {
+            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
+                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            });
+            if (!orderItemsArePartiallyFulfilled(orderWithFulfillments)) {
+                return `error.cannot-transition-unless-some-order-items-fulfilled`;
+            }
+        }
+        if (toState === 'Fulfilled') {
+            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
+                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            });
+            if (!orderItemsAreFulfilled(orderWithFulfillments)) {
+                return `error.cannot-transition-unless-all-order-items-fulfilled`;
             }
         }
     }

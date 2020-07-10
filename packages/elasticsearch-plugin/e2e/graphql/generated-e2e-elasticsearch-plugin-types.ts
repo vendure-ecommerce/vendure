@@ -1862,6 +1862,7 @@ export type Mutation = {
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
+    transitionOrderToState?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -2147,6 +2148,11 @@ export type MutationUpdateOrderNoteArgs = {
 
 export type MutationDeleteOrderNoteArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
 };
 
 export type MutationUpdatePaymentMethodArgs = {

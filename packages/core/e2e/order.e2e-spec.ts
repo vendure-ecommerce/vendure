@@ -12,7 +12,7 @@ import {
     singleStageRefundablePaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
-import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
+import { ORDER_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
     CancelOrder,
@@ -39,6 +39,7 @@ import {
 import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
+    GET_ORDER,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_PRODUCT_VARIANTS,
@@ -690,7 +691,7 @@ describe('Orders resolver', () => {
         );
 
         it(
-            'throws if lines are ampty',
+            'throws if lines are empty',
             assertThrowsWithMessage(async () => {
                 const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
                 expect(order.state).toBe('PaymentAuthorized');
@@ -1297,15 +1298,6 @@ export const GET_ORDERS_LIST = gql`
         }
     }
     ${ORDER_FRAGMENT}
-`;
-
-export const GET_ORDER = gql`
-    query GetOrder($id: ID!) {
-        order(id: $id) {
-            ...OrderWithLines
-        }
-    }
-    ${ORDER_WITH_LINES_FRAGMENT}
 `;
 
 export const SETTLE_PAYMENT = gql`

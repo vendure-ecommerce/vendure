@@ -50,11 +50,15 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
-import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import {
+    orderItemsAreAllCancelled,
+    orderItemsAreFulfilled,
+    orderTotalIsCovered,
+} from '../helpers/utils/order-utils';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
@@ -406,6 +410,7 @@ export class OrderService {
 
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        order.payments = await this.getOrderPayments(orderId);
         const fromState = order.state;
         await this.orderStateMachine.transition(ctx, order, state);
         await this.connection.getRepository(Order).save(order, { reload: false });
@@ -433,17 +438,10 @@ export class OrderService {
             throw new InternalServerError(payment.errorMessage);
         }
 
-        function totalIsCovered(state: PaymentState): boolean {
-            return (
-                order.payments.filter((p) => p.state === state).reduce((sum, p) => sum + p.amount, 0) ===
-                order.total
-            );
-        }
-
-        if (totalIsCovered('Settled')) {
+        if (orderTotalIsCovered(order, 'Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }
-        if (totalIsCovered('Authorized')) {
+        if (orderTotalIsCovered(order, 'Authorized')) {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
         return order;
@@ -511,13 +509,7 @@ export class OrderService {
             if (!orderWithFulfillments) {
                 throw new InternalServerError('error.could-not-find-order');
             }
-            const allOrderItemsFulfilled = orderWithFulfillments.lines
-                .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
-                .filter((orderItem) => !orderItem.cancelled)
-                .every((orderItem) => {
-                    return !!orderItem.fulfillment;
-                });
-            if (allOrderItemsFulfilled) {
+            if (orderItemsAreFulfilled(orderWithFulfillments)) {
                 await this.transitionToState(ctx, order.id, 'Fulfilled');
             } else {
                 await this.transitionToState(ctx, order.id, 'PartiallyFulfilled');
@@ -626,10 +618,7 @@ export class OrderService {
                 reason: input.reason || undefined,
             },
         });
-        const allOrderItemsCancelled = orderWithItems.lines
-            .reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[])
-            .every((orderItem) => orderItem.cancelled);
-        return allOrderItemsCancelled;
+        return orderItemsAreAllCancelled(orderWithItems);
     }
 
     async refundOrder(ctx: RequestContext, input: RefundOrderInput): Promise<Refund> {

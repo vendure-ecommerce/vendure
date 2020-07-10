@@ -1862,6 +1862,7 @@ export type Mutation = {
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
+    transitionOrderToState?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -2147,6 +2148,11 @@ export type MutationUpdateOrderNoteArgs = {
 
 export type MutationDeleteOrderNoteArgs = {
     id: Scalars['ID'];
+};
+
+export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -5032,12 +5038,29 @@ export type GetCustomerHistoryQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type GetOrderQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetOrderQuery = { __typename?: 'Query' } & {
+    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
 
 export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
     updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
+};
+
+export type AdminTransitionMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
 };
 
 export type DeletePromotionAdHoc1MutationVariables = {};
@@ -5075,14 +5098,6 @@ export type GetOrderListQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
             items: Array<{ __typename?: 'Order' } & OrderFragment>;
         };
-};
-
-export type GetOrderQueryVariables = {
-    id: Scalars['ID'];
-};
-
-export type GetOrderQuery = { __typename?: 'Query' } & {
-    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
 export type SettlePaymentMutationVariables = {
@@ -6706,10 +6721,22 @@ export namespace GetCustomerHistory {
     >;
 }
 
+export namespace GetOrder {
+    export type Variables = GetOrderQueryVariables;
+    export type Query = GetOrderQuery;
+    export type Order = OrderWithLinesFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
     export type UpdateProductOptionGroup = UpdateOptionGroupMutation['updateProductOptionGroup'];
+}
+
+export namespace AdminTransition {
+    export type Variables = AdminTransitionMutationVariables;
+    export type Mutation = AdminTransitionMutation;
+    export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
 }
 
 export namespace DeletePromotionAdHoc1 {
@@ -6738,12 +6765,6 @@ export namespace GetOrderList {
     export type Query = GetOrderListQuery;
     export type Orders = GetOrderListQuery['orders'];
     export type Items = OrderFragment;
-}
-
-export namespace GetOrder {
-    export type Variables = GetOrderQueryVariables;
-    export type Query = GetOrderQuery;
-    export type Order = OrderWithLinesFragment;
 }
 
 export namespace SettlePayment {

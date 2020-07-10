@@ -8,6 +8,7 @@ import {
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
+    ORDER_WITH_LINES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
     PROMOTION_FRAGMENT,
@@ -394,4 +395,13 @@ export const GET_CUSTOMER_HISTORY = gql`
             }
         }
     }
+`;
+
+export const GET_ORDER = gql`
+    query GetOrder($id: ID!) {
+        order(id: $id) {
+            ...OrderWithLines
+        }
+    }
+    ${ORDER_WITH_LINES_FRAGMENT}
 `;
