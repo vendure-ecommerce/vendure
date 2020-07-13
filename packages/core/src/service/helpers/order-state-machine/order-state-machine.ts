@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -12,6 +13,7 @@ import {
 } from '../../../common/finite-state-machine/finite-state-machine';
 import { mergeTransitionDefinitions } from '../../../common/finite-state-machine/merge-transition-definitions';
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
+import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
@@ -142,7 +144,9 @@ export class OrderStateMachine {
             onTransitionStart: async (fromState, toState, data) => {
                 for (const process of customProcesses) {
                     if (typeof process.onTransitionStart === 'function') {
-                        const result = await process.onTransitionStart(fromState, toState, data);
+                        const result = await awaitPromiseOrObservable(
+                            process.onTransitionStart(fromState, toState, data),
+                        );
                         if (result === false || typeof result === 'string') {
                             return result;
                         }
@@ -153,15 +157,15 @@ export class OrderStateMachine {
             onTransitionEnd: async (fromState, toState, data) => {
                 for (const process of customProcesses) {
                     if (typeof process.onTransitionEnd === 'function') {
-                        await process.onTransitionEnd(fromState, toState, data);
+                        await awaitPromiseOrObservable(process.onTransitionEnd(fromState, toState, data));
                     }
                 }
                 await this.onTransitionEnd(fromState, toState, data);
             },
-            onError: (fromState, toState, message) => {
+            onError: async (fromState, toState, message) => {
                 for (const process of customProcesses) {
                     if (typeof process.onError === 'function') {
-                        process.onError(fromState, toState, message);
+                        await awaitPromiseOrObservable(process.onError(fromState, toState, message));
                     }
                 }
                 throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {

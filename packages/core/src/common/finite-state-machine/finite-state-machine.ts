@@ -1,5 +1,7 @@
 import { Observable } from 'rxjs';
 
+import { awaitPromiseOrObservable } from '../utils';
+
 /**
  * @description
  * A type which is used to define all valid transitions and transition callbacks
@@ -30,8 +32,8 @@ export type StateMachineConfig<T extends string, Data = undefined> = {
         toState: T,
         data: Data,
     ): boolean | string | void | Promise<boolean | string | void> | Observable<boolean | string | void>;
-    onTransitionEnd?(fromState: T, toState: T, data: Data): void | Promise<void>;
-    onError?(fromState: T, toState: T, message?: string): void;
+    onTransitionEnd?(fromState: T, toState: T, data: Data): void | Promise<void> | Observable<void>;
+    onError?(fromState: T, toState: T, message?: string): void | Promise<void> | Observable<void>;
 };
 
 /**
@@ -73,14 +75,13 @@ export class FSM<T extends string, Data = any> {
             // If the onTransitionStart callback is defined, invoke it. If it returns false,
             // then the transition will be cancelled.
             if (typeof this.config.onTransitionStart === 'function') {
-                const transitionResult = this.config.onTransitionStart(this._currentState, state, data);
-                const canTransition = await (transitionResult instanceof Observable
-                    ? transitionResult.toPromise()
-                    : transitionResult);
+                const canTransition = await awaitPromiseOrObservable(
+                    this.config.onTransitionStart(this._currentState, state, data),
+                );
                 if (canTransition === false) {
                     return;
                 } else if (typeof canTransition === 'string') {
-                    this.onError(this._currentState, state, canTransition);
+                    await this.onError(this._currentState, state, canTransition);
                     return;
                 }
             }
@@ -89,7 +90,7 @@ export class FSM<T extends string, Data = any> {
             this._currentState = state;
             // If the onTransitionEnd callback is defined, invoke it.
             if (typeof this.config.onTransitionEnd === 'function') {
-                await this.config.onTransitionEnd(fromState, state, data);
+                await awaitPromiseOrObservable(this.config.onTransitionEnd(fromState, state, data));
             }
         } else {
             return this.onError(this._currentState, state);
@@ -118,9 +119,9 @@ export class FSM<T extends string, Data = any> {
         return -1 < this.config.transitions[this._currentState].to.indexOf(state);
     }
 
-    private onError(fromState: T, toState: T, message?: string) {
+    private async onError(fromState: T, toState: T, message?: string) {
         if (typeof this.config.onError === 'function') {
-            return this.config.onError(fromState, toState, message);
+            await awaitPromiseOrObservable(this.config.onError(fromState, toState, message));
         }
     }
 }
