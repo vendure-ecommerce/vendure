@@ -23,6 +23,7 @@ import { map, startWith, switchMap, take } from 'rxjs/operators';
 
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
+import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/order-process-graph-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
 
@@ -112,6 +113,22 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     getPromotionLink(promotion: OrderDetail.Adjustments): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
+    }
+
+    openStateDiagram() {
+        this.entity$
+            .pipe(
+                take(1),
+                switchMap((order) =>
+                    this.modalService.fromComponent(OrderProcessGraphDialogComponent, {
+                        closable: true,
+                        locals: {
+                            activeState: order.state,
+                        },
+                    }),
+                ),
+            )
+            .subscribe();
     }
 
     transitionToState(state: string) {

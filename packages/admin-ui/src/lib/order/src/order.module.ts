@@ -12,6 +12,10 @@ import { OrderDetailComponent } from './components/order-detail/order-detail.com
 import { OrderHistoryComponent } from './components/order-history/order-history.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
 import { OrderPaymentCardComponent } from './components/order-payment-card/order-payment-card.component';
+import { OrderProcessGraphDialogComponent } from './components/order-process-graph-dialog/order-process-graph-dialog.component';
+import { OrderProcessEdgeComponent } from './components/order-process-graph/order-process-edge.component';
+import { OrderProcessGraphComponent } from './components/order-process-graph/order-process-graph.component';
+import { OrderProcessNodeComponent } from './components/order-process-graph/order-process-node.component';
 import { PaymentDetailComponent } from './components/payment-detail/payment-detail.component';
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
 import { RefundOrderDialogComponent } from './components/refund-order-dialog/refund-order-dialog.component';
@@ -39,6 +43,10 @@ import { orderRoutes } from './order.routes';
         PaymentDetailComponent,
         SimpleItemListComponent,
         OrderCustomFieldsCardComponent,
+        OrderProcessGraphComponent,
+        OrderProcessNodeComponent,
+        OrderProcessEdgeComponent,
+        OrderProcessGraphDialogComponent,
     ],
 })
 export class OrderModule {}

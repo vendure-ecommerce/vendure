@@ -2567,6 +2567,12 @@ export type OrderListOptions = {
   filter?: Maybe<OrderFilterParameter>;
 };
 
+export type OrderProcessState = {
+   __typename?: 'OrderProcessState';
+  name: Scalars['String'];
+  to: Array<Scalars['String']>;
+};
+
 export type OrderSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
@@ -3378,6 +3384,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
    __typename?: 'ServerConfig';
+  orderProcess: Array<OrderProcessState>;
   customFieldConfig: CustomFields;
 };
 
@@ -6309,7 +6316,10 @@ export type GetServerConfigQuery = (
     { __typename?: 'GlobalSettings' }
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
-      & { customFieldConfig: (
+      & { orderProcess: Array<(
+        { __typename?: 'OrderProcessState' }
+        & Pick<OrderProcessState, 'name' | 'to'>
+      )>, customFieldConfig: (
         { __typename?: 'CustomFields' }
         & { Address: Array<(
           { __typename?: 'StringCustomFieldConfig' }
@@ -7897,6 +7907,7 @@ export namespace GetServerConfig {
   export type Query = GetServerConfigQuery;
   export type GlobalSettings = GetServerConfigQuery['globalSettings'];
   export type ServerConfig = GetServerConfigQuery['globalSettings']['serverConfig'];
+  export type OrderProcess = (NonNullable<GetServerConfigQuery['globalSettings']['serverConfig']['orderProcess'][0]>);
   export type CustomFieldConfig = GetServerConfigQuery['globalSettings']['serverConfig']['customFieldConfig'];
   export type Address = CustomFieldsFragment;
   export type Collection = CustomFieldsFragment;

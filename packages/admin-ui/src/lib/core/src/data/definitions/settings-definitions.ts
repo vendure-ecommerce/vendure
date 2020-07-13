@@ -537,6 +537,10 @@ export const GET_SERVER_CONFIG = gql`
     query GetServerConfig {
         globalSettings {
             serverConfig {
+                orderProcess {
+                    name
+                    to
+                }
                 customFieldConfig {
                     Address {
                         ...CustomFields

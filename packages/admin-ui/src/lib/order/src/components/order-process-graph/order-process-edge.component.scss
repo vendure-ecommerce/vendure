@@ -1,0 +1,23 @@
+@import 'variables';
+
+.edge {
+    position: absolute;
+    border: 1px solid $color-grey-300;
+    background-color: $color-grey-300;
+    opacity: 0.3;
+    transition: border 0.2s, opacity 0.2s, background-color 0.2s;
+    &.active {
+        border-color: $color-primary-500;
+        background-color: $color-primary-500;
+        opacity: 1;
+        .arrow {
+            color: $color-primary-500;
+        }
+    }
+    .arrow {
+        position: absolute;
+        bottom: -4px;
+        left: -8px;
+        color: $color-grey-300;
+    }
+}

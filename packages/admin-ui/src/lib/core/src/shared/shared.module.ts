@@ -82,6 +82,7 @@ import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
+import { OrderStateI18nTokenPipe } from './pipes/order-state-i18n-token.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
@@ -172,6 +173,7 @@ const DECLARATIONS = [
     TimelineEntryComponent,
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
+    OrderStateI18nTokenPipe,
 ];
 
 @NgModule({

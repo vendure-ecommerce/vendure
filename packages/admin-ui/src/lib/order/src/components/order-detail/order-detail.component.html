@@ -2,7 +2,11 @@
     <vdr-ab-left>
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
-            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+            <vdr-order-state-label [state]="order.state">
+                <button class="icon-button" (click)="openStateDiagram()" [title]="'order.order-state-diagram' | translate">
+                <clr-icon shape="list"></clr-icon>
+                </button>
+            </vdr-order-state-label>
         </div>
     </vdr-ab-left>
 
