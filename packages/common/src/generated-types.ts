@@ -2527,6 +2527,12 @@ export type OrderListOptions = {
   filter?: Maybe<OrderFilterParameter>;
 };
 
+export type OrderProcessState = {
+   __typename?: 'OrderProcessState';
+  name: Scalars['String'];
+  to: Array<Scalars['String']>;
+};
+
 export type OrderSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
@@ -3335,6 +3341,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
    __typename?: 'ServerConfig';
+  orderProcess: Array<OrderProcessState>;
   customFieldConfig: CustomFields;
 };
 

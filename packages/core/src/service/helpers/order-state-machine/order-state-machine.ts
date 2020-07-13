@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { from } from 'rxjs';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -14,7 +13,6 @@ import {
 import { mergeTransitionDefinitions } from '../../../common/finite-state-machine/merge-transition-definitions';
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { ConfigService } from '../../../config/config.service';
-import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
@@ -31,7 +29,7 @@ import { OrderState, orderStateTransitions, OrderTransitionData } from './order-
 
 @Injectable()
 export class OrderStateMachine {
-    private readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
+    readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
     private readonly initialState: OrderState = 'AddingItems';
 
     constructor(

@@ -7,5 +7,12 @@ type GlobalSettings {
     serverConfig: ServerConfig!
 }
 
+type OrderProcessState {
+    name: String!
+    to: [String!]!
+}
+
 # Programatically extended by the addGraphQLCustomFields function
-type ServerConfig
+type ServerConfig {
+    orderProcess: [OrderProcessState!]!
+}

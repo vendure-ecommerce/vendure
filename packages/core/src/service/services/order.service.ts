@@ -9,6 +9,7 @@ import {
     FulfillOrderInput,
     HistoryEntryType,
     OrderLineInput,
+    OrderProcessState,
     RefundOrderInput,
     SettleRefundInput,
     ShippingMethodQuote,
@@ -89,6 +90,13 @@ export class OrderService {
         private promotionService: PromotionService,
         private eventBus: EventBus,
     ) {}
+
+    getOrderProcessStates(): OrderProcessState[] {
+        return Object.entries(this.orderStateMachine.config.transitions).map(([name, { to }]) => ({
+            name,
+            to,
+        }));
+    }
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
