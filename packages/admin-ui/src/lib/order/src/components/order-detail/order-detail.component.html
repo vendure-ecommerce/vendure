@@ -237,6 +237,7 @@
             <vdr-order-custom-fields-card
                 [customFieldsConfig]="customFields"
                 [customFieldValues]="order.customFields"
+                (updateClick)="updateCustomFields($event)"
             ></vdr-order-custom-fields-card>
             <div class="card">
                 <div class="card-header">

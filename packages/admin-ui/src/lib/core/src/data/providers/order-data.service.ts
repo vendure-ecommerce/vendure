@@ -16,6 +16,8 @@ import {
     SettleRefund,
     SettleRefundInput,
     TransitionOrderToState,
+    UpdateOrderCustomFields,
+    UpdateOrderInput,
     UpdateOrderNote,
     UpdateOrderNoteInput,
 } from '../../common/generated-types';
@@ -31,6 +33,7 @@ import {
     SETTLE_PAYMENT,
     SETTLE_REFUND,
     TRANSITION_ORDER_TO_STATE,
+    UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
 } from '../definitions/order-definitions';
 
@@ -130,5 +133,14 @@ export class OrderDataService {
                 state,
             },
         );
+    }
+
+    updateOrderCustomFields(input: UpdateOrderInput) {
+        return this.baseDataService.mutate<
+            UpdateOrderCustomFields.Mutation,
+            UpdateOrderCustomFields.Variables
+        >(UPDATE_ORDER_CUSTOM_FIELDS, {
+            input,
+        });
     }
 }

@@ -138,6 +138,17 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         });
     }
 
+    updateCustomFields(customFieldsValue: any) {
+        this.dataService.order
+            .updateOrderCustomFields({
+                id: this.id,
+                customFields: customFieldsValue,
+            })
+            .subscribe(() => {
+                this.notificationService.success(_('common.notify-update-success'), { entity: 'Order' });
+            });
+    }
+
     getCouponCodeForAdjustment(
         order: OrderDetail.Fragment,
         promotionAdjustment: OrderDetail.Adjustments,

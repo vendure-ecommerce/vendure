@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
 import { CustomFieldConfig } from '@vendure/admin-ui/core';
 
 @Component({
@@ -12,7 +11,9 @@ import { CustomFieldConfig } from '@vendure/admin-ui/core';
 export class OrderCustomFieldsCardComponent implements OnInit {
     @Input() customFieldsConfig: CustomFieldConfig[] = [];
     @Input() customFieldValues: { [name: string]: any } = {};
+    @Output() updateClick = new EventEmitter<any>();
     customFieldForm: FormGroup;
+    editable = false;
     constructor(private formBuilder: FormBuilder) {}
 
     ngOnInit() {
@@ -23,5 +24,11 @@ export class OrderCustomFieldsCardComponent implements OnInit {
                 this.formBuilder.control(this.customFieldValues[field.name]),
             );
         }
+    }
+
+    onUpdateClick() {
+        this.updateClick.emit(this.customFieldForm.value);
+        this.customFieldForm.markAsPristine();
+        this.editable = false;
     }
 }

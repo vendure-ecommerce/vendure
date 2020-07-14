@@ -1896,6 +1896,7 @@ export type Mutation = {
   setActiveChannel: UserStatus;
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
+  setOrderCustomFields?: Maybe<Order>;
   setUiLanguage?: Maybe<LanguageCode>;
   settlePayment: Payment;
   settleRefund: Refund;
@@ -2272,6 +2273,11 @@ export type MutationSetActiveChannelArgs = {
 
 export type MutationSetAsLoggedInArgs = {
   input: UserStatusInput;
+};
+
+
+export type MutationSetOrderCustomFieldsArgs = {
+  input: UpdateOrderInput;
 };
 
 
@@ -3713,6 +3719,11 @@ export type UpdateGlobalSettingsInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderInput = {
+  id: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
   note?: Maybe<Scalars['String']>;
@@ -5038,6 +5049,19 @@ export type TransitionOrderToStateMutationVariables = {
 export type TransitionOrderToStateMutation = (
   { __typename?: 'Mutation' }
   & { transitionOrderToState?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderFragment
+  )> }
+);
+
+export type UpdateOrderCustomFieldsMutationVariables = {
+  input: UpdateOrderInput;
+};
+
+
+export type UpdateOrderCustomFieldsMutation = (
+  { __typename?: 'Mutation' }
+  & { setOrderCustomFields?: Maybe<(
     { __typename?: 'Order' }
     & OrderFragment
   )> }
@@ -7357,6 +7381,12 @@ export namespace TransitionOrderToState {
   export type Variables = TransitionOrderToStateMutationVariables;
   export type Mutation = TransitionOrderToStateMutation;
   export type TransitionOrderToState = OrderFragment;
+}
+
+export namespace UpdateOrderCustomFields {
+  export type Variables = UpdateOrderCustomFieldsMutationVariables;
+  export type Mutation = UpdateOrderCustomFieldsMutation;
+  export type SetOrderCustomFields = OrderFragment;
 }
 
 export namespace Asset {

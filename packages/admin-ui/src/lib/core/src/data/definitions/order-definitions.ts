@@ -301,3 +301,12 @@ export const TRANSITION_ORDER_TO_STATE = gql`
     }
     ${ORDER_FRAGMENT}
 `;
+
+export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
+    mutation UpdateOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            ...Order
+        }
+    }
+    ${ORDER_FRAGMENT}
+`;

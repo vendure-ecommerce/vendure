@@ -54,7 +54,7 @@
             clrToggle
             [id]="customField.name"
             [formControl]="formGroup.get(customField.name)"
-            [readonly]="readonly || customField.readonly"
+            [attr.disabled]="readonly || customField.readonly"
         />
     </clr-toggle-wrapper>
     <vdr-datetime-picker
