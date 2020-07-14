@@ -278,7 +278,7 @@ export class ShopOrderResolver {
                         );
                         // If the Customer has no addresses yet, use the shipping address data
                         // to populate the initial default Address.
-                        if (addresses.length === 0) {
+                        if (addresses.length === 0 && order.shippingAddress?.country) {
                             const address = order.shippingAddress;
                             await this.customerService.createAddress(ctx, order.customer.id as string, {
                                 ...address,
