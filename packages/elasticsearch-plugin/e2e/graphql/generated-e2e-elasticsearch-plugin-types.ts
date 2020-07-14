@@ -1863,6 +1863,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
+    setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -2153,6 +2154,10 @@ export type MutationDeleteOrderNoteArgs = {
 export type MutationTransitionOrderToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
+};
+
+export type MutationSetOrderCustomFieldsArgs = {
+    input: UpdateOrderInput;
 };
 
 export type MutationUpdatePaymentMethodArgs = {
@@ -3538,6 +3543,11 @@ export type UpdateFacetValueInput = {
 export type UpdateGlobalSettingsInput = {
     availableLanguages?: Maybe<Array<LanguageCode>>;
     trackInventory?: Maybe<Scalars['Boolean']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderInput = {
+    id: Scalars['ID'];
     customFields?: Maybe<Scalars['JSON']>;
 };
 

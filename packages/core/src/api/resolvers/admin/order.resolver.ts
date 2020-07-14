@@ -5,6 +5,7 @@ import {
     MutationDeleteOrderNoteArgs,
     MutationFulfillOrderArgs,
     MutationRefundOrderArgs,
+    MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
     MutationTransitionOrderToStateArgs,
@@ -85,6 +86,12 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async deleteOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteOrderNoteArgs) {
         return this.orderService.deleteOrderNote(ctx, args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async setOrderCustomFields(@Ctx() ctx: RequestContext, @Args() args: MutationSetOrderCustomFieldsArgs) {
+        return this.orderService.updateCustomFields(ctx, args.input.id, args.input.customFields);
     }
 
     @Mutation()
