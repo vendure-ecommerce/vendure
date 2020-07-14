@@ -60,6 +60,7 @@ import {
     orderItemsAreFulfilled,
     orderTotalIsCovered,
 } from '../helpers/utils/order-utils';
+import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
 import { CountryService } from './country.service';
@@ -239,6 +240,12 @@ export class OrderService {
             }
         }
         return this.connection.getRepository(Order).save(newOrder);
+    }
+
+    async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {
+        let order = await this.getOrderOrThrow(ctx, orderId);
+        order = patchEntity(order, { customFields });
+        return this.connection.getRepository(Order).save(order);
     }
 
     async addItemToOrder(

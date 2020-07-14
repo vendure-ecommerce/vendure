@@ -14,7 +14,7 @@ const CLIENT_QUERY_FILES = path.join(
 );
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,
-    '../../packages/core/e2e/**/!(import.e2e-spec|plugin.e2e-spec|shop-definitions|custom-fields.e2e-spec|price-calculation-strategy.e2e-spec|list-query-builder.e2e-spec).ts',
+    '../../packages/core/e2e/**/!(import.e2e-spec|plugin.e2e-spec|shop-definitions|custom-fields.e2e-spec|price-calculation-strategy.e2e-spec|list-query-builder.e2e-spec|shop-order.e2e-spec).ts',
 );
 const E2E_SHOP_QUERY_FILES = [path.join(__dirname, '../../packages/core/e2e/graphql/shop-definitions.ts')];
 const E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES = path.join(

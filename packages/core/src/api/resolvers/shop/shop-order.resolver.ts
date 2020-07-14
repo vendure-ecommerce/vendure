@@ -7,6 +7,7 @@ import {
     MutationRemoveOrderLineArgs,
     MutationSetCustomerForOrderArgs,
     MutationSetOrderBillingAddressArgs,
+    MutationSetOrderCustomFieldsArgs,
     MutationSetOrderShippingAddressArgs,
     MutationSetOrderShippingMethodArgs,
     MutationTransitionOrderToStateArgs,
@@ -175,6 +176,20 @@ export class ShopOrderResolver {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingMethod(ctx, sessionOrder.id, args.shippingMethodId);
+            }
+        }
+    }
+
+    @Mutation()
+    @Allow(Permission.Owner)
+    async setOrderCustomFields(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSetOrderCustomFieldsArgs,
+    ): Promise<Order | undefined> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.updateCustomFields(ctx, sessionOrder.id, args.input.customFields);
             }
         }
     }

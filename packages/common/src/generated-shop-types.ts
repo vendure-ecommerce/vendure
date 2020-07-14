@@ -1338,6 +1338,7 @@ export type Mutation = {
      * entity, a third argument 'customFields' will be available.
      */
     addItemToOrder?: Maybe<Order>;
+    /** Remove an OrderLine from the Order */
     removeOrderLine?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
@@ -1353,9 +1354,13 @@ export type Mutation = {
     setOrderShippingAddress?: Maybe<Order>;
     /** Sets the billing address for this order */
     setOrderBillingAddress?: Maybe<Order>;
+    /** Allows any custom fields to be set for the active order */
+    setOrderCustomFields?: Maybe<Order>;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
     setOrderShippingMethod?: Maybe<Order>;
+    /** Add a Payment to the Order */
     addPaymentToOrder?: Maybe<Order>;
+    /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
     setCustomerForOrder?: Maybe<Order>;
     /**
      * Authenticates the user using the native authentication strategy. This mutation
@@ -1364,6 +1369,7 @@ export type Mutation = {
     login: LoginResult;
     /** Authenticates the user using a named authentication strategy */
     authenticate: LoginResult;
+    /** End the current authenticated session */
     logout: Scalars['Boolean'];
     /**
      * Regenerate and send a verification token for a new Customer registration. Only
@@ -1437,6 +1443,10 @@ export type MutationSetOrderShippingAddressArgs = {
 
 export type MutationSetOrderBillingAddressArgs = {
     input: CreateAddressInput;
+};
+
+export type MutationSetOrderCustomFieldsArgs = {
+    input: UpdateOrderInput;
 };
 
 export type MutationSetOrderShippingMethodArgs = {
@@ -2288,6 +2298,10 @@ export type UpdateCustomerInput = {
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 

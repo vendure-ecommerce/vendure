@@ -1,6 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -75,6 +76,9 @@ describe('Shop orders', () => {
                     testFailingPaymentMethod,
                     testErrorPaymentMethod,
                 ],
+            },
+            customFields: {
+                Order: [{ name: 'giftWrap', type: 'boolean', defaultValue: false }],
             },
             orderOptions: {
                 orderItemsLimit: 99,
@@ -1119,4 +1123,59 @@ describe('Shop orders', () => {
             expect(activeOrder!.customer!.orders.items).toEqual([]);
         });
     });
+
+    describe('order custom fields', () => {
+        it('custom fields added to type', async () => {
+            await shopClient.asAnonymousUser();
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
+
+            expect(activeOrder?.customFields).toEqual({
+                giftWrap: false,
+            });
+        });
+
+        it('setting order custom fields', async () => {
+            const { setOrderCustomFields } = await shopClient.query(SET_ORDER_CUSTOM_FIELDS, {
+                input: {
+                    customFields: { giftWrap: true },
+                },
+            });
+
+            expect(setOrderCustomFields?.customFields).toEqual({
+                giftWrap: true,
+            });
+
+            const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
+
+            expect(activeOrder?.customFields).toEqual({
+                giftWrap: true,
+            });
+        });
+    });
 });
+
+const GET_ORDER_CUSTOM_FIELDS = gql`
+    query GetOrderCustomFields {
+        activeOrder {
+            id
+            customFields {
+                giftWrap
+            }
+        }
+    }
+`;
+
+const SET_ORDER_CUSTOM_FIELDS = gql`
+    mutation SetOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            id
+            customFields {
+                giftWrap
+            }
+        }
+    }
+`;
