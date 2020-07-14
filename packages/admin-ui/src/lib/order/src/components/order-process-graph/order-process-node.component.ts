@@ -25,6 +25,9 @@ export class OrderProcessNodeComponent implements OnChanges {
     active$ = new BehaviorSubject<boolean>(false);
     activeTarget$ = new BehaviorSubject<boolean>(false);
     isCancellable = false;
+    // We use a class field here to prevent the
+    // i18n extractor from extracting a "Cancelled" key
+    cancelledState = 'Cancelled';
 
     constructor(private graph: OrderProcessGraphComponent, private elementRef: ElementRef<HTMLDivElement>) {}
 

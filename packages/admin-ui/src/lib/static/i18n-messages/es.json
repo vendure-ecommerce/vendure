@@ -552,6 +552,7 @@
     "note-only-visible-to-administrators": "",
     "note-visible-to-customer": "",
     "order-history": "",
+    "order-state-diagram": "",
     "payment": "",
     "payment-amount": "",
     "payment-metadata": "metadata de pago",

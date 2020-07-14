@@ -552,6 +552,7 @@
     "note-only-visible-to-administrators": "Nur für Administratoren sichtbar",
     "note-visible-to-customer": "Sichtbar für Administratoren und Kunden",
     "order-history": "Bestellhistorie",
+    "order-state-diagram": "",
     "payment": "Zahlung",
     "payment-amount": "Zahlungsbetrag",
     "payment-metadata": "Metadaten zur Bezahlung",

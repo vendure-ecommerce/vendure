@@ -552,6 +552,7 @@
     "note-only-visible-to-administrators": "仅管理员可见",
     "note-visible-to-customer": "管理员及客户可见",
     "order-history": "历史订单",
+    "order-state-diagram": "",
     "payment": "付款信息",
     "payment-amount": "付款金额",
     "payment-metadata": "付款元数据",
