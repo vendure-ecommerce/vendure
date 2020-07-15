@@ -1498,7 +1498,7 @@ export type MutationDeleteCustomerAddressArgs = {
 
 export type MutationVerifyCustomerAccountArgs = {
     token: Scalars['String'];
-    password: Scalars['String'];
+    password?: Maybe<Scalars['String']>;
 };
 
 export type MutationUpdateCustomerPasswordArgs = {
@@ -2423,7 +2423,7 @@ export type RegisterMutationVariables = {
 export type RegisterMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'registerCustomerAccount'>;
 
 export type VerifyMutationVariables = {
-    password: Scalars['String'];
+    password?: Maybe<Scalars['String']>;
     token: Scalars['String'];
 };
 

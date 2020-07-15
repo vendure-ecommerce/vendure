@@ -9,6 +9,7 @@ import {
     InternalServerError,
     PasswordResetTokenExpiredError,
     UnauthorizedError,
+    UserInputError,
     VerificationTokenExpiredError,
 } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
@@ -103,17 +104,27 @@ export class UserService {
         return this.connection.manager.save(user);
     }
 
-    async verifyUserByToken(verificationToken: string, password: string): Promise<User | undefined> {
+    async verifyUserByToken(verificationToken: string, password?: string): Promise<User | undefined> {
         const user = await this.connection
             .getRepository(User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethod')
+            .addSelect('authenticationMethod.passwordHash')
             .where('authenticationMethod.verificationToken = :verificationToken', { verificationToken })
             .getOne();
         if (user) {
             if (this.verificationTokenGenerator.verifyVerificationToken(verificationToken)) {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
-                nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
+                if (!password) {
+                    if (!nativeAuthMethod.passwordHash) {
+                        throw new UserInputError(`error.password-required-for-verification`);
+                    }
+                } else {
+                    if (!!nativeAuthMethod.passwordHash) {
+                        throw new UserInputError(`error.password-already-set-during-registration`);
+                    }
+                    nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
+                }
                 nativeAuthMethod.verificationToken = null;
                 user.verified = true;
                 await this.connection.manager.save(nativeAuthMethod);

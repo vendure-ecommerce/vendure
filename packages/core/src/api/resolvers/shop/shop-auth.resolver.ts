@@ -31,13 +31,14 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { HistoryService } from '../../../service/services/history.service';
 import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
+import { setSessionToken } from '../../common/set-session-token';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
 export class ShopAuthResolver extends BaseAuthResolver {
-    private nativeAuthStrategyIsConfigured = false;
+    private readonly nativeAuthStrategyIsConfigured: boolean;
 
     constructor(
         authService: AuthService,
@@ -49,7 +50,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     ) {
         super(authService, userService, administratorService, configService);
         this.nativeAuthStrategyIsConfigured = !!this.configService.authOptions.shopAuthenticationStrategy.find(
-            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
+            (strategy) => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
         );
     }
 
@@ -73,7 +74,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return this.createAuthenticatedSession(ctx, args, req, res);
+        return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
     @Mutation()
@@ -109,27 +110,30 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: MutationVerifyCustomerAccountArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ) {
+    ): Promise<LoginResult> {
         this.requireNativeAuthStrategy();
+        const { token, password } = args;
         const customer = await this.customerService.verifyCustomerEmailAddress(
             ctx,
-            args.token,
-            args.password,
+            token,
+            password || undefined,
         );
         if (customer && customer.user) {
-            return super.createAuthenticatedSession(
+            const session = await this.authService.createAuthenticatedSessionForUser(
                 ctx,
-                {
-                    input: {
-                        [NATIVE_AUTH_STRATEGY_NAME]: {
-                            username: customer.user.identifier,
-                            password: args.password,
-                        },
-                    },
-                },
+                customer.user,
+                NATIVE_AUTH_STRATEGY_NAME,
+            );
+            setSessionToken({
                 req,
                 res,
-            );
+                authOptions: this.configService.authOptions,
+                rememberMe: true,
+                sessionToken: session.token,
+            });
+            return {
+                user: this.publiclyAccessibleUser(session.user),
+            };
         } else {
             throw new VerificationTokenError();
         }
@@ -163,7 +167,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         const { token, password } = args;
         const customer = await this.customerService.resetPassword(ctx, token, password);
         if (customer && customer.user) {
-            return super.createAuthenticatedSession(
+            return super.authenticateAndCreateSession(
                 ctx,
                 {
                     input: {
@@ -230,7 +234,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     private requireNativeAuthStrategy() {
         if (!this.nativeAuthStrategyIsConfigured) {
             const authStrategyNames = this.configService.authOptions.shopAuthenticationStrategy
-                .map(s => s.name)
+                .map((s) => s.name)
                 .join(', ');
             const errorMessage =
                 'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Shop API.\n' +

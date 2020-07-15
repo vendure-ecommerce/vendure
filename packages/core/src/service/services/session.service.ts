@@ -65,7 +65,7 @@ export class SessionService implements EntitySubscriberInterface {
     async createNewAuthenticatedSession(
         ctx: RequestContext,
         user: User,
-        authenticationStrategy: AuthenticationStrategy,
+        authenticationStrategyName: string,
     ): Promise<AuthenticatedSession> {
         const token = await this.generateSessionToken();
         const guestOrder =
@@ -79,7 +79,7 @@ export class SessionService implements EntitySubscriberInterface {
                 token,
                 user,
                 activeOrder,
-                authenticationStrategy: authenticationStrategy.name,
+                authenticationStrategy: authenticationStrategyName,
                 expires: this.getExpiryDate(this.sessionDurationInMs),
                 invalidated: false,
             }),

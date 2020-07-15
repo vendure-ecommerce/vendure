@@ -59,7 +59,7 @@ type Mutation {
     "Delete an existing Address"
     deleteCustomerAddress(id: ID!): Boolean!
     "Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true."
-    verifyCustomerAccount(token: String!, password: String!): LoginResult!
+    verifyCustomerAccount(token: String!, password: String): LoginResult!
     "Update the password of the active Customer"
     updateCustomerPassword(currentPassword: String!, newPassword: String!): Boolean
     """

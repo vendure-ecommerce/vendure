@@ -105,7 +105,7 @@ describe('Shop auth & accounts', () => {
         await server.destroy();
     });
 
-    describe('customer account creation', () => {
+    describe('customer account creation with deferred password', () => {
         const password = 'password';
         const emailAddress = 'test1@test.com';
         let verificationToken: string;
@@ -115,23 +115,7 @@ describe('Shop auth & accounts', () => {
             sendEmailFn = jest.fn();
         });
 
-        it(
-            'errors if a password is provided',
-            assertThrowsWithMessage(async () => {
-                const input: RegisterCustomerInput = {
-                    firstName: 'Sofia',
-                    lastName: 'Green',
-                    emailAddress: 'sofia.green@test.com',
-                    password: 'test',
-                };
-                const result = await shopClient.query<Register.Mutation, Register.Variables>(
-                    REGISTER_ACCOUNT,
-                    { input },
-                );
-            }, 'Do not provide a password when `authOptions.requireVerification` is set to "true"'),
-        );
-
-        it('register a new account', async () => {
+        it('register a new account without password', async () => {
             const verificationTokenPromise = getVerificationTokenPromise();
             const input: RegisterCustomerInput = {
                 firstName: 'Sean',
@@ -244,7 +228,18 @@ describe('Shop auth & accounts', () => {
             ),
         );
 
-        it('verification succeeds with correct token', async () => {
+        it(
+            'verification fails with no password',
+            assertThrowsWithMessage(
+                () =>
+                    shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
+                        token: verificationToken,
+                    }),
+                `A password must be provided as it was not set during registration`,
+            ),
+        );
+
+        it('verification succeeds with password and correct token', async () => {
             const result = await shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
                 password,
                 token: verificationToken,
@@ -310,6 +305,70 @@ describe('Shop auth & accounts', () => {
                     },
                 },
             ]);
+        });
+    });
+
+    describe('customer account creation with up-front password', () => {
+        const password = 'password';
+        const emailAddress = 'test2@test.com';
+        let verificationToken: string;
+
+        it('register a new account with password', async () => {
+            const verificationTokenPromise = getVerificationTokenPromise();
+            const input: RegisterCustomerInput = {
+                firstName: 'Lu',
+                lastName: 'Tester',
+                phoneNumber: '443324',
+                emailAddress,
+                password,
+            };
+            const result = await shopClient.query<Register.Mutation, Register.Variables>(REGISTER_ACCOUNT, {
+                input,
+            });
+
+            verificationToken = await verificationTokenPromise;
+
+            expect(result.registerCustomerAccount).toBe(true);
+            expect(sendEmailFn).toHaveBeenCalled();
+            expect(verificationToken).toBeDefined();
+
+            const { customers } = await adminClient.query<GetCustomerList.Query, GetCustomerList.Variables>(
+                GET_CUSTOMER_LIST,
+                {
+                    options: {
+                        filter: {
+                            emailAddress: {
+                                eq: emailAddress,
+                            },
+                        },
+                    },
+                },
+            );
+
+            expect(
+                pick(customers.items[0], ['firstName', 'lastName', 'emailAddress', 'phoneNumber']),
+            ).toEqual(pick(input, ['firstName', 'lastName', 'emailAddress', 'phoneNumber']));
+        });
+        it(
+            'verification fails with password',
+            assertThrowsWithMessage(
+                () =>
+                    shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
+                        token: verificationToken,
+                        password: 'new password',
+                    }),
+                `A password has already been set during registration`,
+            ),
+        );
+
+        it('verification succeeds with no password and correct token', async () => {
+            const a = 1;
+            const result = await shopClient.query<Verify.Mutation, Verify.Variables>(VERIFY_EMAIL, {
+                token: verificationToken,
+            });
+
+            expect(result.verifyCustomerAccount.user.identifier).toBe('test2@test.com');
+            const { activeCustomer } = await shopClient.query<GetActiveCustomer.Query>(GET_ACTIVE_CUSTOMER);
         });
     });
 

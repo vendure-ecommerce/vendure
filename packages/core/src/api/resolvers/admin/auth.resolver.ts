@@ -48,7 +48,7 @@ export class AuthResolver extends BaseAuthResolver {
         @Context('req') req: Request,
         @Context('res') res: Response,
     ): Promise<LoginResult> {
-        return this.createAuthenticatedSession(ctx, args, req, res);
+        return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
     @Mutation()

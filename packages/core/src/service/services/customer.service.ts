@@ -131,7 +131,7 @@ export class CustomerService {
         if (password && password !== '') {
             const verificationToken = customer.user.getNativeAuthenticationMethod().verificationToken;
             if (verificationToken) {
-                customer.user = await this.userService.verifyUserByToken(verificationToken, password);
+                customer.user = await this.userService.verifyUserByToken(verificationToken);
             }
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
@@ -161,11 +161,7 @@ export class CustomerService {
     }
 
     async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
-        if (this.configService.authOptions.requireVerification) {
-            if (input.password) {
-                throw new UserInputError(`error.unexpected-password-on-registration`);
-            }
-        } else {
+        if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
                 throw new UserInputError(`error.missing-password-on-registration`);
             }
@@ -241,7 +237,7 @@ export class CustomerService {
     async verifyCustomerEmailAddress(
         ctx: RequestContext,
         verificationToken: string,
-        password: string,
+        password?: string,
     ): Promise<Customer | undefined> {
         const user = await this.userService.verifyUserByToken(verificationToken, password);
         if (user) {

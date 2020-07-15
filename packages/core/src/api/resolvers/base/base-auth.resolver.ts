@@ -38,7 +38,7 @@ export class BaseAuthResolver {
         req: Request,
         res: Response,
     ): Promise<LoginResult> {
-        return await this.createAuthenticatedSession(
+        return await this.authenticateAndCreateSession(
             ctx,
             {
                 input: { [NATIVE_AUTH_STRATEGY_NAME]: args },
@@ -85,12 +85,12 @@ export class BaseAuthResolver {
     /**
      * Creates an authenticated session and sets the session token.
      */
-    protected async createAuthenticatedSession(
+    protected async authenticateAndCreateSession(
         ctx: RequestContext,
         args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
-    ) {
+    ): Promise<LoginResult> {
         const [method, data] = Object.entries(args.input)[0];
         const { apiType } = ctx;
         const session = await this.authService.authenticate(ctx, apiType, method, data);
@@ -130,7 +130,7 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    private publiclyAccessibleUser(user: User): CurrentUser {
+    protected publiclyAccessibleUser(user: User): CurrentUser {
         return {
             id: user.id as string,
             identifier: user.identifier,

@@ -112,7 +112,7 @@ export const REGISTER_ACCOUNT = gql`
     }
 `;
 export const VERIFY_EMAIL = gql`
-    mutation Verify($password: String!, $token: String!) {
+    mutation Verify($password: String, $token: String!) {
         verifyCustomerAccount(password: $password, token: $token) {
             user {
                 id

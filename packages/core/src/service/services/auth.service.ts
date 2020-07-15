@@ -48,6 +48,14 @@ export class AuthService {
         if (!user) {
             throw new UnauthorizedError();
         }
+        return this.createAuthenticatedSessionForUser(ctx, user, authenticationStrategy.name);
+    }
+
+    async createAuthenticatedSessionForUser(
+        ctx: RequestContext,
+        user: User,
+        authenticationStrategyName: string,
+    ): Promise<AuthenticatedSession> {
         if (!user.roles || !user.roles[0]?.channels) {
             const userWithRoles = await this.connection
                 .getRepository(User)
@@ -70,7 +78,7 @@ export class AuthService {
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
-            authenticationStrategy,
+            authenticationStrategyName,
         );
         this.eventBus.publish(new LoginEvent(ctx, user));
         return session;

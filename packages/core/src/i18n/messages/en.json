@@ -63,8 +63,10 @@
     "order-items-limit-exceeded": "Cannot add items. An order may consist of a maximum of { maxItems } items",
     "order-lines-must-belong-to-same-order": "OrderLines must all belong to a single Order",
     "payment-may-only-be-added-in-arrangingpayment-state": "A Payment may only be added when Order is in \"ArrangingPayment\" state",
+    "password-already-set-during-registration": "A password has already been set during registration",
     "password-reset-token-has-expired": "Password reset token has expired.",
     "password-reset-token-not-recognized": "Password reset token not recognized",
+    "password-required-for-verification": "A password must be provided as it was not set during registration",
     "permission-invalid": "The permission \"{ permission }\" is not valid",
     "products-cannot-be-removed-from-default-channel": "Products cannot be removed from the default Channel",
     "product-id-or-slug-must-be-provided": "Either the Product id or slug must be provided",
@@ -80,8 +82,7 @@
     "stockonhand-cannot-be-negative": "stockOnHand cannot be a negative value",
     "verification-token-has-expired": "Verification token has expired. Use refreshCustomerVerification to send a new token.",
     "verification-token-not-recognized": "Verification token not recognized",
-    "unauthorized": "The credentials did not match. Please check and try again",
-    "unexpected-password-on-registration": "Do not provide a password when `authOptions.requireVerification` is set to \"true\""
+    "unauthorized": "The credentials did not match. Please check and try again"
   },
   "message": {
     "asset-to-be-deleted-is-featured": "The selected {assetCount, plural, one {Asset is} other {Assets are}} featured by {products, plural, =0 {} one {1 Product} other {# Products}} {variants, plural, =0 {} one { 1 ProductVariant} other { # ProductVariants}} {collections, plural, =0 {} one { 1 Collection} other { # Collections}}",
