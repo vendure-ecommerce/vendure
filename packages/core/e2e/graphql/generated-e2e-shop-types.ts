@@ -1349,6 +1349,7 @@ export type Mutation = {
     applyCouponCode?: Maybe<Order>;
     /** Removes the given coupon code from the active Order */
     removeCouponCode?: Maybe<Order>;
+    /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<Order>;
     /** Sets the shipping address for this order */
     setOrderShippingAddress?: Maybe<Order>;
@@ -1376,7 +1377,27 @@ export type Mutation = {
      * applicable if `authOptions.requireVerification` is set to true.
      */
     refreshCustomerVerification: Scalars['Boolean'];
-    /** Register a Customer account with the given credentials */
+    /**
+     * Register a Customer account with the given credentials. There are three possible registration flows:
+     *
+     * _If `authOptions.requireVerification` is set to `true`:_
+     *
+     * 1. **The Customer is registered _with_ a password**. A verificationToken will
+     * be created (and typically emailed to the Customer). That
+     *    verificationToken would then be passed to the `verifyCustomerAccount`
+     * mutation _without_ a password. The Customer is then
+     *    verified and authenticated in one step.
+     * 2. **The Customer is registered _without_ a password**. A verificationToken
+     * will be created (and typically emailed to the Customer). That
+     *    verificationToken would then be passed to the `verifyCustomerAccount`
+     * mutation _with_ the chosed password of the Customer. The Customer is then
+     *    verified and authenticated in one step.
+     *
+     * _If `authOptions.requireVerification` is set to `false`:_
+     *
+     * 3. The Customer _must_ be registered _with_ a password. No further action is
+     * needed - the Customer is able to authenticate immediately.
+     */
     registerCustomerAccount: Scalars['Boolean'];
     /** Update an existing Customer */
     updateCustomer: Customer;
@@ -1389,6 +1410,9 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only
      * applicable if `authOptions.requireVerification` is set to true.
+     *
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+     * provided here.
      */
     verifyCustomerAccount: LoginResult;
     /** Update the password of the active Customer */
@@ -1968,20 +1992,45 @@ export type PromotionList = PaginatedList & {
 
 export type Query = {
     __typename?: 'Query';
+    /** The active Channel */
     activeChannel: Channel;
+    /** The active Customer */
     activeCustomer?: Maybe<Customer>;
+    /**
+     * The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
+     * state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
+     * query will once again return `null`.
+     */
     activeOrder?: Maybe<Order>;
+    /** An array of supported Countries */
     availableCountries: Array<Country>;
+    /** A list of Collections available to the shop */
     collections: CollectionList;
+    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
     collection?: Maybe<Collection>;
+    /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;
+    /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
+    /** Returns the possible next states that the activeOrder can transition to */
     nextOrderStates: Array<Scalars['String']>;
+    /**
+     * Returns an Order based on the id. Note that in the Shop API, only orders belonging to the
+     * currently-authenticated User may be queried.
+     */
     order?: Maybe<Order>;
+    /**
+     * Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)
+     * this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation
+     * screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing
+     * general anonymous access to Order data.
+     */
     orderByCode?: Maybe<Order>;
     /** Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** Get a list of Products */
     products: ProductList;
+    /** Search Products based on the criteria set by the `SearchInput` */
     search: SearchResponse;
 };
 
