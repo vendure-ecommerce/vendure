@@ -167,7 +167,9 @@ export class SessionService implements EntitySubscriberInterface {
     }
 
     async setActiveOrder(serializedSession: CachedSession, order: Order): Promise<CachedSession> {
-        const session = await this.connection.getRepository(Session).findOne(serializedSession.id);
+        const session = await this.connection
+            .getRepository(Session)
+            .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
         if (session) {
             session.activeOrder = order;
             await this.connection.getRepository(Session).save(session, { reload: false });
@@ -182,10 +184,14 @@ export class SessionService implements EntitySubscriberInterface {
         if (serializedSession.activeOrderId) {
             const session = await this.connection
                 .getRepository(Session)
-                .save({ id: serializedSession.id, activeOrder: null });
-            const updatedSerializedSession = this.serializeSession(session);
-            await this.configService.authOptions.sessionCacheStrategy.set(updatedSerializedSession);
-            return updatedSerializedSession;
+                .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
+            if (session) {
+                session.activeOrder = null;
+                await this.connection.getRepository(Session).save(session);
+                const updatedSerializedSession = this.serializeSession(session);
+                await this.configService.authOptions.sessionCacheStrategy.set(updatedSerializedSession);
+                return updatedSerializedSession;
+            }
         }
         return serializedSession;
     }
