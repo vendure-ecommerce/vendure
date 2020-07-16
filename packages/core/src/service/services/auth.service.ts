@@ -9,6 +9,7 @@ import { InternalServerError, NotVerifiedError, UnauthorizedError } from '../../
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
     NATIVE_AUTH_STRATEGY_NAME,
+    NativeAuthenticationData,
     NativeAuthenticationStrategy,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
@@ -42,7 +43,15 @@ export class AuthService {
         authenticationMethod: string,
         authenticationData: any,
     ): Promise<AuthenticatedSession> {
-        this.eventBus.publish(new AttemptedLoginEvent(ctx, authenticationMethod));
+        this.eventBus.publish(
+            new AttemptedLoginEvent(
+                ctx,
+                authenticationMethod,
+                authenticationMethod === NATIVE_AUTH_STRATEGY_NAME
+                    ? (authenticationData as NativeAuthenticationData).username
+                    : undefined,
+            ),
+        );
         const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
         const user = await authenticationStrategy.authenticate(ctx, authenticationData);
         if (!user) {
