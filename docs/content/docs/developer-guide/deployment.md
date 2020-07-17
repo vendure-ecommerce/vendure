@@ -16,6 +16,14 @@ A typical pattern is to run the Vendure app on the server, e.g. at `http://local
 
 Here is a good guide to setting up a production-ready server for an app such as Vendure: https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04
 
+## Security Considerations
+
+For a production Vendure server, there are a few security-related points to consider when deploying:
+
+* Set the [Superadmin credentials]({{< relref "auth-options" >}}#superadmincredentials) to something other than the default.
+* Consider taking steps to harden your GraphQL APIs against DOS attacks. Use the [ApiOptions]({{< relref "api-options" >}}) to set up appropriate Express middleware for things like [request timeouts](https://github.com/expressjs/express/issues/3330) and [rate limits](https://www.npmjs.com/package/express-rate-limit). A tool such as [graphql-query-complexity](https://github.com/slicknode/graphql-query-complexity) can be used to mitigate resource-intensive GraphQL queries. 
+* You may wish to restrict the Admin API to only be accessed from trusted IPs. This could be achieved for instance by configuring an nginx reverse proxy that sits in front of the Vendure server.
+
 ## Health/Readiness Checks
 
 If you wish to deploy with Kubernetes or some similar system, you can make use of the health check endpoint. This is a regular REST route (note: _not_ GraphQL), available at `/health`.

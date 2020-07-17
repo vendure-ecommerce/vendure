@@ -1,6 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -32,6 +33,7 @@ import {
     GetOrderByCode,
     GetShippingMethods,
     RemoveItemFromOrder,
+    SetBillingAddress,
     SetCustomerForOrder,
     SetShippingAddress,
     SetShippingMethod,
@@ -57,6 +59,7 @@ import {
     GET_NEXT_STATES,
     GET_ORDER_BY_CODE,
     REMOVE_ITEM_FROM_ORDER,
+    SET_BILLING_ADDRESS,
     SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
@@ -73,6 +76,9 @@ describe('Shop orders', () => {
                     testFailingPaymentMethod,
                     testErrorPaymentMethod,
                 ],
+            },
+            customFields: {
+                Order: [{ name: 'giftWrap', type: 'boolean', defaultValue: false }],
             },
             orderOptions: {
                 orderItemsLimit: 99,
@@ -382,6 +388,38 @@ describe('Shop orders', () => {
             });
         });
 
+        it('setOrderBillingAddress sets billing address', async () => {
+            const address: CreateAddressInput = {
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                countryCode: 'US',
+                phoneNumber: '4444444',
+            };
+            const { setOrderBillingAddress } = await shopClient.query<
+                SetBillingAddress.Mutation,
+                SetBillingAddress.Variables
+            >(SET_BILLING_ADDRESS, {
+                input: address,
+            });
+
+            expect(setOrderBillingAddress!.billingAddress).toEqual({
+                fullName: 'name',
+                company: 'company',
+                streetLine1: '12 the street',
+                streetLine2: null,
+                city: 'foo',
+                province: 'bar',
+                postalCode: '123456',
+                country: 'United States of America',
+                phoneNumber: '4444444',
+            });
+        });
+
         it('customer default Addresses are not updated before payment', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
@@ -559,6 +597,22 @@ describe('Shop orders', () => {
             const result2 = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             expect(result2.activeOrder!.id).toBe(activeOrder.id);
         });
+
+        it(
+            'cannot setCustomerForOrder when already logged in',
+            assertThrowsWithMessage(async () => {
+                await shopClient.query<SetCustomerForOrder.Mutation, SetCustomerForOrder.Variables>(
+                    SET_CUSTOMER,
+                    {
+                        input: {
+                            emailAddress: 'newperson@email.com',
+                            firstName: 'New',
+                            lastName: 'Person',
+                        },
+                    },
+                );
+            }, 'Cannot set a Customer for the Order when already logged in'),
+        );
 
         describe('shipping', () => {
             let shippingMethods: GetShippingMethods.EligibleShippingMethods[];
@@ -1069,4 +1123,59 @@ describe('Shop orders', () => {
             expect(activeOrder!.customer!.orders.items).toEqual([]);
         });
     });
+
+    describe('order custom fields', () => {
+        it('custom fields added to type', async () => {
+            await shopClient.asAnonymousUser();
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
+
+            expect(activeOrder?.customFields).toEqual({
+                giftWrap: false,
+            });
+        });
+
+        it('setting order custom fields', async () => {
+            const { setOrderCustomFields } = await shopClient.query(SET_ORDER_CUSTOM_FIELDS, {
+                input: {
+                    customFields: { giftWrap: true },
+                },
+            });
+
+            expect(setOrderCustomFields?.customFields).toEqual({
+                giftWrap: true,
+            });
+
+            const { activeOrder } = await shopClient.query(GET_ORDER_CUSTOM_FIELDS);
+
+            expect(activeOrder?.customFields).toEqual({
+                giftWrap: true,
+            });
+        });
+    });
 });
+
+const GET_ORDER_CUSTOM_FIELDS = gql`
+    query GetOrderCustomFields {
+        activeOrder {
+            id
+            customFields {
+                giftWrap
+            }
+        }
+    }
+`;
+
+const SET_ORDER_CUSTOM_FIELDS = gql`
+    mutation SetOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            id
+            customFields {
+                giftWrap
+            }
+        }
+    }
+`;

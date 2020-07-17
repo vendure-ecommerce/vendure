@@ -82,9 +82,18 @@ export abstract class BaseDetailComponent<Entity extends { id: string; updatedAt
     }
 
     protected setQueryParam(key: string, value: any) {
-        this.router.navigate(['./', { [key]: value }], {
-            relativeTo: this.route,
-            queryParamsHandling: 'merge',
-        });
+        this.router.navigate(
+            [
+                './',
+                {
+                    ...this.route.snapshot.params,
+                    [key]: value,
+                },
+            ],
+            {
+                relativeTo: this.route,
+                queryParamsHandling: 'merge',
+            },
+        );
     }
 }

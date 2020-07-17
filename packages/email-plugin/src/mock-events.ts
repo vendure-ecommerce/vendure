@@ -2,6 +2,7 @@ import {
     AccountRegistrationEvent,
     Customer,
     IdentifierChangeRequestEvent,
+    NativeAuthenticationMethod,
     Order,
     OrderItem,
     OrderLine,
@@ -98,7 +99,11 @@ export const mockAccountRegistrationEvent = new AccountRegistrationEvent(
     {} as any,
     new User({
         verified: false,
-        verificationToken: 'MjAxOC0xMS0xM1QxNToxNToxNC42ODda_US2U6UK1WZC7NDAX',
+        authenticationMethods: [
+            new NativeAuthenticationMethod({
+                verificationToken: 'MjAxOC0xMS0xM1QxNToxNToxNC42ODda_US2U6UK1WZC7NDAX',
+            }),
+        ],
         identifier: 'test@test.com',
     }),
 );
@@ -107,7 +112,11 @@ export const mockPasswordResetEvent = new PasswordResetEvent(
     {} as any,
     new User({
         identifier: 'test@test.com',
-        passwordResetToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
+        authenticationMethods: [
+            new NativeAuthenticationMethod({
+                passwordResetToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
+            }),
+        ],
     }),
 );
 
@@ -115,7 +124,11 @@ export const mockEmailAddressChangeEvent = new IdentifierChangeRequestEvent(
     {} as any,
     new User({
         identifier: 'old-address@test.com',
-        pendingIdentifier: 'new-address@test.com',
-        identifierChangeToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
+        authenticationMethods: [
+            new NativeAuthenticationMethod({
+                pendingIdentifier: 'new-address@test.com',
+                identifierChangeToken: 'MjAxOS0wNC0xNVQxMzozMDozOC43MjFa_MA2FR6HRZBW7JWD6',
+            }),
+        ],
     }),
 );

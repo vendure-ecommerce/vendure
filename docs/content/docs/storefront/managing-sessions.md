@@ -1,10 +1,10 @@
 ---
-title: "Authentication & Sessions"
+title: "Managing Sessions"
 weight: 1
 showtoc: true
 ---
  
-# Authentication & Sessions
+# Managing Sessions
 
 Vendure supports two ways to manage user sessions: cookies and bearer token. The method you choose depends on your requirements, and is specified by the [`authOptions.tokenMethod` property]({{< relref "auth-options" >}}#tokenmethod) of the VendureConfig.
 

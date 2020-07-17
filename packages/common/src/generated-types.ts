@@ -170,6 +170,18 @@ export type AssignProductsToChannelInput = {
   priceFactor?: Maybe<Scalars['Float']>;
 };
 
+export type AuthenticationInput = {
+  native?: Maybe<NativeAuthInput>;
+};
+
+export type AuthenticationMethod = Node & {
+   __typename?: 'AuthenticationMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
@@ -570,6 +582,7 @@ export type CreateShippingMethodInput = {
   description: Scalars['String'];
   checker: ConfigurableOperationInput;
   calculator: ConfigurableOperationInput;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -1056,6 +1069,7 @@ export type CustomFields = {
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
   User: Array<CustomFieldConfig>;
+  ShippingMethod: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
@@ -1758,6 +1772,8 @@ export type Mutation = {
   createAdministrator: Administrator;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
+  /** Delete an Administrator */
+  deleteAdministrator: DeletionResponse;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
   /** Create a new Asset */
@@ -1766,7 +1782,15 @@ export type Mutation = {
   updateAsset: Asset;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
+  /** Delete multiple Assets */
+  deleteAssets: DeletionResponse;
+  /**
+   * Authenticates the user using the native authentication strategy. This mutation
+   * is an alias for `authenticate({ native: { ... }})`
+   */
   login: LoginResult;
+  /** Authenticates the user using a named authentication strategy */
+  authenticate: LoginResult;
   logout: Scalars['Boolean'];
   /** Create a new Channel */
   createChannel: Channel;
@@ -1837,6 +1861,8 @@ export type Mutation = {
   addNoteToOrder: Order;
   updateOrderNote: HistoryEntry;
   deleteOrderNote: DeletionResponse;
+  transitionOrderToState?: Maybe<Order>;
+  setOrderCustomFields?: Maybe<Order>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Create a new ProductOptionGroup */
@@ -1918,6 +1944,11 @@ export type MutationUpdateAdministratorArgs = {
 };
 
 
+export type MutationDeleteAdministratorArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'];
   roleId: Scalars['ID'];
@@ -1940,9 +1971,21 @@ export type MutationDeleteAssetArgs = {
 };
 
 
+export type MutationDeleteAssetsArgs = {
+  ids: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type MutationLoginArgs = {
   username: Scalars['String'];
   password: Scalars['String'];
+  rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationAuthenticateArgs = {
+  input: AuthenticationInput;
   rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2159,6 +2202,17 @@ export type MutationDeleteOrderNoteArgs = {
 };
 
 
+export type MutationTransitionOrderToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type MutationSetOrderCustomFieldsArgs = {
+  input: UpdateOrderInput;
+};
+
+
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput;
 };
@@ -2337,6 +2391,11 @@ export type MutationRemoveMembersFromZoneArgs = {
   memberIds: Array<Scalars['ID']>;
 };
 
+export type NativeAuthInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -2357,6 +2416,7 @@ export type NumberRange = {
 
 export type Order = Node & {
    __typename?: 'Order';
+  nextStates: Array<Scalars['String']>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2471,6 +2531,12 @@ export type OrderListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<OrderSortParameter>;
   filter?: Maybe<OrderFilterParameter>;
+};
+
+export type OrderProcessState = {
+   __typename?: 'OrderProcessState';
+  name: Scalars['String'];
+  to: Array<Scalars['String']>;
 };
 
 export type OrderSortParameter = {
@@ -2646,6 +2712,7 @@ export type ProductOption = Node & {
   code: Scalars['String'];
   name: Scalars['String'];
   groupId: Scalars['ID'];
+  group: ProductOptionGroup;
   translations: Array<ProductOptionTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2731,6 +2798,7 @@ export type ProductVariant = Node & {
   trackInventory: Scalars['Boolean'];
   stockMovements: StockMovementList;
   id: Scalars['ID'];
+  product: Product;
   productId: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3279,6 +3347,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
    __typename?: 'ServerConfig';
+  orderProcess: Array<OrderProcessState>;
   customFieldConfig: CustomFields;
 };
 
@@ -3296,6 +3365,7 @@ export type ShippingMethod = Node & {
   description: Scalars['String'];
   checker: ConfigurableOperation;
   calculator: ConfigurableOperation;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodFilterParameter = {
@@ -3601,6 +3671,11 @@ export type UpdateGlobalSettingsInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderInput = {
+  id: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
   note?: Maybe<Scalars['String']>;
@@ -3679,6 +3754,7 @@ export type UpdateShippingMethodInput = {
   description?: Maybe<Scalars['String']>;
   checker?: Maybe<ConfigurableOperationInput>;
   calculator?: Maybe<ConfigurableOperationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateTaxCategoryInput = {
@@ -3710,7 +3786,8 @@ export type User = Node & {
   identifier: Scalars['String'];
   verified: Scalars['Boolean'];
   roles: Array<Role>;
-  lastLogin?: Maybe<Scalars['String']>;
+  lastLogin?: Maybe<Scalars['DateTime']>;
+  authenticationMethods: Array<AuthenticationMethod>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 

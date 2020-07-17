@@ -14,15 +14,36 @@
         [iconShape]="getTimelineIcon(entry)"
         [createdAt]="entry.createdAt"
         [name]="getName(entry)"
+        [featured]="isFeatured(entry)"
     >
         <ng-container [ngSwitch]="entry.type">
             <ng-container *ngSwitchCase="type.CUSTOMER_REGISTERED">
-                {{ 'customer.history-customer-registered' | translate }}
+                <div class="title">
+                    {{ 'customer.history-customer-registered' | translate }}
+                </div>
+                <ng-container *ngIf="entry.data.strategy === 'native'; else namedStrategy">
+                    {{ 'customer.history-using-native-auth-strategy' | translate }}
+                </ng-container>
+                <ng-template #namedStrategy>
+                    {{
+                    'customer.history-using-external-auth-strategy'
+                        | translate: { strategy: entry.data.strategy }
+                    }}
+                </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_VERIFIED">
                 <div class="title">
                     {{ 'customer.history-customer-verified' | translate }}
                 </div>
+                <ng-container *ngIf="entry.data.strategy === 'native'; else namedStrategy">
+                    {{ 'customer.history-using-native-auth-strategy' | translate }}
+                </ng-container>
+                <ng-template #namedStrategy>
+                    {{
+                        'customer.history-using-external-auth-strategy'
+                            | translate: { strategy: entry.data.strategy }
+                    }}
+                </ng-template>
             </ng-container>
             <ng-container *ngSwitchCase="type.CUSTOMER_DETAIL_UPDATED">
                 <div class="flex">

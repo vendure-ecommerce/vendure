@@ -171,6 +171,18 @@ export type AssignProductsToChannelInput = {
   priceFactor?: Maybe<Scalars['Float']>;
 };
 
+export type AuthenticationInput = {
+  native?: Maybe<NativeAuthInput>;
+};
+
+export type AuthenticationMethod = Node & {
+   __typename?: 'AuthenticationMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
@@ -571,6 +583,7 @@ export type CreateShippingMethodInput = {
   description: Scalars['String'];
   checker: ConfigurableOperationInput;
   calculator: ConfigurableOperationInput;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -1064,6 +1077,7 @@ export type CustomFields = {
   ProductOptionGroup: Array<CustomFieldConfig>;
   ProductVariant: Array<CustomFieldConfig>;
   User: Array<CustomFieldConfig>;
+  ShippingMethod: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
@@ -1774,6 +1788,8 @@ export type Mutation = {
   assignProductsToChannel: Array<Product>;
   /** Assign a Role to an Administrator */
   assignRoleToAdministrator: Administrator;
+  /** Authenticates the user using a named authentication strategy */
+  authenticate: LoginResult;
   cancelOrder: Order;
   /** Create a new Administrator */
   createAdministrator: Administrator;
@@ -1814,8 +1830,12 @@ export type Mutation = {
   createTaxRate: TaxRate;
   /** Create a new Zone */
   createZone: Zone;
+  /** Delete an Administrator */
+  deleteAdministrator: DeletionResponse;
   /** Delete an Asset */
   deleteAsset: DeletionResponse;
+  /** Delete multiple Assets */
+  deleteAssets: DeletionResponse;
   /** Delete a Channel */
   deleteChannel: DeletionResponse;
   /** Delete a Collection and all of its descendants */
@@ -1851,6 +1871,10 @@ export type Mutation = {
   deleteZone: DeletionResponse;
   fulfillOrder: Fulfillment;
   importProducts?: Maybe<ImportInfo>;
+  /**
+   * Authenticates the user using the native authentication strategy. This mutation
+   * is an alias for `authenticate({ native: { ... }})`
+   */
   login: LoginResult;
   logout: Scalars['Boolean'];
   /** Move a Collection to a different parent or index */
@@ -1872,9 +1896,11 @@ export type Mutation = {
   setActiveChannel: UserStatus;
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
+  setOrderCustomFields?: Maybe<Order>;
   setUiLanguage?: Maybe<LanguageCode>;
   settlePayment: Payment;
   settleRefund: Refund;
+  transitionOrderToState?: Maybe<Order>;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
   /** Update an existing Asset */
@@ -1959,6 +1985,12 @@ export type MutationAssignProductsToChannelArgs = {
 export type MutationAssignRoleToAdministratorArgs = {
   administratorId: Scalars['ID'];
   roleId: Scalars['ID'];
+};
+
+
+export type MutationAuthenticateArgs = {
+  input: AuthenticationInput;
+  rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
 
@@ -2069,8 +2101,19 @@ export type MutationCreateZoneArgs = {
 };
 
 
+export type MutationDeleteAdministratorArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type MutationDeleteAssetArgs = {
   id: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationDeleteAssetsArgs = {
+  ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2233,6 +2276,11 @@ export type MutationSetAsLoggedInArgs = {
 };
 
 
+export type MutationSetOrderCustomFieldsArgs = {
+  input: UpdateOrderInput;
+};
+
+
 export type MutationSetUiLanguageArgs = {
   languageCode?: Maybe<LanguageCode>;
 };
@@ -2245,6 +2293,12 @@ export type MutationSettlePaymentArgs = {
 
 export type MutationSettleRefundArgs = {
   input: SettleRefundInput;
+};
+
+
+export type MutationTransitionOrderToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
 };
 
 
@@ -2372,6 +2426,11 @@ export type MutationUpdateZoneArgs = {
   input: UpdateZoneInput;
 };
 
+export type NativeAuthInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
 export type NetworkStatus = {
    __typename?: 'NetworkStatus';
   inFlightRequests: Scalars['Int'];
@@ -2397,6 +2456,7 @@ export type NumberRange = {
 
 export type Order = Node & {
    __typename?: 'Order';
+  nextStates: Array<Scalars['String']>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2511,6 +2571,12 @@ export type OrderListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<OrderSortParameter>;
   filter?: Maybe<OrderFilterParameter>;
+};
+
+export type OrderProcessState = {
+   __typename?: 'OrderProcessState';
+  name: Scalars['String'];
+  to: Array<Scalars['String']>;
 };
 
 export type OrderSortParameter = {
@@ -2686,6 +2752,7 @@ export type ProductOption = Node & {
   code: Scalars['String'];
   name: Scalars['String'];
   groupId: Scalars['ID'];
+  group: ProductOptionGroup;
   translations: Array<ProductOptionTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2771,6 +2838,7 @@ export type ProductVariant = Node & {
   trackInventory: Scalars['Boolean'];
   stockMovements: StockMovementList;
   id: Scalars['ID'];
+  product: Product;
   productId: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3322,6 +3390,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
    __typename?: 'ServerConfig';
+  orderProcess: Array<OrderProcessState>;
   customFieldConfig: CustomFields;
 };
 
@@ -3339,6 +3408,7 @@ export type ShippingMethod = Node & {
   description: Scalars['String'];
   checker: ConfigurableOperation;
   calculator: ConfigurableOperation;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodFilterParameter = {
@@ -3649,6 +3719,11 @@ export type UpdateGlobalSettingsInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderInput = {
+  id: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
   note?: Maybe<Scalars['String']>;
@@ -3727,6 +3802,7 @@ export type UpdateShippingMethodInput = {
   description?: Maybe<Scalars['String']>;
   checker?: Maybe<ConfigurableOperationInput>;
   calculator?: Maybe<ConfigurableOperationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateTaxCategoryInput = {
@@ -3758,7 +3834,8 @@ export type User = Node & {
   identifier: Scalars['String'];
   verified: Scalars['Boolean'];
   roles: Array<Role>;
-  lastLogin?: Maybe<Scalars['String']>;
+  lastLogin?: Maybe<Scalars['DateTime']>;
+  authenticationMethods: Array<AuthenticationMethod>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -3863,6 +3940,19 @@ export type UpdateAdministratorMutation = (
   & { updateAdministrator: (
     { __typename?: 'Administrator' }
     & AdministratorFragment
+  ) }
+);
+
+export type DeleteAdministratorMutationVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type DeleteAdministratorMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteAdministrator: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'result' | 'message'>
   ) }
 );
 
@@ -4708,14 +4798,14 @@ export type RefundFragment = (
   & Pick<Refund, 'id' | 'state' | 'items' | 'shipping' | 'adjustment' | 'transactionId' | 'paymentId'>
 );
 
-export type ShippingAddressFragment = (
+export type OrderAddressFragment = (
   { __typename?: 'OrderAddress' }
   & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'phoneNumber'>
 );
 
 export type OrderFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'total' | 'currencyCode'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -4751,7 +4841,7 @@ export type OrderLineFragment = (
 
 export type OrderDetailFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>
@@ -4769,7 +4859,10 @@ export type OrderDetailFragment = (
     & Pick<ShippingMethod, 'id' | 'code' | 'description'>
   )>, shippingAddress?: Maybe<(
     { __typename?: 'OrderAddress' }
-    & ShippingAddressFragment
+    & OrderAddressFragment
+  )>, billingAddress?: Maybe<(
+    { __typename?: 'OrderAddress' }
+    & OrderAddressFragment
   )>, payments?: Maybe<Array<(
     { __typename?: 'Payment' }
     & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
@@ -4947,12 +5040,57 @@ export type DeleteOrderNoteMutation = (
   ) }
 );
 
+export type TransitionOrderToStateMutationVariables = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type TransitionOrderToStateMutation = (
+  { __typename?: 'Mutation' }
+  & { transitionOrderToState?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderFragment
+  )> }
+);
+
+export type UpdateOrderCustomFieldsMutationVariables = {
+  input: UpdateOrderInput;
+};
+
+
+export type UpdateOrderCustomFieldsMutation = (
+  { __typename?: 'Mutation' }
+  & { setOrderCustomFields?: Maybe<(
+    { __typename?: 'Order' }
+    & OrderFragment
+  )> }
+);
+
 export type AssetFragment = (
   { __typename?: 'Asset' }
   & Pick<Asset, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source' | 'width' | 'height'>
   & { focalPoint?: Maybe<(
     { __typename?: 'Coordinate' }
     & Pick<Coordinate, 'x' | 'y'>
+  )> }
+);
+
+export type ProductOptionGroupFragment = (
+  { __typename?: 'ProductOptionGroup' }
+  & Pick<ProductOptionGroup, 'id' | 'code' | 'languageCode' | 'name'>
+  & { translations: Array<(
+    { __typename?: 'ProductOptionGroupTranslation' }
+    & Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>
+  )> }
+);
+
+export type ProductOptionFragment = (
+  { __typename?: 'ProductOption' }
+  & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'>
+  & { translations: Array<(
+    { __typename?: 'ProductOptionTranslation' }
+    & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>
   )> }
 );
 
@@ -4967,11 +5105,7 @@ export type ProductVariantFragment = (
     & Pick<TaxCategory, 'id' | 'name'>
   ), options: Array<(
     { __typename?: 'ProductOption' }
-    & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name' | 'groupId'>
-    & { translations: Array<(
-      { __typename?: 'ProductOptionTranslation' }
-      & Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>
-    )> }
+    & ProductOptionFragment
   )>, facetValues: Array<(
     { __typename?: 'FacetValue' }
     & Pick<FacetValue, 'id' | 'code' | 'name'>
@@ -5005,7 +5139,7 @@ export type ProductWithVariantsFragment = (
     & Pick<ProductTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>
   )>, optionGroups: Array<(
     { __typename?: 'ProductOptionGroup' }
-    & Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>
+    & ProductOptionGroupFragment
   )>, variants: Array<(
     { __typename?: 'ProductVariant' }
     & ProductVariantFragment
@@ -5022,7 +5156,7 @@ export type ProductWithVariantsFragment = (
   )> }
 );
 
-export type ProductOptionGroupFragment = (
+export type ProductOptionGroupWithOptionsFragment = (
   { __typename?: 'ProductOptionGroup' }
   & Pick<ProductOptionGroup, 'id' | 'createdAt' | 'updatedAt' | 'languageCode' | 'code' | 'name'>
   & { translations: Array<(
@@ -5112,7 +5246,7 @@ export type CreateProductOptionGroupMutation = (
   { __typename?: 'Mutation' }
   & { createProductOptionGroup: (
     { __typename?: 'ProductOptionGroup' }
-    & ProductOptionGroupFragment
+    & ProductOptionGroupWithOptionsFragment
   ) }
 );
 
@@ -5125,7 +5259,7 @@ export type GetProductOptionGroupQuery = (
   { __typename?: 'Query' }
   & { productOptionGroup?: Maybe<(
     { __typename?: 'ProductOptionGroup' }
-    & ProductOptionGroupFragment
+    & ProductOptionGroupWithOptionsFragment
   )> }
 );
 
@@ -5293,15 +5427,15 @@ export type UpdateAssetMutation = (
   ) }
 );
 
-export type DeleteAssetMutationVariables = {
-  id: Scalars['ID'];
+export type DeleteAssetsMutationVariables = {
+  ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
 };
 
 
-export type DeleteAssetMutation = (
+export type DeleteAssetsMutation = (
   { __typename?: 'Mutation' }
-  & { deleteAsset: (
+  & { deleteAssets: (
     { __typename?: 'DeletionResponse' }
     & Pick<DeletionResponse, 'result' | 'message'>
   ) }
@@ -5359,7 +5493,7 @@ export type UpdateProductOptionMutation = (
   { __typename?: 'Mutation' }
   & { updateProductOption: (
     { __typename?: 'ProductOption' }
-    & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name'>
+    & ProductOptionFragment
   ) }
 );
 
@@ -5391,7 +5525,7 @@ export type GetProductVariantOptionsQuery = (
       & Pick<ProductOptionGroup, 'id' | 'name' | 'code'>
       & { options: Array<(
         { __typename?: 'ProductOption' }
-        & Pick<ProductOption, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code'>
+        & ProductOptionFragment
       )> }
     )>, variants: Array<(
       { __typename?: 'ProductVariant' }
@@ -6206,7 +6340,10 @@ export type GetServerConfigQuery = (
     { __typename?: 'GlobalSettings' }
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
-      & { customFieldConfig: (
+      & { orderProcess: Array<(
+        { __typename?: 'OrderProcessState' }
+        & Pick<OrderProcessState, 'name' | 'to'>
+      )>, customFieldConfig: (
         { __typename?: 'CustomFields' }
         & { Address: Array<(
           { __typename?: 'StringCustomFieldConfig' }
@@ -6407,6 +6544,24 @@ export type GetServerConfigQuery = (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
         )>, ProductVariant: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        )>, ShippingMethod: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
         ) | (
@@ -6723,6 +6878,12 @@ export namespace UpdateAdministrator {
   export type Variables = UpdateAdministratorMutationVariables;
   export type Mutation = UpdateAdministratorMutation;
   export type UpdateAdministrator = AdministratorFragment;
+}
+
+export namespace DeleteAdministrator {
+  export type Variables = DeleteAdministratorMutationVariables;
+  export type Mutation = DeleteAdministratorMutation;
+  export type DeleteAdministrator = DeleteAdministratorMutation['deleteAdministrator'];
 }
 
 export namespace GetRoles {
@@ -7109,8 +7270,8 @@ export namespace Refund {
   export type Fragment = RefundFragment;
 }
 
-export namespace ShippingAddress {
-  export type Fragment = ShippingAddressFragment;
+export namespace OrderAddress {
+  export type Fragment = OrderAddressFragment;
 }
 
 export namespace Order {
@@ -7138,7 +7299,8 @@ export namespace OrderDetail {
   export type Adjustments = AdjustmentFragment;
   export type Promotions = (NonNullable<OrderDetailFragment['promotions'][0]>);
   export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
-  export type ShippingAddress = ShippingAddressFragment;
+  export type ShippingAddress = OrderAddressFragment;
+  export type BillingAddress = OrderAddressFragment;
   export type Payments = (NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>);
   export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>);
   export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);
@@ -7215,22 +7377,43 @@ export namespace DeleteOrderNote {
   export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
 }
 
+export namespace TransitionOrderToState {
+  export type Variables = TransitionOrderToStateMutationVariables;
+  export type Mutation = TransitionOrderToStateMutation;
+  export type TransitionOrderToState = OrderFragment;
+}
+
+export namespace UpdateOrderCustomFields {
+  export type Variables = UpdateOrderCustomFieldsMutationVariables;
+  export type Mutation = UpdateOrderCustomFieldsMutation;
+  export type SetOrderCustomFields = OrderFragment;
+}
+
 export namespace Asset {
   export type Fragment = AssetFragment;
   export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
+}
+
+export namespace ProductOptionGroup {
+  export type Fragment = ProductOptionGroupFragment;
+  export type Translations = (NonNullable<ProductOptionGroupFragment['translations'][0]>);
+}
+
+export namespace ProductOption {
+  export type Fragment = ProductOptionFragment;
+  export type Translations = (NonNullable<ProductOptionFragment['translations'][0]>);
 }
 
 export namespace ProductVariant {
   export type Fragment = ProductVariantFragment;
   export type TaxRateApplied = ProductVariantFragment['taxRateApplied'];
   export type TaxCategory = ProductVariantFragment['taxCategory'];
-  export type Options = (NonNullable<ProductVariantFragment['options'][0]>);
-  export type Translations = (NonNullable<(NonNullable<ProductVariantFragment['options'][0]>)['translations'][0]>);
+  export type Options = ProductOptionFragment;
   export type FacetValues = (NonNullable<ProductVariantFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductVariantFragment['facetValues'][0]>)['facet'];
   export type FeaturedAsset = AssetFragment;
   export type Assets = AssetFragment;
-  export type _Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
+  export type Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
 }
 
 export namespace ProductWithVariants {
@@ -7238,18 +7421,18 @@ export namespace ProductWithVariants {
   export type FeaturedAsset = AssetFragment;
   export type Assets = AssetFragment;
   export type Translations = (NonNullable<ProductWithVariantsFragment['translations'][0]>);
-  export type OptionGroups = (NonNullable<ProductWithVariantsFragment['optionGroups'][0]>);
+  export type OptionGroups = ProductOptionGroupFragment;
   export type Variants = ProductVariantFragment;
   export type FacetValues = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>);
   export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
   export type Channels = (NonNullable<ProductWithVariantsFragment['channels'][0]>);
 }
 
-export namespace ProductOptionGroup {
-  export type Fragment = ProductOptionGroupFragment;
-  export type Translations = (NonNullable<ProductOptionGroupFragment['translations'][0]>);
-  export type Options = (NonNullable<ProductOptionGroupFragment['options'][0]>);
-  export type _Translations = (NonNullable<(NonNullable<ProductOptionGroupFragment['options'][0]>)['translations'][0]>);
+export namespace ProductOptionGroupWithOptions {
+  export type Fragment = ProductOptionGroupWithOptionsFragment;
+  export type Translations = (NonNullable<ProductOptionGroupWithOptionsFragment['translations'][0]>);
+  export type Options = (NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>);
+  export type _Translations = (NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>)['translations'][0]>);
 }
 
 export namespace UpdateProduct {
@@ -7285,13 +7468,13 @@ export namespace UpdateProductVariants {
 export namespace CreateProductOptionGroup {
   export type Variables = CreateProductOptionGroupMutationVariables;
   export type Mutation = CreateProductOptionGroupMutation;
-  export type CreateProductOptionGroup = ProductOptionGroupFragment;
+  export type CreateProductOptionGroup = ProductOptionGroupWithOptionsFragment;
 }
 
 export namespace GetProductOptionGroup {
   export type Variables = GetProductOptionGroupQueryVariables;
   export type Query = GetProductOptionGroupQuery;
-  export type ProductOptionGroup = ProductOptionGroupFragment;
+  export type ProductOptionGroup = ProductOptionGroupWithOptionsFragment;
 }
 
 export namespace AddOptionToGroup {
@@ -7362,10 +7545,10 @@ export namespace UpdateAsset {
   export type UpdateAsset = AssetFragment;
 }
 
-export namespace DeleteAsset {
-  export type Variables = DeleteAssetMutationVariables;
-  export type Mutation = DeleteAssetMutation;
-  export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
+export namespace DeleteAssets {
+  export type Variables = DeleteAssetsMutationVariables;
+  export type Mutation = DeleteAssetsMutation;
+  export type DeleteAssets = DeleteAssetsMutation['deleteAssets'];
 }
 
 export namespace SearchProducts {
@@ -7385,7 +7568,7 @@ export namespace SearchProducts {
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
-  export type UpdateProductOption = UpdateProductOptionMutation['updateProductOption'];
+  export type UpdateProductOption = ProductOptionFragment;
 }
 
 export namespace DeleteProductVariant {
@@ -7399,7 +7582,7 @@ export namespace GetProductVariantOptions {
   export type Query = GetProductVariantOptionsQuery;
   export type Product = (NonNullable<GetProductVariantOptionsQuery['product']>);
   export type OptionGroups = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>);
-  export type Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>)['options'][0]>);
+  export type Options = ProductOptionFragment;
   export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
   export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
 }
@@ -7754,6 +7937,7 @@ export namespace GetServerConfig {
   export type Query = GetServerConfigQuery;
   export type GlobalSettings = GetServerConfigQuery['globalSettings'];
   export type ServerConfig = GetServerConfigQuery['globalSettings']['serverConfig'];
+  export type OrderProcess = (NonNullable<GetServerConfigQuery['globalSettings']['serverConfig']['orderProcess'][0]>);
   export type CustomFieldConfig = GetServerConfigQuery['globalSettings']['serverConfig']['customFieldConfig'];
   export type Address = CustomFieldsFragment;
   export type Collection = CustomFieldsFragment;
@@ -7767,6 +7951,7 @@ export namespace GetServerConfig {
   export type ProductOption = CustomFieldsFragment;
   export type ProductOptionGroup = CustomFieldsFragment;
   export type ProductVariant = CustomFieldsFragment;
+  export type ShippingMethod = CustomFieldsFragment;
   export type User = CustomFieldsFragment;
 }
 

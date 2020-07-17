@@ -1,34 +1,13 @@
-import { Observable } from 'rxjs';
+import { awaitPromiseOrObservable } from '../utils';
+
+import { StateMachineConfig } from './types';
 
 /**
- * A type which is used to define all valid transitions and transition callbacks
- */
-export type Transitions<T extends string> = {
-    [S in T]: {
-        to: T[];
-    }
-};
-
-/**
- * The config object used to instantiate a new FSM instance.
- */
-export type StateMachineConfig<T extends string, Data = undefined> = {
-    transitions: Transitions<T>;
-    /**
-     * Called before a transition takes place. If the function resolves to false or a string, then the transition
-     * will be cancelled. In the case of a string, the string will be forwarded to the onError handler.
-     */
-    onTransitionStart?(
-        fromState: T,
-        toState: T,
-        data: Data,
-    ): boolean | string | void | Promise<boolean | string | void> | Observable<boolean | string | void>;
-    onTransitionEnd?(fromState: T, toState: T, data: Data): void | Promise<void>;
-    onError?(fromState: T, toState: T, message?: string): void;
-};
-
-/**
- * A simple type-safe finite state machine
+ * @description
+ * A simple type-safe finite state machine. This is used internally to control the Order process, ensuring that
+ * the state of Orders, Payments and Refunds follows a well-defined behaviour.
+ *
+ * @docsCategory StateMachine
  */
 export class FSM<T extends string, Data = any> {
     private readonly _initialState: T;
@@ -63,14 +42,13 @@ export class FSM<T extends string, Data = any> {
             // If the onTransitionStart callback is defined, invoke it. If it returns false,
             // then the transition will be cancelled.
             if (typeof this.config.onTransitionStart === 'function') {
-                const transitionResult = this.config.onTransitionStart(this._currentState, state, data);
-                const canTransition = await (transitionResult instanceof Observable
-                    ? await transitionResult.toPromise()
-                    : transitionResult);
+                const canTransition = await awaitPromiseOrObservable(
+                    this.config.onTransitionStart(this._currentState, state, data),
+                );
                 if (canTransition === false) {
                     return;
                 } else if (typeof canTransition === 'string') {
-                    this.onError(this._currentState, state, canTransition);
+                    await this.onError(this._currentState, state, canTransition);
                     return;
                 }
             }
@@ -79,7 +57,7 @@ export class FSM<T extends string, Data = any> {
             this._currentState = state;
             // If the onTransitionEnd callback is defined, invoke it.
             if (typeof this.config.onTransitionEnd === 'function') {
-                await this.config.onTransitionEnd(fromState, state, data);
+                await awaitPromiseOrObservable(this.config.onTransitionEnd(fromState, state, data));
             }
         } else {
             return this.onError(this._currentState, state);
@@ -97,7 +75,7 @@ export class FSM<T extends string, Data = any> {
     /**
      * Returns an array of state to which the machine may transition from the current state.
      */
-    getNextStates(): T[] {
+    getNextStates(): ReadonlyArray<T> {
         return this.config.transitions[this._currentState].to;
     }
 
@@ -108,9 +86,9 @@ export class FSM<T extends string, Data = any> {
         return -1 < this.config.transitions[this._currentState].to.indexOf(state);
     }
 
-    private onError(fromState: T, toState: T, message?: string) {
+    private async onError(fromState: T, toState: T, message?: string) {
         if (typeof this.config.onError === 'function') {
-            return this.config.onError(fromState, toState, message);
+            await awaitPromiseOrObservable(this.config.onError(fromState, toState, message));
         }
     }
 }

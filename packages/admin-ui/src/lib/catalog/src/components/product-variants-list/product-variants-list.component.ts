@@ -11,13 +11,12 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormArray } from '@angular/forms';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { Subscription } from 'rxjs';
-
 import {
     CustomFieldConfig,
     FacetValue,
     FacetWithValues,
+    LanguageCode,
+    ProductOptionFragment,
     ProductVariant,
     ProductWithVariants,
     TaxCategory,
@@ -25,6 +24,9 @@ import {
 } from '@vendure/admin-ui/core';
 import { flattenFacetValues } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { Subscription } from 'rxjs';
+
 import { AssetChange } from '../product-assets/product-assets.component';
 import { VariantFormValue } from '../product-detail/product-detail.component';
 import { UpdateProductOptionDialogComponent } from '../update-product-option-dialog/update-product-option-dialog.component';
@@ -46,6 +48,8 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() facets: FacetWithValues.Fragment[];
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
     @Input() customFields: CustomFieldConfig[];
+    @Input() customOptionFields: CustomFieldConfig[];
+    @Input() activeLanguage: LanguageCode;
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
@@ -77,7 +81,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     getTaxCategoryName(index: number): string {
         const control = this.formArray.at(index).get(['taxCategoryId']);
         if (control && this.taxCategories) {
-            const match = this.taxCategories.find(t => t.id === control.value);
+            const match = this.taxCategories.find((t) => t.id === control.value);
             return match ? match.name : '';
         }
         return '';
@@ -92,7 +96,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             variantId,
             ...event,
         });
-        const index = this.variants.findIndex(v => v.id === variantId);
+        const index = this.variants.findIndex((v) => v.id === variantId);
         this.formArray.at(index).markAsDirty();
     }
 
@@ -100,7 +104,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         if (this.areAllSelected()) {
             this.selectedVariantIds = [];
         } else {
-            this.selectedVariantIds = this.variants.map(v => v.id);
+            this.selectedVariantIds = this.variants.map((v) => v.id);
         }
         this.selectionChange.emit(this.selectedVariantIds);
     }
@@ -116,17 +120,28 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     }
 
     optionGroupName(optionGroupId: string): string | undefined {
-        const group = this.optionGroups.find(g => g.id === optionGroupId);
-        return group && group.name;
+        const group = this.optionGroups.find((g) => g.id === optionGroupId);
+        if (group) {
+            const translation =
+                group?.translations.find((t) => t.languageCode === this.activeLanguage) ??
+                group.translations[0];
+            return translation.name;
+        }
+    }
+
+    optionName(option: ProductOptionFragment) {
+        const translation =
+            option.translations.find((t) => t.languageCode === this.activeLanguage) ?? option.translations[0];
+        return translation.name;
     }
 
     pendingFacetValues(index: number) {
         if (this.facets) {
             const formFacetValueIds = this.getFacetValueIds(index);
-            const variantFacetValueIds = this.variants[index].facetValues.map(fv => fv.id);
+            const variantFacetValueIds = this.variants[index].facetValues.map((fv) => fv.id);
             return formFacetValueIds
-                .filter(x => !variantFacetValueIds.includes(x))
-                .map(id => this.facetValues.find(fv => fv.id === id))
+                .filter((x) => !variantFacetValueIds.includes(x))
+                .map((id) => this.facetValues.find((fv) => fv.id === id))
                 .filter(notNullOrUndefined);
         } else {
             return [];
@@ -136,18 +151,18 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     existingFacetValues(index: number) {
         const variant = this.variants[index];
         const formFacetValueIds = this.getFacetValueIds(index);
-        const intersection = [...formFacetValueIds].filter(x =>
-            variant.facetValues.map(fv => fv.id).includes(x),
+        const intersection = [...formFacetValueIds].filter((x) =>
+            variant.facetValues.map((fv) => fv.id).includes(x),
         );
         return intersection
-            .map(id => variant.facetValues.find(fv => fv.id === id))
+            .map((id) => variant.facetValues.find((fv) => fv.id === id))
             .filter(notNullOrUndefined);
     }
 
     removeFacetValue(index: number, facetValueId: string) {
         const formGroup = this.formArray.at(index);
         const newValue = (formGroup.value as VariantFormValue).facetValueIds.filter(
-            id => id !== facetValueId,
+            (id) => id !== facetValueId,
         );
         formGroup.patchValue({
             facetValueIds: newValue,
@@ -169,9 +184,11 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                 size: 'md',
                 locals: {
                     productOption: option,
+                    activeLanguage: this.activeLanguage,
+                    customFields: this.customOptionFields,
                 },
             })
-            .subscribe(result => {
+            .subscribe((result) => {
                 if (result) {
                     this.updateProductOption.emit(result);
                 }

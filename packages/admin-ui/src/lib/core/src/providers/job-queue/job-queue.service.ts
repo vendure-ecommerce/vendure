@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { EMPTY, interval, Observable, of, Subject, Subscription, timer } from 'rxjs';
 import { debounceTime, map, mapTo, scan, shareReplay, switchMap } from 'rxjs/operators';
 
-import { JobInfoFragment, JobState } from '../../common/generated-types';
+import { JobInfoFragment, JobState, Permission } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 
 @Injectable({
@@ -23,14 +23,14 @@ export class JobQueueService implements OnDestroy {
                 (jobMap, job) => this.handleJob(jobMap, job),
                 new Map<string, JobInfoFragment>(),
             ),
-            map(jobMap => Array.from(jobMap.values())),
+            map((jobMap) => Array.from(jobMap.values())),
             debounceTime(500),
             shareReplay(1),
         );
 
         this.subscription = this.activeJobs$
             .pipe(
-                switchMap(jobs => {
+                switchMap((jobs) => {
                     if (jobs.length) {
                         return interval(2500).pipe(mapTo(jobs));
                     } else {
@@ -38,10 +38,10 @@ export class JobQueueService implements OnDestroy {
                     }
                 }),
             )
-            .subscribe(jobs => {
+            .subscribe((jobs) => {
                 if (jobs.length) {
-                    this.dataService.settings.pollJobs(jobs.map(j => j.id)).single$.subscribe(data => {
-                        data.jobsById.forEach(job => {
+                    this.dataService.settings.pollJobs(jobs.map((j) => j.id)).single$.subscribe((data) => {
+                        data.jobsById.forEach((job) => {
                             this.updateJob$.next(job);
                         });
                     });
@@ -61,14 +61,16 @@ export class JobQueueService implements OnDestroy {
     checkForJobs(delay: number = 1000) {
         timer(delay)
             .pipe(
-                switchMap(() =>
-                    this.dataService.client.userStatus().mapSingle(data => data.userStatus.isLoggedIn),
-                ),
-                switchMap(isLoggedIn =>
-                    isLoggedIn ? this.dataService.settings.getRunningJobs().single$ : EMPTY,
-                ),
+                switchMap(() => this.dataService.client.userStatus().mapSingle((data) => data.userStatus)),
+                switchMap((userStatus) => {
+                    if (userStatus.permissions.includes(Permission.ReadSettings) && userStatus.isLoggedIn) {
+                        return this.dataService.settings.getRunningJobs().single$;
+                    } else {
+                        return EMPTY;
+                    }
+                }),
             )
-            .subscribe(data => data.jobs.items.forEach(job => this.updateJob$.next(job)));
+            .subscribe((data) => data.jobs.items.forEach((job) => this.updateJob$.next(job)));
     }
 
     addJob(jobId: string, onComplete?: (job: JobInfoFragment) => void) {

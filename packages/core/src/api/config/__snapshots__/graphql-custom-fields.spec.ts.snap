@@ -257,3 +257,25 @@ input OrderLineCustomFieldsInput {
 }
 "
 `;
+
+exports[`addRegisterCustomerCustomFieldsInput() add public writable custom fields to RegisterCustomerInput 1`] = `
+"type Mutation {
+  registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
+}
+
+input RegisterCustomerCustomFieldsInput {
+  isB2B: Boolean
+  message: String
+}
+
+input RegisterCustomerInput {
+  emailAddress: String!
+  title: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  password: String
+  customFields: RegisterCustomerCustomFieldsInput
+}
+"
+`;

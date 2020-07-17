@@ -9,6 +9,8 @@ import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import {
     Administrator,
     CreateAdministrator,
+    DeleteAdministrator,
+    DeletionResult,
     GetAdministrator,
     GetAdministrators,
     UpdateAdministrator,
@@ -121,6 +123,40 @@ describe('Administrator resolver', () => {
             `No Role with the id '999' could be found`,
         ),
     );
+
+    it('deleteAdministrator', async () => {
+        const { administrators: before } = await adminClient.query<
+            GetAdministrators.Query,
+            GetAdministrators.Variables
+        >(GET_ADMINISTRATORS);
+        expect(before.totalItems).toBe(2);
+
+        const { deleteAdministrator } = await adminClient.query<
+            DeleteAdministrator.Mutation,
+            DeleteAdministrator.Variables
+        >(DELETE_ADMINISTRATOR, {
+            id: createdAdmin.id,
+        });
+
+        expect(deleteAdministrator.result).toBe(DeletionResult.DELETED);
+
+        const { administrators: after } = await adminClient.query<
+            GetAdministrators.Query,
+            GetAdministrators.Variables
+        >(GET_ADMINISTRATORS);
+        expect(after.totalItems).toBe(1);
+    });
+
+    it('cannot query a deleted Administrator', async () => {
+        const { administrator } = await adminClient.query<GetAdministrator.Query, GetAdministrator.Variables>(
+            GET_ADMINISTRATOR,
+            {
+                id: createdAdmin.id,
+            },
+        );
+
+        expect(administrator).toBeNull();
+    });
 });
 
 export const GET_ADMINISTRATORS = gql`
@@ -151,4 +187,13 @@ export const UPDATE_ADMINISTRATOR = gql`
         }
     }
     ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const DELETE_ADMINISTRATOR = gql`
+    mutation DeleteAdministrator($id: ID!) {
+        deleteAdministrator(id: $id) {
+            message
+            result
+        }
+    }
 `;

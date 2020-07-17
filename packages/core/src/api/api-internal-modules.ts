@@ -39,13 +39,14 @@ import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-e
 import { FacetEntityResolver } from './resolvers/entity/facet-entity.resolver';
 import { FacetValueEntityResolver } from './resolvers/entity/facet-value-entity.resolver';
 import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
-import { OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
+import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
 import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
 import {
     ProductAdminEntityResolver,
     ProductEntityResolver,
 } from './resolvers/entity/product-entity.resolver';
+import { ProductOptionEntityResolver } from './resolvers/entity/product-option-entity.resolver';
 import { ProductOptionGroupEntityResolver } from './resolvers/entity/product-option-group-entity.resolver';
 import {
     ProductVariantAdminEntityResolver,
@@ -53,6 +54,7 @@ import {
 } from './resolvers/entity/product-variant-entity.resolver';
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
+import { UserEntityResolver } from './resolvers/entity/user-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
 import { ShopEnvironmentResolver } from './resolvers/shop/shop-environment.resolver';
@@ -104,14 +106,17 @@ export const entityResolvers = [
     OrderLineEntityResolver,
     PaymentEntityResolver,
     ProductEntityResolver,
+    ProductOptionEntityResolver,
     ProductOptionGroupEntityResolver,
     ProductVariantEntityResolver,
     RefundEntityResolver,
     RoleEntityResolver,
+    UserEntityResolver,
 ];
 
 export const adminEntityResolvers = [
     CustomerAdminEntityResolver,
+    OrderAdminEntityResolver,
     ProductVariantAdminEntityResolver,
     ProductAdminEntityResolver,
 ];

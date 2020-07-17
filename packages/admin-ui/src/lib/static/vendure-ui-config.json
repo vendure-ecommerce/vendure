@@ -2,7 +2,7 @@
   "apiHost": "http://localhost",
   "apiPort": "3000",
   "adminApiPath": "admin-api",
-  "tokenMethod": "cookie",
+  "tokenMethod": "bearer",
   "authTokenHeaderKey": "vendure-auth-token",
   "defaultLanguage": "en",
   "availableLanguages": ["en", "es", "zh_Hant", "zh_Hans", "pl", "de"]

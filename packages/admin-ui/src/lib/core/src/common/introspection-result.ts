@@ -37,6 +37,9 @@ const result: IntrospectionResultData = {
                         name: 'Role',
                     },
                     {
+                        name: 'AuthenticationMethod',
+                    },
+                    {
                         name: 'Asset',
                     },
                     {
@@ -94,10 +97,10 @@ const result: IntrospectionResultData = {
                         name: 'Return',
                     },
                     {
-                        name: 'TaxRate',
+                        name: 'Product',
                     },
                     {
-                        name: 'TaxCategory',
+                        name: 'ProductOptionGroup',
                     },
                     {
                         name: 'ProductOption',
@@ -109,16 +112,16 @@ const result: IntrospectionResultData = {
                         name: 'Facet',
                     },
                     {
+                        name: 'TaxRate',
+                    },
+                    {
+                        name: 'TaxCategory',
+                    },
+                    {
                         name: 'Job',
                     },
                     {
                         name: 'PaymentMethod',
-                    },
-                    {
-                        name: 'Product',
-                    },
-                    {
-                        name: 'ProductOptionGroup',
                     },
                 ],
             },

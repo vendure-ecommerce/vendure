@@ -112,7 +112,7 @@ export const REGISTER_ACCOUNT = gql`
     }
 `;
 export const VERIFY_EMAIL = gql`
-    mutation Verify($password: String!, $token: String!) {
+    mutation Verify($password: String, $token: String!) {
         verifyCustomerAccount(password: $password, token: $token) {
             user {
                 id
@@ -310,6 +310,24 @@ export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
             shippingAddress {
+                fullName
+                company
+                streetLine1
+                streetLine2
+                city
+                province
+                postalCode
+                country
+                phoneNumber
+            }
+        }
+    }
+`;
+
+export const SET_BILLING_ADDRESS = gql`
+    mutation SetBillingAddress($input: CreateAddressInput!) {
+        setOrderBillingAddress(input: $input) {
+            billingAddress {
                 fullName
                 company
                 streetLine1

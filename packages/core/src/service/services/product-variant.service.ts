@@ -15,7 +15,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
+import { OrderLine, ProductOptionGroup, ProductVariantPrice, TaxCategory } from '../../entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { ProductVariantTranslation } from '../../entity/product-variant/product-variant-translation.entity';
@@ -63,7 +63,9 @@ export class ProductVariantService {
             .findOne(productVariantId, { relations })
             .then((result) => {
                 if (result) {
-                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode);
+                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
+                        'product',
+                    ]);
                 }
             });
     }
@@ -155,6 +157,13 @@ export class ProductVariantService {
         });
     }
 
+    async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
+        const { productVariant } = await getEntityOrThrow(this.connection, OrderLine, orderLineId, {
+            relations: ['productVariant'],
+        });
+        return translateDeep(productVariant, ctx.languageCode);
+    }
+
     getOptionsForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<ProductOption>>> {
         return this.connection
             .getRepository(ProductVariant)
@@ -171,6 +180,16 @@ export class ProductVariantService {
             .then((variant) =>
                 !variant ? [] : variant.facetValues.map((o) => translateDeep(o, ctx.languageCode, ['facet'])),
             );
+    }
+
+    /**
+     * Returns the Product associated with the ProductVariant. Whereas the `ProductService.findOne()`
+     * method performs a large multi-table join with all the typical data needed for a "product detail"
+     * page, this method returns on the Product itself.
+     */
+    async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
+        const product = await getEntityOrThrow(this.connection, Product, variant.productId);
+        return translateDeep(product, ctx.languageCode);
     }
 
     async create(

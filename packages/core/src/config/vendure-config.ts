@@ -8,23 +8,26 @@ import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
-import { Transitions } from '../common/finite-state-machine';
+import { Transitions } from '../common/finite-state-machine/types';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
+import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
+import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
+import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
 import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
@@ -136,7 +139,7 @@ export interface ApiOptions {
 
 /**
  * @description
- * The AuthOptions define how authentication is managed.
+ * The AuthOptions define how authentication and authorization is managed.
  *
  * @docsCategory auth
  * */
@@ -188,15 +191,33 @@ export interface AuthOptions {
     authTokenHeaderKey?: string;
     /**
      * @description
-     * Session duration, i.e. the time which must elapse from the last authenticted request
+     * Session duration, i.e. the time which must elapse from the last authenticated request
      * after which the user must re-authenticate.
      *
      * Expressed as a string describing a time span per
      * [zeit/ms](https://github.com/zeit/ms.js).  Eg: `60`, `'2 days'`, `'10h'`, `'7d'`
      *
-     * @default '7d'
+     * @default '1y'
      */
     sessionDuration?: string | number;
+    /**
+     * @description
+     * This strategy defines how sessions will be cached. By default, sessions are cached using a simple
+     * in-memory caching strategy which is suitable for development and low-traffic, single-instance
+     * deployments.
+     *
+     * @default InMemorySessionCacheStrategy
+     */
+    sessionCacheStrategy?: SessionCacheStrategy;
+    /**
+     * @description
+     * The "time to live" of a given item in the session cache. This determines the length of time (in seconds)
+     * that a cache entry is kept before being considered "stale" and being replaced with fresh data
+     * taken from the database.
+     *
+     * @default 300
+     */
+    sessionCacheTTL?: number;
     /**
      * @description
      * Determines whether new User accounts require verification of their email address.
@@ -223,6 +244,20 @@ export interface AuthOptions {
      * Configures the credentials to be used to create a superadmin
      */
     superadminCredentials?: SuperadminCredentials;
+    /**
+     * @description
+     * Configures one or more AuthenticationStrategies which defines how authentication
+     * is handled in the Shop API.
+     * @default NativeAuthenticationStrategy
+     */
+    shopAuthenticationStrategy?: AuthenticationStrategy[];
+    /**
+     * @description
+     * Configures one or more AuthenticationStrategy which defines how authentication
+     * is handled in the Admin API.
+     * @default NativeAuthenticationStrategy
+     */
+    adminAuthenticationStrategy?: AuthenticationStrategy[];
 }
 
 /**
@@ -254,9 +289,12 @@ export interface OrderOptions {
     priceCalculationStrategy?: PriceCalculationStrategy;
     /**
      * @description
-     * Defines custom states and transition logic for the order process state machine.
+     * Allows the definition of custom states and transition logic for the order process state machine.
+     * Takes an array of objects implementing the {@link CustomOrderProcess} interface.
+     *
+     * @default []
      */
-    process?: OrderProcessOptions<string>;
+    process?: Array<CustomOrderProcess<any>>;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
@@ -284,43 +322,6 @@ export interface OrderOptions {
      * for codes to be unique.
      */
     generateOrderCode?: (ctx: RequestContext) => string | Promise<string>;
-}
-
-/**
- * @description
- * Defines custom states and transition logic for the order process state machine.
- *
- * @docsCategory orders
- * @docsPage OrderOptions
- */
-export interface OrderProcessOptions<T extends string> {
-    /**
-     * @description
-     * Define how the custom states fit in with the default order
-     * state transitions.
-     *
-     */
-    transitions?: Partial<Transitions<T | OrderState>>;
-    /**
-     * @description
-     * Define logic to run before a state tranition takes place. Returning
-     * false will prevent the transition from going ahead.
-     */
-    onTransitionStart?(
-        fromState: T,
-        toState: T,
-        data: { order: Order },
-    ): boolean | Promise<boolean> | Observable<boolean> | void;
-    /**
-     * @description
-     * Define logic to run after a state transition has taken place.
-     */
-    onTransitionEnd?(fromState: T, toState: T, data: { order: Order }): void;
-    /**
-     * @description
-     * Define a custom error handler function for transition errors.
-     */
-    onTransitionError?(fromState: T, toState: T, message?: string): void;
 }
 
 /**
@@ -411,18 +412,24 @@ export interface ShippingOptions {
 }
 
 /**
- * @docsCategory superadmin
+ * @description
+ * These credentials will be used to create the Superadmin user & administrator
+ * when Vendure first bootstraps.
+ *
+ * @docsCategory auth
  */
 export interface SuperadminCredentials {
     /**
      * @description
      * The identifier to be used to create a superadmin account
+     * @default 'superadmin'
      */
     identifier: string;
 
     /**
      * @description
      * The password to be used to create a superadmin account
+     * @default 'superadmin'
      */
     password: string;
 }

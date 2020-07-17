@@ -1,5 +1,18 @@
 @import "variables";
 
+vdr-custom-field-control {
+    margin-bottom: 6px;
+    display: block;
+}
+
 .custom-field-form {
-    padding-bottom: 24px;
+    ::ng-deep .clr-control-label {
+        color: $color-grey-400;
+    }
+
+    &.editable {
+        ::ng-deep .clr-control-label {
+            color: inherit;
+        }
+    }
 }

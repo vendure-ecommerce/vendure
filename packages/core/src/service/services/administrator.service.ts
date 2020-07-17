@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { CreateAdministratorInput, UpdateAdministratorInput } from '@vendure/common/lib/generated-types';
+import {
+    CreateAdministratorInput,
+    DeletionResult,
+    UpdateAdministratorInput,
+} from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
@@ -11,6 +15,7 @@ import { Administrator } from '../../entity/administrator/administrator.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
+import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 
 import { RoleService } from './role.service';
@@ -33,7 +38,7 @@ export class AdministratorService {
 
     findAll(options?: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
         return this.listQueryBuilder
-            .build(Administrator, options, { relations: ['user', 'user.roles'] })
+            .build(Administrator, options, { relations: ['user', 'user.roles'], where: { deletedAt: null } })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -44,6 +49,9 @@ export class AdministratorService {
     findOne(administratorId: ID): Promise<Administrator | undefined> {
         return this.connection.manager.findOne(Administrator, administratorId, {
             relations: ['user', 'user.roles'],
+            where: {
+                deletedAt: null,
+            },
         });
     }
 
@@ -75,7 +83,12 @@ export class AdministratorService {
         await this.connection.manager.save(administrator, { reload: false });
 
         if (input.password) {
-            administrator.user.passwordHash = await this.passwordCipher.hash(input.password);
+            const user = await this.userService.getUserById(administrator.user.id);
+            if (user) {
+                const nativeAuthMethod = user.getNativeAuthenticationMethod();
+                nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
+                await this.connection.manager.save(nativeAuthMethod);
+            }
         }
         if (input.roleIds) {
             administrator.user.roles = [];
@@ -102,6 +115,18 @@ export class AdministratorService {
         administrator.user.roles.push(role);
         await this.connection.manager.save(administrator.user, { reload: false });
         return administrator;
+    }
+
+    async softDelete(id: ID) {
+        const administrator = await getEntityOrThrow(this.connection, Administrator, id, {
+            relations: ['user'],
+        });
+        await this.connection.getRepository(Administrator).update({ id }, { deletedAt: new Date() });
+        // tslint:disable-next-line:no-non-null-assertion
+        await this.userService.softDelete(administrator.user!.id);
+        return {
+            result: DeletionResult.DELETED,
+        };
     }
 
     /**

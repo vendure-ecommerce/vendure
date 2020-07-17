@@ -2,22 +2,23 @@ import {
     CurrentUser,
     CurrentUserChannel,
     LoginResult,
+    MutationAuthenticateArgs,
     MutationLoginArgs,
 } from '@vendure/common/lib/generated-types';
-import { unique } from '@vendure/common/lib/unique';
 import { Request, Response } from 'express';
 
 import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { UserService } from '../../../service/services/user.service';
-import { extractAuthToken } from '../../common/extract-auth-token';
+import { extractSessionToken } from '../../common/extract-session-token';
 import { ApiType } from '../../common/get-api-type';
 import { RequestContext } from '../../common/request-context';
-import { setAuthToken } from '../../common/set-auth-token';
+import { setSessionToken } from '../../common/set-session-token';
 
 export class BaseAuthResolver {
     constructor(
@@ -36,23 +37,29 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         req: Request,
         res: Response,
-        apiType: ApiType,
     ): Promise<LoginResult> {
-        return await this.createAuthenticatedSession(ctx, args, req, res, apiType);
+        return await this.authenticateAndCreateSession(
+            ctx,
+            {
+                input: { [NATIVE_AUTH_STRATEGY_NAME]: args },
+            },
+            req,
+            res,
+        );
     }
 
     async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
-        const token = extractAuthToken(req, this.configService.authOptions.tokenMethod);
+        const token = extractSessionToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
             return false;
         }
-        await this.authService.deleteSessionByToken(ctx, token);
-        setAuthToken({
+        await this.authService.destroyAuthenticatedSession(ctx, token);
+        setSessionToken({
             req,
             res,
             authOptions: this.configService.authOptions,
             rememberMe: false,
-            authToken: '',
+            sessionToken: '',
         });
         return true;
     }
@@ -78,26 +85,27 @@ export class BaseAuthResolver {
     /**
      * Creates an authenticated session and sets the session token.
      */
-    protected async createAuthenticatedSession(
+    protected async authenticateAndCreateSession(
         ctx: RequestContext,
-        args: MutationLoginArgs,
+        args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
-        apiType?: ApiType,
-    ) {
-        const session = await this.authService.authenticate(ctx, args.username, args.password);
+    ): Promise<LoginResult> {
+        const [method, data] = Object.entries(args.input)[0];
+        const { apiType } = ctx;
+        const session = await this.authService.authenticate(ctx, apiType, method, data);
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(session.user.id);
             if (!administrator) {
                 throw new UnauthorizedError();
             }
         }
-        setAuthToken({
+        setSessionToken({
             req,
             res,
             authOptions: this.configService.authOptions,
             rememberMe: args.rememberMe || false,
-            authToken: session.token,
+            sessionToken: session.token,
         });
         return {
             user: this.publiclyAccessibleUser(session.user),
@@ -122,7 +130,7 @@ export class BaseAuthResolver {
     /**
      * Exposes a subset of the User properties which we want to expose to the public API.
      */
-    private publiclyAccessibleUser(user: User): CurrentUser {
+    protected publiclyAccessibleUser(user: User): CurrentUser {
         return {
             id: user.id as string,
             identifier: user.identifier,

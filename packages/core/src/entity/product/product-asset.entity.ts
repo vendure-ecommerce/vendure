@@ -13,6 +13,6 @@ export class ProductAsset extends OrderableAsset {
     @Column()
     productId: ID;
 
-    @ManyToOne(type => Product, product => product.assets)
+    @ManyToOne((type) => Product, (product) => product.assets, { onDelete: 'CASCADE' })
     product: Product;
 }

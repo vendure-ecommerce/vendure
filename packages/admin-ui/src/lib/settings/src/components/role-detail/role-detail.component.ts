@@ -2,11 +2,17 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
-import { CreateRoleInput, LanguageCode, Permission, Role, UpdateRoleInput } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
+import {
+    BaseDetailComponent,
+    CreateRoleInput,
+    DataService,
+    LanguageCode,
+    NotificationService,
+    Permission,
+    Role,
+    ServerConfigService,
+    UpdateRoleInput,
+} from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
@@ -46,6 +52,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     ngOnInit() {
         this.init();
         this.role$ = this.entity$;
+        // setTimeout(() => this.changeDetector.markForCheck(), 2000);
     }
 
     ngOnDestroy(): void {
@@ -128,6 +135,10 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         for (const permission of Object.keys(this.permissions)) {
             this.permissions[permission] = role.permissions.includes(permission as Permission);
         }
+        // This was required to get the channel selector component to
+        // correctly display its contents. A while spent debugging the root
+        // cause did not yield a solution, therefore this next line.
+        this.changeDetector.detectChanges();
     }
 
     private getSelectedPermissions(): Permission[] {

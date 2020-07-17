@@ -1,18 +1,16 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { GqlExecutionContext } from '@nestjs/graphql';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
-import { GraphQLResolveInfo } from 'graphql';
 
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
-import { Session } from '../../entity/session/session.entity';
-import { AuthService } from '../../service/services/auth.service';
-import { extractAuthToken } from '../common/extract-auth-token';
+import { CachedSession } from '../../config/session-cache/session-cache-strategy';
+import { SessionService } from '../../service/services/session.service';
+import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
-import { setAuthToken } from '../common/set-auth-token';
+import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 
 /**
@@ -26,8 +24,8 @@ export class AuthGuard implements CanActivate {
     constructor(
         private reflector: Reflector,
         private configService: ConfigService,
-        private authService: AuthService,
         private requestContextService: RequestContextService,
+        private sessionService: SessionService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -56,35 +54,35 @@ export class AuthGuard implements CanActivate {
         req: Request,
         res: Response,
         hasOwnerPermission: boolean,
-    ): Promise<Session | undefined> {
-        const authToken = extractAuthToken(req, this.configService.authOptions.tokenMethod);
-        let session: Session | undefined;
-        if (authToken) {
-            session = await this.authService.validateSession(authToken);
-            if (session) {
-                return session;
+    ): Promise<CachedSession | undefined> {
+        const sessionToken = extractSessionToken(req, this.configService.authOptions.tokenMethod);
+        let serializedSession: CachedSession | undefined;
+        if (sessionToken) {
+            serializedSession = await this.sessionService.getSessionFromToken(sessionToken);
+            if (serializedSession) {
+                return serializedSession;
             }
             // if there is a token but it cannot be validated to a Session,
             // then the token is no longer valid and should be unset.
-            setAuthToken({
+            setSessionToken({
                 req,
                 res,
                 authOptions: this.configService.authOptions,
                 rememberMe: false,
-                authToken: '',
+                sessionToken: '',
             });
         }
 
-        if (hasOwnerPermission && !session) {
-            session = await this.authService.createAnonymousSession();
-            setAuthToken({
-                authToken: session.token,
+        if (hasOwnerPermission && !serializedSession) {
+            serializedSession = await this.sessionService.createAnonymousSession();
+            setSessionToken({
+                sessionToken: serializedSession.token,
                 rememberMe: true,
                 authOptions: this.configService.authOptions,
                 req,
                 res,
             });
         }
-        return session;
+        return serializedSession;
     }
 }

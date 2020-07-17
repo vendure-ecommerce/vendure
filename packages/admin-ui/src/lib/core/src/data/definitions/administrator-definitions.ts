@@ -75,6 +75,15 @@ export const UPDATE_ADMINISTRATOR = gql`
     ${ADMINISTRATOR_FRAGMENT}
 `;
 
+export const DELETE_ADMINISTRATOR = gql`
+    mutation DeleteAdministrator($id: ID!) {
+        deleteAdministrator(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
 export const GET_ROLES = gql`
     query GetRoles($options: RoleListOptions) {
         roles(options: $options) {

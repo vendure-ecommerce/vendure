@@ -95,6 +95,18 @@ export enum AssetType {
     BINARY = 'BINARY',
 }
 
+export type AuthenticationInput = {
+    native?: Maybe<NativeAuthInput>;
+};
+
+export type AuthenticationMethod = Node & {
+    __typename?: 'AuthenticationMethod';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -745,6 +757,7 @@ export type CustomFields = {
     ProductOptionGroup: Array<CustomFieldConfig>;
     ProductVariant: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
+    ShippingMethod: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
@@ -1325,6 +1338,7 @@ export type Mutation = {
      * entity, a third argument 'customFields' will be available.
      */
     addItemToOrder?: Maybe<Order>;
+    /** Remove an OrderLine from the Order */
     removeOrderLine?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
@@ -1335,19 +1349,55 @@ export type Mutation = {
     applyCouponCode?: Maybe<Order>;
     /** Removes the given coupon code from the active Order */
     removeCouponCode?: Maybe<Order>;
+    /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<Order>;
+    /** Sets the shipping address for this order */
     setOrderShippingAddress?: Maybe<Order>;
+    /** Sets the billing address for this order */
+    setOrderBillingAddress?: Maybe<Order>;
+    /** Allows any custom fields to be set for the active order */
+    setOrderCustomFields?: Maybe<Order>;
+    /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
     setOrderShippingMethod?: Maybe<Order>;
+    /** Add a Payment to the Order */
     addPaymentToOrder?: Maybe<Order>;
+    /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
     setCustomerForOrder?: Maybe<Order>;
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation
+     * is an alias for `authenticate({ native: { ... }})`
+     */
     login: LoginResult;
+    /** Authenticates the user using a named authentication strategy */
+    authenticate: LoginResult;
+    /** End the current authenticated session */
     logout: Scalars['Boolean'];
     /**
      * Regenerate and send a verification token for a new Customer registration. Only
      * applicable if `authOptions.requireVerification` is set to true.
      */
     refreshCustomerVerification: Scalars['Boolean'];
-    /** Register a Customer account with the given credentials */
+    /**
+     * Register a Customer account with the given credentials. There are three possible registration flows:
+     *
+     * _If `authOptions.requireVerification` is set to `true`:_
+     *
+     * 1. **The Customer is registered _with_ a password**. A verificationToken will
+     * be created (and typically emailed to the Customer). That
+     *    verificationToken would then be passed to the `verifyCustomerAccount`
+     * mutation _without_ a password. The Customer is then
+     *    verified and authenticated in one step.
+     * 2. **The Customer is registered _without_ a password**. A verificationToken
+     * will be created (and typically emailed to the Customer). That
+     *    verificationToken would then be passed to the `verifyCustomerAccount`
+     * mutation _with_ the chosed password of the Customer. The Customer is then
+     *    verified and authenticated in one step.
+     *
+     * _If `authOptions.requireVerification` is set to `false`:_
+     *
+     * 3. The Customer _must_ be registered _with_ a password. No further action is
+     * needed - the Customer is able to authenticate immediately.
+     */
     registerCustomerAccount: Scalars['Boolean'];
     /** Update an existing Customer */
     updateCustomer: Customer;
@@ -1360,6 +1410,9 @@ export type Mutation = {
     /**
      * Verify a Customer email address with the token sent to that address. Only
      * applicable if `authOptions.requireVerification` is set to true.
+     *
+     * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+     * provided here.
      */
     verifyCustomerAccount: LoginResult;
     /** Update the password of the active Customer */
@@ -1412,6 +1465,14 @@ export type MutationSetOrderShippingAddressArgs = {
     input: CreateAddressInput;
 };
 
+export type MutationSetOrderBillingAddressArgs = {
+    input: CreateAddressInput;
+};
+
+export type MutationSetOrderCustomFieldsArgs = {
+    input: UpdateOrderInput;
+};
+
 export type MutationSetOrderShippingMethodArgs = {
     shippingMethodId: Scalars['ID'];
 };
@@ -1427,6 +1488,11 @@ export type MutationSetCustomerForOrderArgs = {
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationAuthenticateArgs = {
+    input: AuthenticationInput;
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
@@ -1456,7 +1522,7 @@ export type MutationDeleteCustomerAddressArgs = {
 
 export type MutationVerifyCustomerAccountArgs = {
     token: Scalars['String'];
-    password: Scalars['String'];
+    password?: Maybe<Scalars['String']>;
 };
 
 export type MutationUpdateCustomerPasswordArgs = {
@@ -1479,6 +1545,11 @@ export type MutationRequestPasswordResetArgs = {
 
 export type MutationResetPasswordArgs = {
     token: Scalars['String'];
+    password: Scalars['String'];
+};
+
+export type NativeAuthInput = {
+    username: Scalars['String'];
     password: Scalars['String'];
 };
 
@@ -1610,6 +1681,12 @@ export type OrderListOptions = {
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<OrderSortParameter>;
     filter?: Maybe<OrderFilterParameter>;
+};
+
+export type OrderProcessState = {
+    __typename?: 'OrderProcessState';
+    name: Scalars['String'];
+    to: Array<Scalars['String']>;
 };
 
 export type OrderSortParameter = {
@@ -1767,6 +1844,7 @@ export type ProductOption = Node & {
     code: Scalars['String'];
     name: Scalars['String'];
     groupId: Scalars['ID'];
+    group: ProductOptionGroup;
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -1825,6 +1903,7 @@ export type ProductTranslation = {
 export type ProductVariant = Node & {
     __typename?: 'ProductVariant';
     id: Scalars['ID'];
+    product: Product;
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1913,20 +1992,45 @@ export type PromotionList = PaginatedList & {
 
 export type Query = {
     __typename?: 'Query';
+    /** The active Channel */
     activeChannel: Channel;
+    /** The active Customer */
     activeCustomer?: Maybe<Customer>;
+    /**
+     * The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
+     * state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
+     * query will once again return `null`.
+     */
     activeOrder?: Maybe<Order>;
+    /** An array of supported Countries */
     availableCountries: Array<Country>;
+    /** A list of Collections available to the shop */
     collections: CollectionList;
+    /** Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
     collection?: Maybe<Collection>;
+    /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;
+    /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
+    /** Returns the possible next states that the activeOrder can transition to */
     nextOrderStates: Array<Scalars['String']>;
+    /**
+     * Returns an Order based on the id. Note that in the Shop API, only orders belonging to the
+     * currently-authenticated User may be queried.
+     */
     order?: Maybe<Order>;
+    /**
+     * Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)
+     * this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation
+     * screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing
+     * general anonymous access to Order data.
+     */
     orderByCode?: Maybe<Order>;
     /** Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** Get a list of Products */
     products: ProductList;
+    /** Search Products based on the criteria set by the `SearchInput` */
     search: SearchResponse;
 };
 
@@ -1983,6 +2087,7 @@ export type RegisterCustomerInput = {
     title?: Maybe<Scalars['String']>;
     firstName?: Maybe<Scalars['String']>;
     lastName?: Maybe<Scalars['String']>;
+    phoneNumber?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
 };
 
@@ -2093,6 +2198,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
     __typename?: 'ServerConfig';
+    orderProcess: Array<OrderProcessState>;
     customFieldConfig: CustomFields;
 };
 
@@ -2105,6 +2211,7 @@ export type ShippingMethod = Node & {
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodList = PaginatedList & {
@@ -2243,6 +2350,10 @@ export type UpdateCustomerInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderInput = {
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type User = Node & {
     __typename?: 'User';
     id: Scalars['ID'];
@@ -2251,7 +2362,8 @@ export type User = Node & {
     identifier: Scalars['String'];
     verified: Scalars['Boolean'];
     roles: Array<Role>;
-    lastLogin?: Maybe<Scalars['String']>;
+    lastLogin?: Maybe<Scalars['DateTime']>;
+    authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 

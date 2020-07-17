@@ -6,7 +6,10 @@ import { AuthOptions } from '../../config/vendure-config';
  * Get the session token from either the cookie or the Authorization header, depending
  * on the configured tokenMethod.
  */
-export function extractAuthToken(req: Request, tokenMethod: AuthOptions['tokenMethod']): string | undefined {
+export function extractSessionToken(
+    req: Request,
+    tokenMethod: AuthOptions['tokenMethod'],
+): string | undefined {
     if (tokenMethod === 'cookie') {
         if (req.session && req.session.token) {
             return req.session.token;

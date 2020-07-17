@@ -24,8 +24,10 @@ import {
 } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
+import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
+import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -127,11 +129,9 @@ export class CustomerService {
         customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
 
         if (password && password !== '') {
-            if (customer.user.verificationToken) {
-                customer.user = await this.userService.verifyUserByToken(
-                    customer.user.verificationToken,
-                    password,
-                );
+            const verificationToken = customer.user.getNativeAuthenticationMethod().verificationToken;
+            if (verificationToken) {
+                customer.user = await this.userService.verifyUserByToken(verificationToken);
             }
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
@@ -142,7 +142,9 @@ export class CustomerService {
             ctx,
             customerId: createdCustomer.id,
             type: HistoryEntryType.CUSTOMER_REGISTERED,
-            data: {},
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
         });
 
         if (customer.user?.verified) {
@@ -150,42 +152,59 @@ export class CustomerService {
                 ctx,
                 customerId: createdCustomer.id,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
         }
         return createdCustomer;
     }
 
     async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
-        if (this.configService.authOptions.requireVerification) {
-            if (input.password) {
-                throw new UserInputError(`error.unexpected-password-on-registration`);
-            }
-        } else {
+        if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
                 throw new UserInputError(`error.missing-password-on-registration`);
             }
         }
         let user = await this.userService.getUserByEmailAddress(input.emailAddress);
+        const hasNativeAuthMethod = !!user?.authenticationMethods.find(
+            (m) => m instanceof NativeAuthenticationMethod,
+        );
         if (user && user.verified) {
-            // If the user has already been verified, do nothing
-            return false;
+            if (hasNativeAuthMethod) {
+                // If the user has already been verified and has already
+                // registered with the native authentication strategy, do nothing.
+                return false;
+            }
         }
+        const customFields = (input as any).customFields;
         const customer = await this.createOrUpdate({
             emailAddress: input.emailAddress,
             title: input.title || '',
             firstName: input.firstName || '',
             lastName: input.lastName || '',
+            phoneNumber: input.phoneNumber || '',
+            ...(customFields ? { customFields } : {}),
         });
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
             type: HistoryEntryType.CUSTOMER_REGISTERED,
-            data: {},
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
         });
         if (!user) {
             user = await this.userService.createCustomerUser(input.emailAddress, input.password || undefined);
-        } else if (!user.verified) {
+        }
+        if (!hasNativeAuthMethod) {
+            user = await this.userService.addNativeAuthenticationMethod(
+                user,
+                input.emailAddress,
+                input.password || undefined,
+            );
+        }
+        if (!user.verified) {
             user = await this.userService.setVerificationToken(user);
         }
         customer.user = user;
@@ -197,7 +216,9 @@ export class CustomerService {
                 customerId: customer.id,
                 ctx,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
         }
         return true;
@@ -216,7 +237,7 @@ export class CustomerService {
     async verifyCustomerEmailAddress(
         ctx: RequestContext,
         verificationToken: string,
-        password: string,
+        password?: string,
     ): Promise<Customer | undefined> {
         const user = await this.userService.verifyUserByToken(verificationToken, password);
         if (user) {
@@ -228,7 +249,9 @@ export class CustomerService {
                 customerId: customer.id,
                 ctx,
                 type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {},
+                data: {
+                    strategy: NATIVE_AUTH_STRATEGY_NAME,
+                },
             });
             return this.findOneByUserId(user.id);
         }
@@ -300,7 +323,7 @@ export class CustomerService {
             },
         });
         if (this.configService.authOptions.requireVerification) {
-            user.pendingIdentifier = newEmailAddress;
+            user.getNativeAuthenticationMethod().pendingIdentifier = newEmailAddress;
             await this.userService.setIdentifierChangeToken(user);
             this.eventBus.publish(new IdentifierChangeRequestEvent(ctx, user));
             return true;

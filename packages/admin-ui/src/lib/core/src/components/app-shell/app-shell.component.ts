@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { EMPTY, Observable } from 'rxjs';
 import { map, switchMap, take } from 'rxjs/operators';
 
+import { getAppConfig } from '../../app.config';
 import { LanguageCode } from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { AuthService } from '../../providers/auth/auth.service';
@@ -64,7 +65,12 @@ export class AppShellComponent implements OnInit {
 
     logOut() {
         this.authService.logOut().subscribe(() => {
-            this.router.navigate(['/login']);
+            const { loginUrl } = getAppConfig();
+            if (loginUrl) {
+                window.location.href = loginUrl;
+            } else {
+                this.router.navigate(['/login']);
+            }
         });
     }
 }

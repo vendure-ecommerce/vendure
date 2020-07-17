@@ -5,8 +5,10 @@ import {
     MutationDeleteOrderNoteArgs,
     MutationFulfillOrderArgs,
     MutationRefundOrderArgs,
+    MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
+    MutationTransitionOrderToStateArgs,
     MutationUpdateOrderNoteArgs,
     Permission,
     QueryOrderArgs,
@@ -15,6 +17,7 @@ import {
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Order } from '../../../entity/order/order.entity';
+import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
@@ -83,5 +86,20 @@ export class OrderResolver {
     @Allow(Permission.UpdateOrder)
     async deleteOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteOrderNoteArgs) {
         return this.orderService.deleteOrderNote(ctx, args.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async setOrderCustomFields(@Ctx() ctx: RequestContext, @Args() args: MutationSetOrderCustomFieldsArgs) {
+        return this.orderService.updateCustomFields(ctx, args.input.id, args.input.customFields);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async transitionOrderToState(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationTransitionOrderToStateArgs,
+    ) {
+        return this.orderService.transitionToState(ctx, args.id, args.state as OrderState);
     }
 }

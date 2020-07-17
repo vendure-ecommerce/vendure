@@ -21,8 +21,8 @@ export const REFUND_FRAGMENT = gql`
     }
 `;
 
-export const SHIPPING_ADDRESS_FRAGMENT = gql`
-    fragment ShippingAddress on OrderAddress {
+export const ORDER_ADDRESS_FRAGMENT = gql`
+    fragment OrderAddress on OrderAddress {
         fullName
         company
         streetLine1
@@ -42,6 +42,7 @@ export const ORDER_FRAGMENT = gql`
         updatedAt
         code
         state
+        nextStates
         total
         currencyCode
         customer {
@@ -102,6 +103,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         updatedAt
         code
         state
+        nextStates
         active
         customer {
             id
@@ -130,7 +132,10 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             description
         }
         shippingAddress {
-            ...ShippingAddress
+            ...OrderAddress
+        }
+        billingAddress {
+            ...OrderAddress
         }
         payments {
             id
@@ -163,7 +168,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         total
     }
     ${ADJUSTMENT_FRAGMENT}
-    ${SHIPPING_ADDRESS_FRAGMENT}
+    ${ORDER_ADDRESS_FRAGMENT}
     ${FULFILLMENT_FRAGMENT}
     ${ORDER_LINE_FRAGMENT}
 `;
@@ -286,4 +291,22 @@ export const DELETE_ORDER_NOTE = gql`
             message
         }
     }
+`;
+
+export const TRANSITION_ORDER_TO_STATE = gql`
+    mutation TransitionOrderToState($id: ID!, $state: String!) {
+        transitionOrderToState(id: $id, state: $state) {
+            ...Order
+        }
+    }
+    ${ORDER_FRAGMENT}
+`;
+
+export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
+    mutation UpdateOrderCustomFields($input: UpdateOrderInput!) {
+        setOrderCustomFields(input: $input) {
+            ...Order
+        }
+    }
+    ${ORDER_FRAGMENT}
 `;

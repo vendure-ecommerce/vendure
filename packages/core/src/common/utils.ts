@@ -1,5 +1,6 @@
 import { AssetType } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { Observable } from 'rxjs';
 
 /**
  * Takes a predicate function and returns a negated version.
@@ -13,7 +14,7 @@ export function not(predicate: (...args: any[]) => boolean) {
  * as determined by a === equality check on the given compareBy property.
  */
 export function foundIn<T>(set: T[], compareBy: keyof T) {
-    return (item: T) => set.some(t => t[compareBy] === item[compareBy]);
+    return (item: T) => set.some((t) => t[compareBy] === item[compareBy]);
 }
 
 /**
@@ -61,4 +62,16 @@ export function getAssetType(mimeType: string): AssetType {
  */
 export function normalizeEmailAddress(input: string): string {
     return input.trim().toLowerCase();
+}
+
+/**
+ * Converts a value that may be wrapped into a Promise or Observable into a Promise-wrapped
+ * value.
+ */
+export async function awaitPromiseOrObservable<T>(value: T | Promise<T> | Observable<T>): Promise<T> {
+    let result = await value;
+    if (result instanceof Observable) {
+        result = await result.toPromise();
+    }
+    return result;
 }

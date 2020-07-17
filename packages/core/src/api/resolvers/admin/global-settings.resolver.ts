@@ -1,11 +1,16 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { MutationUpdateGlobalSettingsArgs, Permission } from '@vendure/common/lib/generated-types';
+import {
+    MutationUpdateGlobalSettingsArgs,
+    OrderProcessState,
+    Permission,
+} from '@vendure/common/lib/generated-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
+import { OrderService } from '../../../service/services/order.service';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver('GlobalSettings')
@@ -14,6 +19,7 @@ export class GlobalSettingsResolver {
         private configService: ConfigService,
         private globalSettingsService: GlobalSettingsService,
         private channelService: ChannelService,
+        private orderService: OrderService,
     ) {}
 
     @Query()
@@ -26,7 +32,10 @@ export class GlobalSettingsResolver {
      * Exposes a subset of the VendureConfig which may be of use to clients.
      */
     @ResolveField()
-    serverConfig() {
+    serverConfig(): {
+        customFieldConfig: CustomFields;
+        orderProcess: OrderProcessState[];
+    } {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
@@ -36,6 +45,7 @@ export class GlobalSettingsResolver {
         }
         return {
             customFieldConfig: exposedCustomFieldConfig,
+            orderProcess: this.orderService.getOrderProcessStates(),
         };
     }
 

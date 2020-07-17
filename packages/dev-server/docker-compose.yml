@@ -9,16 +9,16 @@ services:
     ports:
       - '3306:3306'
   phpmyadmin:
-    image: 'bitnami/phpmyadmin:latest'
-    labels:
-      kompose.service.type: nodeport
+    image: 'phpmyadmin/phpmyadmin:latest'
+    container_name: phpmyadmin
+    environment:
+      - PMA_HOST=mariadb
+      - PMA_USER=root
+    restart: always
     ports:
-      - '80:80'
-      - '443:443'
-    depends_on:
-      - mariadb
+      - 8080:80
     volumes:
-      - 'phpmyadmin_data:/bitnami'
+      - /sessions
   postgres:
     image: postgres:12.3
     restart: always
@@ -39,7 +39,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: secret
       PGADMIN_LISTEN_PORT: 80
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     links:

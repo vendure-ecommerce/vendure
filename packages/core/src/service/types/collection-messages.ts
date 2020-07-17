@@ -18,4 +18,4 @@ export class ApplyCollectionFiltersMessage extends WorkerMessage<
     static readonly pattern = 'ApplyCollectionFilters';
 }
 
-export type ApplyCollectionFiletersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
+export type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };

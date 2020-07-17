@@ -9,10 +9,11 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import {
     failsToSettlePaymentMethod,
+    onTransitionSpy,
     singleStageRefundablePaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
-import { ORDER_FRAGMENT, ORDER_WITH_LINES_FRAGMENT } from './graphql/fragments';
+import { ORDER_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
     CancelOrder,
@@ -39,13 +40,14 @@ import {
 import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
     GET_CUSTOMER_LIST,
+    GET_ORDER,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
@@ -148,12 +150,16 @@ describe('Orders resolver', () => {
             expect(result.order!.state).toBe('PaymentAuthorized');
         });
 
-        it('settlePayment succeeds', async () => {
+        it('settlePayment succeeds, onStateTransitionStart called', async () => {
+            onTransitionSpy.mockClear();
             await shopClient.asUserWithCredentials(customers[1].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
             const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
 
             expect(order.state).toBe('PaymentAuthorized');
+            expect(onTransitionSpy).toHaveBeenCalledTimes(1);
+            expect(onTransitionSpy.mock.calls[0][0]).toBe('Created');
+            expect(onTransitionSpy.mock.calls[0][1]).toBe('Authorized');
 
             const payment = order.payments![0];
             const { settlePayment } = await adminClient.query<
@@ -170,6 +176,9 @@ describe('Orders resolver', () => {
                 baz: 'quux',
                 moreData: 42,
             });
+            expect(onTransitionSpy).toHaveBeenCalledTimes(2);
+            expect(onTransitionSpy.mock.calls[1][0]).toBe('Authorized');
+            expect(onTransitionSpy.mock.calls[1][1]).toBe('Settled');
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
@@ -690,7 +699,7 @@ describe('Orders resolver', () => {
         );
 
         it(
-            'throws if lines are ampty',
+            'throws if lines are empty',
             assertThrowsWithMessage(async () => {
                 const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
                 expect(order.state).toBe('PaymentAuthorized');
@@ -1297,15 +1306,6 @@ export const GET_ORDERS_LIST = gql`
         }
     }
     ${ORDER_FRAGMENT}
-`;
-
-export const GET_ORDER = gql`
-    query GetOrder($id: ID!) {
-        order(id: $id) {
-            ...OrderWithLines
-        }
-    }
-    ${ORDER_WITH_LINES_FRAGMENT}
 `;
 
 export const SETTLE_PAYMENT = gql`

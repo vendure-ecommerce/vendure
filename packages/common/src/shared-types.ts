@@ -180,6 +180,14 @@ export interface AdminUiConfig {
      * @default [LanguageCode.en, LanguageCode.es]
      */
     availableLanguages: LanguageCode[];
+    /**
+     * @description
+     * If you are using an external {@link AuthenticationStrategy} for the Admin API, you can configure
+     * a custom URL for the login page with this option. On logging out or redirecting an unauthenticated
+     * user, the Admin UI app will redirect the user to this URL rather than the default username/password
+     * screen.
+     */
+    loginUrl?: string;
 }
 
 /**

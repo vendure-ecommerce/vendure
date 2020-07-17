@@ -1,6 +1,7 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 
+import { SoftDeletable } from '../../common/types/common-types';
 import { VendureEntity } from '../base/base.entity';
 import { User } from '../user/user.entity';
 
@@ -11,10 +12,13 @@ import { User } from '../user/user.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Administrator extends VendureEntity {
+export class Administrator extends VendureEntity implements SoftDeletable {
     constructor(input?: DeepPartial<Administrator>) {
         super(input);
     }
+
+    @Column({ type: Date, nullable: true })
+    deletedAt: Date | null;
 
     @Column() firstName: string;
 
@@ -23,7 +27,7 @@ export class Administrator extends VendureEntity {
     @Column({ unique: true })
     emailAddress: string;
 
-    @OneToOne(type => User)
+    @OneToOne((type) => User)
     @JoinColumn()
     user: User;
 }

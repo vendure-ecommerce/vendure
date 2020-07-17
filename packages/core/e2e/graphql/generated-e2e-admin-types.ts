@@ -170,6 +170,18 @@ export type AssignProductsToChannelInput = {
     priceFactor?: Maybe<Scalars['Float']>;
 };
 
+export type AuthenticationInput = {
+    native?: Maybe<NativeAuthInput>;
+};
+
+export type AuthenticationMethod = Node & {
+    __typename?: 'AuthenticationMethod';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    strategy: Scalars['String'];
+};
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -570,6 +582,7 @@ export type CreateShippingMethodInput = {
     description: Scalars['String'];
     checker: ConfigurableOperationInput;
     calculator: ConfigurableOperationInput;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -1059,6 +1072,7 @@ export type CustomFields = {
     ProductOptionGroup: Array<CustomFieldConfig>;
     ProductVariant: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
+    ShippingMethod: Array<CustomFieldConfig>;
 };
 
 export type DateOperators = {
@@ -1759,6 +1773,8 @@ export type Mutation = {
     createAdministrator: Administrator;
     /** Update an existing Administrator */
     updateAdministrator: Administrator;
+    /** Delete an Administrator */
+    deleteAdministrator: DeletionResponse;
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
     /** Create a new Asset */
@@ -1767,7 +1783,15 @@ export type Mutation = {
     updateAsset: Asset;
     /** Delete an Asset */
     deleteAsset: DeletionResponse;
+    /** Delete multiple Assets */
+    deleteAssets: DeletionResponse;
+    /**
+     * Authenticates the user using the native authentication strategy. This mutation
+     * is an alias for `authenticate({ native: { ... }})`
+     */
     login: LoginResult;
+    /** Authenticates the user using a named authentication strategy */
+    authenticate: LoginResult;
     logout: Scalars['Boolean'];
     /** Create a new Channel */
     createChannel: Channel;
@@ -1838,6 +1862,8 @@ export type Mutation = {
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
+    transitionOrderToState?: Maybe<Order>;
+    setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -1916,6 +1942,10 @@ export type MutationUpdateAdministratorArgs = {
     input: UpdateAdministratorInput;
 };
 
+export type MutationDeleteAdministratorArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationAssignRoleToAdministratorArgs = {
     administratorId: Scalars['ID'];
     roleId: Scalars['ID'];
@@ -1934,9 +1964,19 @@ export type MutationDeleteAssetArgs = {
     force?: Maybe<Scalars['Boolean']>;
 };
 
+export type MutationDeleteAssetsArgs = {
+    ids: Array<Scalars['ID']>;
+    force?: Maybe<Scalars['Boolean']>;
+};
+
 export type MutationLoginArgs = {
     username: Scalars['String'];
     password: Scalars['String'];
+    rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationAuthenticateArgs = {
+    input: AuthenticationInput;
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
@@ -2111,6 +2151,15 @@ export type MutationDeleteOrderNoteArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationSetOrderCustomFieldsArgs = {
+    input: UpdateOrderInput;
+};
+
 export type MutationUpdatePaymentMethodArgs = {
     input: UpdatePaymentMethodInput;
 };
@@ -2255,6 +2304,11 @@ export type MutationRemoveMembersFromZoneArgs = {
     memberIds: Array<Scalars['ID']>;
 };
 
+export type NativeAuthInput = {
+    username: Scalars['String'];
+    password: Scalars['String'];
+};
+
 export type Node = {
     id: Scalars['ID'];
 };
@@ -2275,6 +2329,7 @@ export type NumberRange = {
 
 export type Order = Node & {
     __typename?: 'Order';
+    nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2388,6 +2443,12 @@ export type OrderListOptions = {
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<OrderSortParameter>;
     filter?: Maybe<OrderFilterParameter>;
+};
+
+export type OrderProcessState = {
+    __typename?: 'OrderProcessState';
+    name: Scalars['String'];
+    to: Array<Scalars['String']>;
 };
 
 export type OrderSortParameter = {
@@ -2563,6 +2624,7 @@ export type ProductOption = Node & {
     code: Scalars['String'];
     name: Scalars['String'];
     groupId: Scalars['ID'];
+    group: ProductOptionGroup;
     translations: Array<ProductOptionTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2648,6 +2710,7 @@ export type ProductVariant = Node & {
     trackInventory: Scalars['Boolean'];
     stockMovements: StockMovementList;
     id: Scalars['ID'];
+    product: Product;
     productId: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3158,6 +3221,7 @@ export type SearchResultSortParameter = {
 
 export type ServerConfig = {
     __typename?: 'ServerConfig';
+    orderProcess: Array<OrderProcessState>;
     customFieldConfig: CustomFields;
 };
 
@@ -3175,6 +3239,7 @@ export type ShippingMethod = Node & {
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingMethodFilterParameter = {
@@ -3481,6 +3546,11 @@ export type UpdateGlobalSettingsInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateOrderInput = {
+    id: Scalars['ID'];
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type UpdateOrderNoteInput = {
     noteId: Scalars['ID'];
     note?: Maybe<Scalars['String']>;
@@ -3559,6 +3629,7 @@ export type UpdateShippingMethodInput = {
     description?: Maybe<Scalars['String']>;
     checker?: Maybe<ConfigurableOperationInput>;
     calculator?: Maybe<ConfigurableOperationInput>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateTaxCategoryInput = {
@@ -3589,7 +3660,8 @@ export type User = Node & {
     identifier: Scalars['String'];
     verified: Scalars['Boolean'];
     roles: Array<Role>;
-    lastLogin?: Maybe<Scalars['String']>;
+    lastLogin?: Maybe<Scalars['DateTime']>;
+    authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -3626,6 +3698,14 @@ export type UpdateAdministratorMutationVariables = {
 
 export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
     updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
+};
+
+export type DeleteAdministratorMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteAdministratorMutation = { __typename?: 'Mutation' } & {
+    deleteAdministrator: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
 };
 
 export type Q1QueryVariables = {};
@@ -3672,6 +3752,45 @@ export type GetCustomerCountQueryVariables = {};
 
 export type GetCustomerCountQuery = { __typename?: 'Query' } & {
     customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
+};
+
+export type AuthenticateMutationVariables = {
+    input: AuthenticationInput;
+};
+
+export type AuthenticateMutation = { __typename?: 'Mutation' } & {
+    authenticate: { __typename?: 'LoginResult' } & {
+        user: { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'>;
+    };
+};
+
+export type GetCustomersQueryVariables = {};
+
+export type GetCustomersQuery = { __typename?: 'Query' } & {
+    customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+            items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'emailAddress'>>;
+        };
+};
+
+export type GetCustomerUserAuthQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetCustomerUserAuthQuery = { __typename?: 'Query' } & {
+    customer?: Maybe<
+        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                user?: Maybe<
+                    { __typename?: 'User' } & Pick<User, 'id' | 'verified'> & {
+                            authenticationMethods: Array<
+                                { __typename?: 'AuthenticationMethod' } & Pick<
+                                    AuthenticationMethod,
+                                    'id' | 'strategy'
+                                >
+                            >;
+                        }
+                >;
+            }
+    >;
 };
 
 export type GetChannelsQueryVariables = {};
@@ -4694,7 +4813,7 @@ export type GetCustomerListQuery = { __typename?: 'Query' } & {
             items: Array<
                 { __typename?: 'Customer' } & Pick<
                     Customer,
-                    'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress'
+                    'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber'
                 > & { user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'verified'>> }
             >;
         };
@@ -4936,12 +5055,29 @@ export type GetCustomerHistoryQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type GetOrderQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetOrderQuery = { __typename?: 'Query' } & {
+    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
 
 export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
     updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
+};
+
+export type AdminTransitionMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
 };
 
 export type DeletePromotionAdHoc1MutationVariables = {};
@@ -4979,14 +5115,6 @@ export type GetOrderListQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
             items: Array<{ __typename?: 'Order' } & OrderFragment>;
         };
-};
-
-export type GetOrderQueryVariables = {
-    id: Scalars['ID'];
-};
-
-export type GetOrderQuery = { __typename?: 'Query' } & {
-    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
 export type SettlePaymentMutationVariables = {
@@ -5321,6 +5449,10 @@ export type DeleteRoleMutationVariables = {
 export type DeleteRoleMutation = { __typename?: 'Mutation' } & {
     deleteRole: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
 };
+
+export type LogoutMutationVariables = {};
+
+export type LogoutMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'logout'>;
 
 export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
     ShippingMethod,
@@ -5701,6 +5833,12 @@ export namespace UpdateAdministrator {
     export type UpdateAdministrator = AdministratorFragment;
 }
 
+export namespace DeleteAdministrator {
+    export type Variables = DeleteAdministratorMutationVariables;
+    export type Mutation = DeleteAdministratorMutation;
+    export type DeleteAdministrator = DeleteAdministratorMutation['deleteAdministrator'];
+}
+
 export namespace Q1 {
     export type Variables = Q1QueryVariables;
     export type Query = Q1Query;
@@ -5736,6 +5874,30 @@ export namespace GetCustomerCount {
     export type Variables = GetCustomerCountQueryVariables;
     export type Query = GetCustomerCountQuery;
     export type Customers = GetCustomerCountQuery['customers'];
+}
+
+export namespace Authenticate {
+    export type Variables = AuthenticateMutationVariables;
+    export type Mutation = AuthenticateMutation;
+    export type Authenticate = AuthenticateMutation['authenticate'];
+    export type User = AuthenticateMutation['authenticate']['user'];
+}
+
+export namespace GetCustomers {
+    export type Variables = GetCustomersQueryVariables;
+    export type Query = GetCustomersQuery;
+    export type Customers = GetCustomersQuery['customers'];
+    export type Items = NonNullable<GetCustomersQuery['customers']['items'][0]>;
+}
+
+export namespace GetCustomerUserAuth {
+    export type Variables = GetCustomerUserAuthQueryVariables;
+    export type Query = GetCustomerUserAuthQuery;
+    export type Customer = NonNullable<GetCustomerUserAuthQuery['customer']>;
+    export type User = NonNullable<NonNullable<GetCustomerUserAuthQuery['customer']>['user']>;
+    export type AuthenticationMethods = NonNullable<
+        NonNullable<NonNullable<GetCustomerUserAuthQuery['customer']>['user']>['authenticationMethods'][0]
+    >;
 }
 
 export namespace GetChannels {
@@ -6576,10 +6738,22 @@ export namespace GetCustomerHistory {
     >;
 }
 
+export namespace GetOrder {
+    export type Variables = GetOrderQueryVariables;
+    export type Query = GetOrderQuery;
+    export type Order = OrderWithLinesFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
     export type UpdateProductOptionGroup = UpdateOptionGroupMutation['updateProductOptionGroup'];
+}
+
+export namespace AdminTransition {
+    export type Variables = AdminTransitionMutationVariables;
+    export type Mutation = AdminTransitionMutation;
+    export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
 }
 
 export namespace DeletePromotionAdHoc1 {
@@ -6608,12 +6782,6 @@ export namespace GetOrderList {
     export type Query = GetOrderListQuery;
     export type Orders = GetOrderListQuery['orders'];
     export type Items = OrderFragment;
-}
-
-export namespace GetOrder {
-    export type Variables = GetOrderQueryVariables;
-    export type Query = GetOrderQuery;
-    export type Order = OrderWithLinesFragment;
 }
 
 export namespace SettlePayment {
@@ -6839,6 +7007,11 @@ export namespace DeleteRole {
     export type Variables = DeleteRoleMutationVariables;
     export type Mutation = DeleteRoleMutation;
     export type DeleteRole = DeleteRoleMutation['deleteRole'];
+}
+
+export namespace Logout {
+    export type Variables = LogoutMutationVariables;
+    export type Mutation = LogoutMutation;
 }
 
 export namespace ShippingMethod {

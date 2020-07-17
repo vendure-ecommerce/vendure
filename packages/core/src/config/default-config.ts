@@ -12,6 +12,7 @@ import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strat
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
 import { NoAssetPreviewStrategy } from './asset-preview-strategy/no-asset-preview-strategy';
 import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storage-strategy';
+import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './collection/default-collection-filters';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { DefaultLogger } from './logger/default-logger';
@@ -21,6 +22,7 @@ import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions } from './promotion/default-promotion-actions';
 import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
+import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
 import { DefaultTaxCalculationStrategy } from './tax/default-tax-calculation-strategy';
@@ -59,13 +61,17 @@ export const defaultConfig: RuntimeVendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: 'session-secret',
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
-        sessionDuration: '7d',
+        sessionDuration: '1y',
+        sessionCacheStrategy: new InMemorySessionCacheStrategy(),
+        sessionCacheTTL: 300,
         requireVerification: true,
         verificationTokenDuration: '7d',
         superadminCredentials: {
             identifier: SUPER_ADMIN_USER_IDENTIFIER,
             password: SUPER_ADMIN_USER_PASSWORD,
         },
+        shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
+        adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
@@ -94,7 +100,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         priceCalculationStrategy: new DefaultPriceCalculationStrategy(),
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
-        process: {},
+        process: [],
         generateOrderCode: () => generatePublicId(),
     },
     paymentOptions: {
@@ -132,6 +138,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         ProductOptionGroup: [],
         ProductVariant: [],
         User: [],
+        ShippingMethod: [],
     },
     plugins: [],
 };

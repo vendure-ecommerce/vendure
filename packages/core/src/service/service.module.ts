@@ -11,6 +11,7 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
 import { TaxRateController } from './controllers/tax-rate.controller';
+import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
@@ -46,6 +47,7 @@ import { ProductService } from './services/product.service';
 import { PromotionService } from './services/promotion.service';
 import { RoleService } from './services/role.service';
 import { SearchService } from './services/search.service';
+import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
 import { TaxCategoryService } from './services/tax-category.service';
@@ -76,6 +78,7 @@ const services = [
     PromotionService,
     RoleService,
     SearchService,
+    SessionService,
     ShippingMethodService,
     StockMovementService,
     TaxCategoryService,
@@ -98,6 +101,7 @@ const helpers = [
     RefundStateMachine,
     ShippingConfiguration,
     SlugValidator,
+    ExternalAuthenticationService,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];

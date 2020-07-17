@@ -27,6 +27,7 @@ import {
     CustomProductOptionGroupFieldsTranslation,
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
+    CustomShippingMethodFields,
     CustomUserFields,
 } from './custom-entity-fields';
 
@@ -62,9 +63,7 @@ function registerCustomFieldsForEntity(
                     const length = customField.length || 255;
                     if (MAX_STRING_LENGTH < length) {
                         throw new Error(
-                            `ERROR: The "length" property of the custom field "${
-                                customField.name
-                            }" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
+                            `ERROR: The "length" property of the custom field "${customField.name}" is greater than the maximum allowed value of ${MAX_STRING_LENGTH}`,
                         );
                     }
                     options.length = length;
@@ -177,4 +176,5 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'ProductVariant', CustomProductVariantFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
+    registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
 }

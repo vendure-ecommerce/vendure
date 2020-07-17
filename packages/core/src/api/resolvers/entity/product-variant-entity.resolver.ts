@@ -3,7 +3,7 @@ import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { Asset, FacetValue, ProductOption } from '../../../entity';
+import { Asset, FacetValue, Product, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { AssetService } from '../../../service/services/asset.service';
@@ -17,6 +17,17 @@ import { Ctx } from '../../decorators/request-context.decorator';
 @Resolver('ProductVariant')
 export class ProductVariantEntityResolver {
     constructor(private productVariantService: ProductVariantService, private assetService: AssetService) {}
+
+    @ResolveField()
+    async product(
+        @Ctx() ctx: RequestContext,
+        @Parent() productVariant: ProductVariant,
+    ): Promise<Product | undefined> {
+        if (productVariant.product) {
+            return productVariant.product;
+        }
+        return this.productVariantService.getProductForVariant(ctx, productVariant);
+    }
 
     @ResolveField()
     async assets(
@@ -61,7 +72,7 @@ export class ProductVariantEntityResolver {
             facetValues = await this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
         }
         if (apiType === 'shop') {
-            facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
+            facetValues = facetValues.filter((fv) => !fv.facet.isPrivate);
         }
         return facetValues;
     }

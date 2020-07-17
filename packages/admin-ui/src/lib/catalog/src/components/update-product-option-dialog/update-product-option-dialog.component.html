@@ -1,5 +1,4 @@
 <ng-template vdrDialogTitle>{{ 'catalog.update-product-option' | translate }}</ng-template>
-
 <vdr-form-field [label]="'catalog.option-name' | translate" for="name">
     <input
         id="name"
@@ -13,13 +12,25 @@
 <vdr-form-field [label]="'common.code' | translate" for="code">
     <input id="code" type="text" #codeInput="ngModel" required [(ngModel)]="code" pattern="[a-z0-9_-]+" />
 </vdr-form-field>
+<section *ngIf="customFields.length">
+    <label>{{ 'common.custom-fields' | translate }}</label>
+    <ng-container *ngFor="let customField of customFields">
+        <vdr-custom-field-control
+            *ngIf="customFieldsForm.get(customField.name)"
+            entityName="ProductOption"
+            [customFieldsFormGroup]="customFieldsForm"
+            [customField]="customField"
+            [readonly]="!('UpdateCatalog' | hasPermission)"
+        ></vdr-custom-field-control>
+    </ng-container>
+</section>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
     <button
         type="submit"
         (click)="update()"
-        [disabled]="nameInput.invalid || codeInput.invalid || (nameInput.pristine && codeInput.pristine)"
+        [disabled]="nameInput.invalid || codeInput.invalid || (nameInput.pristine && codeInput.pristine && customFieldsForm.pristine)"
         class="btn btn-primary"
     >
         {{ 'catalog.update-product-option' | translate }}

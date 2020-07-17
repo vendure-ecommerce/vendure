@@ -7,6 +7,7 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
+    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
@@ -38,6 +39,7 @@ export const devConfig: VendureConfig = {
     },
     authOptions: {
         disableAuth: false,
+        tokenMethod: 'cookie',
         sessionSecret: 'some-secret',
         requireVerification: true,
     },
@@ -50,13 +52,8 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        /*Product: [
-            { name: 'rating', type: 'float', readonly: true },
-            { name: 'markup', type: 'float', internal: true },
-        ],*/
-    },
-    logger: new DefaultLogger({ level: LogLevel.Info }),
+    customFields: {},
+    logger: new DefaultLogger({ level: LogLevel.Debug }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -123,7 +120,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mysql',
                 host: '127.0.0.1',
                 port: 3306,

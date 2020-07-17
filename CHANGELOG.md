@@ -1,3 +1,20 @@
+## <small>0.13.1 (2020-06-30)</small>
+
+
+#### Features
+
+* **admin-ui** Display billing address in Order detail view ([c8992a5](https://github.com/vendure-ecommerce/vendure/commit/c8992a5)), closes [#372](https://github.com/vendure-ecommerce/vendure/issues/372)
+* **core** Add setOrderBillingAddress mutation to Shop API ([83347b2](https://github.com/vendure-ecommerce/vendure/commit/83347b2)), closes [#372](https://github.com/vendure-ecommerce/vendure/issues/372)
+* **core** Allow phoneNumber in registerCustomerAccount mutation ([2c710b9](https://github.com/vendure-ecommerce/vendure/commit/2c710b9)), closes [#389](https://github.com/vendure-ecommerce/vendure/issues/389)
+
+#### Fixes
+
+* **admin-ui** Add custom field controls to ProductOption dialog ([4678360](https://github.com/vendure-ecommerce/vendure/commit/4678360)), closes [#382](https://github.com/vendure-ecommerce/vendure/issues/382)
+* **admin-ui** Correctly render channels in Role detail view ([cfb3c03](https://github.com/vendure-ecommerce/vendure/commit/cfb3c03))
+* **admin-ui** Only check jobs if Admin has ReadSettings permission ([daca6b6](https://github.com/vendure-ecommerce/vendure/commit/daca6b6)), closes [#383](https://github.com/vendure-ecommerce/vendure/issues/383)
+* **core** Correctly resolve activeCustomer order lines ([56449b8](https://github.com/vendure-ecommerce/vendure/commit/56449b8)), closes [#374](https://github.com/vendure-ecommerce/vendure/issues/374) [#375](https://github.com/vendure-ecommerce/vendure/issues/375)
+* **core** Implement field resolvers for Facet & FacetValue ([7a4d046](https://github.com/vendure-ecommerce/vendure/commit/7a4d046))
+
 ## 0.13.0 (2020-06-12)
 
 
