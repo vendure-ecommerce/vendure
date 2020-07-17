@@ -80,7 +80,7 @@ export type OnTransitionEndFn<T extends string, Data> = (
 
 /**
  * @description
- * The config object used to instantiate a new FSM instance.
+ * The config object used to instantiate a new {@link FSM} instance.
  *
  * @docsCategory StateMachine
  * @docsPage StateMachineConfig

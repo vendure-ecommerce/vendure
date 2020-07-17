@@ -4,7 +4,8 @@ import { StateMachineConfig } from './types';
 
 /**
  * @description
- * A simple type-safe finite state machine
+ * A simple type-safe finite state machine. This is used internally to control the Order process, ensuring that
+ * the state of Orders, Payments and Refunds follows a well-defined behaviour.
  *
  * @docsCategory StateMachine
  */
