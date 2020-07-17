@@ -1,6 +1,6 @@
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 
-import { Transitions } from './finite-state-machine';
+import { Transitions } from './types';
 
 /**
  * Merges two state machine Transitions definitions.

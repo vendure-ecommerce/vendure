@@ -3,7 +3,8 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
-import { FSM, StateMachineConfig } from '../../../common/finite-state-machine/finite-state-machine';
+import { FSM } from '../../../common/finite-state-machine/finite-state-machine';
+import { StateMachineConfig } from '../../../common/finite-state-machine/types';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
@@ -40,7 +41,7 @@ export class PaymentStateMachine {
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {}
 
-    getNextStates(payment: Payment): PaymentState[] {
+    getNextStates(payment: Payment): ReadonlyArray<PaymentState> {
         const fsm = new FSM(this.config, payment.state);
         return fsm.getNextStates();
     }

@@ -96,7 +96,7 @@ export class OrderService {
         return Object.entries(this.orderStateMachine.config.transitions).map(([name, { to }]) => ({
             name,
             to,
-        }));
+        })) as OrderProcessState[];
     }
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
@@ -379,7 +379,7 @@ export class OrderService {
         return order.promotions || [];
     }
 
-    getNextOrderStates(order: Order): OrderState[] {
+    getNextOrderStates(order: Order): ReadonlyArray<OrderState> {
         return this.orderStateMachine.getNextStates(order);
     }
 

@@ -1,6 +1,7 @@
 import { of } from 'rxjs';
 
-import { FSM, Transitions } from './finite-state-machine';
+import { FSM } from './finite-state-machine';
+import { Transitions } from './types';
 
 describe('Finite State Machine', () => {
     type TestState = 'DoorsClosed' | 'DoorsOpen' | 'Moving';

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
-import { Transitions } from '../common/finite-state-machine/finite-state-machine';
+import { Transitions } from '../common/finite-state-machine/types';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
@@ -294,7 +294,7 @@ export interface OrderOptions {
      *
      * @default []
      */
-    process?: Array<CustomOrderProcess<string>>;
+    process?: Array<CustomOrderProcess<any>>;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when

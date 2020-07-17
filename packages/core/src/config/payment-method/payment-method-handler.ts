@@ -9,7 +9,7 @@ import {
     ConfigurableOperationDefOptions,
     LocalizedStringArray,
 } from '../../common/configurable-operation';
-import { StateMachineConfig } from '../../common/finite-state-machine/finite-state-machine';
+import { StateMachineConfig } from '../../common/finite-state-machine/types';
 import { Order } from '../../entity/order/order.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import {

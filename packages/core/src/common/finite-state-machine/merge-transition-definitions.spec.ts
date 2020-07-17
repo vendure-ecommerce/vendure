@@ -1,5 +1,5 @@
-import { Transitions } from './finite-state-machine';
 import { mergeTransitionDefinitions } from './merge-transition-definitions';
+import { Transitions } from './types';
 
 describe('FSM mergeTransitionDefinitions()', () => {
     it('handles no b', () => {

@@ -1,4 +1,4 @@
-import { Transitions } from './finite-state-machine';
+import { Transitions } from './types';
 
 type ValidationResult = { reachable: boolean };
 
