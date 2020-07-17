@@ -11,6 +11,10 @@ An Order is a collection of one or more ProductVariants which can be purchased b
 
 Every Order has a `state` property of type [`OrderState`]({{< relref "order-state" >}}). The following diagram shows the default states and how an Order transitions from one to the next.
 
+{{% alert %}}
+Note that this default workflow can be modified to better fit your business processes. See the [Customizing the Order Process guide]({{< relref "customizing-the-order-process" >}}).
+{{< /alert >}}
+
 {{< figure src="./order_state_diagram.png" >}}
 
 ## Structure of an Order
