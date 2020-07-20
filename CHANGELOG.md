@@ -1,3 +1,70 @@
+## 0.14.0 (2020-07-20)
+
+
+#### Fixes
+
+* **admin-ui** Fix error when creating new Customer ([edc56f8](https://github.com/vendure-ecommerce/vendure/commit/edc56f8))
+* **admin-ui** Fix ts error introduced by ShippingMethods custom fields ([8c38ad1](https://github.com/vendure-ecommerce/vendure/commit/8c38ad1))
+* **admin-ui** Save custom fields in the Customer detail view ([3c45b16](https://github.com/vendure-ecommerce/vendure/commit/3c45b16)), closes [#387](https://github.com/vendure-ecommerce/vendure/issues/387)
+* **core** Correct handling of multiple session for same user ([2c42305](https://github.com/vendure-ecommerce/vendure/commit/2c42305))
+* **core** Correctly call PaymentMethodHandler.onStateTransitionStart ([143e62f](https://github.com/vendure-ecommerce/vendure/commit/143e62f))
+* **core** Define cascade behaviour for featured assets ([3f0c79b](https://github.com/vendure-ecommerce/vendure/commit/3f0c79b))
+* **core** Fix bug where session user in cache would get removed ([ebec0f0](https://github.com/vendure-ecommerce/vendure/commit/ebec0f0))
+* **core** Fix error when de-serializing a RequestContext without expiry ([a1e03fd](https://github.com/vendure-ecommerce/vendure/commit/a1e03fd))
+* **core** Prevent countryCode exception when adding payment to order ([49c2ad4](https://github.com/vendure-ecommerce/vendure/commit/49c2ad4))
+
+#### Features
+
+* **admin-ui-plugin** Support `loginUrl` option ([5a95476](https://github.com/vendure-ecommerce/vendure/commit/5a95476))
+* **admin-ui** Add `loginUrl` option to support external login pages ([2745146](https://github.com/vendure-ecommerce/vendure/commit/2745146)), closes [#215](https://github.com/vendure-ecommerce/vendure/issues/215)
+* **admin-ui** Add ability to delete administrator from admin list ([e217ce0](https://github.com/vendure-ecommerce/vendure/commit/e217ce0)), closes [#384](https://github.com/vendure-ecommerce/vendure/issues/384)
+* **admin-ui** Display auth strategy in customer history ([bdfc43d](https://github.com/vendure-ecommerce/vendure/commit/bdfc43d))
+* **admin-ui** Display customer last login time ([0f9dd1c](https://github.com/vendure-ecommerce/vendure/commit/0f9dd1c))
+* **admin-ui** Enable updating of Order custom fields ([5bbd80b](https://github.com/vendure-ecommerce/vendure/commit/5bbd80b)), closes [#404](https://github.com/vendure-ecommerce/vendure/issues/404)
+* **admin-ui** Implement multiple asset deletion ([b2f3f08](https://github.com/vendure-ecommerce/vendure/commit/b2f3f08)), closes [#380](https://github.com/vendure-ecommerce/vendure/issues/380)
+* **admin-ui** Implement order process state chart view ([7283258](https://github.com/vendure-ecommerce/vendure/commit/7283258))
+* **admin-ui** Improve multi-selection in Asset gallery component ([a4e132a](https://github.com/vendure-ecommerce/vendure/commit/a4e132a)), closes [#380](https://github.com/vendure-ecommerce/vendure/issues/380)
+* **admin-ui** Support custom state transitions from Order detail view ([1d2ba31](https://github.com/vendure-ecommerce/vendure/commit/1d2ba31))
+* **core** Add `ProductOption.group` field & resolver ([f20e108](https://github.com/vendure-ecommerce/vendure/commit/f20e108)), closes [#378](https://github.com/vendure-ecommerce/vendure/issues/378)
+* **core** Add `ProductVariant.product` field & resolver ([0334848](https://github.com/vendure-ecommerce/vendure/commit/0334848)), closes [#378](https://github.com/vendure-ecommerce/vendure/issues/378)
+* **core** Add admin helpers to ExternalAuthenticationService ([3456ffb](https://github.com/vendure-ecommerce/vendure/commit/3456ffb))
+* **core** Add custom fields to registerCustomerAccount mutation ([be1f200](https://github.com/vendure-ecommerce/vendure/commit/be1f200)), closes [#388](https://github.com/vendure-ecommerce/vendure/issues/388)
+* **core** Allow all CustomOrderProcess handlers to be async functions ([5d67d06](https://github.com/vendure-ecommerce/vendure/commit/5d67d06))
+* **core** Enable custom fields on ShippingMethod entity (#406) ([fbc36ab](https://github.com/vendure-ecommerce/vendure/commit/fbc36ab)), closes [#406](https://github.com/vendure-ecommerce/vendure/issues/406) [#402](https://github.com/vendure-ecommerce/vendure/issues/402)
+* **core** Export ExternalAuthenticationService ([c3ed2cd](https://github.com/vendure-ecommerce/vendure/commit/c3ed2cd))
+* **core** Expose `nextStates` on Order type in Admin API ([ece0bbe](https://github.com/vendure-ecommerce/vendure/commit/ece0bbe))
+* **core** Expose order state machine config via `serverConfig` type ([0a77438](https://github.com/vendure-ecommerce/vendure/commit/0a77438))
+* **core** Expose User.authenticationMethod in GraphQL APIs ([96f923a](https://github.com/vendure-ecommerce/vendure/commit/96f923a))
+* **core** Implement `authenticate` mutation for Admin API ([357f878](https://github.com/vendure-ecommerce/vendure/commit/357f878))
+* **core** Implement `deleteAdministrator` mutation ([dc82b2c](https://github.com/vendure-ecommerce/vendure/commit/dc82b2c)), closes [#384](https://github.com/vendure-ecommerce/vendure/issues/384)
+* **core** Implement `setOrderCustomFields` in Admin API ([ad89fc9](https://github.com/vendure-ecommerce/vendure/commit/ad89fc9)), closes [#404](https://github.com/vendure-ecommerce/vendure/issues/404)
+* **core** Implement `setOrderCustomFields` in Shop API ([3a12dc5](https://github.com/vendure-ecommerce/vendure/commit/3a12dc5)), closes [#404](https://github.com/vendure-ecommerce/vendure/issues/404)
+* **core** Implement `transitionOrderToState` in Admin API ([3196b52](https://github.com/vendure-ecommerce/vendure/commit/3196b52))
+* **core** Implement configurable session caching ([09a432d](https://github.com/vendure-ecommerce/vendure/commit/09a432d)), closes [#394](https://github.com/vendure-ecommerce/vendure/issues/394)
+* **core** Implement deleteAssets mutation ([6f12014](https://github.com/vendure-ecommerce/vendure/commit/6f12014)), closes [#380](https://github.com/vendure-ecommerce/vendure/issues/380)
+* **core** Improve customization of order process ([0011ea9](https://github.com/vendure-ecommerce/vendure/commit/0011ea9)), closes [#401](https://github.com/vendure-ecommerce/vendure/issues/401)
+* **core** Include auth strategy name in AttemptedLoginEvent ([b83f1fe](https://github.com/vendure-ecommerce/vendure/commit/b83f1fe))
+* **core** Log error variables as well as message ([de25bdb](https://github.com/vendure-ecommerce/vendure/commit/de25bdb))
+* **core** More flexible customer registration flow ([92350e6](https://github.com/vendure-ecommerce/vendure/commit/92350e6)), closes [#392](https://github.com/vendure-ecommerce/vendure/issues/392)
+* **core** More flexible handling of shipping calculations ([d166c08](https://github.com/vendure-ecommerce/vendure/commit/d166c08)), closes [#397](https://github.com/vendure-ecommerce/vendure/issues/397) [#398](https://github.com/vendure-ecommerce/vendure/issues/398)
+* **core** Record lastLogin date on authenticate ([39c743b](https://github.com/vendure-ecommerce/vendure/commit/39c743b))
+* **core** Record strategy used to register in Customer history ([5504044](https://github.com/vendure-ecommerce/vendure/commit/5504044))
+* **core** Rework User/auth implementation to enable 3rd party auth ([f12b96f](https://github.com/vendure-ecommerce/vendure/commit/f12b96f)), closes [#215](https://github.com/vendure-ecommerce/vendure/issues/215)
+* **core** Store authenticationStrategy on an AuthenticatedSession ([e737c56](https://github.com/vendure-ecommerce/vendure/commit/e737c56))
+* **email-plugin** Use new User model in email handlers ([16dd884](https://github.com/vendure-ecommerce/vendure/commit/16dd884))
+
+
+### BREAKING CHANGE
+
+* (email-plugin) The default email handlers have been updated to use the new User model, and as a result the email templates "email-verification", "email-address-change" and "password-reset" should be updated to remove the "user" object, so `{{ user.verificationToken }}` becomes `{{ verificationToken }}` and so on.
+* A new `AuthenticationMethod` entity has been added, with a one-to-many relation to the existing User entities. Several properties that were formerly part of the User entity have now moved to the `AuthenticationMethod` entity. Upgrading with therefore require a careful database migration to ensure that no data is lost. On release, a migration script will be provided for this.
+* Some ON DELETE behaviour was incorrectly defined in the database schema, and has how been fixed. This will require a non-destructive migration.
+* The `AttemptedLoginEvent.identifier` property is now optional, since it will only be sent when using the "native" authentication strategy. Code that listens for this event should now check that the `identifier` property is defined before attempting to use it.
+* The `RequestContext.session` object is no longer a `Session` entity. Instead it is a new type, `SerializedSession` which contains a subset of data pertaining to the current session. For example, if you have custom code which references `ctx.session.activeOrder` you will now get an error, since `activeOrder` does not exist on `SerializedSession`. Instead you would use `SerializedSession.activeOrderId` and then lookup the order in a separate query.
+
+The reason for this change is to enable efficient session caching.
+* The Administrator entity has a new `deletedAt` field, which will require a non-destructive database migration.
+* The way custom Order states are defined has changed. The `VendureConfig.orderOptions.process` property now accepts an **array** of objects implementing the `CustomerOrderProcess` interface. This interface is more-or-less the same as the old `OrderProcessOptions` object, but the use of an array now allows better composition, and since `CustomerOrderProcess` inherits from `InjectableStrategy`, this means providers can now be injected and used in the custom order process logic.
 ## <small>0.13.1 (2020-06-30)</small>
 
 
