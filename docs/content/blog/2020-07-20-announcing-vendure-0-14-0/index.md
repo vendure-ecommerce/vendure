@@ -77,7 +77,7 @@ Due to some of the new features described above, there are a bunch of breaking c
 
 The new authentication strategy support required a fundamental change to the user table. Running a standard TypeORM migration will cause data loss, since you'll need to manually transfer existing User data to the new table structure. 
 
-1. Generate a migration script as described in the [Migrations guide]({{ relref "migrations" >}}).
+1. Generate a migration script as described in the [Migrations guide]({{< relref "migrations" >}}).
 2. Replace any queries relating to the `user`, `authentication_method`, `administrator` and `session` tables with the queries provided in [this sample migration script](https://gist.github.com/michaelbromley/7b4c2acaa51ac540e26023736d08fe6c). Take time to read and understand the content of that script.
 3. **IMPORTANT** test the migration first on data you are prepared to lose to ensure that it works as expected. Do not run on production data without testing.
 
