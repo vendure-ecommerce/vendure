@@ -1,19 +1,19 @@
 ---
 title: "Announcing Vendure v0.14.0"
-date: 2020-06-12T12:00:00
+date: 2020-07-20T12:00:00
 draft: false
 author: "Michael Bromley"
 images: 
-    - "/blog/2020/06/vendure-v0.13.0-the-customer-is-always-right/vendure-0.13.0-banner-01.jpg"
+    - "/blog/2020/07/announcing-vendure-v0.14.0/vendure-0.14.0-banner-01.jpg"
 ---
 
-We are excited to announce the release of Vendure v0.14.0. This is a pretty huge release with some [breaking changes](#breaking-changes) that _will_ require some action when you upgrade.
+We are excited to announce the release of Vendure v0.14.0. This is a pretty big release with some [breaking changes](#breaking-changes) that _will_ require some action when you upgrade.
 
-* 3rd-party auth support * -
-* Order custom fields * -
-* Order process config * -
-* Asset multi-deletion *
-* Flexible customer registration flow -
+{{< figure src="./vendure-0.14.0-banner-01.jpg" >}}
+
+This release includes some core changes which represent a big step towards reaching v1.0. Here's a video overview of the main features:
+
+{{< vimeo id="440017551" >}}
 
 ## 3rd-Party Authentication Support
 
@@ -27,7 +27,7 @@ For example, you may wish to support native, Facebook and Google auth for shop c
 
 ## Improved Order Process Customization
 
-All Orders in Vendure are governed by a state machine, which controls how an Order may pass from one state to another (e.g. "AddingItems" to "ArrangingPayment" to "PaymentSettled"). What was not well-known previously is that this order process can be customized, so that you can add states and transitions specific to your business needs.
+All Orders in Vendure are governed by a state machine, which controls how an Order may pass from one state to another (e.g. "AddingItems" to "ArrangingPayment" to "PaymentSettled"). What was not well known previously is that this order process can be customized, so that you can add states and transitions specific to your business processes.
 
 With this release, we've improved the [OrderOptions API]({{< relref "order-options" >}}#process) to allow composition of order state definitions, which means plugins can now define specific states and logic to run when orders transition from one state to another.
 
@@ -39,7 +39,9 @@ Additionally, work has been done to make the order process more transparent in t
 
 In Vendure, sessions are used to track the current user, the user's permissions, and the contents of a Customer's active order. As such, the "session" and related "user" and "role" database tables get joined and queried in almost every request. At scale, this could become a performance bottleneck.
 
-This version introduces session caching, so that most of the data needed for each request is stored in a cache mechanism defined by the new [`AuthOptions.sessionCacheStrategy` config setting]({{< relref "auth-options" >}}#sessioncachestrategy). By default, Vendure uses the [InMemorySessionCacheStrategy]({{< relref "in-memory-session-cache-strategy" >}}), but for production requirements you can implement a shared cached based on Redis for example.
+This release introduces session caching, so that most of the data needed for each request is stored in a cache mechanism defined by the new [`AuthOptions.sessionCacheStrategy` config setting]({{< relref "auth-options" >}}#sessioncachestrategy). By default, Vendure uses the [InMemorySessionCacheStrategy]({{< relref "in-memory-session-cache-strategy" >}}), but for production requirements you can implement a shared cache based on Redis for example.
+
+For a deeper discussion of this feature, as well as performance benchmark data, see the [related GitHib issue](https://github.com/vendure-ecommerce/vendure/issues/394).
 
 ## Order custom fields
 
