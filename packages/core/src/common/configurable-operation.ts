@@ -174,6 +174,28 @@ export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
             await this.options.destroy();
         }
     }
+
+    /**
+     * Coverts an array of ConfigArgs into a hash object:
+     *
+     * from:
+     * [{ name: 'foo', type: 'string', value: 'bar'}]
+     *
+     * to:
+     * { foo: 'bar' }
+     **/
+    protected argsArrayToHash(args: ConfigArg[]): ConfigArgValues<T> {
+        const output: ConfigArgValues<T> = {} as any;
+        for (const arg of args) {
+            if (arg && arg.value != null) {
+                output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(
+                    arg.value,
+                    this.args[arg.name],
+                );
+            }
+        }
+        return output;
+    }
 }
 
 /**
@@ -231,42 +253,26 @@ function localizeString(stringArray: LocalizedStringArray, languageCode: Languag
     return match.value;
 }
 
-/**
- * Coverts an array of ConfigArgs into a hash object:
- *
- * from:
- * [{ name: 'foo', type: 'string', value: 'bar'}]
- *
- * to:
- * { foo: 'bar' }
- **/
-export function argsArrayToHash<T extends ConfigArgs<any>>(args: ConfigArg[]): ConfigArgValues<T> {
-    const output: ConfigArgValues<T> = {} as any;
-    for (const arg of args) {
-        if (arg && arg.value != null) {
-            output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(arg);
-        }
-    }
-    return output;
-}
-
-function coerceValueToType<T extends ConfigArgs<any>>(arg: ConfigArg): ConfigArgValues<T>[keyof T] {
-    switch (arg.type as ConfigArgType) {
+function coerceValueToType<T extends ConfigArgs<any>>(
+    value: string,
+    argDef: ConfigArgDef<any>,
+): ConfigArgValues<T>[keyof T] {
+    switch (argDef.type as ConfigArgType) {
         case 'string':
-            return arg.value as any;
+            return value as any;
         case 'int':
-            return Number.parseInt(arg.value || '', 10) as any;
+            return Number.parseInt(value || '', 10) as any;
         case 'datetime':
-            return Date.parse(arg.value || '') as any;
+            return Date.parse(value || '') as any;
         case 'boolean':
-            return !!(arg.value && (arg.value.toLowerCase() === 'true' || arg.value === '1')) as any;
+            return !!(value && (value.toLowerCase() === 'true' || value === '1')) as any;
         case 'facetValueIds':
             try {
-                return JSON.parse(arg.value as any);
+                return JSON.parse(value as any);
             } catch (err) {
                 throw new InternalServerError(err.message);
             }
         default:
-            return (arg.value as string) as any;
+            return (value as string) as any;
     }
 }

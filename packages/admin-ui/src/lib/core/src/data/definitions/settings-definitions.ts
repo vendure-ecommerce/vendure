@@ -372,7 +372,6 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         enabled
         configArgs {
             name
-            type
             value
         }
     }

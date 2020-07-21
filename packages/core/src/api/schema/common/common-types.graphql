@@ -22,7 +22,6 @@ type Adjustment {
 
 type ConfigArg {
     name: String!
-    type: String!
     value: String!
 }
 
@@ -59,7 +58,6 @@ type DeletionResponse {
 
 input ConfigArgInput {
     name: String!
-    type: String!
     value: String!
 }
 

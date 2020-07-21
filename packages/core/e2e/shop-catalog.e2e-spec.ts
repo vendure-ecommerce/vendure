@@ -248,12 +248,10 @@ describe('Shop catalog', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: `["${sportsEquipment.id}"]`,
-                                    type: 'facetValueIds',
                                 },
                                 {
                                     name: 'containsAny',
                                     value: `false`,
-                                    type: 'boolean',
                                 },
                             ],
                         },

@@ -50,7 +50,6 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
       ],
@@ -62,7 +61,6 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "int",
           "value": "500",
         },
       ],
@@ -84,7 +82,6 @@ Object {
       "args": Array [
         Object {
           "name": "facetValueIds",
-          "type": "facetValueIds",
           "value": "[\\"T_1\\"]",
         },
       ],
@@ -96,7 +93,6 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "int",
           "value": "90",
         },
       ],
@@ -106,7 +102,6 @@ Object {
       "args": Array [
         Object {
           "name": "arg",
-          "type": "int",
           "value": "10",
         },
       ],

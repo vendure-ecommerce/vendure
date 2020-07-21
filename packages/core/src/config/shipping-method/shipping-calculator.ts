@@ -2,7 +2,6 @@ import { ConfigArg } from '@vendure/common/lib/generated-types';
 import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
@@ -57,7 +56,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> extends C
      * @internal
      */
     calculate(order: Order, args: ConfigArg[]): CalculateShippingFnResult {
-        return this.calculateFn(order, argsArrayToHash(args));
+        return this.calculateFn(order, this.argsArrayToHash(args));
     }
 }
 

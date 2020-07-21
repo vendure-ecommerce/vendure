@@ -6,6 +6,7 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
 import { ServiceModule } from '../service/service.module';
 
+import { ConfigurableOperationCodec } from './common/configurable-operation-codec';
 import { IdCodecService } from './common/id-codec.service';
 import { AdministratorResolver } from './resolvers/admin/administrator.resolver';
 import { AssetResolver } from './resolvers/admin/asset.resolver';
@@ -127,8 +128,8 @@ export const adminEntityResolvers = [
  */
 @Module({
     imports: [ConfigModule],
-    providers: [IdCodecService],
-    exports: [IdCodecService, ConfigModule],
+    providers: [IdCodecService, ConfigurableOperationCodec],
+    exports: [IdCodecService, ConfigModule, ConfigurableOperationCodec],
 })
 export class ApiSharedModule {}
 

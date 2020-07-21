@@ -1,0 +1,97 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigurableOperation, ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
+import { Type } from '@vendure/common/lib/shared-types';
+
+import { ConfigurableOperationDef } from '../../common/configurable-operation';
+import { InternalServerError } from '../../common/error/errors';
+import {
+    PromotionCondition,
+    PromotionItemAction,
+    PromotionOrderAction,
+    ShippingCalculator,
+    ShippingEligibilityChecker,
+} from '../../config';
+import { CollectionFilter } from '../../config/collection/collection-filter';
+import { ConfigService } from '../../config/config.service';
+import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
+
+import { IdCodecService } from './id-codec.service';
+
+@Injectable()
+export class ConfigurableOperationCodec {
+    constructor(private configService: ConfigService, private idCodecService: IdCodecService) {}
+
+    /**
+     * Decodes any ID type arguments of a ConfigurableOperationDef
+     */
+    decodeConfigurableOperationIds<T extends ConfigurableOperationDef<any>>(
+        defType: Type<ConfigurableOperationDef<any>>,
+        input: ConfigurableOperationInput[],
+    ): ConfigurableOperationInput[] {
+        const availableDefs = this.getAvailableDefsOfType(defType);
+        for (const operationInput of input) {
+            const def = availableDefs.find(d => d.code === operationInput.code);
+            if (!def) {
+                continue;
+            }
+            for (const arg of operationInput.arguments) {
+                const argDef = def.args[arg.name];
+                if (argDef.type === 'facetValueIds' && arg.value) {
+                    const ids = JSON.parse(arg.value) as string[];
+                    const decodedIds = ids.map(id => this.idCodecService.decode(id));
+                    arg.value = JSON.stringify(decodedIds);
+                }
+            }
+        }
+        return input;
+    }
+
+    /**
+     * Encodes any ID type arguments of a ConfigurableOperationDef
+     */
+    encodeConfigurableOperationIds<T extends ConfigurableOperationDef<any>>(
+        defType: Type<ConfigurableOperationDef<any>>,
+        input: ConfigurableOperation[],
+    ): ConfigurableOperation[] {
+        const availableDefs = this.getAvailableDefsOfType(defType);
+        for (const operationInput of input) {
+            const def = availableDefs.find(d => d.code === operationInput.code);
+            if (!def) {
+                continue;
+            }
+            for (const arg of operationInput.args) {
+                const argDef = def.args[arg.name];
+                if (argDef.type === 'facetValueIds' && arg.value) {
+                    const ids = JSON.parse(arg.value) as string[];
+                    const encodedIds = ids.map(id => this.idCodecService.encode(id));
+                    arg.value = JSON.stringify(encodedIds);
+                }
+            }
+        }
+        return input;
+    }
+
+    getAvailableDefsOfType(
+        defType: Type<ConfigurableOperationDef<any>>,
+    ): Array<ConfigurableOperationDef<any>> {
+        switch (defType) {
+            case CollectionFilter:
+                return this.configService.catalogOptions.collectionFilters;
+            case PaymentMethodHandler:
+                return this.configService.paymentOptions.paymentMethodHandlers;
+            case PromotionItemAction:
+            case PromotionOrderAction:
+                return this.configService.promotionOptions.promotionActions || [];
+            case PromotionCondition:
+                return this.configService.promotionOptions.promotionConditions || [];
+            case ShippingEligibilityChecker:
+                return this.configService.shippingOptions.shippingEligibilityCheckers || [];
+            case ShippingCalculator:
+                return this.configService.shippingOptions.shippingCalculators || [];
+            default:
+                throw new InternalServerError('error.unknown-configurable-operation-definition', {
+                    name: defType.name,
+                });
+        }
+    }
+}

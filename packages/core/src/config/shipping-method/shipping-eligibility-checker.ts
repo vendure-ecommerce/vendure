@@ -3,11 +3,10 @@ import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     ConfigArgs,
+    ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
-import { argsArrayToHash, ConfigArgValues } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
 export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
@@ -56,7 +55,7 @@ export class ShippingEligibilityChecker<
      * @internal
      */
     check(order: Order, args: ConfigArg[]): boolean | Promise<boolean> {
-        return this.checkFn(order, argsArrayToHash(args));
+        return this.checkFn(order, this.argsArrayToHash(args));
     }
 }
 

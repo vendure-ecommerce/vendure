@@ -10,16 +10,21 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { PromotionItemAction, PromotionOrderAction } from '../../../config/promotion/promotion-action';
+import { PromotionCondition } from '../../../config/promotion/promotion-condition';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { PromotionService } from '../../../service/services/promotion.service';
-import { IdCodecService } from '../../common/id-codec.service';
+import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('Promotion')
 export class PromotionResolver {
-    constructor(private promotionService: PromotionService, private idCodecService: IdCodecService) {}
+    constructor(
+        private promotionService: PromotionService,
+        private configurableOperationCodec: ConfigurableOperationCodec,
+    ) {}
 
     @Query()
     @Allow(Permission.ReadPromotion)
@@ -57,8 +62,14 @@ export class PromotionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreatePromotionArgs,
     ): Promise<Promotion> {
-        this.idCodecService.decodeConfigurableOperation(args.input.actions);
-        this.idCodecService.decodeConfigurableOperation(args.input.conditions);
+        this.configurableOperationCodec.decodeConfigurableOperationIds(
+            PromotionOrderAction,
+            args.input.actions,
+        );
+        this.configurableOperationCodec.decodeConfigurableOperationIds(
+            PromotionCondition,
+            args.input.conditions,
+        );
         return this.promotionService.createPromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
@@ -68,8 +79,18 @@ export class PromotionResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdatePromotionArgs,
     ): Promise<Promotion> {
-        this.idCodecService.decodeConfigurableOperation(args.input.actions || []);
-        this.idCodecService.decodeConfigurableOperation(args.input.conditions || []);
+        this.configurableOperationCodec.decodeConfigurableOperationIds(
+            PromotionOrderAction,
+            args.input.actions || [],
+        );
+        this.configurableOperationCodec.decodeConfigurableOperationIds(
+            PromotionItemAction,
+            args.input.actions || [],
+        );
+        this.configurableOperationCodec.decodeConfigurableOperationIds(
+            PromotionCondition,
+            args.input.conditions || [],
+        );
         return this.promotionService.updatePromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
@@ -84,8 +105,14 @@ export class PromotionResolver {
      */
     private encodeConditionsAndActions = <T extends Promotion | undefined>(collection: T): T => {
         if (collection) {
-            this.idCodecService.encodeConfigurableOperation(collection.conditions);
-            this.idCodecService.encodeConfigurableOperation(collection.actions);
+            this.configurableOperationCodec.encodeConfigurableOperationIds(
+                PromotionOrderAction,
+                collection.actions,
+            );
+            this.configurableOperationCodec.encodeConfigurableOperationIds(
+                PromotionCondition,
+                collection.conditions,
+            );
         }
         return collection;
     };

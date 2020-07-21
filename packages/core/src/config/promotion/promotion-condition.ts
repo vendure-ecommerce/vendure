@@ -2,12 +2,10 @@ import { ConfigArg } from '@vendure/common/lib/generated-types';
 import { ConfigArgSubset, ID } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
@@ -76,6 +74,6 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> extends C
     }
 
     async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
-        return this.checkFn(order, argsArrayToHash<T>(args), utils);
+        return this.checkFn(order, this.argsArrayToHash(args), utils);
     }
 }

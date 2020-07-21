@@ -2,7 +2,6 @@ import { ConfigArg } from '@vendure/common/lib/generated-types';
 import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
@@ -126,7 +125,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
 
     /** @internal */
     execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(orderItem, orderLine, argsArrayToHash(args), utils);
+        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args), utils);
     }
 }
 
@@ -159,6 +158,6 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
 
     /** @internal */
     execute(order: Order, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(order, argsArrayToHash(args), utils);
+        return this.executeFn(order, this.argsArrayToHash(args), utils);
     }
 }

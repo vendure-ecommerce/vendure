@@ -2,12 +2,10 @@ import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types
 import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
 import { Order } from '../../entity/order/order.entity';
@@ -237,7 +235,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
-        const paymentConfig = await this.createPaymentFn(order, argsArrayToHash(args), metadata);
+        const paymentConfig = await this.createPaymentFn(order, this.argsArrayToHash(args), metadata);
         return {
             method: this.code,
             ...paymentConfig,
@@ -251,7 +249,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
-        return this.settlePaymentFn(order, payment, argsArrayToHash(args));
+        return this.settlePaymentFn(order, payment, this.argsArrayToHash(args));
     }
 
     /**
@@ -268,7 +266,7 @@ export class PaymentMethodHandler<
         args: ConfigArg[],
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args))
+            ? this.createRefundFn(input, total, order, payment, this.argsArrayToHash(args))
             : false;
     }
 

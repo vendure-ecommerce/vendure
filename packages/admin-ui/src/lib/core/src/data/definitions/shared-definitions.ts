@@ -4,7 +4,6 @@ export const CONFIGURABLE_OPERATION_FRAGMENT = gql`
     fragment ConfigurableOperation on ConfigurableOperation {
         args {
             name
-            type
             value
         }
         code

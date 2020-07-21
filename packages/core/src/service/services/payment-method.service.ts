@@ -210,7 +210,6 @@ export class PaymentMethodService {
             if (!existingConfigArgs.find(ca => ca.name === name)) {
                 configArgs.push({
                     name,
-                    type: def.type,
                     value: this.getDefaultValue(def.type),
                 });
             }

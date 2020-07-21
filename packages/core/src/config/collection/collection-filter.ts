@@ -3,7 +3,6 @@ import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
@@ -23,7 +22,7 @@ export interface CollectionFilterConfig<T extends CollectionFilterArgs>
     extends ConfigurableOperationDefOptions<T> {
     apply: ApplyCollectionFilterFn<T>;
 }
-
+// tslint:disable:max-line-length
 /**
  * @description
  * A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
@@ -36,14 +35,14 @@ export interface CollectionFilterConfig<T extends CollectionFilterArgs>
  * @docsCategory configuration
  */
 export class CollectionFilter<T extends CollectionFilterArgs = {}> extends ConfigurableOperationDef<T> {
+    // tslint:enable:max-line-length
     private readonly applyFn: ApplyCollectionFilterFn<T>;
-
     constructor(config: CollectionFilterConfig<T>) {
         super(config);
         this.applyFn = config.apply;
     }
 
     apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]): SelectQueryBuilder<ProductVariant> {
-        return this.applyFn(qb, argsArrayToHash(args));
+        return this.applyFn(qb, this.argsArrayToHash(args));
     }
 }

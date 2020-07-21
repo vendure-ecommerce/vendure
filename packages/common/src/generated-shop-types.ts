@@ -226,7 +226,6 @@ export type CollectionTranslation = {
 export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -241,7 +240,6 @@ export type ConfigArgDefinition = {
 
 export type ConfigArgInput = {
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -773,7 +771,7 @@ export type DateRange = {
 };
 
 /**
- * Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {

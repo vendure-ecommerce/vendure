@@ -55,13 +55,13 @@ describe('Promotions applied to Orders', () => {
 
     const freeOrderAction = {
         code: orderPercentageDiscount.code,
-        arguments: [{ name: 'discount', type: 'int', value: '100' }],
+        arguments: [{ name: 'discount', value: '100' }],
     };
     const minOrderAmountCondition = (min: number) => ({
         code: minimumOrderAmount.code,
         arguments: [
-            { name: 'amount', type: 'int', value: min.toString() },
-            { name: 'taxInclusive', type: 'boolean', value: 'true' },
+            { name: 'amount', value: min.toString() },
+            { name: 'taxInclusive', value: 'true' },
         ],
     });
 
@@ -290,8 +290,8 @@ describe('Promotions applied to Orders', () => {
                     {
                         code: atLeastNWithFacets.code,
                         arguments: [
-                            { name: 'minimum', type: 'int', value: '2' },
-                            { name: 'facets', type: 'facetValueIds', value: `["${saleFacetValue.id}"]` },
+                            { name: 'minimum', value: '2' },
+                            { name: 'facets', value: `["${saleFacetValue.id}"]` },
                         ],
                     },
                 ],
@@ -344,7 +344,7 @@ describe('Promotions applied to Orders', () => {
                 actions: [
                     {
                         code: orderPercentageDiscount.code,
-                        arguments: [{ name: 'discount', type: 'int', value: '50' }],
+                        arguments: [{ name: 'discount', value: '50' }],
                     },
                 ],
             });
@@ -386,8 +386,8 @@ describe('Promotions applied to Orders', () => {
                     {
                         code: discountOnItemWithFacets.code,
                         arguments: [
-                            { name: 'discount', type: 'int', value: '50' },
-                            { name: 'facets', type: 'facetValueIds', value: `["${saleFacetValue.id}"]` },
+                            { name: 'discount', value: '50' },
+                            { name: 'facets', value: `["${saleFacetValue.id}"]` },
                         ],
                     },
                 ],
@@ -450,8 +450,8 @@ describe('Promotions applied to Orders', () => {
                     {
                         code: discountOnItemWithFacets.code,
                         arguments: [
-                            { name: 'discount', type: 'int', value: '50' },
-                            { name: 'facets', type: 'facetValueIds', value: `["${saleFacetValue.id}"]` },
+                            { name: 'discount', value: '50' },
+                            { name: 'facets', value: `["${saleFacetValue.id}"]` },
                         ],
                     },
                 ],
@@ -464,7 +464,7 @@ describe('Promotions applied to Orders', () => {
                 actions: [
                     {
                         code: orderPercentageDiscount.code,
-                        arguments: [{ name: 'discount', type: 'int', value: '50' }],
+                        arguments: [{ name: 'discount', value: '50' }],
                     },
                 ],
             });

@@ -9,7 +9,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateShippingMethod,
@@ -157,7 +157,6 @@ describe('ShippingMethod resolver', () => {
                     arguments: [
                         {
                             name: 'orderMinimum',
-                            type: 'int',
                             value: '0',
                         },
                     ],
@@ -197,7 +196,6 @@ describe('ShippingMethod resolver', () => {
                     arguments: [
                         {
                             name: 'orderMinimum',
-                            type: 'int',
                             value: '0',
                         },
                     ],
