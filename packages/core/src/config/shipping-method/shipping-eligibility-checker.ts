@@ -1,5 +1,4 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     ConfigArgs,
@@ -9,10 +8,7 @@ import {
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
-export type ShippingEligibilityCheckerArgType = ConfigArgSubset<'int' | 'float' | 'string' | 'boolean'>;
-export type ShippingEligibilityCheckerArgs = ConfigArgs<ShippingEligibilityCheckerArgType>;
-
-export interface ShippingEligibilityCheckerConfig<T extends ShippingEligibilityCheckerArgs>
+export interface ShippingEligibilityCheckerConfig<T extends ConfigArgs>
     extends ConfigurableOperationDefOptions<T> {
     check: CheckShippingEligibilityCheckerFn<T>;
 }
@@ -38,9 +34,9 @@ export interface ShippingEligibilityCheckerConfig<T extends ShippingEligibilityC
  * @docsCategory shipping
  * @docsPage ShippingEligibilityChecker
  */
-export class ShippingEligibilityChecker<
-    T extends ShippingEligibilityCheckerArgs = {}
-> extends ConfigurableOperationDef<T> {
+export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<
+    T
+> {
     private readonly checkFn: CheckShippingEligibilityCheckerFn<T>;
 
     constructor(config: ShippingEligibilityCheckerConfig<T>) {
@@ -67,7 +63,7 @@ export class ShippingEligibilityChecker<
  * @docsCategory shipping
  * @docsPage ShippingEligibilityChecker
  */
-export type CheckShippingEligibilityCheckerFn<T extends ShippingEligibilityCheckerArgs> = (
+export type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
 ) => boolean | Promise<boolean>;

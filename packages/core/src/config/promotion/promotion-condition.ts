@@ -1,5 +1,5 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset, ID } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, ID } from '@vendure/common/lib/shared-types';
 
 import {
     ConfigArgs,
@@ -9,9 +9,6 @@ import {
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
-
-export type PromotionConditionArgType = ConfigArgSubset<'int' | 'string' | 'datetime' | 'boolean' | 'ID'>;
-export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 
 /**
  * @description
@@ -40,14 +37,13 @@ export interface PromotionUtils {
  * @docsCategory promotions
  * @docsPage promotion-condition
  */
-export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
+export type CheckPromotionConditionFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     utils: PromotionUtils,
 ) => boolean | Promise<boolean>;
 
-export interface PromotionConditionConfig<T extends PromotionConditionArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     check: CheckPromotionConditionFn<T>;
     priorityValue?: number;
 }
@@ -61,7 +57,7 @@ export interface PromotionConditionConfig<T extends PromotionConditionArgs>
  * @docsCategory promotions
  * @docsPage promotion-condition
  */
-export class PromotionCondition<T extends PromotionConditionArgs = {}> extends ConfigurableOperationDef<T> {
+export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
 

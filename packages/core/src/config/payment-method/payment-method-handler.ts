@@ -1,5 +1,4 @@
 import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
     ConfigArgs,
@@ -16,8 +15,6 @@ import {
 } from '../../service/helpers/payment-state-machine/payment-state';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
-export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
-export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnPaymentTransitionStartReturnType = ReturnType<
     Required<StateMachineConfig<any>>['onTransitionStart']
 >;
@@ -85,7 +82,7 @@ export interface SettlePaymentResult {
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreatePaymentFn<T extends PaymentMethodArgs> = (
+export type CreatePaymentFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
@@ -98,7 +95,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type SettlePaymentFn<T extends PaymentMethodArgs> = (
+export type SettlePaymentFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
@@ -111,7 +108,7 @@ export type SettlePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreateRefundFn<T extends PaymentMethodArgs> = (
+export type CreateRefundFn<T extends ConfigArgs> = (
     input: RefundOrderInput,
     total: number,
     order: Order,
@@ -125,8 +122,7 @@ export type CreateRefundFn<T extends PaymentMethodArgs> = (
  *
  * @docsCategory payment
  */
-export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -211,9 +207,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @docsCategory payment
  */
-export class PaymentMethodHandler<
-    T extends PaymentMethodArgs = PaymentMethodArgs
-> extends ConfigurableOperationDef<T> {
+export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly createRefundFn?: CreateRefundFn<T>;

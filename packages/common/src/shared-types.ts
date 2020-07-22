@@ -109,8 +109,6 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
  */
 export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'ID';
 
-export type ConfigArgSubset<T extends ConfigArgType> = T;
-
 export type CustomFieldsObject = { [key: string]: any };
 
 /**

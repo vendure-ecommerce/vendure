@@ -92,15 +92,15 @@ export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export type ConfigArgs<T extends ConfigArgType> = {
-    [name: string]: ConfigArgDef<T>;
+export type ConfigArgs = {
+    [name: string]: ConfigArgDef<ConfigArgType>;
 };
 
 /**
  * Represents the ConfigArgs once they have been coerced into JavaScript values for use
  * in business logic.
  */
-export type ConfigArgValues<T extends ConfigArgs<any>> = {
+export type ConfigArgValues<T extends ConfigArgs> = {
     [K in keyof T]: T[K] extends ConfigArgListDef<'int' | 'float'>
         ? number[]
         : T[K] extends ConfigArgDef<'int' | 'float'>
@@ -130,8 +130,7 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export interface ConfigurableOperationDefOptions<T extends ConfigArgs<ConfigArgType>>
-    extends InjectableStrategy {
+export interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends InjectableStrategy {
     /**
      * @description
      * A unique code used to identify this operation.
@@ -168,7 +167,7 @@ export interface ConfigurableOperationDefOptions<T extends ConfigArgs<ConfigArgT
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType> = ConfigArgs<ConfigArgType>> {
+export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
     get code(): string {
         return this.options.code;
     }
@@ -268,7 +267,7 @@ function localizeString(stringArray: LocalizedStringArray, languageCode: Languag
     return match.value;
 }
 
-function coerceValueToType<T extends ConfigArgs<any>>(
+function coerceValueToType<T extends ConfigArgs>(
     value: string,
     type: ConfigArgType,
     isList: boolean,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { ConfigArg, RefundOrderInput, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Connection } from 'typeorm';
 
@@ -10,11 +10,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
-import {
-    PaymentMethodArgs,
-    PaymentMethodArgType,
-    PaymentMethodHandler,
-} from '../../config/payment-method/payment-method-handler';
+import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
@@ -167,8 +163,7 @@ export class PaymentMethodService {
     }
 
     private async ensurePaymentMethodsExist() {
-        const paymentMethodHandlers: Array<PaymentMethodHandler<PaymentMethodArgs>> = this.configService
-            .paymentOptions.paymentMethodHandlers;
+        const paymentMethodHandlers = this.configService.paymentOptions.paymentMethodHandlers;
         const existingPaymentMethods = await this.connection.getRepository(PaymentMethod).find();
         const toCreate = paymentMethodHandlers.filter(
             h => !existingPaymentMethods.find(pm => pm.code === h.code),
@@ -221,14 +216,19 @@ export class PaymentMethodService {
         return [...existingConfigArgs, ...configArgs];
     }
 
-    private getDefaultValue(type: PaymentMethodArgType): string {
+    private getDefaultValue(type: ConfigArgType): string {
         switch (type) {
             case 'string':
                 return '';
             case 'boolean':
                 return 'false';
             case 'int':
+            case 'float':
                 return '0';
+            case 'ID':
+                return '';
+            case 'datetime':
+                return new Date().toISOString();
             default:
                 assertNever(type);
                 return '';

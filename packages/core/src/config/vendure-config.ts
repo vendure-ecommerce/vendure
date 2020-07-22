@@ -445,7 +445,7 @@ export interface PaymentOptions {
      * @description
      * An array of {@link PaymentMethodHandler}s with which to process payments.
      */
-    paymentMethodHandlers: Array<PaymentMethodHandler<any>>;
+    paymentMethodHandlers: PaymentMethodHandler[];
 }
 
 /**
