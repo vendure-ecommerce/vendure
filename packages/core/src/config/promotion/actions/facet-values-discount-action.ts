@@ -1,22 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { PromotionItemAction, PromotionOrderAction } from './promotion-action';
-
-export const orderPercentageDiscount = new PromotionOrderAction({
-    code: 'order_percentage_discount',
-    args: {
-        discount: {
-            type: 'int',
-            config: {
-                inputType: 'percentage',
-            },
-        },
-    },
-    execute(order, args) {
-        return -order.subTotal * (args.discount / 100);
-    },
-    description: [{ languageCode: LanguageCode.en, value: 'Discount order by { discount }%' }],
-});
+import { PromotionItemAction } from '../promotion-action';
 
 export const discountOnItemWithFacets = new PromotionItemAction({
     code: 'facet_based_discount',
@@ -42,5 +26,3 @@ export const discountOnItemWithFacets = new PromotionItemAction({
         { languageCode: LanguageCode.en, value: 'Discount products with these facets by { discount }%' },
     ],
 });
-
-export const defaultPromotionActions = [orderPercentageDiscount, discountOnItemWithFacets];
