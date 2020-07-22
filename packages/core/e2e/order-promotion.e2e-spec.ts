@@ -2,8 +2,8 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
-    atLeastNWithFacets,
     discountOnItemWithFacets,
+    hasFacetValues,
     minimumOrderAmount,
     orderPercentageDiscount,
 } from '@vendure/core';
@@ -288,7 +288,7 @@ describe('Promotions applied to Orders', () => {
                 name: 'Free if order contains 2 items with Sale facet value',
                 conditions: [
                     {
-                        code: atLeastNWithFacets.code,
+                        code: hasFacetValues.code,
                         arguments: [
                             { name: 'minimum', value: '2' },
                             { name: 'facets', value: `["${saleFacetValue.id}"]` },

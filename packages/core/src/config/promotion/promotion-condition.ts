@@ -12,26 +12,6 @@ import { Order } from '../../entity/order/order.entity';
 
 /**
  * @description
- * An object containing utility methods which may be used in promotion `check` functions
- * in order to determine whether a promotion should be applied.
- *
- * TODO: Remove this and use the new init() method to inject providers where needed.
- *
- * @docsCategory promotions
- * @docsPage promotion-condition
- */
-export interface PromotionUtils {
-    /**
-     * @description
-     * Checks a given {@link OrderLine} against the facetValueIds and returns
-     * `true` if the associated {@link ProductVariant} & {@link Product} together
-     * have *all* the specified {@link FacetValue}s.
-     */
-    hasFacetValues: (orderLine: OrderLine, facetValueIds: ID[]) => Promise<boolean>;
-}
-
-/**
- * @description
  * A function which checks whether or not a given {@link Order} satisfies the {@link PromotionCondition}.
  *
  * @docsCategory promotions
@@ -40,7 +20,6 @@ export interface PromotionUtils {
 export type CheckPromotionConditionFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => boolean | Promise<boolean>;
 
 export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
@@ -67,7 +46,7 @@ export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends Confi
         this.priorityValue = config.priorityValue || 0;
     }
 
-    async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
-        return this.checkFn(order, this.argsArrayToHash(args), utils);
+    async check(order: Order, args: ConfigArg[]): Promise<boolean> {
+        return this.checkFn(order, this.argsArrayToHash(args));
     }
 }

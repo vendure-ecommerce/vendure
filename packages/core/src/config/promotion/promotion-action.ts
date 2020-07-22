@@ -10,8 +10,6 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
-import { PromotionUtils } from './promotion-condition';
-
 /**
  * @description
  * The function which is used by a PromotionItemAction to calculate the
@@ -24,7 +22,6 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => number | Promise<number>;
 
 /**
@@ -38,7 +35,6 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
 export type ExecutePromotionOrderActionFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => number | Promise<number>;
 
 export interface PromotionActionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
@@ -117,8 +113,8 @@ export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends Prom
     }
 
     /** @internal */
-    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args), utils);
+    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
+        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args));
     }
 }
 
@@ -150,7 +146,7 @@ export class PromotionOrderAction<T extends ConfigArgs = ConfigArgs> extends Pro
     }
 
     /** @internal */
-    execute(order: Order, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(order, this.argsArrayToHash(args), utils);
+    execute(order: Order, args: ConfigArg[]) {
+        return this.executeFn(order, this.argsArrayToHash(args));
     }
 }
