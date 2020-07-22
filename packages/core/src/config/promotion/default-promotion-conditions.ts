@@ -10,6 +10,7 @@ export const minimumOrderAmount = new PromotionCondition({
     args: {
         amount: { type: 'int', config: { inputType: 'money' } },
         taxInclusive: { type: 'boolean' },
+        ids: { type: 'string', list: true },
     },
     check(order, args) {
         if (args.taxInclusive) {

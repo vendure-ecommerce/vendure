@@ -28,6 +28,7 @@ type ConfigArg {
 type ConfigArgDefinition {
     name: String!
     type: String!
+    list: Boolean!
     label: String
     description: String
     config: JSON

@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, forwardRef, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    forwardRef,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import {
     AbstractControl,
     ControlValueAccessor,
@@ -67,7 +77,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     }
 
     ngOnChanges(changes: SimpleChanges) {
-        if ('operation' in changes) {
+        if ('operation' in changes || 'operationDefinition' in changes) {
             this.createForm();
         }
     }
@@ -146,8 +156,8 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         return [];
     }
 
-    getArgType(arg: ConfigArg): ConfigArgType {
-        return arg.type as ConfigArgType;
+    getArgType(arg: ConfigArg): ConfigArgType | undefined {
+        return this.operationDefinition?.args.find(argDef => argDef.name === arg.name)?.type as ConfigArgType;
     }
 
     private getArgConfig(arg: ConfigArg): Record<string, any> | undefined {
@@ -167,13 +177,13 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         this.form = new FormGroup({});
 
         if (this.operation.args) {
-            for (const arg of this.operation.args) {
-                let value: any = arg.value;
+            for (const arg of this.operationDefinition?.args || []) {
+                let value: any = this.operation.args.find(a => a.name === arg.name)?.value;
                 if (value === undefined) {
-                    value = getDefaultConfigArgValue(arg);
+                    value = getDefaultConfigArgValue(arg.type as ConfigArgType);
                 } else {
                     if (arg.type === 'boolean') {
-                        value = arg.value === 'true';
+                        value = value === 'true';
                     }
                 }
                 this.form.addControl(arg.name, new FormControl(value, Validators.required));

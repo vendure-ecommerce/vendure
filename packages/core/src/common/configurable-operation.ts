@@ -38,9 +38,15 @@ export type LocalizedStringArray = Array<Omit<LocalizedString, '__typename'>>;
 
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;
+    list?: boolean;
     label?: LocalizedStringArray;
     description?: LocalizedStringArray;
 }
+
+export type ConfigArgListDef<
+    T extends ConfigArgType,
+    C extends ConfigArgCommonDef<T> = ConfigArgCommonDef<T>
+> = C & { list: true };
 
 export type WithArgConfig<T> = {
     config?: T;
@@ -89,21 +95,28 @@ export type ConfigArgs<T extends ConfigArgType> = {
     [name: string]: ConfigArgDef<T>;
 };
 
-// prettier-ignore
 /**
  * Represents the ConfigArgs once they have been coerced into JavaScript values for use
  * in business logic.
  */
 export type ConfigArgValues<T extends ConfigArgs<any>> = {
-    [K in keyof T]: T[K] extends ConfigArgDef<'int' | 'float'>
+    [K in keyof T]: T[K] extends ConfigArgListDef<'int' | 'float'>
+        ? number[]
+        : T[K] extends ConfigArgDef<'int' | 'float'>
         ? number
+        : T[K] extends ConfigArgListDef<'datetime'>
+        ? Date[]
         : T[K] extends ConfigArgDef<'datetime'>
-            ? Date
-            : T[K] extends ConfigArgDef<'boolean'>
-                ? boolean
-                : T[K] extends ConfigArgDef<'facetValueIds'>
-                    ? string[]
-                        : string
+        ? Date
+        : T[K] extends ConfigArgListDef<'boolean'>
+        ? boolean[]
+        : T[K] extends ConfigArgDef<'boolean'>
+        ? boolean
+        : T[K] extends ConfigArgDef<'facetValueIds'>
+        ? string[]
+        : T[K] extends ConfigArgListDef<'string'>
+        ? string[]
+        : string;
 };
 
 /**
@@ -176,6 +189,28 @@ export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
     }
 
     /**
+     * Convert a ConfigurableOperationDef into a ConfigurableOperationDefinition object, typically
+     * so that it can be sent via the API.
+     */
+    toGraphQlType(ctx: RequestContext): ConfigurableOperationDefinition {
+        return {
+            code: this.code,
+            description: localizeString(this.description, ctx.languageCode),
+            args: Object.entries(this.args).map(
+                ([name, arg]) =>
+                    ({
+                        name,
+                        type: arg.type,
+                        list: arg.list ?? false,
+                        config: localizeConfig(arg, ctx.languageCode),
+                        label: arg.label && localizeString(arg.label, ctx.languageCode),
+                        description: arg.description && localizeString(arg.description, ctx.languageCode),
+                    } as Required<ConfigArgDefinition>),
+            ),
+        };
+    }
+
+    /**
      * Coverts an array of ConfigArgs into a hash object:
      *
      * from:
@@ -196,30 +231,6 @@ export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
         }
         return output;
     }
-}
-
-/**
- * Convert a ConfigurableOperationDef into a ConfigurableOperation object, typically
- * so that it can be sent via the API.
- */
-export function configurableDefToOperation(
-    ctx: RequestContext,
-    def: ConfigurableOperationDef<ConfigArgs<any>>,
-): ConfigurableOperationDefinition {
-    return {
-        code: def.code,
-        description: localizeString(def.description, ctx.languageCode),
-        args: Object.entries(def.args).map(
-            ([name, arg]) =>
-                ({
-                    name,
-                    type: arg.type,
-                    config: localizeConfig(arg, ctx.languageCode),
-                    label: arg.label && localizeString(arg.label, ctx.languageCode),
-                    description: arg.description && localizeString(arg.description, ctx.languageCode),
-                } as Required<ConfigArgDefinition>),
-        ),
-    };
 }
 
 function localizeConfig(

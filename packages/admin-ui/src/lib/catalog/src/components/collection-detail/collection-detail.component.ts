@@ -296,7 +296,6 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                 arguments: Object.values(formValueOperations[i].args).map((value: any, j) => ({
                     name: o.args[j].name,
                     value: value.toString(),
-                    type: o.args[j].type,
                 })),
             };
         });

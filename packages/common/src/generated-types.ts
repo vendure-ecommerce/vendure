@@ -318,6 +318,7 @@ export type ConfigArgDefinition = {
    __typename?: 'ConfigArgDefinition';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   config?: Maybe<Scalars['JSON']>;
@@ -2578,6 +2579,7 @@ export type PaymentMethod = Node & {
   code: Scalars['String'];
   enabled: Scalars['Boolean'];
   configArgs: Array<ConfigArg>;
+  definition: ConfigurableOperationDefinition;
 };
 
 export type PaymentMethodFilterParameter = {

@@ -142,6 +142,14 @@ export class PaymentMethodService {
         return refund;
     }
 
+    getPaymentMethodHandler(code: string): PaymentMethodHandler {
+        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(h => h.code === code);
+        if (!handler) {
+            throw new UserInputError(`error.no-payment-handler-with-code`, { code });
+        }
+        return handler;
+    }
+
     private async getMethodAndHandler(
         method: string,
     ): Promise<{ paymentMethod: PaymentMethod; handler: PaymentMethodHandler }> {
@@ -154,12 +162,7 @@ export class PaymentMethodService {
         if (!paymentMethod) {
             throw new UserInputError(`error.payment-method-not-found`, { method });
         }
-        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(
-            h => h.code === paymentMethod.code,
-        );
-        if (!handler) {
-            throw new UserInputError(`error.no-payment-handler-with-code`, { code: paymentMethod.code });
-        }
+        const handler = this.getPaymentMethodHandler(paymentMethod.code);
         return { paymentMethod, handler };
     }
 

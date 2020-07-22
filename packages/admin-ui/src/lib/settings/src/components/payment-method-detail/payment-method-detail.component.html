@@ -46,36 +46,42 @@
         </clr-toggle-wrapper>
     </vdr-form-field>
 
-    <div class="clr-row" formGroupName="configArgs" *ngIf="(entity$ | async)?.configArgs?.length && configArgsIsPopulated()">
-        <div class="clr-col">
-            <label>{{ 'settings.payment-method-config-options' | translate }}</label>
-            <section class="form-block" *ngFor="let arg of (entity$ | async)?.configArgs">
-                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'string'">
-                    <input
-                        [id]="arg.name"
-                        type="text"
-                        [readonly]="!('UpdateSettings' | hasPermission)"
-                        [formControlName]="arg.name"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'int'">
-                    <input
-                        [id]="arg.name"
-                        type="number"
-                        [readonly]="!('UpdateSettings' | hasPermission)"
-                        [formControlName]="arg.name"
-                    />
-                </vdr-form-field>
-                <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(arg) === 'boolean'">
-                    <input
-                        type="checkbox"
-                        [id]="arg.name"
-                        [vdrDisabled]="!('UpdateSettings' | hasPermission)"
-                        [formControlName]="arg.name"
-                        clrCheckbox
-                    />
-                </vdr-form-field>
-            </section>
+    <ng-container *ngIf="entity$ | async as paymentMethod">
+        <div
+            class="clr-row"
+            formGroupName="configArgs"
+            *ngIf="paymentMethod?.configArgs?.length && configArgsIsPopulated()"
+        >
+            <div class="clr-col">
+                <label>{{ 'settings.payment-method-config-options' | translate }}</label>
+                <section class="form-block" *ngFor="let arg of paymentMethod.configArgs">
+                    <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(paymentMethod, arg.name) === 'string'">
+                        <input
+                            [id]="arg.name"
+                            type="text"
+                            [readonly]="!('UpdateSettings' | hasPermission)"
+                            [formControlName]="arg.name"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(paymentMethod, arg.name) === 'int'">
+                        <input
+                            [id]="arg.name"
+                            type="number"
+                            [readonly]="!('UpdateSettings' | hasPermission)"
+                            [formControlName]="arg.name"
+                        />
+                    </vdr-form-field>
+                    <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(paymentMethod, arg.name) === 'boolean'">
+                        <input
+                            type="checkbox"
+                            [id]="arg.name"
+                            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                            [formControlName]="arg.name"
+                            clrCheckbox
+                        />
+                    </vdr-form-field>
+                </section>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </form>

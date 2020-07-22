@@ -5,4 +5,5 @@ type PaymentMethod implements Node {
     code: String!
     enabled: Boolean!
     configArgs: [ConfigArg!]!
+    definition: ConfigurableOperationDefinition!
 }

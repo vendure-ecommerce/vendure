@@ -45,8 +45,11 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         this.destroy();
     }
 
-    getType(arg: PaymentMethod.ConfigArgs): ConfigArgSubset<'int' | 'string' | 'boolean'> {
-        return arg.type as any;
+    getType(
+        paymentMethod: PaymentMethod.Fragment,
+        argName: string,
+    ): ConfigArgSubset<'int' | 'string' | 'boolean'> | undefined {
+        return paymentMethod.definition.args.find(a => a.name === argName)?.type as ConfigArgSubset<any>;
     }
 
     configArgsIsPopulated(): boolean {
@@ -70,21 +73,20 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                         configArgs: Object.entries<any>(formValue.configArgs).map(([name, value], i) => ({
                             name,
                             value: value.toString(),
-                            type: configArgs[i].type,
                         })),
                     };
                     return this.dataService.settings.updatePaymentMethod(input);
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'PaymentMethod',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'PaymentMethod',
                     });
@@ -102,17 +104,21 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
             for (const arg of paymentMethod.configArgs) {
                 const control = configArgsGroup.get(arg.name);
                 if (control) {
-                    control.patchValue(this.parseArgValue(arg));
+                    control.patchValue(this.parseArgValue(paymentMethod, arg));
                 } else {
-                    configArgsGroup.addControl(arg.name, this.formBuilder.control(this.parseArgValue(arg)));
+                    configArgsGroup.addControl(
+                        arg.name,
+                        this.formBuilder.control(this.parseArgValue(paymentMethod, arg)),
+                    );
                 }
             }
         }
         this.changeDetector.markForCheck();
     }
 
-    private parseArgValue(arg: ConfigArg): string | number | boolean {
-        switch (arg.type) {
+    private parseArgValue(paymentMethod: PaymentMethod.Fragment, arg: ConfigArg): string | number | boolean {
+        const type = paymentMethod.definition.args.find(a => (a.name = arg.name))?.type;
+        switch (type) {
             case 'int':
                 return Number.parseInt(arg.value || '0', 10);
             case 'boolean':

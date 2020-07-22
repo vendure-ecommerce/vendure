@@ -3,60 +3,67 @@
     <div class="card-block" *ngIf="operation.args?.length">
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args" class="arg-row">
-                <label>{{ arg.name | sentenceCase }}</label>
-                <clr-checkbox-wrapper *ngIf="getArgType(arg) === 'boolean'">
+                <ng-container *ngIf="form.get(arg.name)">
+                    <label>{{ arg.name | sentenceCase }}</label>
+                    <clr-checkbox-wrapper *ngIf="getArgType(arg) === 'boolean'">
+                        <input
+                            type="checkbox"
+                            clrCheckbox
+                            [formControlName]="arg.name"
+                            [id]="arg.name"
+                            [vdrDisabled]="readonly"
+                        />
+                    </clr-checkbox-wrapper>
                     <input
-                        type="checkbox"
-                        clrCheckbox
+                        *ngIf="isIntInput(arg)"
+                        [name]="arg.name"
+                        type="number"
+                        step="1"
+                        [readonly]="readonly"
                         [formControlName]="arg.name"
-                        [id]="arg.name"
-                        [vdrDisabled]="readonly"
                     />
-                </clr-checkbox-wrapper>
-                <input
-                    *ngIf="isIntInput(arg)"
-                    [name]="arg.name"
-                    type="number"
-                    step="1"
-                    [readonly]="readonly"
-                    [formControlName]="arg.name"
-                />
-                <input
-                    *ngIf="isStringWithoutOptions(arg)"
-                    [name]="arg.name"
-                    type="text"
-                    [readonly]="readonly"
-                    [formControlName]="arg.name"
-                />
-                <input
-                    *ngIf="getArgType(arg) === 'datetime'"
-                    [name]="arg.name"
-                    type="date"
-                    [readonly]="readonly"
-                    [formControlName]="arg.name"
-                />
-                <vdr-currency-input
-                    *ngIf="isMoneyInput(arg)"
-                    [formControlName]="arg.name"
-                    [readonly]="readonly"
-                    [currencyCode]="activeChannel?.currencyCode"
-                ></vdr-currency-input>
-                <vdr-percentage-suffix-input
-                    *ngIf="isPercentageInput(arg)"
-                    [readonly]="readonly"
-                    [formControlName]="arg.name"
-                ></vdr-percentage-suffix-input>
-                <vdr-facet-value-selector
-                    [readonly]="readonly"
-                    [facets]="facets"
-                    [formControlName]="arg.name"
-                    *ngIf="getArgType(arg) === 'facetValueIds' && facets"
-                ></vdr-facet-value-selector>
-                <select clrSelect [formControlName]="arg.name" *ngIf="isStringWithOptions(arg)" [vdrDisabled]="readonly">
-                    <option *ngFor="let option of getStringOptions(arg)" [value]="option.value">
-                        {{ option.label || option.value }}
-                    </option>
-                </select>
+                    <input
+                        *ngIf="isStringWithoutOptions(arg)"
+                        [name]="arg.name"
+                        type="text"
+                        [readonly]="readonly"
+                        [formControlName]="arg.name"
+                    />
+                    <input
+                        *ngIf="getArgType(arg) === 'datetime'"
+                        [name]="arg.name"
+                        type="date"
+                        [readonly]="readonly"
+                        [formControlName]="arg.name"
+                    />
+                    <vdr-currency-input
+                        *ngIf="isMoneyInput(arg)"
+                        [formControlName]="arg.name"
+                        [readonly]="readonly"
+                        [currencyCode]="activeChannel?.currencyCode"
+                    ></vdr-currency-input>
+                    <vdr-percentage-suffix-input
+                        *ngIf="isPercentageInput(arg)"
+                        [readonly]="readonly"
+                        [formControlName]="arg.name"
+                    ></vdr-percentage-suffix-input>
+                    <vdr-facet-value-selector
+                        [readonly]="readonly"
+                        [facets]="facets"
+                        [formControlName]="arg.name"
+                        *ngIf="getArgType(arg) === 'facetValueIds' && facets"
+                    ></vdr-facet-value-selector>
+                    <select
+                        clrSelect
+                        [formControlName]="arg.name"
+                        *ngIf="isStringWithOptions(arg)"
+                        [vdrDisabled]="readonly"
+                    >
+                        <option *ngFor="let option of getStringOptions(arg)" [value]="option.value">
+                            {{ option.label || option.value }}
+                        </option>
+                    </select>
+                </ng-container>
             </div>
         </form>
     </div>

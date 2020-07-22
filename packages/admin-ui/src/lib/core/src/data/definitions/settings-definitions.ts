@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT } from './shared-definitions';
+
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
         id
@@ -374,7 +376,11 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
             name
             value
         }
+        definition {
+            ...ConfigurableOperationDef
+        }
     }
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
 `;
 
 export const GET_PAYMENT_METHOD_LIST = gql`

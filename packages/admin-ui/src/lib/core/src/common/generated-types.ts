@@ -319,6 +319,7 @@ export type ConfigArgDefinition = {
    __typename?: 'ConfigArgDefinition';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   config?: Maybe<Scalars['JSON']>;
@@ -2618,6 +2619,7 @@ export type PaymentMethod = Node & {
   code: Scalars['String'];
   enabled: Scalars['Boolean'];
   configArgs: Array<ConfigArg>;
+  definition: ConfigurableOperationDefinition;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -6105,7 +6107,10 @@ export type PaymentMethodFragment = (
   & { configArgs: Array<(
     { __typename?: 'ConfigArg' }
     & Pick<ConfigArg, 'name' | 'value'>
-  )> }
+  )>, definition: (
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  ) }
 );
 
 export type GetPaymentMethodListQueryVariables = {
@@ -6709,7 +6714,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'config'>
   )> }
 );
 
@@ -7851,6 +7856,7 @@ export namespace DeleteChannel {
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
   export type ConfigArgs = (NonNullable<PaymentMethodFragment['configArgs'][0]>);
+  export type Definition = ConfigurableOperationDefFragment;
 }
 
 export namespace GetPaymentMethodList {

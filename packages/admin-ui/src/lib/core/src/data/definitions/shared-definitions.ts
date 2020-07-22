@@ -15,6 +15,7 @@ export const CONFIGURABLE_OPERATION_DEF_FRAGMENT = gql`
         args {
             name
             type
+            list
             config
         }
         code
