@@ -251,7 +251,7 @@ function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
         description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
-        args: { facetValueIds: { type: 'facetValueIds' } },
+        args: { facetValueIds: { type: 'ID', list: true } },
         execute: (order, args) => {
             return 42;
         },

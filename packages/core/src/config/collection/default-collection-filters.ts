@@ -10,7 +10,7 @@ import { CollectionFilter } from './collection-filter';
  */
 export const facetValueCollectionFilter = new CollectionFilter({
     args: {
-        facetValueIds: { type: 'facetValueIds' },
+        facetValueIds: { type: 'ID', list: true },
         containsAny: { type: 'boolean' },
     },
     code: 'facet-value-filter',

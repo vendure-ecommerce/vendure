@@ -28,7 +28,8 @@ export const discountOnItemWithFacets = new PromotionItemAction({
             },
         },
         facets: {
-            type: 'facetValueIds',
+            type: 'ID',
+            list: true,
         },
     },
     async execute(orderItem, orderLine, args, { hasFacetValues }) {

@@ -13,7 +13,7 @@ import { Order } from '../../entity/order/order.entity';
 
 import { PromotionUtils } from './promotion-condition';
 
-export type PromotionActionArgType = ConfigArgSubset<'int' | 'facetValueIds'>;
+export type PromotionActionArgType = ConfigArgSubset<'int' | 'ID'>;
 export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
 
 /**

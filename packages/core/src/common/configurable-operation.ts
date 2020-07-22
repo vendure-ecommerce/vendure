@@ -8,7 +8,8 @@ import {
     Maybe,
     StringFieldOption,
 } from '@vendure/common/lib/generated-types';
-import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, ID } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 
 import { RequestContext } from '../api/common/request-context';
@@ -112,8 +113,10 @@ export type ConfigArgValues<T extends ConfigArgs<any>> = {
         ? boolean[]
         : T[K] extends ConfigArgDef<'boolean'>
         ? boolean
-        : T[K] extends ConfigArgDef<'facetValueIds'>
-        ? string[]
+        : T[K] extends ConfigArgListDef<'ID'>
+        ? ID[]
+        : T[K] extends ConfigArgDef<'ID'>
+        ? ID
         : T[K] extends ConfigArgListDef<'string'>
         ? string[]
         : string;
@@ -165,7 +168,7 @@ export interface ConfigurableOperationDefOptions<T extends ConfigArgs<ConfigArgT
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
+export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType> = ConfigArgs<ConfigArgType>> {
     get code(): string {
         return this.options.code;
     }
@@ -225,7 +228,8 @@ export class ConfigurableOperationDef<T extends ConfigArgs<ConfigArgType>> {
             if (arg && arg.value != null) {
                 output[arg.name as keyof ConfigArgValues<T>] = coerceValueToType<T>(
                     arg.value,
-                    this.args[arg.name],
+                    this.args[arg.name].type,
+                    this.args[arg.name].list || false,
                 );
             }
         }
@@ -266,24 +270,30 @@ function localizeString(stringArray: LocalizedStringArray, languageCode: Languag
 
 function coerceValueToType<T extends ConfigArgs<any>>(
     value: string,
-    argDef: ConfigArgDef<any>,
+    type: ConfigArgType,
+    isList: boolean,
 ): ConfigArgValues<T>[keyof T] {
-    switch (argDef.type as ConfigArgType) {
+    if (isList) {
+        try {
+            return (JSON.parse(value) as string[]).map(v => coerceValueToType(v, type, false)) as any;
+        } catch (err) {
+            throw new InternalServerError(err.message);
+        }
+    }
+    switch (type) {
         case 'string':
             return value as any;
         case 'int':
             return Number.parseInt(value || '', 10) as any;
+        case 'float':
+            return Number.parseFloat(value || '') as any;
         case 'datetime':
             return Date.parse(value || '') as any;
         case 'boolean':
             return !!(value && (value.toLowerCase() === 'true' || value === '1')) as any;
-        case 'facetValueIds':
-            try {
-                return JSON.parse(value as any);
-            } catch (err) {
-                throw new InternalServerError(err.message);
-            }
+        case 'ID':
+            return value as any;
         default:
-            return (value as string) as any;
+            assertNever(type);
     }
 }

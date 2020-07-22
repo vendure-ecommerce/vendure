@@ -36,10 +36,15 @@ export class ConfigurableOperationCodec {
             }
             for (const arg of operationInput.arguments) {
                 const argDef = def.args[arg.name];
-                if (argDef.type === 'facetValueIds' && arg.value) {
-                    const ids = JSON.parse(arg.value) as string[];
-                    const decodedIds = ids.map(id => this.idCodecService.decode(id));
-                    arg.value = JSON.stringify(decodedIds);
+                if (argDef.type === 'ID' && arg.value) {
+                    if (argDef.list === true) {
+                        const ids = JSON.parse(arg.value) as string[];
+                        const decodedIds = ids.map(id => this.idCodecService.decode(id));
+                        arg.value = JSON.stringify(decodedIds);
+                    } else {
+                        const decodedId = this.idCodecService.decode(arg.value);
+                        arg.value = JSON.stringify(decodedId);
+                    }
                 }
             }
         }
@@ -61,19 +66,22 @@ export class ConfigurableOperationCodec {
             }
             for (const arg of operationInput.args) {
                 const argDef = def.args[arg.name];
-                if (argDef.type === 'facetValueIds' && arg.value) {
-                    const ids = JSON.parse(arg.value) as string[];
-                    const encodedIds = ids.map(id => this.idCodecService.encode(id));
-                    arg.value = JSON.stringify(encodedIds);
+                if (argDef.type === 'ID' && arg.value) {
+                    if (argDef.list === true) {
+                        const ids = JSON.parse(arg.value) as string[];
+                        const encodedIds = ids.map(id => this.idCodecService.encode(id));
+                        arg.value = JSON.stringify(encodedIds);
+                    } else {
+                        const encodedId = this.idCodecService.encode(arg.value);
+                        arg.value = JSON.stringify(encodedId);
+                    }
                 }
             }
         }
         return input;
     }
 
-    getAvailableDefsOfType(
-        defType: Type<ConfigurableOperationDef<any>>,
-    ): Array<ConfigurableOperationDef<any>> {
+    getAvailableDefsOfType(defType: Type<ConfigurableOperationDef>): ConfigurableOperationDef[] {
         switch (defType) {
             case CollectionFilter:
                 return this.configService.catalogOptions.collectionFilters;

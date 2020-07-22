@@ -29,7 +29,7 @@ export const atLeastNWithFacets = new PromotionCondition({
     ],
     args: {
         minimum: { type: 'int' },
-        facets: { type: 'facetValueIds' },
+        facets: { type: 'ID', list: true },
     },
     async check(order: Order, args, { hasFacetValues }) {
         let matches = 0;

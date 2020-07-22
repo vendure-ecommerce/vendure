@@ -107,7 +107,7 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'facetValueIds';
+export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'ID';
 
 export type ConfigArgSubset<T extends ConfigArgType> = T;
 

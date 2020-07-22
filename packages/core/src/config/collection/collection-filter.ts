@@ -10,7 +10,7 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgSubset<'facetValueIds' | 'string' | 'boolean'>;
+export type CollectionFilterArgType = ConfigArgSubset<'ID' | 'string' | 'boolean'>;
 export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
 
 export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (

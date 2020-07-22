@@ -381,7 +381,6 @@ export class CollectionService implements OnModuleInit {
                     args: filter.arguments.map((inputArg, i) => {
                         return {
                             name: inputArg.name,
-                            type: match.args[inputArg.name].type,
                             value: inputArg.value,
                         };
                     }),

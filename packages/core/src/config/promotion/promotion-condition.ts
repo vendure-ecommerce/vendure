@@ -10,9 +10,7 @@ import {
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
 
-export type PromotionConditionArgType = ConfigArgSubset<
-    'int' | 'string' | 'datetime' | 'boolean' | 'facetValueIds'
->;
+export type PromotionConditionArgType = ConfigArgSubset<'int' | 'string' | 'datetime' | 'boolean' | 'ID'>;
 export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
 
 /**
