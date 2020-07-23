@@ -56,7 +56,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> extends C
      *
      * @internal
      */
-    calculate(order: Order, args: ConfigArg[]): CalculateShippingFnResponse {
+    calculate(order: Order, args: ConfigArg[]): CalculateShippingFnResult {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
@@ -87,7 +87,7 @@ export interface ShippingCalculationResult {
     metadata?: Record<string, any>;
 }
 
-export type CalculateShippingFnResponse =
+export type CalculateShippingFnResult =
     | ShippingCalculationResult
     | Promise<ShippingCalculationResult | undefined>
     | undefined;
@@ -105,4 +105,4 @@ export type CalculateShippingFnResponse =
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => CalculateShippingFnResponse;
+) => CalculateShippingFnResult;
