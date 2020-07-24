@@ -56,10 +56,7 @@ export class ShippingCalculator<T extends ShippingCalculatorArgs = {}> extends C
      *
      * @internal
      */
-    calculate(
-        order: Order,
-        args: ConfigArg[],
-    ): ShippingCalculationResult | Promise<ShippingCalculationResult> | undefined {
+    calculate(order: Order, args: ConfigArg[]): CalculateShippingFnResult {
         return this.calculateFn(order, argsArrayToHash(args));
     }
 }
@@ -90,6 +87,11 @@ export interface ShippingCalculationResult {
     metadata?: Record<string, any>;
 }
 
+export type CalculateShippingFnResult =
+    | ShippingCalculationResult
+    | Promise<ShippingCalculationResult | undefined>
+    | undefined;
+
 /**
  * @description
  * A function which implements the specific shipping calculation logic. It takes an {@link Order} and
@@ -103,4 +105,4 @@ export interface ShippingCalculationResult {
 export type CalculateShippingFn<T extends ShippingCalculatorArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-) => ShippingCalculationResult | Promise<ShippingCalculationResult> | undefined;
+) => CalculateShippingFnResult;
