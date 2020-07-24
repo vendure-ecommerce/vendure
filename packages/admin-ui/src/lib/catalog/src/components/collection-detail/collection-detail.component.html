@@ -104,12 +104,10 @@
             <ng-container *ngFor="let filter of filters; index as i">
                 <vdr-configurable-input
                     (remove)="removeFilter($event)"
-                    [facets]="facets$ | async"
                     [operation]="filter"
                     [operationDefinition]="getFilterDefinition(filter)"
                     [formControlName]="i"
                     [readonly]="!('UpdateCatalog' | hasPermission)"
-                    [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>
             </ng-container>
 

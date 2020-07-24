@@ -54,8 +54,8 @@
         >
             <div class="clr-col">
                 <label>{{ 'settings.payment-method-config-options' | translate }}</label>
-                <section class="form-block" *ngFor="let arg of paymentMethod.configArgs">
-                    <vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(paymentMethod, arg.name) === 'string'">
+                <section class="form-block" *ngFor="let arg of paymentMethod.configArgs; index as i">
+                    <!--<vdr-form-field [label]="arg.name" [for]="arg.name" *ngIf="getType(paymentMethod, arg.name) === 'string'">
                         <input
                             [id]="arg.name"
                             type="text"
@@ -79,6 +79,17 @@
                             [formControlName]="arg.name"
                             clrCheckbox
                         />
+                    </vdr-form-field>-->
+                    <vdr-form-field
+                        [label]="arg.name"
+                        [for]="arg.name"
+                    >
+                        <vdr-dynamic-form-input
+                            [def]="paymentMethod.definition.args[i]"
+                            [formControlName]="arg.name"
+                            [control]="detailForm.get(['configArgs', arg.name])"
+                            [readonly]="!('UpdateSettings' | hasPermission)"
+                        ></vdr-dynamic-form-input>
                     </vdr-form-field>
                 </section>
             </div>

@@ -13,7 +13,7 @@ export * from './common/introspection-result';
 export * from './common/language-translation-strings';
 export * from './common/utilities/create-updated-translatable';
 export * from './common/utilities/flatten-facet-values';
-export * from './common/utilities/get-default-config-arg-value';
+export * from './common/utilities/configurable-operation-utils';
 export * from './common/utilities/get-default-ui-language';
 export * from './common/utilities/interpolate-description';
 export * from './common/utilities/string-to-color';

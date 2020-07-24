@@ -1,6 +1,6 @@
 import { PlatformLocation } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
@@ -17,10 +17,18 @@ import { OverlayHostComponent } from './components/overlay-host/overlay-host.com
 import { UiLanguageSwitcherDialogComponent } from './components/ui-language-switcher-dialog/ui-language-switcher-dialog.component';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { DataModule } from './data/data.module';
+import { ComponentRegistryService } from './providers/component-registry/component-registry.service';
 import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader';
 import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
+import { BooleanFormInputComponent } from './shared/dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { CurrencyFormInputComponent } from './shared/dynamic-form-inputs/currency-form-input/currency-form-input.component';
+import { DateFormInputComponent } from './shared/dynamic-form-inputs/date-form-input/date-form-input.component';
+import { FacetValueFormInputComponent } from './shared/dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
+import { NumberFormInputComponent } from './shared/dynamic-form-inputs/number-form-input/number-form-input.component';
+import { SelectFormInputComponent } from './shared/dynamic-form-inputs/select-form-input/select-form-input.component';
+import { TextFormInputComponent } from './shared/dynamic-form-inputs/text-form-input/text-form-input.component';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
@@ -38,7 +46,23 @@ import { SharedModule } from './shared/shared.module';
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
-    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }],
+    providers: [
+        { provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales },
+        {
+            provide: APP_INITIALIZER,
+            multi: true,
+            useFactory: (registry: ComponentRegistryService) => () => {
+                registry.registerInputComponent('boolean-form-input', BooleanFormInputComponent);
+                registry.registerInputComponent('currency-form-input', CurrencyFormInputComponent);
+                registry.registerInputComponent('date-form-input', DateFormInputComponent);
+                registry.registerInputComponent('facet-value-form-input', FacetValueFormInputComponent);
+                registry.registerInputComponent('number-form-input', NumberFormInputComponent);
+                registry.registerInputComponent('select-form-input', SelectFormInputComponent);
+                registry.registerInputComponent('text-form-input', TextFormInputComponent);
+            },
+            deps: [ComponentRegistryService],
+        },
+    ],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,

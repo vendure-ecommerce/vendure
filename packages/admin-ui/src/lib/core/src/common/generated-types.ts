@@ -322,7 +322,7 @@ export type ConfigArgDefinition = {
   list: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  config?: Maybe<Scalars['JSON']>;
+  ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
@@ -6714,7 +6714,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'config'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui'>
   )> }
 );
 

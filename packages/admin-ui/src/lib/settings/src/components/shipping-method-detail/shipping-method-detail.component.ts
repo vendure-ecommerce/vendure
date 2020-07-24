@@ -157,7 +157,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             args: def.args.map(arg => {
                 return {
                     ...arg,
-                    value: getDefaultConfigArgValue(arg.type as ConfigArgType),
+                    value: getDefaultConfigArgValue(arg),
                 };
             }),
         } as ConfigurableOperation;

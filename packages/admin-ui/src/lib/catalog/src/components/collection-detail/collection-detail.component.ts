@@ -13,14 +13,14 @@ import {
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
+    ConfigurableOperationDef,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
-    FacetWithValues,
-    GetActiveChannel,
+    getConfigArgValue,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -28,8 +28,8 @@ import {
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { combineLatest, Observable } from 'rxjs';
-import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -46,8 +46,6 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
-    facets$: Observable<FacetWithValues.Fragment[]>;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
@@ -76,17 +74,9 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     ngOnInit() {
         this.init();
-        this.facets$ = this.dataService.facet
-            .getAllFacets()
-            .mapSingle(data => data.facets.items)
-            .pipe(shareReplay(1));
-
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
-        this.activeChannel$ = this.dataService.settings
-            .getActiveChannel()
-            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy() {
@@ -126,7 +116,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             const argsHash = collectionFilter.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value,
+                    [arg.name]: getConfigArgValue(arg.value),
                 }),
                 {},
             );
@@ -136,7 +126,10 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     args: argsHash,
                 }),
             );
-            this.filters.push(collectionFilter);
+            this.filters.push({
+                code: collectionFilter.code,
+                args: collectionFilter.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+            });
         }
     }
 

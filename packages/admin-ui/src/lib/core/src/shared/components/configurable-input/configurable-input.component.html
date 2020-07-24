@@ -5,64 +5,12 @@
             <div *ngFor="let arg of operation.args" class="arg-row">
                 <ng-container *ngIf="form.get(arg.name)">
                     <label>{{ arg.name | sentenceCase }}</label>
-                    <clr-checkbox-wrapper *ngIf="getArgType(arg) === 'boolean'">
-                        <input
-                            type="checkbox"
-                            clrCheckbox
-                            [formControlName]="arg.name"
-                            [id]="arg.name"
-                            [vdrDisabled]="readonly"
-                        />
-                    </clr-checkbox-wrapper>
-                    <input
-                        *ngIf="isIntInput(arg)"
-                        [name]="arg.name"
-                        type="number"
-                        step="1"
+                    <vdr-dynamic-form-input
+                        [def]="getArgDef(arg)"
                         [readonly]="readonly"
+                        [control]="form.get(arg.name)"
                         [formControlName]="arg.name"
-                    />
-                    <input
-                        *ngIf="isStringWithoutOptions(arg)"
-                        [name]="arg.name"
-                        type="text"
-                        [readonly]="readonly"
-                        [formControlName]="arg.name"
-                    />
-                    <input
-                        *ngIf="getArgType(arg) === 'datetime'"
-                        [name]="arg.name"
-                        type="date"
-                        [readonly]="readonly"
-                        [formControlName]="arg.name"
-                    />
-                    <vdr-currency-input
-                        *ngIf="isMoneyInput(arg)"
-                        [formControlName]="arg.name"
-                        [readonly]="readonly"
-                        [currencyCode]="activeChannel?.currencyCode"
-                    ></vdr-currency-input>
-                    <vdr-percentage-suffix-input
-                        *ngIf="isPercentageInput(arg)"
-                        [readonly]="readonly"
-                        [formControlName]="arg.name"
-                    ></vdr-percentage-suffix-input>
-                    <vdr-facet-value-selector
-                        [readonly]="readonly"
-                        [facets]="facets"
-                        [formControlName]="arg.name"
-                        *ngIf="getArgType(arg) === 'facetValueIds' && facets"
-                    ></vdr-facet-value-selector>
-                    <select
-                        clrSelect
-                        [formControlName]="arg.name"
-                        *ngIf="isStringWithOptions(arg)"
-                        [vdrDisabled]="readonly"
-                    >
-                        <option *ngFor="let option of getStringOptions(arg)" [value]="option.value">
-                            {{ option.label || option.value }}
-                        </option>
-                    </select>
+                    ></vdr-dynamic-form-input>
                 </ng-container>
             </div>
         </form>

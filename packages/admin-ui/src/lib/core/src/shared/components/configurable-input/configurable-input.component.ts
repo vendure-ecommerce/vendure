@@ -21,17 +21,17 @@ import {
     Validators,
 } from '@angular/forms';
 import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Subscription } from 'rxjs';
 
+import { InputComponentConfig } from '../../../common/component-registry-types';
 import {
     ConfigArg,
+    ConfigArgDefinition,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
-    FacetWithValues,
-    GetActiveChannel,
-    StringFieldOption,
 } from '../../../common/generated-types';
-import { getDefaultConfigArgValue } from '../../../common/utilities/get-default-config-arg-value';
+import { getDefaultConfigArgValue } from '../../../common/utilities/configurable-operation-utils';
 import { interpolateDescription } from '../../../common/utilities/interpolate-description';
 
 /**
@@ -58,8 +58,6 @@ import { interpolateDescription } from '../../../common/utilities/interpolate-de
 export class ConfigurableInputComponent implements OnChanges, OnDestroy, ControlValueAccessor, Validator {
     @Input() operation?: ConfigurableOperation;
     @Input() operationDefinition?: ConfigurableOperationDefinition;
-    @Input() facets: FacetWithValues.Fragment[] = [];
-    @Input() activeChannel: GetActiveChannel.ActiveChannel;
     @Input() readonly = false;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
@@ -110,61 +108,9 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         }
     }
 
-    isIntInput(arg: ConfigArg): boolean {
-        if (this.getArgType(arg) === 'int') {
-            const config = this.getArgConfig(arg);
-            return !!(!config || config.inputType === 'default');
-        }
-        return false;
-    }
-
-    isMoneyInput(arg: ConfigArg): boolean {
-        if (this.getArgType(arg) === 'int') {
-            const config = this.getArgConfig(arg);
-            return !!(config && config.inputType === 'money');
-        }
-        return false;
-    }
-
-    isPercentageInput(arg: ConfigArg): boolean {
-        if (this.getArgType(arg) === 'int') {
-            const config = this.getArgConfig(arg);
-            return !!(config && config.inputType === 'percentage');
-        }
-        return false;
-    }
-
-    isStringWithOptions(arg: ConfigArg): boolean {
-        if (this.getArgType(arg) === 'string') {
-            return 0 < this.getStringOptions(arg).length;
-        }
-        return false;
-    }
-
-    isStringWithoutOptions(arg: ConfigArg): boolean {
-        if (this.getArgType(arg) === 'string') {
-            return this.getStringOptions(arg).length === 0;
-        }
-        return false;
-    }
-
-    getStringOptions(arg: ConfigArg): StringFieldOption[] {
-        if (this.getArgType(arg) === 'string') {
-            const config = this.getArgConfig(arg);
-            return (config && config.options) || [];
-        }
-        return [];
-    }
-
-    getArgType(arg: ConfigArg): ConfigArgType | undefined {
-        return this.operationDefinition?.args.find(argDef => argDef.name === arg.name)?.type as ConfigArgType;
-    }
-
-    private getArgConfig(arg: ConfigArg): Record<string, any> | undefined {
-        if (this.operationDefinition) {
-            const match = this.operationDefinition.args.find(argDef => argDef.name === arg.name);
-            return match && match.config;
-        }
+    getArgDef(arg: ConfigArg): ConfigArgDefinition | undefined {
+        const argDef = this.operationDefinition?.args.find(a => a.name === arg.name);
+        return argDef;
     }
 
     private createForm() {
@@ -180,11 +126,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
             for (const arg of this.operationDefinition?.args || []) {
                 let value: any = this.operation.args.find(a => a.name === arg.name)?.value;
                 if (value === undefined) {
-                    value = getDefaultConfigArgValue(arg.type as ConfigArgType);
-                } else {
-                    if (arg.type === 'boolean') {
-                        value = value === 'true';
-                    }
+                    value = getDefaultConfigArgValue(arg);
                 }
                 this.form.addControl(arg.name, new FormControl(value, Validators.required));
             }

@@ -16,7 +16,7 @@ export const CONFIGURABLE_OPERATION_DEF_FRAGMENT = gql`
             name
             type
             list
-            config
+            ui
         }
         code
         description

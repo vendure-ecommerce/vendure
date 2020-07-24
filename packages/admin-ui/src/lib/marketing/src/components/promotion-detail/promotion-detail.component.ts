@@ -9,8 +9,6 @@ import {
     ConfigurableOperationInput,
     CreatePromotionInput,
     DataService,
-    FacetWithValues,
-    GetActiveChannel,
     getDefaultConfigArgValue,
     LanguageCode,
     NotificationService,
@@ -18,9 +16,8 @@ import {
     ServerConfigService,
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
-import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
-import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-promotion-detail',
@@ -34,8 +31,6 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     detailForm: FormGroup;
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
-    facets$: Observable<FacetWithValues.Fragment[]>;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
     private allConditions: ConfigurableOperationDefinition[] = [];
     private allActions: ConfigurableOperationDefinition[] = [];
@@ -64,23 +59,12 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     ngOnInit() {
         this.init();
-        this.facets$ = this.dataService.facet
-            .getAllFacets()
-            .mapSingle(data => data.facets.items)
-            .pipe(shareReplay(1));
-
         this.promotion$ = this.entity$;
         this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe(data => {
             this.allActions = data.promotionActions;
             this.allConditions = data.promotionConditions;
+            this.changeDetector.markForCheck();
         });
-        this.activeChannel$ = this.dataService.settings
-            .getActiveChannel()
-            .mapStream(data => data.activeChannel);
-
-        // When creating a new Promotion, the initial bindings do not work
-        // unless explicitly re-running the change detector. Don't know why.
-        setTimeout(() => this.changeDetector.markForCheck(), 0);
     }
 
     ngOnDestroy() {
@@ -279,7 +263,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         if (def) {
             const argDef = def.args.find(a => a.name === argName);
             if (argDef) {
-                return getDefaultConfigArgValue(argDef.type as ConfigArgType);
+                return getDefaultConfigArgValue(argDef);
             }
         }
         throw new Error(`Could not determine default value for "argName"`);
