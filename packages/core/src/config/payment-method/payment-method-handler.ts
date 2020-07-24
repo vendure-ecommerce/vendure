@@ -169,6 +169,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @example
  * ```ts
+ * import { PaymentMethodHandler, CreatePaymentResult, SettlePaymentResult, LanguageCode } from '\@vendure/core';
  * // A mock 3rd-party payment SDK
  * import gripeSDK from 'gripe';
  *
@@ -181,7 +182,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     args: {
  *         apiKey: { type: 'string' },
  *     },
- *     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
+ *     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
  *         try {
  *             const result = await gripeSDK.charges.create({
  *                 apiKey: args.apiKey,
