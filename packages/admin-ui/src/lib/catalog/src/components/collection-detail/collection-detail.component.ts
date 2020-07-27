@@ -20,6 +20,7 @@ import {
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
+    encodeConfigArgValue,
     getConfigArgValue,
     LanguageCode,
     ModalService,
@@ -288,7 +289,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                 code: o.code,
                 arguments: Object.values(formValueOperations[i].args).map((value: any, j) => ({
                     name: o.args[j].name,
-                    value: value.toString(),
+                    value: encodeConfigArgValue(value),
                 })),
             };
         });

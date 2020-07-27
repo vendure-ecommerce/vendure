@@ -13,7 +13,7 @@ export const hasFacetValues = new PromotionCondition({
     ],
     args: {
         minimum: { type: 'int' },
-        facets: { type: 'ID', list: true },
+        facets: { type: 'ID', list: true, ui: { component: 'facet-value-form-input' } },
     },
     init(injector) {
         facetValueChecker = new FacetValueChecker(injector.getConnection());

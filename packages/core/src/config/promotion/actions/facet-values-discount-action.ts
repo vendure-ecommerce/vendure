@@ -10,13 +10,14 @@ export const discountOnItemWithFacets = new PromotionItemAction({
     args: {
         discount: {
             type: 'int',
-            config: {
-                inputType: 'percentage',
+            ui: {
+                suffix: '%',
             },
         },
         facets: {
             type: 'ID',
             list: true,
+            ui: { component: 'facet-value-form-input' },
         },
     },
     init(injector) {

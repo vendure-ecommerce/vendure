@@ -13,6 +13,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetValueFormInputComponent implements FormInputComponent, OnInit {
+    readonly isListInput = true;
     readonly: boolean;
     formControl: FormControl;
     facets$: Observable<FacetWithValues.Fragment[]>;

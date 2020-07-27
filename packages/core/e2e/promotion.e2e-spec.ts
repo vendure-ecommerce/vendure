@@ -301,7 +301,7 @@ export const CONFIGURABLE_DEF_FRAGMENT = gql`
         args {
             name
             type
-            config
+            ui
         }
         code
         description

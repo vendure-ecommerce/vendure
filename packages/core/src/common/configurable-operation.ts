@@ -22,6 +22,8 @@ import { InjectableStrategy } from './types/injectable-strategy';
 /**
  * @description
  * An array of string values in a given {@link LanguageCode}, used to define human-readable string values.
+ * The `ui` property can be used in conjunction with the Vendure Admin UI to specify a custom form input
+ * component.
  *
  * @example
  * ```TypeScript
@@ -42,6 +44,10 @@ export interface ConfigArgCommonDef<T extends ConfigArgType> {
     list?: boolean;
     label?: LocalizedStringArray;
     description?: LocalizedStringArray;
+    ui?: {
+        component?: string;
+        [prop: string]: any;
+    };
 }
 
 export type ConfigArgListDef<
@@ -76,7 +82,7 @@ export type ConfigArgDef<T extends ConfigArgType> = T extends 'string'
  * {
  *   operator: {
  *     type: 'string',
- *     config: {
+ *     ui: {
  *       options: [
  *         { value: 'startsWith' },
  *         { value: 'endsWith' },
@@ -204,7 +210,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
                         name,
                         type: arg.type,
                         list: arg.list ?? false,
-                        config: localizeConfig(arg, ctx.languageCode),
+                        ui: arg.ui,
                         label: arg.label && localizeString(arg.label, ctx.languageCode),
                         description: arg.description && localizeString(arg.description, ctx.languageCode),
                     } as Required<ConfigArgDefinition>),
@@ -234,26 +240,6 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
         }
         return output;
     }
-}
-
-function localizeConfig(
-    arg: StringArgConfig | IntArgConfig | WithArgConfig<undefined>,
-    languageCode: LanguageCode,
-): any {
-    const { config } = arg;
-    if (!config) {
-        return config;
-    }
-    const clone = simpleDeepClone(config);
-    const options: Maybe<StringFieldOption[]> = (clone as any).options;
-    if (options) {
-        for (const option of options) {
-            if (option.label) {
-                (option as any).label = localizeString(option.label, languageCode);
-            }
-        }
-    }
-    return clone;
 }
 
 function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode): string {

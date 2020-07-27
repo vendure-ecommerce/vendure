@@ -1,1 +1,20 @@
-<ng-container #outlet></ng-container>
+<ng-container *ngIf="!renderAsList; else list">
+    <ng-container #single></ng-container>
+</ng-container>
+<ng-template #list>
+    <div class="list-container" cdkDropList (cdkDropListDropped)="moveListItem($event)">
+        <div class="list-item-row" *ngFor="let item of listItems; trackBy: trackById" cdkDrag [cdkDragData]="item">
+            <ng-container #listItem></ng-container>
+            <button class="btn btn-link btn-sm btn-warning" (click)="removeListItem(item)">
+                <clr-icon shape="times"></clr-icon>
+            </button>
+            <div class="flex-spacer"></div>
+            <div class="drag-handle" cdkDragHandle *vdrIfPermissions="'UpdateCatalog'">
+                <clr-icon shape="drag-handle" size="24"></clr-icon>
+            </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" (click)="addListItem()">
+            <clr-icon shape="plus"></clr-icon>
+        </button>
+    </div>
+</ng-template>

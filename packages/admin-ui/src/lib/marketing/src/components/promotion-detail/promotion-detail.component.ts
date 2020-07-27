@@ -9,6 +9,8 @@ import {
     ConfigurableOperationInput,
     CreatePromotionInput,
     DataService,
+    encodeConfigArgValue,
+    getConfigArgValue,
     getDefaultConfigArgValue,
     LanguageCode,
     NotificationService,
@@ -219,7 +221,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                 code: o.code,
                 arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
                     name: o.args[j].name,
-                    value: value.toString(),
+                    value: encodeConfigArgValue(value),
                 })),
             };
         });
@@ -237,7 +239,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                 (output, arg) => ({
                     ...output,
                     [arg.name]:
-                        arg.value != null ? arg.value : this.getDefaultArgValue(key, operation, arg.name),
+                        getConfigArgValue(arg.value) ?? this.getDefaultArgValue(key, operation, arg.name),
                 }),
                 {},
             );
@@ -247,7 +249,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                     args: argsHash,
                 }),
             );
-            collection.push(operation);
+            collection.push({
+                code: operation.code,
+                args: operation.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+            });
         }
     }
 

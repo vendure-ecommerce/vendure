@@ -9,7 +9,9 @@ import {
     ConfigurableOperationInput,
     CreateShippingMethodInput,
     DataService,
+    encodeConfigArgValue,
     GetActiveChannel,
+    getConfigArgValue,
     getDefaultConfigArgValue,
     NotificationService,
     ServerConfigService,
@@ -264,7 +266,9 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             code: operation.code,
             arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
-                value: value.hasOwnProperty('value') ? (value as any).value : value.toString(),
+                value: value.hasOwnProperty('value')
+                    ? encodeConfigArgValue((value as any).value)
+                    : encodeConfigArgValue(value),
             })),
         };
     }
@@ -276,7 +280,13 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });
-        this.selectedChecker = shippingMethod.checker;
-        this.selectedCalculator = shippingMethod.calculator;
+        this.selectedChecker = {
+            code: shippingMethod.checker.code,
+            args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+        };
+        this.selectedCalculator = {
+            code: shippingMethod.calculator.code,
+            args: shippingMethod.calculator.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+        };
     }
 }

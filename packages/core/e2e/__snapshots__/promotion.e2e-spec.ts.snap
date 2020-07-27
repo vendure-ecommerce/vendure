@@ -5,9 +5,9 @@ Array [
   Object {
     "args": Array [
       Object {
-        "config": null,
         "name": "facetValueIds",
-        "type": "facetValueIds",
+        "type": "ID",
+        "ui": null,
       },
     ],
     "code": "promo_action",
@@ -21,9 +21,9 @@ Array [
   Object {
     "args": Array [
       Object {
-        "config": null,
         "name": "arg",
         "type": "int",
+        "ui": null,
       },
     ],
     "code": "promo_condition",
@@ -32,9 +32,9 @@ Array [
   Object {
     "args": Array [
       Object {
-        "config": null,
         "name": "arg",
         "type": "int",
+        "ui": null,
       },
     ],
     "code": "promo_condition2",

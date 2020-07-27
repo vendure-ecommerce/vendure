@@ -16,14 +16,18 @@ export function getConfigArgValue(value: any) {
     }
 }
 
+export function encodeConfigArgValue(value: any): string {
+    return Array.isArray(value) ? JSON.stringify(value) : value.toString();
+}
+
 /**
  * Returns a default value based on the type of the config arg.
  */
 export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
-    return arg.list ? [] : getSingleValue(arg.type as ConfigArgType);
+    return arg.list ? [] : getDefaultConfigArgSingleValue(arg.type as ConfigArgType);
 }
 
-function getSingleValue(type: ConfigArgType): any {
+export function getDefaultConfigArgSingleValue(type: ConfigArgType): any {
     switch (type) {
         case 'boolean':
             return 'false';

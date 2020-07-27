@@ -7,8 +7,8 @@ export const orderPercentageDiscount = new PromotionOrderAction({
     args: {
         discount: {
             type: 'int',
-            config: {
-                inputType: 'percentage',
+            ui: {
+                suffix: '%',
             },
         },
     },

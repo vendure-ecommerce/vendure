@@ -4,14 +4,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
+    ConfigArgDefinition,
     DataService,
+    encodeConfigArgValue,
     getConfigArgValue,
     NotificationService,
     PaymentMethod,
     ServerConfigService,
     UpdatePaymentMethodInput,
 } from '@vendure/admin-ui/core';
-import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
@@ -49,8 +50,8 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         this.destroy();
     }
 
-    getType(paymentMethod: PaymentMethod.Fragment, argName: string): ConfigArgType | undefined {
-        return paymentMethod.definition.args.find(a => a.name === argName)?.type as ConfigArgType;
+    getArgDef(paymentMethod: PaymentMethod.Fragment, argName: string): ConfigArgDefinition | undefined {
+        return paymentMethod.definition.args.find(a => a.name === argName);
     }
 
     configArgsIsPopulated(): boolean {
@@ -73,7 +74,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                         enabled: formValue.enabled,
                         configArgs: Object.entries<any>(formValue.configArgs).map(([name, value], i) => ({
                             name,
-                            value: value.toString(),
+                            value: encodeConfigArgValue(value),
                         })),
                     };
                     return this.dataService.settings.updatePaymentMethod(input);
@@ -103,14 +104,14 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         const configArgsGroup = this.detailForm.get('configArgs') as FormGroup;
         if (configArgsGroup) {
             for (const arg of paymentMethod.configArgs) {
-                const control = configArgsGroup.get(arg.name);
+                let control = configArgsGroup.get(arg.name);
+                const def = this.getArgDef(paymentMethod, arg.name);
+                const value = def?.list === true && arg.value === '' ? [] : getConfigArgValue(arg.value);
                 if (control) {
-                    control.patchValue(getConfigArgValue(arg.value));
+                    control.patchValue(value);
                 } else {
-                    configArgsGroup.addControl(
-                        arg.name,
-                        this.formBuilder.control(getConfigArgValue(arg.value)),
-                    );
+                    control = this.formBuilder.control(value);
+                    configArgsGroup.addControl(arg.name, control);
                 }
             }
         }

@@ -10,7 +10,13 @@ import { CollectionFilter } from './collection-filter';
  */
 export const facetValueCollectionFilter = new CollectionFilter({
     args: {
-        facetValueIds: { type: 'ID', list: true },
+        facetValueIds: {
+            type: 'ID',
+            list: true,
+            ui: {
+                component: 'facet-value-form-input',
+            },
+        },
         containsAny: { type: 'boolean' },
     },
     code: 'facet-value-filter',
@@ -67,7 +73,7 @@ export const variantNameCollectionFilter = new CollectionFilter({
     args: {
         operator: {
             type: 'string',
-            config: {
+            ui: {
                 options: [
                     { value: 'startsWith' },
                     { value: 'endsWith' },

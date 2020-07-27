@@ -74,13 +74,13 @@ describe('ShippingMethod resolver', () => {
             {
                 args: [
                     {
-                        config: {
-                            inputType: 'money',
-                        },
                         description: 'Order is eligible only if its total is greater or equal to this value',
                         label: 'Minimum order value',
                         name: 'orderMinimum',
                         type: 'int',
+                        ui: {
+                            component: 'currency-form-input',
+                        },
                     },
                 ],
                 code: 'default-shipping-eligibility-checker',
@@ -96,8 +96,8 @@ describe('ShippingMethod resolver', () => {
             {
                 args: [
                     {
-                        config: {
-                            inputType: 'money',
+                        ui: {
+                            component: 'currency-form-input',
                         },
                         description: null,
                         label: 'Shipping price',
@@ -105,8 +105,8 @@ describe('ShippingMethod resolver', () => {
                         type: 'int',
                     },
                     {
-                        config: {
-                            inputType: 'percentage',
+                        ui: {
+                            suffix: '%',
                         },
                         description: null,
                         label: 'Tax rate',
@@ -365,7 +365,7 @@ const GET_ELIGIBILITY_CHECKERS = gql`
                 type
                 description
                 label
-                config
+                ui
             }
         }
     }
@@ -381,7 +381,7 @@ const GET_CALCULATORS = gql`
                 type
                 description
                 label
-                config
+                ui
             }
         }
     }

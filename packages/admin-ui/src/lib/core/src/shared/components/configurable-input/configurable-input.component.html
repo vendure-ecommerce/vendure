@@ -2,7 +2,7 @@
     <div class="card-block">{{ interpolateDescription() }}</div>
     <div class="card-block" *ngIf="operation.args?.length">
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
-            <div *ngFor="let arg of operation.args" class="arg-row">
+            <div *ngFor="let arg of operation.args; trackBy: trackByName" class="arg-row">
                 <ng-container *ngIf="form.get(arg.name)">
                     <label>{{ arg.name | sentenceCase }}</label>
                     <vdr-dynamic-form-input

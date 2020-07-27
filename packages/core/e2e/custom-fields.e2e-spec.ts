@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
@@ -97,6 +97,32 @@ const customConfig = mergeConfig(testConfig, {
                 type: 'string',
                 internal: true,
             },
+            {
+                name: 'stringList',
+                type: 'string',
+                list: true,
+            },
+            {
+                name: 'localeStringList',
+                type: 'localeString',
+                list: true,
+            },
+            {
+                name: 'stringListWithDefault',
+                type: 'string',
+                list: true,
+                defaultValue: ['cat'],
+            },
+            {
+                name: 'intListWithValidation',
+                type: 'int',
+                list: true,
+                validate: value => {
+                    if (!value.includes(42)) {
+                        return `Must include the number 42!`;
+                    }
+                },
+            },
         ],
         Facet: [
             {
@@ -140,6 +166,7 @@ describe('Custom fields', () => {
                                 ... on CustomField {
                                     name
                                     type
+                                    list
                                 }
                             }
                         }
@@ -150,26 +177,30 @@ describe('Custom fields', () => {
 
         expect(globalSettings.serverConfig.customFieldConfig).toEqual({
             Product: [
-                { name: 'nullable', type: 'string' },
-                { name: 'notNullable', type: 'string' },
-                { name: 'stringWithDefault', type: 'string' },
-                { name: 'localeStringWithDefault', type: 'localeString' },
-                { name: 'intWithDefault', type: 'int' },
-                { name: 'floatWithDefault', type: 'float' },
-                { name: 'booleanWithDefault', type: 'boolean' },
-                { name: 'dateTimeWithDefault', type: 'datetime' },
-                { name: 'validateString', type: 'string' },
-                { name: 'validateLocaleString', type: 'localeString' },
-                { name: 'validateInt', type: 'int' },
-                { name: 'validateFloat', type: 'float' },
-                { name: 'validateDateTime', type: 'datetime' },
-                { name: 'validateFn1', type: 'string' },
-                { name: 'validateFn2', type: 'string' },
-                { name: 'stringWithOptions', type: 'string' },
-                { name: 'nonPublic', type: 'string' },
-                { name: 'public', type: 'string' },
-                { name: 'longString', type: 'string' },
-                { name: 'readonlyString', type: 'string' },
+                { name: 'nullable', type: 'string', list: false },
+                { name: 'notNullable', type: 'string', list: false },
+                { name: 'stringWithDefault', type: 'string', list: false },
+                { name: 'localeStringWithDefault', type: 'localeString', list: false },
+                { name: 'intWithDefault', type: 'int', list: false },
+                { name: 'floatWithDefault', type: 'float', list: false },
+                { name: 'booleanWithDefault', type: 'boolean', list: false },
+                { name: 'dateTimeWithDefault', type: 'datetime', list: false },
+                { name: 'validateString', type: 'string', list: false },
+                { name: 'validateLocaleString', type: 'localeString', list: false },
+                { name: 'validateInt', type: 'int', list: false },
+                { name: 'validateFloat', type: 'float', list: false },
+                { name: 'validateDateTime', type: 'datetime', list: false },
+                { name: 'validateFn1', type: 'string', list: false },
+                { name: 'validateFn2', type: 'string', list: false },
+                { name: 'stringWithOptions', type: 'string', list: false },
+                { name: 'nonPublic', type: 'string', list: false },
+                { name: 'public', type: 'string', list: false },
+                { name: 'longString', type: 'string', list: false },
+                { name: 'readonlyString', type: 'string', list: false },
+                { name: 'stringList', type: 'string', list: true },
+                { name: 'localeStringList', type: 'localeString', list: true },
+                { name: 'stringListWithDefault', type: 'string', list: true },
+                { name: 'intListWithValidation', type: 'int', list: true },
                 // The internal type should not be exposed at all
                 // { name: 'internalString', type: 'string' },
             ],
@@ -233,6 +264,7 @@ describe('Custom fields', () => {
                         floatWithDefault
                         booleanWithDefault
                         dateTimeWithDefault
+                        stringListWithDefault
                     }
                 }
             }
@@ -248,6 +280,7 @@ describe('Custom fields', () => {
                 floatWithDefault: 5.5,
                 booleanWithDefault: true,
                 dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
+                stringListWithDefault: ['cat'],
             },
         });
     });
@@ -266,7 +299,7 @@ describe('Custom fields', () => {
     );
 
     it(
-        'thows on attempt to update readonly field',
+        'throws on attempt to update readonly field',
         assertThrowsWithMessage(async () => {
             await adminClient.query(gql`
                 mutation {
@@ -279,7 +312,7 @@ describe('Custom fields', () => {
     );
 
     it(
-        'thows on attempt to update readonly field when no other custom fields defined',
+        'throws on attempt to update readonly field when no other custom fields defined',
         assertThrowsWithMessage(async () => {
             await adminClient.query(gql`
                 mutation {
@@ -292,7 +325,7 @@ describe('Custom fields', () => {
     );
 
     it(
-        'thows on attempt to create readonly field',
+        'throws on attempt to create readonly field',
         assertThrowsWithMessage(async () => {
             await adminClient.query(gql`
                 mutation {
@@ -462,6 +495,35 @@ describe('Custom fields', () => {
                 `);
             }, `The value ['invalid'] is not valid`),
         );
+
+        it(
+            'invalid list field',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query(gql`
+                    mutation {
+                        updateProduct(
+                            input: { id: "T_1", customFields: { intListWithValidation: [1, 2, 3] } }
+                        ) {
+                            id
+                        }
+                    }
+                `);
+            }, `Must include the number 42!`),
+        );
+
+        it('valid list field', async () => {
+            const { updateProduct } = await adminClient.query(gql`
+                mutation {
+                    updateProduct(input: { id: "T_1", customFields: { intListWithValidation: [1, 42, 3] } }) {
+                        id
+                        customFields {
+                            intListWithValidation
+                        }
+                    }
+                }
+            `);
+            expect(updateProduct.customFields.intListWithValidation).toEqual([1, 42, 3]);
+        });
     });
 
     describe('public access', () => {

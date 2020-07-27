@@ -108,9 +108,12 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
         }
     }
 
+    trackByName(index: number, arg: ConfigArg): string {
+        return arg.name;
+    }
+
     getArgDef(arg: ConfigArg): ConfigArgDefinition | undefined {
-        const argDef = this.operationDefinition?.args.find(a => a.name === arg.name);
-        return argDef;
+        return this.operationDefinition?.args.find(a => a.name === arg.name);
     }
 
     private createForm() {
@@ -128,7 +131,8 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
                 if (value === undefined) {
                     value = getDefaultConfigArgValue(arg);
                 }
-                this.form.addControl(arg.name, new FormControl(value, Validators.required));
+                const validators = arg.list ? undefined : Validators.required;
+                this.form.addControl(arg.name, new FormControl(value, validators));
             }
         }
 

@@ -8,12 +8,12 @@ export const defaultShippingCalculator = new ShippingCalculator({
     args: {
         rate: {
             type: 'int',
-            config: { inputType: 'money' },
+            ui: { component: 'currency-form-input' },
             label: [{ languageCode: LanguageCode.en, value: 'Shipping price' }],
         },
         taxRate: {
             type: 'int',
-            config: { inputType: 'percentage' },
+            ui: { suffix: '%' },
             label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
         },
     },
