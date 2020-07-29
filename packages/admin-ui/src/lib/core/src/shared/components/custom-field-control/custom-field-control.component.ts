@@ -1,9 +1,21 @@
-import { AfterViewInit, Component, ComponentFactory, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ComponentFactory,
+    Input,
+    OnInit,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
 import { CustomFieldsFragment } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
-import { CustomFieldComponentService, CustomFieldControl, CustomFieldEntityName } from '../../../providers/custom-field-component/custom-field-component.service';
+import {
+    CustomFieldComponentService,
+    CustomFieldControl,
+    CustomFieldEntityName,
+} from '../../../providers/custom-field-component/custom-field-component.service';
 
 /**
  * This component renders the appropriate type of form input control based
@@ -49,28 +61,6 @@ export class CustomFieldControlComponent implements OnInit, AfterViewInit {
                 this.customField.name,
             ) as FormControl;
         }
-    }
-
-    get isTextInput(): boolean {
-        if (this.customField.__typename === 'StringCustomFieldConfig') {
-            return !this.customField.options;
-        } else {
-            return this.customField.__typename === 'LocaleStringCustomFieldConfig';
-        }
-    }
-
-    get isSelectInput(): boolean {
-        if (this.customField.__typename === 'StringCustomFieldConfig') {
-            return !!this.customField.options;
-        }
-        return false;
-    }
-
-    get stringOptions() {
-        if (this.customField.__typename === 'StringCustomFieldConfig') {
-            return this.customField.options || [];
-        }
-        return [];
     }
 
     get min(): string | number | undefined | null {

@@ -20,7 +20,16 @@
     </ng-template>
 </vdr-form-field>
 <ng-template #inputs>
-    <input
+    <ng-container [formGroup]="formGroup">
+        <vdr-dynamic-form-input
+            [formControlName]="customField.name"
+            [readonly]="readonly || customField.readonly"
+            [control]="formGroup.get(customField.name)"
+            [def]="customField"
+        >
+        </vdr-dynamic-form-input>
+    </ng-container>
+    <!--<input
         *ngIf="isTextInput"
         type="text"
         [id]="customField.name"
@@ -65,6 +74,5 @@
         [max]="max"
         [readonly]="readonly || customField.readonly"
     >
-
-    </vdr-datetime-picker>
+    </vdr-datetime-picker>-->
 </ng-template>

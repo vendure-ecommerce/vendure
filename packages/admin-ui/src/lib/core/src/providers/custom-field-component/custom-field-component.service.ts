@@ -2,7 +2,6 @@ import {
     APP_INITIALIZER,
     ComponentFactory,
     ComponentFactoryResolver,
-    ComponentRef,
     Injectable,
     Injector,
     Provider,
@@ -11,6 +10,7 @@ import { FormControl } from '@angular/forms';
 import { Type } from '@vendure/common/lib/shared-types';
 
 import { CustomFields, CustomFieldsFragment } from '../../common/generated-types';
+
 export type CustomFieldConfigType = CustomFieldsFragment;
 
 export interface CustomFieldControl {

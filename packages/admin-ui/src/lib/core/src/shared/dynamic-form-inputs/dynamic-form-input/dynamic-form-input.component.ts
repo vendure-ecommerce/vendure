@@ -20,13 +20,15 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, FormArray, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { getConfigArgValue, getDefaultConfigArgSingleValue } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, getConfigArgValue, getDefaultConfigArgSingleValue } from '@vendure/admin-ui/core';
+import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Subject, Subscription } from 'rxjs';
+import { switchMap, take, takeUntil } from 'rxjs/operators';
 
+import { CustomFieldType } from '../../../../../../../../common/src/shared-types';
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
 import { ConfigArgDefinition } from '../../../common/generated-types';
 import { ComponentRegistryService } from '../../../providers/component-registry/component-registry.service';
@@ -55,7 +57,7 @@ type InputListItem = {
 })
 export class DynamicFormInputComponent
     implements OnInit, OnChanges, AfterViewInit, OnDestroy, ControlValueAccessor {
-    @Input() def: ConfigArgDefinition;
+    @Input() def: ConfigArgDefinition | CustomFieldConfig;
     @Input() readonly: boolean;
     @Input() control: FormControl;
     @ViewChild('single', { read: ViewContainerRef }) singleViewContainer: ViewContainerRef;
@@ -68,6 +70,7 @@ export class DynamicFormInputComponent
     private componentType: Type<FormInputComponent>;
     private onChange: (val: any) => void;
     private onTouch: () => void;
+    private renderList$ = new Subject();
     private destroy$ = new Subject();
 
     constructor(
@@ -78,11 +81,21 @@ export class DynamicFormInputComponent
     ) {}
 
     ngOnInit() {
-        const componentType = this.componentRegistryService.getInputComponent(
-            this.getInputComponentConfig(this.def).component,
-        );
+        const componentId = this.getInputComponentConfig(this.def).component;
+        const componentType = this.componentRegistryService.getInputComponent(componentId);
         if (componentType) {
             this.componentType = componentType;
+        } else {
+            // tslint:disable-next-line:no-console
+            console.error(
+                `No form input component registered with the id "${componentId}". Using the default input instead.`,
+            );
+            const defaultComponentType = this.componentRegistryService.getInputComponent(
+                this.getInputComponentConfig({ ...this.def, ui: undefined } as any).component,
+            );
+            if (defaultComponentType) {
+                this.componentType = defaultComponentType;
+            }
         }
     }
 
@@ -108,44 +121,51 @@ export class DynamicFormInputComponent
                     this.control,
                 );
             } else {
-                const arrayValue = Array.isArray(this.control.value)
-                    ? this.control.value
-                    : !!this.control.value
-                    ? [this.control.value]
-                    : [];
-                this.listItems = arrayValue.map(
-                    value =>
-                        ({
-                            id: this.listId++,
-                            control: new FormControl(getConfigArgValue(value)),
-                        } as InputListItem),
-                );
-                let firstRenderHasOccurred = false;
+                let formArraySub: Subscription | undefined;
                 const renderListInputs = (viewContainerRefs: QueryList<ViewContainerRef>) => {
-                    viewContainerRefs.forEach((ref, i) => {
-                        const listItem = this.listItems[i];
-                        if (!this.listFormArray.controls.includes(listItem.control)) {
-                            this.listFormArray.push(listItem.control);
-                            listItem.componentRef = this.renderInputComponent(factory, ref, listItem.control);
+                    if (viewContainerRefs.length) {
+                        if (formArraySub) {
+                            formArraySub.unsubscribe();
                         }
-                    });
-                    firstRenderHasOccurred = true;
+                        this.listFormArray = new FormArray([]);
+                        this.listItems.forEach(i => i.componentRef?.destroy());
+                        viewContainerRefs.forEach((ref, i) => {
+                            const listItem = this.listItems?.[i];
+                            if (listItem) {
+                                this.listFormArray.push(listItem.control);
+                                listItem.componentRef = this.renderInputComponent(
+                                    factory,
+                                    ref,
+                                    listItem.control,
+                                );
+                            }
+                        });
+
+                        formArraySub = this.listFormArray.valueChanges
+                            .pipe(takeUntil(this.destroy$))
+                            .subscribe(val => {
+                                this.control.markAsTouched();
+                                this.control.markAsDirty();
+                                this.onChange(val);
+                                this.control.patchValue(val, { emitEvent: false });
+                            });
+                    }
                 };
 
+                // initial render
                 this.listItemContainers.changes
-                    .pipe(takeUntil(this.destroy$))
-                    .subscribe((refs: QueryList<ViewContainerRef>) => {
-                        renderListInputs(refs);
-                    });
+                    .pipe(take(1))
+                    .subscribe(val => renderListInputs(this.listItemContainers));
 
-                this.listFormArray.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(val => {
-                    if (firstRenderHasOccurred) {
-                        this.control.markAsTouched();
-                        this.control.markAsDirty();
-                        this.onChange(val);
-                    }
-                    this.control.patchValue(val, { emitEvent: false });
-                });
+                // render on changes to the list
+                this.renderList$
+                    .pipe(
+                        switchMap(() => this.listItemContainers.changes.pipe(take(1))),
+                        takeUntil(this.destroy$),
+                    )
+                    .subscribe(() => {
+                        renderListInputs(this.listItemContainers);
+                    });
             }
         }
         setTimeout(() => this.changeDetectorRef.markForCheck());
@@ -171,7 +191,7 @@ export class DynamicFormInputComponent
 
     private updateBindings(changes: SimpleChanges, componentRef: ComponentRef<FormInputComponent>) {
         if ('def' in changes) {
-            componentRef.instance.config = this.def.ui;
+            componentRef.instance.config = this.isConfigArgDef(this.def) ? this.def.ui : this.def;
         }
         if ('readonly' in changes) {
             componentRef.instance.readonly = this.readonly;
@@ -184,23 +204,33 @@ export class DynamicFormInputComponent
     }
 
     addListItem() {
+        if (!this.listItems) {
+            this.listItems = [];
+        }
         this.listItems.push({
             id: this.listId++,
             control: new FormControl(getDefaultConfigArgSingleValue(this.def.type as ConfigArgType)),
         });
+        this.renderList$.next();
     }
 
     moveListItem(event: CdkDragDrop<InputListItem>) {
-        moveItemInArray(this.listItems, event.previousIndex, event.currentIndex);
-        this.listFormArray.removeAt(event.previousIndex);
-        this.listFormArray.insert(event.currentIndex, event.item.data.control);
+        if (this.listItems) {
+            moveItemInArray(this.listItems, event.previousIndex, event.currentIndex);
+            this.listFormArray.removeAt(event.previousIndex);
+            this.listFormArray.insert(event.currentIndex, event.item.data.control);
+            this.renderList$.next();
+        }
     }
 
     removeListItem(item: InputListItem) {
-        const index = this.listItems.findIndex(i => i === item);
-        item.componentRef?.destroy();
-        this.listFormArray.removeAt(index);
-        this.listItems = this.listItems.filter(i => i !== item);
+        if (this.listItems) {
+            const index = this.listItems.findIndex(i => i === item);
+            item.componentRef?.destroy();
+            this.listFormArray.removeAt(index);
+            this.listItems = this.listItems.filter(i => i !== item);
+            this.renderList$.next();
+        }
     }
 
     private renderInputComponent(
@@ -210,7 +240,7 @@ export class DynamicFormInputComponent
     ) {
         const componentRef = viewContainerRef.createComponent(factory);
         const { instance } = componentRef;
-        instance.config = simpleDeepClone(this.def.ui);
+        instance.config = simpleDeepClone(this.isConfigArgDef(this.def) ? this.def.ui : this.def);
         instance.formControl = formControl;
         instance.readonly = this.readonly;
         componentRef.injector.get(ChangeDetectorRef).markForCheck();
@@ -226,17 +256,38 @@ export class DynamicFormInputComponent
     }
 
     writeValue(obj: any): void {
-        /* empty */
+        if (Array.isArray(obj)) {
+            if (obj.length === this.listItems.length) {
+                obj.forEach((value, index) => {
+                    const control = this.listItems[index]?.control;
+                    control.patchValue(getConfigArgValue(value), { emitEvent: false });
+                });
+            } else {
+                this.listItems = obj.map(
+                    value =>
+                        ({
+                            id: this.listId++,
+                            control: new FormControl(getConfigArgValue(value)),
+                        } as InputListItem),
+                );
+                this.renderList$.next();
+            }
+        } else {
+            this.listItems = [];
+            this.renderList$.next();
+        }
+        this.changeDetectorRef.markForCheck();
     }
 
-    private getInputComponentConfig(argDef: ConfigArgDefinition): InputComponentConfig {
-        if (argDef?.ui?.component) {
+    private getInputComponentConfig(argDef: ConfigArgDefinition | CustomFieldConfig): InputComponentConfig {
+        if (this.isConfigArgDef(argDef) && argDef?.ui?.component) {
             return argDef.ui;
         }
-        const type = argDef?.type as ConfigArgType;
+        const type = argDef?.type as ConfigArgType | CustomFieldType;
         switch (type) {
             case 'string':
-                if (argDef.ui?.options) {
+            case 'localeString':
+                if (this.isConfigArgDef(argDef) && argDef.ui?.options) {
                     return { component: 'select-form-input' };
                 } else {
                     return { component: 'text-form-input' };
@@ -253,5 +304,9 @@ export class DynamicFormInputComponent
             default:
                 assertNever(type);
         }
+    }
+
+    private isConfigArgDef(def: ConfigArgDefinition | CustomFieldConfig): def is ConfigArgDefinition {
+        return (def as ConfigArgDefinition)?.__typename === 'ConfigArgDefinition';
     }
 }

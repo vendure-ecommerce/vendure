@@ -1,4 +1,4 @@
-import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { ConfigArgDefinition } from '../generated-types';
@@ -27,7 +27,7 @@ export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
     return arg.list ? [] : getDefaultConfigArgSingleValue(arg.type as ConfigArgType);
 }
 
-export function getDefaultConfigArgSingleValue(type: ConfigArgType): any {
+export function getDefaultConfigArgSingleValue(type: ConfigArgType | CustomFieldType): any {
     switch (type) {
         case 'boolean':
             return 'false';
@@ -37,6 +37,7 @@ export function getDefaultConfigArgSingleValue(type: ConfigArgType): any {
         case 'ID':
             return '';
         case 'string':
+        case 'localeString':
             return '';
         case 'datetime':
             return new Date();

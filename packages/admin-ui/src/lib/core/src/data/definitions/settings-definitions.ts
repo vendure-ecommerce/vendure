@@ -442,6 +442,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
     fragment CustomFieldConfig on CustomField {
         name
         type
+        list
         description {
             languageCode
             value
