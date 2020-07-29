@@ -186,6 +186,7 @@ export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -321,7 +322,7 @@ export type ConfigArgDefinition = {
     list: Scalars['Boolean'];
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
-    config?: Maybe<Scalars['JSON']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
@@ -1042,6 +1043,7 @@ export type CustomerSortParameter = {
 export type CustomField = {
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1094,6 +1096,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
     __typename?: 'DateTimeCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1219,6 +1222,7 @@ export type FloatCustomFieldConfig = CustomField & {
     __typename?: 'FloatCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1328,6 +1332,7 @@ export type IntCustomFieldConfig = CustomField & {
     __typename?: 'IntCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1737,6 +1742,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     __typename?: 'LocaleStringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -3335,6 +3341,7 @@ export type StringCustomFieldConfig = CustomField & {
     __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;

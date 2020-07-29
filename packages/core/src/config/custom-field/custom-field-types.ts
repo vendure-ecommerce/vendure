@@ -17,26 +17,50 @@ export type DefaultValueType<T extends CustomFieldType> =
             T extends 'boolean' ? boolean :
                 T extends 'datetime' ? Date : never;
 
+export type BaseTypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
+    C,
+    '__typename' | 'list'
+> & {
+    type: T;
+    /**
+     * @description
+     * Whether or not the custom field is available via the Shop API.
+     * @default true
+     */
+    public?: boolean;
+    nullable?: boolean;
+};
+
 /**
  * @description
  * Configures a custom field on an entity in the {@link CustomFields} config object.
  *
  * @docsCategory custom-fields
  */
-export type TypedCustomFieldConfig<T extends CustomFieldType, C extends CustomField> = Omit<
-    C,
-    '__typename'
-> & {
-    type: T;
-    /**
-     * Whether or not the custom field is available via the Shop API.
-     * @default true
-     */
-    public?: boolean;
+export type TypedCustomSingleFieldConfig<
+    T extends CustomFieldType,
+    C extends CustomField
+> = BaseTypedCustomFieldConfig<T, C> & {
+    list?: false;
     defaultValue?: DefaultValueType<T>;
-    nullable?: boolean;
     validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;
 };
+
+export type TypedCustomListFieldConfig<
+    T extends CustomFieldType,
+    C extends CustomField
+> = BaseTypedCustomFieldConfig<T, C> & {
+    list?: true;
+    defaultValue?: Array<DefaultValueType<T>>;
+    validate?: (value: Array<DefaultValueType<T>>) => string | LocalizedString[] | void;
+};
+
+export type TypedCustomFieldConfig<
+    T extends CustomFieldType,
+    C extends CustomField
+> = BaseTypedCustomFieldConfig<T, C> &
+    (TypedCustomSingleFieldConfig<T, C> | TypedCustomListFieldConfig<T, C>);
+
 export type StringCustomFieldConfig = TypedCustomFieldConfig<'string', GraphQLStringCustomFieldConfig>;
 export type LocaleStringCustomFieldConfig = TypedCustomFieldConfig<
     'localeString',
@@ -72,6 +96,7 @@ export type CustomFieldConfig =
  *
  * * `name: string`: The name of the field
  * * `type: string`: A string of type {@link CustomFieldType}
+ * * `list: boolean`: If set to `true`, then the field will be an array of the specified type
  * * `label?: LocalizedString[]`: An array of localized labels for the field.
  * * `description?: LocalizedString[]`: An array of localized descriptions for the field.
  * * `public?: boolean`: Whether or not the custom field is available via the Shop API. Defaults to `true`
@@ -79,7 +104,8 @@ export type CustomFieldConfig =
  * * `internal?: boolean`: Whether or not the custom field is exposed at all via the GraphQL APIs. Defaults to `false`
  * * `defaultValue?: any`: The default value when an Entity is created with this field.
  * * `nullable?: boolean`: Whether the field is nullable in the database. If set to `false`, then a `defaultValue` should be provided.
- * * `validate?: (value: any) => string | LocalizedString[] | void`: A custom validation function.
+ * * `validate?: (value: any) => string | LocalizedString[] | void`: A custom validation function. If the value is valid, then
+ *     the function should not return a value. If a string or LocalizedString array is returned, this is interpreted as an error message.
  *
  * The `LocalizedString` type looks like this:
  *

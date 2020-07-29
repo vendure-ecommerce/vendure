@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ConfigArg, RefundOrderInput, UpdatePaymentMethodInput } from '@vendure/common/lib/generated-types';
+import {
+    ConfigArg,
+    ConfigArgInput,
+    RefundOrderInput,
+    UpdatePaymentMethodInput,
+} from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
@@ -62,7 +67,10 @@ export class PaymentMethodService {
                 h => h.code === paymentMethod.code,
             );
             if (handler) {
-                updatedPaymentMethod.configArgs = input.configArgs;
+                function handlerHasArgDefinition(arg: ConfigArgInput): boolean {
+                    return !!handler?.args.hasOwnProperty(arg.name);
+                }
+                updatedPaymentMethod.configArgs = input.configArgs.filter(handlerHasArgDefinition);
             }
         }
         return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);

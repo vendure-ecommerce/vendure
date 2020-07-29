@@ -31,7 +31,7 @@ type ConfigArgDefinition {
     list: Boolean!
     label: String
     description: String
-    config: JSON
+    ui: JSON
 }
 
 type ConfigurableOperation {

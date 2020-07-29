@@ -50,16 +50,20 @@ function registerCustomFieldsForEntity(
     const dbEngine = config.dbConnectionOptions.type;
     if (customFields) {
         for (const customField of customFields) {
-            const { name, type, defaultValue, nullable } = customField;
+            const { name, type, list, defaultValue, nullable } = customField;
             const registerColumn = () => {
                 const options: ColumnOptions = {
-                    type: getColumnType(dbEngine, type),
+                    type: list ? 'simple-json' : getColumnType(dbEngine, type),
                     default:
-                        type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue,
+                        list && defaultValue
+                            ? JSON.stringify(defaultValue)
+                            : type === 'datetime'
+                            ? formatDefaultDatetime(dbEngine, defaultValue)
+                            : defaultValue,
                     name,
                     nullable: nullable === false ? false : true,
                 };
-                if (customField.type === 'string') {
+                if (customField.type === 'string' && !list) {
                     const length = customField.length || 255;
                     if (MAX_STRING_LENGTH < length) {
                         throw new Error(
@@ -74,7 +78,8 @@ function registerCustomFieldsForEntity(
                     // Setting precision on an sqlite datetime will cause
                     // spurious migration commands. See https://github.com/typeorm/typeorm/issues/2333
                     dbEngine !== 'sqljs' &&
-                    dbEngine !== 'sqlite'
+                    dbEngine !== 'sqlite' &&
+                    !list
                 ) {
                     options.precision = 6;
                 }

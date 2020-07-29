@@ -1,6 +1,7 @@
 interface CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
@@ -10,6 +11,7 @@ interface CustomField {
 type StringCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     length: Int
     label: [LocalizedString!]
     description: [LocalizedString!]
@@ -27,6 +29,7 @@ type StringFieldOption {
 type LocaleStringCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
@@ -36,6 +39,7 @@ type LocaleStringCustomFieldConfig implements CustomField {
 type IntCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
@@ -47,6 +51,7 @@ type IntCustomFieldConfig implements CustomField {
 type FloatCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
@@ -58,6 +63,7 @@ type FloatCustomFieldConfig implements CustomField {
 type BooleanCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
@@ -70,6 +76,7 @@ See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-loc
 type DateTimeCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    list: Boolean!
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
