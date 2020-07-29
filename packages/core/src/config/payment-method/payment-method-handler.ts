@@ -9,7 +9,7 @@ import {
     ConfigurableOperationDefOptions,
     LocalizedStringArray,
 } from '../../common/configurable-operation';
-import { StateMachineConfig } from '../../common/finite-state-machine/finite-state-machine';
+import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
 import { Order } from '../../entity/order/order.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import {
@@ -20,24 +20,9 @@ import { RefundState } from '../../service/helpers/refund-state-machine/refund-s
 
 export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
 export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
-export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
-
-/**
- * @description
- * The signature of the function defined by `onStateTransitionStart` in {@link PaymentMethodConfigOptions}.
- *
- * This function is called before the state of a Payment is transitioned. Its
- * return value used to determine whether the transition can occur.
- *
- * @docsCategory payment
- * @docsPage Payment Method Types
- */
-export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
-    fromState: PaymentState,
-    toState: PaymentState,
-    args: ConfigArgValues<T>,
-    data: PaymentTransitionData,
-) => OnTransitionStartReturnType;
+export type OnPaymentTransitionStartReturnType = ReturnType<
+    Required<StateMachineConfig<any>>['onTransitionStart']
+>;
 
 /**
  * @description
@@ -172,7 +157,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * This function, when specified, will be invoked before any transition from one {@link PaymentState} to another.
      * The return value (a sync / async `boolean`) is used to determine whether the transition is permitted.
      */
-    onStateTransitionStart?: OnTransitionStartFn<T>;
+    onStateTransitionStart?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
 }
 
 /**
@@ -184,6 +169,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @example
  * ```ts
+ * import { PaymentMethodHandler, CreatePaymentResult, SettlePaymentResult, LanguageCode } from '\@vendure/core';
  * // A mock 3rd-party payment SDK
  * import gripeSDK from 'gripe';
  *
@@ -196,7 +182,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     args: {
  *         apiKey: { type: 'string' },
  *     },
- *     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
+ *     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
  *         try {
  *             const result = await gripeSDK.charges.create({
  *                 apiKey: args.apiKey,
@@ -233,7 +219,7 @@ export class PaymentMethodHandler<
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly createRefundFn?: CreateRefundFn<T>;
-    private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
+    private readonly onTransitionStartFn?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
         super(config);
@@ -297,11 +283,10 @@ export class PaymentMethodHandler<
     onStateTransitionStart(
         fromState: PaymentState,
         toState: PaymentState,
-        args: ConfigArg[],
         data: PaymentTransitionData,
-    ): OnTransitionStartReturnType {
+    ): OnPaymentTransitionStartReturnType {
         if (typeof this.onTransitionStartFn === 'function') {
-            return this.onTransitionStartFn(fromState, toState, argsArrayToHash(args), data);
+            return this.onTransitionStartFn(fromState, toState, data);
         } else {
             return true;
         }

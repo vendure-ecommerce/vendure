@@ -4,13 +4,12 @@ import {
     ElementRef,
     Input,
     OnChanges,
-    OnInit,
     SimpleChanges,
 } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 import { NODE_HEIGHT } from './constants';
-import { OrderProcessGraphComponent, StateNode } from './order-process-graph.component';
+import { StateNode } from './types';
 
 @Component({
     selector: 'vdr-order-process-node',
@@ -29,7 +28,7 @@ export class OrderProcessNodeComponent implements OnChanges {
     // i18n extractor from extracting a "Cancelled" key
     cancelledState = 'Cancelled';
 
-    constructor(private graph: OrderProcessGraphComponent, private elementRef: ElementRef<HTMLDivElement>) {}
+    constructor(private elementRef: ElementRef<HTMLDivElement>) {}
 
     ngOnChanges(changes: SimpleChanges) {
         this.isCancellable = !!this.node.to.find((s) => s.name === 'Cancelled');

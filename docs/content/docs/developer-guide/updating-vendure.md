@@ -1,0 +1,78 @@
+---
+title: "Updating Vendure"
+showtoc: true
+---
+
+# Updating Vendure
+
+This guide provides guidance for updating the Vendure core framework to a newer version.
+
+## How to update
+
+First, check the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md) for an overview of the changes and any breaking changes in the next version.
+
+In your project's `package.json` file, find all the `@vendure/...` packages and change the version
+to the latest. All the Vendure packages have the same version, and are all released together.
+
+```diff
+{
+  // ...
+  "dependencies": {
+-    "@vendure/common": "0.10.1",
++    "@vendure/common": "0.11.0",
+-    "@vendure/core": "0.10.1",
++    "@vendure/core": "0.11.0",
+     // etc.
+  }
+}
+```
+
+Then run `npm install` or `yarn install` depending on which package manager you prefer.
+
+## Breaking changes
+
+Vendure follows the [SemVer convention](https://semver.org/) for version numbering. While in beta (pre-v1.0.0), this means breaking changes are possible in each release:
+
+> Major version zero is all about rapid development. If you’re changing the API every day you should either still be in version 0.y.z or on a separate development branch working on the next major version.
+ [[source]](https://semver.org/#doesnt-this-discourage-rapid-development-and-fast-iteration)
+
+In practice, we aim to introduce breaking changes in **minor versions** and non-breaking changes in **patch versions**. So v0.10.0 -> v0.11.0 will contain breaking changes, whereas v0.11.0 -> v0.11.1 should not.
+
+### What kinds of breaking changes can be expected?
+
+* Changes to the database schema
+* Changes to the GraphQL schema
+* Updates of major underlying libraries, such as upgrading NestJS to a new major version
+* Changes to certain core services which are often used in plugins, such as the JobQueue or WorkerService providers.
+
+Every release will be accompanied by an entry in the [changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md), listing the changes in that release. And breaking changes are clearly listed under a **BREAKING CHANGE** heading.
+
+### Database migrations
+
+Database changes are one of the most common causes for breaking changes. In most cases, the changes are minor (such as the addition of a new column) and non-destructive (i.e. performing the migration has no risk of data loss).
+
+However, some more fundamental changes occasionally require a careful approach to database migration in order to preserve existing data.
+
+The key rule is **never run your production instance with the `synchronize` option set to `true`**. Doing so can cause inadvertent data loss in rare cases.
+
+For any database schema changes, it is advised to:
+
+1. Read the changelog breaking changes entries to see what changes to expect
+2. Create a new database migration as described in the [Migrations guide](http://localhost:1313/docs/developer-guide/migrations/)
+3. Manually check the migration script. In some cases manual action is needed to customize the script in order to correctly migrate your existing data.
+4. Test the migration script against non-production data.
+5. Only when you have verified that the migration works as expected, run it against your production database.
+
+### GraphQL schema changes
+
+If you are using a code-generation tool (such as [graphql-code-generator](https://graphql-code-generator.com/)) for your custom plugins or storefront, it is a good idea to re-generate after upgrading, which will catch any errors caused by changes to the GraphQL schema.
+
+### TypeScript API changes
+
+If you are using Vendure providers (services, JobQueue, EventBus etc.) in your custom plugins, you should look out for breakages caused by changes to those services. Major changes will be listed in the changelog, but occasionally internal changes may also impact your code. 
+
+The best way to check whether this is the case is to build your entire project after upgrading, to see if any new TypeScript compiler errors emerge.
+
+### Admin UI changes
+
+If you are using UI extensions to create your own custom Admin UI using the [`compileUiExtensions`]({{< relref "compile-ui-extensions" >}}) function, then you'll need to delete and re-compile your admin-ui directory after upgrading (this is the directory specified by the [`outputPath`]({{< relref "ui-extension-compiler-options" >}}#outputpath) property).
