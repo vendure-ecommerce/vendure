@@ -1,0 +1,99 @@
+a {
+    color: #e30613 !important;
+}
+
+.btn-primary {
+    background-color: #e30613 !important;
+    border-color: #e30613 !important;
+
+    &:hover {
+        background-color: #ffffff !important;
+        color: #e30613 !important;
+    }
+}
+
+.btn-secondary {
+    background-color: #ffffff !important;
+    border-color: #e30613 !important;
+    color: #e30613 !important;
+
+    &:hover {
+        background-color: rgba(#e30613, .1) !important;
+    }
+}
+
+vdr-ab-right {
+    a {
+        color: #ffffff !important;
+    }
+}
+
+.header {
+    z-index: 100;
+    background-color: #ffffff !important;
+    margin-top: 20px;
+
+    .user-name {
+        color: #898989 !important;
+        font-weight: bold;
+    }
+
+    .header-actions {
+        clr-icon {
+            color: #898989 !important;
+        }
+    }
+}
+
+.subnav {
+    z-index: 99;
+    top: 0;
+    box-shadow: 1px 1px 22px grey;
+
+    .breadcrumbs {
+        color: #e30613 !important;
+        font-weight: bold;
+    }
+
+    a {
+        color: #e30613 !important;
+        font-weight: bold;
+    }
+}
+
+.branding {
+    img {
+        background: url(https://www.lambrechts.be/sites/default/files/logo_lambechts_0.png) no-repeat;
+        background-size: contain;
+        display: block;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 300px !important; /* Width of new image */
+        height: 70px; /* Height of new image */
+        padding-left: 300px; /* Equal to width of new image */
+    }
+}
+
+.clr-checkbox-wrapper input[type=checkbox]:checked + label::before {
+    background: #e30613 !important;
+}
+
+.clr-checkbox-wrapper input[type=checkbox]:focus + label::before {
+    box-shadow: 0 0 0.1rem 0.1rem #e30613 !important;
+}
+
+vdr-dropdown {
+    .btn.btn-link {
+        color: #e30613 !important;
+    }
+}
+
+.nav-link {
+    color: #000000 !important;
+}
+
+pagination-template {
+    div.current {
+        border-bottom-color: #e30613 !important;
+    }
+}

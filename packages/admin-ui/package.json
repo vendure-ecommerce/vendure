@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "node scripts/set-version.js && ng serve",
+    "start": "node scripts/set-version.js && ng serve --port 5000",
     "build:app": "yarn ng build --prod",
     "build": "node scripts/copy-package-json.js && node scripts/set-version.js && node scripts/build-public-api.js && yarn ng build vendure-admin-lib --prod && node scripts/compile-styles.js",
     "watch": "ng build --watch=true",
