@@ -106,6 +106,7 @@ describe('ShippingMethod resolver', () => {
                     },
                     {
                         ui: {
+                            component: 'number-form-input',
                             suffix: '%',
                         },
                         description: null,

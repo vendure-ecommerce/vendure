@@ -11,6 +11,7 @@ export const discountOnItemWithFacets = new PromotionItemAction({
         discount: {
             type: 'int',
             ui: {
+                component: 'number-form-input',
                 suffix: '%',
             },
         },

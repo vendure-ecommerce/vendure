@@ -8,6 +8,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
         discount: {
             type: 'int',
             ui: {
+                component: 'number-form-input',
                 suffix: '%',
             },
         },

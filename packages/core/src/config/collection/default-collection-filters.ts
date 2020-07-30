@@ -74,6 +74,7 @@ export const variantNameCollectionFilter = new CollectionFilter({
         operator: {
             type: 'string',
             ui: {
+                component: 'select-form-input',
                 options: [
                     { value: 'startsWith' },
                     { value: 'endsWith' },
