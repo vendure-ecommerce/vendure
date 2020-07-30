@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 
-import { CustomFieldsFragment } from '../../../common/generated-types';
+import { InputComponentConfig } from '../../../common/component-registry-types';
+import { CustomFieldConfig, CustomFieldsFragment } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import {
     CustomFieldComponentService,
@@ -26,7 +27,7 @@ import {
     templateUrl: './custom-field-control.component.html',
     styleUrls: ['./custom-field-control.component.scss'],
 })
-export class CustomFieldControlComponent implements OnInit, AfterViewInit {
+export class CustomFieldControlComponent {
     @Input() entityName: CustomFieldEntityName;
     @Input('customFieldsFormGroup') formGroup: FormGroup;
     @Input() customField: CustomFieldsFragment;
@@ -43,56 +44,43 @@ export class CustomFieldControlComponent implements OnInit, AfterViewInit {
         private customFieldComponentService: CustomFieldComponentService,
     ) {}
 
-    ngOnInit(): void {
-        this.customComponentFactory = this.customFieldComponentService.getCustomFieldComponent(
+    getFieldDefinition(): CustomFieldConfig & { ui?: InputComponentConfig } {
+        const config: CustomFieldsFragment & { ui?: InputComponentConfig } = {
+            ...this.customField,
+        };
+        const id = this.customFieldComponentService.customFieldComponentExists(
             this.entityName,
             this.customField.name,
         );
-        this.hasCustomControl = !!this.customComponentFactory;
-    }
-
-    ngAfterViewInit(): void {
-        if (this.customComponentFactory) {
-            const customComponentRef = this.customComponentPlaceholder.createComponent(
-                this.customComponentFactory,
-            );
-            customComponentRef.instance.customFieldConfig = this.customField;
-            customComponentRef.instance.formControl = this.formGroup.get(
-                this.customField.name,
-            ) as FormControl;
+        if (id) {
+            config.ui = { component: id };
         }
-    }
-
-    get min(): string | number | undefined | null {
-        switch (this.customField.__typename) {
+        switch (config.__typename) {
             case 'IntCustomFieldConfig':
-                return this.customField.intMin;
+                return {
+                    ...config,
+                    min: config.intMin,
+                    max: config.intMax,
+                    step: config.intStep,
+                };
             case 'FloatCustomFieldConfig':
-                return this.customField.floatMin;
+                return {
+                    ...config,
+                    min: config.floatMin,
+                    max: config.floatMax,
+                    step: config.floatStep,
+                };
             case 'DateTimeCustomFieldConfig':
-                return this.customField.datetimeMin;
-        }
-    }
-
-    get max(): string | number | undefined | null {
-        switch (this.customField.__typename) {
-            case 'IntCustomFieldConfig':
-                return this.customField.intMax;
-            case 'FloatCustomFieldConfig':
-                return this.customField.floatMax;
-            case 'DateTimeCustomFieldConfig':
-                return this.customField.datetimeMax;
-        }
-    }
-
-    get step(): string | number | undefined | null {
-        switch (this.customField.__typename) {
-            case 'IntCustomFieldConfig':
-                return this.customField.intStep;
-            case 'FloatCustomFieldConfig':
-                return this.customField.floatStep;
-            case 'DateTimeCustomFieldConfig':
-                return this.customField.datetimeStep;
+                return {
+                    ...config,
+                    min: config.datetimeMin,
+                    max: config.datetimeMax,
+                    step: config.datetimeStep,
+                };
+            default:
+                return {
+                    ...config,
+                };
         }
     }
 }

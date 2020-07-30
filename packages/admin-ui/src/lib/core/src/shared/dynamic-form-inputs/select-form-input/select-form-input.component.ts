@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 
@@ -10,10 +11,8 @@ import { FormInputComponent } from '../../../common/component-registry-types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectFormInputComponent implements FormInputComponent {
+    static readonly id: DefaultFormComponentId = 'select-form-input';
     @Input() readonly: boolean;
     formControl: FormControl;
-    config: {
-        component: string;
-        options: Array<{ value: string; label?: string }>;
-    };
+    config: DefaultFormComponentConfig<'select-form-input'>;
 }

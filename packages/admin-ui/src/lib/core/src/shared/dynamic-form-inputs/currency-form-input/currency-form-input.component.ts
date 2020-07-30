@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
@@ -13,10 +14,11 @@ import { DataService } from '../../../data/providers/data.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CurrencyFormInputComponent implements FormInputComponent {
+    static readonly id: DefaultFormComponentId = 'currency-form-input';
     @Input() readonly: boolean;
     formControl: FormControl;
     currencyCode$: Observable<CurrencyCode>;
-    config: InputComponentConfig;
+    config: DefaultFormComponentConfig<'currency-form-input'>;
 
     constructor(private dataService: DataService) {
         this.currencyCode$ = this.dataService.settings

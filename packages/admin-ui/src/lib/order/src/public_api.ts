@@ -13,6 +13,7 @@ export * from './components/order-process-graph/constants';
 export * from './components/order-process-graph/order-process-edge.component';
 export * from './components/order-process-graph/order-process-graph.component';
 export * from './components/order-process-graph/order-process-node.component';
+export * from './components/order-process-graph/types';
 export * from './components/order-process-graph-dialog/order-process-graph-dialog.component';
 export * from './components/payment-detail/payment-detail.component';
 export * from './components/payment-state-label/payment-state-label.component';

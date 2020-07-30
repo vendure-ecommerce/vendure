@@ -1,10 +1,12 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { DataService, FacetWithValues } from '@vendure/admin-ui/core';
+import { DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 
 import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
+import { FacetWithValues } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-facet-value-form-input',
@@ -13,6 +15,7 @@ import { FormInputComponent, InputComponentConfig } from '../../../common/compon
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacetValueFormInputComponent implements FormInputComponent, OnInit {
+    static readonly id: DefaultFormComponentId = 'facet-value-form-input';
     readonly isListInput = true;
     readonly: boolean;
     formControl: FormControl;

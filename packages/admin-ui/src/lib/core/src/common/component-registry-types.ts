@@ -1,13 +1,12 @@
 import { FormControl } from '@angular/forms';
 
-export interface FormInputComponent {
+export interface FormInputComponent<C = InputComponentConfig> {
     isListInput?: boolean;
     readonly: boolean;
     formControl: FormControl;
-    config: InputComponentConfig;
+    config: C;
 }
 
 export type InputComponentConfig = {
-    component: string;
     [prop: string]: any;
 };

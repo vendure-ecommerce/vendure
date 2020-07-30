@@ -6,9 +6,9 @@ import { FormInputComponent, InputComponentConfig } from '../../common/component
     providedIn: 'root',
 })
 export class ComponentRegistryService {
-    private inputComponentMap = new Map<string, Type<FormInputComponent>>();
+    private inputComponentMap = new Map<string, Type<FormInputComponent<any>>>();
 
-    registerInputComponent(id: string, component: Type<FormInputComponent>) {
+    registerInputComponent(id: string, component: Type<FormInputComponent<any>>) {
         if (this.inputComponentMap.has(id)) {
             throw new Error(
                 `Cannot register an InputComponent with the id "${id}", as one with that id already exists`,
@@ -17,7 +17,7 @@ export class ComponentRegistryService {
         this.inputComponentMap.set(id, component);
     }
 
-    getInputComponent(id: string): Type<FormInputComponent> | undefined {
+    getInputComponent(id: string): Type<FormInputComponent<any>> | undefined {
         return this.inputComponentMap.get(id);
     }
 }

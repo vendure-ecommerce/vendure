@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { DefaultFormComponentConfig, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 
@@ -10,11 +11,8 @@ import { FormInputComponent } from '../../../common/component-registry-types';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NumberFormInputComponent implements FormInputComponent {
+    static readonly id: DefaultFormComponentId = 'number-form-input';
     @Input() readonly: boolean;
     formControl: FormControl;
-    config: {
-        component: string;
-        prefix?: string;
-        suffix?: string;
-    };
+    config: DefaultFormComponentConfig<'number-form-input'>;
 }

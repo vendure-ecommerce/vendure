@@ -20,17 +20,18 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, FormArray, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CustomFieldConfig, getConfigArgValue, getDefaultConfigArgSingleValue } from '@vendure/admin-ui/core';
-import { omit } from '@vendure/common/lib/omit';
-import { ConfigArgType } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, CustomFieldType, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { Subject, Subscription } from 'rxjs';
 import { switchMap, take, takeUntil } from 'rxjs/operators';
 
-import { CustomFieldType } from '../../../../../../../../common/src/shared-types';
-import { FormInputComponent, InputComponentConfig } from '../../../common/component-registry-types';
-import { ConfigArgDefinition } from '../../../common/generated-types';
+import { FormInputComponent } from '../../../common/component-registry-types';
+import { ConfigArgDefinition, CustomFieldConfig } from '../../../common/generated-types';
+import {
+    getConfigArgValue,
+    getDefaultConfigArgSingleValue,
+} from '../../../common/utilities/configurable-operation-utils';
 import { ComponentRegistryService } from '../../../providers/component-registry/component-registry.service';
 
 type InputListItem = {
@@ -279,8 +280,10 @@ export class DynamicFormInputComponent
         this.changeDetectorRef.markForCheck();
     }
 
-    private getInputComponentConfig(argDef: ConfigArgDefinition | CustomFieldConfig): InputComponentConfig {
-        if (this.isConfigArgDef(argDef) && argDef?.ui?.component) {
+    private getInputComponentConfig(
+        argDef: ConfigArgDefinition | CustomFieldConfig,
+    ): { component: DefaultFormComponentId } {
+        if (this.hasUiConfig(argDef) && argDef.ui.component) {
             return argDef.ui;
         }
         const type = argDef?.type as ConfigArgType | CustomFieldType;
@@ -300,7 +303,7 @@ export class DynamicFormInputComponent
             case 'datetime':
                 return { component: 'date-form-input' };
             case 'ID':
-                return { component: 'string-form-input' };
+                return { component: 'text-form-input' };
             default:
                 assertNever(type);
         }
@@ -308,5 +311,9 @@ export class DynamicFormInputComponent
 
     private isConfigArgDef(def: ConfigArgDefinition | CustomFieldConfig): def is ConfigArgDefinition {
         return (def as ConfigArgDefinition)?.__typename === 'ConfigArgDefinition';
+    }
+
+    private hasUiConfig(def: unknown): def is { ui: { component: string } } {
+        return typeof def === 'object' && typeof (def as any)?.ui?.component === 'string';
     }
 }
