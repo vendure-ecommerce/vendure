@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { DeepPartial } from '../../../../common/lib/shared-types';
+import { FulfillmentState } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { VendureEntity } from '../base/base.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 
@@ -17,12 +18,14 @@ export class Fulfillment extends VendureEntity {
         super(input);
     }
 
+    @Column('varchar') state: FulfillmentState;
+
     @Column({ default: '' })
     trackingCode: string;
 
     @Column()
     method: string;
 
-    @OneToMany(type => OrderItem, orderItem => orderItem.fulfillment)
+    @OneToMany((type) => OrderItem, (orderItem) => orderItem.fulfillment)
     orderItems: OrderItem[];
 }
