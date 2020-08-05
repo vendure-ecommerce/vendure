@@ -1,0 +1,22 @@
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+
+@Component({
+    selector: 'vdr-fulfillment-state-label',
+    templateUrl: './fulfillment-state-label.component.html',
+    styleUrls: ['./fulfillment-state-label.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class FulfillmentStateLabelComponent {
+    @Input() state: string;
+
+    get chipColorType() {
+        switch (this.state) {
+            case 'Delivered':
+                return 'success';
+            case 'Cancelled':
+                return 'error';
+            default:
+                return 'warning';
+        }
+    }
+}

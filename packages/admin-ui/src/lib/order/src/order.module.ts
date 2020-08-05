@@ -5,10 +5,12 @@ import { SharedModule } from '@vendure/admin-ui/core';
 import { CancelOrderDialogComponent } from './components/cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from './components/fulfill-order-dialog/fulfill-order-dialog.component';
 import { FulfillmentDetailComponent } from './components/fulfillment-detail/fulfillment-detail.component';
+import { FulfillmentStateLabelComponent } from './components/fulfillment-state-label/fulfillment-state-label.component';
 import { LineFulfillmentComponent } from './components/line-fulfillment/line-fulfillment.component';
 import { LineRefundsComponent } from './components/line-refunds/line-refunds.component';
 import { OrderCustomFieldsCardComponent } from './components/order-custom-fields-card/order-custom-fields-card.component';
 import { OrderDetailComponent } from './components/order-detail/order-detail.component';
+import { OrderFulfillmentCardComponent } from './components/order-fulfillment-card/order-fulfillment-card.component';
 import { OrderHistoryComponent } from './components/order-history/order-history.component';
 import { OrderListComponent } from './components/order-list/order-list.component';
 import { OrderPaymentCardComponent } from './components/order-payment-card/order-payment-card.component';
@@ -47,6 +49,8 @@ import { orderRoutes } from './order.routes';
         OrderProcessNodeComponent,
         OrderProcessEdgeComponent,
         OrderProcessGraphDialogComponent,
+        OrderFulfillmentCardComponent,
+        FulfillmentStateLabelComponent,
     ],
 })
 export class OrderModule {}
