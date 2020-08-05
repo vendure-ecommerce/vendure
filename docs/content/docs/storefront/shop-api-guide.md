@@ -37,6 +37,7 @@ There are a couple of query parameters which are valid for all GraphQL operation
 * {{< shop-api-operation operation="addItemToOrder" type="mutation" >}} adds an item to the order. The first time it is called will also create a new Order for the session.
 * {{< shop-api-operation operation="adjustOrderLine" type="mutation" >}} is used to adjust the quantity of an OrderLine.
 * {{< shop-api-operation operation="removeOrderLine" type="mutation" >}} removes an OrderLine from the Order.
+* {{< shop-api-operation operation="removeAllOrderLines" type="mutation" >}} removes all OrderLine from the Order.
 * {{< shop-api-operation operation="setCustomerForOrder" type="mutation" >}} specifies the Customer details (required if the customer is not logged in as an authenticated user).
 * {{< shop-api-operation operation="setOrderShippingAddress" type="mutation" >}} sets the shipping address for the Order.
 * {{< shop-api-operation operation="eligibleShippingMethods" type="mutation" >}} returns all available shipping methods based on the customer's shipping address and the contents of the Order.

@@ -260,6 +260,13 @@ export class ShopOrderResolver {
 
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
+    async removeAllOrderLines(@Ctx() ctx: RequestContext): Promise<Order> {
+        const order = await this.getOrderFromContext(ctx, true);
+        return this.orderService.removeAllItemsFromOrder(ctx, order.id);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
     async applyCouponCode(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationApplyCouponCodeArgs,
