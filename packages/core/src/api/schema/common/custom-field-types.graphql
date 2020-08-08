@@ -27,6 +27,7 @@ type StringFieldOption {
 type LocaleStringCustomFieldConfig implements CustomField {
     name: String!
     type: String!
+    length: Int
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean
