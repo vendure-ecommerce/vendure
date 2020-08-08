@@ -1,6 +1,6 @@
 {
   "name": "@advantitge/asset-server-plugin",
-  "version": "0.14.0",
+  "version": "0.14.2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
