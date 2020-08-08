@@ -1,5 +1,5 @@
 {
-  "name": "@vendure/asset-server-plugin",
+  "name": "@advantitge/asset-server-plugin",
   "version": "0.14.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -15,7 +15,13 @@
     "e2e": "jest --config ../../e2e-common/jest-config.js --runInBand --package=asset-server-plugin"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/advantitge/vendure.git",
+    "directory": "packages/asset-server-plugin"
   },
   "devDependencies": {
     "@types/express": "^4.0.39",
