@@ -1,5 +1,6 @@
 import { AssetStorageStrategy, Logger } from '@vendure/core';
 import { Request } from 'express';
+import * as path from 'path';
 import { Readable, Stream } from 'stream';
 
 import { loggerCtx } from './constants';
@@ -202,7 +203,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private getObjectParams(identifier: string) {
         return {
             Bucket: this.s3Config.bucket,
-            Key: identifier.replace(/^\//, '').replace(/\//g, '\\'),
+            Key: path.join(identifier.replace(/^\//, '')),
         };
     }
 
