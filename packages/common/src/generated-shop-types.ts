@@ -1346,6 +1346,8 @@ export type Mutation = {
     addItemToOrder?: Maybe<Order>;
     /** Remove an OrderLine from the Order */
     removeOrderLine?: Maybe<Order>;
+    /** Remove all OrderLine from the Order */
+    removeAllOrderLines?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
      * third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.

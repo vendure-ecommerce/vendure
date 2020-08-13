@@ -32,6 +32,7 @@ import {
     GetNextOrderStates,
     GetOrderByCode,
     GetShippingMethods,
+    RemoveAllOrderLines,
     RemoveItemFromOrder,
     SetBillingAddress,
     SetCustomerForOrder,
@@ -58,6 +59,7 @@ import {
     GET_ELIGIBLE_SHIPPING_METHODS,
     GET_NEXT_STATES,
     GET_ORDER_BY_CODE,
+    REMOVE_ALL_ORDER_LINES,
     REMOVE_ITEM_FROM_ORDER,
     SET_BILLING_ADDRESS,
     SET_CUSTOMER,
@@ -1154,6 +1156,28 @@ describe('Shop orders', () => {
             expect(activeOrder?.customFields).toEqual({
                 giftWrap: true,
             });
+        });
+    });
+
+    describe('remove all order lines', () => {
+        beforeAll(async () => {
+            await shopClient.asAnonymousUser();
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_2',
+                quantity: 3,
+            });
+        });
+        it('should remove all order lines', async () => {
+            const { removeAllOrderLines } = await shopClient.query<
+                RemoveAllOrderLines.Mutation,
+                RemoveAllOrderLines.Variables
+            >(REMOVE_ALL_ORDER_LINES);
+            expect(removeAllOrderLines?.total).toBe(0);
+            expect(removeAllOrderLines?.lines.length).toBe(0);
         });
     });
 });

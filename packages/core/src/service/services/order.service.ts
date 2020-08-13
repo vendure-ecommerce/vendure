@@ -337,6 +337,15 @@ export class OrderService {
         return updatedOrder;
     }
 
+    async removeAllItemsFromOrder(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        this.assertAddingItemsState(order);
+        await this.connection.getRepository(OrderLine).remove(order.lines);
+        order.lines = [];
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        return updatedOrder;
+    }
+
     async applyCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {

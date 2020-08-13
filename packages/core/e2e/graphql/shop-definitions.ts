@@ -426,3 +426,12 @@ export const REMOVE_COUPON_CODE = gql`
     }
     ${TEST_ORDER_FRAGMENT}
 `;
+
+export const REMOVE_ALL_ORDER_LINES = gql`
+    mutation RemoveAllOrderLines {
+        removeAllOrderLines {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;

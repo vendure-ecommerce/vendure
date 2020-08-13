@@ -46,6 +46,8 @@ type Mutation {
     addItemToOrder(productVariantId: ID!, quantity: Int!): Order
     "Remove an OrderLine from the Order"
     removeOrderLine(orderLineId: ID!): Order
+    "Remove all OrderLine from the Order"
+    removeAllOrderLines: Order
     "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
     adjustOrderLine(orderLineId: ID!, quantity: Int): Order
     "Applies the given coupon code to the active Order"
