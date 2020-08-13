@@ -1742,6 +1742,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
+  length?: Maybe<Scalars['Int']>;
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
