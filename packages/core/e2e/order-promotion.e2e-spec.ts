@@ -2,6 +2,7 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
+    containsProducts,
     discountOnItemWithFacets,
     hasFacetValues,
     minimumOrderAmount,
@@ -324,6 +325,53 @@ describe('Promotions applied to Orders', () => {
                 'Free if order contains 2 items with Sale facet value',
             );
             expect(res2!.adjustments[0].amount).toBe(-1320);
+
+            await deletePromotion(promotion.id);
+        });
+
+        it('containsProducts', async () => {
+            const item60 = getVariantBySlug('item-60');
+            const item12 = getVariantBySlug('item-12');
+            const promotion = await createPromotion({
+                enabled: true,
+                name: 'Free if buying 3 or more offer products',
+                conditions: [
+                    {
+                        code: containsProducts.code,
+                        arguments: [
+                            { name: 'minimum', value: '3' },
+                            { name: 'productVariantIds', value: JSON.stringify([item60.id, item12.id]) },
+                        ],
+                    },
+                ],
+                actions: [freeOrderAction],
+            });
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: item60.id,
+                quantity: 1,
+            });
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item12.id,
+                quantity: 1,
+            });
+            expect(addItemToOrder!.total).toBe(7200);
+            expect(addItemToOrder!.adjustments.length).toBe(0);
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: addItemToOrder!.lines[0].id,
+                quantity: 2,
+            });
+            expect(adjustOrderLine!.total).toBe(0);
+            expect(adjustOrderLine!.adjustments[0].description).toBe(
+                'Free if buying 3 or more offer products',
+            );
+            expect(adjustOrderLine!.adjustments[0].amount).toBe(-13200);
 
             await deletePromotion(promotion.id);
         });

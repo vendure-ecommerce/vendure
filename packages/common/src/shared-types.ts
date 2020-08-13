@@ -120,6 +120,7 @@ export type DefaultFormComponentId =
     | 'facet-value-form-input'
     | 'number-form-input'
     | 'select-form-input'
+    | 'product-selector-form-input'
     | 'text-form-input';
 
 /**
@@ -132,6 +133,7 @@ type DefaultFormConfigHash = {
     'boolean-form-input': {};
     'currency-form-input': {};
     'facet-value-form-input': {};
+    'product-selector-form-input': {};
     'text-form-input': {};
 };
 
