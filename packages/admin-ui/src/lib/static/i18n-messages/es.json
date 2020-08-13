@@ -134,6 +134,7 @@
   "common": {
     "ID": "ID",
     "actions": "Acciones",
+    "add-item-to-list": "",
     "add-new-variants": "",
     "add-note": "Añadir nota",
     "available-languages": "Idiomas disponibles",
@@ -190,6 +191,7 @@
     "public": "Público",
     "remember-me": "Recordarme",
     "remove": "Borrar",
+    "remove-item-from-list": "",
     "results-count": "",
     "select": "Seleccionar...",
     "select-display-language": "Seleccionar idioma de interfaz",

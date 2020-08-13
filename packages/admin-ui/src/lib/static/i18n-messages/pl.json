@@ -134,6 +134,7 @@
   "common": {
     "ID": "ID",
     "actions": "Akcje",
+    "add-item-to-list": "",
     "add-new-variants": "Dodaj {count, plural, one {1 wariant} other {{count} wariantów}}",
     "add-note": "",
     "available-languages": "Dostępne języki",
@@ -190,6 +191,7 @@
     "public": "Publiczne",
     "remember-me": "Zapamiętaj mnie",
     "remove": "Usuń",
+    "remove-item-from-list": "",
     "results-count": "{ count } {count, plural, one {wynik} other {wyników}}",
     "select": "Wybrano...",
     "select-display-language": "Wybierz język",

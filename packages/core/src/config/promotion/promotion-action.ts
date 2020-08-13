@@ -1,8 +1,6 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
@@ -12,11 +10,6 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
-import { PromotionUtils } from './promotion-condition';
-
-export type PromotionActionArgType = ConfigArgSubset<'int' | 'facetValueIds'>;
-export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
-
 /**
  * @description
  * The function which is used by a PromotionItemAction to calculate the
@@ -25,11 +18,10 @@ export type PromotionActionArgs = ConfigArgs<PromotionActionArgType>;
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
+export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
     orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => number | Promise<number>;
 
 /**
@@ -40,14 +32,12 @@ export type ExecutePromotionItemActionFn<T extends PromotionActionArgs> = (
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export type ExecutePromotionOrderActionFn<T extends PromotionActionArgs> = (
+export type ExecutePromotionOrderActionFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => number | Promise<number>;
 
-export interface PromotionActionConfig<T extends PromotionActionArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface PromotionActionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     priorityValue?: number;
 }
 
@@ -57,7 +47,7 @@ export interface PromotionActionConfig<T extends PromotionActionArgs>
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export interface PromotionItemActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
+export interface PromotionItemActionConfig<T extends ConfigArgs> extends PromotionActionConfig<T> {
     /**
      * @description
      * The function which contains the promotion calculation logic.
@@ -71,7 +61,7 @@ export interface PromotionItemActionConfig<T extends PromotionActionArgs> extend
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export interface PromotionOrderActionConfig<T extends PromotionActionArgs> extends PromotionActionConfig<T> {
+export interface PromotionOrderActionConfig<T extends ConfigArgs> extends PromotionActionConfig<T> {
     /**
      * @description
      * The function which contains the promotion calculation logic.
@@ -86,9 +76,7 @@ export interface PromotionOrderActionConfig<T extends PromotionActionArgs> exten
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export abstract class PromotionAction<T extends PromotionActionArgs = {}> extends ConfigurableOperationDef<
-    T
-> {
+export abstract class PromotionAction<T extends ConfigArgs = {}> extends ConfigurableOperationDef<T> {
     readonly priorityValue: number;
 
     protected constructor(config: PromotionActionConfig<T>) {
@@ -117,7 +105,7 @@ export abstract class PromotionAction<T extends PromotionActionArgs = {}> extend
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export class PromotionItemAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
+export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionItemActionFn<T>;
     constructor(config: PromotionItemActionConfig<T>) {
         super(config);
@@ -125,8 +113,8 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
     }
 
     /** @internal */
-    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(orderItem, orderLine, argsArrayToHash(args), utils);
+    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
+        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args));
     }
 }
 
@@ -150,7 +138,7 @@ export class PromotionItemAction<T extends PromotionActionArgs = {}> extends Pro
  * @docsCategory promotions
  * @docsPage promotion-action
  */
-export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends PromotionAction<T> {
+export class PromotionOrderAction<T extends ConfigArgs = ConfigArgs> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionOrderActionFn<T>;
     constructor(config: PromotionOrderActionConfig<T>) {
         super(config);
@@ -158,7 +146,7 @@ export class PromotionOrderAction<T extends PromotionActionArgs = {}> extends Pr
     }
 
     /** @internal */
-    execute(order: Order, args: ConfigArg[], utils: PromotionUtils) {
-        return this.executeFn(order, argsArrayToHash(args), utils);
+    execute(order: Order, args: ConfigArg[]) {
+        return this.executeFn(order, this.argsArrayToHash(args));
     }
 }

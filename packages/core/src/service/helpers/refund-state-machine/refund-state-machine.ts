@@ -3,7 +3,8 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
-import { FSM, StateMachineConfig } from '../../../common/finite-state-machine/finite-state-machine';
+import { FSM } from '../../../common/finite-state-machine/finite-state-machine';
+import { StateMachineConfig } from '../../../common/finite-state-machine/types';
 import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
@@ -41,7 +42,7 @@ export class RefundStateMachine {
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {}
 
-    getNextStates(refund: Refund): RefundState[] {
+    getNextStates(refund: Refund): ReadonlyArray<RefundState> {
         const fsm = new FSM(this.config, refund.state);
         return fsm.getNextStates();
     }

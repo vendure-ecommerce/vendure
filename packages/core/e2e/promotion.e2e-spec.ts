@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
@@ -74,7 +74,7 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '500', type: 'int' }],
+                            arguments: [{ name: 'arg', value: '500' }],
                         },
                     ],
                     actions: [
@@ -84,7 +84,6 @@ describe('Promotion resolver', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: '["T_1"]',
-                                    type: 'facetValueIds',
                                 },
                             ],
                         },
@@ -111,7 +110,6 @@ describe('Promotion resolver', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: '["T_1"]',
-                                    type: 'facetValueIds',
                                 },
                             ],
                         },
@@ -133,11 +131,11 @@ describe('Promotion resolver', () => {
                     conditions: [
                         {
                             code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '90', type: 'int' }],
+                            arguments: [{ name: 'arg', value: '90' }],
                         },
                         {
                             code: promoCondition2.code,
-                            arguments: [{ name: 'arg', value: '10', type: 'int' }],
+                            arguments: [{ name: 'arg', value: '10' }],
                         },
                     ],
                 },
@@ -253,7 +251,7 @@ function generateTestAction(code: string): PromotionAction<any> {
     return new PromotionOrderAction({
         code,
         description: [{ languageCode: LanguageCode.en, value: `description for ${code}` }],
-        args: { facetValueIds: { type: 'facetValueIds' } },
+        args: { facetValueIds: { type: 'ID', list: true } },
         execute: (order, args) => {
             return 42;
         },
@@ -303,7 +301,7 @@ export const CONFIGURABLE_DEF_FRAGMENT = gql`
         args {
             name
             type
-            config
+            ui
         }
         code
         description

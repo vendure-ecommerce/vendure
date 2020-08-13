@@ -107,9 +107,35 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
  * @docsCategory common
  * @docsPage Configurable Operations
  */
-export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'facetValueIds';
+export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'ID';
 
-export type ConfigArgSubset<T extends ConfigArgType> = T;
+/**
+ * The ids of the default form input components that ship with the
+ * Admin UI.
+ */
+export type DefaultFormComponentId =
+    | 'boolean-form-input'
+    | 'currency-form-input'
+    | 'date-form-input'
+    | 'facet-value-form-input'
+    | 'number-form-input'
+    | 'select-form-input'
+    | 'text-form-input';
+
+/**
+ * Used to defined the expected arguments for a given default form input component.
+ */
+type DefaultFormConfigHash = {
+    'date-form-input': { min?: string; max?: string; yearRange?: number };
+    'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
+    'select-form-input': { options?: Array<{ value: string; label?: string }> };
+    'boolean-form-input': {};
+    'currency-form-input': {};
+    'facet-value-form-input': {};
+    'text-form-input': {};
+};
+
+export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
 
 export type CustomFieldsObject = { [key: string]: any };
 

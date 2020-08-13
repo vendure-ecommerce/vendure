@@ -196,7 +196,7 @@ export class ShopOrderResolver {
 
     @Query()
     @Allow(Permission.Owner)
-    async nextOrderStates(@Ctx() ctx: RequestContext): Promise<string[]> {
+    async nextOrderStates(@Ctx() ctx: RequestContext): Promise<ReadonlyArray<string>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx, true);
             return this.orderService.getNextOrderStates(sessionOrder);

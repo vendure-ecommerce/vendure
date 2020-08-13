@@ -101,13 +101,11 @@ export class Populator {
                     arguments: [
                         {
                             name: 'facetValueIds',
-                            type: 'facetValueIds',
                             value: JSON.stringify(facetValueIds),
                         },
                         {
                             name: 'containsAny',
                             value: filter.args.containsAny.toString(),
-                            type: 'boolean',
                         },
                     ],
                 };
@@ -201,13 +199,13 @@ export class Populator {
             await this.shippingMethodService.create(ctx, {
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
-                    arguments: [{ name: 'orderMinimum', value: '0', type: 'int' }],
+                    arguments: [{ name: 'orderMinimum', value: '0' }],
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
                     arguments: [
-                        { name: 'rate', value: method.price.toString(), type: 'int' },
-                        { name: 'taxRate', value: '0', type: 'int' },
+                        { name: 'rate', value: method.price.toString() },
+                        { name: 'taxRate', value: '0' },
                     ],
                 },
                 description: method.name,

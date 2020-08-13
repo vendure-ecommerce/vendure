@@ -111,6 +111,7 @@ export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -226,7 +227,6 @@ export type CollectionTranslation = {
 export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -234,14 +234,14 @@ export type ConfigArgDefinition = {
     __typename?: 'ConfigArgDefinition';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
-    config?: Maybe<Scalars['JSON']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -728,6 +728,7 @@ export type CustomerSortParameter = {
 export type CustomField = {
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -780,6 +781,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
     __typename?: 'DateTimeCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -866,6 +868,7 @@ export type FloatCustomFieldConfig = CustomField & {
     __typename?: 'FloatCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -969,6 +972,7 @@ export type IntCustomFieldConfig = CustomField & {
     __typename?: 'IntCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1308,6 +1312,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     __typename?: 'LocaleStringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
+    length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1744,6 +1750,7 @@ export type PaymentMethod = Node & {
     code: Scalars['String'];
     enabled: Scalars['Boolean'];
     configArgs: Array<ConfigArg>;
+    definition: ConfigurableOperationDefinition;
 };
 
 /**
@@ -2281,6 +2288,7 @@ export type StringCustomFieldConfig = CustomField & {
     __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;

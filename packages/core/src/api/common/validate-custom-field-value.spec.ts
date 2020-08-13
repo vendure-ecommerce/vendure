@@ -3,14 +3,16 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { validateCustomFieldValue } from './validate-custom-field-value';
 
 describe('validateCustomFieldValue()', () => {
-
     describe('string & localeString', () => {
-
-        const validate = (value: string) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'string',
-            pattern: '^[0-9]+',
-        }, value);
+        const validate = (value: string) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'string',
+                    pattern: '^[0-9]+',
+                },
+                value,
+            );
 
         it('passes valid pattern', () => {
             expect(validate('1')).not.toThrow();
@@ -26,15 +28,15 @@ describe('validateCustomFieldValue()', () => {
     });
 
     describe('string options', () => {
-
-        const validate = (value: string) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'string',
-            options: [
-                { value: 'small' },
-                { value: 'large' },
-            ],
-        }, value);
+        const validate = (value: string) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'string',
+                    options: [{ value: 'small' }, { value: 'large' }],
+                },
+                value,
+            );
 
         it('passes valid option', () => {
             expect(validate('small')).not.toThrow();
@@ -49,13 +51,16 @@ describe('validateCustomFieldValue()', () => {
     });
 
     describe('int & float', () => {
-
-        const validate = (value: number) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'int',
-            min: 5,
-            max: 10,
-        }, value);
+        const validate = (value: number) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'int',
+                    min: 5,
+                    max: 10,
+                },
+                value,
+            );
 
         it('passes valid range', () => {
             expect(validate(5)).not.toThrow();
@@ -71,13 +76,16 @@ describe('validateCustomFieldValue()', () => {
     });
 
     describe('datetime', () => {
-
-        const validate = (value: string) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'datetime',
-            min: '2019-01-01T08:30',
-            max: '2019-06-01T08:30',
-        }, value);
+        const validate = (value: string) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'datetime',
+                    min: '2019-01-01T08:30',
+                    max: '2019-06-01T08:30',
+                },
+                value,
+            );
 
         it('passes valid range', () => {
             expect(validate('2019-01-01T08:30:00.000')).not.toThrow();
@@ -86,34 +94,46 @@ describe('validateCustomFieldValue()', () => {
         });
 
         it('throws on invalid range', () => {
-            expect(validate('2019-01-01T08:29:00.000')).toThrowError('error.field-invalid-datetime-range-min');
-            expect(validate('2019-06-01T08:30:00.100')).toThrowError('error.field-invalid-datetime-range-max');
+            expect(validate('2019-01-01T08:29:00.000')).toThrowError(
+                'error.field-invalid-datetime-range-min',
+            );
+            expect(validate('2019-06-01T08:30:00.100')).toThrowError(
+                'error.field-invalid-datetime-range-max',
+            );
         });
     });
 
     describe('validate function', () => {
-
-        const validate1 = (value: string) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'string',
-            validate: v => {
-                if (v !== 'valid') {
-                    return 'invalid';
-                }
-            },
-        }, value);
-        const validate2 = (value: string, languageCode: LanguageCode) => () => validateCustomFieldValue({
-            name: 'test',
-            type: 'string',
-            validate: v => {
-                if (v !== 'valid') {
-                    return [
-                        { languageCode: LanguageCode.en, value: 'invalid' },
-                        { languageCode: LanguageCode.de, value: 'ungültig' },
-                    ];
-                }
-            },
-        }, value, languageCode);
+        const validate1 = (value: string) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'string',
+                    validate: (v: string) => {
+                        if (v !== 'valid') {
+                            return 'invalid';
+                        }
+                    },
+                },
+                value,
+            );
+        const validate2 = (value: string, languageCode: LanguageCode) => () =>
+            validateCustomFieldValue(
+                {
+                    name: 'test',
+                    type: 'string',
+                    validate: (v: string) => {
+                        if (v !== 'valid') {
+                            return [
+                                { languageCode: LanguageCode.en, value: 'invalid' },
+                                { languageCode: LanguageCode.de, value: 'ungültig' },
+                            ];
+                        }
+                    },
+                },
+                value,
+                languageCode,
+            );
 
         it('passes validate fn string', () => {
             expect(validate1('valid')).not.toThrow();

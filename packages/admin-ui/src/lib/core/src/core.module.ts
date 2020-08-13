@@ -21,6 +21,7 @@ import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader
 import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
+import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/register-dynamic-input-components';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
@@ -38,7 +39,7 @@ import { SharedModule } from './shared/shared.module';
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
-    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }],
+    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }, registerDefaultFormInputs()],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,

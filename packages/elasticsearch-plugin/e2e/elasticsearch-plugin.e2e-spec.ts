@@ -562,12 +562,10 @@ describe('Elasticsearch plugin', () => {
                                         {
                                             name: 'facetValueIds',
                                             value: `["T_4"]`,
-                                            type: 'facetValueIds',
                                         },
                                         {
                                             name: 'containsAny',
                                             value: `false`,
-                                            type: 'boolean',
                                         },
                                     ],
                                 },
@@ -612,12 +610,10 @@ describe('Elasticsearch plugin', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["T_3"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },

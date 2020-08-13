@@ -187,6 +187,7 @@ export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -312,7 +313,6 @@ export type CollectionTranslation = {
 export type ConfigArg = {
    __typename?: 'ConfigArg';
   name: Scalars['String'];
-  type: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -320,14 +320,14 @@ export type ConfigArgDefinition = {
    __typename?: 'ConfigArgDefinition';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  config?: Maybe<Scalars['JSON']>;
+  ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
   name: Scalars['String'];
-  type: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -1054,6 +1054,7 @@ export type CustomerSortParameter = {
 export type CustomField = {
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1101,6 +1102,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
    __typename?: 'DateTimeCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1226,6 +1228,7 @@ export type FloatCustomFieldConfig = CustomField & {
    __typename?: 'FloatCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1335,6 +1338,7 @@ export type IntCustomFieldConfig = CustomField & {
    __typename?: 'IntCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1745,6 +1749,8 @@ export type LocaleStringCustomFieldConfig = CustomField & {
    __typename?: 'LocaleStringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
+  length?: Maybe<Scalars['Int']>;
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -2620,6 +2626,7 @@ export type PaymentMethod = Node & {
   code: Scalars['String'];
   enabled: Scalars['Boolean'];
   configArgs: Array<ConfigArg>;
+  definition: ConfigurableOperationDefinition;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -3503,6 +3510,7 @@ export type StringCustomFieldConfig = CustomField & {
    __typename?: 'StringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   length?: Maybe<Scalars['Int']>;
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
@@ -6106,8 +6114,11 @@ export type PaymentMethodFragment = (
   & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'>
   & { configArgs: Array<(
     { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'type' | 'value'>
-  )> }
+    & Pick<ConfigArg, 'name' | 'value'>
+  )>, definition: (
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  ) }
 );
 
 export type GetPaymentMethodListQueryVariables = {
@@ -6184,7 +6195,7 @@ export type UpdateGlobalSettingsMutation = (
 
 type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
   { __typename?: 'StringCustomFieldConfig' }
-  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6196,7 +6207,7 @@ type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
   { __typename?: 'LocaleStringCustomFieldConfig' }
-  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6208,7 +6219,7 @@ type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
   { __typename?: 'IntCustomFieldConfig' }
-  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6220,7 +6231,7 @@ type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
   { __typename?: 'FloatCustomFieldConfig' }
-  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6232,7 +6243,7 @@ type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
   { __typename?: 'BooleanCustomFieldConfig' }
-  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6244,7 +6255,7 @@ type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
   { __typename?: 'DateTimeCustomFieldConfig' }
-  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6702,7 +6713,7 @@ export type ConfigurableOperationFragment = (
   & Pick<ConfigurableOperation, 'code'>
   & { args: Array<(
     { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'type' | 'value'>
+    & Pick<ConfigArg, 'name' | 'value'>
   )> }
 );
 
@@ -6711,7 +6722,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui'>
   )> }
 );
 
@@ -7853,6 +7864,7 @@ export namespace DeleteChannel {
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
   export type ConfigArgs = (NonNullable<PaymentMethodFragment['configArgs'][0]>);
+  export type Definition = ConfigurableOperationDefFragment;
 }
 
 export namespace GetPaymentMethodList {

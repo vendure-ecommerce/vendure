@@ -1,6 +1,6 @@
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 
-import { Transitions } from './finite-state-machine';
+import { Transitions } from './types';
 import { validateTransitionDefinition } from './validate-transition-definition';
 
 describe('FSM validateTransitionDefinition()', () => {

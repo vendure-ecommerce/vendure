@@ -12,16 +12,12 @@ import {
     ViewChildren,
 } from '@angular/core';
 import { OrderProcessState } from '@vendure/admin-ui/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { NODE_HEIGHT } from './constants';
 import { OrderProcessNodeComponent } from './order-process-node.component';
-
-export type StateNode = {
-    name: string;
-    to: StateNode[];
-};
+import { StateNode } from './types';
 
 @Component({
     selector: 'vdr-order-process-graph',

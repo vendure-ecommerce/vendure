@@ -1,17 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { Observable } from 'rxjs';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
-import {
-    FSM,
-    StateMachineConfig,
-    Transitions,
-} from '../../../common/finite-state-machine/finite-state-machine';
+import { FSM } from '../../../common/finite-state-machine/finite-state-machine';
 import { mergeTransitionDefinitions } from '../../../common/finite-state-machine/merge-transition-definitions';
+import { StateMachineConfig, Transitions } from '../../../common/finite-state-machine/types';
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
@@ -52,7 +48,7 @@ export class OrderStateMachine {
         return new FSM(this.config, currentState).canTransitionTo(newState);
     }
 
-    getNextStates(order: Order): OrderState[] {
+    getNextStates(order: Order): ReadonlyArray<OrderState> {
         const fsm = new FSM(this.config, order.state);
         return fsm.getNextStates();
     }
@@ -164,8 +160,10 @@ export class OrderStateMachine {
             },
             onError: async (fromState, toState, message) => {
                 for (const process of customProcesses) {
-                    if (typeof process.onError === 'function') {
-                        await awaitPromiseOrObservable(process.onError(fromState, toState, message));
+                    if (typeof process.onTransitionError === 'function') {
+                        await awaitPromiseOrObservable(
+                            process.onTransitionError(fromState, toState, message),
+                        );
                     }
                 }
                 throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {

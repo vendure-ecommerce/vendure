@@ -134,6 +134,7 @@
   "common": {
     "ID": "ID",
     "actions": "操作",
+    "add-item-to-list": "",
     "add-new-variants": "添加{count}个商品规格",
     "add-note": "",
     "available-languages": "可用语言",
@@ -190,6 +191,7 @@
     "public": "公开",
     "remember-me": "记住我",
     "remove": "删除",
+    "remove-item-from-list": "",
     "results-count": "{count, plural, 0{无} other {{count}个过滤结果}}",
     "select": "选择...",
     "select-display-language": "选择显示语言",
