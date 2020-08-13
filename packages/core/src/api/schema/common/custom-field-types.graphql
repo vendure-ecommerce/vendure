@@ -30,6 +30,7 @@ type LocaleStringCustomFieldConfig implements CustomField {
     name: String!
     type: String!
     list: Boolean!
+    length: Int
     label: [LocalizedString!]
     description: [LocalizedString!]
     readonly: Boolean

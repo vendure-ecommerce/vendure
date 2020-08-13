@@ -63,7 +63,7 @@ function registerCustomFieldsForEntity(
                     name,
                     nullable: nullable === false ? false : true,
                 };
-                if (customField.type === 'string' && !list) {
+                if ((customField.type === 'string' || customField.type === 'localeString') && !list) {
                     const length = customField.length || 255;
                     if (MAX_STRING_LENGTH < length) {
                         throw new Error(
