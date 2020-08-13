@@ -1,9 +1,7 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 import { SelectQueryBuilder } from 'typeorm';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
@@ -11,19 +9,15 @@ import {
 } from '../../common/configurable-operation';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-export type CollectionFilterArgType = ConfigArgSubset<'facetValueIds' | 'string' | 'boolean'>;
-export type CollectionFilterArgs = ConfigArgs<CollectionFilterArgType>;
-
-export type ApplyCollectionFilterFn<T extends CollectionFilterArgs> = (
+export type ApplyCollectionFilterFn<T extends ConfigArgs> = (
     qb: SelectQueryBuilder<ProductVariant>,
     args: ConfigArgValues<T>,
 ) => SelectQueryBuilder<ProductVariant>;
 
-export interface CollectionFilterConfig<T extends CollectionFilterArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface CollectionFilterConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     apply: ApplyCollectionFilterFn<T>;
 }
-
+// tslint:disable:max-line-length
 /**
  * @description
  * A CollectionFilter defines a rule which can be used to associate ProductVariants with a Collection.
@@ -35,15 +29,15 @@ export interface CollectionFilterConfig<T extends CollectionFilterArgs>
  *
  * @docsCategory configuration
  */
-export class CollectionFilter<T extends CollectionFilterArgs = {}> extends ConfigurableOperationDef<T> {
+export class CollectionFilter<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
+    // tslint:enable:max-line-length
     private readonly applyFn: ApplyCollectionFilterFn<T>;
-
     constructor(config: CollectionFilterConfig<T>) {
         super(config);
         this.applyFn = config.apply;
     }
 
     apply(qb: SelectQueryBuilder<ProductVariant>, args: ConfigArg[]): SelectQueryBuilder<ProductVariant> {
-        return this.applyFn(qb, argsArrayToHash(args));
+        return this.applyFn(qb, this.argsArrayToHash(args));
     }
 }

@@ -1,15 +1,12 @@
 import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
-import { StateMachineConfig } from '../../common/finite-state-machine/finite-state-machine';
+import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
 import { Order } from '../../entity/order/order.entity';
 import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
 import {
@@ -18,26 +15,9 @@ import {
 } from '../../service/helpers/payment-state-machine/payment-state';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
-export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
-export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
-export type OnTransitionStartReturnType = ReturnType<Required<StateMachineConfig<any>>['onTransitionStart']>;
-
-/**
- * @description
- * The signature of the function defined by `onStateTransitionStart` in {@link PaymentMethodConfigOptions}.
- *
- * This function is called before the state of a Payment is transitioned. Its
- * return value used to determine whether the transition can occur.
- *
- * @docsCategory payment
- * @docsPage Payment Method Types
- */
-export type OnTransitionStartFn<T extends PaymentMethodArgs> = (
-    fromState: PaymentState,
-    toState: PaymentState,
-    args: ConfigArgValues<T>,
-    data: PaymentTransitionData,
-) => OnTransitionStartReturnType;
+export type OnPaymentTransitionStartReturnType = ReturnType<
+    Required<StateMachineConfig<any>>['onTransitionStart']
+>;
 
 /**
  * @description
@@ -102,7 +82,7 @@ export interface SettlePaymentResult {
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreatePaymentFn<T extends PaymentMethodArgs> = (
+export type CreatePaymentFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
@@ -115,7 +95,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type SettlePaymentFn<T extends PaymentMethodArgs> = (
+export type SettlePaymentFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
@@ -128,7 +108,7 @@ export type SettlePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreateRefundFn<T extends PaymentMethodArgs> = (
+export type CreateRefundFn<T extends ConfigArgs> = (
     input: RefundOrderInput,
     total: number,
     order: Order,
@@ -142,8 +122,7 @@ export type CreateRefundFn<T extends PaymentMethodArgs> = (
  *
  * @docsCategory payment
  */
-export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -172,7 +151,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
      * This function, when specified, will be invoked before any transition from one {@link PaymentState} to another.
      * The return value (a sync / async `boolean`) is used to determine whether the transition is permitted.
      */
-    onStateTransitionStart?: OnTransitionStartFn<T>;
+    onStateTransitionStart?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
 }
 
 /**
@@ -184,6 +163,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @example
  * ```ts
+ * import { PaymentMethodHandler, CreatePaymentResult, SettlePaymentResult, LanguageCode } from '\@vendure/core';
  * // A mock 3rd-party payment SDK
  * import gripeSDK from 'gripe';
  *
@@ -196,7 +176,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     args: {
  *         apiKey: { type: 'string' },
  *     },
- *     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
+ *     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
  *         try {
  *             const result = await gripeSDK.charges.create({
  *                 apiKey: args.apiKey,
@@ -227,13 +207,11 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @docsCategory payment
  */
-export class PaymentMethodHandler<
-    T extends PaymentMethodArgs = PaymentMethodArgs
-> extends ConfigurableOperationDef<T> {
+export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly createRefundFn?: CreateRefundFn<T>;
-    private readonly onTransitionStartFn?: OnTransitionStartFn<T>;
+    private readonly onTransitionStartFn?: OnTransitionStartFn<PaymentState, PaymentTransitionData>;
 
     constructor(config: PaymentMethodConfigOptions<T>) {
         super(config);
@@ -251,7 +229,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
-        const paymentConfig = await this.createPaymentFn(order, argsArrayToHash(args), metadata);
+        const paymentConfig = await this.createPaymentFn(order, this.argsArrayToHash(args), metadata);
         return {
             method: this.code,
             ...paymentConfig,
@@ -265,7 +243,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
-        return this.settlePaymentFn(order, payment, argsArrayToHash(args));
+        return this.settlePaymentFn(order, payment, this.argsArrayToHash(args));
     }
 
     /**
@@ -282,7 +260,7 @@ export class PaymentMethodHandler<
         args: ConfigArg[],
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args))
+            ? this.createRefundFn(input, total, order, payment, this.argsArrayToHash(args))
             : false;
     }
 
@@ -297,11 +275,10 @@ export class PaymentMethodHandler<
     onStateTransitionStart(
         fromState: PaymentState,
         toState: PaymentState,
-        args: ConfigArg[],
         data: PaymentTransitionData,
-    ): OnTransitionStartReturnType {
+    ): OnPaymentTransitionStartReturnType {
         if (typeof this.onTransitionStartFn === 'function') {
-            return this.onTransitionStartFn(fromState, toState, argsArrayToHash(args), data);
+            return this.onTransitionStartFn(fromState, toState, data);
         } else {
             return true;
         }

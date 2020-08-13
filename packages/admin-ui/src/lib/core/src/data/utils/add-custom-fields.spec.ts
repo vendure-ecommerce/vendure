@@ -144,7 +144,10 @@ describe('addCustomFields()', () => {
 
     it('Adds customFields to Product fragment', () => {
         const customFieldsConfig: Partial<CustomFields> = {
-            Product: [{ name: 'custom1', type: 'string' }, { name: 'custom2', type: 'boolean' }],
+            Product: [
+                { name: 'custom1', type: 'string', list: false },
+                { name: 'custom2', type: 'boolean', list: false },
+            ],
         };
 
         const result = addCustomFields(documentNode, customFieldsConfig as CustomFields);
@@ -158,7 +161,7 @@ describe('addCustomFields()', () => {
 
     it('Adds customFields to Product translations', () => {
         const customFieldsConfig: Partial<CustomFields> = {
-            Product: [{ name: 'customLocaleString', type: 'localeString' }],
+            Product: [{ name: 'customLocaleString', type: 'localeString', list: false }],
         };
 
         const result = addCustomFields(documentNode, customFieldsConfig as CustomFields);

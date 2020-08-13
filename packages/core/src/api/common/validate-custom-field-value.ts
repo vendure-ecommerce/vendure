@@ -48,7 +48,7 @@ export function validateCustomFieldValue(
         default:
             assertNever(config);
     }
-    validateCustomFunction(config, value, languageCode);
+    validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, languageCode);
 }
 
 function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
@@ -62,7 +62,7 @@ function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
             throw new UserInputError(error);
         }
         if (Array.isArray(error)) {
-            const localizedError = error.find((e) => e.languageCode === languageCode) || error[0];
+            const localizedError = error.find(e => e.languageCode === languageCode) || error[0];
             throw new UserInputError(localizedError.value);
         }
     }
@@ -85,12 +85,12 @@ function validateStringField(
     }
     const options = (config as StringCustomFieldConfig).options;
     if (options) {
-        const validOptions = options.map((o) => o.value);
+        const validOptions = options.map(o => o.value);
         if (!validOptions.includes(value)) {
             throw new UserInputError('error.field-invalid-string-option', {
                 name: config.name,
                 value,
-                validOptions: validOptions.map((o) => `'${o}'`).join(', '),
+                validOptions: validOptions.map(o => `'${o}'`).join(', '),
             });
         }
     }

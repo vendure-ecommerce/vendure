@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT } from './shared-definitions';
+
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
         id
@@ -372,10 +374,13 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         enabled
         configArgs {
             name
-            type
             value
         }
+        definition {
+            ...ConfigurableOperationDef
+        }
     }
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
 `;
 
 export const GET_PAYMENT_METHOD_LIST = gql`
@@ -437,6 +442,7 @@ export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
     fragment CustomFieldConfig on CustomField {
         name
         type
+        list
         description {
             languageCode
             value

@@ -1,44 +1,11 @@
-import { Observable } from 'rxjs';
-
 import { awaitPromiseOrObservable } from '../utils';
 
-/**
- * @description
- * A type which is used to define all valid transitions and transition callbacks
- *
- * @docsCategory StateMachine
- */
-export type Transitions<State extends string, Target extends string = State> = {
-    [S in State]: {
-        to: Target[];
-        mergeStrategy?: 'merge' | 'replace';
-    };
-};
+import { StateMachineConfig } from './types';
 
 /**
  * @description
- * The config object used to instantiate a new FSM instance.
- *
- * @docsCategory StateMachine
- */
-export type StateMachineConfig<T extends string, Data = undefined> = {
-    transitions: Transitions<T>;
-    /**
-     * Called before a transition takes place. If the function resolves to false or a string, then the transition
-     * will be cancelled. In the case of a string, the string will be forwarded to the onError handler.
-     */
-    onTransitionStart?(
-        fromState: T,
-        toState: T,
-        data: Data,
-    ): boolean | string | void | Promise<boolean | string | void> | Observable<boolean | string | void>;
-    onTransitionEnd?(fromState: T, toState: T, data: Data): void | Promise<void> | Observable<void>;
-    onError?(fromState: T, toState: T, message?: string): void | Promise<void> | Observable<void>;
-};
-
-/**
- * @description
- * A simple type-safe finite state machine
+ * A simple type-safe finite state machine. This is used internally to control the Order process, ensuring that
+ * the state of Orders, Payments and Refunds follows a well-defined behaviour.
  *
  * @docsCategory StateMachine
  */
@@ -108,7 +75,7 @@ export class FSM<T extends string, Data = any> {
     /**
      * Returns an array of state to which the machine may transition from the current state.
      */
-    getNextStates(): T[] {
+    getNextStates(): ReadonlyArray<T> {
         return this.config.transitions[this._currentState].to;
     }
 

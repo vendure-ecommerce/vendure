@@ -50,6 +50,7 @@ export class TypeOrmLogger implements TypeOrmLoggerInterface {
         if (this.shouldDisplay('error')) {
             const sql = this.formatQueryWithParams(query, parameters);
             Logger.error(`Query error: ${sql}`, context);
+            Logger.verbose(error, context);
         }
     }
 

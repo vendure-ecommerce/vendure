@@ -12,7 +12,6 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { configurableDefToOperation } from '../../common/configurable-operation';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
@@ -112,13 +111,11 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingEligibilityCheckers.map(x =>
-            configurableDefToOperation(ctx, x),
-        );
+        return this.shippingConfiguration.shippingEligibilityCheckers.map(x => x.toGraphQlType(ctx));
     }
 
     getShippingCalculators(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingCalculators.map(x => configurableDefToOperation(ctx, x));
+        return this.shippingConfiguration.shippingCalculators.map(x => x.toGraphQlType(ctx));
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {

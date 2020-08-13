@@ -8,7 +8,7 @@ export const defaultShippingEligibilityChecker = new ShippingEligibilityChecker(
     args: {
         orderMinimum: {
             type: 'int',
-            config: { inputType: 'money' },
+            ui: { component: 'currency-form-input' },
             label: [{ languageCode: LanguageCode.en, value: 'Minimum order value' }],
             description: [
                 {

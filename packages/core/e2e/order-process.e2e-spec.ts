@@ -66,7 +66,7 @@ describe('Order process', () => {
         onTransitionEnd(fromState, toState, data) {
             transitionEndSpy(fromState, toState, data);
         },
-        onError(fromState, toState, message) {
+        onTransitionError(fromState, toState, message) {
             transitionErrorSpy(fromState, toState, message);
         },
     };
@@ -84,7 +84,7 @@ describe('Order process', () => {
 
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
-            orderOptions: { process: [customOrderProcess, customOrderProcess2] },
+            orderOptions: { process: [customOrderProcess as any, customOrderProcess2 as any] },
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
             },

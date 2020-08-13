@@ -14,11 +14,12 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: order => ({
+    settlePayment: (order) => ({
         success: true,
     }),
 });
 
+export const onTransitionSpy = jest.fn();
 /**
  * A two-stage (authorize, capture) payment method, with no createRefund method.
  */
@@ -41,6 +42,9 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
                 moreData: 42,
             },
         };
+    },
+    onStateTransitionStart: (fromState, toState, data) => {
+        onTransitionSpy(fromState, toState, data);
     },
 });
 
@@ -104,7 +108,7 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: order => ({
+    settlePayment: (order) => ({
         success: true,
     }),
 });
@@ -120,7 +124,7 @@ export const testErrorPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: order => ({
+    settlePayment: (order) => ({
         success: true,
     }),
 });

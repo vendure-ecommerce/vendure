@@ -134,6 +134,7 @@
   "common": {
     "ID": "ID",
     "actions": "操作",
+    "add-item-to-list": "",
     "add-new-variants": "新增{count}個商品規格",
     "add-note": "",
     "available-languages": "可用語言",
@@ -190,6 +191,7 @@
     "public": "公開",
     "remember-me": "記住登入帳號",
     "remove": "移除",
+    "remove-item-from-list": "",
     "results-count": "{count, plural, 0{無} other {{count}個篩選結果}}",
     "select": "選擇...",
     "select-display-language": "選擇顯示語言",

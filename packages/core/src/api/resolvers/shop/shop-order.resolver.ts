@@ -196,7 +196,7 @@ export class ShopOrderResolver {
 
     @Query()
     @Allow(Permission.Owner)
-    async nextOrderStates(@Ctx() ctx: RequestContext): Promise<string[]> {
+    async nextOrderStates(@Ctx() ctx: RequestContext): Promise<ReadonlyArray<string>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx, true);
             return this.orderService.getNextOrderStates(sessionOrder);
@@ -256,6 +256,13 @@ export class ShopOrderResolver {
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async removeAllOrderLines(@Ctx() ctx: RequestContext): Promise<Order> {
+        const order = await this.getOrderFromContext(ctx, true);
+        return this.orderService.removeAllItemsFromOrder(ctx, order.id);
     }
 
     @Mutation()

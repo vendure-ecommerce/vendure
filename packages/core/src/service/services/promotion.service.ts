@@ -17,7 +17,6 @@ import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { configurableDefToOperation } from '../../common/configurable-operation';
 import {
     CouponCodeExpiredError,
     CouponCodeInvalidError,
@@ -81,11 +80,11 @@ export class PromotionService {
     }
 
     getPromotionConditions(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.availableConditions.map(x => configurableDefToOperation(ctx, x));
+        return this.availableConditions.map(x => x.toGraphQlType(ctx));
     }
 
     getPromotionActions(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.availableActions.map(x => configurableDefToOperation(ctx, x));
+        return this.availableActions.map(x => x.toGraphQlType(ctx));
     }
 
     /**

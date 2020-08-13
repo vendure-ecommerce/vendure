@@ -44,11 +44,10 @@
         <div class="clr-col">
             <label class="clr-control-label">{{ 'settings.shipping-eligibility-checker' | translate }}</label>
             <vdr-configurable-input
-                *ngIf="selectedChecker"
+                *ngIf="selectedChecker && selectedCheckerDefinition"
                 [operation]="selectedChecker"
                 [operationDefinition]="selectedCheckerDefinition"
                 [readonly]="!('UpdateSettings' | hasPermission)"
-                [activeChannel]="activeChannel$ | async"
                 (remove)="selectedChecker = null"
                 formControlName="checker"
             ></vdr-configurable-input>
@@ -74,11 +73,10 @@
         <div class="clr-col">
             <label class="clr-control-label">{{ 'settings.shipping-calculator' | translate }}</label>
             <vdr-configurable-input
-                *ngIf="selectedCalculator"
+                *ngIf="selectedCalculator && selectedCalculatorDefinition"
                 [operation]="selectedCalculator"
                 [operationDefinition]="selectedCalculatorDefinition"
                 [readonly]="!('UpdateSettings' | hasPermission)"
-                [activeChannel]="activeChannel$ | async"
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"
             ></vdr-configurable-input>

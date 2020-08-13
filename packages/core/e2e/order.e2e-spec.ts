@@ -9,6 +9,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import {
     failsToSettlePaymentMethod,
+    onTransitionSpy,
     singleStageRefundablePaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
@@ -149,12 +150,16 @@ describe('Orders resolver', () => {
             expect(result.order!.state).toBe('PaymentAuthorized');
         });
 
-        it('settlePayment succeeds', async () => {
+        it('settlePayment succeeds, onStateTransitionStart called', async () => {
+            onTransitionSpy.mockClear();
             await shopClient.asUserWithCredentials(customers[1].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
             const order = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
 
             expect(order.state).toBe('PaymentAuthorized');
+            expect(onTransitionSpy).toHaveBeenCalledTimes(1);
+            expect(onTransitionSpy.mock.calls[0][0]).toBe('Created');
+            expect(onTransitionSpy.mock.calls[0][1]).toBe('Authorized');
 
             const payment = order.payments![0];
             const { settlePayment } = await adminClient.query<
@@ -171,6 +176,9 @@ describe('Orders resolver', () => {
                 baz: 'quux',
                 moreData: 42,
             });
+            expect(onTransitionSpy).toHaveBeenCalledTimes(2);
+            expect(onTransitionSpy.mock.calls[1][0]).toBe('Authorized');
+            expect(onTransitionSpy.mock.calls[1][1]).toBe('Settled');
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,

@@ -9,7 +9,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateShippingMethod,
@@ -74,13 +74,13 @@ describe('ShippingMethod resolver', () => {
             {
                 args: [
                     {
-                        config: {
-                            inputType: 'money',
-                        },
                         description: 'Order is eligible only if its total is greater or equal to this value',
                         label: 'Minimum order value',
                         name: 'orderMinimum',
                         type: 'int',
+                        ui: {
+                            component: 'currency-form-input',
+                        },
                     },
                 ],
                 code: 'default-shipping-eligibility-checker',
@@ -96,8 +96,8 @@ describe('ShippingMethod resolver', () => {
             {
                 args: [
                     {
-                        config: {
-                            inputType: 'money',
+                        ui: {
+                            component: 'currency-form-input',
                         },
                         description: null,
                         label: 'Shipping price',
@@ -105,8 +105,9 @@ describe('ShippingMethod resolver', () => {
                         type: 'int',
                     },
                     {
-                        config: {
-                            inputType: 'percentage',
+                        ui: {
+                            component: 'number-form-input',
+                            suffix: '%',
                         },
                         description: null,
                         label: 'Tax rate',
@@ -157,7 +158,6 @@ describe('ShippingMethod resolver', () => {
                     arguments: [
                         {
                             name: 'orderMinimum',
-                            type: 'int',
                             value: '0',
                         },
                     ],
@@ -197,7 +197,6 @@ describe('ShippingMethod resolver', () => {
                     arguments: [
                         {
                             name: 'orderMinimum',
-                            type: 'int',
                             value: '0',
                         },
                     ],
@@ -367,7 +366,7 @@ const GET_ELIGIBILITY_CHECKERS = gql`
                 type
                 description
                 label
-                config
+                ui
             }
         }
     }
@@ -383,7 +382,7 @@ const GET_CALCULATORS = gql`
                 type
                 description
                 label
-                config
+                ui
             }
         }
     }
