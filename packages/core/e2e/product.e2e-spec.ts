@@ -19,6 +19,7 @@ import {
     GetOptionGroup,
     GetProductList,
     GetProductSimple,
+    GetProductVariant,
     GetProductWithVariants,
     LanguageCode,
     ProductWithVariants,
@@ -309,6 +310,30 @@ describe('Product resolver', () => {
             });
 
             expect(result.product).toBeNull();
+        });
+    });
+
+    describe('productVariant query', () => {
+        it('by id', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_1',
+            });
+
+            expect(productVariant?.id).toBe('T_1');
+            expect(productVariant?.name).toBe('Laptop 13 inch 8GB');
+        });
+        it('returns null when id not found', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_999',
+            });
+
+            expect(productVariant).toBeNull();
         });
     });
 
@@ -1146,6 +1171,15 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
         }
     }
 `;

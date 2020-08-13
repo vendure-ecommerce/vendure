@@ -2976,6 +2976,8 @@ export type Query = {
   products: ProductList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
   promotion?: Maybe<Promotion>;
   promotions: PromotionList;
   promotionConditions: Array<ConfigurableOperationDefinition>;
@@ -3131,6 +3133,11 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>;
   slug?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductVariantArgs = {
+  id: Scalars['ID'];
 };
 
 

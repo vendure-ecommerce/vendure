@@ -2887,6 +2887,8 @@ export type Query = {
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** Get a ProductVariant by id */
+    productVariant?: Maybe<ProductVariant>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
     promotionConditions: Array<ConfigurableOperationDefinition>;
@@ -3015,6 +3017,10 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
+};
+
+export type QueryProductVariantArgs = {
+    id: Scalars['ID'];
 };
 
 export type QueryPromotionArgs = {
@@ -5370,6 +5376,14 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type GetProductVariantQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetProductVariantQuery = { __typename?: 'Query' } & {
+    productVariant?: Maybe<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
+};
+
 export type DeletePromotionMutationVariables = {
     id: Scalars['ID'];
 };
@@ -6953,6 +6967,12 @@ export namespace GetOptionGroup {
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
     export type Options = NonNullable<NonNullable<GetOptionGroupQuery['productOptionGroup']>['options'][0]>;
+}
+
+export namespace GetProductVariant {
+    export type Variables = GetProductVariantQueryVariables;
+    export type Query = GetProductVariantQuery;
+    export type ProductVariant = NonNullable<GetProductVariantQuery['productVariant']>;
 }
 
 export namespace DeletePromotion {
