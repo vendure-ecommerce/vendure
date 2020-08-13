@@ -40,7 +40,6 @@ import {
     JobListOptions,
     JobState,
     RemoveMembersFromZone,
-    SearchForTestOrder,
     UpdateChannel,
     UpdateChannelInput,
     UpdateCountry,
@@ -87,7 +86,6 @@ import {
     GET_TAX_RATE_LIST,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
-    SEARCH_FOR_TEST_ORDER,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
@@ -369,15 +367,5 @@ export class SettingsDataService {
                 },
             },
         });
-    }
-
-    searchForTestOrder(term: string, take: number) {
-        return this.baseDataService.query<SearchForTestOrder.Query, SearchForTestOrder.Variables>(
-            SEARCH_FOR_TEST_ORDER,
-            {
-                take,
-                term,
-            },
-        );
     }
 }

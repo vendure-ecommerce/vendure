@@ -442,6 +442,29 @@ export const SEARCH_PRODUCTS = gql`
     }
 `;
 
+export const PRODUCT_SELECTOR_SEARCH = gql`
+    query ProductSelectorSearch($term: String!, $take: Int!) {
+        search(input: { groupByProduct: false, term: $term, take: $take }) {
+            items {
+                productVariantId
+                productVariantName
+                productPreview
+                price {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                sku
+            }
+        }
+    }
+`;
+
 export const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {

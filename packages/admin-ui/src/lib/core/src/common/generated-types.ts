@@ -5492,6 +5492,30 @@ export type SearchProductsQuery = (
   ) }
 );
 
+export type ProductSelectorSearchQueryVariables = {
+  term: Scalars['String'];
+  take: Scalars['Int'];
+};
+
+
+export type ProductSelectorSearchQuery = (
+  { __typename?: 'Query' }
+  & { search: (
+    { __typename?: 'SearchResponse' }
+    & { items: Array<(
+      { __typename?: 'SearchResult' }
+      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
+      & { price: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ), priceWithTax: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ) }
+    )> }
+  ) }
+);
+
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput;
 };
@@ -6684,30 +6708,6 @@ export type ReindexMutation = (
   ) }
 );
 
-export type SearchForTestOrderQueryVariables = {
-  term: Scalars['String'];
-  take: Scalars['Int'];
-};
-
-
-export type SearchForTestOrderQuery = (
-  { __typename?: 'Query' }
-  & { search: (
-    { __typename?: 'SearchResponse' }
-    & { items: Array<(
-      { __typename?: 'SearchResult' }
-      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
-      & { price: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ), priceWithTax: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ) }
-    )> }
-  ) }
-);
-
 export type ConfigurableOperationFragment = (
   { __typename?: 'ConfigurableOperation' }
   & Pick<ConfigurableOperation, 'code'>
@@ -7576,6 +7576,17 @@ export namespace SearchProducts {
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
 }
 
+export namespace ProductSelectorSearch {
+  export type Variables = ProductSelectorSearchQueryVariables;
+  export type Query = ProductSelectorSearchQuery;
+  export type Search = ProductSelectorSearchQuery['search'];
+  export type Items = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>);
+  export type Price = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'];
+  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
+  export type PriceWithTax = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'];
+  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
+}
+
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
@@ -8000,17 +8011,6 @@ export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
   export type Reindex = JobInfoFragment;
-}
-
-export namespace SearchForTestOrder {
-  export type Variables = SearchForTestOrderQueryVariables;
-  export type Query = SearchForTestOrderQuery;
-  export type Search = SearchForTestOrderQuery['search'];
-  export type Items = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>);
-  export type Price = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'];
-  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
-  export type PriceWithTax = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'];
-  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
 }
 
 export namespace ConfigurableOperation {

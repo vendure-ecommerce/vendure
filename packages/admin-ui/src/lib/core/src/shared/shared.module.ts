@@ -63,6 +63,7 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
@@ -182,6 +183,7 @@ const DECLARATIONS = [
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
     OrderStateI18nTokenPipe,
+    ProductSelectorComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

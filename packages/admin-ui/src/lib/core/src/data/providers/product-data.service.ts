@@ -23,6 +23,7 @@ import {
     GetProductOptionGroups,
     GetProductVariantOptions,
     GetProductWithVariants,
+    ProductSelectorSearch,
     Reindex,
     RemoveOptionGroupFromProduct,
     RemoveProductsFromChannel,
@@ -56,6 +57,7 @@ import {
     GET_PRODUCT_OPTION_GROUPS,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
+    PRODUCT_SELECTOR_SEARCH,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
@@ -80,6 +82,16 @@ export class ProductDataService {
                 groupByProduct: true,
             },
         });
+    }
+
+    productSelectorSearch(term: string, take: number) {
+        return this.baseDataService.query<ProductSelectorSearch.Query, ProductSelectorSearch.Variables>(
+            PRODUCT_SELECTOR_SEARCH,
+            {
+                take,
+                term,
+            },
+        );
     }
 
     reindex() {
@@ -274,7 +286,7 @@ export class ProductDataService {
 
     createAssets(files: File[]) {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
-            input: files.map((file) => ({ file })),
+            input: files.map(file => ({ file })),
         });
     }
 
