@@ -14,6 +14,7 @@ import {
     AssetOptions,
     AuthOptions,
     CatalogOptions,
+    FulfillmentOptions,
     ImportExportOptions,
     JobQueueOptions,
     OrderOptions,
@@ -77,6 +78,10 @@ export class ConfigService implements VendureConfig {
 
     get shippingOptions(): ShippingOptions {
         return this.activeConfig.shippingOptions;
+    }
+
+    get fulfillmentOptions(): FulfillmentOptions {
+        return this.activeConfig.fulfillmentOptions;
     }
 
     get orderOptions(): Required<OrderOptions> {

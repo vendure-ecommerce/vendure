@@ -140,4 +140,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         ShippingMethod: [],
     },
     plugins: [],
+    fulfillmentOptions: {
+        process: [],
+    },
 };

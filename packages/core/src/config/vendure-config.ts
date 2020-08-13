@@ -19,6 +19,7 @@ import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
@@ -411,6 +412,17 @@ export interface ShippingOptions {
     shippingCalculators?: Array<ShippingCalculator<any>>;
 }
 
+export interface FulfillmentOptions {
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the fulfillment process state machine.
+     * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
+     *
+     * @default []
+     */
+    process?: Array<CustomFulfillmentProcess<any>>;
+}
+
 /**
  * @description
  * These credentials will be used to create the Superadmin user & administrator
@@ -663,6 +675,11 @@ export interface VendureConfig {
      * Configures the available checkers and calculators for ShippingMethods.
      */
     shippingOptions?: ShippingOptions;
+    /**
+     * @description
+     * Configuration settings governing how fulfillment are handled.
+     */
+    fulfillmentOptions?: FulfillmentOptions;
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.
