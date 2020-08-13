@@ -1088,7 +1088,7 @@ export type DateRange = {
 };
 
 /**
- * Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {

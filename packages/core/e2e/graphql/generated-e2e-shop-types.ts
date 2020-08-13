@@ -773,7 +773,7 @@ export type DateRange = {
 };
 
 /**
- * Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
@@ -1340,6 +1340,8 @@ export type Mutation = {
     addItemToOrder?: Maybe<Order>;
     /** Remove an OrderLine from the Order */
     removeOrderLine?: Maybe<Order>;
+    /** Remove all OrderLine from the Order */
+    removeAllOrderLines?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
      * third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
@@ -2817,6 +2819,12 @@ export type RemoveCouponCodeMutation = { __typename?: 'Mutation' } & {
     removeCouponCode?: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
 };
 
+export type RemoveAllOrderLinesMutationVariables = {};
+
+export type RemoveAllOrderLinesMutation = { __typename?: 'Mutation' } & {
+    removeAllOrderLines?: Maybe<{ __typename?: 'Order' } & TestOrderFragmentFragment>;
+};
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
@@ -3088,4 +3096,10 @@ export namespace RemoveCouponCode {
     export type Variables = RemoveCouponCodeMutationVariables;
     export type Mutation = RemoveCouponCodeMutation;
     export type RemoveCouponCode = TestOrderFragmentFragment;
+}
+
+export namespace RemoveAllOrderLines {
+    export type Variables = RemoveAllOrderLinesMutationVariables;
+    export type Mutation = RemoveAllOrderLinesMutation;
+    export type RemoveAllOrderLines = TestOrderFragmentFragment;
 }

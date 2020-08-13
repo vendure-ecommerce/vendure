@@ -773,7 +773,7 @@ export type DateRange = {
 };
 
 /**
- * Expects the same validation formats as the <input type="datetime-local"> HTML element.
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
@@ -1340,6 +1340,8 @@ export type Mutation = {
     addItemToOrder?: Maybe<Order>;
     /** Remove an OrderLine from the Order */
     removeOrderLine?: Maybe<Order>;
+    /** Remove all OrderLine from the Order */
+    removeAllOrderLines?: Maybe<Order>;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
      * third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
