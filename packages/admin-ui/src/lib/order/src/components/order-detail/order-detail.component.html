@@ -267,10 +267,16 @@
                 ></vdr-order-payment-detail>
             </ng-container>
             <ng-container *ngIf="order.fulfillments && order.fulfillments.length">
-                <vdr-order-fulfillment-detail
-                    *ngFor="let fulfillment of order.fulfillments"
-                    [fulfillment]="fulfillment"
-                ></vdr-order-fulfillment-detail>
+                <div class="card">
+                    <div class="card-header">
+                        {{ 'order.fulfillment' | translate }}
+                    </div>
+                    <div class="card-block">
+                        <div class="fulfillment-detail" *ngFor="let fulfillment of order.fulfillments">
+                            <vdr-fulfillment-detail [fulfillmentId]="fulfillment.id" [order]="order"></vdr-fulfillment-detail>
+                        </div>
+                    </div>
+                </div>
             </ng-container>
         </div>
     </div>
