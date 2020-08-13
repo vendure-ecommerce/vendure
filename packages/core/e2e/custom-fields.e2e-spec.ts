@@ -88,6 +88,11 @@ const customConfig = mergeConfig(testConfig, {
                 length: 10000,
             },
             {
+                name: 'longLocaleString',
+                type: 'localeString',
+                length: 10000,
+            },
+            {
                 name: 'readonlyString',
                 type: 'string',
                 readonly: true,
@@ -196,6 +201,7 @@ describe('Custom fields', () => {
                 { name: 'nonPublic', type: 'string', list: false },
                 { name: 'public', type: 'string', list: false },
                 { name: 'longString', type: 'string', list: false },
+                { name: 'longLocaleString', type: 'localeString', list: false },
                 { name: 'readonlyString', type: 'string', list: false },
                 { name: 'stringList', type: 'string', list: true },
                 { name: 'localeStringList', type: 'localeString', list: true },
@@ -359,6 +365,32 @@ describe('Custom fields', () => {
         );
 
         expect(result.updateProduct.customFields.longString).toBe(longString);
+    });
+
+    it('string length allows long localeStrings', async () => {
+        const longString = Array.from({ length: 500 }, v => 'hello there!').join(' ');
+        const result = await adminClient.query(
+            gql`
+                mutation($stringValue: String!) {
+                    updateProduct(
+                        input: {
+                            id: "T_1"
+                            translations: [
+                                { languageCode: en, customFields: { longLocaleString: $stringValue } }
+                            ]
+                        }
+                    ) {
+                        id
+                        customFields {
+                            longLocaleString
+                        }
+                    }
+                }
+            `,
+            { stringValue: longString },
+        );
+
+        expect(result.updateProduct.customFields.longLocaleString).toBe(longString);
     });
 
     describe('validation', () => {

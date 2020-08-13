@@ -127,6 +127,7 @@ export type CustomFieldConfig =
  * #### `localeString` type
  *
  * * `pattern?: string`: A regex pattern which the field value must match
+ * * `length?: number`: The max length of the varchar created in the database. Defaults to 255. Maximum is 65,535.
  *
  * #### `int` & `float` type
  *
