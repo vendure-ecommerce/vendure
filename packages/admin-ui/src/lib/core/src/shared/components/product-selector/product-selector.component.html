@@ -1,7 +1,6 @@
 <ng-select
     #autoComplete
     [items]="searchResults$ | async"
-    bindLabel="productVariantName"
     [addTag]="false"
     [multiple]="false"
     [hideSelected]="true"
@@ -9,4 +8,10 @@
     [typeahead]="searchInput$"
     [placeholder]="'settings.search-by-product-name-or-sku' | translate"
     (change)="selectResult($event)"
-></ng-select>
+>
+    <ng-template ng-option-tmp let-item="item">
+        <img [src]="item.productAsset | assetPreview: 32">
+        {{ item.productVariantName }}
+        <small class="sku">{{ item.sku }}</small>
+    </ng-template>
+</ng-select>

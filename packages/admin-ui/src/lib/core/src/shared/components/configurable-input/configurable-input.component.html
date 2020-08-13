@@ -4,7 +4,7 @@
         <form [formGroup]="form" *ngIf="operation" class="operation-inputs">
             <div *ngFor="let arg of operation.args; trackBy: trackByName" class="arg-row">
                 <ng-container *ngIf="form.get(arg.name)">
-                    <label>{{ arg.name | sentenceCase }}</label>
+                    <label>{{ getArgDef(arg)?.label || (arg.name | sentenceCase) }}</label>
                     <vdr-dynamic-form-input
                         [def]="getArgDef(arg)"
                         [readonly]="readonly"

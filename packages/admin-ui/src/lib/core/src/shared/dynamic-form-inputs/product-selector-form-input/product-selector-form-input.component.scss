@@ -1,0 +1,19 @@
+@import "variables";
+
+.variant {
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s;
+    &:hover {
+        background-color: $color-grey-200;
+    }
+}
+.thumb {
+    margin-right: 6px;
+}
+.sku {
+    color: $color-grey-400;
+    font-size: smaller;
+    line-height: 1em;
+}

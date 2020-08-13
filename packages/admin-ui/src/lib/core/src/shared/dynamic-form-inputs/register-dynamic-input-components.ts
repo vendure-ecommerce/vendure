@@ -13,6 +13,7 @@ import { CurrencyFormInputComponent } from './currency-form-input/currency-form-
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
 import { FacetValueFormInputComponent } from './facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './number-form-input/number-form-input.component';
+import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { SelectFormInputComponent } from './select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './text-form-input/text-form-input.component';
 
@@ -24,6 +25,7 @@ export const defaultFormInputs = [
     NumberFormInputComponent,
     SelectFormInputComponent,
     TextFormInputComponent,
+    ProductSelectorFormInputComponent,
 ];
 
 /**

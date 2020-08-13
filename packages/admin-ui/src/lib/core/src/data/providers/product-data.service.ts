@@ -21,8 +21,10 @@ import {
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
+    GetProductVariant,
     GetProductVariantOptions,
     GetProductWithVariants,
+    ProductListOptions,
     ProductSelectorSearch,
     Reindex,
     RemoveOptionGroupFromProduct,
@@ -55,6 +57,7 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUP,
     GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     PRODUCT_SELECTOR_SEARCH,
@@ -98,12 +101,9 @@ export class ProductDataService {
         return this.baseDataService.mutate<Reindex.Mutation>(REINDEX);
     }
 
-    getProducts(take: number = 10, skip: number = 0) {
+    getProducts(options: ProductListOptions) {
         return this.baseDataService.query<GetProductList.Query, GetProductList.Variables>(GET_PRODUCT_LIST, {
-            options: {
-                take,
-                skip,
-            },
+            options,
         });
     }
 
@@ -113,6 +113,13 @@ export class ProductDataService {
             {
                 id,
             },
+        );
+    }
+
+    getProductVariant(id: string) {
+        return this.baseDataService.query<GetProductVariant.Query, GetProductVariant.Variables>(
+            GET_PRODUCT_VARIANT,
+            { id },
         );
     }
 

@@ -82,6 +82,7 @@ import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/da
 import { DynamicFormInputComponent } from './dynamic-form-inputs/dynamic-form-input/dynamic-form-input.component';
 import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './dynamic-form-inputs/number-form-input/number-form-input.component';
+import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
@@ -182,6 +183,7 @@ const DECLARATIONS = [
     TimelineEntryComponent,
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
+    ProductSelectorFormInputComponent,
     OrderStateI18nTokenPipe,
     ProductSelectorComponent,
 ];

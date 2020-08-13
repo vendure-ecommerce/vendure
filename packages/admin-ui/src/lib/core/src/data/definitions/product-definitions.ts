@@ -449,6 +449,14 @@ export const PRODUCT_SELECTOR_SEARCH = gql`
                 productVariantId
                 productVariantName
                 productPreview
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
                 price {
                     ... on SinglePrice {
                         value
@@ -541,6 +549,27 @@ export const REMOVE_PRODUCTS_FROM_CHANNEL = gql`
             channels {
                 id
                 code
+            }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
+            sku
+            product {
+                id
+                featuredAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
             }
         }
     }

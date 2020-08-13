@@ -3015,6 +3015,8 @@ export type Query = {
   product?: Maybe<Product>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
   productOptionGroups: Array<ProductOptionGroup>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -3164,6 +3166,11 @@ export type QueryProductOptionGroupArgs = {
 
 export type QueryProductOptionGroupsArgs = {
   filterTerm?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductVariantArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -5505,7 +5512,14 @@ export type ProductSelectorSearchQuery = (
     & { items: Array<(
       { __typename?: 'SearchResult' }
       & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
-      & { price: { __typename?: 'PriceRange' } | (
+      & { productAsset?: Maybe<(
+        { __typename?: 'SearchResultAsset' }
+        & Pick<SearchResultAsset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, price: { __typename?: 'PriceRange' } | (
         { __typename?: 'SinglePrice' }
         & Pick<SinglePrice, 'value'>
       ), priceWithTax: { __typename?: 'PriceRange' } | (
@@ -5601,6 +5615,31 @@ export type RemoveProductsFromChannelMutation = (
       { __typename?: 'Channel' }
       & Pick<Channel, 'id' | 'code'>
     )> }
+  )> }
+);
+
+export type GetProductVariantQueryVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type GetProductVariantQuery = (
+  { __typename?: 'Query' }
+  & { productVariant?: Maybe<(
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & { product: (
+      { __typename?: 'Product' }
+      & Pick<Product, 'id'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )> }
+    ) }
   )> }
 );
 
@@ -6722,7 +6761,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui' | 'label'>
   )> }
 );
 
@@ -7581,6 +7620,8 @@ export namespace ProductSelectorSearch {
   export type Query = ProductSelectorSearchQuery;
   export type Search = ProductSelectorSearchQuery['search'];
   export type Items = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>);
+  export type ProductAsset = (NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
   export type Price = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'];
   export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
   export type PriceWithTax = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'];
@@ -7621,6 +7662,15 @@ export namespace RemoveProductsFromChannel {
   export type Mutation = RemoveProductsFromChannelMutation;
   export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
   export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
+}
+
+export namespace GetProductVariant {
+  export type Variables = GetProductVariantQueryVariables;
+  export type Query = GetProductVariantQuery;
+  export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
+  export type Product = (NonNullable<GetProductVariantQuery['productVariant']>)['product'];
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace Promotion {
