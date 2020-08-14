@@ -10,6 +10,7 @@ import {
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
+import { CustomerGroupFormInputComponent } from './customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
 import { FacetValueFormInputComponent } from './facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './number-form-input/number-form-input.component';
@@ -26,6 +27,7 @@ export const defaultFormInputs = [
     SelectFormInputComponent,
     TextFormInputComponent,
     ProductSelectorFormInputComponent,
+    CustomerGroupFormInputComponent,
 ];
 
 /**

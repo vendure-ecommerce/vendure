@@ -78,6 +78,7 @@ import { IfMultichannelDirective } from './directives/if-multichannel.directive'
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
 import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
 import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
+import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
 import { DynamicFormInputComponent } from './dynamic-form-inputs/dynamic-form-input/dynamic-form-input.component';
 import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
@@ -202,7 +203,7 @@ const DYNAMIC_FORM_INPUTS = [
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS, CustomerGroupFormInputComponent],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which
