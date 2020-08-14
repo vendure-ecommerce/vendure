@@ -46,6 +46,10 @@ export type UiComponentConfig =
     | ({ component: 'boolean-form-input' } & DefaultFormComponentConfig<'boolean-form-input'>)
     | ({ component: 'currency-form-input' } & DefaultFormComponentConfig<'currency-form-input'>)
     | ({ component: 'facet-value-form-input' } & DefaultFormComponentConfig<'facet-value-form-input'>)
+    | ({ component: 'product-selector-form-input' } & DefaultFormComponentConfig<
+          'product-selector-form-input'
+      >)
+    | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
     | { component: string; [prop: string]: any };
 
 const d: UiComponentConfig = {

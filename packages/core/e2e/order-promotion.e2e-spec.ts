@@ -3,6 +3,7 @@ import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
     containsProducts,
+    customerGroup,
     discountOnItemWithFacets,
     hasFacetValues,
     minimumOrderAmount,
@@ -18,11 +19,13 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
+    CreateCustomerGroup,
     CreatePromotion,
     CreatePromotionInput,
     GetFacetList,
     GetPromoProducts,
     HistoryEntryType,
+    RemoveCustomersFromGroup,
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
@@ -34,7 +37,12 @@ import {
     RemoveCouponCode,
     SetCustomerForOrder,
 } from './graphql/generated-e2e-shop-types';
-import { CREATE_PROMOTION, GET_FACET_LIST } from './graphql/shared-definitions';
+import {
+    CREATE_CUSTOMER_GROUP,
+    CREATE_PROMOTION,
+    GET_FACET_LIST,
+    REMOVE_CUSTOMERS_FROM_GROUP,
+} from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADJUST_ITEM_QUANTITY,
@@ -373,6 +381,61 @@ describe('Promotions applied to Orders', () => {
                 'Free if buying 3 or more offer products',
             );
             expect(adjustOrderLine!.adjustments[0].amount).toBe(-13200);
+
+            await deletePromotion(promotion.id);
+        });
+
+        it('customerGroup', async () => {
+            const { createCustomerGroup } = await adminClient.query<
+                CreateCustomerGroup.Mutation,
+                CreateCustomerGroup.Variables
+            >(CREATE_CUSTOMER_GROUP, {
+                input: { name: 'Test Group', customerIds: ['T_1'] },
+            });
+
+            await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
+
+            const promotion = await createPromotion({
+                enabled: true,
+                name: 'Free for group members',
+                conditions: [
+                    {
+                        code: customerGroup.code,
+                        arguments: [{ name: 'customerGroupId', value: createCustomerGroup.id }],
+                    },
+                ],
+                actions: [freeOrderAction],
+            });
+
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: getVariantBySlug('item-60').id,
+                quantity: 1,
+            });
+            expect(addItemToOrder!.total).toBe(0);
+            expect(addItemToOrder!.adjustments.length).toBe(1);
+            expect(addItemToOrder!.adjustments[0].description).toBe('Free for group members');
+            expect(addItemToOrder!.adjustments[0].amount).toBe(-6000);
+
+            await adminClient.query<RemoveCustomersFromGroup.Mutation, RemoveCustomersFromGroup.Variables>(
+                REMOVE_CUSTOMERS_FROM_GROUP,
+                {
+                    groupId: createCustomerGroup.id,
+                    customerIds: ['T_1'],
+                },
+            );
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: addItemToOrder!.lines[0].id,
+                quantity: 2,
+            });
+            expect(adjustOrderLine!.total).toBe(12000);
+            expect(adjustOrderLine!.adjustments.length).toBe(0);
 
             await deletePromotion(promotion.id);
         });

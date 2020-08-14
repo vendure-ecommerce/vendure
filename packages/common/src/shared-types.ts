@@ -121,6 +121,7 @@ export type DefaultFormComponentId =
     | 'number-form-input'
     | 'select-form-input'
     | 'product-selector-form-input'
+    | 'customer-group-form-input'
     | 'text-form-input';
 
 /**
@@ -134,6 +135,7 @@ type DefaultFormConfigHash = {
     'currency-form-input': {};
     'facet-value-form-input': {};
     'product-selector-form-input': {};
+    'customer-group-form-input': {};
     'text-form-input': {};
 };
 
