@@ -7,6 +7,7 @@ import {
     hasFacetValues,
     minimumOrderAmount,
     orderPercentageDiscount,
+    productsPercentageDiscount,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
@@ -482,6 +483,58 @@ describe('Promotions applied to Orders', () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             expect(activeOrder!.lines[2].adjustments.length).toBe(2); // 2x tax
             expect(activeOrder!.total).toBe(2640);
+
+            await deletePromotion(promotion.id);
+        });
+
+        it('productsPercentageDiscount', async () => {
+            const item60 = getVariantBySlug('item-60');
+            const couponCode = '50%_off_product';
+            const promotion = await createPromotion({
+                enabled: true,
+                name: '50% off product',
+                couponCode,
+                conditions: [],
+                actions: [
+                    {
+                        code: productsPercentageDiscount.code,
+                        arguments: [
+                            { name: 'discount', value: '50' },
+                            { name: 'productVariantIds', value: `["${item60.id}"]` },
+                        ],
+                    },
+                ],
+            });
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item60.id,
+                quantity: 1,
+            });
+            expect(addItemToOrder!.adjustments.length).toBe(0);
+            expect(addItemToOrder!.lines[0].adjustments.length).toBe(1); // 1x tax
+            expect(addItemToOrder!.total).toBe(6000);
+
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode,
+            });
+
+            expect(applyCouponCode!.total).toBe(3000);
+            expect(applyCouponCode!.lines[0].adjustments.length).toBe(2); // 1x tax, 1x promotion
+
+            const { removeCouponCode } = await shopClient.query<
+                RemoveCouponCode.Mutation,
+                RemoveCouponCode.Variables
+            >(REMOVE_COUPON_CODE, {
+                couponCode,
+            });
+
+            expect(removeCouponCode!.lines[0].adjustments.length).toBe(1); // 1x tax
+            expect(removeCouponCode!.total).toBe(6000);
 
             await deletePromotion(promotion.id);
         });
