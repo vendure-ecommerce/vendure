@@ -49,7 +49,7 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
             return;
         }
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {
-            const isAssetType = type && type.name === 'Asset';
+            const isAssetType = type && (type.name === 'Asset' || type.name === 'SearchResultAsset');
             if (isAssetType) {
                 if (value && !Array.isArray(value)) {
                     if (value.preview) {
@@ -60,20 +60,12 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
                     }
                 }
             }
+
+            // TODO: This path is deprecated and should be removed in a future version
+            // once the fields are removed from the GraphQL API
             const isSearchResultType = type && type.name === 'SearchResult';
             if (isSearchResultType) {
                 if (value && !Array.isArray(value)) {
-                    if (value.productAsset) {
-                        value.productAsset.preview = toAbsoluteUrl(request, value.productAsset.preview);
-                    }
-                    if (value.productVariantAsset) {
-                        value.productVariantAsset.preview = toAbsoluteUrl(
-                            request,
-                            value.productVariantAsset.preview,
-                        );
-                    }
-                    // TODO: This path is deprecated and should be removed in a future version
-                    // once the fields are removed from the GraphQL API
                     if (value.productPreview) {
                         value.productPreview = toAbsoluteUrl(request, value.productPreview);
                     }
