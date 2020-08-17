@@ -32,15 +32,15 @@ export function addGraphQLCustomFields(
 
     for (const entityName of Object.keys(customFieldConfig)) {
         const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
-            (config) => {
+            config => {
                 return !config.internal && (publicOnly === true ? config.public !== false : true);
             },
         );
 
-        const localeStringFields = customEntityFields.filter((field) => field.type === 'localeString');
-        const nonLocaleStringFields = customEntityFields.filter((field) => field.type !== 'localeString');
-        const writeableLocaleStringFields = localeStringFields.filter((field) => !field.readonly);
-        const writeableNonLocaleStringFields = nonLocaleStringFields.filter((field) => !field.readonly);
+        const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
+        const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
+        const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
+        const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
@@ -53,6 +53,16 @@ export function addGraphQLCustomFields(
                         customFields: ${entityName}CustomFields
                     }
                 `;
+
+                // For custom fields on the Address entity, we also extend the OrderAddress
+                // type (which is used to store address snapshots on Orders)
+                if (entityName === 'Address' && schema.getType('OrderAddress')) {
+                    customFieldTypeDefs += `
+                        extend type OrderAddress {
+                            customFields: ${entityName}CustomFields
+                        }
+                    `;
+                }
             } else {
                 customFieldTypeDefs += `
                     extend type ${entityName} {
@@ -197,7 +207,7 @@ export function addRegisterCustomerCustomFieldsInput(
     if (!customerCustomFields || customerCustomFields.length === 0) {
         return schema;
     }
-    const publicWritableCustomFields = customerCustomFields.filter((fieldDef) => {
+    const publicWritableCustomFields = customerCustomFields.filter(fieldDef => {
         return fieldDef.public !== false && !fieldDef.readonly && !fieldDef.internal;
     });
     if (publicWritableCustomFields.length < 1) {
@@ -271,7 +281,7 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
 function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
-    return fieldDefs.map((field) => `${field.name}: ${typeFn(field.type)}`).join('\n');
+    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
 }
 
 function getFilterOperator(type: CustomFieldType): string {

@@ -203,6 +203,24 @@ describe('addGraphQLCustomFields()', () => {
         const result = addGraphQLCustomFields(input, customFieldConfig, true);
         expect(printSchema(result)).toMatchSnapshot();
     });
+
+    it('extends OrderAddress if Address custom fields defined', () => {
+        const input = `
+             type Address {
+                 id: ID
+                 streetLine1: String
+             }
+
+             type OrderAddress {
+                 streetLine1: String
+             }
+        `;
+        const customFieldConfig: CustomFields = {
+            Address: [{ name: 'instructions', type: 'string' }],
+        };
+        const result = addGraphQLCustomFields(input, customFieldConfig, true);
+        expect(printSchema(result)).toMatchSnapshot();
+    });
 });
 
 describe('addOrderLineCustomFieldsInput()', () => {
