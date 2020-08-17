@@ -17,10 +17,17 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
     const fragmentDefs = documentNode.definitions.filter(isFragmentDefinition);
 
     for (const fragmentDef of fragmentDefs) {
-        const entityType = fragmentDef.typeCondition.name.value as keyof Pick<
+        let entityType = fragmentDef.typeCondition.name.value as keyof Pick<
             CustomFields,
             Exclude<keyof CustomFields, '__typename'>
         >;
+
+        if (entityType === ('OrderAddress' as any)) {
+            // OrderAddress is a special case of the Address entity, and shares its custom fields
+            // so we treat it as an alias
+            entityType = 'Address';
+        }
+
         const customFieldsForType = customFields[entityType];
         if (customFieldsForType && customFieldsForType.length) {
             (fragmentDef.selectionSet.selections as SelectionNode[]).push({
