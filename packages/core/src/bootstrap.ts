@@ -56,12 +56,14 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     app.useLogger(new Logger());
     await runBeforeBootstrapHooks(config, app);
     if (config.authOptions.tokenMethod === 'cookie') {
-        const cookieHandler = cookieSession({
-            name: 'session',
-            secret: config.authOptions.sessionSecret,
-            httpOnly: true,
-        });
-        app.use(cookieHandler);
+        const { sessionSecret, cookieOptions } = config.authOptions;
+        app.use(
+            cookieSession({
+                ...cookieOptions,
+                // TODO: Remove once the deprecated sessionSecret field is removed
+                ...(sessionSecret ? { secret: sessionSecret } : {}),
+            }),
+        );
     }
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();

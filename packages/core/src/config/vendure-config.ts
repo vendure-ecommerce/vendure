@@ -139,6 +139,90 @@ export interface ApiOptions {
 
 /**
  * @description
+ * Options for the handling of the cookies used to track sessions (only applicable if
+ * `authOptions.tokenMethod` is set to `'cookie'`). These options are passed directly
+ * to the Express [cookie-session middleware](https://github.com/expressjs/cookie-session).
+ *
+ * @docsCategory auth
+ */
+export interface CookieOptions {
+    /**
+     * @description
+     * The name of the cookie to set.
+     *
+     * @default 'session'
+     */
+    name?: string;
+
+    /**
+     * @description
+     * A string which will be used as single key if keys is not provided.
+     *
+     * @default (random character string)
+     */
+    secret?: string;
+
+    /**
+     * @description
+     * a string indicating the path of the cookie.
+     *
+     * @default '/'
+     */
+    path?: string;
+
+    /**
+     * @description
+     * a string indicating the domain of the cookie (no default).
+     */
+    domain?: string;
+
+    /**
+     * @description
+     * a boolean or string indicating whether the cookie is a "same site" cookie (false by default). This can be set to 'strict',
+     * 'lax', 'none', or true (which maps to 'strict').
+     *
+     * @default false
+     */
+    sameSite?: 'strict' | 'lax' | 'none' | boolean;
+
+    /**
+     * @description
+     * a boolean indicating whether the cookie is only to be sent over HTTPS (false by default for HTTP, true by default for HTTPS).
+     */
+    secure?: boolean;
+
+    /**
+     * @description
+     * a boolean indicating whether the cookie is only to be sent over HTTPS (use this if you handle SSL not in your node process).
+     */
+    secureProxy?: boolean;
+
+    /**
+     * @description
+     * a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (true by default).
+     *
+     * @default true
+     */
+    httpOnly?: boolean;
+
+    /**
+     * @description
+     * a boolean indicating whether the cookie is to be signed (true by default). If this is true, another cookie of the same name with the .sig
+     * suffix appended will also be sent, with a 27-byte url-safe base64 SHA1 value representing the hash of cookie-name=cookie-value against the
+     * first Keygrip key. This signature key is used to detect tampering the next time a cookie is received.
+     */
+    signed?: boolean;
+
+    /**
+     * @description
+     * a boolean indicating whether to overwrite previously set cookies of the same name (true by default). If this is true, all cookies set during
+     * the same request with the same name (regardless of path or domain) are filtered out of the Set-Cookie header when setting this cookie.
+     */
+    overwrite?: boolean;
+}
+
+/**
+ * @description
  * The AuthOptions define how authentication and authorization is managed.
  *
  * @docsCategory auth
@@ -172,6 +256,8 @@ export interface AuthOptions {
     tokenMethod?: 'cookie' | 'bearer';
     /**
      * @description
+     * **Deprecated** use `cookieConfig.secret` instead.
+     *
      * The secret used for signing the session cookies for authenticated users. Only applies when
      * tokenMethod is set to 'cookie'.
      *
@@ -180,8 +266,14 @@ export interface AuthOptions {
      * file not under source control, or from an environment variable, for example.
      *
      * @default 'session-secret'
+     * @deprecated use `cookieConfig.secret` instead
      */
     sessionSecret?: string;
+    /**
+     * @description
+     * Options related to the handling of cookies when using the 'cookie' tokenMethod.
+     */
+    cookieOptions?: CookieOptions;
     /**
      * @description
      * Sets the header property which will be used to send the auth token when using the 'bearer' method.
