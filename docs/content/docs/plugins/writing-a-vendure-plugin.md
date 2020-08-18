@@ -9,6 +9,8 @@ This is a complete example of how to implement a simple plugin step-by-step.
 
 {{< alert "primary" >}}
   For a complete working example of a Vendure plugin, see the [real-world-vendure Reviews plugin](https://github.com/vendure-ecommerce/real-world-vendure/tree/master/src/plugins/reviews)
+  
+  If you intend to write a shared plugin to be distributed as an npm package, see the [vendure plugin-template repo](https://github.com/vendure-ecommerce/plugin-template)
 {{< /alert >}}
 
 ## Example: RandomCatPlugin
