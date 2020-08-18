@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig } from '@vendure/common/lib/merge-config';
 import { omit } from '@vendure/common/lib/omit';
+import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
