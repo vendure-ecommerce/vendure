@@ -236,7 +236,6 @@ export class SimpleGraphQLClient {
         const response = await result.json();
         if (response.errors && response.errors.length) {
             const error = response.errors[0];
-            console.log(JSON.stringify(error.extensions, null, 2));
             throw new Error(error.message);
         }
         return response.data;
