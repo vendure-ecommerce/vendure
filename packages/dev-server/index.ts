@@ -8,4 +8,5 @@ import { devConfig } from './dev-config';
 bootstrap(devConfig).catch(err => {
     // tslint:disable-next-line
     console.log(err);
+    process.exit(1);
 });

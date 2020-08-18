@@ -1,5 +1,6 @@
-import { AssetStorageStrategy, Injector, Logger } from '@vendure/core';
+import { AssetStorageStrategy, Logger } from '@vendure/core';
 import { Request } from 'express';
+import * as path from 'path';
 import { Readable, Stream } from 'stream';
 
 import { loggerCtx } from './constants';
@@ -38,8 +39,17 @@ export interface S3Config {
     /**
      * @description
      * The AWS region in which to host the assets.
+     * @deprecated
+     * Use nativeS3Configuration instead.
      */
     region?: string;
+    /**
+     * @description
+     * Configuration object passed directly to the AWS SDK.
+     * S3.Types.ClientConfiguration can be used after importing aws-sdk.
+     * Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
+     */
+    nativeS3Configuration: any;
 }
 
 /**
@@ -110,7 +120,7 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private s3: import('aws-sdk').S3;
     constructor(
         private s3Config: S3Config,
-        public readonly toAbsoluteUrl: (reqest: Request, identifier: string) => string,
+        public readonly toAbsoluteUrl: (request: Request, identifier: string) => string,
     ) {}
 
     async init() {
@@ -124,11 +134,12 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
             );
         }
 
-        this.setCredentials();
-        if (this.s3Config.region) {
-            this.AWS.config.update({ region: this.s3Config.region });
-        }
-        this.s3 = new this.AWS.S3();
+        const config = {
+            credentials: this.getS3Credentials(),
+            region: this.s3Config.region,
+            ...this.s3Config.nativeS3Configuration,
+        };
+        this.s3 = new this.AWS.S3(config);
         await this.ensureBucket(this.s3Config.bucket);
     }
 
@@ -192,17 +203,16 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private getObjectParams(identifier: string) {
         return {
             Bucket: this.s3Config.bucket,
-            Key: identifier.replace(/^\//, '').replace(/\//g, '\\'),
+            Key: path.join(identifier.replace(/^\//, '')),
         };
     }
 
-    private setCredentials() {
+    private getS3Credentials() {
         const { credentials } = this.s3Config;
         if (this.isCredentialsProfile(credentials)) {
-            this.AWS.config.credentials = new this.AWS.SharedIniFileCredentials(credentials);
-        } else {
-            this.AWS.config.credentials = new this.AWS.Credentials(credentials);
+            return new this.AWS.SharedIniFileCredentials(credentials);
         }
+        return new this.AWS.Credentials(credentials);
     }
 
     private async ensureBucket(bucket: string) {

@@ -35,6 +35,7 @@ export class GlobalSettingsResolver {
     serverConfig(): {
         customFieldConfig: CustomFields;
         orderProcess: OrderProcessState[];
+        permittedAssetTypes: string[];
     } {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
@@ -46,6 +47,7 @@ export class GlobalSettingsResolver {
         return {
             customFieldConfig: exposedCustomFieldConfig,
             orderProcess: this.orderService.getOrderProcessStates(),
+            permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
         };
     }
 

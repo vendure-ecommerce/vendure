@@ -16,7 +16,7 @@ import { Stream } from 'stream';
 import { Connection, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError } from '../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -47,12 +47,22 @@ export interface EntityAssetInput {
 
 @Injectable()
 export class AssetService {
+    private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
+
     constructor(
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
-    ) {}
+    ) {
+        this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
+            .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))
+            .filter(notNullOrUndefined)
+            .map(val => {
+                const [type, subtype] = val.split('/');
+                return { type, subtype };
+            });
+    }
 
     findOne(id: ID): Promise<Asset | undefined> {
         return this.connection.getRepository(Asset).findOne(id);
@@ -91,7 +101,7 @@ export class AssetService {
                 });
             assets = (entityWithAssets && entityWithAssets.assets) || [];
         }
-        return assets.sort((a, b) => a.position - b.position).map((a) => a.asset);
+        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(entity: T, input: EntityAssetInput): Promise<T> {
@@ -121,7 +131,7 @@ export class AssetService {
         if (assetIds && assetIds.length) {
             const assets = await this.connection.getRepository(Asset).findByIds(assetIds);
             const sortedAssets = assetIds
-                .map((id) => assets.find((a) => idsAreEqual(a.id, id)))
+                .map(id => assets.find(a => idsAreEqual(a.id, id)))
                 .filter(notNullOrUndefined);
             await this.removeExistingOrderableAssets(entity);
             entity.assets = await this.createOrderableAssets(entity, sortedAssets);
@@ -129,6 +139,15 @@ export class AssetService {
             await this.removeExistingOrderableAssets(entity);
         }
         return entity;
+    }
+
+    async validateInputMimeTypes(inputs: CreateAssetInput[]): Promise<void> {
+        for (const input of inputs) {
+            const { mimetype } = await input.file;
+            if (!this.validateMimeType(mimetype)) {
+                throw new UserInputError('error.mime-type-not-permitted', { mimetype });
+            }
+        }
     }
 
     /**
@@ -214,6 +233,9 @@ export class AssetService {
 
     private async createAssetInternal(stream: Stream, filename: string, mimetype: string): Promise<Asset> {
         const { assetOptions } = this.configService;
+        if (!this.validateMimeType(mimetype)) {
+            throw new UserInputError('error.mime-type-not-permitted', { mimetype });
+        }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(filename);
         const previewFileName = await this.getPreviewFileName(sourceFileName);
@@ -310,7 +332,7 @@ export class AssetService {
     private getOrderableAssetType(entity: EntityWithAssets): Type<OrderableAsset> {
         const assetRelation = this.connection
             .getRepository(entity.constructor)
-            .metadata.relations.find((r) => r.propertyName === 'assets');
+            .metadata.relations.find(r => r.propertyName === 'assets');
         if (!assetRelation || typeof assetRelation.type === 'string') {
             throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
@@ -329,6 +351,15 @@ export class AssetService {
             default:
                 throw new InternalServerError('error.could-not-find-matching-orderable-asset');
         }
+    }
+
+    private validateMimeType(mimeType: string): boolean {
+        const [type, subtype] = mimeType.split('/');
+        const typeMatch = this.permittedMimeTypes.find(t => t.type === type);
+        if (typeMatch) {
+            return typeMatch.subtype === subtype || typeMatch.subtype === '*';
+        }
+        return false;
     }
 
     /**
