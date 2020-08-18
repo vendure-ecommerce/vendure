@@ -53,6 +53,16 @@ export function addGraphQLCustomFields(
                         customFields: ${entityName}CustomFields
                     }
                 `;
+
+                // For custom fields on the Address entity, we also extend the OrderAddress
+                // type (which is used to store address snapshots on Orders)
+                if (entityName === 'Address' && schema.getType('OrderAddress')) {
+                    customFieldTypeDefs += `
+                        extend type OrderAddress {
+                            customFields: ${entityName}CustomFields
+                        }
+                    `;
+                }
             } else {
                 customFieldTypeDefs += `
                     extend type ${entityName} {

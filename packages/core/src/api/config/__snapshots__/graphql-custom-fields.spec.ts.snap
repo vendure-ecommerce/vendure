@@ -1,5 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`addGraphQLCustomFields() extends OrderAddress if Address custom fields defined 1`] = `
+"type Address {
+  id: ID
+  streetLine1: String
+  customFields: AddressCustomFields
+}
+
+type AddressCustomFields {
+  instructions: String
+}
+
+scalar DateTime
+
+scalar JSON
+
+type OrderAddress {
+  streetLine1: String
+  customFields: AddressCustomFields
+}
+"
+`;
+
 exports[`addGraphQLCustomFields() extends a type 1`] = `
 "scalar DateTime
 

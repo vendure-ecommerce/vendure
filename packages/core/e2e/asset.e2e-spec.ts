@@ -1,11 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
+import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -24,9 +25,16 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_ASSET,
 } from './graphql/shared-definitions';
+import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Asset resolver', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
+    const { server, adminClient } = createTestEnvironment(
+        mergeConfig(testConfig, {
+            assetOptions: {
+                permittedFileTypes: ['image/*', '.pdf'],
+            },
+        }),
+    );
 
     let firstAssetId: string;
     let createdAssetId: string;
@@ -57,7 +65,7 @@ describe('Asset resolver', () => {
         );
 
         expect(assets.totalItems).toBe(4);
-        expect(assets.items.map((a) => omit(a, ['id']))).toEqual([
+        expect(assets.items.map(a => omit(a, ['id']))).toEqual([
             {
                 fileSize: 1680,
                 mimeType: 'image/jpeg',
@@ -113,41 +121,82 @@ describe('Asset resolver', () => {
         });
     });
 
-    it('createAssets', async () => {
-        const filesToUpload = [
-            path.join(__dirname, 'fixtures/assets/pps1.jpg'),
-            path.join(__dirname, 'fixtures/assets/pps2.jpg'),
-        ];
-        const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
-            mutation: CREATE_ASSETS,
-            filePaths: filesToUpload,
-            mapVariables: (filePaths) => ({
-                input: filePaths.map((p) => ({ file: null })),
-            }),
+    describe('createAssets', () => {
+        it('permitted types by mime type', async () => {
+            const filesToUpload = [
+                path.join(__dirname, 'fixtures/assets/pps1.jpg'),
+                path.join(__dirname, 'fixtures/assets/pps2.jpg'),
+            ];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
+                }),
+            });
+
+            expect(createAssets.map(a => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1))).toEqual(
+                [
+                    {
+                        fileSize: 1680,
+                        focalPoint: null,
+                        mimeType: 'image/jpeg',
+                        name: 'pps1.jpg',
+                        preview: 'test-url/test-assets/pps1__preview.jpg',
+                        source: 'test-url/test-assets/pps1.jpg',
+                        type: 'IMAGE',
+                    },
+                    {
+                        fileSize: 1680,
+                        focalPoint: null,
+                        mimeType: 'image/jpeg',
+                        name: 'pps2.jpg',
+                        preview: 'test-url/test-assets/pps2__preview.jpg',
+                        source: 'test-url/test-assets/pps2.jpg',
+                        type: 'IMAGE',
+                    },
+                ],
+            );
+
+            createdAssetId = createAssets[0].id;
         });
 
-        expect(createAssets.map((a) => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1))).toEqual([
-            {
-                fileSize: 1680,
-                focalPoint: null,
-                mimeType: 'image/jpeg',
-                name: 'pps1.jpg',
-                preview: 'test-url/test-assets/pps1__preview.jpg',
-                source: 'test-url/test-assets/pps1.jpg',
-                type: 'IMAGE',
-            },
-            {
-                fileSize: 1680,
-                focalPoint: null,
-                mimeType: 'image/jpeg',
-                name: 'pps2.jpg',
-                preview: 'test-url/test-assets/pps2__preview.jpg',
-                source: 'test-url/test-assets/pps2.jpg',
-                type: 'IMAGE',
-            },
-        ]);
+        it('permitted type by file extension', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.pdf')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
+                }),
+            });
 
-        createdAssetId = createAssets[0].id;
+            expect(createAssets.map(a => omit(a, ['id']))).toEqual([
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'application/pdf',
+                    name: 'dummy.pdf',
+                    preview: 'test-url/test-assets/dummy__preview.pdf.png',
+                    source: 'test-url/test-assets/dummy.pdf',
+                    type: 'BINARY',
+                },
+            ]);
+        });
+
+        it(
+            'not permitted type',
+            assertThrowsWithMessage(async () => {
+                const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.txt')];
+                const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                    mutation: CREATE_ASSETS,
+                    filePaths: filesToUpload,
+                    mapVariables: filePaths => ({
+                        input: filePaths.map(p => ({ file: null })),
+                    }),
+                });
+            }, `The MIME type 'text/plain' is not permitted.`),
+        );
     });
 
     describe('updateAsset', () => {

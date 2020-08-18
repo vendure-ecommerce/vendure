@@ -2208,6 +2208,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
 };
 

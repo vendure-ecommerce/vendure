@@ -190,7 +190,6 @@ async function generateSources(
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
-        sessionSecret: Math.random().toString(36).substr(3),
     };
     const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
     const configSource = Handlebars.compile(configTemplate)(templateContext);

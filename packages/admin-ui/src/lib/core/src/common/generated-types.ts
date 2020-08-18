@@ -3405,6 +3405,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
    __typename?: 'ServerConfig';
   orderProcess: Array<OrderProcessState>;
+  permittedAssetTypes: Array<Scalars['String']>;
   customFieldConfig: CustomFields;
 };
 
@@ -6414,6 +6415,7 @@ export type GetServerConfigQuery = (
     { __typename?: 'GlobalSettings' }
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
+      & Pick<ServerConfig, 'permittedAssetTypes'>
       & { orderProcess: Array<(
         { __typename?: 'OrderProcessState' }
         & Pick<OrderProcessState, 'name' | 'to'>

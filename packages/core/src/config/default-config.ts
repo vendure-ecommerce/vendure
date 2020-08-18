@@ -58,7 +58,13 @@ export const defaultConfig: RuntimeVendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
-        sessionSecret: 'session-secret',
+        sessionSecret: '',
+        cookieOptions: {
+            secret: Math.random()
+                .toString(36)
+                .substr(3),
+            httpOnly: true,
+        },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
         sessionCacheStrategy: new InMemorySessionCacheStrategy(),
@@ -80,6 +86,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new NoAssetStorageStrategy(),
         assetPreviewStrategy: new NoAssetPreviewStrategy(),
+        permittedFileTypes: ['image/*', 'video/*', 'audio/*', '.pdf'],
         uploadMaxFileSize: 20971520,
     },
     dbConnectionOptions: {

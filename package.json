@@ -55,6 +55,9 @@
     "tslint": "^5.11.0",
     "typescript": "3.8.3"
   },
+  "resolutions": {
+    "npm-packlist": "1.1.12"
+  },
   "workspaces": {
     "packages": [
       "packages/*"
