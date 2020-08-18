@@ -448,6 +448,16 @@ export interface AssetOptions {
     assetPreviewStrategy: AssetPreviewStrategy;
     /**
      * @description
+     * An array of the permitted file types that may be uploaded as Assets. Each entry
+     * should be in the form of a valid
+     * [unique file type specifier](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/file#Unique_file_type_specifiers)
+     * i.e. either a file extension (".pdf") or a mime type ("image/*", "audio/mpeg" etc.).
+     *
+     * @default image, audio, video MIME types plus PDFs
+     */
+    permittedFileTypes: string[];
+    /**
+     * @description
      * The max file size in bytes for uploaded assets.
      *
      * @default 20971520
