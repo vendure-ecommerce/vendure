@@ -35,17 +35,19 @@ export class GlobalSettingsResolver {
     serverConfig(): {
         customFieldConfig: CustomFields;
         orderProcess: OrderProcessState[];
+        permittedAssetTypes: string[];
     } {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
             exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields.filter(
-                (c) => !c.internal,
+                c => !c.internal,
             );
         }
         return {
             customFieldConfig: exposedCustomFieldConfig,
             orderProcess: this.orderService.getOrderProcessStates(),
+            permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
         };
     }
 
@@ -58,12 +60,12 @@ export class GlobalSettingsResolver {
         if (availableLanguages) {
             const channels = await this.channelService.findAll();
             const unavailableDefaults = channels.filter(
-                (c) => !availableLanguages.includes(c.defaultLanguageCode),
+                c => !availableLanguages.includes(c.defaultLanguageCode),
             );
             if (unavailableDefaults.length) {
                 throw new UserInputError('error.cannot-set-default-language-as-unavailable', {
-                    language: unavailableDefaults.map((c) => c.defaultLanguageCode).join(', '),
-                    channelCode: unavailableDefaults.map((c) => c.code).join(', '),
+                    language: unavailableDefaults.map(c => c.defaultLanguageCode).join(', '),
+                    channelCode: unavailableDefaults.map(c => c.code).join(', '),
                 });
             }
         }

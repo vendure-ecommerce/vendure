@@ -15,4 +15,5 @@ type OrderProcessState {
 # Programatically extended by the addGraphQLCustomFields function
 type ServerConfig {
     orderProcess: [OrderProcessState!]!
+    permittedAssetTypes: [String!]!
 }

@@ -41,7 +41,13 @@ export type Address = Node & {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<AddressCustomFields>;
+};
+
+export type AddressCustomFields = {
+   __typename?: 'AddressCustomFields';
+  instructions?: Maybe<Scalars['String']>;
+  verified?: Maybe<Scalars['Boolean']>;
 };
 
 export type Adjustment = {
@@ -416,6 +422,11 @@ export type CountryTranslationInput = {
   name?: Maybe<Scalars['String']>;
 };
 
+export type CreateAddressCustomFieldsInput = {
+  instructions?: Maybe<Scalars['String']>;
+  verified?: Maybe<Scalars['Boolean']>;
+};
+
 export type CreateAddressInput = {
   fullName?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
@@ -428,7 +439,7 @@ export type CreateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<CreateAddressCustomFieldsInput>;
 };
 
 export type CreateAdministratorInput = {
@@ -2467,6 +2478,7 @@ export type OrderAddress = {
   country?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
+  customFields?: Maybe<AddressCustomFields>;
 };
 
 export type OrderFilterParameter = {
@@ -3349,6 +3361,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
    __typename?: 'ServerConfig';
   orderProcess: Array<OrderProcessState>;
+  permittedAssetTypes: Array<Scalars['String']>;
   customFieldConfig: CustomFields;
 };
 
@@ -3562,6 +3575,11 @@ export type TestShippingMethodResult = {
   quote?: Maybe<TestShippingMethodQuote>;
 };
 
+export type UpdateAddressCustomFieldsInput = {
+  instructions?: Maybe<Scalars['String']>;
+  verified?: Maybe<Scalars['Boolean']>;
+};
+
 export type UpdateAddressInput = {
   id: Scalars['ID'];
   fullName?: Maybe<Scalars['String']>;
@@ -3575,7 +3593,7 @@ export type UpdateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<UpdateAddressCustomFieldsInput>;
 };
 
 export type UpdateAdministratorInput = {

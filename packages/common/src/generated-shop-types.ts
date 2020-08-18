@@ -29,7 +29,12 @@ export type Address = Node & {
     phoneNumber?: Maybe<Scalars['String']>;
     defaultShippingAddress?: Maybe<Scalars['Boolean']>;
     defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<AddressCustomFields>;
+};
+
+export type AddressCustomFields = {
+    __typename?: 'AddressCustomFields';
+    instructions?: Maybe<Scalars['String']>;
 };
 
 export type Adjustment = {
@@ -296,6 +301,10 @@ export type CountryTranslation = {
     name: Scalars['String'];
 };
 
+export type CreateAddressCustomFieldsInput = {
+    instructions?: Maybe<Scalars['String']>;
+};
+
 export type CreateAddressInput = {
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
@@ -308,7 +317,7 @@ export type CreateAddressInput = {
     phoneNumber?: Maybe<Scalars['String']>;
     defaultShippingAddress?: Maybe<Scalars['Boolean']>;
     defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<CreateAddressCustomFieldsInput>;
 };
 
 export type CreateCustomerInput = {
@@ -1622,6 +1631,7 @@ export type OrderAddress = {
     country?: Maybe<Scalars['String']>;
     countryCode?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<AddressCustomFields>;
 };
 
 export type OrderFilterParameter = {
@@ -2200,6 +2210,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
 };
 
@@ -2327,6 +2338,10 @@ export type TaxRateList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type UpdateAddressCustomFieldsInput = {
+    instructions?: Maybe<Scalars['String']>;
+};
+
 export type UpdateAddressInput = {
     id: Scalars['ID'];
     fullName?: Maybe<Scalars['String']>;
@@ -2340,7 +2355,7 @@ export type UpdateAddressInput = {
     phoneNumber?: Maybe<Scalars['String']>;
     defaultShippingAddress?: Maybe<Scalars['Boolean']>;
     defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<UpdateAddressCustomFieldsInput>;
 };
 
 export type UpdateCustomerInput = {
