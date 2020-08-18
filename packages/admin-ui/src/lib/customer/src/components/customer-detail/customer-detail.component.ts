@@ -80,7 +80,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                 firstName: ['', Validators.required],
                 lastName: ['', Validators.required],
                 phoneNumber: '',
-                emailAddress: '',
+                emailAddress: ['', [Validators.required, Validators.email]],
                 password: '',
                 customFields: this.formBuilder.group(
                     this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
