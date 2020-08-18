@@ -42,9 +42,10 @@ export type CurrentView = {
 export class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, OnInit, OnDestroy {
     /**
      * The range above and below the current year which is selectable from
-     * the year select control.
+     * the year select control. If a min or max value is set, these will
+     * override the yearRange.
      */
-    @Input() yearRange = 10;
+    @Input() yearRange;
     /**
      * The day that the week should start with in the calendar view.
      */
@@ -209,10 +210,12 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
     }
 
     private populateYearsSelection() {
+        const yearRange = this.yearRange ?? 10;
         const currentYear = new Date().getFullYear();
-        this.years = Array.from({ length: this.yearRange * 2 + 1 }).map(
-            (_, i) => currentYear - this.yearRange + i,
-        );
+        const min = (this.min && new Date(this.min).getFullYear()) || currentYear - yearRange;
+        const max = (this.max && new Date(this.max).getFullYear()) || currentYear + yearRange;
+        const spread = max - min + 1;
+        this.years = Array.from({ length: spread }).map((_, i) => min + i);
     }
 
     private populateWeekdays() {
