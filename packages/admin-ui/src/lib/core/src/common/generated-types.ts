@@ -42,13 +42,7 @@ export type Address = Node & {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<AddressCustomFields>;
-};
-
-export type AddressCustomFields = {
-   __typename?: 'AddressCustomFields';
-  instructions?: Maybe<Scalars['String']>;
-  verified?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Adjustment = {
@@ -423,11 +417,6 @@ export type CountryTranslationInput = {
   name?: Maybe<Scalars['String']>;
 };
 
-export type CreateAddressCustomFieldsInput = {
-  instructions?: Maybe<Scalars['String']>;
-  verified?: Maybe<Scalars['Boolean']>;
-};
-
 export type CreateAddressInput = {
   fullName?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
@@ -440,7 +429,7 @@ export type CreateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<CreateAddressCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CreateAdministratorInput = {
@@ -2518,7 +2507,6 @@ export type OrderAddress = {
   country?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
-  customFields?: Maybe<AddressCustomFields>;
 };
 
 export type OrderFilterParameter = {
@@ -3623,11 +3611,6 @@ export type UiState = {
   language: LanguageCode;
 };
 
-export type UpdateAddressCustomFieldsInput = {
-  instructions?: Maybe<Scalars['String']>;
-  verified?: Maybe<Scalars['Boolean']>;
-};
-
 export type UpdateAddressInput = {
   id: Scalars['ID'];
   fullName?: Maybe<Scalars['String']>;
@@ -3641,7 +3624,7 @@ export type UpdateAddressInput = {
   phoneNumber?: Maybe<Scalars['String']>;
   defaultShippingAddress?: Maybe<Scalars['Boolean']>;
   defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<UpdateAddressCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
