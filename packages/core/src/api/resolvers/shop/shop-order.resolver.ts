@@ -57,7 +57,7 @@ export class ShopOrderResolver {
                 skip: 0,
                 take: 99999,
             })
-            .then((data) => data.items);
+            .then(data => data.items);
     }
 
     @Query()
@@ -238,6 +238,9 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAdjustOrderLineArgs,
     ): Promise<Order> {
+        if (args.quantity === 0) {
+            return this.removeOrderLine(ctx, { orderLineId: args.orderLineId });
+        }
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.adjustOrderLine(
             ctx,
