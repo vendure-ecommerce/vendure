@@ -431,21 +431,21 @@ export interface AssetOptions {
      *
      * @default DefaultAssetNamingStrategy
      */
-    assetNamingStrategy: AssetNamingStrategy;
+    assetNamingStrategy?: AssetNamingStrategy;
     /**
      * @description
      * Defines the strategy used for storing uploaded binary files.
      *
      * @default NoAssetStorageStrategy
      */
-    assetStorageStrategy: AssetStorageStrategy;
+    assetStorageStrategy?: AssetStorageStrategy;
     /**
      * @description
      * Defines the strategy used for creating preview images of uploaded assets.
      *
      * @default NoAssetPreviewStrategy
      */
-    assetPreviewStrategy: AssetPreviewStrategy;
+    assetPreviewStrategy?: AssetPreviewStrategy;
     /**
      * @description
      * An array of the permitted file types that may be uploaded as Assets. Each entry
@@ -455,7 +455,7 @@ export interface AssetOptions {
      *
      * @default image, audio, video MIME types plus PDFs
      */
-    permittedFileTypes: string[];
+    permittedFileTypes?: string[];
     /**
      * @description
      * The max file size in bytes for uploaded assets.
