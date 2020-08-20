@@ -126,6 +126,7 @@ input SearchInput {
     facetValueIds: [ID!]
     facetValueOperator: LogicalOperator
     collectionId: ID
+    collectionSlug: String
     groupByProduct: Boolean
     take: Int
     skip: Int

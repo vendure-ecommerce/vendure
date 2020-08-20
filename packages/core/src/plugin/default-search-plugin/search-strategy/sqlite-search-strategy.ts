@@ -105,7 +105,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -148,6 +148,11 @@ export class SqliteSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`(',' || collectionIds || ',') LIKE :collectionId`, {
                 collectionId: `%,${collectionId},%`,
+            });
+        }
+        if (collectionSlug) {
+            qb.andWhere(`(',' || collectionSlugs || ',') LIKE :collectionSlug`, {
+                collectionSlug: `%,${collectionSlug},%`,
             });
         }
         qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });

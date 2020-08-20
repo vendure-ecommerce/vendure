@@ -108,7 +108,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -149,6 +149,9 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         if (collectionId) {
             qb.andWhere(`FIND_IN_SET (:collectionId, collectionIds)`, { collectionId });
+        }
+        if (collectionSlug) {
+            qb.andWhere(`FIND_IN_SET (:collectionSlug, collectionSlugs)`, { collectionSlug });
         }
         qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
         qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });

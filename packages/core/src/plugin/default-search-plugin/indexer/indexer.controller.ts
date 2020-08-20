@@ -59,7 +59,7 @@ export class IndexerController {
     @MessagePattern(ReindexMessage.pattern)
     reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
         const ctx = RequestContext.deserialize(rawContext);
-        return asyncObservable(async (observer) => {
+        return asyncObservable(async observer => {
             const timeStart = Date.now();
             const qb = this.getSearchIndexQueryBuilder(ctx.channelId);
             const count = await qb.getCount();
@@ -103,7 +103,7 @@ export class IndexerController {
     }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
         const ctx = RequestContext.deserialize(rawContext);
 
-        return asyncObservable(async (observer) => {
+        return asyncObservable(async observer => {
             const timeStart = Date.now();
             if (ids.length) {
                 const batches = Math.ceil(ids.length / BATCH_SIZE);
@@ -169,7 +169,7 @@ export class IndexerController {
                 await this.removeSearchIndexItems(
                     ctx.languageCode,
                     ctx.channelId,
-                    variants.map((v) => v.id),
+                    variants.map(v => v.id),
                 );
             }
             return true;
@@ -238,14 +238,14 @@ export class IndexerController {
         });
         if (product) {
             let updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
-                product.variants.map((v) => v.id),
+                product.variants.map(v => v.id),
                 {
                     relations: variantRelations,
                     where: { deletedAt: null },
                 },
             );
             if (product.enabled === false) {
-                updatedVariants.forEach((v) => (v.enabled = false));
+                updatedVariants.forEach(v => (v.enabled = false));
             }
             Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
             updatedVariants = this.hydrateVariants(ctx, updatedVariants);
@@ -282,7 +282,7 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
-            const removedVariantIds = product.variants.map((v) => v.id);
+            const removedVariantIds = product.variants.map(v => v.id);
             if (removedVariantIds.length) {
                 await this.removeSearchIndexItems(ctx.languageCode, channelId, removedVariantIds);
             }
@@ -309,8 +309,8 @@ export class IndexerController {
      */
     private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
         return variants
-            .map((v) => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map((v) => translateDeep(v, ctx.languageCode, ['product']));
+            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
+            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
     private async saveVariants(languageCode: LanguageCode, channelId: ID, variants: ProductVariant[]) {
@@ -337,10 +337,11 @@ export class IndexerController {
                     productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
                     productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
                     productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                    channelIds: v.product.channels.map((c) => c.id as string),
+                    channelIds: v.product.channels.map(c => c.id as string),
                     facetIds: this.getFacetIds(v),
                     facetValueIds: this.getFacetValueIds(v),
-                    collectionIds: v.collections.map((c) => c.id.toString()),
+                    collectionIds: v.collections.map(c => c.id.toString()),
+                    collectionSlugs: v.collections.map(c => c.slug),
                 }),
         );
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
@@ -364,7 +365,7 @@ export class IndexerController {
      * Remove items from the search index
      */
     private async removeSearchIndexItems(languageCode: LanguageCode, channelId: ID, variantIds: ID[]) {
-        const compositeKeys = variantIds.map((id) => ({
+        const compositeKeys = variantIds.map(id => ({
             productVariantId: id,
             channelId,
             languageCode,
