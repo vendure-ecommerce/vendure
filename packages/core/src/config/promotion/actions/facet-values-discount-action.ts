@@ -26,7 +26,7 @@ export const discountOnItemWithFacets = new PromotionItemAction({
     },
     async execute(orderItem, orderLine, args) {
         if (await facetValueChecker.hasFacetValues(orderLine, args.facets)) {
-            return -orderLine.unitPrice * (args.discount / 100);
+            return -orderItem.unitPriceWithPromotions * (args.discount / 100);
         }
         return 0;
     },
