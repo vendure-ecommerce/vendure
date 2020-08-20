@@ -22,6 +22,7 @@ import {
     GetProductVariant,
     GetProductWithVariants,
     LanguageCode,
+    ProductVariantFragment,
     ProductWithVariants,
     RemoveOptionGroupFromProduct,
     SortOrder,
@@ -1008,6 +1009,8 @@ describe('Product resolver', () => {
                 ),
             );
 
+            let deletedVariant: ProductVariantFragment;
+
             it('deleteProductVariant', async () => {
                 const result1 = await adminClient.query<
                     GetProductWithVariants.Query,
@@ -1034,6 +1037,30 @@ describe('Product resolver', () => {
                     id: newProduct.id,
                 });
                 expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
+
+                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+            });
+
+            /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
+            it('createProductVariants ignores deleted variants when checking for existing combinations', async () => {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'RE1',
+                            optionIds: [deletedVariant.options[0].id, deletedVariant.options[1].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Re-created Variant' }],
+                        },
+                    ],
+                });
+
+                expect(createProductVariants.length).toBe(1);
+                expect(createProductVariants[0]!.options.map(o => o.code)).toEqual(
+                    deletedVariant.options.map(o => o.code),
+                );
             });
         });
     });
