@@ -232,6 +232,23 @@ describe('Elasticsearch plugin', () => {
         ]);
     }
 
+    async function testMatchCollectionSlug(client: SimpleGraphQLClient) {
+        const result = await client.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+            SEARCH_PRODUCTS_SHOP,
+            {
+                input: {
+                    collectionSlug: 'plants',
+                    groupByProduct: true,
+                },
+            },
+        );
+        expect(result.search.items.map(i => i.productName)).toEqual([
+            'Spiky Cactus',
+            'Orchid',
+            'Bonsai Tree',
+        ]);
+    }
+
     async function testSinglePrices(client: SimpleGraphQLClient) {
         const result = await client.query<SearchGetPrices.Query, SearchGetPrices.Variables>(
             SEARCH_GET_PRICES,
@@ -292,6 +309,8 @@ describe('Elasticsearch plugin', () => {
         it('matches by facetValueId with OR operator', () => testMatchFacetIdsOr(shopClient));
 
         it('matches by collectionId', () => testMatchCollectionId(shopClient));
+
+        it('matches by collectionSlug', () => testMatchCollectionSlug(shopClient));
 
         it('single prices', () => testSinglePrices(shopClient));
 
@@ -445,6 +464,8 @@ describe('Elasticsearch plugin', () => {
 
         it('matches by collectionId', () => testMatchCollectionId(adminClient));
 
+        it('matches by collectionSlug', () => testMatchCollectionSlug(adminClient));
+
         it('single prices', () => testSinglePrices(adminClient));
 
         it('price ranges', () => testPriceRanges(adminClient));
@@ -576,9 +597,21 @@ describe('Elasticsearch plugin', () => {
                 await awaitRunningJobs(adminClient);
                 // add an additional check for the collection filters to update
                 await awaitRunningJobs(adminClient);
-                const result = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
+                const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
 
-                expect(result.search.items.map(i => i.productName)).toEqual([
+                expect(result1.search.items.map(i => i.productName)).toEqual([
+                    'Road Bike',
+                    'Skipping Rope',
+                    'Boxing Gloves',
+                    'Tent',
+                    'Cruiser Skateboard',
+                    'Football',
+                    'Running Shoe',
+                ]);
+
+                const result2 = await doAdminSearchQuery({ collectionSlug: 'plants', groupByProduct: true });
+
+                expect(result2.search.items.map(i => i.productName)).toEqual([
                     'Road Bike',
                     'Skipping Rope',
                     'Boxing Gloves',

@@ -18,6 +18,7 @@ export function buildElasticBody(
         facetValueIds,
         facetValueOperator,
         collectionId,
+        collectionSlug,
         groupByProduct,
         skip,
         take,
@@ -59,6 +60,10 @@ export function buildElasticBody(
     if (collectionId) {
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { collectionIds: collectionId } });
+    }
+    if (collectionSlug) {
+        ensureBoolFilterExists(query);
+        query.bool.filter.push({ term: { collectionSlugs: collectionSlug } });
     }
     if (enabledOnly) {
         ensureBoolFilterExists(query);
