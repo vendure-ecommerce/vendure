@@ -70,6 +70,8 @@ import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
+import { ChannelService } from './channel.service';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 
 export class OrderService {
     constructor(
@@ -90,6 +92,7 @@ export class OrderService {
         private historyService: HistoryService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
+        private channelService: ChannelService,
     ) {}
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -101,7 +104,7 @@ export class OrderService {
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, { relations: ['lines', 'customer', 'lines.productVariant'] })
+            .build(Order, options, { relations: ['lines', 'customer', 'lines.productVariant', 'channels'], channelId: ctx.channelId, })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
@@ -115,7 +118,9 @@ export class OrderService {
         const order = await this.connection
             .getRepository(Order)
             .createQueryBuilder('order')
+            .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', { channelId: ctx.channelId })
             .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('customer.user', 'user') // Used in de 'Order' query, guess this didn't work before?
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
             .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
@@ -147,7 +152,7 @@ export class OrderService {
                 code: orderCode,
             },
         });
-        return order;
+        return order ? this.findOne(ctx, order.id) : undefined;
     }
 
     async findByCustomerId(
@@ -163,7 +168,9 @@ export class OrderService {
                     'lines.productVariant',
                     'lines.productVariant.options',
                     'customer',
+                    'channels',
                 ],
+                channelId: ctx.channelId,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
@@ -208,12 +215,16 @@ export class OrderService {
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
         const customer = await this.customerService.findOneByUserId(userId);
         if (customer) {
-            const activeOrder = await this.connection.getRepository(Order).findOne({
-                where: {
-                    customer,
-                    active: true,
-                },
-            });
+            const activeOrder = await this.connection
+                .createQueryBuilder(Order, 'order')
+                .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', {
+                    channelId: ctx.channelId,
+                  })
+                .leftJoinAndSelect('order.customer', 'customer')
+                .where('active = :active', { active: true })
+                .andWhere('order.customer.id = :customerId', { customerId: customer.id })
+                .orderBy('order.createdAt', 'DESC')
+                .getOne();
             if (activeOrder) {
                 return this.findOne(ctx, activeOrder.id);
             }
@@ -239,6 +250,7 @@ export class OrderService {
                 newOrder.customer = customer;
             }
         }
+        this.channelService.assignToCurrentChannel(newOrder, ctx)
         return this.connection.getRepository(Order).save(newOrder);
     }
 
@@ -372,8 +384,8 @@ export class OrderService {
         }
     }
 
-    async getOrderPromotions(orderId: ID): Promise<Promotion[]> {
-        const order = await getEntityOrThrow(this.connection, Order, orderId, {
+    async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
+        const order = await getEntityOrThrow(this.connection, Order, orderId, ctx.channelId, {
             relations: ['promotions'],
         });
         return order.promotions || [];
@@ -490,6 +502,7 @@ export class OrderService {
             throw new UserInputError('error.create-fulfillment-nothing-to-fulfill');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             input.lines,
             (i) => !i.fulfillment,
             'error.create-fulfillment-items-already-fulfilled',
@@ -518,7 +531,7 @@ export class OrderService {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await this.connection.getRepository(Order).findOne(order.id, {
+            const orderWithFulfillments = await findOneInChannel(this.connection, Order, order.id, ctx.channelId, { 
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
             if (!orderWithFulfillments) {
@@ -596,6 +609,7 @@ export class OrderService {
             throw new UserInputError('error.cancel-order-lines-nothing-to-cancel');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             lines,
             (i) => !i.cancelled,
             'error.cancel-order-lines-quantity-too-high',
@@ -646,6 +660,7 @@ export class OrderService {
             throw new UserInputError('error.refund-order-lines-nothing-to-refund');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             input.lines,
             (i) => !i.cancelled,
             'error.refund-order-lines-quantity-too-high',
@@ -881,6 +896,7 @@ export class OrderService {
     }
 
     private async getOrdersAndItemsFromLines(
+        ctx: RequestContext,
         orderLinesInput: OrderLineInput[],
         itemMatcher: (i: OrderItem) => boolean,
         noMatchesError: string,
@@ -891,7 +907,7 @@ export class OrderService {
         const lines = await this.connection.getRepository(OrderLine).findByIds(
             orderLinesInput.map((l) => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillment'],
+                relations: ['order', 'items', 'items.fulfillment', 'order.channels'],
                 order: { id: 'ASC' },
             },
         );
@@ -901,6 +917,9 @@ export class OrderService {
                 continue;
             }
             const order = line.order;
+            if (!order.channels.some(channel => channel.id == ctx.channelId)) {
+                throw new EntityNotFoundError('Order', order.id)
+            }
             if (!orders.has(order.id)) {
                 orders.set(order.id, order);
             }

@@ -14,6 +14,8 @@ import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
+import { ChannelAware } from '../../common/types/common-types';
+import { Channel } from '../channel/channel.entity';
 
 /**
  * @description
@@ -27,7 +29,7 @@ import { ShippingMethod } from '../shipping-method/shipping-method.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Order extends VendureEntity implements HasCustomFields {
+export class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
@@ -93,6 +95,10 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     @EntityId({ nullable: true })
     taxZoneId?: ID;
+
+    @ManyToMany((type) => Channel)
+    @JoinTable()
+    channels: Channel[];
 
     @Calculated()
     get totalBeforeTax(): number {
