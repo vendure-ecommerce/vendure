@@ -54,6 +54,7 @@ import { OrderStateMachine } from '../helpers/order-state-machine/order-state-ma
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
@@ -63,6 +64,7 @@ import {
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
 import { HistoryService } from './history.service';
@@ -70,8 +72,6 @@ import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
-import { ChannelService } from './channel.service';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 
 export class OrderService {
     constructor(
@@ -104,7 +104,10 @@ export class OrderService {
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, { relations: ['lines', 'customer', 'lines.productVariant', 'channels'], channelId: ctx.channelId, })
+            .build(Order, options, {
+                relations: ['lines', 'customer', 'lines.productVariant', 'channels'],
+                channelId: ctx.channelId,
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
@@ -118,7 +121,7 @@ export class OrderService {
         const order = await this.connection
             .getRepository(Order)
             .createQueryBuilder('order')
-            .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', { channelId: ctx.channelId })
+            .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
             .leftJoinAndSelect('customer.user', 'user') // Used in de 'Order' query, guess this didn't work before?
             .leftJoinAndSelect('order.lines', 'lines')
@@ -131,6 +134,7 @@ export class OrderService {
             .leftJoinAndSelect('items.fulfillment', 'fulfillment')
             .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
             .where('order.id = :orderId', { orderId })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addOrderBy('lines.createdAt', 'ASC')
             .addOrderBy('items.createdAt', 'ASC')
             .getOne();
@@ -219,7 +223,7 @@ export class OrderService {
                 .createQueryBuilder(Order, 'order')
                 .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', {
                     channelId: ctx.channelId,
-                  })
+                })
                 .leftJoinAndSelect('order.customer', 'customer')
                 .where('active = :active', { active: true })
                 .andWhere('order.customer.id = :customerId', { customerId: customer.id })
@@ -250,7 +254,7 @@ export class OrderService {
                 newOrder.customer = customer;
             }
         }
-        this.channelService.assignToCurrentChannel(newOrder, ctx)
+        this.channelService.assignToCurrentChannel(newOrder, ctx);
         return this.connection.getRepository(Order).save(newOrder);
     }
 
@@ -531,9 +535,15 @@ export class OrderService {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await findOneInChannel(this.connection, Order, order.id, ctx.channelId, { 
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await findOneInChannel(
+                this.connection,
+                Order,
+                order.id,
+                ctx.channelId,
+                {
+                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+                },
+            );
             if (!orderWithFulfillments) {
                 throw new InternalServerError('error.could-not-find-order');
             }
@@ -917,8 +927,8 @@ export class OrderService {
                 continue;
             }
             const order = line.order;
-            if (!order.channels.some(channel => channel.id == ctx.channelId)) {
-                throw new EntityNotFoundError('Order', order.id)
+            if (!order.channels.some((channel) => channel.id === ctx.channelId)) {
+                throw new EntityNotFoundError('Order', order.id);
             }
             if (!orders.has(order.id)) {
                 orders.set(order.id, order);
