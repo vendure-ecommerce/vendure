@@ -45,7 +45,12 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm" *ngIf="product$ | async as product" (keydown.enter)="$event.preventDefault()">
+<form
+    class="form"
+    [formGroup]="detailForm"
+    *ngIf="product$ | async as product"
+    (keydown.enter)="$event.preventDefault()"
+>
     <clr-tabs>
         <clr-tab>
             <button clrTabLink (click)="navigateToTab('details')">
@@ -165,7 +170,7 @@
             <clr-tab-content *clrIfActive="(activeTab$ | async) === 'variants'">
                 <section class="form-block">
                     <div class="view-mode">
-                        <div class="btn-group btn-sm">
+                        <div class="btn-group">
                             <button
                                 class="btn btn-secondary-outline"
                                 (click)="variantDisplayMode = 'card'"
@@ -183,11 +188,21 @@
                                 {{ 'catalog.display-variant-table' | translate }}
                             </button>
                         </div>
+                        <div class="variant-filter">
+                            <input
+                                [formControl]="filterInput"
+                                class="clr-input"
+                                [placeholder]="'catalog.filter-by-name-or-sku' | translate"
+                            />
+                            <button class="icon-button" (click)="filterInput.setValue('')">
+                                <clr-icon shape="times"></clr-icon>
+                            </button>
+                        </div>
                         <div class="flex-spacer"></div>
                         <a
                             *vdrIfPermissions="'UpdateCatalog'"
                             [routerLink]="['./', 'manage-variants']"
-                            class="btn btn-secondary btn-sm edit-variants-btn"
+                            class="btn btn-secondary edit-variants-btn"
                         >
                             <clr-icon shape="add-text"></clr-icon>
                             {{ 'catalog.manage-variants' | translate }}

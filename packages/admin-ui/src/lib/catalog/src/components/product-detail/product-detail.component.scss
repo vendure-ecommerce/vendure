@@ -12,6 +12,21 @@ vdr-action-bar clr-toggle-wrapper {
     margin-top: 12px;
 }
 
+.variant-filter {
+    flex: 1;
+    display: flex;
+    input {
+        flex: 1;
+        max-width: initial;
+        border-radius: 3px 0 0 3px !important;
+    }
+    .icon-button {
+        border: 1px solid $color-grey-300;
+        border-radius: 0 3px 3px 0;
+        border-left: none;
+    }
+}
+
 .group-name {
     padding-right: 6px;
 }
@@ -19,6 +34,7 @@ vdr-action-bar clr-toggle-wrapper {
 .view-mode {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
 }
 
 .edit-variants-btn {
