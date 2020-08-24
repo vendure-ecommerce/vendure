@@ -6,6 +6,7 @@
     [hideSelected]="true"
     [loading]="searchLoading"
     [typeahead]="searchInput$"
+    [appendTo]="'body'"
     [placeholder]="'settings.search-by-product-name-or-sku' | translate"
     (change)="selectResult($event)"
 >
