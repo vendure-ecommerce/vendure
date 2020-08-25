@@ -6,9 +6,11 @@ export const minimumOrderAmount = new PromotionCondition({
     description: [{ languageCode: LanguageCode.en, value: 'If order total is greater than { amount }' }],
     code: 'minimum_order_amount',
     args: {
-        amount: { type: 'int', config: { inputType: 'money' } },
+        amount: {
+            type: 'int',
+            ui: { component: 'currency-form-input' },
+        },
         taxInclusive: { type: 'boolean' },
-        ids: { type: 'string', list: true },
     },
     check(order, args) {
         if (args.taxInclusive) {
