@@ -42,6 +42,8 @@ There are a couple of query parameters which are valid for all GraphQL operation
 * {{< shop-api-operation operation="setOrderShippingAddress" type="mutation" >}} sets the shipping address for the Order.
 * {{< shop-api-operation operation="eligibleShippingMethods" type="mutation" >}} returns all available shipping methods based on the customer's shipping address and the contents of the Order.
 * {{< shop-api-operation operation="setOrderShippingMethod" type="mutation" >}} sets the shipping method to use.
+* {{< shop-api-operation operation="nextOrderStates" type="query" >}} returns the possible next states that the active Order can transition to
+* {{< shop-api-operation operation="transitionOrderToState" type="mutation" >}} transitions the active Order to the given state according to the [Order state machine]({{< relref "order-workflow" >}}).
 * {{< shop-api-operation operation="addPaymentToOrder" type="mutation" >}} adds a payment to the Order. If the payment amount equals the order total, then the Order will be transitioned to either the `PaymentAuthorized` or `PaymentSettled` state (depending on how the payment provider is configured) and the order process is complete from the customer's side.
 * {{< shop-api-operation operation="orderByCode" type="query" >}} allows even guest Customers to fetch the order they just placed for up to 2 hours after placing it. This is intended to be used to display an order confirmation page immediately after the order is completed.
 

@@ -185,21 +185,21 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  *             });
  *             return {
  *                 amount: order.total,
- *                 state: 'Settled' as 'Settled',
+ *                 state: 'Settled' as const,
  *                 transactionId: result.id.toString(),
  *                 metadata: result.outcome,
  *             };
  *         } catch (err) {
  *             return {
  *                 amount: order.total,
- *                 state: 'Declined' as 'Declined',
+ *                 state: 'Declined' as const,
  *                 metadata: {
  *                     errorMessage: err.message,
  *                 },
  *             };
  *         }
  *     },
- *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> {
+ *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
  *         return { success: true };
  *     }
  * });
