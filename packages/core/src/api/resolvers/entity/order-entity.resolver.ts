@@ -54,11 +54,11 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
-    async promotions(@Parent() order: Order) {
+    async promotions(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.promotions) {
             return order.promotions;
         }
-        return this.orderService.getOrderPromotions(order.id);
+        return this.orderService.getOrderPromotions(ctx, order.id);
     }
 }
 
