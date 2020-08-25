@@ -110,8 +110,12 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
 export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'ID';
 
 /**
+ * @description
  * The ids of the default form input components that ship with the
  * Admin UI.
+ *
+ * @docsCategory common
+ * @docsPage Configurable Operations
  */
 export type DefaultFormComponentId =
     | 'boolean-form-input'
@@ -122,7 +126,8 @@ export type DefaultFormComponentId =
     | 'select-form-input'
     | 'product-selector-form-input'
     | 'customer-group-form-input'
-    | 'text-form-input';
+    | 'text-form-input'
+    | 'password-form-input';
 
 /**
  * Used to defined the expected arguments for a given default form input component.
@@ -137,6 +142,7 @@ type DefaultFormConfigHash = {
     'product-selector-form-input': {};
     'customer-group-form-input': {};
     'text-form-input': {};
+    'password-form-input': {};
 };
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];
