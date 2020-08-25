@@ -52,10 +52,6 @@ export type UiComponentConfig =
     | ({ component: 'customer-group-form-input' } & DefaultFormComponentConfig<'customer-group-form-input'>)
     | { component: string; [prop: string]: any };
 
-const d: UiComponentConfig = {
-    component: 'number-form-input',
-};
-
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;
     list?: boolean;

@@ -22,6 +22,13 @@ export type CheckPromotionConditionFn<T extends ConfigArgs> = (
     args: ConfigArgValues<T>,
 ) => boolean | Promise<boolean>;
 
+/**
+ * @description
+ * This object is used to configure a PromotionCondition.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-condition
+ */
 export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     check: CheckPromotionConditionFn<T>;
     priorityValue?: number;
@@ -37,6 +44,14 @@ export interface PromotionConditionConfig<T extends ConfigArgs> extends Configur
  * @docsPage promotion-condition
  */
 export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
+    /**
+     * @description
+     * Used to determine the order of application of multiple Promotions
+     * on the same Order. See the {@link Promotion} `priorityScore` field for
+     * more information.
+     *
+     * @default 0
+     */
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
 
