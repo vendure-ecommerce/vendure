@@ -48,26 +48,18 @@ export function createApollo(
             new OmitTypenameLink(),
             new CheckJobsLink(injector),
             setContext(() => {
+                const headers: Record<string, string> = {};
                 const channelToken = localStorageService.get('activeChannelToken');
                 if (channelToken) {
-                    return {
-                        headers: {
-                            'vendure-token': channelToken,
-                        },
-                    };
+                    headers['vendure-token'] = channelToken;
                 }
-            }),
-            setContext(() => {
                 if (tokenMethod === 'bearer') {
                     const authToken = localStorageService.get('authToken');
                     if (authToken) {
-                        return {
-                            headers: {
-                                authorization: `Bearer ${authToken}`,
-                            },
-                        };
+                        headers.authorization = `Bearer ${authToken}`;
                     }
                 }
+                return { headers };
             }),
             createUploadLink({
                 uri: `${serverLocation}/${adminApiPath}`,
