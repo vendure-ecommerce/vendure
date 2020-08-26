@@ -7,7 +7,7 @@
 storage: ./storage
 # path to a directory with plugins to include
 plugins: ./plugins
-
+max_body_size: 1000mb
 web:
   # WebUI is enabled as default, if you want disable it, just uncomment this line
   enable: false
