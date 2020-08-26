@@ -8,6 +8,13 @@ import {
 } from '../../common/configurable-operation';
 import { Order } from '../../entity/order/order.entity';
 
+/**
+ * @description
+ * Configuration passed into the constructor of a {@link ShippingEligibilityChecker} to
+ * configure its behavior.
+ *
+ * @docsCategory shipping
+ */
 export interface ShippingEligibilityCheckerConfig<T extends ConfigArgs>
     extends ConfigurableOperationDefOptions<T> {
     check: CheckShippingEligibilityCheckerFn<T>;
@@ -61,7 +68,6 @@ export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> exten
  * a particular shipping method.
  *
  * @docsCategory shipping
- * @docsPage ShippingEligibilityChecker
  */
 export type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (
     order: Order,
