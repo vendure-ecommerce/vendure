@@ -227,7 +227,7 @@ export class ProductVariantService {
         if (input.price == null) {
             input.price = 0;
         }
-        input.taxCategoryId = (await this.getTaxCategoryForNewVariant(input.taxCategoryId)).id as string;
+        input.taxCategoryId = (await this.getTaxCategoryForNewVariant(input.taxCategoryId)).id;
 
         const createdVariant = await this.translatableSaver.create({
             input,
@@ -448,9 +448,7 @@ export class ProductVariantService {
             .join(glue);
     }
 
-    private async getTaxCategoryForNewVariant(
-        taxCategoryId: string | null | undefined,
-    ): Promise<TaxCategory> {
+    private async getTaxCategoryForNewVariant(taxCategoryId: ID | null | undefined): Promise<TaxCategory> {
         let taxCategory: TaxCategory;
         if (taxCategoryId) {
             taxCategory = await getEntityOrThrow(this.connection, TaxCategory, taxCategoryId);

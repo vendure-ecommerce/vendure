@@ -133,9 +133,9 @@ export class Populator {
                 `The defaultZone (${data.defaultZone}) did not match any zones from the InitialData`,
             );
         }
-        const defaultZoneId = defaultZone.entity.id as string;
+        const defaultZoneId = defaultZone.entity.id;
         await this.channelService.update({
-            id: channel.id as string,
+            id: channel.id,
             defaultTaxZoneId: defaultZoneId,
             defaultShippingZoneId: defaultZoneId,
         });
@@ -156,13 +156,13 @@ export class Populator {
                 zoneItem = { entity: zoneEntity, members: [] };
                 zones.set(zone, zoneItem);
             }
-            zoneItem.members.push(countryEntity.id as string);
+            zoneItem.members.push(countryEntity.id);
         }
 
         // add the countries to the respective zones
         for (const zoneItem of zones.values()) {
             await this.zoneService.addMembersToZone(ctx, {
-                zoneId: zoneItem.entity.id as string,
+                zoneId: zoneItem.entity.id,
                 memberIds: zoneItem.members,
             });
         }
@@ -181,9 +181,9 @@ export class Populator {
 
             for (const { entity } of zoneMap.values()) {
                 await this.taxRateService.create(ctx, {
-                    zoneId: entity.id as string,
+                    zoneId: entity.id,
                     value: taxRate.percentage,
-                    categoryId: category.id as string,
+                    categoryId: category.id,
                     name: `${taxRate.name} ${entity.name}`,
                     enabled: true,
                 });

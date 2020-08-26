@@ -69,7 +69,7 @@ export class OrderTestingService {
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
         return eligibleMethods.map(result => ({
-            id: result.method.id as string,
+            id: result.method.id,
             price: result.result.price,
             priceWithTax: result.result.priceWithTax,
             description: result.method.description,

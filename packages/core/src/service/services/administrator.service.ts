@@ -149,7 +149,7 @@ export class AdministratorService {
                 password: superadminCredentials.password,
                 firstName: 'Super',
                 lastName: 'Admin',
-                roleIds: [superAdminRole.id as string],
+                roleIds: [superAdminRole.id],
             });
         }
     }

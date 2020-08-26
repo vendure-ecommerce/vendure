@@ -107,12 +107,22 @@ Promise.all([
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     plugins: commonPlugins,
-                    config,
+                    config: {
+                        ...config,
+                        scalars: {
+                            ID: 'string | number',
+                        },
+                    },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     plugins: commonPlugins,
-                    config,
+                    config: {
+                        ...config,
+                        scalars: {
+                            ID: 'string | number',
+                        },
+                    },
                 },
             },
         });

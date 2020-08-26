@@ -48,7 +48,7 @@ export class ShopCustomerResolver {
         @Args() args: MutationCreateCustomerAddressArgs,
     ): Promise<Address> {
         const customer = await this.getCustomerForOwner(ctx);
-        return this.customerService.createAddress(ctx, customer.id as string, args.input);
+        return this.customerService.createAddress(ctx, customer.id, args.input);
     }
 
     @Mutation()
@@ -59,7 +59,7 @@ export class ShopCustomerResolver {
     ): Promise<Address> {
         const customer = await this.getCustomerForOwner(ctx);
         const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
-        if (!customerAddresses.find((address) => idsAreEqual(address.id, args.input.id))) {
+        if (!customerAddresses.find(address => idsAreEqual(address.id, args.input.id))) {
             throw new ForbiddenError();
         }
         return this.customerService.updateAddress(ctx, args.input);
@@ -73,7 +73,7 @@ export class ShopCustomerResolver {
     ): Promise<boolean> {
         const customer = await this.getCustomerForOwner(ctx);
         const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
-        if (!customerAddresses.find((address) => idsAreEqual(address.id, args.id))) {
+        if (!customerAddresses.find(address => idsAreEqual(address.id, args.id))) {
             throw new ForbiddenError();
         }
         return this.customerService.deleteAddress(ctx, args.id);

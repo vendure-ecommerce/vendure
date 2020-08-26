@@ -305,7 +305,7 @@ export class ShopOrderResolver {
                         // to populate the initial default Address.
                         if (addresses.length === 0 && order.shippingAddress?.country) {
                             const address = order.shippingAddress;
-                            await this.customerService.createAddress(ctx, order.customer.id as string, {
+                            await this.customerService.createAddress(ctx, order.customer.id, {
                                 ...address,
                                 streetLine1: address.streetLine1 || '',
                                 streetLine2: address.streetLine2 || '',

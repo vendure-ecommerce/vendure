@@ -632,10 +632,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const variantAsset = v.featuredAsset;
         const item: VariantIndexItem = {
             channelId,
-            productVariantId: v.id as string,
+            productVariantId: v.id,
             sku: v.sku,
             slug: v.product.slug,
-            productId: v.product.id as string,
+            productId: v.product.id,
             productName: v.product.name,
             productAssetId: productAsset ? productAsset.id : null,
             productPreview: productAsset ? productAsset.preview : '',
@@ -649,7 +649,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             currencyCode: v.currencyCode,
             description: v.product.description,
             facetIds: this.getFacetIds([v]),
-            channelIds: v.product.channels.map(c => c.id as string),
+            channelIds: v.product.channels.map(c => c.id),
             facetValueIds: this.getFacetValueIds([v]),
             collectionIds: v.collections.map(c => c.id.toString()),
             collectionSlugs: v.collections.map(c => c.slug),
@@ -697,7 +697,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 (ids, v) => [...ids, ...v.collections.map(c => c.slug)],
                 [] as string[],
             ),
-            channelIds: first.product.channels.map(c => c.id as string),
+            channelIds: first.product.channels.map(c => c.id),
             enabled: variants.some(v => v.enabled) && first.product.enabled,
         };
 

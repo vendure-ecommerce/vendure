@@ -162,6 +162,7 @@ export * from './shared/dynamic-form-inputs/date-form-input/date-form-input.comp
 export * from './shared/dynamic-form-inputs/dynamic-form-input/dynamic-form-input.component';
 export * from './shared/dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
 export * from './shared/dynamic-form-inputs/number-form-input/number-form-input.component';
+export * from './shared/dynamic-form-inputs/password-form-input/password-form-input.component';
 export * from './shared/dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
 export * from './shared/dynamic-form-inputs/register-dynamic-input-components';
 export * from './shared/dynamic-form-inputs/select-form-input/select-form-input.component';

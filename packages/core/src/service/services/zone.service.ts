@@ -129,7 +129,7 @@ export class ZoneService implements OnModuleInit {
         input: MutationRemoveMembersFromZoneArgs,
     ): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
-        zone.members = zone.members.filter(country => !input.memberIds.includes(country.id as string));
+        zone.members = zone.members.filter(country => !input.memberIds.includes(country.id));
         await this.connection.getRepository(Zone).save(zone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
