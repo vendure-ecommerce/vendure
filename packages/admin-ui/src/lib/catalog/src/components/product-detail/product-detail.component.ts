@@ -34,6 +34,7 @@ import {
     distinctUntilChanged,
     map,
     mergeMap,
+    shareReplay,
     startWith,
     switchMap,
     take,
@@ -131,7 +132,11 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         this.init();
         this.product$ = this.entity$;
         const variants$ = this.product$.pipe(map(product => product.variants));
-        const filterTerm$ = this.filterInput.valueChanges.pipe(startWith(''), debounceTime(50));
+        const filterTerm$ = this.filterInput.valueChanges.pipe(
+            startWith(''),
+            debounceTime(50),
+            shareReplay(),
+        );
         this.variants$ = combineLatest(variants$, filterTerm$).pipe(
             map(([variants, term]) => {
                 return term
