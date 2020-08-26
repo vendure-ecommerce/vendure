@@ -48,7 +48,7 @@ export function validateCustomFieldValue(
         default:
             assertNever(config);
     }
-    validateCustomFunction(config, value, languageCode);
+    validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, languageCode);
 }
 
 function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(

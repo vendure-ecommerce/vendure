@@ -1,0 +1,28 @@
+@startuml
+!include theme.puml
+title Payment Integration - two-step flow
+skinparam SequenceBoxBorderColor #
+hide footbox
+participant Storefront #555
+box "Vendure Server" #Lightblue
+participant "Shop API" as ShopAPI
+participant "Admin API" as AdminAPI
+participant PaymentMethodHandler
+end box
+participant "Payment Provider" as PaymentProvider #39a4ac
+
+Storefront -> ShopAPI: **addPaymentToOrder**\nmutation
+ShopAPI -> PaymentMethodHandler++
+PaymentMethodHandler -> PaymentProvider: **createPayment()**
+note right: The Payment Provider\n**authorizes** the payment
+PaymentProvider --> PaymentMethodHandler: Transaction ID
+PaymentMethodHandler --> ShopAPI: creates new **Payment**\nfor the Order
+deactivate PaymentMethodHandler
+ShopAPI --> Storefront: Order in\n**PaymentAuthorized** state
+== Second step done via Admin UI / Admin API ==
+AdminAPI -> PaymentMethodHandler: **settlePayment** mutation
+PaymentMethodHandler -> PaymentProvider: **settlePayment()**
+note right: The Payment Provider\n**captures** the payment
+PaymentProvider --> PaymentMethodHandler: Confirmation data
+PaymentMethodHandler --> AdminAPI: Order in\n**PaymentSettled** state
+@enduml

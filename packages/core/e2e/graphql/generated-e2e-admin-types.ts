@@ -186,6 +186,7 @@ export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -311,7 +312,6 @@ export type CollectionTranslation = {
 export type ConfigArg = {
     __typename?: 'ConfigArg';
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -319,14 +319,14 @@ export type ConfigArgDefinition = {
     __typename?: 'ConfigArgDefinition';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
-    config?: Maybe<Scalars['JSON']>;
+    ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
     name: Scalars['String'];
-    type: Scalars['String'];
     value: Scalars['String'];
 };
 
@@ -1043,6 +1043,7 @@ export type CustomerSortParameter = {
 export type CustomField = {
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1095,6 +1096,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
     __typename?: 'DateTimeCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1220,6 +1222,7 @@ export type FloatCustomFieldConfig = CustomField & {
     __typename?: 'FloatCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1329,6 +1332,7 @@ export type IntCustomFieldConfig = CustomField & {
     __typename?: 'IntCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
     readonly?: Maybe<Scalars['Boolean']>;
@@ -1738,6 +1742,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
     __typename?: 'LocaleStringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
@@ -2493,6 +2498,7 @@ export type PaymentMethod = Node & {
     code: Scalars['String'];
     enabled: Scalars['Boolean'];
     configArgs: Array<ConfigArg>;
+    definition: ConfigurableOperationDefinition;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -2881,6 +2887,8 @@ export type Query = {
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** Get a ProductVariant by id */
+    productVariant?: Maybe<ProductVariant>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
     promotionConditions: Array<ConfigurableOperationDefinition>;
@@ -3009,6 +3017,10 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
+};
+
+export type QueryProductVariantArgs = {
+    id: Scalars['ID'];
 };
 
 export type QueryPromotionArgs = {
@@ -3158,6 +3170,7 @@ export type SearchInput = {
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     facetValueOperator?: Maybe<LogicalOperator>;
     collectionId?: Maybe<Scalars['ID']>;
+    collectionSlug?: Maybe<Scalars['String']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
@@ -3337,6 +3350,7 @@ export type StringCustomFieldConfig = CustomField & {
     __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
+    list: Scalars['Boolean'];
     length?: Maybe<Scalars['Int']>;
     label?: Maybe<Array<LocalizedString>>;
     description?: Maybe<Array<LocalizedString>>;
@@ -4006,20 +4020,6 @@ export type CreateCountryMutation = { __typename?: 'Mutation' } & {
     createCountry: { __typename?: 'Country' } & CountryFragment;
 };
 
-export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
-        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-            };
-    };
-
-export type CreateCustomerGroupMutationVariables = {
-    input: CreateCustomerGroupInput;
-};
-
-export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
-    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
-
 export type UpdateCustomerGroupMutationVariables = {
     input: UpdateCustomerGroupInput;
 };
@@ -4068,15 +4068,6 @@ export type AddCustomersToGroupMutationVariables = {
 
 export type AddCustomersToGroupMutation = { __typename?: 'Mutation' } & {
     addCustomersToGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
-
-export type RemoveCustomersFromGroupMutationVariables = {
-    groupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
-};
-
-export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
-    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
 };
 
 export type GetCustomerWithGroupsQueryVariables = {
@@ -4532,7 +4523,7 @@ export type RoleFragment = { __typename?: 'Role' } & Pick<
 export type ConfigurableOperationFragment = { __typename?: 'ConfigurableOperation' } & Pick<
     ConfigurableOperation,
     'code'
-> & { args: Array<{ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'type' | 'value'>> };
+> & { args: Array<{ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'value'>> };
 
 export type CollectionFragment = { __typename?: 'Collection' } & Pick<
     Collection,
@@ -5065,6 +5056,29 @@ export type GetOrderQuery = { __typename?: 'Query' } & {
     order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
+export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
+        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+            };
+    };
+
+export type CreateCustomerGroupMutationVariables = {
+    input: CreateCustomerGroupInput;
+};
+
+export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type RemoveCustomersFromGroupMutationVariables = {
+    groupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
+    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5364,6 +5378,14 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
     >;
 };
 
+export type GetProductVariantQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetProductVariantQuery = { __typename?: 'Query' } & {
+    productVariant?: Maybe<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
+};
+
 export type DeletePromotionMutationVariables = {
     id: Scalars['ID'];
 };
@@ -5403,7 +5425,7 @@ export type ConfigurableOperationDefFragment = { __typename?: 'ConfigurableOpera
     'code' | 'description'
 > & {
         args: Array<
-            { __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+            { __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'ui'>
         >;
     };
 
@@ -5515,7 +5537,7 @@ export type GetEligibilityCheckersQuery = { __typename?: 'Query' } & {
                 args: Array<
                     { __typename?: 'ConfigArgDefinition' } & Pick<
                         ConfigArgDefinition,
-                        'name' | 'type' | 'description' | 'label' | 'config'
+                        'name' | 'type' | 'description' | 'label' | 'ui'
                     >
                 >;
             }
@@ -5533,7 +5555,7 @@ export type GetCalculatorsQuery = { __typename?: 'Query' } & {
                 args: Array<
                     { __typename?: 'ConfigArgDefinition' } & Pick<
                         ConfigArgDefinition,
-                        'name' | 'type' | 'description' | 'label' | 'config'
+                        'name' | 'type' | 'description' | 'label' | 'ui'
                     >
                 >;
             }
@@ -6061,18 +6083,6 @@ export namespace CreateCountry {
     export type CreateCountry = CountryFragment;
 }
 
-export namespace CustomerGroup {
-    export type Fragment = CustomerGroupFragment;
-    export type Customers = CustomerGroupFragment['customers'];
-    export type Items = NonNullable<CustomerGroupFragment['customers']['items'][0]>;
-}
-
-export namespace CreateCustomerGroup {
-    export type Variables = CreateCustomerGroupMutationVariables;
-    export type Mutation = CreateCustomerGroupMutation;
-    export type CreateCustomerGroup = CustomerGroupFragment;
-}
-
 export namespace UpdateCustomerGroup {
     export type Variables = UpdateCustomerGroupMutationVariables;
     export type Mutation = UpdateCustomerGroupMutation;
@@ -6106,12 +6116,6 @@ export namespace AddCustomersToGroup {
     export type Variables = AddCustomersToGroupMutationVariables;
     export type Mutation = AddCustomersToGroupMutation;
     export type AddCustomersToGroup = CustomerGroupFragment;
-}
-
-export namespace RemoveCustomersFromGroup {
-    export type Variables = RemoveCustomersFromGroupMutationVariables;
-    export type Mutation = RemoveCustomersFromGroupMutation;
-    export type RemoveCustomersFromGroup = CustomerGroupFragment;
 }
 
 export namespace GetCustomerWithGroups {
@@ -6746,6 +6750,24 @@ export namespace GetOrder {
     export type Order = OrderWithLinesFragment;
 }
 
+export namespace CustomerGroup {
+    export type Fragment = CustomerGroupFragment;
+    export type Customers = CustomerGroupFragment['customers'];
+    export type Items = NonNullable<CustomerGroupFragment['customers']['items'][0]>;
+}
+
+export namespace CreateCustomerGroup {
+    export type Variables = CreateCustomerGroupMutationVariables;
+    export type Mutation = CreateCustomerGroupMutation;
+    export type CreateCustomerGroup = CustomerGroupFragment;
+}
+
+export namespace RemoveCustomersFromGroup {
+    export type Variables = RemoveCustomersFromGroupMutationVariables;
+    export type Mutation = RemoveCustomersFromGroupMutation;
+    export type RemoveCustomersFromGroup = CustomerGroupFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -6947,6 +6969,12 @@ export namespace GetOptionGroup {
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
     export type Options = NonNullable<NonNullable<GetOptionGroupQuery['productOptionGroup']>['options'][0]>;
+}
+
+export namespace GetProductVariant {
+    export type Variables = GetProductVariantQueryVariables;
+    export type Query = GetProductVariantQuery;
+    export type ProductVariant = NonNullable<GetProductVariantQuery['productVariant']>;
 }
 
 export namespace DeletePromotion {

@@ -86,6 +86,7 @@
     "expand-all-collections": "Expand all collections",
     "facet-values": "Facet values",
     "filter-by-name": "Filter by name",
+    "filter-by-name-or-sku": "Filter by name or SKU",
     "filters": "Filters",
     "group-by-product": "Group by product",
     "manage-variants": "Manage variants",
@@ -134,6 +135,7 @@
   "common": {
     "ID": "ID",
     "actions": "Actions",
+    "add-item-to-list": "Add item to list",
     "add-new-variants": "Add {count, plural, one {1 variant} other {{count} variants}}",
     "add-note": "Add note",
     "available-languages": "Available languages",
@@ -190,6 +192,7 @@
     "public": "Public",
     "remember-me": "Remember me",
     "remove": "Remove",
+    "remove-item-from-list": "Remove item from list",
     "results-count": "{ count } {count, plural, one {result} other {results}}",
     "select": "Select...",
     "select-display-language": "Select display language",

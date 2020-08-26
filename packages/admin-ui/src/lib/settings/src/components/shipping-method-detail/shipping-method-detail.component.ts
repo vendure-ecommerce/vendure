@@ -9,7 +9,9 @@ import {
     ConfigurableOperationInput,
     CreateShippingMethodInput,
     DataService,
+    encodeConfigArgValue,
     GetActiveChannel,
+    getConfigArgValue,
     getDefaultConfigArgValue,
     NotificationService,
     ServerConfigService,
@@ -19,6 +21,7 @@ import {
     UpdateShippingMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { ConfigArgType } from '@vendure/common/lib/shared-types';
 import { combineLatest, merge, Observable, of, Subject } from 'rxjs';
 import { mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 
@@ -263,8 +266,9 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             code: operation.code,
             arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
                 name: operation.args[j].name,
-                value: value.hasOwnProperty('value') ? (value as any).value : value.toString(),
-                type: operation.args[j].type,
+                value: value.hasOwnProperty('value')
+                    ? encodeConfigArgValue((value as any).value)
+                    : encodeConfigArgValue(value),
             })),
         };
     }
@@ -276,7 +280,13 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });
-        this.selectedChecker = shippingMethod.checker;
-        this.selectedCalculator = shippingMethod.calculator;
+        this.selectedChecker = {
+            code: shippingMethod.checker.code,
+            args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+        };
+        this.selectedCalculator = {
+            code: shippingMethod.calculator.code,
+            args: shippingMethod.calculator.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+        };
     }
 }

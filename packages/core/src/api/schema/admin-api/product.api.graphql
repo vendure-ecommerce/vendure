@@ -2,6 +2,8 @@ type Query {
     products(options: ProductListOptions): ProductList!
     "Get a Product either by id or slug. If neither id nor slug is speicified, an error will result."
     product(id: ID, slug: String): Product
+    "Get a ProductVariant by id"
+    productVariant(id: ID!): ProductVariant
 }
 
 type Mutation {

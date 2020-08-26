@@ -63,7 +63,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.entityIdStrategy;
     }
 
-    get assetOptions(): AssetOptions {
+    get assetOptions(): Required<AssetOptions> {
         return this.activeConfig.assetOptions;
     }
 

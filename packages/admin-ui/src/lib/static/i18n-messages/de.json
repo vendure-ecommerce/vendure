@@ -86,6 +86,7 @@
     "expand-all-collections": "Alle Sammlungen erweitern",
     "facet-values": "Facettenwerte",
     "filter-by-name": "Nach Name filtern",
+    "filter-by-name-or-sku": "Nach Name oder Artikelnummer filtern",
     "filters": "Filter",
     "group-by-product": "Nach Produkt gruppieren",
     "manage-variants": "Varianten verwalten",
@@ -134,6 +135,7 @@
   "common": {
     "ID": "ID",
     "actions": "Aktionen",
+    "add-item-to-list": "",
     "add-new-variants": "{count, plural, one {1 Variante} other {{count} Varianten}} hinzufügen",
     "add-note": "",
     "available-languages": "Verfügbare Sprachen",
@@ -190,6 +192,7 @@
     "public": "Öffentlich",
     "remember-me": "Logindaten merken",
     "remove": "Entfernen",
+    "remove-item-from-list": "",
     "results-count": "{ count } {count, plural, one {Ergebnis} other {Ergebnisse}}",
     "select": "Auswählen...",
     "select-display-language": "Anzeigesprache wählen",

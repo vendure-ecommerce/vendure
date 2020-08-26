@@ -22,16 +22,16 @@ type Adjustment {
 
 type ConfigArg {
     name: String!
-    type: String!
     value: String!
 }
 
 type ConfigArgDefinition {
     name: String!
     type: String!
+    list: Boolean!
     label: String
     description: String
-    config: JSON
+    ui: JSON
 }
 
 type ConfigurableOperation {
@@ -59,7 +59,6 @@ type DeletionResponse {
 
 input ConfigArgInput {
     name: String!
-    type: String!
     value: String!
 }
 
@@ -127,6 +126,7 @@ input SearchInput {
     facetValueIds: [ID!]
     facetValueOperator: LogicalOperator
     collectionId: ID
+    collectionSlug: String
     groupByProduct: Boolean
     take: Int
     skip: Int

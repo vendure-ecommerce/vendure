@@ -1,6 +1,6 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
-import { APOLLO_OPTIONS, ApolloModule } from 'apollo-angular';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
 import { ApolloClientOptions } from 'apollo-client';
 import { ApolloLink } from 'apollo-link';
@@ -48,26 +48,18 @@ export function createApollo(
             new OmitTypenameLink(),
             new CheckJobsLink(injector),
             setContext(() => {
+                const headers: Record<string, string> = {};
                 const channelToken = localStorageService.get('activeChannelToken');
                 if (channelToken) {
-                    return {
-                        headers: {
-                            'vendure-token': channelToken,
-                        },
-                    };
+                    headers['vendure-token'] = channelToken;
                 }
-            }),
-            setContext(() => {
                 if (tokenMethod === 'bearer') {
                     const authToken = localStorageService.get('authToken');
                     if (authToken) {
-                        return {
-                            headers: {
-                                authorization: `Bearer ${authToken}`,
-                            },
-                        };
+                        headers.authorization = `Bearer ${authToken}`;
                     }
                 }
+                return { headers };
             }),
             createUploadLink({
                 uri: `${serverLocation}/${adminApiPath}`,

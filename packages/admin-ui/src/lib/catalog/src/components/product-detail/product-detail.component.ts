@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,11 +8,15 @@ import {
     CreateProductInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
+    DataService,
     FacetWithValues,
     flattenFacetValues,
     IGNORE_CAN_DEACTIVATE_GUARD,
     LanguageCode,
+    ModalService,
+    NotificationService,
     ProductWithVariants,
+    ServerConfigService,
     TaxCategory,
     UpdateProductInput,
     UpdateProductMutation,
@@ -20,16 +24,18 @@ import {
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
-import { DataService, ModalService, NotificationService, ServerConfigService } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
+    debounceTime,
     distinctUntilChanged,
     map,
     mergeMap,
+    shareReplay,
+    startWith,
     switchMap,
     take,
     takeUntil,
@@ -44,6 +50,7 @@ import { VariantAssetChange } from '../product-variants-list/product-variants-li
 
 export type TabName = 'details' | 'variants';
 export interface VariantFormValue {
+    id: string;
     enabled: boolean;
     sku: string;
     name: string;
@@ -79,6 +86,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     customOptionGroupFields: CustomFieldConfig[];
     customOptionFields: CustomFieldConfig[];
     detailForm: FormGroup;
+    filterInput = new FormControl('');
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     productChannels$: Observable<ProductWithVariants.Channels[]>;
@@ -123,7 +131,25 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     ngOnInit() {
         this.init();
         this.product$ = this.entity$;
-        this.variants$ = this.product$.pipe(map(product => product.variants));
+        const variants$ = this.product$.pipe(map(product => product.variants));
+        const filterTerm$ = this.filterInput.valueChanges.pipe(
+            startWith(''),
+            debounceTime(50),
+            shareReplay(),
+        );
+        this.variants$ = combineLatest(variants$, filterTerm$).pipe(
+            map(([variants, term]) => {
+                return term
+                    ? variants.filter(v => {
+                          const lcTerm = term.toLocaleLowerCase();
+                          return (
+                              v.name.toLocaleLowerCase().includes(term) ||
+                              v.sku.toLocaleLowerCase().includes(term)
+                          );
+                      })
+                    : variants;
+            }),
+        );
         this.taxCategories$ = this.productDetailService.getTaxCategories().pipe(takeUntil(this.destroy$));
         this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
@@ -455,6 +481,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
             const facetValueIds = variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
+                id: variant.id,
                 enabled: variant.enabled,
                 sku: variant.sku,
                 name: variantTranslation ? variantTranslation.name : '',

@@ -2,16 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
-import { PromotionUtils, ShippingCalculationResult } from '../../../config';
+import { ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
-import { OrderItem, OrderLine, ProductVariant, TaxCategory, TaxRate } from '../../../entity';
+import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
@@ -152,9 +150,8 @@ export class OrderCalculator {
      * any OrderItems which had their Adjustments modified.
      */
     private async applyPromotions(order: Order, promotions: Promotion[]): Promise<OrderItem[]> {
-        const utils = this.createPromotionUtils();
-        const updatedItems = await this.applyOrderItemPromotions(order, promotions, utils);
-        await this.applyOrderPromotions(order, promotions, utils);
+        const updatedItems = await this.applyOrderItemPromotions(order, promotions);
+        await this.applyOrderPromotions(order, promotions);
         return updatedItems;
     }
 
@@ -163,7 +160,7 @@ export class OrderCalculator {
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
      */
-    private async applyOrderItemPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+    private async applyOrderItemPromotions(order: Order, promotions: Promotion[]) {
         // The naive implementation updates *every* OrderItem after this function is run.
         // However, on a very large order with hundreds or thousands of OrderItems, this results in
         // very poor performance. E.g. updating a single quantity of an OrderLine results in saving
@@ -175,7 +172,7 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
+            const applicablePromotions = await filterAsync(promotions, p => p.test(order));
 
             const lineHasExistingPromotions =
                 line.items[0].pendingAdjustments &&
@@ -197,12 +194,11 @@ export class OrderCalculator {
                 // We need to test the promotion *again*, even though we've tested them for the line.
                 // This is because the previous Promotions may have adjusted the Order in such a way
                 // as to render later promotions no longer applicable.
-                if (await promotion.test(order, utils)) {
+                if (await promotion.test(order)) {
                     for (const item of line.items) {
                         const adjustment = await promotion.apply({
                             orderItem: item,
                             orderLine: line,
-                            utils,
                         });
                         if (adjustment) {
                             item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
@@ -255,15 +251,15 @@ export class OrderCalculator {
         return hasPromotionsThatAreNoLongerApplicable;
     }
 
-    private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+    private async applyOrderPromotions(order: Order, promotions: Promotion[]) {
         order.clearAdjustments(AdjustmentType.PROMOTION);
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
-                if (await promotion.test(order, utils)) {
-                    const adjustment = await promotion.apply({ order, utils });
+                if (await promotion.test(order)) {
+                    const adjustment = await promotion.apply({ order });
                     if (adjustment) {
                         order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
                     }
@@ -299,34 +295,5 @@ export class OrderCalculator {
 
         order.subTotalBeforeTax = totalPriceBeforeTax;
         order.subTotal = totalPrice;
-    }
-
-    /**
-     * Creates a new PromotionUtils object with a cache which lives as long as the created object.
-     */
-    private createPromotionUtils(): PromotionUtils {
-        const variantCache = new Map<ID, ProductVariant>();
-
-        return {
-            hasFacetValues: async (orderLine: OrderLine, facetValueIds: ID[]): Promise<boolean> => {
-                let variant = variantCache.get(orderLine.productVariant.id);
-                if (!variant) {
-                    variant = await this.connection
-                        .getRepository(ProductVariant)
-                        .findOne(orderLine.productVariant.id, {
-                            relations: ['product', 'product.facetValues', 'facetValues'],
-                        });
-                    if (!variant) {
-                        return false;
-                    }
-                    variantCache.set(variant.id, variant);
-                }
-                const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
-                return facetValueIds.reduce(
-                    (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
-                    true as boolean,
-                );
-            },
-        };
     }
 }

@@ -2,12 +2,17 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
-import { ConfigArg, PaymentMethod, UpdatePaymentMethodInput } from '@vendure/admin-ui/core';
-import { NotificationService } from '@vendure/admin-ui/core';
-import { DataService } from '@vendure/admin-ui/core';
-import { ServerConfigService } from '@vendure/admin-ui/core';
-import { ConfigArgSubset, ConfigArgType } from '@vendure/common/lib/shared-types';
+import {
+    BaseDetailComponent,
+    ConfigArgDefinition,
+    DataService,
+    encodeConfigArgValue,
+    getConfigArgValue,
+    NotificationService,
+    PaymentMethod,
+    ServerConfigService,
+    UpdatePaymentMethodInput,
+} from '@vendure/admin-ui/core';
 import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
@@ -45,8 +50,8 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         this.destroy();
     }
 
-    getType(arg: PaymentMethod.ConfigArgs): ConfigArgSubset<'int' | 'string' | 'boolean'> {
-        return arg.type as any;
+    getArgDef(paymentMethod: PaymentMethod.Fragment, argName: string): ConfigArgDefinition | undefined {
+        return paymentMethod.definition.args.find(a => a.name === argName);
     }
 
     configArgsIsPopulated(): boolean {
@@ -69,8 +74,7 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
                         enabled: formValue.enabled,
                         configArgs: Object.entries<any>(formValue.configArgs).map(([name, value], i) => ({
                             name,
-                            value: value.toString(),
-                            type: configArgs[i].type,
+                            value: encodeConfigArgValue(value),
                         })),
                     };
                     return this.dataService.settings.updatePaymentMethod(input);
@@ -100,25 +104,17 @@ export class PaymentMethodDetailComponent extends BaseDetailComponent<PaymentMet
         const configArgsGroup = this.detailForm.get('configArgs') as FormGroup;
         if (configArgsGroup) {
             for (const arg of paymentMethod.configArgs) {
-                const control = configArgsGroup.get(arg.name);
+                let control = configArgsGroup.get(arg.name);
+                const def = this.getArgDef(paymentMethod, arg.name);
+                const value = def?.list === true && arg.value === '' ? [] : getConfigArgValue(arg.value);
                 if (control) {
-                    control.patchValue(this.parseArgValue(arg));
+                    control.patchValue(value);
                 } else {
-                    configArgsGroup.addControl(arg.name, this.formBuilder.control(this.parseArgValue(arg)));
+                    control = this.formBuilder.control(value);
+                    configArgsGroup.addControl(arg.name, control);
                 }
             }
         }
         this.changeDetector.markForCheck();
-    }
-
-    private parseArgValue(arg: ConfigArg): string | number | boolean {
-        switch (arg.type) {
-            case 'int':
-                return Number.parseInt(arg.value || '0', 10);
-            case 'boolean':
-                return arg.value === 'false' ? false : true;
-            default:
-                return arg.value || '';
-        }
     }
 }

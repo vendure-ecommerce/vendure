@@ -40,9 +40,9 @@ export class GlobalSettingsResolver {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
-            exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields.filter(
-                c => !c.internal,
-            );
+            exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields
+                .filter(c => !c.internal)
+                .map(c => ({ ...c, list: !!c.list as any }));
         }
         return {
             customFieldConfig: exposedCustomFieldConfig,

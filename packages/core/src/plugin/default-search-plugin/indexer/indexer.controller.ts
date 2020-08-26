@@ -341,6 +341,7 @@ export class IndexerController {
                     facetIds: this.getFacetIds(v),
                     facetValueIds: this.getFacetValueIds(v),
                     collectionIds: v.collections.map(c => c.id.toString()),
+                    collectionSlugs: v.collections.map(c => c.slug),
                 }),
         );
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));

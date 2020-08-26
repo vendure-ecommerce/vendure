@@ -442,6 +442,37 @@ export const SEARCH_PRODUCTS = gql`
     }
 `;
 
+export const PRODUCT_SELECTOR_SEARCH = gql`
+    query ProductSelectorSearch($term: String!, $take: Int!) {
+        search(input: { groupByProduct: false, term: $term, take: $take }) {
+            items {
+                productVariantId
+                productVariantName
+                productPreview
+                productAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                price {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                priceWithTax {
+                    ... on SinglePrice {
+                        value
+                    }
+                }
+                sku
+            }
+        }
+    }
+`;
+
 export const UPDATE_PRODUCT_OPTION = gql`
     mutation UpdateProductOption($input: UpdateProductOptionInput!) {
         updateProductOption(input: $input) {
@@ -518,6 +549,27 @@ export const REMOVE_PRODUCTS_FROM_CHANNEL = gql`
             channels {
                 id
                 code
+            }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
+            sku
+            product {
+                id
+                featuredAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
             }
         }
     }

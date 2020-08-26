@@ -86,7 +86,9 @@ export class DropdownMenuComponent implements AfterViewInit, OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.overlayRef.dispose();
+        if (this.overlayRef) {
+            this.overlayRef.dispose();
+        }
         if (this.backdropClickSub) {
             this.backdropClickSub.unsubscribe();
         }

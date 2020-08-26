@@ -281,7 +281,13 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
  * Maps an array of CustomFieldConfig objects into a string of SDL fields.
  */
 function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
-    return fieldDefs.map(field => `${field.name}: ${typeFn(field.type)}`).join('\n');
+    return fieldDefs
+        .map(field => {
+            const primitiveType = typeFn(field.type);
+            const finalType = field.list ? `[${primitiveType}!]` : primitiveType;
+            return `${field.name}: ${finalType}`;
+        })
+        .join('\n');
 }
 
 function getFilterOperator(type: CustomFieldType): string {

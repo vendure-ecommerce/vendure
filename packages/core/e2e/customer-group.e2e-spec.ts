@@ -1,14 +1,6 @@
 import { pick } from '@vendure/common/lib/pick';
-import {
-    AccountRegistrationEvent,
-    EventBus,
-    EventBusModule,
-    mergeConfig,
-    VendurePlugin,
-} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
-import cu from 'i18next-icu/locale-data/cu';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -28,7 +20,13 @@ import {
     UpdateCustomerGroup,
 } from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import {
+    CREATE_CUSTOMER_GROUP,
+    CUSTOMER_GROUP_FRAGMENT,
+    GET_CUSTOMER_HISTORY,
+    GET_CUSTOMER_LIST,
+    REMOVE_CUSTOMERS_FROM_GROUP,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
@@ -285,28 +283,6 @@ describe('CustomerGroup resolver', () => {
     });
 });
 
-export const CUSTOMER_GROUP_FRAGMENT = gql`
-    fragment CustomerGroup on CustomerGroup {
-        id
-        name
-        customers {
-            items {
-                id
-            }
-            totalItems
-        }
-    }
-`;
-
-export const CREATE_CUSTOMER_GROUP = gql`
-    mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
-        createCustomerGroup(input: $input) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
 export const UPDATE_CUSTOMER_GROUP = gql`
     mutation UpdateCustomerGroup($input: UpdateCustomerGroupInput!) {
         updateCustomerGroup(input: $input) {
@@ -355,15 +331,6 @@ export const GET_CUSTOMER_GROUP = gql`
 export const ADD_CUSTOMERS_TO_GROUP = gql`
     mutation AddCustomersToGroup($groupId: ID!, $customerIds: [ID!]!) {
         addCustomersToGroup(customerGroupId: $groupId, customerIds: $customerIds) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
-    mutation RemoveCustomersFromGroup($groupId: ID!, $customerIds: [ID!]!) {
-        removeCustomersFromGroup(customerGroupId: $groupId, customerIds: $customerIds) {
             ...CustomerGroup
         }
     }

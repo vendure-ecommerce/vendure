@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     testErrorPaymentMethod,
@@ -32,6 +32,7 @@ import {
     GetNextOrderStates,
     GetOrderByCode,
     GetShippingMethods,
+    RemoveAllOrderLines,
     RemoveItemFromOrder,
     SetBillingAddress,
     SetCustomerForOrder,
@@ -58,6 +59,7 @@ import {
     GET_ELIGIBLE_SHIPPING_METHODS,
     GET_NEXT_STATES,
     GET_ORDER_BY_CODE,
+    REMOVE_ALL_ORDER_LINES,
     REMOVE_ITEM_FROM_ORDER,
     SET_BILLING_ADDRESS,
     SET_CUSTOMER,
@@ -102,7 +104,7 @@ describe('Shop orders', () => {
     it('availableCountries returns enabled countries', async () => {
         // disable Austria
         const { countries } = await adminClient.query<GetCountryList.Query>(GET_COUNTRY_LIST, {});
-        const AT = countries.items.find((c) => c.code === 'AT')!;
+        const AT = countries.items.find(c => c.code === 'AT')!;
         await adminClient.query<UpdateCountry.Mutation, UpdateCountry.Variables>(UPDATE_COUNTRY, {
             input: {
                 id: AT.id,
@@ -112,7 +114,7 @@ describe('Shop orders', () => {
 
         const result = await shopClient.query<GetAvailableCountries.Query>(GET_AVAILABLE_COUNTRIES);
         expect(result.availableCountries.length).toBe(countries.items.length - 1);
-        expect(result.availableCountries.find((c) => c.id === AT.id)).toBeUndefined();
+        expect(result.availableCountries.find(c => c.id === AT.id)).toBeUndefined();
     });
 
     describe('ordering as anonymous user', () => {
@@ -210,6 +212,29 @@ describe('Shop orders', () => {
             expect(adjustOrderLine!.lines[0].quantity).toBe(50);
         });
 
+        it('adjustOrderLine with quantity 0 removes the line', async () => {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 3,
+            });
+            expect(addItemToOrder!.lines.length).toBe(2);
+            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: addItemToOrder?.lines[1].id!,
+                quantity: 0,
+            });
+
+            expect(adjustOrderLine!.lines.length).toBe(1);
+            expect(adjustOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_1']);
+        });
+
         it(
             'adjustOrderLine errors when going beyond orderItemsLimit',
             assertThrowsWithMessage(async () => {
@@ -262,7 +287,7 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             expect(addItemToOrder!.lines.length).toBe(2);
-            expect(addItemToOrder!.lines.map((i) => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
                 RemoveItemFromOrder.Mutation,
@@ -271,7 +296,7 @@ describe('Shop orders', () => {
                 orderLineId: firstOrderLineId,
             });
             expect(removeOrderLine!.lines.length).toBe(1);
-            expect(removeOrderLine!.lines.map((i) => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it(
@@ -570,7 +595,7 @@ describe('Shop orders', () => {
                 quantity: 3,
             });
             expect(addItemToOrder!.lines.length).toBe(2);
-            expect(addItemToOrder!.lines.map((i) => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+            expect(addItemToOrder!.lines.map(i => i.productVariant.id)).toEqual(['T_1', 'T_3']);
 
             const { removeOrderLine } = await shopClient.query<
                 RemoveItemFromOrder.Mutation,
@@ -579,7 +604,7 @@ describe('Shop orders', () => {
                 orderLineId: firstOrderLineId,
             });
             expect(removeOrderLine!.lines.length).toBe(1);
-            expect(removeOrderLine!.lines.map((i) => i.productVariant.id)).toEqual(['T_3']);
+            expect(removeOrderLine!.lines.map(i => i.productVariant.id)).toEqual(['T_3']);
         });
 
         it('nextOrderStates returns next valid states', async () => {
@@ -1154,6 +1179,28 @@ describe('Shop orders', () => {
             expect(activeOrder?.customFields).toEqual({
                 giftWrap: true,
             });
+        });
+    });
+
+    describe('remove all order lines', () => {
+        beforeAll(async () => {
+            await shopClient.asAnonymousUser();
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_2',
+                quantity: 3,
+            });
+        });
+        it('should remove all order lines', async () => {
+            const { removeAllOrderLines } = await shopClient.query<
+                RemoveAllOrderLines.Mutation,
+                RemoveAllOrderLines.Variables
+            >(REMOVE_ALL_ORDER_LINES);
+            expect(removeAllOrderLines?.total).toBe(0);
+            expect(removeAllOrderLines?.lines.length).toBe(0);
         });
     });
 });

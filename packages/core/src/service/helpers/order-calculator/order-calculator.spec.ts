@@ -172,7 +172,7 @@ describe('OrderCalculator', () => {
             code: 'percentage_item_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
-            async execute(orderItem, orderLine, args, { hasFacetValues }) {
+            async execute(orderItem, orderLine, args) {
                 return -orderLine.unitPrice * (args.discount / 100);
             },
         });
@@ -212,7 +212,7 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderTotalCondition.code,
-                        args: [{ name: 'minimum', type: 'int', value: '100' }],
+                        args: [{ name: 'minimum', value: '100' }],
                     },
                 ],
                 promotionConditions: [orderTotalCondition],
@@ -251,7 +251,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageOrderAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                        args: [{ name: 'discount', value: '50' }],
                     },
                 ],
                 promotionActions: [percentageOrderAction],
@@ -278,7 +278,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageOrderAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                        args: [{ name: 'discount', value: '50' }],
                     },
                 ],
                 promotionActions: [percentageOrderAction],
@@ -305,7 +305,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageItemAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                        args: [{ name: 'discount', value: '50' }],
                     },
                 ],
                 promotionActions: [percentageItemAction],
@@ -332,7 +332,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageItemAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                        args: [{ name: 'discount', value: '50' }],
                     },
                 ],
                 promotionActions: [percentageItemAction],
@@ -374,14 +374,14 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderQuantityCondition.code,
-                        args: [{ name: 'minimum', type: 'int', value: '3' }],
+                        args: [{ name: 'minimum', value: '3' }],
                     },
                 ],
                 promotionConditions: [orderQuantityCondition],
                 actions: [
                     {
                         code: percentageOrderAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '50' }],
+                        args: [{ name: 'discount', value: '50' }],
                     },
                 ],
                 promotionActions: [percentageOrderAction],
@@ -393,14 +393,14 @@ describe('OrderCalculator', () => {
                 conditions: [
                     {
                         code: orderTotalCondition.code,
-                        args: [{ name: 'minimum', type: 'int', value: '100' }],
+                        args: [{ name: 'minimum', value: '100' }],
                     },
                 ],
                 promotionConditions: [orderTotalCondition],
                 actions: [
                     {
                         code: percentageOrderAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '10' }],
+                        args: [{ name: 'discount', value: '10' }],
                     },
                 ],
                 promotionActions: [percentageOrderAction],
@@ -479,7 +479,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageOrderAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '10' }],
+                        args: [{ name: 'discount', value: '10' }],
                     },
                 ],
                 promotionActions: [percentageOrderAction],
@@ -494,7 +494,7 @@ describe('OrderCalculator', () => {
                 actions: [
                     {
                         code: percentageItemAction.code,
-                        args: [{ name: 'discount', type: 'int', value: '10' }],
+                        args: [{ name: 'discount', value: '10' }],
                     },
                 ],
                 promotionActions: [percentageItemAction],
@@ -550,14 +550,14 @@ describe('OrderCalculator', () => {
                     conditions: [
                         {
                             code: orderTotalCondition.code,
-                            args: [{ name: 'minimum', type: 'int', value: '10' }],
+                            args: [{ name: 'minimum', value: '10' }],
                         },
                     ],
                     promotionConditions: [orderTotalCondition],
                     actions: [
                         {
                             code: percentageOrderAction.code,
-                            args: [{ name: 'discount', type: 'int', value: '10' }],
+                            args: [{ name: 'discount', value: '10' }],
                         },
                     ],
                     promotionActions: [percentageOrderAction],

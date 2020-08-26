@@ -14,9 +14,11 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
+import { CollectionFilter } from '../../../config/collection/collection-filter';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
+import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
 import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
@@ -27,7 +29,7 @@ export class CollectionResolver {
     constructor(
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
-        private idCodecService: IdCodecService,
+        private configurableOperationCodec: ConfigurableOperationCodec,
     ) {}
 
     @Query()
@@ -79,7 +81,7 @@ export class CollectionResolver {
         @Args() args: MutationCreateCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        this.idCodecService.decodeConfigurableOperation(input.filters);
+        this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, input.filters);
         return this.collectionService.create(ctx, input).then(this.encodeFilters);
     }
 
@@ -90,7 +92,7 @@ export class CollectionResolver {
         @Args() args: MutationUpdateCollectionArgs,
     ): Promise<Translated<Collection>> {
         const { input } = args;
-        this.idCodecService.decodeConfigurableOperation(input.filters || []);
+        this.configurableOperationCodec.decodeConfigurableOperationIds(CollectionFilter, input.filters || []);
         return this.collectionService.update(ctx, input).then(this.encodeFilters);
     }
 
@@ -118,7 +120,10 @@ export class CollectionResolver {
      */
     private encodeFilters = <T extends Collection | undefined>(collection: T): T => {
         if (collection) {
-            this.idCodecService.encodeConfigurableOperation(collection.filters);
+            this.configurableOperationCodec.encodeConfigurableOperationIds(
+                CollectionFilter,
+                collection.filters,
+            );
         }
         return collection;
     };

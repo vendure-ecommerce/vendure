@@ -5,8 +5,8 @@ import { removeReadonlyCustomFields } from './remove-readonly-custom-fields';
 describe('removeReadonlyCustomFields', () => {
     it('readonly field and writable field', () => {
         const config: CustomFieldConfig[] = [
-            { name: 'weight', type: 'int' },
-            { name: 'rating', type: 'float', readonly: true },
+            { name: 'weight', type: 'int', list: false },
+            { name: 'rating', type: 'float', readonly: true, list: false },
         ];
         const entity = {
             id: 1,
@@ -28,7 +28,7 @@ describe('removeReadonlyCustomFields', () => {
     });
 
     it('single readonly field', () => {
-        const config: CustomFieldConfig[] = [{ name: 'rating', type: 'float', readonly: true }];
+        const config: CustomFieldConfig[] = [{ name: 'rating', type: 'float', readonly: true, list: false }];
         const entity = {
             id: 1,
             name: 'test',
@@ -46,7 +46,9 @@ describe('removeReadonlyCustomFields', () => {
     });
 
     it('readonly field in translation', () => {
-        const config: CustomFieldConfig[] = [{ name: 'alias', type: 'localeString', readonly: true }];
+        const config: CustomFieldConfig[] = [
+            { name: 'alias', type: 'localeString', readonly: true, list: false },
+        ];
         const entity = {
             id: 1,
             name: 'test',
@@ -63,8 +65,8 @@ describe('removeReadonlyCustomFields', () => {
 
     it('wrapped in an input object', () => {
         const config: CustomFieldConfig[] = [
-            { name: 'weight', type: 'int' },
-            { name: 'rating', type: 'float', readonly: true },
+            { name: 'weight', type: 'int', list: false },
+            { name: 'rating', type: 'float', readonly: true, list: false },
         ];
         const entity = {
             input: {

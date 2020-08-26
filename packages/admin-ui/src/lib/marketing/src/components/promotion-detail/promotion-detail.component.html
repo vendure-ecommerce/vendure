@@ -72,12 +72,10 @@
             <ng-container *ngFor="let condition of conditions; index as i">
                 <vdr-configurable-input
                     (remove)="removeCondition($event)"
-                    [facets]="facets$ | async"
                     [readonly]="!('UpdatePromotion' | hasPermission)"
                     [operation]="condition"
                     [operationDefinition]="getConditionDefinition(condition)"
                     [formControlName]="i"
-                    [activeChannel]="activeChannel$ | async"
                 ></vdr-configurable-input>
             </ng-container>
 
@@ -105,12 +103,10 @@
             <vdr-configurable-input
                 *ngFor="let action of actions; index as i"
                 (remove)="removeAction($event)"
-                [facets]="facets$ | async"
                 [operation]="action"
                 [readonly]="!('UpdatePromotion' | hasPermission)"
                 [operationDefinition]="getActionDefinition(action)"
                 [formControlName]="i"
-                [activeChannel]="activeChannel$ | async"
             ></vdr-configurable-input>
             <div>
                 <vdr-dropdown *vdrIfPermissions="'UpdatePromotion'">

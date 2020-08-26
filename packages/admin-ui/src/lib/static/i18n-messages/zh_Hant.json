@@ -86,6 +86,7 @@
     "expand-all-collections": "展開所有系列",
     "facet-values": "特徵值列表",
     "filter-by-name": "按名字篩選",
+    "filter-by-name-or-sku": "",
     "filters": "篩選條件",
     "group-by-product": "按商品分组顯示",
     "manage-variants": "商品規格管理",
@@ -134,6 +135,7 @@
   "common": {
     "ID": "ID",
     "actions": "操作",
+    "add-item-to-list": "",
     "add-new-variants": "新增{count}個商品規格",
     "add-note": "",
     "available-languages": "可用語言",
@@ -190,6 +192,7 @@
     "public": "公開",
     "remember-me": "記住登入帳號",
     "remove": "移除",
+    "remove-item-from-list": "",
     "results-count": "{count, plural, 0{無} other {{count}個篩選結果}}",
     "select": "選擇...",
     "select-display-language": "選擇顯示語言",

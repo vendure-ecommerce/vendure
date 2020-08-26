@@ -187,6 +187,7 @@ export type BooleanCustomFieldConfig = CustomField & {
    __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -312,7 +313,6 @@ export type CollectionTranslation = {
 export type ConfigArg = {
    __typename?: 'ConfigArg';
   name: Scalars['String'];
-  type: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -320,14 +320,14 @@ export type ConfigArgDefinition = {
    __typename?: 'ConfigArgDefinition';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
-  config?: Maybe<Scalars['JSON']>;
+  ui?: Maybe<Scalars['JSON']>;
 };
 
 export type ConfigArgInput = {
   name: Scalars['String'];
-  type: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -1054,6 +1054,7 @@ export type CustomerSortParameter = {
 export type CustomField = {
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1101,6 +1102,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
    __typename?: 'DateTimeCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1226,6 +1228,7 @@ export type FloatCustomFieldConfig = CustomField & {
    __typename?: 'FloatCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1335,6 +1338,7 @@ export type IntCustomFieldConfig = CustomField & {
    __typename?: 'IntCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
@@ -1745,6 +1749,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
    __typename?: 'LocaleStringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   length?: Maybe<Scalars['Int']>;
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
@@ -2621,6 +2626,7 @@ export type PaymentMethod = Node & {
   code: Scalars['String'];
   enabled: Scalars['Boolean'];
   configArgs: Array<ConfigArg>;
+  definition: ConfigurableOperationDefinition;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -3009,6 +3015,8 @@ export type Query = {
   product?: Maybe<Product>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
   productOptionGroups: Array<ProductOptionGroup>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -3158,6 +3166,11 @@ export type QueryProductOptionGroupArgs = {
 
 export type QueryProductOptionGroupsArgs = {
   filterTerm?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductVariantArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -3327,6 +3340,7 @@ export type SearchInput = {
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   facetValueOperator?: Maybe<LogicalOperator>;
   collectionId?: Maybe<Scalars['ID']>;
+  collectionSlug?: Maybe<Scalars['String']>;
   groupByProduct?: Maybe<Scalars['Boolean']>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
@@ -3505,6 +3519,7 @@ export type StringCustomFieldConfig = CustomField & {
    __typename?: 'StringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
+  list: Scalars['Boolean'];
   length?: Maybe<Scalars['Int']>;
   label?: Maybe<Array<LocalizedString>>;
   description?: Maybe<Array<LocalizedString>>;
@@ -5486,6 +5501,37 @@ export type SearchProductsQuery = (
   ) }
 );
 
+export type ProductSelectorSearchQueryVariables = {
+  term: Scalars['String'];
+  take: Scalars['Int'];
+};
+
+
+export type ProductSelectorSearchQuery = (
+  { __typename?: 'Query' }
+  & { search: (
+    { __typename?: 'SearchResponse' }
+    & { items: Array<(
+      { __typename?: 'SearchResult' }
+      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
+      & { productAsset?: Maybe<(
+        { __typename?: 'SearchResultAsset' }
+        & Pick<SearchResultAsset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, price: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ), priceWithTax: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ) }
+    )> }
+  ) }
+);
+
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput;
 };
@@ -5571,6 +5617,31 @@ export type RemoveProductsFromChannelMutation = (
       { __typename?: 'Channel' }
       & Pick<Channel, 'id' | 'code'>
     )> }
+  )> }
+);
+
+export type GetProductVariantQueryVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type GetProductVariantQuery = (
+  { __typename?: 'Query' }
+  & { productVariant?: Maybe<(
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & { product: (
+      { __typename?: 'Product' }
+      & Pick<Product, 'id'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )> }
+    ) }
   )> }
 );
 
@@ -6108,8 +6179,11 @@ export type PaymentMethodFragment = (
   & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'>
   & { configArgs: Array<(
     { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'type' | 'value'>
-  )> }
+    & Pick<ConfigArg, 'name' | 'value'>
+  )>, definition: (
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  ) }
 );
 
 export type GetPaymentMethodListQueryVariables = {
@@ -6186,7 +6260,7 @@ export type UpdateGlobalSettingsMutation = (
 
 type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
   { __typename?: 'StringCustomFieldConfig' }
-  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<StringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6198,7 +6272,7 @@ type CustomFieldConfig_StringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
   { __typename?: 'LocaleStringCustomFieldConfig' }
-  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<LocaleStringCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6210,7 +6284,7 @@ type CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
   { __typename?: 'IntCustomFieldConfig' }
-  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<IntCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6222,7 +6296,7 @@ type CustomFieldConfig_IntCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
   { __typename?: 'FloatCustomFieldConfig' }
-  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<FloatCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6234,7 +6308,7 @@ type CustomFieldConfig_FloatCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
   { __typename?: 'BooleanCustomFieldConfig' }
-  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<BooleanCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6246,7 +6320,7 @@ type CustomFieldConfig_BooleanCustomFieldConfig_Fragment = (
 
 type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
   { __typename?: 'DateTimeCustomFieldConfig' }
-  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'readonly'>
+  & Pick<DateTimeCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
   & { description?: Maybe<Array<(
     { __typename?: 'LocalizedString' }
     & Pick<LocalizedString, 'languageCode' | 'value'>
@@ -6676,36 +6750,12 @@ export type ReindexMutation = (
   ) }
 );
 
-export type SearchForTestOrderQueryVariables = {
-  term: Scalars['String'];
-  take: Scalars['Int'];
-};
-
-
-export type SearchForTestOrderQuery = (
-  { __typename?: 'Query' }
-  & { search: (
-    { __typename?: 'SearchResponse' }
-    & { items: Array<(
-      { __typename?: 'SearchResult' }
-      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
-      & { price: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ), priceWithTax: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ) }
-    )> }
-  ) }
-);
-
 export type ConfigurableOperationFragment = (
   { __typename?: 'ConfigurableOperation' }
   & Pick<ConfigurableOperation, 'code'>
   & { args: Array<(
     { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'type' | 'value'>
+    & Pick<ConfigArg, 'name' | 'value'>
   )> }
 );
 
@@ -6714,7 +6764,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'config'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui' | 'label'>
   )> }
 );
 
@@ -7568,6 +7618,19 @@ export namespace SearchProducts {
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
 }
 
+export namespace ProductSelectorSearch {
+  export type Variables = ProductSelectorSearchQueryVariables;
+  export type Query = ProductSelectorSearchQuery;
+  export type Search = ProductSelectorSearchQuery['search'];
+  export type Items = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>);
+  export type ProductAsset = (NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
+  export type Price = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'];
+  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
+  export type PriceWithTax = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'];
+  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
+}
+
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
@@ -7602,6 +7665,15 @@ export namespace RemoveProductsFromChannel {
   export type Mutation = RemoveProductsFromChannelMutation;
   export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
   export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
+}
+
+export namespace GetProductVariant {
+  export type Variables = GetProductVariantQueryVariables;
+  export type Query = GetProductVariantQuery;
+  export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
+  export type Product = (NonNullable<GetProductVariantQuery['productVariant']>)['product'];
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace Promotion {
@@ -7856,6 +7928,7 @@ export namespace DeleteChannel {
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
   export type ConfigArgs = (NonNullable<PaymentMethodFragment['configArgs'][0]>);
+  export type Definition = ConfigurableOperationDefFragment;
 }
 
 export namespace GetPaymentMethodList {
@@ -7991,17 +8064,6 @@ export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
   export type Reindex = JobInfoFragment;
-}
-
-export namespace SearchForTestOrder {
-  export type Variables = SearchForTestOrderQueryVariables;
-  export type Query = SearchForTestOrderQuery;
-  export type Search = SearchForTestOrderQuery['search'];
-  export type Items = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>);
-  export type Price = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'];
-  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
-  export type PriceWithTax = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'];
-  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
 }
 
 export namespace ConfigurableOperation {

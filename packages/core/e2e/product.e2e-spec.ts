@@ -19,8 +19,10 @@ import {
     GetOptionGroup,
     GetProductList,
     GetProductSimple,
+    GetProductVariant,
     GetProductWithVariants,
     LanguageCode,
+    ProductVariantFragment,
     ProductWithVariants,
     RemoveOptionGroupFromProduct,
     SortOrder,
@@ -309,6 +311,30 @@ describe('Product resolver', () => {
             });
 
             expect(result.product).toBeNull();
+        });
+    });
+
+    describe('productVariant query', () => {
+        it('by id', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_1',
+            });
+
+            expect(productVariant?.id).toBe('T_1');
+            expect(productVariant?.name).toBe('Laptop 13 inch 8GB');
+        });
+        it('returns null when id not found', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_999',
+            });
+
+            expect(productVariant).toBeNull();
         });
     });
 
@@ -983,6 +1009,8 @@ describe('Product resolver', () => {
                 ),
             );
 
+            let deletedVariant: ProductVariantFragment;
+
             it('deleteProductVariant', async () => {
                 const result1 = await adminClient.query<
                     GetProductWithVariants.Query,
@@ -1009,6 +1037,30 @@ describe('Product resolver', () => {
                     id: newProduct.id,
                 });
                 expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
+
+                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+            });
+
+            /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
+            it('createProductVariants ignores deleted variants when checking for existing combinations', async () => {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'RE1',
+                            optionIds: [deletedVariant.options[0].id, deletedVariant.options[1].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Re-created Variant' }],
+                        },
+                    ],
+                });
+
+                expect(createProductVariants.length).toBe(1);
+                expect(createProductVariants[0]!.options.map(o => o.code)).toEqual(
+                    deletedVariant.options.map(o => o.code),
+                );
             });
         });
     });
@@ -1146,6 +1198,15 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
         }
     }
 `;

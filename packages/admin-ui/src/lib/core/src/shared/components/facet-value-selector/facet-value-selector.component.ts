@@ -78,7 +78,7 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
         this.ngSelect.focus();
     }
 
-    writeValue(obj: string | FacetValue.Fragment[] | null): void {
+    writeValue(obj: string | FacetValue.Fragment[] | Array<string | number> | null): void {
         if (typeof obj === 'string') {
             try {
                 const facetIds = JSON.parse(obj) as string[];
@@ -87,8 +87,14 @@ export class FacetValueSelectorComponent implements OnInit, ControlValueAccessor
                 // TODO: log error
                 throw err;
             }
-        } else if (obj) {
-            this.value = obj.map(fv => fv.id);
+        } else if (Array.isArray(obj)) {
+            const isIdArray = (input: unknown[]): input is Array<string | number> =>
+                input.every(i => typeof i === 'number' || typeof i === 'string');
+            if (isIdArray(obj)) {
+                this.value = obj.map(fv => fv.toString());
+            } else {
+                this.value = obj.map(fv => fv.id);
+            }
         }
     }
 

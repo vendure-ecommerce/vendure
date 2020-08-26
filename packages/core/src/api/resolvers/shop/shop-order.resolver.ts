@@ -57,7 +57,7 @@ export class ShopOrderResolver {
                 skip: 0,
                 take: 99999,
             })
-            .then((data) => data.items);
+            .then(data => data.items);
     }
 
     @Query()
@@ -238,6 +238,9 @@ export class ShopOrderResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAdjustOrderLineArgs,
     ): Promise<Order> {
+        if (args.quantity === 0) {
+            return this.removeOrderLine(ctx, { orderLineId: args.orderLineId });
+        }
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.adjustOrderLine(
             ctx,
@@ -256,6 +259,13 @@ export class ShopOrderResolver {
     ): Promise<Order> {
         const order = await this.getOrderFromContext(ctx, true);
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder, Permission.Owner)
+    async removeAllOrderLines(@Ctx() ctx: RequestContext): Promise<Order> {
+        const order = await this.getOrderFromContext(ctx, true);
+        return this.orderService.removeAllItemsFromOrder(ctx, order.id);
     }
 
     @Mutation()
@@ -295,7 +305,7 @@ export class ShopOrderResolver {
                         // to populate the initial default Address.
                         if (addresses.length === 0 && order.shippingAddress?.country) {
                             const address = order.shippingAddress;
-                            await this.customerService.createAddress(ctx, order.customer.id as string, {
+                            await this.customerService.createAddress(ctx, order.customer.id, {
                                 ...address,
                                 streetLine1: address.streetLine1 || '',
                                 streetLine2: address.streetLine2 || '',

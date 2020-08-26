@@ -48,7 +48,7 @@ export class ShopCustomerResolver {
         @Args() args: MutationCreateCustomerAddressArgs,
     ): Promise<Address> {
         const customer = await this.getCustomerForOwner(ctx);
-        return this.customerService.createAddress(ctx, customer.id as string, args.input);
+        return this.customerService.createAddress(ctx, customer.id, args.input);
     }
 
     @Mutation()

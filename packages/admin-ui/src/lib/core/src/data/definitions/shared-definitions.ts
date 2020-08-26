@@ -4,7 +4,6 @@ export const CONFIGURABLE_OPERATION_FRAGMENT = gql`
     fragment ConfigurableOperation on ConfigurableOperation {
         args {
             name
-            type
             value
         }
         code
@@ -16,7 +15,9 @@ export const CONFIGURABLE_OPERATION_DEF_FRAGMENT = gql`
         args {
             name
             type
-            config
+            list
+            ui
+            label
         }
         code
         description

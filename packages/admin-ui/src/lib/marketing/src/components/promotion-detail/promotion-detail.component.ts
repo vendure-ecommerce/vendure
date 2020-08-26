@@ -9,8 +9,8 @@ import {
     ConfigurableOperationInput,
     CreatePromotionInput,
     DataService,
-    FacetWithValues,
-    GetActiveChannel,
+    encodeConfigArgValue,
+    getConfigArgValue,
     getDefaultConfigArgValue,
     LanguageCode,
     NotificationService,
@@ -19,7 +19,7 @@ import {
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
-import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-promotion-detail',
@@ -33,8 +33,6 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     detailForm: FormGroup;
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
-    facets$: Observable<FacetWithValues.Fragment[]>;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
     private allConditions: ConfigurableOperationDefinition[] = [];
     private allActions: ConfigurableOperationDefinition[] = [];
@@ -63,23 +61,12 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     ngOnInit() {
         this.init();
-        this.facets$ = this.dataService.facet
-            .getAllFacets()
-            .mapSingle(data => data.facets.items)
-            .pipe(shareReplay(1));
-
         this.promotion$ = this.entity$;
         this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe(data => {
             this.allActions = data.promotionActions;
             this.allConditions = data.promotionConditions;
+            this.changeDetector.markForCheck();
         });
-        this.activeChannel$ = this.dataService.settings
-            .getActiveChannel()
-            .mapStream(data => data.activeChannel);
-
-        // When creating a new Promotion, the initial bindings do not work
-        // unless explicitly re-running the change detector. Don't know why.
-        setTimeout(() => this.changeDetector.markForCheck(), 0);
     }
 
     ngOnDestroy() {
@@ -234,8 +221,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                 code: o.code,
                 arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
                     name: o.args[j].name,
-                    value: value.toString(),
-                    type: o.args[j].type,
+                    value: encodeConfigArgValue(value),
                 })),
             };
         });
@@ -252,7 +238,8 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             const argsHash = operation.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value != null ? arg.value : getDefaultConfigArgValue(arg),
+                    [arg.name]:
+                        getConfigArgValue(arg.value) ?? this.getDefaultArgValue(key, operation, arg.name),
                 }),
                 {},
             );
@@ -262,8 +249,29 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                     args: argsHash,
                 }),
             );
-            collection.push(operation);
+            collection.push({
+                code: operation.code,
+                args: operation.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+            });
         }
+    }
+
+    private getDefaultArgValue(
+        key: 'conditions' | 'actions',
+        operation: ConfigurableOperation,
+        argName: string,
+    ) {
+        const def =
+            key === 'conditions'
+                ? this.allConditions.find(c => c.code === operation.code)
+                : this.allActions.find(a => a.code === operation.code);
+        if (def) {
+            const argDef = def.args.find(a => a.name === argName);
+            if (argDef) {
+                return getDefaultConfigArgValue(argDef);
+            }
+        }
+        throw new Error(`Could not determine default value for "argName"`);
     }
 
     /**

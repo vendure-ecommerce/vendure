@@ -113,8 +113,8 @@ describe('createUpdatedTranslatable()', () => {
 
     it('updates custom fields correctly', () => {
         const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'available', type: 'boolean' },
-            { name: 'shortName', type: 'localeString' },
+            { name: 'available', type: 'boolean', list: false },
+            { name: 'shortName', type: 'localeString', list: false },
         ];
         product.customFields = {
             available: true,
@@ -151,8 +151,8 @@ describe('createUpdatedTranslatable()', () => {
 
     it('updates custom fields when none initially exists', () => {
         const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'available', type: 'boolean' },
-            { name: 'shortName', type: 'localeString' },
+            { name: 'available', type: 'boolean', list: false },
+            { name: 'shortName', type: 'localeString', list: false },
         ];
 
         const formValue = {
@@ -184,11 +184,11 @@ describe('createUpdatedTranslatable()', () => {
 
     it('coerces empty customFields to correct type', () => {
         const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'a', type: 'boolean' },
-            { name: 'b', type: 'int' },
-            { name: 'c', type: 'float' },
-            { name: 'd', type: 'datetime' },
-            { name: 'e', type: 'string' },
+            { name: 'a', type: 'boolean', list: false },
+            { name: 'b', type: 'int', list: false },
+            { name: 'c', type: 'float', list: false },
+            { name: 'd', type: 'datetime', list: false },
+            { name: 'e', type: 'string', list: false },
         ];
 
         const formValue = {

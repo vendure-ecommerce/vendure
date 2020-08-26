@@ -54,6 +54,7 @@ import { OrderStateMachine } from '../helpers/order-state-machine/order-state-ma
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
@@ -63,6 +64,7 @@ import {
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
 import { HistoryService } from './history.service';
@@ -90,6 +92,7 @@ export class OrderService {
         private historyService: HistoryService,
         private promotionService: PromotionService,
         private eventBus: EventBus,
+        private channelService: ChannelService,
     ) {}
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -101,7 +104,10 @@ export class OrderService {
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
-            .build(Order, options, { relations: ['lines', 'customer', 'lines.productVariant'] })
+            .build(Order, options, {
+                relations: ['lines', 'customer', 'lines.productVariant', 'channels'],
+                channelId: ctx.channelId,
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 return {
@@ -115,7 +121,9 @@ export class OrderService {
         const order = await this.connection
             .getRepository(Order)
             .createQueryBuilder('order')
+            .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('customer.user', 'user') // Used in de 'Order' query, guess this didn't work before?
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
             .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
@@ -126,11 +134,12 @@ export class OrderService {
             .leftJoinAndSelect('items.fulfillment', 'fulfillment')
             .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
             .where('order.id = :orderId', { orderId })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .addOrderBy('lines.createdAt', 'ASC')
             .addOrderBy('items.createdAt', 'ASC')
             .getOne();
         if (order) {
-            order.lines.forEach((line) => {
+            order.lines.forEach(line => {
                 line.productVariant = translateDeep(
                     this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
                     ctx.languageCode,
@@ -147,7 +156,7 @@ export class OrderService {
                 code: orderCode,
             },
         });
-        return order;
+        return order ? this.findOne(ctx, order.id) : undefined;
     }
 
     async findByCustomerId(
@@ -163,13 +172,15 @@ export class OrderService {
                     'lines.productVariant',
                     'lines.productVariant.options',
                     'customer',
+                    'channels',
                 ],
+                channelId: ctx.channelId,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
-                items.forEach((item) => {
-                    item.lines.forEach((line) => {
+                items.forEach(item => {
+                    item.lines.forEach(line => {
                         line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
                             'options',
                         ]);
@@ -208,12 +219,16 @@ export class OrderService {
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
         const customer = await this.customerService.findOneByUserId(userId);
         if (customer) {
-            const activeOrder = await this.connection.getRepository(Order).findOne({
-                where: {
-                    customer,
-                    active: true,
-                },
-            });
+            const activeOrder = await this.connection
+                .createQueryBuilder(Order, 'order')
+                .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', {
+                    channelId: ctx.channelId,
+                })
+                .leftJoinAndSelect('order.customer', 'customer')
+                .where('active = :active', { active: true })
+                .andWhere('order.customer.id = :customerId', { customerId: customer.id })
+                .orderBy('order.createdAt', 'DESC')
+                .getOne();
             if (activeOrder) {
                 return this.findOne(ctx, activeOrder.id);
             }
@@ -239,6 +254,7 @@ export class OrderService {
                 newOrder.customer = customer;
             }
         }
+        this.channelService.assignToCurrentChannel(newOrder, ctx);
         return this.connection.getRepository(Order).save(newOrder);
     }
 
@@ -260,7 +276,7 @@ export class OrderService {
         this.assertAddingItemsState(order);
         this.assertNotOverOrderItemsLimit(order, quantity);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        let orderLine = order.lines.find((line) => {
+        let orderLine = order.lines.find(line => {
             return (
                 idsAreEqual(line.productVariant.id, productVariantId) &&
                 JSON.stringify(line.customFields) === JSON.stringify(customFields)
@@ -331,9 +347,18 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
-        order.lines = order.lines.filter((line) => !idsAreEqual(line.id, orderLineId));
+        order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
+        return updatedOrder;
+    }
+
+    async removeAllItemsFromOrder(ctx: RequestContext, orderId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        this.assertAddingItemsState(order);
+        await this.connection.getRepository(OrderLine).remove(order.lines);
+        order.lines = [];
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         return updatedOrder;
     }
 
@@ -359,7 +384,7 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
-            order.couponCodes = order.couponCodes.filter((cc) => cc !== couponCode);
+            order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
                 orderId: order.id,
@@ -372,8 +397,8 @@ export class OrderService {
         }
     }
 
-    async getOrderPromotions(orderId: ID): Promise<Promotion[]> {
-        const order = await getEntityOrThrow(this.connection, Order, orderId, {
+    async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
+        const order = await getEntityOrThrow(this.connection, Order, orderId, ctx.channelId, {
             relations: ['promotions'],
         });
         return order.promotions || [];
@@ -400,8 +425,8 @@ export class OrderService {
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        return eligibleMethods.map((eligible) => ({
-            id: eligible.method.id as string,
+        return eligibleMethods.map(eligible => ({
+            id: eligible.method.id,
             price: eligible.result.price,
             priceWithTax: eligible.result.priceWithTax,
             description: eligible.method.description,
@@ -413,7 +438,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const selectedMethod = eligibleMethods.find((m) => idsAreEqual(m.method.id, shippingMethodId));
+        const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
         if (!selectedMethod) {
             throw new UserInputError(`error.shipping-method-unavailable`);
         }
@@ -490,8 +515,9 @@ export class OrderService {
             throw new UserInputError('error.create-fulfillment-nothing-to-fulfill');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             input.lines,
-            (i) => !i.fulfillment,
+            i => !i.fulfillment,
             'error.create-fulfillment-items-already-fulfilled',
         );
 
@@ -518,9 +544,15 @@ export class OrderService {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await this.connection.getRepository(Order).findOne(order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await findOneInChannel(
+                this.connection,
+                Order,
+                order.id,
+                ctx.channelId,
+                {
+                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+                },
+            );
             if (!orderWithFulfillments) {
                 throw new InternalServerError('error.could-not-find-order');
             }
@@ -551,7 +583,7 @@ export class OrderService {
             });
         }
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        return unique(items.map((i) => i.fulfillment).filter(notNullOrUndefined), 'id');
+        return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
     }
 
     async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
@@ -579,8 +611,8 @@ export class OrderService {
         if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
             return true;
         } else {
-            const lines: OrderLineInput[] = order.lines.map((l) => ({
-                orderLineId: l.id as string,
+            const lines: OrderLineInput[] = order.lines.map(l => ({
+                orderLineId: l.id,
                 quantity: l.quantity,
             }));
             return this.cancelOrderByOrderLines(ctx, input, lines);
@@ -596,8 +628,9 @@ export class OrderService {
             throw new UserInputError('error.cancel-order-lines-nothing-to-cancel');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             lines,
-            (i) => !i.cancelled,
+            i => !i.cancelled,
             'error.cancel-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -615,7 +648,7 @@ export class OrderService {
 
         // Perform the cancellation
         await this.stockMovementService.createCancellationsForOrderItems(items);
-        items.forEach((i) => (i.cancelled = true));
+        items.forEach(i => (i.cancelled = true));
         await this.connection.getRepository(OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
@@ -629,7 +662,7 @@ export class OrderService {
             orderId: order.id,
             type: HistoryEntryType.ORDER_CANCELLATION,
             data: {
-                orderItemIds: items.map((i) => i.id),
+                orderItemIds: items.map(i => i.id),
                 reason: input.reason || undefined,
             },
         });
@@ -646,8 +679,9 @@ export class OrderService {
             throw new UserInputError('error.refund-order-lines-nothing-to-refund');
         }
         const { items, orders } = await this.getOrdersAndItemsFromLines(
+            ctx,
             input.lines,
-            (i) => !i.cancelled,
+            i => !i.cancelled,
             'error.refund-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -669,7 +703,7 @@ export class OrderService {
                 state: order.state,
             });
         }
-        if (items.some((i) => !!i.refundId)) {
+        if (items.some(i => !!i.refundId)) {
             throw new IllegalOperationError('error.refund-order-item-already-refunded');
         }
 
@@ -703,7 +737,7 @@ export class OrderService {
                 try {
                     await this.promotionService.validateCouponCode(couponCode, customer.id);
                 } catch (err) {
-                    order.couponCodes = order.couponCodes.filter((c) => c !== couponCode);
+                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
                     codesRemoved = true;
                 }
             }
@@ -808,7 +842,7 @@ export class OrderService {
     }
 
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
-        const orderItem = order.lines.find((line) => idsAreEqual(line.id, orderLineId));
+        const orderItem = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderItem) {
             throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
@@ -881,6 +915,7 @@ export class OrderService {
     }
 
     private async getOrdersAndItemsFromLines(
+        ctx: RequestContext,
         orderLinesInput: OrderLineInput[],
         itemMatcher: (i: OrderItem) => boolean,
         noMatchesError: string,
@@ -889,18 +924,21 @@ export class OrderService {
         const items = new Map<ID, OrderItem>();
 
         const lines = await this.connection.getRepository(OrderLine).findByIds(
-            orderLinesInput.map((l) => l.orderLineId),
+            orderLinesInput.map(l => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillment'],
+                relations: ['order', 'items', 'items.fulfillment', 'order.channels'],
                 order: { id: 'ASC' },
             },
         );
         for (const line of lines) {
-            const inputLine = orderLinesInput.find((l) => idsAreEqual(l.orderLineId, line.id));
+            const inputLine = orderLinesInput.find(l => idsAreEqual(l.orderLineId, line.id));
             if (!inputLine) {
                 continue;
             }
             const order = line.order;
+            if (!order.channels.some(channel => channel.id === ctx.channelId)) {
+                throw new EntityNotFoundError('Order', order.id);
+            }
             if (!orders.has(order.id)) {
                 orders.set(order.id, order);
             }
@@ -908,7 +946,7 @@ export class OrderService {
             if (matchingItems.length < inputLine.quantity) {
                 throw new IllegalOperationError(noMatchesError);
             }
-            matchingItems.slice(0, inputLine.quantity).forEach((item) => {
+            matchingItems.slice(0, inputLine.quantity).forEach(item => {
                 items.set(item.id, item);
             });
         }

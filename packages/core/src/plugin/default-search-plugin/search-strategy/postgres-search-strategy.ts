@@ -110,7 +110,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term ? term.trim().replace(/\s+/, ' & ') : '';
 
@@ -157,6 +157,11 @@ export class PostgresSearchStrategy implements SearchStrategy {
         }
         if (collectionId) {
             qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
+        }
+        if (collectionSlug) {
+            qb.andWhere(`:collectionSlug = ANY (string_to_array(si.collectionSlugs, ','))`, {
+                collectionSlug,
+            });
         }
         qb.andWhere('si.languageCode = :languageCode', { languageCode: ctx.languageCode });
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });

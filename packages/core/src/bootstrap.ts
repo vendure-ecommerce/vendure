@@ -226,7 +226,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  */
 function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     if (config.authOptions.tokenMethod === 'bearer') {
-        const authTokenHeaderKey = config.authOptions.authTokenHeaderKey as string;
+        const authTokenHeaderKey = config.authOptions.authTokenHeaderKey;
         const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
             const { exposedHeaders } = corsOptions;

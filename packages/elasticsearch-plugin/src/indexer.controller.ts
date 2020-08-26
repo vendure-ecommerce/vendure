@@ -624,7 +624,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
         return variants
             .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map(v => translateDeep(v, ctx.languageCode, ['product']));
+            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
     private createVariantIndexItem(v: ProductVariant, channelId: ID): VariantIndexItem {
@@ -632,10 +632,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const variantAsset = v.featuredAsset;
         const item: VariantIndexItem = {
             channelId,
-            productVariantId: v.id as string,
+            productVariantId: v.id,
             sku: v.sku,
             slug: v.product.slug,
-            productId: v.product.id as string,
+            productId: v.product.id,
             productName: v.product.name,
             productAssetId: productAsset ? productAsset.id : null,
             productPreview: productAsset ? productAsset.preview : '',
@@ -649,9 +649,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             currencyCode: v.currencyCode,
             description: v.product.description,
             facetIds: this.getFacetIds([v]),
-            channelIds: v.product.channels.map(c => c.id as string),
+            channelIds: v.product.channels.map(c => c.id),
             facetValueIds: this.getFacetValueIds([v]),
             collectionIds: v.collections.map(c => c.id.toString()),
+            collectionSlugs: v.collections.map(c => c.slug),
             enabled: v.enabled && v.product.enabled,
         };
         const customMappings = Object.entries(this.options.customProductVariantMappings);
@@ -692,7 +693,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             facetIds: this.getFacetIds(variants),
             facetValueIds: this.getFacetValueIds(variants),
             collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
-            channelIds: first.product.channels.map(c => c.id as string),
+            collectionSlugs: variants.reduce(
+                (ids, v) => [...ids, ...v.collections.map(c => c.slug)],
+                [] as string[],
+            ),
+            channelIds: first.product.channels.map(c => c.id),
             enabled: variants.some(v => v.enabled) && first.product.enabled,
         };
 
