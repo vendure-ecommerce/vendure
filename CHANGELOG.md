@@ -44,7 +44,15 @@
 ### BREAKING CHANGE
 
 * If you use custom field controls in the Admin UI, you'll need to slightly modify the component class: the `customFieldConfig` property has been renamed to `config` and a required `readonly: boolean;` field should be added. This is part of an effort to unify the way custom input components work across different parts of the Admin UI.
-* Orders are now channel-aware which requires a non-destructive DB migration to apply the schema changes required for this relation.
+* Orders are now channel-aware which requires a non-destructive DB migration to apply the schema changes required for this relation. In addition, this migration is required to relate existing Orders to the default Channel:
+  ```TypeScript
+  // Assuming the ID of the default Channel is 1. If you are using a UUID strategy,
+  // replace 1 with the ID of the default channel.
+  await queryRunner.query(
+    'INSERT INTO `order_channels_channel` (orderId, channelId) SELECT id, 1 FROM `order`',
+    undefined,
+  );
+  ```
 * The `'facetValueIds'` type has been removed from the `ConfigArgType` type, and replaced by `'ID'` and the `list` option. This change only affects you if you have created custom CollectionFilters of PromotionActions/Conditions using the `'facetValueIds'` type for an argument.
 * The `ID` type in `@vendure/common/lib/generated-types` & `@vendure/common/lib/generated-shop-types` is now correctly typed as `string | number`, whereas previously it was `string`. If you are using any generated types in your plugin code, this may lead to TypeScript compiler errors which will need to be corrected.
 ## <small>0.14.1 (2020-08-18)</small>
