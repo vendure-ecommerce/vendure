@@ -62,7 +62,7 @@ Vendure v0.14.0 now allows the password to be set at the registration step, and 
 * **Display Customer's last login time in Admin UI**
 * **Added a new [Updating Vendure guide]({{< relref "updating-vendure" >}})**
 
-### 📖 See all changes in the [v0.14.0 Changelog](#)
+### 📖 See all changes in the [v0.14.0 Changelog](https://github.com/vendure-ecommerce/vendure/blob/master/CHANGELOG.md#0140-2020-07-20)
 
 ## BREAKING CHANGES
 
