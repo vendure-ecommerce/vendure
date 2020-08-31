@@ -60,7 +60,7 @@ export async function populateInitialData(
             loggingFn(`Populated initial data`);
         }
     } catch (err) {
-        console.error(err.message);
+        console.log(err.message);
     }
 }
 
@@ -79,7 +79,7 @@ export async function populateCollections(
             }
         }
     } catch (err) {
-        console.error(err.message);
+        console.log(err.message);
     }
 }
 
