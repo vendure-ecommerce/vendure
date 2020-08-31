@@ -43,8 +43,7 @@ export class TestServer {
             await initializer.populate(populateFn);
             await initializer.destroy();
         } catch (e) {
-            console.log(e);
-            process.exit(1);
+            throw e;
         }
         await this.bootstrap();
     }

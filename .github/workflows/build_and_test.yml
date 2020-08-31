@@ -55,12 +55,13 @@ jobs:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
       mysql:
-        image: mysql:8
+        image: bitnami/mysql:8.0
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
         ports:
           - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
       postgres:
         image: postgres:12
         env:

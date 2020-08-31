@@ -8,8 +8,6 @@ import {
 } from '@vendure/testing';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-import { DefaultLogger } from '../packages/core/src/config/logger/default-logger';
-import { LogLevel } from '../packages/core/src/config/logger/vendure-logger';
 
 import { getPackageDir } from './get-package-dir';
 
@@ -52,7 +50,6 @@ export const testConfig = mergeConfig(defaultTestConfig, {
         pollInterval: 100,
     },
     dbConnectionOptions: getDbConfig(),
-    logger: new DefaultLogger({ level: LogLevel.Verbose }),
 });
 
 function getDbConfig(): ConnectionOptions {
