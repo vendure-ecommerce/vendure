@@ -12,3 +12,12 @@ export class FulfillmentEntityResolver {
         return this.orderService.getFulfillmentOrderItems(fulfillment.id);
     }
 }
+@Resolver('Fulfillment')
+export class FulfillmentAdminEntityResolver {
+    constructor(private orderService: OrderService) {}
+
+    @ResolveField()
+    async nextStates(@Parent() fulfillment: Fulfillment) {
+        return this.orderService.getNextFulfillmentStates(fulfillment);
+    }
+}

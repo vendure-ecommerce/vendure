@@ -1,0 +1,6 @@
+type Fulfillment {
+    nextStates: [String!]!
+}
+type Mutation {
+    transitionFulfillmentToState(id: ID!, state: String!): Fulfillment
+}
