@@ -23,6 +23,7 @@ const packageDir = getPackageDir();
 registerInitializer('sqljs', new SqljsInitializer(path.join(packageDir, '__data__')));
 registerInitializer('postgres', new PostgresInitializer());
 registerInitializer('mysql', new MysqlInitializer());
+registerInitializer('mariadb', new MysqlInitializer());
 
 /**
  * For local debugging of the e2e tests, we set a very long timeout value otherwise tests will
@@ -62,6 +63,15 @@ function getDbConfig(): ConnectionOptions {
                 port: process.env.CI ? +(process.env.E2E_POSTGRES_PORT || 5432) : 5432,
                 username: 'admin',
                 password: 'secret',
+            };
+        case 'mariadb':
+            return {
+                synchronize: true,
+                type: 'mariadb',
+                host: '127.0.0.1',
+                port: process.env.CI ? +(process.env.E2E_MARIADB_PORT || 3306) : 3306,
+                username: 'root',
+                password: '',
             };
         case 'mysql':
             return {
