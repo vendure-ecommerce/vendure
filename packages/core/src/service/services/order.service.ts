@@ -43,9 +43,12 @@ import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { FulfillmentStateTransitionEvent } from '../../event-bus/events/fulfillment-state-transition-event';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
+import { FulfillmentStateMachine } from '../helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
@@ -84,6 +87,7 @@ export class OrderService {
         private orderMerger: OrderMerger,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
+        private fulfillmentStateMachine: FulfillmentStateMachine,
         private listQueryBuilder: ListQueryBuilder,
         private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
@@ -391,6 +395,9 @@ export class OrderService {
     getNextOrderStates(order: Order): ReadonlyArray<OrderState> {
         return this.orderStateMachine.getNextStates(order);
     }
+    getNextFulfillmentStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
+        return this.fulfillmentStateMachine.getNextStates(fulfillment);
+    }
 
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
@@ -440,6 +447,27 @@ export class OrderService {
         await this.connection.getRepository(Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
+    }
+    async findOrderByFulfillmentId(fulfillment: Fulfillment): Promise<Order> {
+        const order = await this.connection.getRepository(Order).findOneOrFail({
+            where: {
+                fulfillment,
+            },
+        });
+        return order;
+    }
+    async transitionFulfillmentToState(
+        ctx: RequestContext,
+        fulfillmentId: ID,
+        state: FulfillmentState,
+    ): Promise<Fulfillment> {
+        const fulfillment = await this.getFulfillmentOrThrow(fulfillmentId);
+        const order = await this.findOrderByFulfillmentId(fulfillment);
+        const fromState = fulfillment.state;
+        await this.fulfillmentStateMachine.transition(ctx, fulfillment, order, state);
+        await this.connection.getRepository(Fulfillment).save(fulfillment, { reload: false });
+        this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
+        return fulfillment;
     }
 
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
@@ -562,11 +590,13 @@ export class OrderService {
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
         return unique(items.map((i) => i.fulfillment).filter(notNullOrUndefined), 'id');
     }
-
-    async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
-        const fulfillment = await getEntityOrThrow(this.connection, Fulfillment, id, {
+    async getFulfillmentOrThrow(id: ID): Promise<Fulfillment> {
+        return await getEntityOrThrow(this.connection, Fulfillment, id, {
             relations: ['orderItems'],
         });
+    }
+    async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
+        const fulfillment = await this.getFulfillmentOrThrow(id);
         return fulfillment.orderItems;
     }
 
