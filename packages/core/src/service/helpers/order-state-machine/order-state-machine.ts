@@ -20,6 +20,7 @@ import {
     orderItemsAreAllCancelled,
     orderItemsAreDelivered,
     orderItemsArePartiallyDelivered,
+    orderItemsAreShipped,
     orderTotalIsCovered,
 } from '../utils/order-utils';
 
@@ -82,12 +83,20 @@ export class OrderStateMachine {
                 return `error.cannot-transition-unless-all-cancelled`;
             }
         }
+        if (toState === 'Shipped') {
+            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
+                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            });
+            if (!orderItemsAreShipped(orderWithFulfillments)) {
+                return `error.cannot-transition-unless-all-order-items-shipped`;
+            }
+        }
         if (toState === 'PartiallyDelivered') {
             const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
             if (!orderItemsArePartiallyDelivered(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-some-order-items-fulfilled`;
+                return `error.cannot-transition-unless-some-order-items-delivered`;
             }
         }
         if (toState === 'Delivered') {
@@ -95,7 +104,7 @@ export class OrderStateMachine {
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
             if (!orderItemsAreDelivered(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-all-order-items-fulfilled`;
+                return `error.cannot-transition-unless-all-order-items-delivered`;
             }
         }
     }
