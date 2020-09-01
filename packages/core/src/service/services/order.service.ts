@@ -56,11 +56,7 @@ import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
-import {
-    orderItemsAreAllCancelled,
-    orderItemsAreDelivered,
-    orderTotalIsCovered,
-} from '../helpers/utils/order-utils';
+import { orderItemsAreAllCancelled, orderTotalIsCovered } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -557,11 +553,6 @@ export class OrderService {
             );
             if (!orderWithFulfillments) {
                 throw new InternalServerError('error.could-not-find-order');
-            }
-            if (orderItemsAreDelivered(orderWithFulfillments)) {
-                await this.transitionToState(ctx, order.id, 'Delivered');
-            } else {
-                await this.transitionToState(ctx, order.id, 'PartiallyDelivered');
             }
         }
         return fulfillment;
