@@ -132,7 +132,7 @@ export class BaseAuthResolver {
      */
     protected publiclyAccessibleUser(user: User): CurrentUser {
         return {
-            id: user.id as string,
+            id: user.id,
             identifier: user.identifier,
             channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
         };

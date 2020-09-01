@@ -310,7 +310,7 @@ export class IndexerController {
     private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
         return variants
             .map((v) => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map((v) => translateDeep(v, ctx.languageCode, ['product']));
+            .map((v) => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
     private async saveVariants(languageCode: LanguageCode, channelId: ID, variants: ProductVariant[]) {
@@ -341,6 +341,7 @@ export class IndexerController {
                     facetIds: this.getFacetIds(v),
                     facetValueIds: this.getFacetValueIds(v),
                     collectionIds: v.collections.map((c) => c.id.toString()),
+                    collectionSlugs: v.collections.map((c) => c.slug),
                 }),
         );
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));

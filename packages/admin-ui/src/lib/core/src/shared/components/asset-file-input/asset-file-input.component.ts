@@ -9,6 +9,8 @@ import {
 } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
+import { ServerConfigService } from '../../../data/server-config';
+
 /**
  * A component for selecting files to upload as new Assets.
  */
@@ -34,8 +36,12 @@ export class AssetFileInputComponent implements OnInit {
         'top.px': 0,
         'left.px': 0,
     };
+    accept: string;
+
+    constructor(private serverConfig: ServerConfigService) {}
 
     ngOnInit() {
+        this.accept = this.serverConfig.serverConfig.permittedAssetTypes.join(',');
         this.fitDropZoneToTarget();
     }
 

@@ -10,9 +10,12 @@ import {
 
 import { BooleanFormInputComponent } from './boolean-form-input/boolean-form-input.component';
 import { CurrencyFormInputComponent } from './currency-form-input/currency-form-input.component';
+import { CustomerGroupFormInputComponent } from './customer-group-form-input/customer-group-form-input.component';
 import { DateFormInputComponent } from './date-form-input/date-form-input.component';
 import { FacetValueFormInputComponent } from './facet-value-form-input/facet-value-form-input.component';
 import { NumberFormInputComponent } from './number-form-input/number-form-input.component';
+import { PasswordFormInputComponent } from './password-form-input/password-form-input.component';
+import { ProductSelectorFormInputComponent } from './product-selector-form-input/product-selector-form-input.component';
 import { SelectFormInputComponent } from './select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './text-form-input/text-form-input.component';
 
@@ -24,6 +27,9 @@ export const defaultFormInputs = [
     NumberFormInputComponent,
     SelectFormInputComponent,
     TextFormInputComponent,
+    ProductSelectorFormInputComponent,
+    CustomerGroupFormInputComponent,
+    PasswordFormInputComponent,
 ];
 
 /**
@@ -90,5 +96,5 @@ export function registerCustomFieldComponent(
  * Registers the default form input components.
  */
 export function registerDefaultFormInputs(): FactoryProvider[] {
-    return defaultFormInputs.map(cmp => registerFormInputComponent(cmp.id, cmp));
+    return defaultFormInputs.map((cmp) => registerFormInputComponent(cmp.id, cmp));
 }

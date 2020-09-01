@@ -3,7 +3,7 @@ export type Maybe<T> = T | null;
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
+  ID: string | number;
   String: string;
   Boolean: boolean;
   Int: number;
@@ -2977,6 +2977,8 @@ export type Query = {
   products: ProductList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
   promotion?: Maybe<Promotion>;
   promotions: PromotionList;
   promotionConditions: Array<ConfigurableOperationDefinition>;
@@ -3132,6 +3134,11 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>;
   slug?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductVariantArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -3291,6 +3298,7 @@ export type SearchInput = {
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   facetValueOperator?: Maybe<LogicalOperator>;
   collectionId?: Maybe<Scalars['ID']>;
+  collectionSlug?: Maybe<Scalars['String']>;
   groupByProduct?: Maybe<Scalars['Boolean']>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
@@ -3356,6 +3364,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
    __typename?: 'ServerConfig';
   orderProcess: Array<OrderProcessState>;
+  permittedAssetTypes: Array<Scalars['String']>;
   customFieldConfig: CustomFields;
 };
 

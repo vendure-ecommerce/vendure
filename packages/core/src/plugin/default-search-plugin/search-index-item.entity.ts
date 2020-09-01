@@ -63,6 +63,9 @@ export class SearchIndexItem {
     collectionIds: string[];
 
     @Column('simple-array')
+    collectionSlugs: string[];
+
+    @Column('simple-array')
     channelIds: string[];
 
     @Column()

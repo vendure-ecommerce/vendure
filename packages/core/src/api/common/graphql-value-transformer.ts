@@ -79,7 +79,7 @@ export class GraphqlValueTransformer {
         typeTree.operation = rootNode;
         let currentNode = rootNode;
         const visitor: Visitor<ASTKindToNode> = {
-            enter: node => {
+            enter: (node) => {
                 const type = typeInfo.getType();
                 const fieldDef = typeInfo.getFieldDef();
                 if (node.kind === 'Field') {
@@ -90,7 +90,7 @@ export class GraphqlValueTransformer {
                         parent: currentNode,
                         children: {},
                     };
-                    currentNode.children[fieldDef.name] = newNode;
+                    currentNode.children[node.alias?.value ?? node.name.value] = newNode;
                     currentNode = newNode;
                 }
                 if (node.kind === 'FragmentSpread') {
@@ -108,7 +108,7 @@ export class GraphqlValueTransformer {
                     typeTree.fragments[node.name.value] = rootFragmentNode;
                 }
             },
-            leave: node => {
+            leave: (node) => {
                 if (node.kind === 'Field') {
                     if (!this.isTypeTree(currentNode.parent)) {
                         currentNode = currentNode.parent;
@@ -146,7 +146,7 @@ export class GraphqlValueTransformer {
         typeTree.operation = rootNode;
         let currentNode = rootNode;
         const visitor: Visitor<ASTKindToNode> = {
-            enter: node => {
+            enter: (node) => {
                 if (node.kind === 'Argument') {
                     const type = typeInfo.getType();
                     const args = typeInfo.getArgument();
@@ -169,7 +169,7 @@ export class GraphqlValueTransformer {
                     }
                 }
             },
-            leave: node => {
+            leave: (node) => {
                 if (node.kind === 'Argument') {
                     if (!this.isTypeTree(currentNode.parent)) {
                         currentNode = currentNode.parent;
@@ -186,23 +186,20 @@ export class GraphqlValueTransformer {
         inputType: GraphQLInputObjectType,
         parent: TypeTreeNode,
     ): { [name: string]: TypeTreeNode } {
-        return Object.entries(inputType.getFields()).reduce(
-            (result, [key, field]) => {
-                const namedType = getNamedType(field.type);
-                const child: TypeTreeNode = {
-                    type: namedType,
-                    isList: this.isList(field.type),
-                    parent,
-                    fragmentRefs: [],
-                    children: {},
-                };
-                if (isInputObjectType(namedType)) {
-                    child.children = this.getChildrenTreeNodes(namedType, child);
-                }
-                return { ...result, [key]: child };
-            },
-            {} as { [name: string]: TypeTreeNode },
-        );
+        return Object.entries(inputType.getFields()).reduce((result, [key, field]) => {
+            const namedType = getNamedType(field.type);
+            const child: TypeTreeNode = {
+                type: namedType,
+                isList: this.isList(field.type),
+                parent,
+                fragmentRefs: [],
+                children: {},
+            };
+            if (isInputObjectType(namedType)) {
+                child.children = this.getChildrenTreeNodes(namedType, child);
+            }
+            return { ...result, [key]: child };
+        }, {} as { [name: string]: TypeTreeNode });
     }
 
     private isList(t: any): boolean {

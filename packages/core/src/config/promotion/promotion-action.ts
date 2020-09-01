@@ -77,6 +77,14 @@ export interface PromotionOrderActionConfig<T extends ConfigArgs> extends Promot
  * @docsPage promotion-action
  */
 export abstract class PromotionAction<T extends ConfigArgs = {}> extends ConfigurableOperationDef<T> {
+    /**
+     * @description
+     * Used to determine the order of application of multiple Promotions
+     * on the same Order. See the {@link Promotion} `priorityScore` field for
+     * more information.
+     *
+     * @default 0
+     */
     readonly priorityValue: number;
 
     protected constructor(config: PromotionActionConfig<T>) {

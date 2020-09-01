@@ -405,3 +405,34 @@ export const GET_ORDER = gql`
     }
     ${ORDER_WITH_LINES_FRAGMENT}
 `;
+
+export const CUSTOMER_GROUP_FRAGMENT = gql`
+    fragment CustomerGroup on CustomerGroup {
+        id
+        name
+        customers {
+            items {
+                id
+            }
+            totalItems
+        }
+    }
+`;
+
+export const CREATE_CUSTOMER_GROUP = gql`
+    mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
+        createCustomerGroup(input: $input) {
+            ...CustomerGroup
+        }
+    }
+    ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
+    mutation RemoveCustomersFromGroup($groupId: ID!, $customerIds: [ID!]!) {
+        removeCustomersFromGroup(customerGroupId: $groupId, customerIds: $customerIds) {
+            ...CustomerGroup
+        }
+    }
+    ${CUSTOMER_GROUP_FRAGMENT}
+`;

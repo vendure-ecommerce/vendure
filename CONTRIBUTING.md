@@ -6,7 +6,7 @@ In order to make the best use of both your time and that of the Vendure maintain
 
 ## Bug fixes
 
-If you would like to contribute a bugfix, please first create an issue detailing the bug, and also indicate that you intend to fix it. When creating commits, please follow the commit message format below.
+If you would like to contribute a bugfix, please first create an issue detailing the bug, and indicate that you intend to fix it. When creating commits, please follow the commit message format below.
 
 ## New features
 
@@ -51,6 +51,18 @@ If a commit applies to no particular package (e.g. a tooling change in the root 
 #### Breaking Changes
 
 If your contribution includes any breaking changes (including any changes to the DB schema; backwards-incompatible changes to the GraphQL APIs or VendureConfig; backwards-incompatible changes to current behavior), please include a `BREAKING CHANGE` section in your commit message as per the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/#commit-message-with-both-and-breaking-change-footer).
+
+Please also make your pull request against the `next` branch rather than `master` in the case of breaking changes.
+
+Example:
+
+```
+feat(core): Add new field to Customer
+
+Relates to #123. This commit adds the "foo" field to the Custom entity.
+
+BREAKING CHANGE: A DB migration will be required in order to add the new "foo" field to the customer table.
+```
 
 #### Linting
 

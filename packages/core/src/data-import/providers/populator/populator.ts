@@ -72,9 +72,9 @@ export class Populator {
                 ],
                 isPrivate: collectionDef.private || false,
                 parentId,
-                assetIds: assets.map(a => a.id.toString()),
+                assetIds: assets.map((a) => a.id.toString()),
                 featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
-                filters: (collectionDef.filters || []).map(filter =>
+                filters: (collectionDef.filters || []).map((filter) =>
                     this.processFilterDefinition(filter, allFacetValues),
                 ),
             });
@@ -82,7 +82,7 @@ export class Populator {
         }
         // Wait for the created collection operations to complete before running
         // the reindex of the search index.
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 50));
         await this.searchService.reindex(ctx);
     }
 
@@ -93,9 +93,9 @@ export class Populator {
         switch (filter.code) {
             case 'facet-value-filter':
                 const facetValueIds = filter.args.facetValueNames
-                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .map((name) => allFacetValues.find((fv) => fv.name === name))
                     .filter(notNullOrUndefined)
-                    .map(fv => fv.id);
+                    .map((fv) => fv.id);
                 return {
                     code: filter.code,
                     arguments: [
@@ -133,9 +133,9 @@ export class Populator {
                 `The defaultZone (${data.defaultZone}) did not match any zones from the InitialData`,
             );
         }
-        const defaultZoneId = defaultZone.entity.id as string;
+        const defaultZoneId = defaultZone.entity.id;
         await this.channelService.update({
-            id: channel.id as string,
+            id: channel.id,
             defaultTaxZoneId: defaultZoneId,
             defaultShippingZoneId: defaultZoneId,
         });
@@ -156,13 +156,13 @@ export class Populator {
                 zoneItem = { entity: zoneEntity, members: [] };
                 zones.set(zone, zoneItem);
             }
-            zoneItem.members.push(countryEntity.id as string);
+            zoneItem.members.push(countryEntity.id);
         }
 
         // add the countries to the respective zones
         for (const zoneItem of zones.values()) {
             await this.zoneService.addMembersToZone(ctx, {
-                zoneId: zoneItem.entity.id as string,
+                zoneId: zoneItem.entity.id,
                 memberIds: zoneItem.members,
             });
         }
@@ -181,9 +181,9 @@ export class Populator {
 
             for (const { entity } of zoneMap.values()) {
                 await this.taxRateService.create(ctx, {
-                    zoneId: entity.id as string,
+                    zoneId: entity.id,
                     value: taxRate.percentage,
-                    categoryId: category.id as string,
+                    categoryId: category.id,
                     name: `${taxRate.name} ${entity.name}`,
                     enabled: true,
                 });

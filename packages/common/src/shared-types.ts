@@ -104,14 +104,16 @@ export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boo
  * 1. How the argument form field is rendered in the admin-ui
  * 2. The JavaScript type into which the value is coerced before being passed to the business logic.
  *
- * @docsCategory common
- * @docsPage Configurable Operations
+ * @docsCategory ConfigurableOperationDef
  */
 export type ConfigArgType = 'string' | 'int' | 'float' | 'boolean' | 'datetime' | 'ID';
 
 /**
+ * @description
  * The ids of the default form input components that ship with the
  * Admin UI.
+ *
+ * @docsCategory ConfigurableOperationDef
  */
 export type DefaultFormComponentId =
     | 'boolean-form-input'
@@ -120,10 +122,16 @@ export type DefaultFormComponentId =
     | 'facet-value-form-input'
     | 'number-form-input'
     | 'select-form-input'
-    | 'text-form-input';
+    | 'product-selector-form-input'
+    | 'customer-group-form-input'
+    | 'text-form-input'
+    | 'password-form-input';
 
 /**
+ * @description
  * Used to defined the expected arguments for a given default form input component.
+ *
+ * @docsCategory ConfigurableOperationDef
  */
 type DefaultFormConfigHash = {
     'date-form-input': { min?: string; max?: string; yearRange?: number };
@@ -132,7 +140,10 @@ type DefaultFormConfigHash = {
     'boolean-form-input': {};
     'currency-form-input': {};
     'facet-value-form-input': {};
+    'product-selector-form-input': {};
+    'customer-group-form-input': {};
     'text-form-input': {};
+    'password-form-input': {};
 };
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];

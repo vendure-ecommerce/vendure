@@ -36,7 +36,7 @@ const path = require('path');
         },// turn this off for production
         adminApiDebug: true, // turn this off for production
         shopApiPath: 'shop-api',
-        shopApiPlayground: { 
+        shopApiPlayground: {
             settings: {
                 'request.credentials': 'include',
             }{{#if isTs}} as any{{/if}},
@@ -44,7 +44,6 @@ const path = require('path');
         shopApiDebug: true,// turn this off for production
     },
     authOptions: {
-        sessionSecret: '{{ sessionSecret }}',
         superadminCredentials: {
             identifier: '{{ superadminIdentifier }}',
             password: '{{ superadminPassword }}',

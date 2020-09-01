@@ -3,9 +3,11 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
@@ -27,7 +29,7 @@ import { ShippingMethod } from '../shipping-method/shipping-method.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Order extends VendureEntity implements HasCustomFields {
+export class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
@@ -42,16 +44,16 @@ export class Order extends VendureEntity implements HasCustomFields {
     @Column({ nullable: true })
     orderPlacedAt?: Date;
 
-    @ManyToOne(type => Customer)
+    @ManyToOne((type) => Customer)
     customer?: Customer;
 
-    @OneToMany(type => OrderLine, line => line.order)
+    @OneToMany((type) => OrderLine, (line) => line.order)
     lines: OrderLine[];
 
     @Column('simple-array')
     couponCodes: string[];
 
-    @ManyToMany(type => Promotion)
+    @ManyToMany((type) => Promotion)
     @JoinTable()
     promotions: Promotion[];
 
@@ -61,7 +63,7 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     @Column('simple-json') billingAddress: OrderAddress;
 
-    @OneToMany(type => Payment, payment => payment.order)
+    @OneToMany((type) => Payment, (payment) => payment.order)
     payments: Payment[];
 
     @Column('varchar')
@@ -79,7 +81,7 @@ export class Order extends VendureEntity implements HasCustomFields {
     @EntityId({ nullable: true })
     shippingMethodId: ID | null;
 
-    @ManyToOne(type => ShippingMethod)
+    @ManyToOne((type) => ShippingMethod)
     shippingMethod: ShippingMethod | null;
 
     @Column({ default: 0 })
@@ -88,11 +90,15 @@ export class Order extends VendureEntity implements HasCustomFields {
     @Column({ default: 0 })
     shippingWithTax: number;
 
-    @Column(type => CustomOrderFields)
+    @Column((type) => CustomOrderFields)
     customFields: CustomOrderFields;
 
     @EntityId({ nullable: true })
     taxZoneId?: ID;
+
+    @ManyToMany((type) => Channel)
+    @JoinTable()
+    channels: Channel[];
 
     @Calculated()
     get totalBeforeTax(): number {
@@ -111,7 +117,7 @@ export class Order extends VendureEntity implements HasCustomFields {
 
     get promotionAdjustmentsTotal(): number {
         return this.adjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
+            .filter((a) => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
     }
 
@@ -123,16 +129,13 @@ export class Order extends VendureEntity implements HasCustomFields {
         if (!type) {
             this.pendingAdjustments = [];
         } else {
-            this.pendingAdjustments = this.pendingAdjustments.filter(a => a.type !== type);
+            this.pendingAdjustments = this.pendingAdjustments.filter((a) => a.type !== type);
         }
     }
 
     getOrderItems(): OrderItem[] {
-        return this.lines.reduce(
-            (items, line) => {
-                return [...items, ...line.items];
-            },
-            [] as OrderItem[],
-        );
+        return this.lines.reduce((items, line) => {
+            return [...items, ...line.items];
+        }, [] as OrderItem[]);
     }
 }

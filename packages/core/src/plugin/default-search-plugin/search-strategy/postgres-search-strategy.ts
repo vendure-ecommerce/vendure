@@ -81,7 +81,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then((res) => res.map((r) => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -101,7 +101,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
             .setParameters(innerQb.getParameters());
-        return totalItemsQb.getRawOne().then(res => res.total);
+        return totalItemsQb.getRawOne().then((res) => res.total);
     }
 
     private applyTermAndFilters(
@@ -110,7 +110,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
         input: SearchInput,
         forceGroup: boolean = false,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
         // join multiple words with the logical AND operator
         const termLogicalAnd = term ? term.trim().replace(/\s+/, ' & ') : '';
 
@@ -130,7 +130,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
                 'score',
             )
                 .andWhere(
-                    new Brackets(qb1 => {
+                    new Brackets((qb1) => {
                         qb1.where('to_tsvector(si.sku) @@ to_tsquery(:term)')
                             .orWhere('to_tsvector(si.productName) @@ to_tsquery(:term)')
                             .orWhere('to_tsvector(si.productVariantName) @@ to_tsquery(:term)')
@@ -141,7 +141,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
         }
         if (facetValueIds?.length) {
             qb.andWhere(
-                new Brackets(qb1 => {
+                new Brackets((qb1) => {
                     for (const id of facetValueIds) {
                         const placeholder = '_' + id;
                         const clause = `:${placeholder} = ANY (string_to_array(si.facetValueIds, ','))`;
@@ -158,6 +158,11 @@ export class PostgresSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`:collectionId = ANY (string_to_array(si.collectionIds, ','))`, { collectionId });
         }
+        if (collectionSlug) {
+            qb.andWhere(`:collectionSlug = ANY (string_to_array(si.collectionSlugs, ','))`, {
+                collectionSlug,
+            });
+        }
         qb.andWhere('si.languageCode = :languageCode', { languageCode: ctx.languageCode });
         qb.andWhere('si.channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
@@ -173,7 +178,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
      */
     private createPostgresSelect(groupByProduct: boolean): string {
         return fieldsToSelect
-            .map(col => {
+            .map((col) => {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
                 if (groupByProduct && col !== 'productId') {

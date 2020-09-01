@@ -75,7 +75,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
 
     @Column() enabled: boolean;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 
@@ -92,6 +92,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
      * PromotionActions comprising this Promotion.
      *
      * An example illustrating the need for a priority is this:
+     *
      *
      * Consider 2 Promotions, 1) buy 1 get one free and 2) 10% off when order total is over $50.
      * If Promotion 2 is evaluated prior to Promotion 1, then it can trigger the 10% discount even

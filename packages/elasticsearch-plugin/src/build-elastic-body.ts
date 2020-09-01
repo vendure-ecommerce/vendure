@@ -18,6 +18,7 @@ export function buildElasticBody(
         facetValueIds,
         facetValueOperator,
         collectionId,
+        collectionSlug,
         groupByProduct,
         skip,
         take,
@@ -52,13 +53,17 @@ export function buildElasticBody(
         const operator = facetValueOperator === LogicalOperator.AND ? 'must' : 'should';
         query.bool.filter = query.bool.filter.concat([
             {
-                bool: { [operator]: facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
+                bool: { [operator]: facetValueIds.map((id) => ({ term: { facetValueIds: id } })) },
             },
         ]);
     }
     if (collectionId) {
         ensureBoolFilterExists(query);
         query.bool.filter.push({ term: { collectionIds: collectionId } });
+    }
+    if (collectionSlug) {
+        ensureBoolFilterExists(query);
+        query.bool.filter.push({ term: { collectionSlugs: collectionSlug } });
     }
     if (enabledOnly) {
         ensureBoolFilterExists(query);

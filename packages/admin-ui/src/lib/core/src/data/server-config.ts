@@ -63,7 +63,7 @@ export class ServerConfigService {
     }
 
     /**
-     * When any of the GLobalSettings are modified, this method should be called to update the Apollo cache.
+     * When any of the GlobalSettings are modified, this method should be called to update the Apollo cache.
      */
     refreshGlobalSettings() {
         return this.baseDataService.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS, {}, 'network-only')

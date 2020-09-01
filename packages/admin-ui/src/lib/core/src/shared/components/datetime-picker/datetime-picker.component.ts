@@ -42,9 +42,10 @@ export type CurrentView = {
 export class DatetimePickerComponent implements ControlValueAccessor, AfterViewInit, OnInit, OnDestroy {
     /**
      * The range above and below the current year which is selectable from
-     * the year select control.
+     * the year select control. If a min or max value is set, these will
+     * override the yearRange.
      */
-    @Input() yearRange = 10;
+    @Input() yearRange;
     /**
      * The day that the week should start with in the calendar view.
      */
@@ -99,16 +100,16 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
         this.populateMinutes();
         this.calendarView$ = this.datetimePickerService.calendarView$;
         this.current$ = this.datetimePickerService.viewing$.pipe(
-            map(date => ({
+            map((date) => ({
                 date,
                 month: date.getMonth() + 1,
                 year: date.getFullYear(),
             })),
         );
         this.selected$ = this.datetimePickerService.selected$;
-        this.selectedHours$ = this.selected$.pipe(map(date => date && date.getHours()));
-        this.selectedMinutes$ = this.selected$.pipe(map(date => date && date.getMinutes()));
-        this.subscription = this.datetimePickerService.selected$.subscribe(val => {
+        this.selectedHours$ = this.selected$.pipe(map((date) => date && date.getHours()));
+        this.selectedMinutes$ = this.selected$.pipe(map((date) => date && date.getMinutes()));
+        this.subscription = this.datetimePickerService.selected$.subscribe((val) => {
             if (this.onChange) {
                 this.onChange(val == null ? val : val.toISOString());
             }
@@ -116,7 +117,7 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
     }
 
     ngAfterViewInit(): void {
-        this.dropdownComponent.onOpenChange(isOpen => {
+        this.dropdownComponent.onOpenChange((isOpen) => {
             if (isOpen) {
                 this.calendarTable.nativeElement.focus();
             }
@@ -209,10 +210,12 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
     }
 
     private populateYearsSelection() {
+        const yearRange = this.yearRange ?? 10;
         const currentYear = new Date().getFullYear();
-        this.years = Array.from({ length: this.yearRange * 2 + 1 }).map(
-            (_, i) => currentYear - this.yearRange + i,
-        );
+        const min = (this.min && new Date(this.min).getFullYear()) || currentYear - yearRange;
+        const max = (this.max && new Date(this.max).getFullYear()) || currentYear + yearRange;
+        const spread = max - min + 1;
+        this.years = Array.from({ length: spread }).map((_, i) => min + i);
     }
 
     private populateWeekdays() {

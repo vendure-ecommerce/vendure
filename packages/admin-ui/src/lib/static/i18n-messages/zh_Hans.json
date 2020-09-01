@@ -86,6 +86,7 @@
     "expand-all-collections": "展开所有系列",
     "facet-values": "特征值列表",
     "filter-by-name": "按名字过滤",
+    "filter-by-name-or-sku": "",
     "filters": "过滤条件",
     "group-by-product": "按商品分组显示",
     "manage-variants": "商品规格管理",

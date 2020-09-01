@@ -79,7 +79,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then((res) => res.map((r) => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -100,7 +100,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
             .setParameters(innerQb.getParameters());
-        return totalItemsQb.getRawOne().then(res => res.total);
+        return totalItemsQb.getRawOne().then((res) => res.total);
     }
 
     private applyTermAndFilters(
@@ -108,7 +108,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -122,7 +122,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
                     'score',
                 )
                 .andWhere(
-                    new Brackets(qb1 => {
+                    new Brackets((qb1) => {
                         qb1.where('sku LIKE :like_term')
                             .orWhere('MATCH (productName) AGAINST (:term)')
                             .orWhere('MATCH (productVariantName) AGAINST (:term)')
@@ -133,7 +133,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
         }
         if (facetValueIds?.length) {
             qb.andWhere(
-                new Brackets(qb1 => {
+                new Brackets((qb1) => {
                     for (const id of facetValueIds) {
                         const placeholder = '_' + id;
                         const clause = `FIND_IN_SET(:${placeholder}, facetValueIds)`;
@@ -150,6 +150,9 @@ export class MysqlSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`FIND_IN_SET (:collectionId, collectionIds)`, { collectionId });
         }
+        if (collectionSlug) {
+            qb.andWhere(`FIND_IN_SET (:collectionSlug, collectionSlugs)`, { collectionSlug });
+        }
         qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });
         qb.andWhere('channelId = :channelId', { channelId: ctx.channelId });
         if (input.groupByProduct === true) {
@@ -165,7 +168,7 @@ export class MysqlSearchStrategy implements SearchStrategy {
      */
     private createMysqlsSelect(groupByProduct: boolean): string {
         return fieldsToSelect
-            .map(col => {
+            .map((col) => {
                 const qualifiedName = `si.${col}`;
                 const alias = `si_${col}`;
                 if (groupByProduct && col !== 'productId') {

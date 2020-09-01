@@ -86,6 +86,7 @@
     "expand-all-collections": "展開所有系列",
     "facet-values": "特徵值列表",
     "filter-by-name": "按名字篩選",
+    "filter-by-name-or-sku": "",
     "filters": "篩選條件",
     "group-by-product": "按商品分组顯示",
     "manage-variants": "商品規格管理",

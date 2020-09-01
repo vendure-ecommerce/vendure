@@ -2888,6 +2888,8 @@ export type Query = {
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** Get a ProductVariant by id */
+    productVariant?: Maybe<ProductVariant>;
     promotion?: Maybe<Promotion>;
     promotions: PromotionList;
     promotionConditions: Array<ConfigurableOperationDefinition>;
@@ -3016,6 +3018,10 @@ export type QueryProductsArgs = {
 export type QueryProductArgs = {
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
+};
+
+export type QueryProductVariantArgs = {
+    id: Scalars['ID'];
 };
 
 export type QueryPromotionArgs = {
@@ -3165,6 +3171,7 @@ export type SearchInput = {
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     facetValueOperator?: Maybe<LogicalOperator>;
     collectionId?: Maybe<Scalars['ID']>;
+    collectionSlug?: Maybe<Scalars['String']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
@@ -3230,6 +3237,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
 };
 
@@ -4013,20 +4021,6 @@ export type CreateCountryMutation = { __typename?: 'Mutation' } & {
     createCountry: { __typename?: 'Country' } & CountryFragment;
 };
 
-export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
-        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-            };
-    };
-
-export type CreateCustomerGroupMutationVariables = {
-    input: CreateCustomerGroupInput;
-};
-
-export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
-    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
-
 export type UpdateCustomerGroupMutationVariables = {
     input: UpdateCustomerGroupInput;
 };
@@ -4075,15 +4069,6 @@ export type AddCustomersToGroupMutationVariables = {
 
 export type AddCustomersToGroupMutation = { __typename?: 'Mutation' } & {
     addCustomersToGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
-
-export type RemoveCustomersFromGroupMutationVariables = {
-    groupId: Scalars['ID'];
-    customerIds: Array<Scalars['ID']>;
-};
-
-export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
-    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
 };
 
 export type GetCustomerWithGroupsQueryVariables = {
@@ -5072,6 +5057,29 @@ export type GetOrderQuery = { __typename?: 'Query' } & {
     order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
 };
 
+export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
+        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+            };
+    };
+
+export type CreateCustomerGroupMutationVariables = {
+    input: CreateCustomerGroupInput;
+};
+
+export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type RemoveCustomersFromGroupMutationVariables = {
+    groupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
+    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5369,6 +5377,14 @@ export type GetOptionGroupQuery = { __typename?: 'Query' } & {
                 options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
             }
     >;
+};
+
+export type GetProductVariantQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetProductVariantQuery = { __typename?: 'Query' } & {
+    productVariant?: Maybe<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
 };
 
 export type DeletePromotionMutationVariables = {
@@ -6068,18 +6084,6 @@ export namespace CreateCountry {
     export type CreateCountry = CountryFragment;
 }
 
-export namespace CustomerGroup {
-    export type Fragment = CustomerGroupFragment;
-    export type Customers = CustomerGroupFragment['customers'];
-    export type Items = NonNullable<CustomerGroupFragment['customers']['items'][0]>;
-}
-
-export namespace CreateCustomerGroup {
-    export type Variables = CreateCustomerGroupMutationVariables;
-    export type Mutation = CreateCustomerGroupMutation;
-    export type CreateCustomerGroup = CustomerGroupFragment;
-}
-
 export namespace UpdateCustomerGroup {
     export type Variables = UpdateCustomerGroupMutationVariables;
     export type Mutation = UpdateCustomerGroupMutation;
@@ -6113,12 +6117,6 @@ export namespace AddCustomersToGroup {
     export type Variables = AddCustomersToGroupMutationVariables;
     export type Mutation = AddCustomersToGroupMutation;
     export type AddCustomersToGroup = CustomerGroupFragment;
-}
-
-export namespace RemoveCustomersFromGroup {
-    export type Variables = RemoveCustomersFromGroupMutationVariables;
-    export type Mutation = RemoveCustomersFromGroupMutation;
-    export type RemoveCustomersFromGroup = CustomerGroupFragment;
 }
 
 export namespace GetCustomerWithGroups {
@@ -6753,6 +6751,24 @@ export namespace GetOrder {
     export type Order = OrderWithLinesFragment;
 }
 
+export namespace CustomerGroup {
+    export type Fragment = CustomerGroupFragment;
+    export type Customers = CustomerGroupFragment['customers'];
+    export type Items = NonNullable<CustomerGroupFragment['customers']['items'][0]>;
+}
+
+export namespace CreateCustomerGroup {
+    export type Variables = CreateCustomerGroupMutationVariables;
+    export type Mutation = CreateCustomerGroupMutation;
+    export type CreateCustomerGroup = CustomerGroupFragment;
+}
+
+export namespace RemoveCustomersFromGroup {
+    export type Variables = RemoveCustomersFromGroupMutationVariables;
+    export type Mutation = RemoveCustomersFromGroupMutation;
+    export type RemoveCustomersFromGroup = CustomerGroupFragment;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -6954,6 +6970,12 @@ export namespace GetOptionGroup {
     export type Query = GetOptionGroupQuery;
     export type ProductOptionGroup = NonNullable<GetOptionGroupQuery['productOptionGroup']>;
     export type Options = NonNullable<NonNullable<GetOptionGroupQuery['productOptionGroup']>['options'][0]>;
+}
+
+export namespace GetProductVariant {
+    export type Variables = GetProductVariantQueryVariables;
+    export type Query = GetProductVariantQuery;
+    export type ProductVariant = NonNullable<GetProductVariantQuery['productVariant']>;
 }
 
 export namespace DeletePromotion {

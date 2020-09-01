@@ -22,6 +22,6 @@ Use-cases of Channels include:
 
 ## Multi-Tenant (Marketplace) Support
 
-In its current form, the Channels feature is not suitable for a multi-tenant or marketplace solution. This is because many entities are still shared across all Channels, e.g. Orders, Customers, Assets.
+In its current form, the Channels feature is not suitable for a multi-tenant or marketplace solution. This is because several entities which should be isolated in a true multi-tenant system are still shared across all Channels.
 
-Multi-tenancy could still be achieved through a dedicated plugin, but would require significant custom work. An out-of-the-box solution will be considered for a future plugin offering.
+Multi-tenancy could still be achieved through a dedicated plugin, and indeed there are some community projects underway in this direction, but would require significant custom work. An out-of-the-box solution will be considered for a future plugin offering.

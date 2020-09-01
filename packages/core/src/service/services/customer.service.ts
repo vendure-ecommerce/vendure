@@ -413,11 +413,7 @@ export class CustomerService {
         return this.connection.getRepository(Customer).save(customer);
     }
 
-    async createAddress(
-        ctx: RequestContext,
-        customerId: string,
-        input: CreateAddressInput,
-    ): Promise<Address> {
+    async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput): Promise<Address> {
         const customer = await this.connection.manager.findOne(Customer, customerId, {
             where: { deletedAt: null },
             relations: ['addresses'],

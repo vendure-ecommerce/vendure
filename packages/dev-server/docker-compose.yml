@@ -21,7 +21,6 @@ services:
       - /sessions
   postgres:
     image: postgres:12.3
-    restart: always
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: admin
@@ -33,7 +32,6 @@ services:
       - "5432:5432"
   pgadmin:
     image: dpage/pgadmin4:4.18
-    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
       PGADMIN_DEFAULT_PASSWORD: secret

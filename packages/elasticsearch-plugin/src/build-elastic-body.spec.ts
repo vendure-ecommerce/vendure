@@ -76,6 +76,15 @@ describe('buildElasticBody()', () => {
         });
     });
 
+    it('collectionSlug', () => {
+        const result = buildElasticBody({ collectionSlug: 'plants' }, searchConfig, CHANNEL_ID);
+        expect(result.query).toEqual({
+            bool: {
+                filter: [CHANNEL_ID_TERM, { term: { collectionSlugs: 'plants' } }],
+            },
+        });
+    });
+
     it('paging', () => {
         const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig, CHANNEL_ID);
         expect(result).toEqual({

@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { DeletionResult, GetFacetList } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { EMPTY } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-facet-list',
@@ -28,7 +27,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
-            data => data.facets,
+            (data) => data.facets,
         );
     }
 
@@ -43,15 +42,17 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
     deleteFacet(facetValueId: string) {
         this.showModalAndDelete(facetValueId)
             .pipe(
-                switchMap(response => {
+                switchMap((response) => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(facetValueId, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
+                            map((r) => r.result === DeletionResult.DELETED),
                         );
                     }
                 }),
+                // Refresh the cached facets to reflect the changes
+                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
             )
             .subscribe(
                 () => {
@@ -60,7 +61,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                     });
                     this.refresh();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'FacetValue',
                     });
@@ -79,8 +80,8 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap(res => (res ? this.dataService.facet.deleteFacet(facetId, !!message) : EMPTY)),
-                map(res => res.deleteFacet),
+                switchMap((res) => (res ? this.dataService.facet.deleteFacet(facetId, !!message) : EMPTY)),
+                map((res) => res.deleteFacet),
             );
     }
 }

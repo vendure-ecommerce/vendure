@@ -19,6 +19,17 @@ export class FormattedAddressComponent {
         }
     }
 
+    getCustomFields(): Array<{ key: string; value: any }> {
+        const customFields = (this.address as any).customFields;
+        if (customFields) {
+            return Object.entries(customFields)
+                .filter(([key]) => key !== '__typename')
+                .map(([key, value]) => ({ key, value: (value as any)?.toString() ?? '-' }));
+        } else {
+            return [];
+        }
+    }
+
     private isAddressFragment(input: AddressFragment | OrderAddress): input is AddressFragment {
         return typeof input.country !== 'string';
     }

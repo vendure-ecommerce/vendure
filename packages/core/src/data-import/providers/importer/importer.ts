@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ImportInfo, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
+import { ID } from '@vendure/common/lib/shared-types';
 import ProgressBar from 'progress';
 import { Observable } from 'rxjs';
 import { Stream } from 'stream';
@@ -30,7 +31,7 @@ export type OnProgressFn = (progess: ImportProgress) => void;
 
 @Injectable()
 export class Importer {
-    private taxCategoryMatches: { [name: string]: string } = {};
+    private taxCategoryMatches: { [name: string]: ID } = {};
     // These Maps are used to cache newly-created entities and prevent duplicates
     // from being created.
     private facetMap = new Map<string, Facet>();
@@ -54,8 +55,8 @@ export class Importer {
     ): Observable<ImportProgress> {
         let bar: ProgressBar | undefined;
 
-        return new Observable(subscriber => {
-            const p = this.doParseAndImport(input, ctxOrLanguageCode, progress => {
+        return new Observable((subscriber) => {
+            const p = this.doParseAndImport(input, ctxOrLanguageCode, (progress) => {
                 if (reportProgress) {
                     if (!bar) {
                         bar = new ProgressBar('  importing [:bar] :percent :etas  Importing: :prodName', {
@@ -68,7 +69,7 @@ export class Importer {
                     bar.tick({ prodName: progress.currentProduct });
                 }
                 subscriber.next(progress);
-            }).then(value => {
+            }).then((value) => {
                 subscriber.next({ ...value, currentProduct: 'Complete' });
                 subscriber.complete();
             });
@@ -84,7 +85,7 @@ export class Importer {
         const parsed = await this.importParser.parseProducts(input);
         if (parsed && parsed.results.length) {
             try {
-                const importErrors = await this.importProducts(ctx, parsed.results, progess => {
+                const importErrors = await this.importProducts(ctx, parsed.results, (progess) => {
                     onProgress({
                         ...progess,
                         processed: parsed.processed,
@@ -148,8 +149,8 @@ export class Importer {
                 errors = errors.concat(createProductAssets.errors);
             }
             const createdProductId = await this.fastImporter.createProduct({
-                featuredAssetId: productAssets.length ? (productAssets[0].id as string) : undefined,
-                assetIds: productAssets.map(a => a.id) as string[],
+                featuredAssetId: productAssets.length ? productAssets[0].id : undefined,
+                assetIds: productAssets.map((a) => a.id),
                 facetValueIds: await this.getFacetValueIds(product.facets, languageCode),
                 translations: [
                     {
@@ -162,12 +163,12 @@ export class Importer {
                 customFields: product.customFields,
             });
 
-            const optionsMap: { [optionName: string]: string } = {};
+            const optionsMap: { [optionName: string]: ID } = {};
             for (const optionGroup of product.optionGroups) {
                 const code = normalizeString(`${product.name}-${optionGroup.name}`, '-');
                 const groupId = await this.fastImporter.createProductOptionGroup({
                     code,
-                    options: optionGroup.values.map(name => ({} as any)),
+                    options: optionGroup.values.map((name) => ({} as any)),
                     translations: [
                         {
                             languageCode,
@@ -177,7 +178,7 @@ export class Importer {
                 });
                 for (const option of optionGroup.values) {
                     const createdOptionId = await this.fastImporter.createProductOption({
-                        productOptionGroupId: groupId as string,
+                        productOptionGroupId: groupId,
                         code: normalizeString(option, '-'),
                         translations: [
                             {
@@ -186,7 +187,7 @@ export class Importer {
                             },
                         ],
                     });
-                    optionsMap[option] = createdOptionId as string;
+                    optionsMap[option] = createdOptionId;
                 }
                 await this.fastImporter.addOptionGroupToProduct(createdProductId, groupId);
             }
@@ -197,20 +198,20 @@ export class Importer {
                 if (createVariantAssets.errors.length) {
                     errors = errors.concat(createVariantAssets.errors);
                 }
-                let facetValueIds: string[] = [];
+                let facetValueIds: ID[] = [];
                 if (0 < variant.facets.length) {
                     facetValueIds = await this.getFacetValueIds(variant.facets, languageCode);
                 }
                 const createdVariant = await this.fastImporter.createProductVariant({
-                    productId: createdProductId as string,
+                    productId: createdProductId,
                     facetValueIds,
-                    featuredAssetId: variantAssets.length ? (variantAssets[0].id as string) : undefined,
-                    assetIds: variantAssets.map(a => a.id) as string[],
+                    featuredAssetId: variantAssets.length ? variantAssets[0].id : undefined,
+                    assetIds: variantAssets.map((a) => a.id),
                     sku: variant.sku,
                     taxCategoryId: this.getMatchingTaxCategoryId(variant.taxCategory, taxCategories),
                     stockOnHand: variant.stockOnHand,
                     trackInventory: variant.trackInventory,
-                    optionIds: variant.optionValues.map(v => optionsMap[v]),
+                    optionIds: variant.optionValues.map((v) => optionsMap[v]),
                     translations: [
                         {
                             languageCode,
@@ -235,8 +236,8 @@ export class Importer {
     private async getFacetValueIds(
         facets: ParsedProductVariant['facets'],
         languageCode: LanguageCode,
-    ): Promise<string[]> {
-        const facetValueIds: string[] = [];
+    ): Promise<ID[]> {
+        const facetValueIds: ID[] = [];
 
         for (const item of facets) {
             const facetName = item.facet;
@@ -266,7 +267,7 @@ export class Importer {
             if (cachedFacetValue) {
                 facetValueEntity = cachedFacetValue;
             } else {
-                const existing = facetEntity.values.find(v => v.name === valueName);
+                const existing = facetEntity.values.find((v) => v.name === valueName);
                 if (existing) {
                     facetValueEntity = existing;
                 } else {
@@ -277,7 +278,7 @@ export class Importer {
                 }
                 this.facetValueMap.set(facetValueMapKey, facetValueEntity);
             }
-            facetValueIds.push(facetValueEntity.id as string);
+            facetValueIds.push(facetValueEntity.id);
         }
 
         return facetValueIds;
@@ -287,14 +288,14 @@ export class Importer {
      * Attempts to match a TaxCategory entity against the name supplied in the import table. If no matches
      * are found, the first TaxCategory id is returned.
      */
-    private getMatchingTaxCategoryId(name: string, taxCategories: TaxCategory[]): string {
+    private getMatchingTaxCategoryId(name: string, taxCategories: TaxCategory[]): ID {
         if (this.taxCategoryMatches[name]) {
             return this.taxCategoryMatches[name];
         }
         const regex = new RegExp(name, 'i');
-        const found = taxCategories.find(tc => !!tc.name.match(regex));
+        const found = taxCategories.find((tc) => !!tc.name.match(regex));
         const match = found ? found : taxCategories[0];
-        this.taxCategoryMatches[name] = match.id as string;
-        return match.id as string;
+        this.taxCategoryMatches[name] = match.id;
+        return match.id;
     }
 }

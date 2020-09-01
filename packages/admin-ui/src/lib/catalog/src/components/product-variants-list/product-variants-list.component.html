@@ -1,10 +1,10 @@
 <div class="variants-list">
     <div
         class="variant-container card"
-        *ngFor="let variant of variants; let i = index"
-        [class.disabled]="!formArray.get([i, 'enabled'])?.value"
+        *ngFor="let variant of variants | paginate: pagination; trackBy:trackById, let i = index"
+        [class.disabled]="!formGroupMap.get(variant.id)?.get('enabled')?.value"
     >
-        <ng-container *ngIf="formArray.at(i)" [formGroup]="formArray.at(i)">
+        <ng-container *ngIf="formGroupMap.get(variant.id) as formGroup" [formGroup]="formGroup">
             <div class="card-block header-row">
                 <div class="details">
                     <vdr-title-input class="sku" [readonly]="!('UpdateCatalog' | hasPermission)">
@@ -51,7 +51,9 @@
                         <div class="standard-fields">
                             <div class="variant-form-input-row">
                                 <div class="tax-category">
-                                    <clr-select-container *vdrIfPermissions="'UpdateCatalog'; else taxCategoryLabel">
+                                    <clr-select-container
+                                        *vdrIfPermissions="'UpdateCatalog'; else taxCategoryLabel"
+                                    >
                                         <label>{{ 'catalog.tax-category' | translate }}</label>
                                         <select clrSelect name="options" formControlName="taxCategoryId">
                                             <option
@@ -63,9 +65,11 @@
                                         </select>
                                     </clr-select-container>
                                     <ng-template #taxCategoryLabel>
-                                        <label class="clr-control-label">{{ 'catalog.tax-category' | translate }}</label>
+                                        <label class="clr-control-label">{{
+                                            'catalog.tax-category' | translate
+                                        }}</label>
                                         <div class="tax-category-label">
-                                            {{ getTaxCategoryName(i) }}
+                                            {{ getTaxCategoryName(formGroup) }}
                                         </div>
                                     </ng-template>
                                 </div>
@@ -81,10 +85,10 @@
                                     </clr-input-container>
                                 </div>
                                 <vdr-variant-price-detail
-                                    [price]="formArray.get([i, 'price'])!.value"
+                                    [price]="formGroup.get('price')!.value"
                                     [currencyCode]="variant.currencyCode"
                                     [priceIncludesTax]="variant.priceIncludesTax"
-                                    [taxCategoryId]="formArray.get([i, 'taxCategoryId'])!.value"
+                                    [taxCategoryId]="formGroup.get('taxCategoryId')!.value"
                                 ></vdr-variant-price-detail>
                             </div>
                             <div class="variant-form-input-row">
@@ -104,7 +108,6 @@
                                         type="checkbox"
                                         clrCheckbox
                                         name="trackInventory"
-
                                         formControlName="trackInventory"
                                         [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
                                     />
@@ -118,10 +121,10 @@
                                     <!--<label>{{ 'common.custom-fields' | translate }}</label>-->
                                     <ng-container *ngFor="let customField of customFields">
                                         <vdr-custom-field-control
-                                            *ngIf="customFieldIsSet(i, customField.name)"
+                                            *ngIf="formGroup.get(['customFields', customField.name])"
                                             entityName="ProductVariant"
                                             [compact]="true"
-                                            [customFieldsFormGroup]="formArray.at(i).get(['customFields'])"
+                                            [customFieldsFormGroup]="formGroup.get('customFields')"
                                             [readonly]="!('UpdateCatalog' | hasPermission)"
                                             [customField]="customField"
                                         ></vdr-custom-field-control>
@@ -152,16 +155,16 @@
                     <div class="flex-spacer"></div>
                     <div class="facets">
                         <vdr-facet-value-chip
-                            *ngFor="let facetValue of existingFacetValues(i)"
+                            *ngFor="let facetValue of existingFacetValues(variant)"
                             [facetValue]="facetValue"
                             [removable]="'UpdateCatalog' | hasPermission"
-                            (remove)="removeFacetValue(i, facetValue.id)"
+                            (remove)="removeFacetValue(variant, facetValue.id)"
                         ></vdr-facet-value-chip>
                         <vdr-facet-value-chip
-                            *ngFor="let facetValue of pendingFacetValues(i)"
+                            *ngFor="let facetValue of pendingFacetValues(variant)"
                             [facetValue]="facetValue"
                             [removable]="'UpdateCatalog' | hasPermission"
-                            (remove)="removeFacetValue(i, facetValue.id)"
+                            (remove)="removeFacetValue(variant, facetValue.id)"
                         ></vdr-facet-value-chip>
                         <button
                             *vdrIfPermissions="'UpdateCatalog'"
@@ -175,5 +178,14 @@
                 </div>
             </div>
         </ng-container>
+    </div>
+    <div class="table-footer">
+        <vdr-items-per-page-controls [(itemsPerPage)]="pagination.itemsPerPage"></vdr-items-per-page-controls>
+
+        <vdr-pagination-controls
+            [currentPage]="pagination.currentPage"
+            [itemsPerPage]="pagination.itemsPerPage"
+            (pageChange)="pagination.currentPage = $event"
+        ></vdr-pagination-controls>
     </div>
 </div>

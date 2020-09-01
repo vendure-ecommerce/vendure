@@ -47,6 +47,7 @@ export type VariantIndexItem = Omit<
         channelId: ID;
         price: number;
         priceWithTax: number;
+        collectionSlugs: string[];
         [customMapping: string]: any;
     };
 
@@ -63,6 +64,7 @@ export type ProductIndexItem = IndexItemAssets & {
     facetIds: ID[];
     facetValueIds: ID[];
     collectionIds: ID[];
+    collectionSlugs: string[];
     channelIds: ID[];
     enabled: boolean;
     priceMin: number;

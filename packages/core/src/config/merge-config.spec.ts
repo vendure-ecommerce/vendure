@@ -42,10 +42,53 @@ describe('mergeConfig()', () => {
         });
     });
 
+    it('does not mutate target', () => {
+        const input: any = {
+            a: 1,
+            b: { c: { d: 'foo', e: { f: 1 } } },
+        };
+
+        const result = mergeConfig(input, { b: { c: { d: 'bar' } } } as any);
+        expect(result).toEqual({
+            a: 1,
+            b: { c: { d: 'bar', e: { f: 1 } } },
+        });
+        expect(input).toEqual({
+            a: 1,
+            b: { c: { d: 'foo', e: { f: 1 } } },
+        });
+    });
+
+    it('works when nested', () => {
+        const input1: any = {
+            a: 1,
+            b: { c: { d: 'foo1', e: { f: 1 } } },
+        };
+
+        const input2: any = {
+            b: { c: { d: 'foo2', e: { f: 2 } } },
+        };
+
+        const result = mergeConfig(input1, mergeConfig(input2, { b: { c: { d: 'bar' } } } as any));
+
+        expect(result).toEqual({
+            a: 1,
+            b: { c: { d: 'bar', e: { f: 2 } } },
+        });
+        expect(input1).toEqual({
+            a: 1,
+            b: { c: { d: 'foo1', e: { f: 1 } } },
+        });
+        expect(input2).toEqual({
+            b: { c: { d: 'foo2', e: { f: 2 } } },
+        });
+    });
+
     it('replaces class instances rather than merging their properties', () => {
         class Foo {
             name = 'foo';
         }
+
         class Bar {
             name = 'bar';
         }

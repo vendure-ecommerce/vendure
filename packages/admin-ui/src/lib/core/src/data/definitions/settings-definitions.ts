@@ -547,6 +547,7 @@ export const GET_SERVER_CONFIG = gql`
                     name
                     to
                 }
+                permittedAssetTypes
                 customFieldConfig {
                     Address {
                         ...CustomFields
@@ -660,27 +661,4 @@ export const REINDEX = gql`
         }
     }
     ${JOB_INFO_FRAGMENT}
-`;
-
-export const SEARCH_FOR_TEST_ORDER = gql`
-    query SearchForTestOrder($term: String!, $take: Int!) {
-        search(input: { groupByProduct: false, term: $term, take: $take }) {
-            items {
-                productVariantId
-                productVariantName
-                productPreview
-                price {
-                    ... on SinglePrice {
-                        value
-                    }
-                }
-                priceWithTax {
-                    ... on SinglePrice {
-                        value
-                    }
-                }
-                sku
-            }
-        }
-    }
 `;

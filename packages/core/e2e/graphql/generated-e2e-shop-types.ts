@@ -2147,6 +2147,7 @@ export type SearchInput = {
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     facetValueOperator?: Maybe<LogicalOperator>;
     collectionId?: Maybe<Scalars['ID']>;
+    collectionSlug?: Maybe<Scalars['String']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
@@ -2209,6 +2210,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
 };
 

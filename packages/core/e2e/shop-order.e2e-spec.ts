@@ -212,6 +212,29 @@ describe('Shop orders', () => {
             expect(adjustOrderLine!.lines[0].quantity).toBe(50);
         });
 
+        it('adjustOrderLine with quantity 0 removes the line', async () => {
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_3',
+                quantity: 3,
+            });
+            expect(addItemToOrder!.lines.length).toBe(2);
+            expect(addItemToOrder!.lines.map((i) => i.productVariant.id)).toEqual(['T_1', 'T_3']);
+
+            const { adjustOrderLine } = await shopClient.query<
+                AdjustItemQuantity.Mutation,
+                AdjustItemQuantity.Variables
+            >(ADJUST_ITEM_QUANTITY, {
+                orderLineId: addItemToOrder?.lines[1].id!,
+                quantity: 0,
+            });
+
+            expect(adjustOrderLine!.lines.length).toBe(1);
+            expect(adjustOrderLine!.lines.map((i) => i.productVariant.id)).toEqual(['T_1']);
+        });
+
         it(
             'adjustOrderLine errors when going beyond orderItemsLimit',
             assertThrowsWithMessage(async () => {

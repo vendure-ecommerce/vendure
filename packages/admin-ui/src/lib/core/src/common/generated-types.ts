@@ -3016,6 +3016,8 @@ export type Query = {
   product?: Maybe<Product>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
   productOptionGroups: Array<ProductOptionGroup>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -3165,6 +3167,11 @@ export type QueryProductOptionGroupArgs = {
 
 export type QueryProductOptionGroupsArgs = {
   filterTerm?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryProductVariantArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -3334,6 +3341,7 @@ export type SearchInput = {
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   facetValueOperator?: Maybe<LogicalOperator>;
   collectionId?: Maybe<Scalars['ID']>;
+  collectionSlug?: Maybe<Scalars['String']>;
   groupByProduct?: Maybe<Scalars['Boolean']>;
   take?: Maybe<Scalars['Int']>;
   skip?: Maybe<Scalars['Int']>;
@@ -3399,6 +3407,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
    __typename?: 'ServerConfig';
   orderProcess: Array<OrderProcessState>;
+  permittedAssetTypes: Array<Scalars['String']>;
   customFieldConfig: CustomFields;
 };
 
@@ -5493,6 +5502,37 @@ export type SearchProductsQuery = (
   ) }
 );
 
+export type ProductSelectorSearchQueryVariables = {
+  term: Scalars['String'];
+  take: Scalars['Int'];
+};
+
+
+export type ProductSelectorSearchQuery = (
+  { __typename?: 'Query' }
+  & { search: (
+    { __typename?: 'SearchResponse' }
+    & { items: Array<(
+      { __typename?: 'SearchResult' }
+      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
+      & { productAsset?: Maybe<(
+        { __typename?: 'SearchResultAsset' }
+        & Pick<SearchResultAsset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, price: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ), priceWithTax: { __typename?: 'PriceRange' } | (
+        { __typename?: 'SinglePrice' }
+        & Pick<SinglePrice, 'value'>
+      ) }
+    )> }
+  ) }
+);
+
 export type UpdateProductOptionMutationVariables = {
   input: UpdateProductOptionInput;
 };
@@ -5578,6 +5618,31 @@ export type RemoveProductsFromChannelMutation = (
       { __typename?: 'Channel' }
       & Pick<Channel, 'id' | 'code'>
     )> }
+  )> }
+);
+
+export type GetProductVariantQueryVariables = {
+  id: Scalars['ID'];
+};
+
+
+export type GetProductVariantQuery = (
+  { __typename?: 'Query' }
+  & { productVariant?: Maybe<(
+    { __typename?: 'ProductVariant' }
+    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & { product: (
+      { __typename?: 'Product' }
+      & Pick<Product, 'id'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )> }
+    ) }
   )> }
 );
 
@@ -6352,6 +6417,7 @@ export type GetServerConfigQuery = (
     { __typename?: 'GlobalSettings' }
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
+      & Pick<ServerConfig, 'permittedAssetTypes'>
       & { orderProcess: Array<(
         { __typename?: 'OrderProcessState' }
         & Pick<OrderProcessState, 'name' | 'to'>
@@ -6685,30 +6751,6 @@ export type ReindexMutation = (
   ) }
 );
 
-export type SearchForTestOrderQueryVariables = {
-  term: Scalars['String'];
-  take: Scalars['Int'];
-};
-
-
-export type SearchForTestOrderQuery = (
-  { __typename?: 'Query' }
-  & { search: (
-    { __typename?: 'SearchResponse' }
-    & { items: Array<(
-      { __typename?: 'SearchResult' }
-      & Pick<SearchResult, 'productVariantId' | 'productVariantName' | 'productPreview' | 'sku'>
-      & { price: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ), priceWithTax: { __typename?: 'PriceRange' } | (
-        { __typename?: 'SinglePrice' }
-        & Pick<SinglePrice, 'value'>
-      ) }
-    )> }
-  ) }
-);
-
 export type ConfigurableOperationFragment = (
   { __typename?: 'ConfigurableOperation' }
   & Pick<ConfigurableOperation, 'code'>
@@ -6723,7 +6765,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui' | 'label'>
   )> }
 );
 
@@ -7577,6 +7619,19 @@ export namespace SearchProducts {
   export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
 }
 
+export namespace ProductSelectorSearch {
+  export type Variables = ProductSelectorSearchQueryVariables;
+  export type Query = ProductSelectorSearchQuery;
+  export type Search = ProductSelectorSearchQuery['search'];
+  export type Items = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>);
+  export type ProductAsset = (NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
+  export type Price = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'];
+  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
+  export type PriceWithTax = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'];
+  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
+}
+
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
@@ -7611,6 +7666,15 @@ export namespace RemoveProductsFromChannel {
   export type Mutation = RemoveProductsFromChannelMutation;
   export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
   export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
+}
+
+export namespace GetProductVariant {
+  export type Variables = GetProductVariantQueryVariables;
+  export type Query = GetProductVariantQuery;
+  export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
+  export type Product = (NonNullable<GetProductVariantQuery['productVariant']>)['product'];
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace Promotion {
@@ -8001,17 +8065,6 @@ export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
   export type Reindex = JobInfoFragment;
-}
-
-export namespace SearchForTestOrder {
-  export type Variables = SearchForTestOrderQueryVariables;
-  export type Query = SearchForTestOrderQuery;
-  export type Search = SearchForTestOrderQuery['search'];
-  export type Items = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>);
-  export type Price = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'];
-  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
-  export type PriceWithTax = (NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'];
-  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<SearchForTestOrderQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
 }
 
 export namespace ConfigurableOperation {

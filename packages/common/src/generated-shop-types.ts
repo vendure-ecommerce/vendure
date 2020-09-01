@@ -3,7 +3,7 @@ export type Maybe<T> = T | null;
 
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-    ID: string;
+    ID: string | number;
     String: string;
     Boolean: boolean;
     Int: number;
@@ -2147,6 +2147,7 @@ export type SearchInput = {
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     facetValueOperator?: Maybe<LogicalOperator>;
     collectionId?: Maybe<Scalars['ID']>;
+    collectionSlug?: Maybe<Scalars['String']>;
     groupByProduct?: Maybe<Scalars['Boolean']>;
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
@@ -2209,6 +2210,7 @@ export type SearchResultSortParameter = {
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
 };
 

@@ -1,15 +1,17 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { TcpClientOptions, Transport } from '@nestjs/microservices';
+import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
-import { ConnectionOptions, EntitySubscriberInterface } from 'typeorm';
+import { Connection, ConnectionOptions, EntitySubscriberInterface } from 'typeorm';
 
 import { InternalServerError } from './common/error/errors';
 import { getConfig, setConfig } from './config/config-helpers';
 import { DefaultLogger } from './config/logger/default-logger';
 import { Logger } from './config/logger/vendure-logger';
 import { RuntimeVendureConfig, VendureConfig } from './config/vendure-config';
+import { Administrator } from './entity/administrator/administrator.entity';
 import { coreEntitiesMap } from './entity/entities';
 import { registerCustomEntityFields } from './entity/register-custom-entity-fields';
 import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
@@ -54,12 +56,14 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     app.useLogger(new Logger());
     await runBeforeBootstrapHooks(config, app);
     if (config.authOptions.tokenMethod === 'cookie') {
-        const cookieHandler = cookieSession({
-            name: 'session',
-            secret: config.authOptions.sessionSecret,
-            httpOnly: true,
-        });
-        app.use(cookieHandler);
+        const { sessionSecret, cookieOptions } = config.authOptions;
+        app.use(
+            cookieSession({
+                ...cookieOptions,
+                // TODO: Remove once the deprecated sessionSecret field is removed
+                ...(sessionSecret ? { secret: sessionSecret } : {}),
+            }),
+        );
     }
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
@@ -70,7 +74,7 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
             Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
             closeWorkerOnAppClose(app, worker);
         } catch (e) {
-            Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
+            Logger.error(`Could not start the worker process: ${e.message || e}`, 'Vendure Worker');
         }
     }
     logWelcomeMessage(config);
@@ -130,6 +134,7 @@ async function bootstrapWorkerInternal(
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
+    await validateDbTablesForWorker(workerApp);
     await runBeforeWorkerBootstrapHooks(config, workerApp);
     // A work-around to correctly handle errors when attempting to start the
     // microservice server listening.
@@ -206,7 +211,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // Check to ensure that no plugins are defining entities with names
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
-        if (allEntities.find(e => e.name === pluginEntity.name)) {
+        if (allEntities.find((e) => e.name === pluginEntity.name)) {
             throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
@@ -221,7 +226,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
  */
 function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     if (config.authOptions.tokenMethod === 'bearer') {
-        const authTokenHeaderKey = config.authOptions.authTokenHeaderKey as string;
+        const authTokenHeaderKey = config.authOptions.authTokenHeaderKey;
         const corsOptions = config.apiOptions.cors;
         if (typeof corsOptions !== 'boolean') {
             const { exposedHeaders } = corsOptions;
@@ -231,7 +236,7 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
             } else if (typeof exposedHeaders === 'string') {
                 exposedHeadersWithAuthKey = exposedHeaders
                     .split(',')
-                    .map(x => x.trim())
+                    .map((x) => x.trim())
                     .concat(authTokenHeaderKey);
             } else {
                 exposedHeadersWithAuthKey = exposedHeaders.concat(authTokenHeaderKey);
@@ -311,18 +316,18 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
     const title = `Vendure server (v${version}) now running on port ${port}`;
-    const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
+    const maxLineLength = Math.max(title.length, ...columnarGreetings.map((l) => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
     Logger.info(`=`.repeat(maxLineLength));
     Logger.info(title.padStart(title.length + titlePadLength));
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
-    columnarGreetings.forEach(line => Logger.info(line));
+    columnarGreetings.forEach((line) => Logger.info(line));
     Logger.info(`=`.repeat(maxLineLength));
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
-    const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
-    return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
+    const columnWidth = Math.max(...lines.map((l) => l[0].length)) + 2;
+    return lines.map((l) => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
 
 /**
@@ -338,6 +343,48 @@ function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonl
     return config;
 }
 
+/**
+ * Check that the Database tables exist. When running Vendure server & worker
+ * concurrently for the first time, the worker will attempt to access the
+ * DB tables before the server has populated them (assuming synchronize = true
+ * in config). This method will use polling to check the existence of a known table
+ * before allowing the rest of the worker bootstrap to continue.
+ * @param worker
+ */
+async function validateDbTablesForWorker(worker: INestMicroservice) {
+    const connection: Connection = worker.get(getConnectionToken());
+    await new Promise(async (resolve, reject) => {
+        const checkForTables = async (): Promise<boolean> => {
+            try {
+                const adminCount = await connection.getRepository(Administrator).count();
+                return 0 < adminCount;
+            } catch (e) {
+                return false;
+            }
+        };
+
+        const pollIntervalMs = 5000;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let validTableStructure = false;
+        Logger.verbose('Checking for expected DB table structure...');
+        while (!validTableStructure && attempts < maxAttempts) {
+            attempts++;
+            validTableStructure = await checkForTables();
+            if (validTableStructure) {
+                Logger.verbose('Table structure verified');
+                resolve();
+                return;
+            }
+            Logger.verbose(
+                `Table structure could not be verified, trying again after ${pollIntervalMs}ms (attempt ${attempts} of ${maxAttempts})`,
+            );
+            await new Promise((resolve1) => setTimeout(resolve1, pollIntervalMs));
+        }
+        reject(`Could not validate DB table structure. Aborting bootstrap.`);
+    });
+}
+
 function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
     const deprecatedApiOptions = [
         'hostname',
@@ -349,7 +396,7 @@ function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
         'middleware',
         'apolloServerPlugins',
     ];
-    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
+    const deprecatedOptionsUsed = deprecatedApiOptions.filter((option) => config.hasOwnProperty(option));
     if (deprecatedOptionsUsed.length) {
         throw new Error(
             `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +

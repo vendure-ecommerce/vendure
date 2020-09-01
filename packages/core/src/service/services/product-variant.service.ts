@@ -229,7 +229,7 @@ export class ProductVariantService {
         if (input.price == null) {
             input.price = 0;
         }
-        input.taxCategoryId = (await this.getTaxCategoryForNewVariant(input.taxCategoryId)).id as string;
+        input.taxCategoryId = (await this.getTaxCategoryForNewVariant(input.taxCategoryId)).id;
 
         const createdVariant = await this.translatableSaver.create({
             input,
@@ -427,14 +427,16 @@ export class ProductVariantService {
 
         const inputOptionIds = this.sortJoin(optionIds, ',');
 
-        product.variants.forEach((variant) => {
-            const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
-            if (variantOptionIds === inputOptionIds) {
-                throw new UserInputError('error.product-variant-options-combination-already-exists', {
-                    optionNames: this.sortJoin(variant.options, ', ', 'code'),
-                });
-            }
-        });
+        product.variants
+            .filter((v) => !v.deletedAt)
+            .forEach((variant) => {
+                const variantOptionIds = this.sortJoin(variant.options, ',', 'id');
+                if (variantOptionIds === inputOptionIds) {
+                    throw new UserInputError('error.product-variant-options-combination-already-exists', {
+                        optionNames: this.sortJoin(variant.options, ', ', 'code'),
+                    });
+                }
+            });
     }
 
     private throwIncompatibleOptionsError(optionGroups: ProductOptionGroup[]) {
@@ -450,9 +452,7 @@ export class ProductVariantService {
             .join(glue);
     }
 
-    private async getTaxCategoryForNewVariant(
-        taxCategoryId: string | null | undefined,
-    ): Promise<TaxCategory> {
+    private async getTaxCategoryForNewVariant(taxCategoryId: ID | null | undefined): Promise<TaxCategory> {
         let taxCategory: TaxCategory;
         if (taxCategoryId) {
             taxCategory = await getEntityOrThrow(this.connection, TaxCategory, taxCategoryId);

@@ -13,4 +13,7 @@
         <clr-icon shape="phone-handset" size="12"></clr-icon>
         {{ address.phoneNumber }}
     </li>
+    <li *ngFor="let customField of getCustomFields()" class="custom-field">
+        <vdr-labeled-data [label]="customField.key">{{ customField.value }}</vdr-labeled-data>
+    </li>
 </ul>

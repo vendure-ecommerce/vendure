@@ -86,6 +86,7 @@
     "expand-all-collections": "Expand all collections",
     "facet-values": "Facet values",
     "filter-by-name": "Filter by name",
+    "filter-by-name-or-sku": "Filter by name or SKU",
     "filters": "Filters",
     "group-by-product": "Group by product",
     "manage-variants": "Manage variants",

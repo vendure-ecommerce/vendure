@@ -19,6 +19,7 @@
 
 .variant-container {
     transition: background-color 0.2s;
+    min-height: 330px;
     &.disabled {
         background-color: $color-grey-200;
     }
@@ -128,4 +129,10 @@
         display: flex;
         color: $color-grey-400;
     }
+}
+.table-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-top: 6px;
 }
