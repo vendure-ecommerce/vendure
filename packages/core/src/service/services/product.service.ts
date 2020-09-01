@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
@@ -10,7 +9,6 @@ import {
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
@@ -31,6 +29,7 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -45,7 +44,7 @@ export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private channelService: ChannelService,
         private roleService: RoleService,
         private assetService: AssetService,
@@ -260,7 +259,7 @@ export class ProductService {
             product.optionGroups = [optionGroup];
         }
 
-        await this.connection.manager.save(product, { reload: false });
+        await this.connection.getRepository(Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -282,7 +281,7 @@ export class ProductService {
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 
-        await this.connection.manager.save(product, { reload: false });
+        await this.connection.getRepository(Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 

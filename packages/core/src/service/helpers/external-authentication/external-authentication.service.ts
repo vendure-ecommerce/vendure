@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
@@ -13,6 +11,7 @@ import { AdministratorService } from '../../services/administrator.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
  * @description
@@ -24,7 +23,7 @@ import { RoleService } from '../../services/role.service';
 @Injectable()
 export class ExternalAuthenticationService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private roleService: RoleService,
         private historyService: HistoryService,
         private customerService: CustomerService,
@@ -89,7 +88,7 @@ export class ExternalAuthenticationService {
             verified: config.verified || false,
         });
 
-        const authMethod = await this.connection.manager.save(
+        const authMethod = await this.connection.getRepository(ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
                 strategy: config.strategy,
@@ -97,9 +96,9 @@ export class ExternalAuthenticationService {
         );
 
         newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.manager.save(newUser);
+        const savedUser = await this.connection.getRepository(User).save(newUser);
 
-        const customer = await this.connection.manager.save(
+        const customer = await this.connection.getRepository(Customer).save(
             new Customer({
                 emailAddress: config.emailAddress,
                 firstName: config.firstName,
@@ -155,7 +154,7 @@ export class ExternalAuthenticationService {
             verified: true,
         });
 
-        const authMethod = await this.connection.manager.save(
+        const authMethod = await this.connection.getRepository(ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
                 strategy: config.strategy,
@@ -163,9 +162,9 @@ export class ExternalAuthenticationService {
         );
 
         newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.manager.save(newUser);
+        const savedUser = await this.connection.getRepository(User).save(newUser);
 
-        const administrator = await this.connection.manager.save(
+        const administrator = await this.connection.getRepository(Administrator).save(
             new Administrator({
                 emailAddress: config.emailAddress,
                 firstName: config.firstName,

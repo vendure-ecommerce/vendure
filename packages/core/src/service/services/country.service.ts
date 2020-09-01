@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateCountryInput,
     DeletionResponse,
@@ -7,7 +6,6 @@ import {
     UpdateCountryInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
@@ -21,13 +19,14 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ZoneService } from './zone.service';
 
 @Injectable()
 export class CountryService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private zoneService: ZoneService,

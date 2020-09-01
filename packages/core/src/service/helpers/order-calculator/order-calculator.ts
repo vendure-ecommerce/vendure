@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
@@ -16,13 +14,14 @@ import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 @Injectable()
 export class OrderCalculator {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,

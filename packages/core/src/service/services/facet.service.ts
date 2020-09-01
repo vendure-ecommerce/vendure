@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateFacetInput,
     DeletionResponse,
@@ -8,7 +7,6 @@ import {
     UpdateFacetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ListQueryOptions } from '../../common/types/common-types';
@@ -21,13 +19,14 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { FacetValueService } from './facet-value.service';
 
 @Injectable()
 export class FacetService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private facetValueService: FacetValueService,
         private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
@@ -57,8 +56,9 @@ export class FacetService {
     findOne(facetId: ID, lang: LanguageCode): Promise<Translated<Facet> | undefined> {
         const relations = ['values', 'values.facet'];
 
-        return this.connection.manager
-            .findOne(Facet, facetId, { relations })
+        return this.connection
+            .getRepository(Facet)
+            .findOne(facetId, { relations })
             .then(facet => facet && translateDeep(facet, lang, ['values', ['values', 'facet']]));
     }
 

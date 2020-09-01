@@ -1,4 +1,4 @@
-import { OnModuleInit } from '@nestjs/common';
+import { OnModuleInit, Optional } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
@@ -42,6 +42,7 @@ import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 import { ApplyCollectionFiltersJobData, ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
 import { AssetService } from './asset.service';
@@ -53,7 +54,10 @@ export class CollectionService implements OnModuleInit {
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        // Optional() allows the onModuleInit() hook to run with injected
+        // providers despite the request-scoped TransactionalConnection
+        // not yet having been created
+        @Optional() private connection: TransactionalConnection,
         private channelService: ChannelService,
         private assetService: AssetService,
         private facetValueService: FacetValueService,
@@ -149,7 +153,9 @@ export class CollectionService implements OnModuleInit {
 
     async getParent(ctx: RequestContext, collectionId: ID): Promise<Collection | undefined> {
         const parentIdSelect =
-            this.connection.options.type === 'postgres' ? '"child"."parentId"' : 'child.parentId';
+            this.connection.rawConnection.options.type === 'postgres'
+                ? '"child"."parentId"'
+                : 'child.parentId';
         const parent = await this.connection
             .getRepository(Collection)
             .createQueryBuilder('collection')

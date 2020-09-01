@@ -1,4 +1,3 @@
-import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToOrderInput,
@@ -18,7 +17,6 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -63,6 +61,7 @@ import {
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
@@ -75,7 +74,7 @@ import { StockMovementService } from './stock-movement.service';
 
 export class OrderService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
         private customerService: CustomerService,
@@ -220,7 +219,8 @@ export class OrderService {
         const customer = await this.customerService.findOneByUserId(userId);
         if (customer) {
             const activeOrder = await this.connection
-                .createQueryBuilder(Order, 'order')
+                .getRepository(Order)
+                .createQueryBuilder('order')
                 .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', {
                     channelId: ctx.channelId,
                 })

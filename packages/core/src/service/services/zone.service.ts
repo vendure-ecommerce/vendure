@@ -1,5 +1,4 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateZoneInput,
     DeletionResponse,
@@ -10,7 +9,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
@@ -20,6 +18,7 @@ import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class ZoneService implements OnModuleInit {
@@ -27,7 +26,7 @@ export class ZoneService implements OnModuleInit {
      * We cache all Zones to avoid hitting the DB many times per request.
      */
     private zones: Zone[] = [];
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     onModuleInit() {
         return this.updateZonesCache();

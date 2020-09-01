@@ -1,11 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 import { Observable } from 'rxjs';
-import { Connection } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -16,6 +14,7 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
+import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
@@ -52,7 +51,7 @@ export class IndexerController {
     private queue = new AsyncQueue('search-index');
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private productVariantService: ProductVariantService,
     ) {}
 
@@ -295,7 +294,11 @@ export class IndexerController {
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: variantRelations,
         });
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+        FindOptionsUtils.joinEagerRelations(
+            qb,
+            qb.alias,
+            this.connection.rawConnection.getMetadata(ProductVariant),
+        );
         qb.leftJoin('variants.product', 'product')
             .leftJoin('product.channels', 'channel')
             .where('channel.id = :channelId', { channelId })

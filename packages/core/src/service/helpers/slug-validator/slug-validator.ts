@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 export type InputWithSlug = {
     id?: ID | null;
@@ -24,7 +23,7 @@ export type TranslationEntity = VendureEntity & {
 
 @Injectable()
 export class SlugValidator {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     /**
      * Normalizes the slug to be URL-safe, and ensures it is unique for the given languageCode.

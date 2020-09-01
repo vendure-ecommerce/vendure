@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     AssetType,
     CreateAssetInput,
@@ -13,7 +12,6 @@ import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
-import { Connection, Like } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError, UserInputError } from '../../common/error/errors';
@@ -32,6 +30,7 @@ import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -50,7 +49,7 @@ export class AssetService {
     private permittedMimeTypes: Array<{ type: string; subtype: string }> = [];
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
@@ -267,7 +266,7 @@ export class AssetService {
             preview: previewFileIdentifier,
             focalPoint: null,
         });
-        return this.connection.manager.save(asset);
+        return this.connection.getRepository(Asset).save(asset);
     }
 
     private async getSourceFileName(fileName: string): Promise<string> {

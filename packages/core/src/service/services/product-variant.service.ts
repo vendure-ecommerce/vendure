@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateProductVariantInput,
     DeletionResponse,
@@ -7,7 +6,6 @@ import {
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError, UserInputError } from '../../common/error/errors';
@@ -29,6 +27,7 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { samplesEach } from '../helpers/utils/samples-each';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AssetService } from './asset.service';
 import { FacetValueService } from './facet-value.service';
@@ -41,7 +40,7 @@ import { ZoneService } from './zone.service';
 @Injectable()
 export class ProductVariantService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private taxCategoryService: TaxCategoryService,
         private facetValueService: FacetValueService,
@@ -71,7 +70,7 @@ export class ProductVariantService {
     }
 
     findByIds(ctx: RequestContext, ids: ID[]): Promise<Array<Translated<ProductVariant>>> {
-        return this.connection.manager
+        return this.connection
             .getRepository(ProductVariant)
             .findByIds(ids, {
                 relations: [

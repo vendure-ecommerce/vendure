@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateCustomerGroupInput,
     CustomerGroupListOptions,
@@ -12,7 +11,6 @@ import {
     UpdateCustomerGroupInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
@@ -22,13 +20,14 @@ import { Customer } from '../../entity/customer/customer.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { HistoryService } from './history.service';
 
 @Injectable()
 export class CustomerGroupService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private listQueryBuilder: ListQueryBuilder,
         private historyService: HistoryService,
     ) {}
@@ -104,7 +103,7 @@ export class CustomerGroupService {
         const customers = await this.getCustomersFromIds(input.customerIds);
         const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
-            if (!customer.groups.map((g) => g.id).includes(input.customerGroupId)) {
+            if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
                 customer.groups.push(group);
                 await this.historyService.createHistoryEntryForCustomer({
                     ctx,
@@ -128,10 +127,10 @@ export class CustomerGroupService {
         const customers = await this.getCustomersFromIds(input.customerIds);
         const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
-            if (!customer.groups.map((g) => g.id).includes(input.customerGroupId)) {
+            if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
                 throw new UserInputError('error.customer-does-not-belong-to-customer-group');
             }
-            customer.groups = customer.groups.filter((g) => !idsAreEqual(g.id, group.id));
+            customer.groups = customer.groups.filter(g => !idsAreEqual(g.id, group.id));
             await this.historyService.createHistoryEntryForCustomer({
                 ctx,
                 customerId: customer.id,

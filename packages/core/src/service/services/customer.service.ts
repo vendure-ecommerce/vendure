@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToCustomerInput,
@@ -13,7 +12,6 @@ import {
     UpdateCustomerNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -42,6 +40,7 @@ import { addressToLine } from '../helpers/utils/address-to-line';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { CountryService } from './country.service';
 import { HistoryService } from './history.service';
@@ -50,7 +49,7 @@ import { UserService } from './user.service';
 @Injectable()
 export class CustomerService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private userService: UserService,
         private countryService: CountryService,
@@ -414,7 +413,7 @@ export class CustomerService {
     }
 
     async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput): Promise<Address> {
-        const customer = await this.connection.manager.findOne(Customer, customerId, {
+        const customer = await this.connection.getRepository(Customer).findOne(customerId, {
             where: { deletedAt: null },
             relations: ['addresses'],
         });
@@ -427,9 +426,9 @@ export class CustomerService {
             ...input,
             country,
         });
-        const createdAddress = await this.connection.manager.getRepository(Address).save(address);
+        const createdAddress = await this.connection.getRepository(Address).save(address);
         customer.addresses.push(createdAddress);
-        await this.connection.manager.save(customer, { reload: false });
+        await this.connection.getRepository(Customer).save(customer, { reload: false });
         await this.enforceSingleDefaultAddress(createdAddress.id, input);
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,

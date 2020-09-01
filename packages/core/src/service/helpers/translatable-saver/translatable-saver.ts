@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { patchEntity } from '../utils/patch-entity';
 
 import { TranslationDiffer } from './translation-differ';
@@ -27,7 +26,7 @@ export interface UpdateTranslatableOptions<T extends Translatable> extends Creat
  */
 @Injectable()
 export class TranslatableSaver {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     /**
      * Create a translatable entity, including creating any translation entities according
@@ -43,7 +42,7 @@ export class TranslatableSaver {
             for (const translationInput of input.translations) {
                 const translation = new translationType(translationInput);
                 translations.push(translation);
-                await this.connection.manager.save(translation);
+                await this.connection.getRepository(translationType).save(translation as any);
             }
         }
 
@@ -51,7 +50,9 @@ export class TranslatableSaver {
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return await this.connection.manager.save(entity, { data: typeOrmSubscriberData });
+        return await this.connection
+            .getRepository(entityType)
+            .save(entity as any, { data: typeOrmSubscriberData });
     }
 
     /**
@@ -65,7 +66,7 @@ export class TranslatableSaver {
             relations: ['base'],
         });
 
-        const differ = new TranslationDiffer(translationType, this.connection.manager);
+        const differ = new TranslationDiffer(translationType, this.connection);
         const diff = differ.diff(existingTranslations, input.translations);
         const entity = await differ.applyDiff(
             new entityType({ ...input, translations: existingTranslations }),
@@ -75,6 +76,6 @@ export class TranslatableSaver {
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return this.connection.manager.save(updatedEntity, { data: typeOrmSubscriberData });
+        return this.connection.getRepository(entityType).save(updatedEntity, { data: typeOrmSubscriberData });
     }
 }

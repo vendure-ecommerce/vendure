@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateRoleInput,
     DeletionResponse,
@@ -15,7 +14,6 @@ import {
 } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -33,13 +31,14 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
 @Injectable()
 export class RoleService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
@@ -60,7 +59,7 @@ export class RoleService {
     }
 
     findOne(roleId: ID): Promise<Role | undefined> {
-        return this.connection.manager.findOne(Role, roleId, {
+        return this.connection.getRepository(Role).findOne(roleId, {
             relations: ['channels'],
         });
     }
@@ -150,7 +149,7 @@ export class RoleService {
         if (input.channelIds && ctx.activeUserId) {
             updatedRole.channels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
         }
-        await this.connection.manager.save(updatedRole, { reload: false });
+        await this.connection.getRepository(Role).save(updatedRole, { reload: false });
         return assertFound(this.findOne(role.id));
     }
 
@@ -255,6 +254,6 @@ export class RoleService {
             permissions: unique([Permission.Authenticated, ...input.permissions]),
         });
         role.channels = channels;
-        return this.connection.manager.save(role);
+        return this.connection.getRepository(Role).save(role);
     }
 }

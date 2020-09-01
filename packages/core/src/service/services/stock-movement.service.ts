@@ -17,6 +17,7 @@ import { Sale } from '../../entity/stock-movement/sale.entity';
 import { StockAdjustment } from '../../entity/stock-movement/stock-adjustment.entity';
 import { StockMovement } from '../../entity/stock-movement/stock-movement.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class StockMovementService {
@@ -24,10 +25,7 @@ export class StockMovementService {
     shippingCalculators: ShippingCalculator[];
     private activeShippingMethods: ShippingMethod[];
 
-    constructor(
-        @InjectConnection() private connection: Connection,
-        private listQueryBuilder: ListQueryBuilder,
-    ) {}
+    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
 
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
@@ -87,9 +85,12 @@ export class StockMovementService {
     }
 
     async createCancellationsForOrderItems(items: OrderItem[]): Promise<Cancellation[]> {
-        const orderItems = await this.connection.getRepository(OrderItem).findByIds(items.map(i => i.id), {
-            relations: ['line', 'line.productVariant'],
-        });
+        const orderItems = await this.connection.getRepository(OrderItem).findByIds(
+            items.map(i => i.id),
+            {
+                relations: ['line', 'line.productVariant'],
+            },
+        );
         const cancellations: Cancellation[] = [];
         const variantsMap = new Map<ID, ProductVariant>();
         for (const item of orderItems) {

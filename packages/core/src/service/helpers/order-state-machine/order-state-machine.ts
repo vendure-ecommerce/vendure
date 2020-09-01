@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { IllegalOperationError } from '../../../common/error/errors';
@@ -15,6 +13,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { getEntityOrThrow } from '../utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
@@ -31,7 +30,7 @@ export class OrderStateMachine {
     private readonly initialState: OrderState = 'AddingItems';
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private stockMovementService: StockMovementService,
         private historyService: HistoryService,

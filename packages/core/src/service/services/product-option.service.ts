@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateGroupOptionInput,
     CreateProductOptionInput,
     UpdateProductOptionInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
@@ -17,28 +15,28 @@ import { ProductOption } from '../../entity/product-option/product-option.entity
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class ProductOptionService {
-    constructor(
-        @InjectConnection() private connection: Connection,
-        private translatableSaver: TranslatableSaver,
-    ) {}
+    constructor(private connection: TransactionalConnection, private translatableSaver: TranslatableSaver) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
-        return this.connection.manager
-            .find(ProductOption, {
+        return this.connection
+            .getRepository(ProductOption)
+            .find({
                 relations: ['group'],
             })
-            .then((options) => options.map((option) => translateDeep(option, ctx.languageCode)));
+            .then(options => options.map(option => translateDeep(option, ctx.languageCode)));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
-        return this.connection.manager
-            .findOne(ProductOption, id, {
+        return this.connection
+            .getRepository(ProductOption)
+            .findOne(id, {
                 relations: ['group'],
             })
-            .then((option) => option && translateDeep(option, ctx.languageCode));
+            .then(option => option && translateDeep(option, ctx.languageCode));
     }
 
     async create(
@@ -54,7 +52,7 @@ export class ProductOptionService {
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
-            beforeSave: (po) => (po.group = productOptionGroup),
+            beforeSave: po => (po.group = productOptionGroup),
         });
         return assertFound(this.findOne(ctx, option.id));
     }

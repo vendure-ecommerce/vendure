@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
@@ -7,7 +6,6 @@ import {
     UpdateCustomerInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Administrator } from '../../entity/administrator/administrator.entity';
@@ -19,6 +17,7 @@ import { OrderState } from '../helpers/order-state-machine/order-state';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AdministratorService } from './administrator.service';
 
@@ -134,7 +133,7 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
 @Injectable()
 export class HistoryService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private administratorService: AdministratorService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}

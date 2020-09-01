@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import {
     IdentifierChangeTokenError,
@@ -18,13 +16,14 @@ import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { RoleService } from './role.service';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private roleService: RoleService,
         private passwordCipher: PasswordCiper,
@@ -52,9 +51,9 @@ export class UserService {
         user.identifier = identifier;
         const customerRole = await this.roleService.getCustomerRole();
         user.roles = [customerRole];
-        return this.connection.manager.save(
-            await this.addNativeAuthenticationMethod(user, identifier, password),
-        );
+        return this.connection
+            .getRepository(User)
+            .save(await this.addNativeAuthenticationMethod(user, identifier, password));
     }
 
     async addNativeAuthenticationMethod(user: User, identifier: string, password?: string): Promise<User> {
@@ -71,7 +70,7 @@ export class UserService {
             authenticationMethod.passwordHash = '';
         }
         authenticationMethod.identifier = identifier;
-        await this.connection.manager.save(authenticationMethod);
+        await this.connection.getRepository(NativeAuthenticationMethod).save(authenticationMethod);
         user.authenticationMethods = [...(user.authenticationMethods ?? []), authenticationMethod];
         return user;
     }
@@ -81,14 +80,14 @@ export class UserService {
             identifier,
             verified: true,
         });
-        const authenticationMethod = await this.connection.manager.save(
+        const authenticationMethod = await this.connection.getRepository(NativeAuthenticationMethod).save(
             new NativeAuthenticationMethod({
                 identifier,
                 passwordHash: await this.passwordCipher.hash(password),
             }),
         );
         user.authenticationMethods = [authenticationMethod];
-        return this.connection.manager.save(user);
+        return this.connection.getRepository(User).save(user);
     }
 
     async softDelete(userId: ID) {
@@ -100,8 +99,8 @@ export class UserService {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         nativeAuthMethod.verificationToken = this.verificationTokenGenerator.generateVerificationToken();
         user.verified = false;
-        await this.connection.manager.save(nativeAuthMethod);
-        return this.connection.manager.save(user);
+        await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
+        return this.connection.getRepository(User).save(user);
     }
 
     async verifyUserByToken(verificationToken: string, password?: string): Promise<User | undefined> {
@@ -127,7 +126,7 @@ export class UserService {
                 }
                 nativeAuthMethod.verificationToken = null;
                 user.verified = true;
-                await this.connection.manager.save(nativeAuthMethod);
+                await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
                 return this.connection.getRepository(User).save(user);
             } else {
                 throw new VerificationTokenExpiredError();
@@ -142,7 +141,7 @@ export class UserService {
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         nativeAuthMethod.passwordResetToken = await this.verificationTokenGenerator.generateVerificationToken();
-        await this.connection.manager.save(nativeAuthMethod);
+        await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
 
@@ -158,7 +157,7 @@ export class UserService {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
                 nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
                 nativeAuthMethod.passwordResetToken = null;
-                await this.connection.manager.save(nativeAuthMethod);
+                await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
                 return this.connection.getRepository(User).save(user);
             } else {
                 throw new PasswordResetTokenExpiredError();
@@ -191,7 +190,9 @@ export class UserService {
         nativeAuthMethod.identifier = pendingIdentifier;
         nativeAuthMethod.identifierChangeToken = null;
         nativeAuthMethod.pendingIdentifier = null;
-        await this.connection.manager.save(nativeAuthMethod, { reload: false });
+        await this.connection
+            .getRepository(NativeAuthenticationMethod)
+            .save(nativeAuthMethod, { reload: false });
         await this.connection.getRepository(User).save(user, { reload: false });
         return { user, oldIdentifier };
     }
@@ -213,14 +214,16 @@ export class UserService {
             throw new UnauthorizedError();
         }
         nativeAuthMethod.passwordHash = await this.passwordCipher.hash(newPassword);
-        await this.connection.manager.save(nativeAuthMethod, { reload: false });
+        await this.connection
+            .getRepository(NativeAuthenticationMethod)
+            .save(nativeAuthMethod, { reload: false });
         return true;
     }
 
     async setIdentifierChangeToken(user: User): Promise<User> {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         nativeAuthMethod.identifierChangeToken = this.verificationTokenGenerator.generateVerificationToken();
-        await this.connection.manager.save(nativeAuthMethod);
+        await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
         return user;
     }
 }

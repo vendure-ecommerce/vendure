@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { UpdateGlobalSettingsInput } from '@vendure/common/lib/generated-types';
-import { Connection } from 'typeorm';
 
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class GlobalSettingsService {
-    constructor(@InjectConnection() private connection: Connection, private configService: ConfigService) {}
+    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
     /**
      * Ensure there is a global settings row in the database.

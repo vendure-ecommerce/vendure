@@ -29,11 +29,12 @@ import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-st
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class PaymentMethodService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private paymentStateMachine: PaymentStateMachine,
@@ -56,7 +57,7 @@ export class PaymentMethodService {
     }
 
     findOne(paymentMethodId: ID): Promise<PaymentMethod | undefined> {
-        return this.connection.manager.findOne(PaymentMethod, paymentMethodId);
+        return this.connection.getRepository(PaymentMethod).findOne(paymentMethodId);
     }
 
     async update(input: UpdatePaymentMethodInput): Promise<PaymentMethod> {

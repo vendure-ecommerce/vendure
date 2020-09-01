@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateAdministratorInput,
     DeletionResult,
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { Administrator } from '../../entity/administrator/administrator.entity';
+import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
@@ -24,7 +24,7 @@ import { UserService } from './user.service';
 @Injectable()
 export class AdministratorService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private passwordCipher: PasswordCiper,
@@ -47,7 +47,7 @@ export class AdministratorService {
     }
 
     findOne(administratorId: ID): Promise<Administrator | undefined> {
-        return this.connection.manager.findOne(Administrator, administratorId, {
+        return this.connection.getRepository(Administrator).findOne(administratorId, {
             relations: ['user', 'user.roles'],
             where: {
                 deletedAt: null,
@@ -67,7 +67,7 @@ export class AdministratorService {
     async create(input: CreateAdministratorInput): Promise<Administrator> {
         const administrator = new Administrator(input);
         administrator.user = await this.userService.createAdminUser(input.emailAddress, input.password);
-        let createdAdministrator = await this.connection.manager.save(administrator);
+        let createdAdministrator = await this.connection.getRepository(Administrator).save(administrator);
         for (const roleId of input.roleIds) {
             createdAdministrator = await this.assignRole(createdAdministrator.id, roleId);
         }
@@ -80,19 +80,19 @@ export class AdministratorService {
             throw new EntityNotFoundError('Administrator', input.id);
         }
         let updatedAdministrator = patchEntity(administrator, input);
-        await this.connection.manager.save(administrator, { reload: false });
+        await this.connection.getRepository(Administrator).save(administrator, { reload: false });
 
         if (input.password) {
             const user = await this.userService.getUserById(administrator.user.id);
             if (user) {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
                 nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
-                await this.connection.manager.save(nativeAuthMethod);
+                await this.connection.getRepository(NativeAuthenticationMethod).save(nativeAuthMethod);
             }
         }
         if (input.roleIds) {
             administrator.user.roles = [];
-            await this.connection.manager.save(administrator.user, { reload: false });
+            await this.connection.getRepository(User).save(administrator.user, { reload: false });
             for (const roleId of input.roleIds) {
                 updatedAdministrator = await this.assignRole(administrator.id, roleId);
             }
@@ -113,7 +113,7 @@ export class AdministratorService {
             throw new EntityNotFoundError('Role', roleId);
         }
         administrator.user.roles.push(role);
-        await this.connection.manager.save(administrator.user, { reload: false });
+        await this.connection.getRepository(User).save(administrator.user, { reload: false });
         return administrator;
     }
 

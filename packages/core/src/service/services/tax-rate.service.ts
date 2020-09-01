@@ -1,4 +1,3 @@
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateTaxRateInput,
     DeletionResponse,
@@ -6,7 +5,6 @@ import {
     UpdateTaxRateInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -22,6 +20,7 @@ import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
 
 export class TaxRateService {
@@ -38,7 +37,7 @@ export class TaxRateService {
     });
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
         private workerService: WorkerService,
@@ -59,7 +58,7 @@ export class TaxRateService {
     }
 
     findOne(taxRateId: ID): Promise<TaxRate | undefined> {
-        return this.connection.manager.findOne(TaxRate, taxRateId, {
+        return this.connection.getRepository(TaxRate).findOne(taxRateId, {
             relations: ['category', 'zone', 'customerGroup'],
         });
     }

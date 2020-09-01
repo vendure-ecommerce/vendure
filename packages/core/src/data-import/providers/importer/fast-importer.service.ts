@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateProductInput,
     CreateProductOptionGroupInput,
@@ -7,7 +6,6 @@ import {
     CreateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
@@ -24,6 +22,7 @@ import { Product } from '../../../entity/product/product.entity';
 import { TranslatableSaver } from '../../../service/helpers/translatable-saver/translatable-saver';
 import { ChannelService } from '../../../service/services/channel.service';
 import { StockMovementService } from '../../../service/services/stock-movement.service';
+import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 
 /**
  * A service to import entities into the database. This replaces the regular `create` methods of the service layer with faster
@@ -35,7 +34,7 @@ import { StockMovementService } from '../../../service/services/stock-movement.s
 export class FastImporterService {
     private defaultChannel: Channel;
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private channelService: ChannelService,
         private stockMovementService: StockMovementService,
         private translatableSaver: TranslatableSaver,
@@ -95,8 +94,9 @@ export class FastImporterService {
 
     async addOptionGroupToProduct(productId: ID, optionGroupId: ID) {
         await this.connection
+            .getRepository(Product)
             .createQueryBuilder()
-            .relation(Product, 'optionGroups')
+            .relation('optionGroups')
             .of(productId)
             .add(optionGroupId);
     }

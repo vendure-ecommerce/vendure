@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     Adjustment,
     AdjustmentType,
@@ -14,7 +13,6 @@ import {
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import {
@@ -35,6 +33,7 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
@@ -50,7 +49,7 @@ export class PromotionService {
     private activePromotions: Promotion[] = [];
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
@@ -111,7 +110,7 @@ export class PromotionService {
         });
         this.validatePromotionConditions(promotion);
         this.channelService.assignToCurrentChannel(promotion, ctx);
-        const newPromotion = await this.connection.manager.save(promotion);
+        const newPromotion = await this.connection.getRepository(Promotion).save(promotion);
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
@@ -127,7 +126,7 @@ export class PromotionService {
         }
         this.validatePromotionConditions(updatedPromotion);
         promotion.priorityScore = this.calculatePriorityScore(input);
-        await this.connection.manager.save(updatedPromotion, { reload: false });
+        await this.connection.getRepository(Promotion).save(updatedPromotion, { reload: false });
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }

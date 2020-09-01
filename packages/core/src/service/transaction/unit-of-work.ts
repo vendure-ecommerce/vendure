@@ -10,7 +10,7 @@ import { Connection, EntityManager } from 'typeorm';
  *
  * @docsCategory data-access
  */
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class UnitOfWork {
     private transactionManager: EntityManager | null;
     constructor(@InjectConnection() private connection: Connection) {}

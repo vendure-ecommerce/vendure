@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { EntitySchema, getRepository, ObjectType, Repository } from 'typeorm';
+import { Connection, ConnectionOptions, EntitySchema, getRepository, ObjectType, Repository } from 'typeorm';
 import { RepositoryFactory } from 'typeorm/repository/RepositoryFactory';
 
 import { UnitOfWork } from './unit-of-work';
@@ -19,9 +19,19 @@ import { UnitOfWork } from './unit-of-work';
  *
  * @docsCategory data-access
  */
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class TransactionalConnection {
     constructor(private uow: UnitOfWork) {}
+
+    /**
+     * @description
+     * The plain TypeORM Connection object. Should be used carefully as any operations
+     * performed with this connection will not be performed within any outer
+     * transactions.
+     */
+    get rawConnection(): Connection {
+        return this.uow.getConnection();
+    }
 
     /**
      * @description

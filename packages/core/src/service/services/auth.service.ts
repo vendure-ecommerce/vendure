@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';
@@ -19,6 +17,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { SessionService } from './session.service';
 
@@ -28,7 +27,7 @@ import { SessionService } from './session.service';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private sessionService: SessionService,
         private eventBus: EventBus,
@@ -83,7 +82,7 @@ export class AuthService {
             await this.sessionService.deleteSessionsByActiveOrderId(ctx.session.activeOrderId);
         }
         user.lastLogin = new Date();
-        await this.connection.manager.save(user, { reload: false });
+        await this.connection.getRepository(User).save(user, { reload: false });
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
@@ -141,7 +140,7 @@ export class AuthService {
             apiType === 'admin'
                 ? authOptions.adminAuthenticationStrategy
                 : authOptions.shopAuthenticationStrategy;
-        const match = strategies.find((s) => s.name === method);
+        const match = strategies.find(s => s.name === method);
         if (!match) {
             throw new InternalServerError('error.unrecognized-authentication-strategy', { name: method });
         }

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateFacetValueInput,
     CreateFacetValueWithFacetInput,
@@ -9,7 +8,6 @@ import {
     UpdateFacetValueInput,
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
@@ -22,26 +20,29 @@ import { Facet } from '../../entity/facet/facet.entity';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class FacetValueService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private translatableSaver: TranslatableSaver,
         private configService: ConfigService,
     ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
-        return this.connection.manager
-            .find(FacetValue, {
+        return this.connection
+            .getRepository(FacetValue)
+            .find({
                 relations: ['facet'],
             })
             .then(facetValues => facetValues.map(facetValue => translateDeep(facetValue, lang, ['facet'])));
     }
 
     findOne(id: ID, lang: LanguageCode): Promise<Translated<FacetValue> | undefined> {
-        return this.connection.manager
-            .findOne(FacetValue, id, {
+        return this.connection
+            .getRepository(FacetValue)
+            .findOne(id, {
                 relations: ['facet'],
             })
             .then(facetValue => facetValue && translateDeep(facetValue, lang, ['facet']));

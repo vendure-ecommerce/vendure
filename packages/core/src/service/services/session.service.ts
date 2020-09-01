@@ -17,6 +17,7 @@ import { AuthenticatedSession } from '../../entity/session/authenticated-session
 import { Session } from '../../entity/session/session.entity';
 import { User } from '../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { OrderService } from './order.service';
 
@@ -26,7 +27,7 @@ export class SessionService implements EntitySubscriberInterface {
     private readonly sessionDurationInMs: number;
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private orderService: OrderService,
     ) {
@@ -34,7 +35,7 @@ export class SessionService implements EntitySubscriberInterface {
         this.sessionDurationInMs = ms(this.configService.authOptions.sessionDuration as string);
         // This allows us to register this class as a TypeORM Subscriber while also allowing
         // the injection on dependencies. See https://docs.nestjs.com/techniques/database#subscribers
-        this.connection.subscribers.push(this);
+        this.connection.rawConnection.subscribers.push(this);
     }
 
     afterInsert(event: InsertEvent<any>): Promise<any> | void {
