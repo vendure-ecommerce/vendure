@@ -16,6 +16,7 @@ export * from './services/customer.service';
 export * from './services/customer-group.service';
 export * from './services/facet.service';
 export * from './services/facet-value.service';
+export * from './services/fulfillment.service';
 export * from './services/global-settings.service';
 export * from './services/order.service';
 export * from './services/payment-method.service';
