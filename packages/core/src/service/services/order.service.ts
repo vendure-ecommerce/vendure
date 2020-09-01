@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import {
@@ -70,6 +71,7 @@ import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
 
+@Injectable()
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
