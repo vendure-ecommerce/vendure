@@ -26,13 +26,12 @@ export class FulfillmentService {
         });
     }
     async findOrderByFulfillment(fulfillment: Fulfillment, channelId: ID): Promise<Order> {
-        const order = await this.connection.getRepository(Order).findOneOrFail({
+        return this.connection.getRepository(Order).findOneOrFail({
             where: {
                 fulfillment,
                 channelId,
             },
         });
-        return order;
     }
     async getOrderItemsByFulfillmentId(id: ID): Promise<OrderItem[]> {
         const fulfillment = await this.findOneOrThrow(id);
