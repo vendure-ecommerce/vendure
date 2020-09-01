@@ -884,6 +884,7 @@ export type Fulfillment = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
 };

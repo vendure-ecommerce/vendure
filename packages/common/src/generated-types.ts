@@ -1232,10 +1232,12 @@ export type FloatCustomFieldConfig = CustomField & {
 
 export type Fulfillment = Node & {
    __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   orderItems: Array<OrderItem>;
+  state: Scalars['String'];
   method: Scalars['String'];
   trackingCode?: Maybe<Scalars['String']>;
 };
@@ -1856,6 +1858,7 @@ export type Mutation = {
   updateFacetValues: Array<FacetValue>;
   /** Delete one or more FacetValues */
   deleteFacetValues: Array<DeletionResponse>;
+  transitionFulfillmentToState?: Maybe<Fulfillment>;
   updateGlobalSettings: GlobalSettings;
   importProducts?: Maybe<ImportInfo>;
   /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
@@ -2150,6 +2153,12 @@ export type MutationUpdateFacetValuesArgs = {
 export type MutationDeleteFacetValuesArgs = {
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationTransitionFulfillmentToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
 };
 
 
