@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
-import { ID } from '@vendure/common/lib/shared-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -20,6 +20,13 @@ export class FulfillmentService {
         private fulfillmentStateMachine: FulfillmentStateMachine,
         private eventBus: EventBus,
     ) {}
+    async create(input: DeepPartial<Fulfillment>): Promise<Fulfillment> {
+        const newFulfillment = new Fulfillment({
+            ...input,
+            state: this.fulfillmentStateMachine.getInitialState(),
+        });
+        return this.connection.getRepository(Fulfillment).save(newFulfillment);
+    }
     async findOneOrThrow(id: ID): Promise<Fulfillment> {
         return await getEntityOrThrow(this.connection, Fulfillment, id, {
             relations: ['orderItems'],

@@ -64,6 +64,7 @@ import { translateDeep } from '../helpers/utils/translate-entity';
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
+import { FulfillmentService } from './fulfillment.service';
 import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
@@ -84,6 +85,7 @@ export class OrderService {
         private orderMerger: OrderMerger,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
+        private fulfillmentService: FulfillmentService,
         private listQueryBuilder: ListQueryBuilder,
         private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
@@ -137,7 +139,7 @@ export class OrderService {
             .addOrderBy('items.createdAt', 'ASC')
             .getOne();
         if (order) {
-            order.lines.forEach((line) => {
+            order.lines.forEach(line => {
                 line.productVariant = translateDeep(
                     this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
                     ctx.languageCode,
@@ -177,8 +179,8 @@ export class OrderService {
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
             .then(([items, totalItems]) => {
-                items.forEach((item) => {
-                    item.lines.forEach((line) => {
+                items.forEach(item => {
+                    item.lines.forEach(line => {
                         line.productVariant = translateDeep(line.productVariant, ctx.languageCode, [
                             'options',
                         ]);
@@ -274,7 +276,7 @@ export class OrderService {
         this.assertAddingItemsState(order);
         this.assertNotOverOrderItemsLimit(order, quantity);
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        let orderLine = order.lines.find((line) => {
+        let orderLine = order.lines.find(line => {
             return (
                 idsAreEqual(line.productVariant.id, productVariantId) &&
                 JSON.stringify(line.customFields) === JSON.stringify(customFields)
@@ -345,7 +347,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
-        order.lines = order.lines.filter((line) => !idsAreEqual(line.id, orderLineId));
+        order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         await this.connection.getRepository(OrderLine).remove(orderLine);
         return updatedOrder;
@@ -382,7 +384,7 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
-            order.couponCodes = order.couponCodes.filter((cc) => cc !== couponCode);
+            order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
                 orderId: order.id,
@@ -423,7 +425,7 @@ export class OrderService {
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        return eligibleMethods.map((eligible) => ({
+        return eligibleMethods.map(eligible => ({
             id: eligible.method.id,
             price: eligible.result.price,
             priceWithTax: eligible.result.priceWithTax,
@@ -436,7 +438,7 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const selectedMethod = eligibleMethods.find((m) => idsAreEqual(m.method.id, shippingMethodId));
+        const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
         if (!selectedMethod) {
             throw new UserInputError(`error.shipping-method-unavailable`);
         }
@@ -515,7 +517,7 @@ export class OrderService {
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             ctx,
             input.lines,
-            (i) => !i.fulfillment,
+            i => !i.fulfillment,
             'error.create-fulfillment-items-already-fulfilled',
         );
 
@@ -524,14 +526,11 @@ export class OrderService {
                 throw new IllegalOperationError('error.create-fulfillment-orders-must-be-settled');
             }
         }
-
-        const fulfillment = await this.connection.getRepository(Fulfillment).save(
-            new Fulfillment({
-                trackingCode: input.trackingCode,
-                method: input.method,
-                orderItems: items,
-            }),
-        );
+        const fulfillment = await this.fulfillmentService.create({
+            trackingCode: input.trackingCode,
+            method: input.method,
+            orderItems: items,
+        });
 
         for (const order of orders) {
             await this.historyService.createHistoryEntryForOrder({
@@ -542,18 +541,6 @@ export class OrderService {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await findOneInChannel(
-                this.connection,
-                Order,
-                order.id,
-                ctx.channelId,
-                {
-                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-                },
-            );
-            if (!orderWithFulfillments) {
-                throw new InternalServerError('error.could-not-find-order');
-            }
         }
         return fulfillment;
     }
@@ -576,7 +563,7 @@ export class OrderService {
             });
         }
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        return unique(items.map((i) => i.fulfillment).filter(notNullOrUndefined), 'id');
+        return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
     }
     async cancelOrder(ctx: RequestContext, input: CancelOrderInput): Promise<Order> {
         let allOrderItemsCancelled = false;
@@ -596,7 +583,7 @@ export class OrderService {
         if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
             return true;
         } else {
-            const lines: OrderLineInput[] = order.lines.map((l) => ({
+            const lines: OrderLineInput[] = order.lines.map(l => ({
                 orderLineId: l.id,
                 quantity: l.quantity,
             }));
@@ -615,7 +602,7 @@ export class OrderService {
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             ctx,
             lines,
-            (i) => !i.cancelled,
+            i => !i.cancelled,
             'error.cancel-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -633,7 +620,7 @@ export class OrderService {
 
         // Perform the cancellation
         await this.stockMovementService.createCancellationsForOrderItems(items);
-        items.forEach((i) => (i.cancelled = true));
+        items.forEach(i => (i.cancelled = true));
         await this.connection.getRepository(OrderItem).save(items, { reload: false });
 
         const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
@@ -647,7 +634,7 @@ export class OrderService {
             orderId: order.id,
             type: HistoryEntryType.ORDER_CANCELLATION,
             data: {
-                orderItemIds: items.map((i) => i.id),
+                orderItemIds: items.map(i => i.id),
                 reason: input.reason || undefined,
             },
         });
@@ -666,7 +653,7 @@ export class OrderService {
         const { items, orders } = await this.getOrdersAndItemsFromLines(
             ctx,
             input.lines,
-            (i) => !i.cancelled,
+            i => !i.cancelled,
             'error.refund-order-lines-quantity-too-high',
         );
         if (1 < orders.length) {
@@ -688,7 +675,7 @@ export class OrderService {
                 state: order.state,
             });
         }
-        if (items.some((i) => !!i.refundId)) {
+        if (items.some(i => !!i.refundId)) {
             throw new IllegalOperationError('error.refund-order-item-already-refunded');
         }
 
@@ -722,7 +709,7 @@ export class OrderService {
                 try {
                     await this.promotionService.validateCouponCode(couponCode, customer.id);
                 } catch (err) {
-                    order.couponCodes = order.couponCodes.filter((c) => c !== couponCode);
+                    order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
                     codesRemoved = true;
                 }
             }
@@ -827,7 +814,7 @@ export class OrderService {
     }
 
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
-        const orderItem = order.lines.find((line) => idsAreEqual(line.id, orderLineId));
+        const orderItem = order.lines.find(line => idsAreEqual(line.id, orderLineId));
         if (!orderItem) {
             throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
@@ -909,19 +896,19 @@ export class OrderService {
         const items = new Map<ID, OrderItem>();
 
         const lines = await this.connection.getRepository(OrderLine).findByIds(
-            orderLinesInput.map((l) => l.orderLineId),
+            orderLinesInput.map(l => l.orderLineId),
             {
                 relations: ['order', 'items', 'items.fulfillment', 'order.channels'],
                 order: { id: 'ASC' },
             },
         );
         for (const line of lines) {
-            const inputLine = orderLinesInput.find((l) => idsAreEqual(l.orderLineId, line.id));
+            const inputLine = orderLinesInput.find(l => idsAreEqual(l.orderLineId, line.id));
             if (!inputLine) {
                 continue;
             }
             const order = line.order;
-            if (!order.channels.some((channel) => channel.id === ctx.channelId)) {
+            if (!order.channels.some(channel => channel.id === ctx.channelId)) {
                 throw new EntityNotFoundError('Order', order.id);
             }
             if (!orders.has(order.id)) {
@@ -931,7 +918,7 @@ export class OrderService {
             if (matchingItems.length < inputLine.quantity) {
                 throw new IllegalOperationError(noMatchesError);
             }
-            matchingItems.slice(0, inputLine.quantity).forEach((item) => {
+            matchingItems.slice(0, inputLine.quantity).forEach(item => {
                 items.set(item.id, item);
             });
         }
