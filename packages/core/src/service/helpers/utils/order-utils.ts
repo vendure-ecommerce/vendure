@@ -14,10 +14,10 @@ export function orderTotalIsCovered(order: Order, state: PaymentState): boolean 
 /**
  * Returns true if all (non-cancelled) OrderItems are fulfilled.
  */
-export function orderItemsAreFulfilled(order: Order) {
+export function orderItemsAreDelivered(order: Order) {
     return getOrderItems(order)
         .filter((orderItem) => !orderItem.cancelled)
-        .every(isFulfilled);
+        .every(isDelivered);
 }
 
 /**
@@ -25,7 +25,7 @@ export function orderItemsAreFulfilled(order: Order) {
  */
 export function orderItemsArePartiallyDelivered(order: Order) {
     const nonCancelledItems = getOrderItems(order).filter((orderItem) => !orderItem.cancelled);
-    return nonCancelledItems.some(isFulfilled) && !nonCancelledItems.every(isFulfilled);
+    return nonCancelledItems.some(isDelivered) && !nonCancelledItems.every(isDelivered);
 }
 
 /**
@@ -39,6 +39,6 @@ function getOrderItems(order: Order): OrderItem[] {
     return order.lines.reduce((orderItems, line) => [...orderItems, ...line.items], [] as OrderItem[]);
 }
 
-function isFulfilled(orderItem: OrderItem) {
+function isDelivered(orderItem: OrderItem) {
     return !!orderItem.fulfillment;
 }

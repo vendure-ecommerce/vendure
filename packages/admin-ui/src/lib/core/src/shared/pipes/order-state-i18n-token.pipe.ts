@@ -11,7 +11,7 @@ export class OrderStateI18nTokenPipe implements PipeTransform {
         PaymentAuthorized: _('order.state-payment-authorized'),
         PaymentSettled: _('order.state-payment-settled'),
         PartiallyDelivered: _('order.state-partially-fulfilled'),
-        Fulfilled: _('order.state-fulfilled'),
+        Delivered: _('order.state-fulfilled'),
         Cancelled: _('order.state-cancelled'),
     };
     transform<T extends unknown>(value: T): T {

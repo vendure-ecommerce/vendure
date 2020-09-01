@@ -18,7 +18,7 @@
     "cannot-transition-to-shipping-when-order-is-empty": "Não é possível fazer a transição do pedido para o estado \"ArrangingShipping\" quando estiver vazio",
     "cannot-transition-to-payment-without-customer": "Não é possível fazer a transição do pedido para o estado \"ArrangingPayment\" sem detalhes do cliente",
     "cannot-transition-unless-all-cancelled": "Não é possível fazer a transição do pedido para o estado \"Cancelled\", a menos que todos os itens de ordem sejam cancelados",
-    "cannot-transition-unless-all-order-items-fulfilled": "Não é possível fazer a transição do pedido para o estado \"Fulfilled\", a menos que todos os itens de ordem sejam cumpridos",
+    "cannot-transition-unless-all-order-items-fulfilled": "Não é possível fazer a transição do pedido para o estado \"Delivered\", a menos que todos os itens de ordem sejam cumpridos",
     "cannot-transition-unless-some-order-items-fulfilled": "Não é possível fazer a transição do pedido para o estado \"PartiallyDelivered\", a menos que alguns itens de ordem sejam atendidos",
     "cannot-transition-without-authorized-payments": "Não é possível fazer a transição do pedido para o estado \"PaymentAuthorized\" quando o total não estiver coberto por pagamentos autorizados",
     "cannot-transition-without-settled-payments": "Não é possível fazer a transição do pedido para o estado \"PaymentSettled\" quando o total não estiver coberto por pagamentos liquidados",

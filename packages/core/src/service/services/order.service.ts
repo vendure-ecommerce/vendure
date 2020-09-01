@@ -58,7 +58,7 @@ import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
-    orderItemsAreFulfilled,
+    orderItemsAreDelivered,
     orderTotalIsCovered,
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -558,8 +558,8 @@ export class OrderService {
             if (!orderWithFulfillments) {
                 throw new InternalServerError('error.could-not-find-order');
             }
-            if (orderItemsAreFulfilled(orderWithFulfillments)) {
-                await this.transitionToState(ctx, order.id, 'Fulfilled');
+            if (orderItemsAreDelivered(orderWithFulfillments)) {
+                await this.transitionToState(ctx, order.id, 'Delivered');
             } else {
                 await this.transitionToState(ctx, order.id, 'PartiallyDelivered');
             }

@@ -18,7 +18,7 @@ import { StockMovementService } from '../../services/stock-movement.service';
 import { getEntityOrThrow } from '../utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
-    orderItemsAreFulfilled,
+    orderItemsAreDelivered,
     orderItemsArePartiallyDelivered,
     orderTotalIsCovered,
 } from '../utils/order-utils';
@@ -90,11 +90,11 @@ export class OrderStateMachine {
                 return `error.cannot-transition-unless-some-order-items-fulfilled`;
             }
         }
-        if (toState === 'Fulfilled') {
+        if (toState === 'Delivered') {
             const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
                 relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
             });
-            if (!orderItemsAreFulfilled(orderWithFulfillments)) {
+            if (!orderItemsAreDelivered(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-all-order-items-fulfilled`;
             }
         }

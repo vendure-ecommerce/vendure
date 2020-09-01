@@ -48,7 +48,7 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
         'PaymentAuthorized',
         'PaymentSettled',
         'PartiallyDelivered',
-        'Fulfilled',
+        'Delivered',
         'Cancelled',
     ];
     constructor(

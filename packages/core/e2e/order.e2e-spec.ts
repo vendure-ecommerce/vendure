@@ -419,7 +419,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(result.order!.state).toBe('Fulfilled');
+            expect(result.order!.state).toBe('Delivered');
         });
 
         it('order history contains expected entries', async () => {
@@ -470,7 +470,7 @@ describe('Orders resolver', () => {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
                         from: 'PartiallyDelivered',
-                        to: 'Fulfilled',
+                        to: 'Delivered',
                     },
                 },
             ]);

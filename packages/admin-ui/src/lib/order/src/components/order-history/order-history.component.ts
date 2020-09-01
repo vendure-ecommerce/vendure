@@ -26,7 +26,7 @@ export class OrderHistoryComponent {
 
     getDisplayType(entry: GetOrderHistory.Items): TimelineDisplayType {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
-            if (entry.data.to === 'Fulfilled') {
+            if (entry.data.to === 'Delivered') {
                 return 'success';
             }
             if (entry.data.to === 'Cancelled') {
@@ -49,7 +49,7 @@ export class OrderHistoryComponent {
 
     getTimelineIcon(entry: GetOrderHistory.Items) {
         if (entry.type === HistoryEntryType.ORDER_STATE_TRANSITION) {
-            if (entry.data.to === 'Fulfilled') {
+            if (entry.data.to === 'Delivered') {
                 return ['success-standard', 'is-solid'];
             }
             if (entry.data.to === 'Cancelled') {
@@ -71,7 +71,7 @@ export class OrderHistoryComponent {
         switch (entry.type) {
             case HistoryEntryType.ORDER_STATE_TRANSITION: {
                 return (
-                    entry.data.to === 'Fulfilled' ||
+                    entry.data.to === 'Delivered' ||
                     entry.data.to === 'Cancelled' ||
                     entry.data.to === 'Settled'
                 );

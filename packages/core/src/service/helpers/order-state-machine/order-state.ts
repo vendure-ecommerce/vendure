@@ -15,7 +15,7 @@ export type OrderState =
     | 'PaymentAuthorized'
     | 'PaymentSettled'
     | 'PartiallyDelivered'
-    | 'Fulfilled'
+    | 'Delivered'
     | 'Cancelled';
 
 export const orderStateTransitions: Transitions<OrderState> = {
@@ -29,12 +29,12 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentSettled', 'Cancelled'],
     },
     PaymentSettled: {
-        to: ['PartiallyDelivered', 'Fulfilled', 'Cancelled'],
+        to: ['PartiallyDelivered', 'Delivered', 'Cancelled'],
     },
     PartiallyDelivered: {
-        to: ['Fulfilled', 'PartiallyDelivered', 'Cancelled'],
+        to: ['Delivered', 'PartiallyDelivered', 'Cancelled'],
     },
-    Fulfilled: {
+    Delivered: {
         to: ['Cancelled'],
     },
     Cancelled: {

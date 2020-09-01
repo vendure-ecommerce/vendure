@@ -30,13 +30,13 @@
     >
         <ng-container [ngSwitch]="entry.type">
             <ng-container *ngSwitchCase="type.ORDER_STATE_TRANSITION">
-                <div class="title" *ngIf="entry.data.to === 'Fulfilled'">
+                <div class="title" *ngIf="entry.data.to === 'Delivered'">
                     {{ 'order.history-order-fulfilled' | translate }}
                 </div>
                 <div class="title" *ngIf="entry.data.to === 'Cancelled'">
                     {{ 'order.history-order-cancelled' | translate }}
                 </div>
-                <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Fulfilled'">
+                <ng-template [ngIf]="entry.data.to !== 'Cancelled' && entry.data.to !== 'Delivered'">
                     {{
                         'order.history-order-transition'
                             | translate: { from: entry.data.from, to: entry.data.to }

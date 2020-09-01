@@ -385,12 +385,12 @@ describe('Order process', () => {
                     AdminTransition.Variables
                 >(ADMIN_TRANSITION_TO_STATE, {
                     id: order.id,
-                    state: 'Fulfilled',
+                    state: 'Delivered',
                 });
                 fail('Should have thrown');
             } catch (e) {
                 expect(e.message).toContain(
-                    'Cannot transition Order to the "Fulfilled" state unless all OrderItems are fulfilled',
+                    'Cannot transition Order to the "Delivered" state unless all OrderItems are fulfilled',
                 );
             }
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
