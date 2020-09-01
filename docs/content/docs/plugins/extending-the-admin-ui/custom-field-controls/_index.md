@@ -35,14 +35,15 @@ import { SharedModule, CustomFieldControl,
   template: `
     <input
         type="range"
-        [min]="customFieldConfig.intMin"
-        [max]="customFieldConfig.intMax"
+        [min]="config.intMin"
+        [max]="config.intMax"
         [formControl]="formControl" />
     {{ formControl.value }}
   `,
 })
 export class SliderControl implements CustomFieldControl {
-  customFieldConfig: CustomFieldConfigType;
+  readonly: boolean;
+  config: CustomFieldConfigType;
   formControl: FormControl;
 }
 

@@ -47,13 +47,21 @@ jobs:
     name: e2e tests
     runs-on: ubuntu-latest
     services:
-      mysql:
+      mariadb:
         image: bitnami/mariadb:10.3
         env:
           ALLOW_EMPTY_PASSWORD: yes
         ports:
           - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+      mysql:
+        image: bitnami/mysql:8.0
+        env:
+          ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=20s --health-retries=10
       postgres:
         image: postgres:12
         env:
@@ -80,7 +88,7 @@ jobs:
         options: --health-cmd="curl --silent --fail localhost:9200/_cluster/health" --health-interval=10s --health-timeout=5s --health-retries=3
     strategy:
       matrix:
-        db: [sqljs, mysql, postgres]
+        db: [sqljs, mariadb, mysql, postgres]
     steps:
       - uses: actions/checkout@v1
       - name: Use Node.js ${{ env.node }}
@@ -99,6 +107,7 @@ jobs:
       - name: e2e tests
         env:
           E2E_MYSQL_PORT: ${{ job.services.mysql.ports['3306'] }}
+          E2E_MARIADB_PORT: ${{ job.services.mariadb.ports['3306'] }}
           E2E_POSTGRES_PORT: ${{ job.services.postgres.ports['5432'] }}
           E2E_ELASTIC_PORT: ${{ job.services.elastic.ports['9200'] }}
           DB: ${{ matrix.db }}

@@ -27,7 +27,8 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
                 name: 'dbType',
                 message: 'Which database are you using?',
                 choices: [
-                    { title: 'MySQL / MariaDB', value: 'mysql' },
+                    { title: 'MySQL', value: 'mysql' },
+                    { title: 'MariaDB', value: 'mariadb' },
                     { title: 'Postgres', value: 'postgres' },
                     { title: 'SQLite', value: 'sqlite' },
                     { title: 'SQL.js', value: 'sqljs' },
@@ -41,7 +42,7 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
                 name: 'dbHost',
                 message: `What's the database host address?`,
-                initial: '192.168.99.100',
+                initial: 'localhost',
             },
             {
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
@@ -207,6 +208,7 @@ async function generateSources(
 function defaultDBPort(dbType: DbType): number {
     switch (dbType) {
         case 'mysql':
+        case 'mariadb':
             return 3306;
         case 'postgres':
             return 5432;

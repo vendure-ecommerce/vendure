@@ -27,7 +27,7 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
 
     ngOnInit() {
         this.formControl.setValidators([
-            (control) => {
+            control => {
                 if (!control.value || !control.value.length) {
                     return {
                         atLeastOne: { length: control.value.length },
@@ -39,19 +39,19 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
 
         this.selection$ = this.formControl.valueChanges.pipe(
             startWith(this.formControl.value),
-            switchMap((value) => {
-                if (Array.isArray(value)) {
+            switchMap(value => {
+                if (Array.isArray(value) && 0 < value.length) {
                     return forkJoin(
-                        value.map((id) =>
+                        value.map(id =>
                             this.dataService.product
                                 .getProductVariant(id)
-                                .mapSingle((data) => data.productVariant),
+                                .mapSingle(data => data.productVariant),
                         ),
                     );
                 }
                 return of([]);
             }),
-            map((variants) => variants.filter(notNullOrUndefined)),
+            map(variants => variants.filter(notNullOrUndefined)),
         );
     }
 
@@ -62,6 +62,6 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
 
     removeProductVariant(id: string) {
         const value = this.formControl.value as string[];
-        this.formControl.setValue(value.filter((_id) => _id !== id));
+        this.formControl.setValue(value.filter(_id => _id !== id));
     }
 }
