@@ -25,10 +25,11 @@ export class FulfillmentService {
             relations: ['orderItems'],
         });
     }
-    async findOrderByFulfillment(fulfillment: Fulfillment): Promise<Order> {
+    async findOrderByFulfillment(fulfillment: Fulfillment, channelId: ID): Promise<Order> {
         const order = await this.connection.getRepository(Order).findOneOrFail({
             where: {
                 fulfillment,
+                channelId,
             },
         });
         return order;
@@ -43,7 +44,7 @@ export class FulfillmentService {
         state: FulfillmentState,
     ): Promise<Fulfillment> {
         const fulfillment = await this.findOneOrThrow(fulfillmentId);
-        const order = await this.findOrderByFulfillment(fulfillment);
+        const order = await this.findOrderByFulfillment(fulfillment, ctx.channelId);
         const fromState = fulfillment.state;
         await this.fulfillmentStateMachine.transition(ctx, fulfillment, order, state);
         await this.connection.getRepository(Fulfillment).save(fulfillment, { reload: false });
