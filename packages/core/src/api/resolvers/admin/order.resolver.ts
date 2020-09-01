@@ -19,7 +19,6 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 import { Order } from '../../../entity/order/order.entity';
 import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
-import { FulfillmentService } from '../../../service/services/fulfillment.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
@@ -28,11 +27,7 @@ import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver()
 export class OrderResolver {
-    constructor(
-        private orderService: OrderService,
-        private shippingMethodService: ShippingMethodService,
-        private fulfillmentService: FulfillmentService,
-    ) {}
+    constructor(private orderService: OrderService, private shippingMethodService: ShippingMethodService) {}
 
     @Query()
     @Allow(Permission.ReadOrder)
@@ -107,11 +102,5 @@ export class OrderResolver {
         @Args() args: MutationTransitionOrderToStateArgs,
     ) {
         return this.orderService.transitionToState(ctx, args.id, args.state as OrderState);
-    }
-
-    @Mutation()
-    @Allow(Permission.UpdateOrder)
-    async transitionFulfillmentToState(@Ctx() ctx: RequestContext, @Args() args: any) {
-        return this.fulfillmentService.transitionToState(ctx, args.id, args.state as FulfillmentState);
     }
 }
