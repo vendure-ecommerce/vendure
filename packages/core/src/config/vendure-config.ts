@@ -410,17 +410,13 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
-}
 
-export interface FulfillmentOptions {
     /**
      * @description
      * Allows the definition of custom states and transition logic for the fulfillment process state machine.
      * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
-     *
-     * @default []
      */
-    process?: Array<CustomFulfillmentProcess<any>>;
+    customFulfillmentProcess?: Array<CustomFulfillmentProcess<any>>;
 }
 
 /**
@@ -675,11 +671,6 @@ export interface VendureConfig {
      * Configures the available checkers and calculators for ShippingMethods.
      */
     shippingOptions?: ShippingOptions;
-    /**
-     * @description
-     * Configuration settings governing how fulfillment are handled.
-     */
-    fulfillmentOptions?: FulfillmentOptions;
     /**
      * @description
      * Provide a logging service which implements the {@link VendureLogger} interface.

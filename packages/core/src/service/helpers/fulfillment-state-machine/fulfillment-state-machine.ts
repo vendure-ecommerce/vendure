@@ -50,12 +50,13 @@ export class FulfillmentStateMachine {
     /**
      * Specific business logic to be executed on Fulfillment state transitions.
      */
-    // tslint:disable-next-line
     private async onTransitionStart(
         fromState: FulfillmentState,
         toState: FulfillmentState,
         data: FulfillmentTransitionData,
-    ) {}
+    ) {
+        /**/
+    }
 
     /**
      * Specific business logic to be executed after Fulfillment state transition completes.
@@ -78,7 +79,7 @@ export class FulfillmentStateMachine {
     }
 
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {
-        const customProcesses = this.configService.fulfillmentOptions.process ?? [];
+        const customProcesses = this.configService.shippingOptions.customFulfillmentProcess ?? [];
 
         const allTransitions = customProcesses.reduce(
             (transitions, process) =>
