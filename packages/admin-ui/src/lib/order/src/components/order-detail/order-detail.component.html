@@ -15,7 +15,7 @@
         <button
             class="btn btn-primary"
             (click)="fulfillOrder()"
-            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled'"
+            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyDelivered'"
         >
             {{ 'order.fulfill-order' | translate }}
         </button>

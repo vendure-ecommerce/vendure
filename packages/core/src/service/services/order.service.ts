@@ -524,7 +524,7 @@ export class OrderService {
         );
 
         for (const order of orders) {
-            if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled') {
+            if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyDelivered') {
                 throw new IllegalOperationError('error.create-fulfillment-orders-must-be-settled');
             }
         }
@@ -561,7 +561,7 @@ export class OrderService {
             if (orderItemsAreFulfilled(orderWithFulfillments)) {
                 await this.transitionToState(ctx, order.id, 'Fulfilled');
             } else {
-                await this.transitionToState(ctx, order.id, 'PartiallyFulfilled');
+                await this.transitionToState(ctx, order.id, 'PartiallyDelivered');
             }
         }
         return fulfillment;

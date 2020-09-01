@@ -13,7 +13,7 @@ export class OrderStateLabelComponent {
         switch (this.state) {
             case 'PaymentAuthorized':
             case 'PaymentSettled':
-            case 'PartiallyFulfilled':
+            case 'PartiallyDelivered':
                 return 'warning';
             case 'Fulfilled':
                 return 'success';

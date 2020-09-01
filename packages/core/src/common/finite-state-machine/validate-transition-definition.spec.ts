@@ -27,10 +27,10 @@ describe('FSM validateTransitionDefinition()', () => {
                 to: ['PaymentSettled', 'Cancelled'],
             },
             PaymentSettled: {
-                to: ['PartiallyFulfilled', 'Fulfilled', 'Cancelled'],
+                to: ['PartiallyDelivered', 'Fulfilled', 'Cancelled'],
             },
-            PartiallyFulfilled: {
-                to: ['Fulfilled', 'PartiallyFulfilled', 'Cancelled'],
+            PartiallyDelivered: {
+                to: ['Fulfilled', 'PartiallyDelivered', 'Cancelled'],
             },
             Fulfilled: {
                 to: ['Cancelled'],

@@ -357,19 +357,19 @@ describe('Order process', () => {
             expect(result.order?.state).toBe('PaymentSettled');
         });
 
-        it('cannot manually transition to PartiallyFulfilled', async () => {
+        it('cannot manually transition to PartiallyDelivered', async () => {
             try {
                 const { transitionOrderToState } = await adminClient.query<
                     AdminTransition.Mutation,
                     AdminTransition.Variables
                 >(ADMIN_TRANSITION_TO_STATE, {
                     id: order.id,
-                    state: 'PartiallyFulfilled',
+                    state: 'PartiallyDelivered',
                 });
                 fail('Should have thrown');
             } catch (e) {
                 expect(e.message).toContain(
-                    'Cannot transition Order to the "PartiallyFulfilled" state unless some OrderItems are fulfilled',
+                    'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are fulfilled',
                 );
             }
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -378,7 +378,7 @@ describe('Order process', () => {
             expect(result.order?.state).toBe('PaymentSettled');
         });
 
-        it('cannot manually transition to PartiallyFulfilled', async () => {
+        it('cannot manually transition to PartiallyDelivered', async () => {
             try {
                 const { transitionOrderToState } = await adminClient.query<
                     AdminTransition.Mutation,

@@ -23,7 +23,7 @@ export function orderItemsAreFulfilled(order: Order) {
 /**
  * Returns true if at least one, but not all (non-cancelled) OrderItems are fulfilled.
  */
-export function orderItemsArePartiallyFulfilled(order: Order) {
+export function orderItemsArePartiallyDelivered(order: Order) {
     const nonCancelledItems = getOrderItems(order).filter((orderItem) => !orderItem.cancelled);
     return nonCancelledItems.some(isFulfilled) && !nonCancelledItems.every(isFulfilled);
 }

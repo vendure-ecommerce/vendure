@@ -323,7 +323,7 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
 
-            expect(result.order!.state).toBe('PartiallyFulfilled');
+            expect(result.order!.state).toBe('PartiallyDelivered');
 
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
             expect(
@@ -338,7 +338,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(order!.state).toBe('PartiallyFulfilled');
+            expect(order!.state).toBe('PartiallyDelivered');
             const lines = order!.lines;
 
             const { fulfillOrder } = await adminClient.query<
@@ -355,7 +355,7 @@ describe('Orders resolver', () => {
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(result.order!.state).toBe('PartiallyFulfilled');
+            expect(result.order!.state).toBe('PartiallyDelivered');
             expect(result.order!.lines[1].items.filter((i) => i.fulfillment != null).length).toBe(2);
             expect(result.order!.lines[1].items.filter((i) => i.fulfillment == null).length).toBe(1);
         });
@@ -366,7 +366,7 @@ describe('Orders resolver', () => {
                 const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                     id: 'T_2',
                 });
-                expect(order!.state).toBe('PartiallyFulfilled');
+                expect(order!.state).toBe('PartiallyDelivered');
                 await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
                     CREATE_FULFILLMENT,
                     {
@@ -388,7 +388,7 @@ describe('Orders resolver', () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(order!.state).toBe('PartiallyFulfilled');
+            expect(order!.state).toBe('PartiallyDelivered');
 
             const orderItems = order!.lines.reduce(
                 (items, line) => [...items, ...line.items],
@@ -443,7 +443,7 @@ describe('Orders resolver', () => {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
                         from: 'PaymentSettled',
-                        to: 'PartiallyFulfilled',
+                        to: 'PartiallyDelivered',
                     },
                 },
 
@@ -456,8 +456,8 @@ describe('Orders resolver', () => {
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
-                        from: 'PartiallyFulfilled',
-                        to: 'PartiallyFulfilled',
+                        from: 'PartiallyDelivered',
+                        to: 'PartiallyDelivered',
                     },
                 },
                 {
@@ -469,7 +469,7 @@ describe('Orders resolver', () => {
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
-                        from: 'PartiallyFulfilled',
+                        from: 'PartiallyDelivered',
                         to: 'Fulfilled',
                     },
                 },
