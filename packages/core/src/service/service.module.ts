@@ -54,6 +54,8 @@ import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
 import { ZoneService } from './services/zone.service';
+import { TransactionalConnection } from './transaction/transactional-connection';
+import { UnitOfWork } from './transaction/unit-of-work';
 
 const services = [
     AdministratorService,
@@ -102,6 +104,8 @@ const helpers = [
     ShippingConfiguration,
     SlugValidator,
     ExternalAuthenticationService,
+    UnitOfWork,
+    TransactionalConnection,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];

@@ -29,7 +29,7 @@ export async function populateForTesting(
     await populateInitialData(app, options.initialData, logFn);
     await populateProducts(app, options.productsCsvPath, logging);
     await populateCollections(app, options.initialData, logFn);
-    await populateCustomers(options.customerCount || 10, config, logging);
+    await populateCustomers(options.customerCount ?? 10, config, logging);
 
     config.authOptions.requireVerification = originalRequireVerification;
     return [app, worker];
