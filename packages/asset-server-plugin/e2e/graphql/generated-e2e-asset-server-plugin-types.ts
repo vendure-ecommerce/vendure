@@ -1859,7 +1859,6 @@ export type Mutation = {
     updateFacetValues: Array<FacetValue>;
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
-    transitionFulfillmentToState?: Maybe<Fulfillment>;
     updateGlobalSettings: GlobalSettings;
     importProducts?: Maybe<ImportInfo>;
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
@@ -1873,6 +1872,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
+    transitionFulfillmentToState?: Maybe<Fulfillment>;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -2116,11 +2116,6 @@ export type MutationDeleteFacetValuesArgs = {
     force?: Maybe<Scalars['Boolean']>;
 };
 
-export type MutationTransitionFulfillmentToStateArgs = {
-    id: Scalars['ID'];
-    state: Scalars['String'];
-};
-
 export type MutationUpdateGlobalSettingsArgs = {
     input: UpdateGlobalSettingsInput;
 };
@@ -2167,6 +2162,11 @@ export type MutationDeleteOrderNoteArgs = {
 };
 
 export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationTransitionFulfillmentToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
 };
