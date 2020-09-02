@@ -475,6 +475,8 @@ export class OrderService {
             const orderWithFulfillment = await this.getOrderWithFulfillments(order.id);
             if (orderItemsAreShipped(orderWithFulfillment)) {
                 await this.transitionToState(ctx, order.id, 'Shipped');
+            } else if (order.state === 'PaymentSettled') {
+                await this.transitionToState(ctx, order.id, 'PartiallyShipped');
             }
         }
         if (fromState === 'Shipped' && toState === 'Delivered') {
