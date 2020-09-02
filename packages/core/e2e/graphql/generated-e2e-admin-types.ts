@@ -1872,7 +1872,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
-    transitionFulfillmentToState?: Maybe<Fulfillment>;
+    transitionFulfillmentToState: Fulfillment;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -5155,9 +5155,19 @@ export type CreateFulfillmentMutationVariables = {
 };
 
 export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
-    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method' | 'trackingCode'> & {
-            orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
-        };
+    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<
+        Fulfillment,
+        'id' | 'method' | 'state' | 'trackingCode'
+    > & { orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>> };
+};
+
+export type TransitFulfillmentMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type TransitFulfillmentMutation = { __typename?: 'Mutation' } & {
+    transitionFulfillmentToState: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'>;
 };
 
 export type GetOrderFulfillmentsQueryVariables = {
@@ -5168,7 +5178,7 @@ export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
         { __typename?: 'Order' } & Pick<Order, 'id'> & {
                 fulfillments?: Maybe<
-                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state' | 'method'>>
                 >;
             }
     >;
@@ -5181,7 +5191,7 @@ export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
         items: Array<
             { __typename?: 'Order' } & Pick<Order, 'id'> & {
                     fulfillments?: Maybe<
-                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state' | 'method'>>
                     >;
                 }
         >;
@@ -5197,7 +5207,7 @@ export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
         { __typename?: 'Order' } & Pick<Order, 'id'> & {
                 fulfillments?: Maybe<
                     Array<
-                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'> & {
+                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'> & {
                                 orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
                             }
                     >
@@ -6828,6 +6838,12 @@ export namespace CreateFulfillment {
     export type Mutation = CreateFulfillmentMutation;
     export type FulfillOrder = CreateFulfillmentMutation['fulfillOrder'];
     export type OrderItems = NonNullable<CreateFulfillmentMutation['fulfillOrder']['orderItems'][0]>;
+}
+
+export namespace TransitFulfillment {
+    export type Variables = TransitFulfillmentMutationVariables;
+    export type Mutation = TransitFulfillmentMutation;
+    export type TransitionFulfillmentToState = TransitFulfillmentMutation['transitionFulfillmentToState'];
 }
 
 export namespace GetOrderFulfillments {
