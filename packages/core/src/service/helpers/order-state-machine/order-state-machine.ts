@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
+import { ID } from '@vendure/common/lib/shared-types';
 import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -20,6 +21,7 @@ import {
     orderItemsAreAllCancelled,
     orderItemsAreDelivered,
     orderItemsArePartiallyDelivered,
+    orderItemsArePartiallyShipped,
     orderItemsAreShipped,
     orderTotalIsCovered,
 } from '../utils/order-utils';
@@ -59,6 +61,11 @@ export class OrderStateMachine {
         await fsm.transitionTo(state, { ctx, order });
         order.state = fsm.currentState;
     }
+    private async findOrderWithFulfillments(id: ID): Promise<Order> {
+        return await getEntityOrThrow(this.connection, Order, id, {
+            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+        });
+    }
 
     /**
      * Specific business logic to be executed on Order state transitions.
@@ -83,26 +90,26 @@ export class OrderStateMachine {
                 return `error.cannot-transition-unless-all-cancelled`;
             }
         }
+        if (toState === 'PartiallyShipped') {
+            const orderWithFulfillments = await this.findOrderWithFulfillments(data.order.id);
+            if (!orderItemsArePartiallyShipped(orderWithFulfillments)) {
+                return `error.cannot-transition-unless-some-order-items-shipped`;
+            }
+        }
         if (toState === 'Shipped') {
-            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await this.findOrderWithFulfillments(data.order.id);
             if (!orderItemsAreShipped(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-all-order-items-shipped`;
             }
         }
         if (toState === 'PartiallyDelivered') {
-            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await this.findOrderWithFulfillments(data.order.id);
             if (!orderItemsArePartiallyDelivered(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-some-order-items-delivered`;
             }
         }
         if (toState === 'Delivered') {
-            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await this.findOrderWithFulfillments(data.order.id);
             if (!orderItemsAreDelivered(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-all-order-items-delivered`;
             }
