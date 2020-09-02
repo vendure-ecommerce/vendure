@@ -598,7 +598,7 @@
     "state-arranging-payment": "Zahlung einrichten",
     "state-cancelled": "Storniert",
     "state-delivered": "Ausgeführt",
-    "state-partially-fulfilled": "Teilweise ausgeführt",
+    "state-partially-delivered": "Teilweise ausgeführt",
     "state-payment-authorized": "Zahlung autorisiert",
     "state-payment-settled": "Bezahlt",
     "sub-total": "Zwischensumme",

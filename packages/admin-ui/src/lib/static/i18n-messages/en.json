@@ -598,7 +598,7 @@
     "state-arranging-payment": "Arranging payment",
     "state-cancelled": "Cancelled",
     "state-delivered": "Delivered",
-    "state-partially-fulfilled": "Partially fulfilled",
+    "state-partially-delivered": "Partially fulfilled",
     "state-payment-authorized": "Payment authorized",
     "state-payment-settled": "Payment settled",
     "sub-total": "Sub total",

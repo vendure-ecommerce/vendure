@@ -598,7 +598,7 @@
     "state-arranging-payment": "Organização de pagamento",
     "state-cancelled": "Cancelado",
     "state-delivered": "Realizado",
-    "state-partially-fulfilled": "Parcialmente realizado",
+    "state-partially-delivered": "Parcialmente realizado",
     "state-payment-authorized": "Pagamento autorizado",
     "state-payment-settled": "Pagamento liquidado",
     "sub-total": "Subtotal",
