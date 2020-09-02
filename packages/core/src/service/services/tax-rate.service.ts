@@ -1,3 +1,5 @@
+import { Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateTaxRateInput,
     DeletionResponse,
@@ -5,6 +7,7 @@ import {
     UpdateTaxRateInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -23,6 +26,7 @@ import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
 
+@Injectable()
 export class TaxRateService {
     /**
      * We cache all active TaxRates to avoid hitting the DB many times

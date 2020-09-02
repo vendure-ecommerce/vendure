@@ -3,13 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
+import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
-import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
+import { RequestContextService } from '../common/request-context.service';
 import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 

@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     Administrator,
+    Ctx,
     InternalServerError,
     mergeConfig,
     NativeAuthenticationMethod,
     PluginCommonModule,
+    RequestContext,
+    Transaction,
     TransactionalConnection,
-    UnitOfWork,
     User,
     VendurePlugin,
 } from '@vendure/core';
@@ -22,8 +24,8 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 class TestUserService {
     constructor(private connection: TransactionalConnection) {}
 
-    async createUser(identifier: string) {
-        const authMethod = await this.connection.getRepository(NativeAuthenticationMethod).save(
+    async createUser(ctx: RequestContext, identifier: string) {
+        const authMethod = await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(
             new NativeAuthenticationMethod({
                 identifier,
                 passwordHash: 'abc',
@@ -45,12 +47,12 @@ class TestUserService {
 class TestAdminService {
     constructor(private connection: TransactionalConnection, private userService: TestUserService) {}
 
-    async createAdministrator(emailAddress: string, fail: boolean) {
-        const user = await this.userService.createUser(emailAddress);
+    async createAdministrator(ctx: RequestContext, emailAddress: string, fail: boolean) {
+        const user = await this.userService.createUser(ctx, emailAddress);
         if (fail) {
             throw new InternalServerError('Failed!');
         }
-        const admin = await this.connection.getRepository(Administrator).save(
+        const admin = await this.connection.getRepository(ctx, Administrator).save(
             new Administrator({
                 emailAddress,
                 user,
@@ -64,19 +66,18 @@ class TestAdminService {
 
 @Resolver()
 class TestResolver {
-    constructor(private uow: UnitOfWork, private testAdminService: TestAdminService) {}
+    constructor(private testAdminService: TestAdminService, private connection: TransactionalConnection) {}
 
     @Mutation()
-    createTestAdministrator(@Args() args: any) {
-        return this.uow.withTransaction(() => {
-            return this.testAdminService.createAdministrator(args.emailAddress, args.fail);
-        });
+    @Transaction
+    createTestAdministrator(@Ctx() ctx: RequestContext, @Args() args: any) {
+        return this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
     }
 
     @Query()
     async verify() {
-        const admins = await this.uow.getConnection().getRepository(Administrator).find();
-        const users = await this.uow.getConnection().getRepository(User).find();
+        const admins = await this.connection.getRepository(Administrator).find();
+        const users = await this.connection.getRepository(User).find();
         return {
             admins,
             users,

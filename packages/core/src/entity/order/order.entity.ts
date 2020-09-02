@@ -3,9 +3,11 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
@@ -14,8 +16,6 @@ import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
-import { ChannelAware } from '../../common/types/common-types';
-import { Channel } from '../channel/channel.entity';
 
 /**
  * @description
@@ -96,7 +96,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @EntityId({ nullable: true })
     taxZoneId?: ID;
 
-    @ManyToMany((type) => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 
@@ -134,11 +134,8 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     }
 
     getOrderItems(): OrderItem[] {
-        return this.lines.reduce(
-            (items, line) => {
-                return [...items, ...line.items];
-            },
-            [] as OrderItem[],
-        );
+        return this.lines.reduce((items, line) => {
+            return [...items, ...line.items];
+        }, [] as OrderItem[]);
     }
 }

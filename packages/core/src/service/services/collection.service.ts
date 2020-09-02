@@ -1,4 +1,4 @@
-import { OnModuleInit, Optional } from '@nestjs/common';
+import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperation,
@@ -49,15 +49,13 @@ import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
+@Injectable()
 export class CollectionService implements OnModuleInit {
     private rootCollection: Collection | undefined;
     private applyFiltersQueue: JobQueue<ApplyCollectionFiltersJobData>;
 
     constructor(
-        // Optional() allows the onModuleInit() hook to run with injected
-        // providers despite the request-scoped TransactionalConnection
-        // not yet having been created
-        @Optional() private connection: TransactionalConnection,
+        private connection: TransactionalConnection,
         private channelService: ChannelService,
         private assetService: AssetService,
         private facetValueService: FacetValueService,

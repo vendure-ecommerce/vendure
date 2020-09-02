@@ -33,5 +33,4 @@ export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
 export * from './services/user.service';
-export * from './transaction/unit-of-work';
 export * from './transaction/transactional-connection';

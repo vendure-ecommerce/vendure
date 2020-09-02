@@ -12,8 +12,6 @@ import { ChannelService } from '../../service/services/channel.service';
 import { getApiType } from './get-api-type';
 import { RequestContext } from './request-context';
 
-export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
-
 /**
  * Creates new RequestContext instances.
  */
@@ -79,7 +77,7 @@ export class RequestContextService {
         if (!user || !channel) {
             return false;
         }
-        const permissionsOnChannel = user.channelPermissions.find((c) => idsAreEqual(c.id, channel.id));
+        const permissionsOnChannel = user.channelPermissions.find(c => idsAreEqual(c.id, channel.id));
         if (permissionsOnChannel) {
             return this.arraysIntersect(permissionsOnChannel.permissions, permissions);
         }

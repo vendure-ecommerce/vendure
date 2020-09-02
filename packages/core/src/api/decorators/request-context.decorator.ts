@@ -1,6 +1,6 @@
 import { ContextType, createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
+import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 
 /**
  * @description

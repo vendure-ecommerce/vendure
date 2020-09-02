@@ -1,4 +1,4 @@
-import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConnectionOptions } from 'typeorm';
 
@@ -25,6 +25,7 @@ import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
+import { InitializerService } from './initializer.service';
 import { AdministratorService } from './services/administrator.service';
 import { AssetService } from './services/asset.service';
 import { AuthService } from './services/auth.service';
@@ -55,7 +56,6 @@ import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
 import { ZoneService } from './services/zone.service';
 import { TransactionalConnection } from './transaction/transactional-connection';
-import { UnitOfWork } from './transaction/unit-of-work';
 
 const services = [
     AdministratorService,
@@ -104,7 +104,6 @@ const helpers = [
     ShippingConfiguration,
     SlugValidator,
     ExternalAuthenticationService,
-    UnitOfWork,
     TransactionalConnection,
 ];
 
@@ -120,36 +119,10 @@ let workerTypeOrmModule: DynamicModule;
  */
 @Module({
     imports: [ConfigModule, EventBusModule, WorkerServiceModule, JobQueueModule],
-    providers: [...services, ...helpers],
+    providers: [...services, ...helpers, InitializerService],
     exports: [...services, ...helpers],
 })
-export class ServiceCoreModule implements OnModuleInit {
-    constructor(
-        private channelService: ChannelService,
-        private roleService: RoleService,
-        private administratorService: AdministratorService,
-        private taxRateService: TaxRateService,
-        private shippingMethodService: ShippingMethodService,
-        private paymentMethodService: PaymentMethodService,
-        private globalSettingsService: GlobalSettingsService,
-    ) {}
-
-    async onModuleInit() {
-        // IMPORTANT - why manually invoke these init methods rather than just relying on
-        // Nest's "onModuleInit" lifecycle hook within each individual service class?
-        // The reason is that the order of invokation matters. By explicitly invoking the
-        // methods below, we can e.g. guarantee that the default channel exists
-        // (channelService.initChannels()) before we try to create any roles (which assume that
-        // there is a default Channel to work with.
-        await this.globalSettingsService.initGlobalSettings();
-        await this.channelService.initChannels();
-        await this.roleService.initRoles();
-        await this.administratorService.initAdministrators();
-        await this.taxRateService.initTaxRates();
-        await this.shippingMethodService.initShippingMethods();
-        await this.paymentMethodService.initPaymentMethods();
-    }
-}
+export class ServiceCoreModule {}
 
 /**
  * The ServiceModule is responsible for the service layer, i.e. accessing the database
