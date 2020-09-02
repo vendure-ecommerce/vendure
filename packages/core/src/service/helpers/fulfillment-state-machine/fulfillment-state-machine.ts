@@ -15,9 +15,7 @@ import { ConfigService } from '../../../config/config.service';
 import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { HistoryService } from '../../services/history.service';
-import { OrderService } from '../../services/order.service';
 import { getEntityOrThrow } from '../utils/get-entity-or-throw';
-import { orderItemsAreDelivered, orderItemsAreShipped } from '../utils/order-utils';
 
 import {
     FulfillmentState,
@@ -34,7 +32,6 @@ export class FulfillmentStateMachine {
         @InjectConnection() private connection: Connection,
         private configService: ConfigService,
         private historyService: HistoryService,
-        private orderService: OrderService,
     ) {
         this.config = this.initConfig();
     }
@@ -92,20 +89,6 @@ export class FulfillmentStateMachine {
                 to: toState,
             },
         });
-        if (fromState === 'Pending' && toState === 'Shipped') {
-            const order = await this.getOrderWithFulfillments(data.order.id);
-            if (orderItemsAreShipped(order)) {
-                await this.orderService.transitionToState(data.ctx, data.order.id, 'Shipped');
-            }
-        }
-        if (fromState === 'Shipped' && toState === 'Delivered') {
-            const order = await this.getOrderWithFulfillments(data.order.id);
-            if (orderItemsAreDelivered(order)) {
-                await this.orderService.transitionToState(data.ctx, data.order.id, 'Delivered');
-            } else {
-                await this.orderService.transitionToState(data.ctx, data.order.id, 'PartiallyDelivered');
-            }
-        }
     }
 
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {

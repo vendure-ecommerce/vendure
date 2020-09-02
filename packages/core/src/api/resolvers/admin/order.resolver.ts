@@ -8,6 +8,7 @@ import {
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
+    MutationTransitionFulfillmentToStateArgs,
     MutationTransitionOrderToStateArgs,
     MutationUpdateOrderNoteArgs,
     Permission,
@@ -102,5 +103,14 @@ export class OrderResolver {
         @Args() args: MutationTransitionOrderToStateArgs,
     ) {
         return this.orderService.transitionToState(ctx, args.id, args.state as OrderState);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async transitionFulfillmentToState(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationTransitionFulfillmentToStateArgs,
+    ) {
+        return this.orderService.transitionFulfillmentToState(ctx, args.id, args.state as FulfillmentState);
     }
 }

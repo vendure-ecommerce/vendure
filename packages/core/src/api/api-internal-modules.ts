@@ -17,7 +17,6 @@ import { CountryResolver } from './resolvers/admin/country.resolver';
 import { CustomerGroupResolver } from './resolvers/admin/customer-group.resolver';
 import { CustomerResolver } from './resolvers/admin/customer.resolver';
 import { FacetResolver } from './resolvers/admin/facet.resolver';
-import { FulfillmentResolver } from './resolvers/admin/fulfillment.resolver';
 import { GlobalSettingsResolver } from './resolvers/admin/global-settings.resolver';
 import { ImportResolver } from './resolvers/admin/import.resolver';
 import { JobResolver } from './resolvers/admin/job.resolver';
@@ -88,7 +87,6 @@ const adminResolvers = [
     TaxCategoryResolver,
     TaxRateResolver,
     ZoneResolver,
-    FulfillmentResolver,
 ];
 
 const shopResolvers = [

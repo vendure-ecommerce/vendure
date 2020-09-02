@@ -1,4 +1,3 @@
-import { Injectable } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/typeorm';
 import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
 import {
@@ -47,6 +46,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
@@ -55,9 +55,13 @@ import { OrderStateMachine } from '../helpers/order-state-machine/order-state-ma
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
-import { orderItemsAreAllCancelled, orderTotalIsCovered } from '../helpers/utils/order-utils';
+import {
+    orderItemsAreAllCancelled,
+    orderItemsAreDelivered,
+    orderItemsAreShipped,
+    orderTotalIsCovered,
+} from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
@@ -71,7 +75,6 @@ import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
 
-@Injectable()
 export class OrderService {
     constructor(
         @InjectConnection() private connection: Connection,
@@ -456,6 +459,34 @@ export class OrderService {
         await this.connection.getRepository(Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
+    }
+    async transitionFulfillmentToState(
+        ctx: RequestContext,
+        fulfillmentId: ID,
+        state: FulfillmentState,
+    ): Promise<Fulfillment> {
+        const { fulfillment, fromState, toState, order } = await this.fulfillmentService.transitionToState(
+            ctx,
+            fulfillmentId,
+            state,
+        );
+
+        if (fromState === 'Pending' && toState === 'Shipped') {
+            const orderWithFulfillment = await this.getOrderWithFulfillments(order.id);
+            if (orderItemsAreShipped(orderWithFulfillment)) {
+                await this.transitionToState(ctx, order.id, 'Shipped');
+            }
+        }
+        if (fromState === 'Shipped' && toState === 'Delivered') {
+            const orderWithFulfillment = await this.getOrderWithFulfillments(order.id);
+            if (orderItemsAreDelivered(orderWithFulfillment)) {
+                await this.transitionToState(ctx, order.id, 'Delivered');
+            } else {
+                await this.transitionToState(ctx, order.id, 'PartiallyDelivered');
+            }
+        }
+
+        return fulfillment;
     }
 
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
@@ -884,6 +915,12 @@ export class OrderService {
         await this.connection.getRepository(Order).save(order, { reload: false });
         await this.connection.getRepository(OrderItem).save(updatedItems, { reload: false });
         return order;
+    }
+
+    private async getOrderWithFulfillments(orderId: ID): Promise<Order> {
+        return await getEntityOrThrow(this.connection, Order, orderId, {
+            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+        });
     }
 
     private async getOrdersAndItemsFromLines(

@@ -48,14 +48,20 @@ export class FulfillmentService {
         ctx: RequestContext,
         fulfillmentId: ID,
         state: FulfillmentState,
-    ): Promise<Fulfillment> {
+    ): Promise<{
+        fulfillment: Fulfillment;
+        order: Order;
+        fromState: FulfillmentState;
+        toState: FulfillmentState;
+    }> {
         const fulfillment = await this.findOneOrThrow(fulfillmentId);
         const order = await this.findOrderByFulfillment(fulfillment, ctx.channelId);
         const fromState = fulfillment.state;
         await this.fulfillmentStateMachine.transition(ctx, fulfillment, order, state);
         await this.connection.getRepository(Fulfillment).save(fulfillment, { reload: false });
         this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
-        return fulfillment;
+
+        return { fulfillment, order, fromState, toState: state };
     }
     getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
