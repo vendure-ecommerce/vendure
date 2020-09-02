@@ -392,7 +392,7 @@ describe('Orders resolver', () => {
             );
             expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
                 {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
+                    type: HistoryEntryType.ORDER_FULFILLMENT,
                     data: {
                         fulfillmentId: 'T_1',
                     },
@@ -406,7 +406,7 @@ describe('Orders resolver', () => {
                 },
 
                 {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
+                    type: HistoryEntryType.ORDER_FULFILLMENT,
                     data: {
                         fulfillmentId: 'T_2',
                     },
@@ -419,7 +419,7 @@ describe('Orders resolver', () => {
                     },
                 },
                 {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
+                    type: HistoryEntryType.ORDER_FULFILLMENT,
                     data: {
                         fulfillmentId: 'T_3',
                     },
@@ -434,7 +434,7 @@ describe('Orders resolver', () => {
             ]);
         });
 
-        it('order.fullfillments resolver for single order', async () => {
+        it('order.fulfillments resolver for single order', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,
                 GetOrderFulfillments.Variables
@@ -449,7 +449,7 @@ describe('Orders resolver', () => {
             ]);
         });
 
-        it('order.fullfillments resolver for order list', async () => {
+        it('order.fulfillments resolver for order list', async () => {
             const { orders } = await adminClient.query<GetOrderListFulfillments.Query>(
                 GET_ORDER_LIST_FULFILLMENTS,
             );
@@ -462,7 +462,7 @@ describe('Orders resolver', () => {
             ]);
         });
 
-        it('order.fullfillments.orderItems resolver', async () => {
+        it('order.fulfillments.orderItems resolver', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillmentItems.Query,
                 GetOrderFulfillmentItems.Variables

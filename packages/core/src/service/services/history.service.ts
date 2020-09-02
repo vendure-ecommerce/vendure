@@ -80,7 +80,7 @@ export type OrderHistoryEntryData = {
         from: FulfillmentState;
         to: FulfillmentState;
     };
-    [HistoryEntryType.ORDER_FULLFILLMENT]: {
+    [HistoryEntryType.ORDER_FULFILLMENT]: {
         fulfillmentId: ID;
     };
     [HistoryEntryType.ORDER_CANCELLATION]: {

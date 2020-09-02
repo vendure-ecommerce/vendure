@@ -81,12 +81,12 @@
                     </vdr-labeled-data>
                 </vdr-history-entry-detail>
             </ng-container>
-            <ng-container *ngSwitchCase="type.ORDER_FULLFILLMENT">
+            <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT">
                 <div class="title">
                     {{ 'order.history-fulfillment-created' | translate }}
                 </div>
-                {{ 'order.tracking-code' | translate }}: {{ getFullfillment(entry)?.trackingCode }}
-                <vdr-history-entry-detail *ngIf="getFullfillment(entry) as fulfillment">
+                {{ 'order.tracking-code' | translate }}: {{ getFulfillment(entry)?.trackingCode }}
+                <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
                     <vdr-fulfillment-detail
                         [fulfillmentId]="fulfillment.id"
                         [order]="order"

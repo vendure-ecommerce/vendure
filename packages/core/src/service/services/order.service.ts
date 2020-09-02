@@ -569,7 +569,7 @@ export class OrderService {
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
                 orderId: order.id,
-                type: HistoryEntryType.ORDER_FULLFILLMENT,
+                type: HistoryEntryType.ORDER_FULFILLMENT,
                 data: {
                     fulfillmentId: fulfillment.id,
                 },
