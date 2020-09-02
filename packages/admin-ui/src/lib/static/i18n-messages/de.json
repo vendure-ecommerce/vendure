@@ -597,7 +597,7 @@
     "state-all-orders": "Alle Bestellungen",
     "state-arranging-payment": "Zahlung einrichten",
     "state-cancelled": "Storniert",
-    "state-fulfilled": "Ausgeführt",
+    "state-delivered": "Ausgeführt",
     "state-partially-fulfilled": "Teilweise ausgeführt",
     "state-payment-authorized": "Zahlung autorisiert",
     "state-payment-settled": "Bezahlt",

@@ -597,7 +597,7 @@
     "state-all-orders": "",
     "state-arranging-payment": "",
     "state-cancelled": "",
-    "state-fulfilled": "",
+    "state-delivered": "",
     "state-partially-fulfilled": "",
     "state-payment-authorized": "",
     "state-payment-settled": "",
