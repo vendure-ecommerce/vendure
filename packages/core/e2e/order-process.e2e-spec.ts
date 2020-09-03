@@ -369,7 +369,7 @@ describe('Order process', () => {
                 fail('Should have thrown');
             } catch (e) {
                 expect(e.message).toContain(
-                    'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are fulfilled',
+                    'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are delivered',
                 );
             }
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -390,7 +390,7 @@ describe('Order process', () => {
                 fail('Should have thrown');
             } catch (e) {
                 expect(e.message).toContain(
-                    'Cannot transition Order to the "Delivered" state unless all OrderItems are fulfilled',
+                    'Cannot transition Order to the "Delivered" state unless all OrderItems are delivered',
                 );
             }
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
