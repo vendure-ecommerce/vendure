@@ -2,6 +2,7 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, Index, ManyToOne, TableInheritance } from 'typeorm';
 
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
 import { Order } from '../order/order.entity';
@@ -28,6 +29,12 @@ export abstract class Session extends VendureEntity {
     @EntityId({ nullable: true })
     activeOrderId?: ID;
 
-    @ManyToOne((type) => Order)
+    @ManyToOne(type => Order)
     activeOrder: Order | null;
+
+    @EntityId({ nullable: true })
+    activeChannelId?: ID;
+
+    @ManyToOne(type => Channel)
+    activeChannel: Channel | null;
 }

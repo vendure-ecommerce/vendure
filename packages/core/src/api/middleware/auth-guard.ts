@@ -6,6 +6,9 @@ import { Request, Response } from 'express';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
+import { Customer } from '../../entity/customer/customer.entity';
+import { ChannelService } from '../../service/services/channel.service';
+import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
@@ -26,6 +29,8 @@ export class AuthGuard implements CanActivate {
         private configService: ConfigService,
         private requestContextService: RequestContextService,
         private sessionService: SessionService,
+        private customerService: CustomerService,
+        private channelService: ChannelService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -37,6 +42,23 @@ export class AuthGuard implements CanActivate {
         const session = await this.getSession(req, res, hasOwnerPermission);
         const requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
         (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
+
+        if (session && (!session.activeChannelId || session.activeChannelId !== requestContext.channelId)) {
+            await this.sessionService.setActiveChannel(session, requestContext.channel);
+            if (requestContext.activeUserId) {
+                const customer = await this.customerService.findOneByUserId(
+                    requestContext,
+                    requestContext.activeUserId,
+                    false,
+                );
+                if (customer) {
+                    await this.channelService.assignToChannels(Customer, customer.id, [
+                        requestContext.channelId,
+                    ]);
+                }
+            }
+            return this.canActivate(context);
+        }
 
         if (authDisabled || !permissions || isPublic) {
             return true;

@@ -36,12 +36,16 @@ export class ExternalAuthenticationService {
      * Looks up a User based on their identifier from an external authentication
      * provider, ensuring this User is associated with a Customer account.
      */
-    async findCustomerUser(strategy: string, externalIdentifier: string): Promise<User | undefined> {
+    async findCustomerUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
         const user = await this.findUser(strategy, externalIdentifier);
 
         if (user) {
             // Ensure this User is associated with a Customer
-            const customer = await this.customerService.findOneByUserId(user.id);
+            const customer = await this.customerService.findOneByUserId(ctx, user.id);
             if (customer) {
                 return user;
             }
