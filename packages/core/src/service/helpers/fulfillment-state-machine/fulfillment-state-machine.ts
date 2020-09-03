@@ -41,9 +41,14 @@ export class FulfillmentStateMachine {
         return fsm.getNextStates();
     }
 
-    async transition(ctx: RequestContext, fulfillment: Fulfillment, order: Order, state: FulfillmentState) {
+    async transition(
+        ctx: RequestContext,
+        fulfillment: Fulfillment,
+        orders: Order[],
+        state: FulfillmentState,
+    ) {
         const fsm = new FSM(this.config, fulfillment.state);
-        await fsm.transitionTo(state, { ctx, order, fulfillment });
+        await fsm.transitionTo(state, { ctx, orders, fulfillment });
         fulfillment.state = fsm.currentState;
     }
 
@@ -66,16 +71,19 @@ export class FulfillmentStateMachine {
         toState: FulfillmentState,
         data: FulfillmentTransitionData,
     ) {
-        await this.historyService.createHistoryEntryForOrder({
-            orderId: data.order.id,
-            type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
-            ctx: data.ctx,
-            data: {
-                fulfillmentId: data.fulfillment.id,
-                from: fromState,
-                to: toState,
-            },
-        });
+        const historyEntryPromises = data.orders.map(order =>
+            this.historyService.createHistoryEntryForOrder({
+                orderId: order.id,
+                type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
+                ctx: data.ctx,
+                data: {
+                    fulfillmentId: data.fulfillment.id,
+                    from: fromState,
+                    to: toState,
+                },
+            }),
+        );
+        await Promise.all(historyEntryPromises);
     }
 
     private initConfig(): StateMachineConfig<FulfillmentState, FulfillmentTransitionData> {

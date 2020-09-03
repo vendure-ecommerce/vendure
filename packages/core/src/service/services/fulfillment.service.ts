@@ -27,17 +27,9 @@ export class FulfillmentService {
         });
         return this.connection.getRepository(Fulfillment).save(newFulfillment);
     }
-    async findOneOrThrow(id: ID): Promise<Fulfillment> {
+    async findOneOrThrow(id: ID, relations: string[] = ['orderItems']): Promise<Fulfillment> {
         return await getEntityOrThrow(this.connection, Fulfillment, id, {
-            relations: ['orderItems'],
-        });
-    }
-    async findOrderByFulfillment(fulfillment: Fulfillment, channelId: ID): Promise<Order> {
-        return this.connection.getRepository(Order).findOneOrFail({
-            where: {
-                fulfillment,
-                channelId,
-            },
+            relations,
         });
     }
     async getOrderItemsByFulfillmentId(id: ID): Promise<OrderItem[]> {
@@ -50,18 +42,24 @@ export class FulfillmentService {
         state: FulfillmentState,
     ): Promise<{
         fulfillment: Fulfillment;
-        order: Order;
+        orders: Order[];
         fromState: FulfillmentState;
         toState: FulfillmentState;
     }> {
-        const fulfillment = await this.findOneOrThrow(fulfillmentId);
-        const order = await this.findOrderByFulfillment(fulfillment, ctx.channelId);
+        const fulfillment = await this.findOneOrThrow(fulfillmentId, [
+            'orderItems',
+            'orderItems.line',
+            'orderItems.line.order',
+        ]);
+        // Find orders based on order items filtering by id, removing duplicated orders
+        const ordersInOrderItems = fulfillment.orderItems.map(oi => oi.line.order);
+        const orders = ordersInOrderItems.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
         const fromState = fulfillment.state;
-        await this.fulfillmentStateMachine.transition(ctx, fulfillment, order, state);
+        await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
         await this.connection.getRepository(Fulfillment).save(fulfillment, { reload: false });
         this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
 
-        return { fulfillment, order, fromState, toState: state };
+        return { fulfillment, orders, fromState, toState: state };
     }
     getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);

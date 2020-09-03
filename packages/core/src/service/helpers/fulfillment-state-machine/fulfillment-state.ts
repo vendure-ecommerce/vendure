@@ -34,6 +34,6 @@ export const fulfillmentStateTransitions: Transitions<FulfillmentState> = {
  */
 export interface FulfillmentTransitionData {
     ctx: RequestContext;
-    order: Order;
+    orders: Order[];
     fulfillment: Fulfillment;
 }

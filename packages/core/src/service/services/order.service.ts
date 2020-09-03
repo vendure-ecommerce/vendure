@@ -465,30 +465,38 @@ export class OrderService {
         fulfillmentId: ID,
         state: FulfillmentState,
     ): Promise<Fulfillment> {
-        const { fulfillment, fromState, toState, order } = await this.fulfillmentService.transitionToState(
+        const { fulfillment, fromState, toState, orders } = await this.fulfillmentService.transitionToState(
             ctx,
             fulfillmentId,
             state,
         );
-
+        await Promise.all(
+            orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order.id, fromState, toState)),
+        );
+        return fulfillment;
+    }
+    private async handleFulfillmentStateTransitByOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        fromState: FulfillmentState,
+        toState: FulfillmentState,
+    ): Promise<void> {
         if (fromState === 'Pending' && toState === 'Shipped') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(order.id);
+            const orderWithFulfillment = await this.getOrderWithFulfillments(orderId);
             if (orderItemsAreShipped(orderWithFulfillment)) {
-                await this.transitionToState(ctx, order.id, 'Shipped');
-            } else if (order.state === 'PaymentSettled') {
-                await this.transitionToState(ctx, order.id, 'PartiallyShipped');
+                await this.transitionToState(ctx, orderId, 'Shipped');
+            } else {
+                await this.transitionToState(ctx, orderId, 'PartiallyShipped');
             }
         }
         if (fromState === 'Shipped' && toState === 'Delivered') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(order.id);
+            const orderWithFulfillment = await this.getOrderWithFulfillments(orderId);
             if (orderItemsAreDelivered(orderWithFulfillment)) {
-                await this.transitionToState(ctx, order.id, 'Delivered');
+                await this.transitionToState(ctx, orderId, 'Delivered');
             } else {
-                await this.transitionToState(ctx, order.id, 'PartiallyDelivered');
+                await this.transitionToState(ctx, orderId, 'PartiallyDelivered');
             }
         }
-
-        return fulfillment;
     }
 
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
