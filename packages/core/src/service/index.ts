@@ -6,6 +6,7 @@ export * from './helpers/list-query-builder/list-query-builder';
 export * from './helpers/external-authentication/external-authentication.service';
 export * from './helpers/order-calculator/order-calculator';
 export * from './helpers/order-state-machine/order-state';
+export * from './helpers/fulfillment-state-machine/fulfillment-state';
 export * from './helpers/payment-state-machine/payment-state';
 export * from './services/administrator.service';
 export * from './services/asset.service';
