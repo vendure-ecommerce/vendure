@@ -2,6 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { from, Observable } from 'rxjs';
 
+import { RequestContext } from '../../api/common/request-context';
 import { TaxRateService } from '../services/tax-rate.service';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
@@ -16,6 +17,6 @@ export class TaxRateController {
      */
     @MessagePattern(TaxRateUpdatedMessage.pattern)
     taxRateUpdated(): Observable<TaxRateUpdatedMessage['response']> {
-        return from(this.taxRateService.updateActiveTaxRates().then(() => true));
+        return from(this.taxRateService.updateActiveTaxRates(RequestContext.empty()).then(() => true));
     }
 }

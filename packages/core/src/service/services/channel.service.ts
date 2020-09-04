@@ -63,6 +63,7 @@ export class ChannelService {
      * Assigns the entity to the given Channels and saves.
      */
     async assignToChannels<T extends ChannelAware & VendureEntity>(
+        ctx: RequestContext,
         entityType: Type<T>,
         entityId: ID,
         channelIds: ID[],
@@ -74,7 +75,7 @@ export class ChannelService {
             const channel = await getEntityOrThrow(this.connection, Channel, id);
             entity.channels.push(channel);
         }
-        await this.connection.getRepository(entityType).save(entity as any, { reload: false });
+        await this.connection.getRepository(ctx, entityType).save(entity as any, { reload: false });
         return entity;
     }
 
@@ -82,6 +83,7 @@ export class ChannelService {
      * Removes the entity from the given Channels and saves.
      */
     async removeFromChannels<T extends ChannelAware & VendureEntity>(
+        ctx: RequestContext,
         entityType: Type<T>,
         entityId: ID,
         channelIds: ID[],
@@ -92,7 +94,7 @@ export class ChannelService {
         for (const id of channelIds) {
             entity.channels = entity.channels.filter(c => !idsAreEqual(c.id, id));
         }
-        await this.connection.getRepository(entityType).save(entity as any, { reload: false });
+        await this.connection.getRepository(ctx, entityType).save(entity as any, { reload: false });
         return entity;
     }
 
@@ -123,19 +125,19 @@ export class ChannelService {
         return defaultChannel;
     }
 
-    findAll(): Promise<Channel[]> {
+    findAll(ctx: RequestContext): Promise<Channel[]> {
         return this.connection
-            .getRepository(Channel)
+            .getRepository(ctx, Channel)
             .find({ relations: ['defaultShippingZone', 'defaultTaxZone'] });
     }
 
-    findOne(id: ID): Promise<Channel | undefined> {
+    findOne(ctx: RequestContext, id: ID): Promise<Channel | undefined> {
         return this.connection
-            .getRepository(Channel)
+            .getRepository(ctx, Channel)
             .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
     }
 
-    async create(input: CreateChannelInput): Promise<Channel> {
+    async create(ctx: RequestContext, input: CreateChannelInput): Promise<Channel> {
         const channel = new Channel(input);
         if (input.defaultTaxZoneId) {
             channel.defaultTaxZone = await getEntityOrThrow(this.connection, Zone, input.defaultTaxZoneId);
@@ -147,19 +149,19 @@ export class ChannelService {
                 input.defaultShippingZoneId,
             );
         }
-        const newChannel = await this.connection.getRepository(Channel).save(channel);
+        const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
         await this.updateAllChannels();
         return channel;
     }
 
-    async update(input: UpdateChannelInput): Promise<Channel> {
-        const channel = await this.findOne(input.id);
+    async update(ctx: RequestContext, input: UpdateChannelInput): Promise<Channel> {
+        const channel = await this.findOne(ctx, input.id);
         if (!channel) {
             throw new EntityNotFoundError('Channel', input.id);
         }
         if (input.defaultLanguageCode) {
             const availableLanguageCodes = await this.globalSettingsService
-                .getSettings()
+                .getSettings(ctx)
                 .then(s => s.availableLanguages);
             if (!availableLanguageCodes.includes(input.defaultLanguageCode)) {
                 throw new UserInputError('error.language-not-available-in-global-settings', {
@@ -182,15 +184,15 @@ export class ChannelService {
                 input.defaultShippingZoneId,
             );
         }
-        await this.connection.getRepository(Channel).save(updatedChannel, { reload: false });
+        await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
         await this.updateAllChannels();
-        return assertFound(this.findOne(channel.id));
+        return assertFound(this.findOne(ctx, channel.id));
     }
 
-    async delete(id: ID): Promise<DeletionResponse> {
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Channel, id);
-        await this.connection.getRepository(Channel).delete(id);
-        await this.connection.getRepository(ProductVariantPrice).delete({
+        await this.connection.getRepository(ctx, Channel).delete(id);
+        await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
         });
         return {
@@ -225,7 +227,7 @@ export class ChannelService {
         }
     }
 
-    private async updateAllChannels() {
-        this.allChannels = await this.findAll();
+    private async updateAllChannels(ctx?: RequestContext) {
+        this.allChannels = await this.findAll(ctx || RequestContext.empty());
     }
 }

@@ -11,7 +11,9 @@ import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
 import { OrderService } from '../../../service/services/order.service';
+import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('GlobalSettings')
 export class GlobalSettingsResolver {
@@ -24,8 +26,8 @@ export class GlobalSettingsResolver {
 
     @Query()
     @Allow(Permission.Authenticated)
-    async globalSettings() {
-        return this.globalSettingsService.getSettings();
+    async globalSettings(@Ctx() ctx: RequestContext) {
+        return this.globalSettingsService.getSettings(ctx);
     }
 
     /**
@@ -53,12 +55,12 @@ export class GlobalSettingsResolver {
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateGlobalSettings(@Args() args: MutationUpdateGlobalSettingsArgs) {
+    async updateGlobalSettings(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateGlobalSettingsArgs) {
         // This validation is performed here in the resolver rather than at the service
         // layer to avoid a circular dependency [ChannelService <> GlobalSettingsService]
         const { availableLanguages } = args.input;
         if (availableLanguages) {
-            const channels = await this.channelService.findAll();
+            const channels = await this.channelService.findAll(ctx);
             const unavailableDefaults = channels.filter(
                 c => !availableLanguages.includes(c.defaultLanguageCode),
             );
@@ -69,6 +71,6 @@ export class GlobalSettingsResolver {
                 });
             }
         }
-        return this.globalSettingsService.updateSettings(args.input);
+        return this.globalSettingsService.updateSettings(ctx, args.input);
     }
 }

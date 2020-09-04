@@ -67,6 +67,7 @@ export class ProductService {
                 relations: this.relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: null },
+                ctx,
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
@@ -112,7 +113,7 @@ export class ProductService {
 
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
-            .getRepository(Product)
+            .getRepository(ctx, Product)
             .findOne(productId, { relations: ['facetValues', 'facetValues.facet'] })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
@@ -120,7 +121,7 @@ export class ProductService {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
-        const translation = await this.connection.getRepository(ProductTranslation).findOne({
+        const translation = await this.connection.getRepository(ctx, ProductTranslation).findOne({
             relations: ['base'],
             where: {
                 languageCode: ctx.languageCode,
@@ -134,37 +135,39 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
-        await this.slugValidator.validateSlugs(input, ProductTranslation);
+        await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
                 this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
-                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                    p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input);
+                await this.assetService.updateFeaturedAsset(ctx, p, input);
             },
         });
-        await this.assetService.updateEntityAssets(product, input);
+        await this.assetService.updateEntityAssets(ctx, product, input);
         this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
         return assertFound(this.findOne(ctx, product.id));
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
         await getEntityOrThrow(this.connection, Product, input.id);
-        await this.slugValidator.validateSlugs(input, ProductTranslation);
+        await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
                 if (input.facetValueIds) {
-                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                    p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input);
-                await this.assetService.updateEntityAssets(p, input);
+                await this.assetService.updateFeaturedAsset(ctx, p, input);
+                await this.assetService.updateEntityAssets(ctx, p, input);
             },
         });
         this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
@@ -174,7 +177,7 @@ export class ProductService {
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
         const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
         product.deletedAt = new Date();
-        await this.connection.getRepository(Product).save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
         return {
             result: DeletionResult.DELETED,
@@ -194,15 +197,16 @@ export class ProductService {
             throw new ForbiddenError();
         }
         const productsWithVariants = await this.connection
-            .getRepository(Product)
+            .getRepository(ctx, Product)
             .findByIds(input.productIds, {
                 relations: ['variants'],
             });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const product of productsWithVariants) {
-            await this.channelService.assignToChannels(Product, product.id, [input.channelId]);
+            await this.channelService.assignToChannels(ctx, Product, product.id, [input.channelId]);
             for (const variant of product.variants) {
                 await this.productVariantService.createProductVariantPrice(
+                    ctx,
                     variant.id,
                     variant.price * priceFactor,
                     input.channelId,
@@ -231,9 +235,9 @@ export class ProductService {
         if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
             throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
         }
-        const products = await this.connection.getRepository(Product).findByIds(input.productIds);
+        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
         for (const product of products) {
-            await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
+            await this.channelService.removeFromChannels(ctx, Product, product.id, [input.channelId]);
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(
@@ -247,8 +251,10 @@ export class ProductService {
         productId: ID,
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
-        const product = await this.getProductWithOptionGroups(productId);
-        const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
+        const product = await this.getProductWithOptionGroups(ctx, productId);
+        const optionGroup = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .findOne(optionGroupId);
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
@@ -259,7 +265,7 @@ export class ProductService {
             product.optionGroups = [optionGroup];
         }
 
-        await this.connection.getRepository(Product).save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -268,7 +274,7 @@ export class ProductService {
         productId: ID,
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
-        const product = await this.getProductWithOptionGroups(productId);
+        const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
@@ -281,12 +287,12 @@ export class ProductService {
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 
-        await this.connection.getRepository(Product).save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
-    private async getProductWithOptionGroups(productId: ID): Promise<Product> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
+    private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
+        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
             relations: ['optionGroups', 'variants', 'variants.options'],
             where: { deletedAt: null },
         });

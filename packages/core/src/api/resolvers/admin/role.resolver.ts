@@ -22,14 +22,14 @@ export class RoleResolver {
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    roles(@Args() args: QueryRolesArgs): Promise<PaginatedList<Role>> {
-        return this.roleService.findAll(args.options || undefined);
+    roles(@Ctx() ctx: RequestContext, @Args() args: QueryRolesArgs): Promise<PaginatedList<Role>> {
+        return this.roleService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadAdministrator)
-    role(@Args() args: QueryRoleArgs): Promise<Role | undefined> {
-        return this.roleService.findOne(args.id);
+    role(@Ctx() ctx: RequestContext, @Args() args: QueryRoleArgs): Promise<Role | undefined> {
+        return this.roleService.findOne(ctx, args.id);
     }
 
     @Mutation()

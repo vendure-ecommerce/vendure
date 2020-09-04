@@ -317,7 +317,7 @@ export class ShopOrderResolver {
                     }
                 }
                 if (order.active === false && ctx.session?.activeOrderId === sessionOrder.id) {
-                    await this.sessionService.unsetActiveOrder(ctx.session);
+                    await this.sessionService.unsetActiveOrder(ctx, ctx.session);
                 }
                 return order;
             }
@@ -333,7 +333,7 @@ export class ShopOrderResolver {
             }
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
-                const customer = await this.customerService.createOrUpdate(args.input, true);
+                const customer = await this.customerService.createOrUpdate(ctx, args.input, true);
                 return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
             }
         }
@@ -354,7 +354,7 @@ export class ShopOrderResolver {
         if (order && order.active === false) {
             // edge case where an inactive order may not have been
             // removed from the session, i.e. the regular process was interrupted
-            await this.sessionService.unsetActiveOrder(ctx.session);
+            await this.sessionService.unsetActiveOrder(ctx, ctx.session);
             order = undefined;
         }
         if (!order) {
@@ -367,7 +367,7 @@ export class ShopOrderResolver {
             }
 
             if (order) {
-                await this.sessionService.setActiveOrder(ctx.session, order);
+                await this.sessionService.setActiveOrder(ctx, ctx.session, order);
             }
         }
         return order || undefined;

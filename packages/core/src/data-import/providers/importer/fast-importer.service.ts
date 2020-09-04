@@ -7,6 +7,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ProductOptionGroupTranslation } from '../../../entity/product-option-group/product-option-group-translation.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
@@ -46,6 +47,7 @@ export class FastImporterService {
 
     async createProduct(input: CreateProductInput): Promise<ID> {
         const product = await this.translatableSaver.create({
+            ctx: RequestContext.empty(),
             input,
             entityType: Product,
             translationType: ProductTranslation,
@@ -75,6 +77,7 @@ export class FastImporterService {
 
     async createProductOptionGroup(input: CreateProductOptionGroupInput): Promise<ID> {
         const group = await this.translatableSaver.create({
+            ctx: RequestContext.empty(),
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
@@ -84,6 +87,7 @@ export class FastImporterService {
 
     async createProductOption(input: CreateProductOptionInput): Promise<ID> {
         const option = await this.translatableSaver.create({
+            ctx: RequestContext.empty(),
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
@@ -110,6 +114,7 @@ export class FastImporterService {
         }
 
         const createdVariant = await this.translatableSaver.create({
+            ctx: RequestContext.empty(),
             input,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
@@ -141,6 +146,7 @@ export class FastImporterService {
         }
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
+                RequestContext.empty(),
                 createdVariant.id,
                 0,
                 input.stockOnHand,

@@ -28,6 +28,7 @@ import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
@@ -64,6 +65,7 @@ export class PromotionService {
                 where: { deletedAt: null },
                 channelId: ctx.channelId,
                 relations: ['channels'],
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -110,7 +112,7 @@ export class PromotionService {
         });
         this.validatePromotionConditions(promotion);
         this.channelService.assignToCurrentChannel(promotion, ctx);
-        const newPromotion = await this.connection.getRepository(Promotion).save(promotion);
+        const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
@@ -126,21 +128,23 @@ export class PromotionService {
         }
         this.validatePromotionConditions(updatedPromotion);
         promotion.priorityScore = this.calculatePriorityScore(input);
-        await this.connection.getRepository(Promotion).save(updatedPromotion, { reload: false });
+        await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, updatedPromotion.id));
     }
 
-    async softDeletePromotion(promotionId: ID): Promise<DeletionResponse> {
+    async softDeletePromotion(ctx: RequestContext, promotionId: ID): Promise<DeletionResponse> {
         await getEntityOrThrow(this.connection, Promotion, promotionId);
-        await this.connection.getRepository(Promotion).update({ id: promotionId }, { deletedAt: new Date() });
+        await this.connection
+            .getRepository(ctx, Promotion)
+            .update({ id: promotionId }, { deletedAt: new Date() });
         return {
             result: DeletionResult.DELETED,
         };
     }
 
-    async validateCouponCode(couponCode: string, customerId?: ID): Promise<Promotion> {
-        const promotion = await this.connection.getRepository(Promotion).findOne({
+    async validateCouponCode(ctx: RequestContext, couponCode: string, customerId?: ID): Promise<Promotion> {
+        const promotion = await this.connection.getRepository(ctx, Promotion).findOne({
             where: {
                 couponCode,
                 enabled: true,
@@ -154,7 +158,7 @@ export class PromotionService {
             throw new CouponCodeExpiredError(couponCode);
         }
         if (customerId && promotion.perCustomerUsageLimit != null) {
-            const usageCount = await this.countPromotionUsagesForCustomer(promotion.id, customerId);
+            const usageCount = await this.countPromotionUsagesForCustomer(ctx, promotion.id, customerId);
             if (promotion.perCustomerUsageLimit <= usageCount) {
                 throw new CouponCodeLimitError(promotion.perCustomerUsageLimit);
             }
@@ -162,7 +166,7 @@ export class PromotionService {
         return promotion;
     }
 
-    async addPromotionsToOrder(order: Order): Promise<Order> {
+    async addPromotionsToOrder(ctx: RequestContext, order: Order): Promise<Order> {
         const allAdjustments: Adjustment[] = [];
         for (const line of order.lines) {
             allAdjustments.push(...line.adjustments);
@@ -172,14 +176,18 @@ export class PromotionService {
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .map(a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
         const promotionIds = unique(allPromotionIds);
-        const promotions = await this.connection.getRepository(Promotion).findByIds(promotionIds);
+        const promotions = await this.connection.getRepository(ctx, Promotion).findByIds(promotionIds);
         order.promotions = promotions;
-        return this.connection.getRepository(Order).save(order);
+        return this.connection.getRepository(ctx, Order).save(order);
     }
 
-    private async countPromotionUsagesForCustomer(promotionId: ID, customerId: ID): Promise<number> {
+    private async countPromotionUsagesForCustomer(
+        ctx: RequestContext,
+        promotionId: ID,
+        customerId: ID,
+    ): Promise<number> {
         const qb = this.connection
-            .getRepository(Order)
+            .getRepository(ctx, Order)
             .createQueryBuilder('order')
             .leftJoin('order.promotions', 'promotion')
             .where('promotion.id = :promotionId', { promotionId })

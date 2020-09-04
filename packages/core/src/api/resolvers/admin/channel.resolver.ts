@@ -22,13 +22,13 @@ export class ChannelResolver {
     @Query()
     @Allow(Permission.ReadSettings)
     channels(@Ctx() ctx: RequestContext): Promise<Channel[]> {
-        return this.channelService.findAll();
+        return this.channelService.findAll(ctx);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
     async channel(@Ctx() ctx: RequestContext, @Args() args: QueryChannelArgs): Promise<Channel | undefined> {
-        return this.channelService.findOne(args.id);
+        return this.channelService.findOne(ctx, args.id);
     }
 
     @Query()
@@ -39,24 +39,33 @@ export class ChannelResolver {
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
-    async createChannel(@Args() args: MutationCreateChannelArgs): Promise<Channel> {
-        const channel = await this.channelService.create(args.input);
+    async createChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateChannelArgs,
+    ): Promise<Channel> {
+        const channel = await this.channelService.create(ctx, args.input);
         const superAdminRole = await this.roleService.getSuperAdminRole();
         const customerRole = await this.roleService.getCustomerRole();
-        await this.roleService.assignRoleToChannel(superAdminRole.id, channel.id);
-        await this.roleService.assignRoleToChannel(customerRole.id, channel.id);
+        await this.roleService.assignRoleToChannel(ctx, superAdminRole.id, channel.id);
+        await this.roleService.assignRoleToChannel(ctx, customerRole.id, channel.id);
         return channel;
     }
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
-    async updateChannel(@Args() args: MutationUpdateChannelArgs): Promise<Channel> {
-        return this.channelService.update(args.input);
+    async updateChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateChannelArgs,
+    ): Promise<Channel> {
+        return this.channelService.update(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.SuperAdmin)
-    async deleteChannel(@Args() args: MutationDeleteChannelArgs): Promise<DeletionResponse> {
-        return this.channelService.delete(args.id);
+    async deleteChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteChannelArgs,
+    ): Promise<DeletionResponse> {
+        return this.channelService.delete(ctx, args.id);
     }
 }

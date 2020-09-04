@@ -28,7 +28,7 @@ export class CustomerGroupResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupsArgs,
     ): Promise<PaginatedList<CustomerGroup>> {
-        return this.customerGroupService.findAll(args.options || undefined);
+        return this.customerGroupService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
@@ -37,7 +37,7 @@ export class CustomerGroupResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryCustomerGroupArgs,
     ): Promise<CustomerGroup | undefined> {
-        return this.customerGroupService.findOne(args.id);
+        return this.customerGroupService.findOne(ctx, args.id);
     }
 
     @Mutation()
@@ -51,14 +51,20 @@ export class CustomerGroupResolver {
 
     @Mutation()
     @Allow(Permission.UpdateCustomer)
-    async updateCustomerGroup(@Args() args: MutationUpdateCustomerGroupArgs): Promise<CustomerGroup> {
-        return this.customerGroupService.update(args.input);
+    async updateCustomerGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateCustomerGroupArgs,
+    ): Promise<CustomerGroup> {
+        return this.customerGroupService.update(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.DeleteCustomer)
-    async deleteCustomerGroup(@Args() args: MutationDeleteCustomerGroupArgs): Promise<DeletionResponse> {
-        return this.customerGroupService.delete(args.id);
+    async deleteCustomerGroup(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCustomerGroupArgs,
+    ): Promise<DeletionResponse> {
+        return this.customerGroupService.delete(ctx, args.id);
     }
 
     @Mutation()

@@ -22,14 +22,14 @@ export class AssetResolver {
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async asset(@Args() args: QueryAssetArgs): Promise<Asset | undefined> {
-        return this.assetService.findOne(args.id);
+    async asset(@Ctx() ctx: RequestContext, @Args() args: QueryAssetArgs): Promise<Asset | undefined> {
+        return this.assetService.findOne(ctx, args.id);
     }
 
     @Query()
     @Allow(Permission.ReadCatalog)
-    async assets(@Args() args: QueryAssetsArgs): Promise<PaginatedList<Asset>> {
-        return this.assetService.findAll(args.options || undefined);
+    async assets(@Ctx() ctx: RequestContext, @Args() args: QueryAssetsArgs): Promise<PaginatedList<Asset>> {
+        return this.assetService.findAll(ctx, args.options || undefined);
     }
 
     @Mutation()

@@ -33,7 +33,7 @@ export const customerGroup = new PromotionCondition({
         const customerId = order.customer.id;
         let groupIds = cache.get(customerId);
         if (!groupIds) {
-            const groups = await customerService.getCustomerGroups(customerId);
+            const groups = await customerService.getCustomerGroups(undefined, customerId);
             groupIds = groups.map(g => g.id);
             cache.set(customerId, groupIds);
         }

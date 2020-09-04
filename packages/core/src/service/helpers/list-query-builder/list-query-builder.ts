@@ -3,6 +3,7 @@ import { ID, Type } from '@vendure/common/lib/shared-types';
 import { FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { ListQueryOptions } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
@@ -16,6 +17,11 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
     channelId?: ID;
     where?: FindConditions<T>;
     orderBy?: FindOneOptions<T>['order'];
+    /**
+     * When a RequestContext is passed, then the query will be
+     * executed as part of any outer transaction.
+     */
+    ctx?: RequestContext;
 };
 
 @Injectable()
@@ -43,7 +49,10 @@ export class ListQueryBuilder {
         );
         const filter = parseFilterParams(rawConnection, entity, options.filter);
 
-        const qb = this.connection.getRepository(entity).createQueryBuilder(entity.name.toLowerCase());
+        const repo = extendedOptions.ctx
+            ? this.connection.getRepository(extendedOptions.ctx, entity)
+            : this.connection.getRepository(entity);
+        const qb = repo.createQueryBuilder(entity.name.toLowerCase());
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, {
             relations: extendedOptions.relations,
             take,

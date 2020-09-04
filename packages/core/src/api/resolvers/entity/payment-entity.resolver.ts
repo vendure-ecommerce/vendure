@@ -15,7 +15,7 @@ export class PaymentEntityResolver {
         if (payment.refunds) {
             return payment.refunds;
         } else {
-            return this.orderService.getPaymentRefunds(payment.id);
+            return this.orderService.getPaymentRefunds(ctx, payment.id);
         }
     }
 }

@@ -10,6 +10,7 @@ import { ShippingCalculator } from '../../config/shipping-method/shipping-calcul
 import { ShippingEligibilityChecker } from '../../config/shipping-method/shipping-eligibility-checker';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { Cancellation } from '../../entity/stock-movement/cancellation.entity';
@@ -33,7 +34,7 @@ export class StockMovementService {
         options: StockMovementListOptions,
     ): Promise<PaginatedList<StockMovement>> {
         return this.listQueryBuilder
-            .build<StockMovement>(StockMovement as any, options)
+            .build<StockMovement>(StockMovement as any, options, { ctx })
             .leftJoin('stockmovement.productVariant', 'productVariant')
             .andWhere('productVariant.id = :productVariantId', { productVariantId })
             .getManyAndCount()
@@ -46,6 +47,7 @@ export class StockMovementService {
     }
 
     async adjustProductVariantStock(
+        ctx: RequestContext,
         productVariantId: ID,
         oldStockLevel: number,
         newStockLevel: number,
@@ -59,10 +61,10 @@ export class StockMovementService {
             quantity: delta,
             productVariant: { id: productVariantId },
         });
-        return this.connection.getRepository(StockAdjustment).save(adjustment);
+        return this.connection.getRepository(ctx, StockAdjustment).save(adjustment);
     }
 
-    async createSalesForOrder(order: Order): Promise<Sale[]> {
+    async createSalesForOrder(ctx: RequestContext, order: Order): Promise<Sale[]> {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-sales-for-active-order');
         }
@@ -78,14 +80,16 @@ export class StockMovementService {
 
             if (productVariant.trackInventory === true) {
                 productVariant.stockOnHand -= line.quantity;
-                await this.connection.getRepository(ProductVariant).save(productVariant, { reload: false });
+                await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(Sale).save(sales);
+        return this.connection.getRepository(ctx, Sale).save(sales);
     }
 
-    async createCancellationsForOrderItems(items: OrderItem[]): Promise<Cancellation[]> {
-        const orderItems = await this.connection.getRepository(OrderItem).findByIds(
+    async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
+        const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
             items.map(i => i.id),
             {
                 relations: ['line', 'line.productVariant'],
@@ -112,9 +116,11 @@ export class StockMovementService {
 
             if (productVariant.trackInventory === true) {
                 productVariant.stockOnHand += 1;
-                await this.connection.getRepository(ProductVariant).save(productVariant, { reload: false });
+                await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(Cancellation).save(cancellations);
+        return this.connection.getRepository(ctx, Cancellation).save(cancellations);
     }
 }

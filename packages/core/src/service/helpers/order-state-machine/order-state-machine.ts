@@ -106,8 +106,8 @@ export class OrderStateMachine {
         if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
-            await this.stockMovementService.createSalesForOrder(data.order);
-            await this.promotionService.addPromotionsToOrder(data.order);
+            await this.stockMovementService.createSalesForOrder(data.ctx, data.order);
+            await this.promotionService.addPromotionsToOrder(data.ctx, data.order);
         }
         if (toState === 'Cancelled') {
             data.order.active = false;

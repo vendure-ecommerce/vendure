@@ -1,12 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
 import crypto from 'crypto';
 import ms from 'ms';
-import { Connection, EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
+import { EntitySubscriberInterface, InsertEvent, RemoveEvent, UpdateEvent } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
-import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession, SessionCacheStrategy } from '../../config/session-cache/session-cache-strategy';
 import { Channel } from '../../entity/channel/channel.entity';
@@ -75,7 +73,7 @@ export class SessionService implements EntitySubscriberInterface {
                 : undefined;
         const existingOrder = await this.orderService.getActiveOrderForUser(ctx, user.id);
         const activeOrder = await this.orderService.mergeOrders(ctx, user, guestOrder, existingOrder);
-        const authenticatedSession = await this.connection.getRepository(AuthenticatedSession).save(
+        const authenticatedSession = await this.connection.getRepository(ctx, AuthenticatedSession).save(
             new AuthenticatedSession({
                 token,
                 user,
@@ -167,13 +165,17 @@ export class SessionService implements EntitySubscriberInterface {
         }
     }
 
-    async setActiveOrder(serializedSession: CachedSession, order: Order): Promise<CachedSession> {
+    async setActiveOrder(
+        ctx: RequestContext,
+        serializedSession: CachedSession,
+        order: Order,
+    ): Promise<CachedSession> {
         const session = await this.connection
             .getRepository(Session)
             .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
         if (session) {
             session.activeOrder = order;
-            await this.connection.getRepository(Session).save(session, { reload: false });
+            await this.connection.getRepository(ctx, Session).save(session, { reload: false });
             const updatedSerializedSession = this.serializeSession(session);
             await this.sessionCacheStrategy.set(updatedSerializedSession);
             return updatedSerializedSession;
@@ -181,14 +183,14 @@ export class SessionService implements EntitySubscriberInterface {
         return serializedSession;
     }
 
-    async unsetActiveOrder(serializedSession: CachedSession): Promise<CachedSession> {
+    async unsetActiveOrder(ctx: RequestContext, serializedSession: CachedSession): Promise<CachedSession> {
         if (serializedSession.activeOrderId) {
             const session = await this.connection
                 .getRepository(Session)
                 .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
             if (session) {
                 session.activeOrder = null;
-                await this.connection.getRepository(Session).save(session);
+                await this.connection.getRepository(ctx, Session).save(session);
                 const updatedSerializedSession = this.serializeSession(session);
                 await this.configService.authOptions.sessionCacheStrategy.set(updatedSerializedSession);
                 return updatedSerializedSession;
@@ -200,11 +202,11 @@ export class SessionService implements EntitySubscriberInterface {
     /**
      * Deletes all existing sessions for the given user.
      */
-    async deleteSessionsByUser(user: User): Promise<void> {
+    async deleteSessionsByUser(ctx: RequestContext, user: User): Promise<void> {
         const userSessions = await this.connection
-            .getRepository(AuthenticatedSession)
+            .getRepository(ctx, AuthenticatedSession)
             .find({ where: { user } });
-        await this.connection.getRepository(AuthenticatedSession).remove(userSessions);
+        await this.connection.getRepository(ctx, AuthenticatedSession).remove(userSessions);
         for (const session of userSessions) {
             await this.sessionCacheStrategy.delete(session.token);
         }
@@ -213,9 +215,9 @@ export class SessionService implements EntitySubscriberInterface {
     /**
      * Deletes all existing sessions with the given activeOrder.
      */
-    async deleteSessionsByActiveOrderId(activeOrderId: ID): Promise<void> {
-        const sessions = await this.connection.getRepository(Session).find({ where: { activeOrderId } });
-        await this.connection.getRepository(Session).remove(sessions);
+    async deleteSessionsByActiveOrderId(ctx: RequestContext, activeOrderId: ID): Promise<void> {
+        const sessions = await this.connection.getRepository(ctx, Session).find({ where: { activeOrderId } });
+        await this.connection.getRepository(ctx, Session).remove(sessions);
         for (const session of sessions) {
             await this.sessionCacheStrategy.delete(session.token);
         }

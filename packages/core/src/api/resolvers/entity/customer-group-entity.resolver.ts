@@ -18,6 +18,6 @@ export class CustomerGroupEntityResolver {
         @Parent() customerGroup: CustomerGroup,
         @Args() args: QueryCustomersArgs,
     ): Promise<PaginatedList<Customer>> {
-        return this.customerGroupService.getGroupCustomers(customerGroup.id, args.options || undefined);
+        return this.customerGroupService.getGroupCustomers(ctx, customerGroup.id, args.options || undefined);
     }
 }

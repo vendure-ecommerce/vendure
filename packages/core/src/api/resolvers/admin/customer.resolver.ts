@@ -31,14 +31,20 @@ export class CustomerResolver {
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customers(@Args() args: QueryCustomersArgs): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.options || undefined);
+    async customers(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryCustomersArgs,
+    ): Promise<PaginatedList<Customer>> {
+        return this.customerService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customer(@Args() args: QueryCustomerArgs): Promise<Customer | undefined> {
-        return this.customerService.findOne(args.id);
+    async customer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryCustomerArgs,
+    ): Promise<Customer | undefined> {
+        return this.customerService.findOne(ctx, args.id);
     }
 
     @Mutation()
@@ -93,8 +99,11 @@ export class CustomerResolver {
 
     @Mutation()
     @Allow(Permission.DeleteCustomer)
-    async deleteCustomer(@Args() args: MutationDeleteCustomerArgs): Promise<DeletionResponse> {
-        return this.customerService.softDelete(args.id);
+    async deleteCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCustomerArgs,
+    ): Promise<DeletionResponse> {
+        return this.customerService.softDelete(ctx, args.id);
     }
 
     @Mutation()

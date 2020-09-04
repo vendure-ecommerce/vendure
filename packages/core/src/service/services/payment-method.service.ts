@@ -46,9 +46,12 @@ export class PaymentMethodService {
         await this.ensurePaymentMethodsExist();
     }
 
-    findAll(options?: ListQueryOptions<PaymentMethod>): Promise<PaginatedList<PaymentMethod>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<PaymentMethod>,
+    ): Promise<PaginatedList<PaymentMethod>> {
         return this.listQueryBuilder
-            .build(PaymentMethod, options)
+            .build(PaymentMethod, options, { ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -56,11 +59,11 @@ export class PaymentMethodService {
             }));
     }
 
-    findOne(paymentMethodId: ID): Promise<PaymentMethod | undefined> {
-        return this.connection.getRepository(PaymentMethod).findOne(paymentMethodId);
+    findOne(ctx: RequestContext, paymentMethodId: ID): Promise<PaymentMethod | undefined> {
+        return this.connection.getRepository(ctx, PaymentMethod).findOne(paymentMethodId);
     }
 
-    async update(input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
+    async update(ctx: RequestContext, input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
         const paymentMethod = await getEntityOrThrow(this.connection, PaymentMethod, input.id);
         const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['configArgs']));
         if (input.configArgs) {
@@ -74,7 +77,7 @@ export class PaymentMethodService {
                 updatedPaymentMethod.configArgs = input.configArgs.filter(handlerHasArgDefinition);
             }
         }
-        return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);
+        return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 
     async createPayment(
@@ -83,22 +86,22 @@ export class PaymentMethodService {
         method: string,
         metadata: PaymentMetadata,
     ): Promise<Payment> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(method);
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
         const initialState = 'Created';
         const payment = await this.connection
-            .getRepository(Payment)
+            .getRepository(ctx, Payment)
             .save(new Payment({ ...result, state: initialState }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
-        await this.connection.getRepository(Payment).save(payment, { reload: false });
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
         return payment;
     }
 
-    async settlePayment(payment: Payment, order: Order) {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+    async settlePayment(ctx: RequestContext, payment: Payment, order: Order) {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         return handler.settlePayment(order, payment, paymentMethod.configArgs);
     }
 
@@ -109,7 +112,7 @@ export class PaymentMethodService {
         items: OrderItem[],
         payment: Payment,
     ): Promise<Refund> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
@@ -135,11 +138,11 @@ export class PaymentMethodService {
             refund.transactionId = createRefundResult.transactionId || '';
             refund.metadata = createRefundResult.metadata || {};
         }
-        refund = await this.connection.getRepository(Refund).save(refund);
+        refund = await this.connection.getRepository(ctx, Refund).save(refund);
         if (createRefundResult) {
             const fromState = refund.state;
             await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-            await this.connection.getRepository(Refund).save(refund, { reload: false });
+            await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
             this.eventBus.publish(
                 new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
             );
@@ -156,9 +159,10 @@ export class PaymentMethodService {
     }
 
     private async getMethodAndHandler(
+        ctx: RequestContext,
         method: string,
     ): Promise<{ paymentMethod: PaymentMethod; handler: PaymentMethodHandler }> {
-        const paymentMethod = await this.connection.getRepository(PaymentMethod).findOne({
+        const paymentMethod = await this.connection.getRepository(ctx, PaymentMethod).findOne({
             where: {
                 code: method,
                 enabled: true,
@@ -172,8 +176,9 @@ export class PaymentMethodService {
     }
 
     private async ensurePaymentMethodsExist() {
+        const paymentMethodRepo = await this.connection.getRepository(PaymentMethod);
         const paymentMethodHandlers = this.configService.paymentOptions.paymentMethodHandlers;
-        const existingPaymentMethods = await this.connection.getRepository(PaymentMethod).find();
+        const existingPaymentMethods = await paymentMethodRepo.find();
         const toCreate = paymentMethodHandlers.filter(
             h => !existingPaymentMethods.find(pm => pm.code === h.code),
         );
@@ -190,7 +195,7 @@ export class PaymentMethodService {
                 continue;
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
+            await paymentMethodRepo.save(paymentMethod, { reload: false });
         }
         for (const handler of toCreate) {
             let paymentMethod = existingPaymentMethods.find(pm => pm.code === handler.code);
@@ -203,9 +208,9 @@ export class PaymentMethodService {
                 });
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
+            await paymentMethodRepo.save(paymentMethod, { reload: false });
         }
-        await this.connection.getRepository(PaymentMethod).remove(toRemove);
+        await paymentMethodRepo.remove(toRemove);
     }
 
     private buildConfigArgsArray(

@@ -140,7 +140,7 @@ export class Importer {
         let errors: string[] = [];
         let imported = 0;
         const languageCode = ctx.languageCode;
-        const taxCategories = await this.taxCategoryService.findAll();
+        const taxCategories = await this.taxCategoryService.findAll(ctx);
         await this.fastImporter.initialize();
         for (const { product, variants } of rows) {
             const createProductAssets = await this.assetImporter.getAssets(product.assetPaths);
@@ -252,7 +252,7 @@ export class Importer {
                 if (existing) {
                     facetEntity = existing;
                 } else {
-                    facetEntity = await this.facetService.create({
+                    facetEntity = await this.facetService.create(RequestContext.empty(), {
                         isPrivate: false,
                         code: normalizeString(facetName, '-'),
                         translations: [{ languageCode, name: facetName }],
@@ -271,10 +271,14 @@ export class Importer {
                 if (existing) {
                     facetValueEntity = existing;
                 } else {
-                    facetValueEntity = await this.facetValueService.create(facetEntity, {
-                        code: normalizeString(valueName, '-'),
-                        translations: [{ languageCode, name: valueName }],
-                    });
+                    facetValueEntity = await this.facetValueService.create(
+                        RequestContext.empty(),
+                        facetEntity,
+                        {
+                            code: normalizeString(valueName, '-'),
+                            translations: [{ languageCode, name: valueName }],
+                        },
+                    );
                 }
                 this.facetValueMap.set(facetValueMapKey, facetValueEntity);
             }

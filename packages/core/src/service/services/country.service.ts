@@ -12,7 +12,7 @@ import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
-import { Address } from '../../entity';
+import { Address, Collection, ProductOptionGroup } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -37,7 +37,7 @@ export class CountryService {
         options?: ListQueryOptions<Country>,
     ): Promise<PaginatedList<Translated<Country>>> {
         return this.listQueryBuilder
-            .build(Country, options)
+            .build(Country, options, { ctx })
             .getManyAndCount()
             .then(([countries, totalItems]) => {
                 const items = countries.map(country => translateDeep(country, ctx.languageCode));
@@ -50,13 +50,13 @@ export class CountryService {
 
     findOne(ctx: RequestContext, countryId: ID): Promise<Translated<Country> | undefined> {
         return this.connection
-            .getRepository(Country)
+            .getRepository(ctx, Country)
             .findOne(countryId)
             .then(country => country && translateDeep(country, ctx.languageCode));
     }
 
     async findOneByCode(ctx: RequestContext, countryCode: string): Promise<Translated<Country>> {
-        const country = await this.connection.getRepository(Country).findOne({
+        const country = await this.connection.getRepository(ctx, Country).findOne({
             where: {
                 code: countryCode,
             },
@@ -69,6 +69,7 @@ export class CountryService {
 
     async create(ctx: RequestContext, input: CreateCountryInput): Promise<Translated<Country>> {
         const country = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: Country,
             translationType: CountryTranslation,
@@ -79,6 +80,7 @@ export class CountryService {
 
     async update(ctx: RequestContext, input: UpdateCountryInput): Promise<Translated<Country>> {
         const country = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: Country,
             translationType: CountryTranslation,
@@ -90,7 +92,7 @@ export class CountryService {
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const country = await getEntityOrThrow(this.connection, Country, id);
         const addressesUsingCountry = await this.connection
-            .getRepository(Address)
+            .getRepository(ctx, Address)
             .createQueryBuilder('address')
             .where('address.country = :id', { id })
             .getCount();
@@ -102,7 +104,7 @@ export class CountryService {
             };
         } else {
             await this.zoneService.updateZonesCache();
-            await this.connection.getRepository(Country).remove(country);
+            await this.connection.getRepository(ctx, Country).remove(country);
             return {
                 result: DeletionResult.DELETED,
                 message: '',

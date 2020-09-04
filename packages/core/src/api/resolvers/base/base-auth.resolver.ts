@@ -73,12 +73,12 @@ export class BaseAuthResolver {
             throw new ForbiddenError();
         }
         if (apiType === 'admin') {
-            const administrator = await this.administratorService.findOneByUserId(userId);
+            const administrator = await this.administratorService.findOneByUserId(ctx, userId);
             if (!administrator) {
                 throw new ForbiddenError();
             }
         }
-        const user = userId && (await this.userService.getUserById(userId));
+        const user = userId && (await this.userService.getUserById(ctx, userId));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 
@@ -95,7 +95,7 @@ export class BaseAuthResolver {
         const { apiType } = ctx;
         const session = await this.authService.authenticate(ctx, apiType, method, data);
         if (apiType && apiType === 'admin') {
-            const administrator = await this.administratorService.findOneByUserId(session.user.id);
+            const administrator = await this.administratorService.findOneByUserId(ctx, session.user.id);
             if (!administrator) {
                 throw new UnauthorizedError();
             }
@@ -124,7 +124,7 @@ export class BaseAuthResolver {
         if (!activeUserId) {
             throw new InternalServerError(`error.no-active-user-id`);
         }
-        return this.userService.updatePassword(activeUserId, currentPassword, newPassword);
+        return this.userService.updatePassword(ctx, activeUserId, currentPassword, newPassword);
     }
 
     /**

@@ -2,6 +2,7 @@ import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
 import { Order } from '../../../entity/order/order.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { HistoryService } from '../../../service/services/history.service';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
@@ -19,11 +20,11 @@ export class OrderEntityResolver {
     ) {}
 
     @ResolveField()
-    async payments(@Parent() order: Order) {
+    async payments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         if (order.payments) {
             return order.payments;
         }
-        return this.orderService.getOrderPayments(order.id);
+        return this.orderService.getOrderPayments(ctx, order.id);
     }
 
     @ResolveField()
@@ -39,18 +40,23 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
-    async fulfillments(@Parent() order: Order) {
-        return this.orderService.getOrderFulfillments(order);
+    async fulfillments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        return this.orderService.getOrderFulfillments(ctx, order);
     }
 
     @ResolveField()
-    async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: OrderHistoryArgs) {
+    async history(
+        @Ctx() ctx: RequestContext,
+        @Api() apiType: ApiType,
+        @Parent() order: Order,
+        @Args() args: OrderHistoryArgs,
+    ) {
         const publicOnly = apiType === 'shop';
         const options: HistoryEntryListOptions = { ...args.options };
         if (!options.sort) {
             options.sort = { createdAt: SortOrder.ASC };
         }
-        return this.historyService.getHistoryForOrder(order.id, publicOnly, options);
+        return this.historyService.getHistoryForOrder(ctx, order.id, publicOnly, options);
     }
 
     @ResolveField()

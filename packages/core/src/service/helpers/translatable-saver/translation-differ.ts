@@ -1,8 +1,10 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { Translatable, Translation, TranslationInput } from '../../../common/types/locale-types';
 import { foundIn, not } from '../../../common/utils';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 export type TranslationContructor<T> = new (
@@ -45,12 +47,16 @@ export class TranslationDiffer<Entity extends Translatable> {
         }
     }
 
-    async applyDiff(entity: Entity, { toUpdate, toAdd }: TranslationDiff<Entity>): Promise<Entity> {
+    async applyDiff(
+        ctx: RequestContext,
+        entity: Entity,
+        { toUpdate, toAdd }: TranslationDiff<Entity>,
+    ): Promise<Entity> {
         if (toUpdate.length) {
             for (const translation of toUpdate) {
                 // any cast below is required due to TS issue: https://github.com/Microsoft/TypeScript/issues/21592
                 const updated = await this.connection
-                    .getRepository(this.translationCtor)
+                    .getRepository(ctx, this.translationCtor)
                     .save(translation as any);
                 const index = entity.translations.findIndex(t => t.languageCode === updated.languageCode);
                 entity.translations.splice(index, 1, updated);
@@ -63,7 +69,7 @@ export class TranslationDiffer<Entity extends Translatable> {
                 let newTranslation: any;
                 try {
                     newTranslation = await this.connection
-                        .getRepository(this.translationCtor)
+                        .getRepository(ctx, this.translationCtor)
                         .save(translation as any);
                 } catch (err) {
                     const entityName = entity.constructor.name;

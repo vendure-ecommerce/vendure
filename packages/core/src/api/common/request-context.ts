@@ -56,6 +56,21 @@ export class RequestContext {
 
     /**
      * @description
+     * Creates an "empty" RequestContext object. This is only intended to be used
+     * when a service method must be called outside the normal request-response
+     * cycle, e.g. when programmatically populating data.
+     */
+    static empty(): RequestContext {
+        return new RequestContext({
+            apiType: 'admin',
+            authorizedAsOwnerOnly: false,
+            channel: new Channel(),
+            isAuthorized: true,
+        });
+    }
+
+    /**
+     * @description
      * Creates a new RequestContext object from a plain object which is the result of
      * a JSON serialization - deserialization operation.
      */

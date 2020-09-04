@@ -26,6 +26,7 @@ import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
@@ -106,6 +107,7 @@ export class CollectionService implements OnModuleInit {
                 channelId: ctx.channelId,
                 where: { isRoot: false },
                 orderBy: { position: 'ASC' },
+                ctx,
             })
             .getManyAndCount()
             .then(async ([collections, totalItems]) => {
@@ -131,7 +133,7 @@ export class CollectionService implements OnModuleInit {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {
-        const translation = await this.connection.getRepository(CollectionTranslation).findOne({
+        const translation = await this.connection.getRepository(ctx, CollectionTranslation).findOne({
             relations: ['base'],
             where: {
                 languageCode: ctx.languageCode,
@@ -155,7 +157,7 @@ export class CollectionService implements OnModuleInit {
                 ? '"child"."parentId"'
                 : 'child.parentId';
         const parent = await this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoinAndSelect('collection.translations', 'translation')
             .where(
@@ -195,7 +197,7 @@ export class CollectionService implements OnModuleInit {
         publicOnly: boolean,
     ): Promise<Array<Translated<Collection>>> {
         const qb = this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoinAndSelect('collection.translations', 'translation')
             .leftJoin('collection.productVariants', 'variant')
@@ -222,7 +224,7 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Array<Translated<Collection>>> {
         const getChildren = async (id: ID, _descendants: Collection[] = [], depth = 1) => {
             const children = await this.connection
-                .getRepository(Collection)
+                .getRepository(ctx, Collection)
                 .find({ where: { parent: { id } } });
             for (const child of children) {
                 _descendants.push(child);
@@ -249,7 +251,7 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Array<Translated<Collection> | Collection>> {
         const getParent = async (id: ID, _ancestors: Collection[] = []): Promise<Collection[]> => {
             const parent = await this.connection
-                .getRepository(Collection)
+                .getRepository(ctx, Collection)
                 .createQueryBuilder()
                 .relation(Collection, 'parent')
                 .of(id)
@@ -273,8 +275,9 @@ export class CollectionService implements OnModuleInit {
     }
 
     async create(ctx: RequestContext, input: CreateCollectionInput): Promise<Translated<Collection>> {
-        await this.slugValidator.validateSlugs(input, CollectionTranslation);
+        await this.slugValidator.validateSlugs(ctx, input, CollectionTranslation);
         const collection = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
@@ -286,10 +289,10 @@ export class CollectionService implements OnModuleInit {
                 }
                 coll.position = await this.getNextPositionInParent(ctx, input.parentId || undefined);
                 coll.filters = this.getCollectionFiltersFromInput(input);
-                await this.assetService.updateFeaturedAsset(coll, input);
+                await this.assetService.updateFeaturedAsset(ctx, coll, input);
             },
         });
-        await this.assetService.updateEntityAssets(collection, input);
+        await this.assetService.updateEntityAssets(ctx, collection, input);
         this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
@@ -298,8 +301,9 @@ export class CollectionService implements OnModuleInit {
     }
 
     async update(ctx: RequestContext, input: UpdateCollectionInput): Promise<Translated<Collection>> {
-        await this.slugValidator.validateSlugs(input, CollectionTranslation);
+        await this.slugValidator.validateSlugs(ctx, input, CollectionTranslation);
         const collection = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: Collection,
             translationType: CollectionTranslation,
@@ -307,8 +311,8 @@ export class CollectionService implements OnModuleInit {
                 if (input.filters) {
                     coll.filters = this.getCollectionFiltersFromInput(input);
                 }
-                await this.assetService.updateFeaturedAsset(coll, input);
-                await this.assetService.updateEntityAssets(coll, input);
+                await this.assetService.updateFeaturedAsset(ctx, coll, input);
+                await this.assetService.updateEntityAssets(ctx, coll, input);
             },
         });
         if (input.filters) {
@@ -325,7 +329,7 @@ export class CollectionService implements OnModuleInit {
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
-            await this.connection.getRepository(Collection).remove(coll);
+            await this.connection.getRepository(ctx, Collection).remove(coll);
             this.eventBus.publish(new CollectionModificationEvent(ctx, coll, affectedVariantIds));
         }
         return {
@@ -353,7 +357,7 @@ export class CollectionService implements OnModuleInit {
         }
 
         let siblings = await this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.parent', 'parent')
             .where('parent.id = :id', { id: input.parentId })
@@ -364,7 +368,7 @@ export class CollectionService implements OnModuleInit {
         }
         siblings = moveToIndex(input.index, target, siblings);
 
-        await this.connection.getRepository(Collection).save(siblings);
+        await this.connection.getRepository(ctx, Collection).save(siblings);
         this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [target.id],
@@ -430,12 +434,12 @@ export class CollectionService implements OnModuleInit {
     /**
      * Returns the IDs of the Collection's ProductVariants.
      */
-    async getCollectionProductVariantIds(collection: Collection): Promise<ID[]> {
+    async getCollectionProductVariantIds(collection: Collection, ctx?: RequestContext): Promise<ID[]> {
         if (collection.productVariants) {
             return collection.productVariants.map(v => v.id);
         } else {
             const productVariants = await this.connection
-                .getRepository(ProductVariant)
+                .getRepository(ctx, ProductVariant)
                 .createQueryBuilder('variant')
                 .innerJoin('variant.collections', 'collection', 'collection.id = :id', { id: collection.id })
                 .getMany();
@@ -449,7 +453,7 @@ export class CollectionService implements OnModuleInit {
     private async getNextPositionInParent(ctx: RequestContext, maybeParentId?: ID): Promise<number> {
         const parentId = maybeParentId || (await this.getRootCollection(ctx)).id;
         const result = await this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.parent', 'parent')
             .select('MAX(collection.position)', 'index')
@@ -464,7 +468,7 @@ export class CollectionService implements OnModuleInit {
     ): Promise<Collection | undefined> {
         if (parentId) {
             return this.connection
-                .getRepository(Collection)
+                .getRepository(ctx, Collection)
                 .createQueryBuilder('collection')
                 .leftJoin('collection.channels', 'channel')
                 .where('collection.id = :id', { id: parentId })
@@ -483,7 +487,7 @@ export class CollectionService implements OnModuleInit {
         }
 
         const existingRoot = await this.connection
-            .getRepository(Collection)
+            .getRepository(ctx, Collection)
             .createQueryBuilder('collection')
             .leftJoin('collection.channels', 'channel')
             .leftJoinAndSelect('collection.translations', 'translation')
@@ -496,7 +500,7 @@ export class CollectionService implements OnModuleInit {
             return this.rootCollection;
         }
 
-        const rootTranslation = await this.connection.getRepository(CollectionTranslation).save(
+        const rootTranslation = await this.connection.getRepository(ctx, CollectionTranslation).save(
             new CollectionTranslation({
                 languageCode: this.configService.defaultLanguageCode,
                 name: ROOT_COLLECTION_NAME,
@@ -513,7 +517,7 @@ export class CollectionService implements OnModuleInit {
             filters: [],
         });
 
-        await this.connection.getRepository(Collection).save(newRoot);
+        await this.connection.getRepository(ctx, Collection).save(newRoot);
         this.rootCollection = newRoot;
         return newRoot;
     }

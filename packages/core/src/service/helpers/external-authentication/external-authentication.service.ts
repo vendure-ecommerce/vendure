@@ -4,6 +4,7 @@ import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { Administrator } from '../../../entity/administrator/administrator.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
+import { Collection } from '../../../entity/collection/collection.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
@@ -35,12 +36,16 @@ export class ExternalAuthenticationService {
      * Looks up a User based on their identifier from an external authentication
      * provider, ensuring this User is associated with a Customer account.
      */
-    async findCustomerUser(strategy: string, externalIdentifier: string): Promise<User | undefined> {
-        const user = await this.findUser(strategy, externalIdentifier);
+    async findCustomerUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
+        const user = await this.findUser(ctx, strategy, externalIdentifier);
 
         if (user) {
             // Ensure this User is associated with a Customer
-            const customer = await this.customerService.findOneByUserId(user.id);
+            const customer = await this.customerService.findOneByUserId(ctx, user.id);
             if (customer) {
                 return user;
             }
@@ -52,11 +57,15 @@ export class ExternalAuthenticationService {
      * Looks up a User based on their identifier from an external authentication
      * provider, ensuring this User is associated with an Administrator account.
      */
-    async findAdministratorUser(strategy: string, externalIdentifier: string): Promise<User | undefined> {
-        const user = await this.findUser(strategy, externalIdentifier);
+    async findAdministratorUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
+        const user = await this.findUser(ctx, strategy, externalIdentifier);
         if (user) {
             // Ensure this User is associated with an Administrator
-            const administrator = await this.administratorService.findOneByUserId(user.id);
+            const administrator = await this.administratorService.findOneByUserId(ctx, user.id);
             if (administrator) {
                 return user;
             }
@@ -88,7 +97,7 @@ export class ExternalAuthenticationService {
             verified: config.verified || false,
         });
 
-        const authMethod = await this.connection.getRepository(ExternalAuthenticationMethod).save(
+        const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
                 strategy: config.strategy,
@@ -96,9 +105,9 @@ export class ExternalAuthenticationService {
         );
 
         newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.getRepository(User).save(newUser);
+        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
 
-        const customer = await this.connection.getRepository(Customer).save(
+        const customer = await this.connection.getRepository(ctx, Customer).save(
             new Customer({
                 emailAddress: config.emailAddress,
                 firstName: config.firstName,
@@ -154,7 +163,7 @@ export class ExternalAuthenticationService {
             verified: true,
         });
 
-        const authMethod = await this.connection.getRepository(ExternalAuthenticationMethod).save(
+        const authMethod = await this.connection.getRepository(ctx, ExternalAuthenticationMethod).save(
             new ExternalAuthenticationMethod({
                 externalIdentifier: config.externalIdentifier,
                 strategy: config.strategy,
@@ -162,9 +171,9 @@ export class ExternalAuthenticationService {
         );
 
         newUser.authenticationMethods = [authMethod];
-        const savedUser = await this.connection.getRepository(User).save(newUser);
+        const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
 
-        const administrator = await this.connection.getRepository(Administrator).save(
+        const administrator = await this.connection.getRepository(ctx, Administrator).save(
             new Administrator({
                 emailAddress: config.emailAddress,
                 firstName: config.firstName,
@@ -176,9 +185,9 @@ export class ExternalAuthenticationService {
         return newUser;
     }
 
-    private findUser(strategy: string, externalIdentifier: string): Promise<User | undefined> {
+    findUser(ctx: RequestContext, strategy: string, externalIdentifier: string): Promise<User | undefined> {
         return this.connection
-            .getRepository(User)
+            .getRepository(ctx, User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authMethod')
             .where('authMethod.strategy = :strategy', { strategy })

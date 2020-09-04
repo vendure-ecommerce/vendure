@@ -29,14 +29,14 @@ export class ProductOptionGroupService {
             };
         }
         return this.connection
-            .getRepository(ProductOptionGroup)
+            .getRepository(ctx, ProductOptionGroup)
             .find(findOptions)
             .then(groups => groups.map(group => translateDeep(group, ctx.languageCode, ['options'])));
     }
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOptionGroup> | undefined> {
         return this.connection
-            .getRepository(ProductOptionGroup)
+            .getRepository(ctx, ProductOptionGroup)
             .findOne(id, {
                 relations: ['options'],
             })
@@ -45,7 +45,7 @@ export class ProductOptionGroupService {
 
     getOptionGroupsByProductId(ctx: RequestContext, id: ID): Promise<Array<Translated<ProductOptionGroup>>> {
         return this.connection
-            .getRepository(ProductOptionGroup)
+            .getRepository(ctx, ProductOptionGroup)
             .find({
                 relations: ['options'],
                 where: {
@@ -63,6 +63,7 @@ export class ProductOptionGroupService {
         input: CreateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,
@@ -75,6 +76,7 @@ export class ProductOptionGroupService {
         input: UpdateProductOptionGroupInput,
     ): Promise<Translated<ProductOptionGroup>> {
         const group = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: ProductOptionGroup,
             translationType: ProductOptionGroupTranslation,

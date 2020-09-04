@@ -15,6 +15,6 @@ export class RoleEntityResolver {
         if (role.channels) {
             return role.channels;
         }
-        return this.roleService.getChannelsForRole(role.id);
+        return this.roleService.getChannelsForRole(ctx, role.id);
     }
 }

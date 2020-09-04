@@ -23,13 +23,13 @@ export class TaxRateResolver {
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     taxRates(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRatesArgs): Promise<PaginatedList<TaxRate>> {
-        return this.taxRateService.findAll(args.options || undefined);
+        return this.taxRateService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
-        return this.taxRateService.findOne(args.id);
+        return this.taxRateService.findOne(ctx, args.id);
     }
 
     @Mutation()
@@ -56,6 +56,6 @@ export class TaxRateResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteTaxRateArgs,
     ): Promise<DeletionResponse> {
-        return this.taxRateService.delete(args.id);
+        return this.taxRateService.delete(ctx, args.id);
     }
 }

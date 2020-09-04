@@ -21,7 +21,7 @@ export class TaxCategoryResolver {
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     taxCategories(@Ctx() ctx: RequestContext): Promise<TaxCategory[]> {
-        return this.taxCategoryService.findAll();
+        return this.taxCategoryService.findAll(ctx);
     }
 
     @Query()
@@ -30,19 +30,25 @@ export class TaxCategoryResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryTaxCategoryArgs,
     ): Promise<TaxCategory | undefined> {
-        return this.taxCategoryService.findOne(args.id);
+        return this.taxCategoryService.findOne(ctx, args.id);
     }
 
     @Mutation()
     @Allow(Permission.CreateSettings)
-    async createTaxCategory(@Args() args: MutationCreateTaxCategoryArgs): Promise<TaxCategory> {
-        return this.taxCategoryService.create(args.input);
+    async createTaxCategory(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateTaxCategoryArgs,
+    ): Promise<TaxCategory> {
+        return this.taxCategoryService.create(ctx, args.input);
     }
 
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateTaxCategory(@Args() args: MutationUpdateTaxCategoryArgs): Promise<TaxCategory> {
-        return this.taxCategoryService.update(args.input);
+    async updateTaxCategory(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateTaxCategoryArgs,
+    ): Promise<TaxCategory> {
+        return this.taxCategoryService.update(ctx, args.input);
     }
 
     @Mutation()

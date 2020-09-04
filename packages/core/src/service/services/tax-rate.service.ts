@@ -48,12 +48,12 @@ export class TaxRateService {
     ) {}
 
     async initTaxRates() {
-        return this.updateActiveTaxRates();
+        return this.updateActiveTaxRates(RequestContext.empty());
     }
 
-    findAll(options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
+    findAll(ctx: RequestContext, options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
         return this.listQueryBuilder
-            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'] })
+            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -61,8 +61,8 @@ export class TaxRateService {
             }));
     }
 
-    findOne(taxRateId: ID): Promise<TaxRate | undefined> {
-        return this.connection.getRepository(TaxRate).findOne(taxRateId, {
+    findOne(ctx: RequestContext, taxRateId: ID): Promise<TaxRate | undefined> {
+        return this.connection.getRepository(ctx, TaxRate).findOne(taxRateId, {
             relations: ['category', 'zone', 'customerGroup'],
         });
     }
@@ -78,15 +78,15 @@ export class TaxRateService {
                 input.customerGroupId,
             );
         }
-        const newTaxRate = await this.connection.getRepository(TaxRate).save(taxRate);
-        await this.updateActiveTaxRates();
+        const newTaxRate = await this.connection.getRepository(ctx, TaxRate).save(taxRate);
+        await this.updateActiveTaxRates(ctx);
         await this.workerService.send(new TaxRateUpdatedMessage(newTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
-        return assertFound(this.findOne(newTaxRate.id));
+        return assertFound(this.findOne(ctx, newTaxRate.id));
     }
 
     async update(ctx: RequestContext, input: UpdateTaxRateInput): Promise<TaxRate> {
-        const taxRate = await this.findOne(input.id);
+        const taxRate = await this.findOne(ctx, input.id);
         if (!taxRate) {
             throw new EntityNotFoundError('TaxRate', input.id);
         }
@@ -104,17 +104,17 @@ export class TaxRateService {
                 input.customerGroupId,
             );
         }
-        await this.connection.getRepository(TaxRate).save(updatedTaxRate, { reload: false });
-        await this.updateActiveTaxRates();
+        await this.connection.getRepository(ctx, TaxRate).save(updatedTaxRate, { reload: false });
+        await this.updateActiveTaxRates(ctx);
         await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
-        return assertFound(this.findOne(taxRate.id));
+        return assertFound(this.findOne(ctx, taxRate.id));
     }
 
-    async delete(id: ID): Promise<DeletionResponse> {
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const taxRate = await getEntityOrThrow(this.connection, TaxRate, id);
         try {
-            await this.connection.getRepository(TaxRate).remove(taxRate);
+            await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
             return {
                 result: DeletionResult.DELETED,
             };
@@ -135,8 +135,8 @@ export class TaxRateService {
         return rate || this.defaultTaxRate;
     }
 
-    async updateActiveTaxRates() {
-        this.activeTaxRates = await this.connection.getRepository(TaxRate).find({
+    async updateActiveTaxRates(ctx: RequestContext) {
+        this.activeTaxRates = await this.connection.getRepository(ctx, TaxRate).find({
             relations: ['category', 'zone', 'customerGroup'],
             where: {
                 enabled: true,

@@ -37,6 +37,7 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
@@ -108,6 +109,7 @@ export class OrderService {
             .build(Order, options, {
                 relations: ['lines', 'customer', 'lines.productVariant', 'channels'],
                 channelId: ctx.channelId,
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => {
@@ -120,7 +122,7 @@ export class OrderService {
 
     async findOne(ctx: RequestContext, orderId: ID): Promise<Order | undefined> {
         const order = await this.connection
-            .getRepository(Order)
+            .getRepository(ctx, Order)
             .createQueryBuilder('order')
             .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
@@ -151,7 +153,7 @@ export class OrderService {
     }
 
     async findOneByCode(ctx: RequestContext, orderCode: string): Promise<Order | undefined> {
-        const order = await this.connection.getRepository(Order).findOne({
+        const order = await this.connection.getRepository(ctx, Order).findOne({
             relations: ['customer'],
             where: {
                 code: orderCode,
@@ -176,6 +178,7 @@ export class OrderService {
                     'channels',
                 ],
                 channelId: ctx.channelId,
+                ctx,
             })
             .andWhere('order.customer.id = :customerId', { customerId })
             .getManyAndCount()
@@ -194,8 +197,8 @@ export class OrderService {
             });
     }
 
-    getOrderPayments(orderId: ID): Promise<Payment[]> {
-        return this.connection.getRepository(Payment).find({
+    getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {
+        return this.connection.getRepository(ctx, Payment).find({
             where: {
                 order: { id: orderId } as any,
             },
@@ -209,8 +212,8 @@ export class OrderService {
         return refund.orderItems;
     }
 
-    getPaymentRefunds(paymentId: ID): Promise<Refund[]> {
-        return this.connection.getRepository(Refund).find({
+    getPaymentRefunds(ctx: RequestContext, paymentId: ID): Promise<Refund[]> {
+        return this.connection.getRepository(ctx, Refund).find({
             where: {
                 paymentId,
             },
@@ -218,10 +221,10 @@ export class OrderService {
     }
 
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
-        const customer = await this.customerService.findOneByUserId(userId);
+        const customer = await this.customerService.findOneByUserId(ctx, userId);
         if (customer) {
             const activeOrder = await this.connection
-                .getRepository(Order)
+                .getRepository(ctx, Order)
                 .createQueryBuilder('order')
                 .innerJoinAndSelect('order.channels', 'channel', 'channel.id = :channelId', {
                     channelId: ctx.channelId,
@@ -251,19 +254,19 @@ export class OrderService {
             currencyCode: ctx.channel.currencyCode,
         });
         if (userId) {
-            const customer = await this.customerService.findOneByUserId(userId);
+            const customer = await this.customerService.findOneByUserId(ctx, userId);
             if (customer) {
                 newOrder.customer = customer;
             }
         }
         this.channelService.assignToCurrentChannel(newOrder, ctx);
-        return this.connection.getRepository(Order).save(newOrder);
+        return this.connection.getRepository(ctx, Order).save(newOrder);
     }
 
     async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
-        return this.connection.getRepository(Order).save(order);
+        return this.connection.getRepository(ctx, Order).save(order);
     }
 
     async addItemToOrder(
@@ -287,9 +290,9 @@ export class OrderService {
 
         if (!orderLine) {
             const newLine = this.createOrderLineFromVariant(productVariant, customFields);
-            orderLine = await this.connection.getRepository(OrderLine).save(newLine);
+            orderLine = await this.connection.getRepository(ctx, OrderLine).save(newLine);
             order.lines.push(orderLine);
-            await this.connection.getRepository(Order).save(order, { reload: false });
+            await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         }
         return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
     }
@@ -325,7 +328,7 @@ export class OrderService {
                     orderLine.customFields || {},
                 );
                 for (let i = currentQuantity; i < quantity; i++) {
-                    const orderItem = await this.connection.getRepository(OrderItem).save(
+                    const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                         new OrderItem({
                             unitPrice: calculatedPrice.price,
                             pendingAdjustments: [],
@@ -341,7 +344,7 @@ export class OrderService {
                 orderLine.items = orderLine.items.slice(0, quantity);
             }
         }
-        await this.connection.getRepository(OrderLine).save(orderLine, { reload: false });
+        await this.connection.getRepository(ctx, OrderLine).save(orderLine, { reload: false });
         return this.applyPriceAdjustments(ctx, order, orderLine);
     }
 
@@ -351,14 +354,14 @@ export class OrderService {
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
-        await this.connection.getRepository(OrderLine).remove(orderLine);
+        await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
         return updatedOrder;
     }
 
     async removeAllItemsFromOrder(ctx: RequestContext, orderId: ID): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         this.assertAddingItemsState(order);
-        await this.connection.getRepository(OrderLine).remove(order.lines);
+        await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         return updatedOrder;
@@ -370,6 +373,7 @@ export class OrderService {
             return order;
         }
         const promotion = await this.promotionService.validateCouponCode(
+            ctx,
             couponCode,
             order.customer && order.customer.id,
         );
@@ -414,14 +418,14 @@ export class OrderService {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         order.shippingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        return this.connection.getRepository(Order).save(order);
+        return this.connection.getRepository(ctx, Order).save(order);
     }
 
     async setBillingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         order.billingAddress = { ...input, countryCode: input.countryCode, country: country.name };
-        return this.connection.getRepository(Order).save(order);
+        return this.connection.getRepository(ctx, Order).save(order);
     }
 
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
@@ -445,17 +449,17 @@ export class OrderService {
             throw new UserInputError(`error.shipping-method-unavailable`);
         }
         order.shippingMethod = selectedMethod.method;
-        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
-        return this.connection.getRepository(Order).save(order);
+        return this.connection.getRepository(ctx, Order).save(order);
     }
 
     async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        order.payments = await this.getOrderPayments(orderId);
+        order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
         await this.orderStateMachine.transition(ctx, order, state);
-        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
     }
@@ -472,9 +476,9 @@ export class OrderService {
             input.metadata,
         );
 
-        const existingPayments = await this.getOrderPayments(orderId);
+        const existingPayments = await this.getOrderPayments(ctx, orderId);
         order.payments = [...existingPayments, payment];
-        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
             throw new InternalServerError(payment.errorMessage);
@@ -491,13 +495,17 @@ export class OrderService {
 
     async settlePayment(ctx: RequestContext, paymentId: ID): Promise<Payment> {
         const payment = await getEntityOrThrow(this.connection, Payment, paymentId, { relations: ['order'] });
-        const settlePaymentResult = await this.paymentMethodService.settlePayment(payment, payment.order);
+        const settlePaymentResult = await this.paymentMethodService.settlePayment(
+            ctx,
+            payment,
+            payment.order,
+        );
         if (settlePaymentResult.success) {
             const fromState = payment.state;
             const toState = 'Settled';
             await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
             payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
-            await this.connection.getRepository(Payment).save(payment, { reload: false });
+            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
             this.eventBus.publish(
                 new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
             );
@@ -529,7 +537,7 @@ export class OrderService {
             }
         }
 
-        const fulfillment = await this.connection.getRepository(Fulfillment).save(
+        const fulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
             new Fulfillment({
                 trackingCode: input.trackingCode,
                 method: input.method,
@@ -567,7 +575,7 @@ export class OrderService {
         return fulfillment;
     }
 
-    async getOrderFulfillments(order: Order): Promise<Fulfillment[]> {
+    async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
         if (
             order.lines &&
@@ -577,7 +585,7 @@ export class OrderService {
         ) {
             lines = order.lines;
         } else {
-            lines = await this.connection.getRepository(OrderLine).find({
+            lines = await this.connection.getRepository(ctx, OrderLine).find({
                 where: {
                     order: order.id,
                 },
@@ -649,11 +657,11 @@ export class OrderService {
         }
 
         // Perform the cancellation
-        await this.stockMovementService.createCancellationsForOrderItems(items);
+        await this.stockMovementService.createCancellationsForOrderItems(ctx, items);
         items.forEach(i => (i.cancelled = true));
-        await this.connection.getRepository(OrderItem).save(items, { reload: false });
+        await this.connection.getRepository(ctx, OrderItem).save(items, { reload: false });
 
-        const orderWithItems = await this.connection.getRepository(Order).findOne(order.id, {
+        const orderWithItems = await this.connection.getRepository(ctx, Order).findOne(order.id, {
             relations: ['lines', 'lines.items'],
         });
         if (!orderWithItems) {
@@ -720,7 +728,7 @@ export class OrderService {
         const fromState = refund.state;
         const toState = 'Settled';
         await this.refundStateMachine.transition(ctx, refund.payment.order, refund, toState);
-        await this.connection.getRepository(Refund).save(refund);
+        await this.connection.getRepository(ctx, Refund).save(refund);
         this.eventBus.publish(
             new RefundStateTransitionEvent(fromState, toState, ctx, refund, refund.payment.order),
         );
@@ -730,14 +738,14 @@ export class OrderService {
     async addCustomerToOrder(ctx: RequestContext, orderId: ID, customer: Customer): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.customer = customer;
-        await this.connection.getRepository(Order).save(order, { reload: false });
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         // Check that any applied couponCodes are still valid now that
         // we know the Customer.
         if (order.couponCodes) {
             let codesRemoved = false;
             for (const couponCode of order.couponCodes.slice()) {
                 try {
-                    await this.promotionService.validateCouponCode(couponCode, customer.id);
+                    await this.promotionService.validateCouponCode(ctx, couponCode, customer.id);
                 } catch (err) {
                     order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
                     codesRemoved = true;
@@ -778,7 +786,7 @@ export class OrderService {
 
     async deleteOrderNote(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         try {
-            await this.historyService.deleteOrderHistoryEntry(id);
+            await this.historyService.deleteOrderHistoryEntry(ctx, id);
             return {
                 result: DeletionResult.DELETED,
             };
@@ -809,17 +817,17 @@ export class OrderService {
         const { orderToDelete, linesToInsert } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
-            await this.connection.getRepository(Order).delete(orderToDelete.id);
+            await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
         }
         if (order && linesToInsert) {
             for (const line of linesToInsert) {
                 order = await this.addItemToOrder(ctx, order.id, line.productVariantId, line.quantity);
             }
         }
-        const customer = await this.customerService.findOneByUserId(user.id);
+        const customer = await this.customerService.findOneByUserId(ctx, user.id);
         if (order && customer) {
             order.customer = customer;
-            await this.connection.getRepository(Order).save(order, { reload: false });
+            await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         }
         return order;
     }
@@ -901,7 +909,7 @@ export class OrderService {
         order: Order,
         updatedOrderLine?: OrderLine,
     ): Promise<Order> {
-        const promotions = await this.connection.getRepository(Promotion).find({
+        const promotions = await this.connection.getRepository(ctx, Promotion).find({
             where: { enabled: true, deletedAt: null },
             order: { priorityScore: 'ASC' },
         });
@@ -911,8 +919,8 @@ export class OrderService {
             promotions,
             updatedOrderLine,
         );
-        await this.connection.getRepository(Order).save(order, { reload: false });
-        await this.connection.getRepository(OrderItem).save(updatedItems, { reload: false });
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
         return order;
     }
 
@@ -925,7 +933,7 @@ export class OrderService {
         const orders = new Map<ID, Order>();
         const items = new Map<ID, OrderItem>();
 
-        const lines = await this.connection.getRepository(OrderLine).findByIds(
+        const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             orderLinesInput.map(l => l.orderLineId),
             {
                 relations: ['order', 'items', 'items.fulfillment', 'order.channels'],

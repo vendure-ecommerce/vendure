@@ -96,8 +96,11 @@ export class PromotionResolver {
 
     @Mutation()
     @Allow(Permission.DeletePromotion)
-    deletePromotion(@Args() args: MutationDeletePromotionArgs): Promise<DeletionResponse> {
-        return this.promotionService.softDeletePromotion(args.id);
+    deletePromotion(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeletePromotionArgs,
+    ): Promise<DeletionResponse> {
+        return this.promotionService.softDeletePromotion(ctx, args.id);
     }
 
     /**

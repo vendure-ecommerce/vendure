@@ -47,8 +47,7 @@ export class TestAuthenticationStrategy implements AuthenticationStrategy<TestAu
         if (data.token !== VALID_AUTH_TOKEN) {
             return false;
         }
-        const user = await this.externalAuthenticationService.findUser(this.name, data.token);
-
+        const user = await this.externalAuthenticationService.findUser(ctx, this.name, data.token);
         if (user) {
             return user;
         }

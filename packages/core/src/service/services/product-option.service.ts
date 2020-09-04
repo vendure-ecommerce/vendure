@@ -23,7 +23,7 @@ export class ProductOptionService {
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
         return this.connection
-            .getRepository(ProductOption)
+            .getRepository(ctx, ProductOption)
             .find({
                 relations: ['group'],
             })
@@ -32,7 +32,7 @@ export class ProductOptionService {
 
     findOne(ctx: RequestContext, id: ID): Promise<Translated<ProductOption> | undefined> {
         return this.connection
-            .getRepository(ProductOption)
+            .getRepository(ctx, ProductOption)
             .findOne(id, {
                 relations: ['group'],
             })
@@ -49,6 +49,7 @@ export class ProductOptionService {
                 ? group
                 : await getEntityOrThrow(this.connection, ProductOptionGroup, group);
         const option = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
@@ -59,6 +60,7 @@ export class ProductOptionService {
 
     async update(ctx: RequestContext, input: UpdateProductOptionInput): Promise<Translated<ProductOption>> {
         const option = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: ProductOption,
             translationType: ProductOptionTranslation,

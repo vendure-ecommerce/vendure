@@ -39,11 +39,11 @@ export class TransactionalConnection {
      */
     getRepository<Entity>(target: ObjectType<Entity> | EntitySchema<Entity> | string): Repository<Entity>;
     getRepository<Entity>(
-        ctx: RequestContext,
+        ctx: RequestContext | undefined,
         target: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity>;
     getRepository<Entity>(
-        ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string,
+        ctxOrTarget: RequestContext | ObjectType<Entity> | EntitySchema<Entity> | string | undefined,
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
@@ -56,7 +56,8 @@ export class TransactionalConnection {
                 return getRepository(maybeTarget!);
             }
         } else {
-            return getRepository(ctxOrTarget);
+            // tslint:disable-next-line:no-non-null-assertion
+            return getRepository(ctxOrTarget ?? maybeTarget!);
         }
     }
 }

@@ -66,7 +66,7 @@ export class AuthService {
     ): Promise<AuthenticatedSession> {
         if (!user.roles || !user.roles[0]?.channels) {
             const userWithRoles = await this.connection
-                .getRepository(User)
+                .getRepository(ctx, User)
                 .createQueryBuilder('user')
                 .leftJoinAndSelect('user.roles', 'role')
                 .leftJoinAndSelect('role.channels', 'channel')
@@ -79,10 +79,10 @@ export class AuthService {
             throw new NotVerifiedError();
         }
         if (ctx.session && ctx.session.activeOrderId) {
-            await this.sessionService.deleteSessionsByActiveOrderId(ctx.session.activeOrderId);
+            await this.sessionService.deleteSessionsByActiveOrderId(ctx, ctx.session.activeOrderId);
         }
         user.lastLogin = new Date();
-        await this.connection.getRepository(User).save(user, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
@@ -111,7 +111,7 @@ export class AuthService {
      * Deletes all sessions for the user associated with the given session token.
      */
     async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string): Promise<void> {
-        const session = await this.connection.getRepository(AuthenticatedSession).findOne({
+        const session = await this.connection.getRepository(ctx, AuthenticatedSession).findOne({
             where: { token: sessionToken },
             relations: ['user', 'user.authenticationMethods'],
         });
@@ -125,7 +125,7 @@ export class AuthService {
                 await authenticationStrategy.onLogOut(session.user);
             }
             this.eventBus.publish(new LogoutEvent(ctx));
-            return this.sessionService.deleteSessionsByUser(session.user);
+            return this.sessionService.deleteSessionsByUser(ctx, session.user);
         }
     }
 

@@ -64,10 +64,7 @@ export class FulltextSearchService {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input, enabledOnly);
-        const facetValues = await this.facetValueService.findByIds(
-            Array.from(facetValueIdsMap.keys()),
-            ctx.languageCode,
-        );
+        const facetValues = await this.facetValueService.findByIds(ctx, Array.from(facetValueIdsMap.keys()));
         return facetValues.map((facetValue, index) => {
             return {
                 facetValue,

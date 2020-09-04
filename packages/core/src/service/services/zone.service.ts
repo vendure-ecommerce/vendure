@@ -12,7 +12,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { assertFound } from '../../common/utils';
-import { Channel, TaxRate } from '../../entity';
+import { Channel, ProductOptionGroup, TaxRate } from '../../entity';
 import { Country } from '../../entity/country/country.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
@@ -41,7 +41,7 @@ export class ZoneService implements OnModuleInit {
 
     findOne(ctx: RequestContext, zoneId: ID): Promise<Zone | undefined> {
         return this.connection
-            .getRepository(Zone)
+            .getRepository(ctx, Zone)
             .findOne(zoneId, {
                 relations: ['members'],
             })
@@ -56,9 +56,9 @@ export class ZoneService implements OnModuleInit {
     async create(ctx: RequestContext, input: CreateZoneInput): Promise<Zone> {
         const zone = new Zone(input);
         if (input.memberIds) {
-            zone.members = await this.getCountriesFromIds(input.memberIds);
+            zone.members = await this.getCountriesFromIds(ctx, input.memberIds);
         }
-        const newZone = await this.connection.getRepository(Zone).save(zone);
+        const newZone = await this.connection.getRepository(ctx, Zone).save(zone);
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, newZone.id));
     }
@@ -66,7 +66,7 @@ export class ZoneService implements OnModuleInit {
     async update(ctx: RequestContext, input: UpdateZoneInput): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.id);
         const updatedZone = patchEntity(zone, input);
-        await this.connection.getRepository(Zone).save(updatedZone, { reload: false });
+        await this.connection.getRepository(ctx, Zone).save(updatedZone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }
@@ -75,7 +75,7 @@ export class ZoneService implements OnModuleInit {
         const zone = await getEntityOrThrow(this.connection, Zone, id);
 
         const channelsUsingZone = await this.connection
-            .getRepository(Channel)
+            .getRepository(ctx, Channel)
             .createQueryBuilder('channel')
             .where('channel.defaultTaxZone = :id', { id })
             .orWhere('channel.defaultShippingZone = :id', { id })
@@ -91,7 +91,7 @@ export class ZoneService implements OnModuleInit {
         }
 
         const taxRatesUsingZone = await this.connection
-            .getRepository(TaxRate)
+            .getRepository(ctx, TaxRate)
             .createQueryBuilder('taxRate')
             .where('taxRate.zone = :id', { id })
             .getMany();
@@ -104,7 +104,7 @@ export class ZoneService implements OnModuleInit {
                 }),
             };
         } else {
-            await this.connection.getRepository(Zone).remove(zone);
+            await this.connection.getRepository(ctx, Zone).remove(zone);
             await this.updateZonesCache();
             return {
                 result: DeletionResult.DELETED,
@@ -114,11 +114,11 @@ export class ZoneService implements OnModuleInit {
     }
 
     async addMembersToZone(ctx: RequestContext, input: MutationAddMembersToZoneArgs): Promise<Zone> {
-        const countries = await this.getCountriesFromIds(input.memberIds);
+        const countries = await this.getCountriesFromIds(ctx, input.memberIds);
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         const members = unique(zone.members.concat(countries), 'id');
         zone.members = members;
-        await this.connection.getRepository(Zone).save(zone, { reload: false });
+        await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }
@@ -129,13 +129,13 @@ export class ZoneService implements OnModuleInit {
     ): Promise<Zone> {
         const zone = await getEntityOrThrow(this.connection, Zone, input.zoneId, { relations: ['members'] });
         zone.members = zone.members.filter(country => !input.memberIds.includes(country.id));
-        await this.connection.getRepository(Zone).save(zone, { reload: false });
+        await this.connection.getRepository(ctx, Zone).save(zone, { reload: false });
         await this.updateZonesCache();
         return assertFound(this.findOne(ctx, zone.id));
     }
 
-    private getCountriesFromIds(ids: ID[]): Promise<Country[]> {
-        return this.connection.getRepository(Country).findByIds(ids);
+    private getCountriesFromIds(ctx: RequestContext, ids: ID[]): Promise<Country[]> {
+        return this.connection.getRepository(ctx, Country).findByIds(ids);
     }
 
     /**

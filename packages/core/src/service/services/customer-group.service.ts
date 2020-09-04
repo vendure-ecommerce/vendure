@@ -15,8 +15,10 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { Collection } from '../../entity/collection/collection.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -32,20 +34,24 @@ export class CustomerGroupService {
         private historyService: HistoryService,
     ) {}
 
-    findAll(options?: CustomerGroupListOptions): Promise<PaginatedList<CustomerGroup>> {
+    findAll(ctx: RequestContext, options?: CustomerGroupListOptions): Promise<PaginatedList<CustomerGroup>> {
         return this.listQueryBuilder
-            .build(CustomerGroup, options)
+            .build(CustomerGroup, options, { ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(customerGroupId: ID): Promise<CustomerGroup | undefined> {
-        return this.connection.getRepository(CustomerGroup).findOne(customerGroupId);
+    findOne(ctx: RequestContext, customerGroupId: ID): Promise<CustomerGroup | undefined> {
+        return this.connection.getRepository(ctx, CustomerGroup).findOne(customerGroupId);
     }
 
-    getGroupCustomers(customerGroupId: ID, options?: CustomerListOptions): Promise<PaginatedList<Customer>> {
+    getGroupCustomers(
+        ctx: RequestContext,
+        customerGroupId: ID,
+        options?: CustomerListOptions,
+    ): Promise<PaginatedList<Customer>> {
         return this.listQueryBuilder
-            .build(Customer, options)
+            .build(Customer, options, { ctx })
             .leftJoin('customer.groups', 'group')
             .andWhere('group.id = :groupId', { groupId: customerGroupId })
             .getManyAndCount()
@@ -55,9 +61,9 @@ export class CustomerGroupService {
     async create(ctx: RequestContext, input: CreateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = new CustomerGroup(input);
 
-        const newCustomerGroup = await this.connection.getRepository(CustomerGroup).save(customerGroup);
+        const newCustomerGroup = await this.connection.getRepository(ctx, CustomerGroup).save(customerGroup);
         if (input.customerIds) {
-            const customers = await this.getCustomersFromIds(input.customerIds);
+            const customers = await this.getCustomersFromIds(ctx, input.customerIds);
             for (const customer of customers) {
                 customer.groups = [...(customer.groups || []), newCustomerGroup];
                 await this.historyService.createHistoryEntryForCustomer({
@@ -69,22 +75,22 @@ export class CustomerGroupService {
                     },
                 });
             }
-            await this.connection.getRepository(Customer).save(customers);
+            await this.connection.getRepository(ctx, Customer).save(customers);
         }
-        return assertFound(this.findOne(newCustomerGroup.id));
+        return assertFound(this.findOne(ctx, newCustomerGroup.id));
     }
 
-    async update(input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
+    async update(ctx: RequestContext, input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
         const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
-        await this.connection.getRepository(CustomerGroup).save(updatedCustomerGroup, { reload: false });
-        return assertFound(this.findOne(customerGroup.id));
+        await this.connection.getRepository(ctx, CustomerGroup).save(updatedCustomerGroup, { reload: false });
+        return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
-    async delete(id: ID): Promise<DeletionResponse> {
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         const group = await getEntityOrThrow(this.connection, CustomerGroup, id);
         try {
-            await this.connection.getRepository(CustomerGroup).remove(group);
+            await this.connection.getRepository(ctx, CustomerGroup).remove(group);
             return {
                 result: DeletionResult.DELETED,
             };
@@ -100,7 +106,7 @@ export class CustomerGroupService {
         ctx: RequestContext,
         input: MutationAddCustomersToGroupArgs,
     ): Promise<CustomerGroup> {
-        const customers = await this.getCustomersFromIds(input.customerIds);
+        const customers = await this.getCustomersFromIds(ctx, input.customerIds);
         const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
             if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
@@ -116,15 +122,15 @@ export class CustomerGroupService {
             }
         }
 
-        await this.connection.getRepository(Customer).save(customers, { reload: false });
-        return assertFound(this.findOne(group.id));
+        await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
+        return assertFound(this.findOne(ctx, group.id));
     }
 
     async removeCustomersFromGroup(
         ctx: RequestContext,
         input: MutationRemoveCustomersFromGroupArgs,
     ): Promise<CustomerGroup> {
-        const customers = await this.getCustomersFromIds(input.customerIds);
+        const customers = await this.getCustomersFromIds(ctx, input.customerIds);
         const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
             if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
@@ -140,13 +146,13 @@ export class CustomerGroupService {
                 },
             });
         }
-        await this.connection.getRepository(Customer).save(customers, { reload: false });
-        return assertFound(this.findOne(group.id));
+        await this.connection.getRepository(ctx, Customer).save(customers, { reload: false });
+        return assertFound(this.findOne(ctx, group.id));
     }
 
-    private getCustomersFromIds(ids: ID[]): Promise<Customer[]> {
+    private getCustomersFromIds(ctx: RequestContext, ids: ID[]): Promise<Customer[]> {
         return this.connection
-            .getRepository(Customer)
+            .getRepository(ctx, Customer)
             .findByIds(ids, { where: { deletedAt: null }, relations: ['groups'] });
     }
 }

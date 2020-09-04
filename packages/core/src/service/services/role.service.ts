@@ -25,6 +25,7 @@ import {
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Channel } from '../../entity/channel/channel.entity';
+import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { Role } from '../../entity/role/role.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -48,9 +49,9 @@ export class RoleService {
         await this.ensureCustomerRoleExists();
     }
 
-    findAll(options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
         return this.listQueryBuilder
-            .build(Role, options, { relations: ['channels'] })
+            .build(Role, options, { relations: ['channels'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -58,14 +59,14 @@ export class RoleService {
             }));
     }
 
-    findOne(roleId: ID): Promise<Role | undefined> {
-        return this.connection.getRepository(Role).findOne(roleId, {
+    findOne(ctx: RequestContext, roleId: ID): Promise<Role | undefined> {
+        return this.connection.getRepository(ctx, Role).findOne(roleId, {
             relations: ['channels'],
         });
     }
 
-    getChannelsForRole(roleId: ID): Promise<Channel[]> {
-        return this.findOne(roleId).then(role => (role ? role.channels : []));
+    getChannelsForRole(ctx: RequestContext, roleId: ID): Promise<Channel[]> {
+        return this.findOne(ctx, roleId).then(role => (role ? role.channels : []));
     }
 
     getSuperAdminRole(): Promise<Role> {
@@ -127,12 +128,12 @@ export class RoleService {
         } else {
             targetChannels = [ctx.channel];
         }
-        return this.createRoleForChannels(input, targetChannels);
+        return this.createRoleForChannels(ctx, input, targetChannels);
     }
 
     async update(ctx: RequestContext, input: UpdateRoleInput): Promise<Role> {
         this.checkPermissionsAreValid(input.permissions);
-        const role = await this.findOne(input.id);
+        const role = await this.findOne(ctx, input.id);
         if (!role) {
             throw new EntityNotFoundError('Role', input.id);
         }
@@ -149,26 +150,26 @@ export class RoleService {
         if (input.channelIds && ctx.activeUserId) {
             updatedRole.channels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
         }
-        await this.connection.getRepository(Role).save(updatedRole, { reload: false });
-        return assertFound(this.findOne(role.id));
+        await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
+        return assertFound(this.findOne(ctx, role.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const role = await this.findOne(id);
+        const role = await this.findOne(ctx, id);
         if (!role) {
             throw new EntityNotFoundError('Role', id);
         }
         if (role.code === SUPER_ADMIN_ROLE_CODE || role.code === CUSTOMER_ROLE_CODE) {
             throw new InternalServerError(`error.cannot-delete-role`, { roleCode: role.code });
         }
-        await this.connection.getRepository(Role).remove(role);
+        await this.connection.getRepository(ctx, Role).remove(role);
         return {
             result: DeletionResult.DELETED,
         };
     }
 
-    async assignRoleToChannel(roleId: ID, channelId: ID) {
-        await this.channelService.assignToChannels(Role, roleId, [channelId]);
+    async assignRoleToChannel(ctx: RequestContext, roleId: ID, channelId: ID) {
+        await this.channelService.assignToChannels(ctx, Role, roleId, [channelId]);
     }
 
     private async getPermittedChannels(channelIds: ID[], activeUserId: ID): Promise<Channel[]> {
@@ -222,6 +223,7 @@ export class RoleService {
             }
         } catch (err) {
             await this.createRoleForChannels(
+                RequestContext.empty(),
                 {
                     code: SUPER_ADMIN_ROLE_CODE,
                     description: SUPER_ADMIN_ROLE_DESCRIPTION,
@@ -237,6 +239,7 @@ export class RoleService {
             await this.getCustomerRole();
         } catch (err) {
             await this.createRoleForChannels(
+                RequestContext.empty(),
                 {
                     code: CUSTOMER_ROLE_CODE,
                     description: CUSTOMER_ROLE_DESCRIPTION,
@@ -247,13 +250,13 @@ export class RoleService {
         }
     }
 
-    private createRoleForChannels(input: CreateRoleInput, channels: Channel[]) {
+    private createRoleForChannels(ctx: RequestContext, input: CreateRoleInput, channels: Channel[]) {
         const role = new Role({
             code: input.code,
             description: input.description,
             permissions: unique([Permission.Authenticated, ...input.permissions]),
         });
         role.channels = channels;
-        return this.connection.getRepository(Role).save(role);
+        return this.connection.getRepository(ctx, Role).save(role);
     }
 }

@@ -71,8 +71,8 @@ export class KeycloakAuthenticationStrategy implements AuthenticationStrategy<Ke
             return user;
         }
 
-        const roles = await this.roleService.findAll();
-        const merchantRole = roles.items.find((r) => r.code === 'merchant');
+        const roles = await this.roleService.findAll(ctx);
+        const merchantRole = roles.items.find(r => r.code === 'merchant');
 
         if (!merchantRole) {
             Logger.error(`Could not find "merchant" role`);

@@ -139,6 +139,7 @@ export class HistoryService {
     ) {}
 
     async getHistoryForOrder(
+        ctx: RequestContext,
         orderId: ID,
         publicOnly: boolean,
         options?: HistoryEntryListOptions,
@@ -150,6 +151,7 @@ export class HistoryService {
                     ...(publicOnly ? { isPublic: true } : {}),
                 },
                 relations: ['administrator'],
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -171,10 +173,11 @@ export class HistoryService {
             order: { id: orderId },
             administrator,
         });
-        return this.connection.getRepository(OrderHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
     }
 
     async getHistoryForCustomer(
+        ctx: RequestContext,
         customerId: ID,
         publicOnly: boolean,
         options?: HistoryEntryListOptions,
@@ -186,6 +189,7 @@ export class HistoryService {
                     ...(publicOnly ? { isPublic: true } : {}),
                 },
                 relations: ['administrator'],
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -207,7 +211,7 @@ export class HistoryService {
             customer: { id: customerId },
             administrator,
         });
-        return this.connection.getRepository(CustomerHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
     }
 
     async updateOrderHistoryEntry<T extends keyof OrderHistoryEntryData>(
@@ -228,12 +232,12 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(OrderHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
     }
 
-    async deleteOrderHistoryEntry(id: ID): Promise<void> {
+    async deleteOrderHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await getEntityOrThrow(this.connection, OrderHistoryEntry, id);
-        await this.connection.getRepository(OrderHistoryEntry).remove(entry);
+        await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
     }
 
     async updateCustomerHistoryEntry<T extends keyof CustomerHistoryEntryData>(
@@ -251,17 +255,17 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(CustomerHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
     }
 
-    async deleteCustomerHistoryEntry(id: ID): Promise<void> {
+    async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
         const entry = await getEntityOrThrow(this.connection, CustomerHistoryEntry, id);
-        await this.connection.getRepository(CustomerHistoryEntry).remove(entry);
+        await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
     }
 
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {
         const administrator = ctx.activeUserId
-            ? await this.administratorService.findOneByUserId(ctx.activeUserId)
+            ? await this.administratorService.findOneByUserId(ctx, ctx.activeUserId)
             : undefined;
         return administrator;
     }
