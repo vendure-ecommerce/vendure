@@ -545,8 +545,8 @@ describe('Orders resolver', () => {
             });
 
             expect(order!.fulfillments).toEqual([
-                { id: 'T_1', method: 'Test1', state: 'Delivered' },
-                { id: 'T_2', method: 'Test2', state: 'Delivered' },
+                { id: 'T_1', method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
+                { id: 'T_2', method: 'Test2', state: 'Delivered', nextStates: ['Cancelled'] },
             ]);
         });
 
@@ -557,8 +557,8 @@ describe('Orders resolver', () => {
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments).toEqual([
-                { id: 'T_1', method: 'Test1', state: 'Delivered' },
-                { id: 'T_2', method: 'Test2', state: 'Delivered' },
+                { id: 'T_1', method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
+                { id: 'T_2', method: 'Test2', state: 'Delivered', nextStates: ['Cancelled'] },
             ]);
         });
 
@@ -1406,6 +1406,7 @@ export const GET_ORDER_FULFILLMENTS = gql`
             fulfillments {
                 id
                 state
+                nextStates
                 method
             }
         }
@@ -1421,6 +1422,7 @@ export const GET_ORDER_LIST_FULFILLMENTS = gql`
                 fulfillments {
                     id
                     state
+                    nextStates
                     method
                 }
             }
