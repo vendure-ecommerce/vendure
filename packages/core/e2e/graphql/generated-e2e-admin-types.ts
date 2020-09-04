@@ -4447,6 +4447,15 @@ export type UpdateFacetValuesMutation = { __typename?: 'Mutation' } & {
     updateFacetValues: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
 };
 
+export type AdminTransitionMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
+};
+
 export type AdministratorFragment = { __typename?: 'Administrator' } & Pick<
     Administrator,
     'id' | 'firstName' | 'lastName' | 'emailAddress'
@@ -5176,9 +5185,14 @@ export type GetOrderFulfillmentsQueryVariables = {
 
 export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                 fulfillments?: Maybe<
-                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state' | 'method'>>
+                    Array<
+                        { __typename?: 'Fulfillment' } & Pick<
+                            Fulfillment,
+                            'id' | 'state' | 'nextStates' | 'method'
+                        >
+                    >
                 >;
             }
     >;
@@ -5189,9 +5203,14 @@ export type GetOrderListFulfillmentsQueryVariables = {};
 export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & {
         items: Array<
-            { __typename?: 'Order' } & Pick<Order, 'id'> & {
+            { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                     fulfillments?: Maybe<
-                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state' | 'method'>>
+                        Array<
+                            { __typename?: 'Fulfillment' } & Pick<
+                                Fulfillment,
+                                'id' | 'state' | 'nextStates' | 'method'
+                            >
+                        >
                     >;
                 }
         >;
@@ -5204,7 +5223,7 @@ export type GetOrderFulfillmentItemsQueryVariables = {
 
 export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                 fulfillments?: Maybe<
                     Array<
                         { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'> & {
@@ -6387,6 +6406,12 @@ export namespace UpdateFacetValues {
     export type Variables = UpdateFacetValuesMutationVariables;
     export type Mutation = UpdateFacetValuesMutation;
     export type UpdateFacetValues = FacetValueFragment;
+}
+
+export namespace AdminTransition {
+    export type Variables = AdminTransitionMutationVariables;
+    export type Mutation = AdminTransitionMutation;
+    export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
 }
 
 export namespace Administrator {
