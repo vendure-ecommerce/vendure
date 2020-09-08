@@ -55,6 +55,16 @@
                     <label>{{ 'customer.phone-number' | translate }}</label>
                     <input formControlName="phoneNumber" type="text" clrInput />
                 </clr-input-container>
+                <section formGroupName="customFields" *ngIf="addressForm.get('customFields') as customFieldsGroup">
+                    <label>{{ 'common.custom-fields' | translate }}</label>
+                    <ng-container *ngFor="let customField of customFields">
+                        <vdr-custom-field-control
+                            entityName="Facet"
+                            [customFieldsFormGroup]="customFieldsGroup"
+                            [customField]="customField"
+                        ></vdr-custom-field-control>
+                    </ng-container>
+                </section>
             </form>
         </div>
     </div>

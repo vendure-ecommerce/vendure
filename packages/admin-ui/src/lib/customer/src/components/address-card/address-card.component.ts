@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-
-import { GetAvailableCountries } from '@vendure/admin-ui/core';
+import { CustomFieldConfig, GetAvailableCountries } from '@vendure/admin-ui/core';
 
 @Component({
     selector: 'vdr-address-card',
@@ -12,6 +11,7 @@ import { GetAvailableCountries } from '@vendure/admin-ui/core';
 export class AddressCardComponent implements OnInit {
     editing = false;
     @Input() addressForm: FormGroup;
+    @Input() customFields: CustomFieldConfig;
     @Input() availableCountries: GetAvailableCountries.Items[] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
