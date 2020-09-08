@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -14,6 +14,7 @@ import {
     DeleteAsset,
     DeletionResult,
     GetAsset,
+    GetAssetFragmentFirst,
     GetAssetList,
     GetProductWithVariants,
     SortOrder,
@@ -119,6 +120,20 @@ describe('Asset resolver', () => {
             type: 'IMAGE',
             width: 48,
         });
+    });
+
+    /**
+     * https://github.com/vendure-ecommerce/vendure/issues/459
+     */
+    it('transforms URL when fragment defined before query (GH issue #459)', async () => {
+        const { asset } = await adminClient.query<
+            GetAssetFragmentFirst.Query,
+            GetAssetFragmentFirst.Variables
+        >(GET_ASSET_FRAGMENT_FIRST, {
+            id: firstAssetId,
+        });
+
+        expect(asset?.preview).toBe('test-url/test-assets/alexandru-acea-686569-unsplash__preview.jpg');
     });
 
     describe('createAssets', () => {
@@ -341,6 +356,19 @@ export const GET_ASSET = gql`
         }
     }
     ${ASSET_FRAGMENT}
+`;
+
+export const GET_ASSET_FRAGMENT_FIRST = gql`
+    fragment AssetFragFirst on Asset {
+        id
+        preview
+    }
+
+    query GetAssetFragmentFirst($id: ID!) {
+        asset(id: $id) {
+            ...AssetFragFirst
+        }
+    }
 `;
 
 export const CREATE_ASSETS = gql`
