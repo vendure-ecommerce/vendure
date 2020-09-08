@@ -16,7 +16,7 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
-import { buffer, debounceTime, filter, map } from 'rxjs/operators';
+import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { CustomMappingsResolver } from './custom-mappings.resolver';
@@ -308,11 +308,17 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
                 return this.elasticsearchIndexService.updateVariantsById(events.ctx, events.ids);
             });
 
-        this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {
-            const defaultTaxZone = event.ctx.channel.defaultTaxZone;
-            if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return this.elasticsearchService.updateAll(event.ctx);
-            }
-        });
+        this.eventBus
+            .ofType(TaxRateModificationEvent)
+            // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
+            // transactions to complete before a new job is added to the queue (assuming the SQL-based
+            // JobQueueStrategy).
+            .pipe(delay(1))
+            .subscribe(event => {
+                const defaultTaxZone = event.ctx.channel.defaultTaxZone;
+                if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
+                    return this.elasticsearchService.updateAll(event.ctx);
+                }
+            });
     }
 }

@@ -15,7 +15,6 @@ import { NativeAuthenticationMethod } from '../../entity/authentication-method/n
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -128,7 +127,7 @@ export class AdministratorService {
     }
 
     async softDelete(ctx: RequestContext, id: ID) {
-        const administrator = await getEntityOrThrow(this.connection, Administrator, id, {
+        const administrator = await this.connection.getEntityOrThrow(ctx, Administrator, id, {
             relations: ['user'],
         });
         await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });

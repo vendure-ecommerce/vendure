@@ -16,7 +16,6 @@ import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-build
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AdministratorService } from './administrator.service';
@@ -205,6 +204,7 @@ export class HistoryService {
         const { ctx, data, customerId, type } = args;
         const administrator = await this.getAdministratorFromContext(ctx);
         const entry = new CustomerHistoryEntry({
+            createdAt: new Date(),
             type,
             isPublic,
             data: data as any,
@@ -218,7 +218,7 @@ export class HistoryService {
         ctx: RequestContext,
         args: UpdateOrderHistoryEntryArgs<T>,
     ) {
-        const entry = await getEntityOrThrow(this.connection, OrderHistoryEntry, args.entryId, {
+        const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, args.entryId, {
             where: { type: args.type },
         });
 
@@ -236,7 +236,7 @@ export class HistoryService {
     }
 
     async deleteOrderHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
-        const entry = await getEntityOrThrow(this.connection, OrderHistoryEntry, id);
+        const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, id);
         await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
     }
 
@@ -244,7 +244,7 @@ export class HistoryService {
         ctx: RequestContext,
         args: UpdateCustomerHistoryEntryArgs<T>,
     ) {
-        const entry = await getEntityOrThrow(this.connection, CustomerHistoryEntry, args.entryId, {
+        const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, args.entryId, {
             where: { type: args.type },
         });
 
@@ -259,7 +259,7 @@ export class HistoryService {
     }
 
     async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
-        const entry = await getEntityOrThrow(this.connection, CustomerHistoryEntry, id);
+        const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, id);
         await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
     }
 

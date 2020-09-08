@@ -182,12 +182,12 @@ describe('Channelaware orders', () => {
     it('returns all orders on default channel', async () => {
         adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map((o) => o.id)).toEqual([order1Id, order2Id]);
+        expect(result.orders.items.map(o => o.id)).toEqual([order1Id, order2Id]);
     });
 
     it('returns only channel specific orders when on other than default channel', async () => {
         adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map((o) => o.id)).toEqual([order1Id]);
+        expect(result.orders.items.map(o => o.id)).toEqual([order1Id]);
     });
 });

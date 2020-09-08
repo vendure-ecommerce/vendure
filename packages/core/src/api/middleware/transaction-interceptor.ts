@@ -1,6 +1,5 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
 import { REQUEST_CONTEXT_KEY, TRANSACTION_MANAGER_KEY } from '../../common/constants';
 import { TransactionalConnection } from '../../service/transaction/transactional-connection';
@@ -19,7 +18,7 @@ export class TransactionInterceptor implements NestInterceptor {
         const { isGraphQL, req } = parseContext(context);
         const ctx = (req as any)[REQUEST_CONTEXT_KEY];
         if (ctx) {
-            return of(this.withTransaction(ctx, () => next.handle().toPromise()));
+            return of(this.withTransaction(ctx, () => next.handle().toPromise(), context.getHandler().name));
         } else {
             return next.handle();
         }
@@ -29,7 +28,7 @@ export class TransactionInterceptor implements NestInterceptor {
      * @description
      * Executes the `work` function within the context of a transaction.
      */
-    private async withTransaction<T>(ctx: RequestContext, work: () => T): Promise<T> {
+    private async withTransaction<T>(ctx: RequestContext, work: () => T, handler: any): Promise<T> {
         const queryRunnerExists = !!(ctx as any)[TRANSACTION_MANAGER_KEY];
         if (queryRunnerExists) {
             // If a QueryRunner already exists on the RequestContext, there must be an existing
@@ -52,8 +51,6 @@ export class TransactionInterceptor implements NestInterceptor {
                 await queryRunner.rollbackTransaction();
             }
             throw error;
-        } finally {
-            await queryRunner.release();
         }
     }
 }

@@ -15,12 +15,9 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -61,7 +58,7 @@ export class ShippingMethodService {
     }
 
     findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
-        return findOneInChannel(this.connection, ShippingMethod, shippingMethodId, ctx.channelId, {
+        return this.connection.findOneInChannel(ctx, ShippingMethod, shippingMethodId, ctx.channelId, {
             relations: ['channels'],
             where: { deletedAt: null },
         });
@@ -104,7 +101,8 @@ export class ShippingMethodService {
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const shippingMethod = await getEntityOrThrow(this.connection, ShippingMethod, id, ctx.channelId, {
+        const shippingMethod = await this.connection.getEntityOrThrow(ctx, ShippingMethod, id, {
+            channelId: ctx.channelId,
             where: { deletedAt: null },
         });
         shippingMethod.deletedAt = new Date();

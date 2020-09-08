@@ -8,6 +8,8 @@ import { TransactionalConnection } from '../../transaction/transactional-connect
 /**
  * Like the TypeOrm `Repository.findByIds()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated
  */
 export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
     connection: TransactionalConnection,
@@ -39,6 +41,8 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
 /**
  * Like the TypeOrm `Repository.findOne()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated Use {@link TransactionalConnection}.findOneInChannel() instead.
  */
 export function findOneInChannel<T extends ChannelAware | VendureEntity>(
     connection: TransactionalConnection,

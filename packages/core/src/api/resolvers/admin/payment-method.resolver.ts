@@ -12,6 +12,7 @@ import { PaymentMethodService } from '../../../service/services/payment-method.s
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('PaymentMethod')
 export class PaymentMethodResolver {
@@ -35,6 +36,7 @@ export class PaymentMethodResolver {
         return this.paymentMethodService.findOne(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     updatePaymentMethod(

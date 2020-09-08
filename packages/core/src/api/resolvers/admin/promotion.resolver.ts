@@ -18,6 +18,7 @@ import { ConfigurableOperationCodec } from '../../common/configurable-operation-
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Promotion')
 export class PromotionResolver {
@@ -56,6 +57,7 @@ export class PromotionResolver {
         return this.promotionService.getPromotionActions(ctx);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreatePromotion)
     createPromotion(
@@ -73,6 +75,7 @@ export class PromotionResolver {
         return this.promotionService.createPromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdatePromotion)
     updatePromotion(
@@ -94,6 +97,7 @@ export class PromotionResolver {
         return this.promotionService.updatePromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeletePromotion)
     deletePromotion(

@@ -24,7 +24,6 @@ import { ProductVariantEvent } from '../../event-bus/events/product-variant-even
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { samplesEach } from '../helpers/utils/samples-each';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -158,7 +157,7 @@ export class ProductVariantService {
     }
 
     async getVariantByOrderLineId(ctx: RequestContext, orderLineId: ID): Promise<Translated<ProductVariant>> {
-        const { productVariant } = await getEntityOrThrow(this.connection, OrderLine, orderLineId, {
+        const { productVariant } = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLineId, {
             relations: ['productVariant'],
         });
         return translateDeep(productVariant, ctx.languageCode);
@@ -186,7 +185,7 @@ export class ProductVariantService {
      * page, this method returns on the Product itself.
      */
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
-        const product = await getEntityOrThrow(this.connection, Product, variant.productId);
+        const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId);
         return translateDeep(product, ctx.languageCode);
     }
 
@@ -274,7 +273,7 @@ export class ProductVariantService {
     }
 
     private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
-        const existingVariant = await getEntityOrThrow(this.connection, ProductVariant, input.id);
+        const existingVariant = await this.connection.getEntityOrThrow(ctx, ProductVariant, input.id);
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
@@ -347,7 +346,7 @@ export class ProductVariantService {
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const variant = await getEntityOrThrow(this.connection, ProductVariant, id);
+        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, id);
         variant.deletedAt = new Date();
         await this.connection.getRepository(ctx, ProductVariant).save(variant, { reload: false });
         this.eventBus.publish(new ProductVariantEvent(ctx, [variant], 'deleted'));
@@ -394,16 +393,11 @@ export class ProductVariantService {
         // this could be done with less queries but depending on the data, node will crash
         // https://github.com/vendure-ecommerce/vendure/issues/328
         const optionGroups = (
-            await getEntityOrThrow(
-                this.connection,
-                Product,
-                input.productId,
-                ctx.channelId,
-                {
-                    relations: ['optionGroups', 'optionGroups.options'],
-                },
-                false,
-            )
+            await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+                channelId: ctx.channelId,
+                relations: ['optionGroups', 'optionGroups.options'],
+                loadEagerRelations: false,
+            })
         ).optionGroups;
 
         const optionIds = input.optionIds || [];
@@ -420,16 +414,11 @@ export class ProductVariantService {
             this.throwIncompatibleOptionsError(optionGroups);
         }
 
-        const product = await getEntityOrThrow(
-            this.connection,
-            Product,
-            input.productId,
-            ctx.channelId,
-            {
-                relations: ['variants', 'variants.options'],
-            },
-            false,
-        );
+        const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+            channelId: ctx.channelId,
+            relations: ['variants', 'variants.options'],
+            loadEagerRelations: false,
+        });
 
         const inputOptionIds = this.sortJoin(optionIds, ',');
 
@@ -464,7 +453,7 @@ export class ProductVariantService {
     ): Promise<TaxCategory> {
         let taxCategory: TaxCategory;
         if (taxCategoryId) {
-            taxCategory = await getEntityOrThrow(this.connection, TaxCategory, taxCategoryId);
+            taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, taxCategoryId);
         } else {
             const taxCategories = await this.taxCategoryService.findAll(ctx);
             taxCategory = taxCategories[0];

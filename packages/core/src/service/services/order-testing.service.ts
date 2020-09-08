@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateAddressInput,
     ShippingMethodQuote,
@@ -7,7 +6,6 @@ import {
     TestShippingMethodInput,
     TestShippingMethodResult,
 } from '@vendure/common/lib/generated-types';
-import { Connection } from 'typeorm';
 
 import { ID } from '../../../../common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
@@ -19,7 +17,6 @@ import { ShippingMethod } from '../../entity/shipping-method/shipping-method.ent
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 /**
@@ -88,8 +85,8 @@ export class OrderTestingService {
         });
         mockOrder.shippingAddress = shippingAddress;
         for (const line of lines) {
-            const productVariant = await getEntityOrThrow(
-                this.connection,
+            const productVariant = await this.connection.getEntityOrThrow(
+                ctx,
                 ProductVariant,
                 line.productVariantId,
                 { relations: ['taxCategory'] },

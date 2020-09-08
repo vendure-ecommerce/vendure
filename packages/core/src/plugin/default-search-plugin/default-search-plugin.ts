@@ -1,6 +1,6 @@
 import { SearchReindexResponse } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { buffer, debounceTime, filter, map } from 'rxjs/operators';
+import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { idsAreEqual } from '../../common/utils';
 import { EventBus } from '../../event-bus/event-bus';
@@ -123,11 +123,17 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
                 return this.searchIndexService.updateVariantsById(events.ctx, events.ids);
             });
 
-        this.eventBus.ofType(TaxRateModificationEvent).subscribe(event => {
-            const defaultTaxZone = event.ctx.channel.defaultTaxZone;
-            if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return this.searchIndexService.reindex(event.ctx);
-            }
-        });
+        this.eventBus
+            .ofType(TaxRateModificationEvent)
+            // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
+            // transactions to complete before a new job is added to the queue (assuming the SQL-based
+            // JobQueueStrategy).
+            .pipe(delay(1))
+            .subscribe(event => {
+                const defaultTaxZone = event.ctx.channel.defaultTaxZone;
+                if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
+                    return this.searchIndexService.reindex(event.ctx);
+                }
+            });
     }
 }

@@ -13,10 +13,8 @@ import {
 } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { User } from '../../entity/user/user.entity';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { VerificationTokenGenerator } from '../helpers/verification-token-generator/verification-token-generator';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -100,7 +98,7 @@ export class UserService {
     }
 
     async softDelete(ctx: RequestContext, userId: ID) {
-        await getEntityOrThrow(this.connection, User, userId);
+        await this.connection.getEntityOrThrow(ctx, User, userId);
         await this.connection.getRepository(ctx, User).update({ id: userId }, { deletedAt: new Date() });
     }
 

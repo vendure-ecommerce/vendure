@@ -95,12 +95,12 @@ export class AuthService {
     /**
      * Verify the provided password against the one we have for the given user.
      */
-    async verifyUserPassword(userId: ID, password: string): Promise<boolean> {
+    async verifyUserPassword(ctx: RequestContext, userId: ID, password: string): Promise<boolean> {
         const nativeAuthenticationStrategy = this.getAuthenticationStrategy(
             'shop',
             NATIVE_AUTH_STRATEGY_NAME,
         );
-        const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(userId, password);
+        const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(ctx, userId, password);
         if (!passwordMatches) {
             throw new UnauthorizedError();
         }

@@ -15,6 +15,7 @@ import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('TaxRate')
 export class TaxRateResolver {
@@ -32,6 +33,7 @@ export class TaxRateResolver {
         return this.taxRateService.findOne(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createTaxRate(
@@ -41,6 +43,7 @@ export class TaxRateResolver {
         return this.taxRateService.create(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateTaxRate(
@@ -50,6 +53,7 @@ export class TaxRateResolver {
         return this.taxRateService.update(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteTaxRate(

@@ -23,6 +23,7 @@ import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class CollectionResolver {
@@ -74,6 +75,7 @@ export class CollectionResolver {
         return this.encodeFilters(collection);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createCollection(
@@ -85,6 +87,7 @@ export class CollectionResolver {
         return this.collectionService.create(ctx, input).then(this.encodeFilters);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateCollection(
@@ -96,6 +99,7 @@ export class CollectionResolver {
         return this.collectionService.update(ctx, input).then(this.encodeFilters);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async moveCollection(
@@ -106,6 +110,7 @@ export class CollectionResolver {
         return this.collectionService.move(ctx, input).then(this.encodeFilters);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteCollection(

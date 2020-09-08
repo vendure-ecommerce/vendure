@@ -37,7 +37,6 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
@@ -54,8 +53,6 @@ import { OrderStateMachine } from '../helpers/order-state-machine/order-state-ma
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
     orderItemsAreFulfilled,
@@ -126,7 +123,7 @@ export class OrderService {
             .createQueryBuilder('order')
             .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
-            .leftJoinAndSelect('customer.user', 'user') // Used in de 'Order' query, guess this didn't work before?
+            .leftJoinAndSelect('customer.user', 'user')
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
             .leftJoinAndSelect('productVariant.taxCategory', 'prodVariantTaxCategory')
@@ -205,8 +202,8 @@ export class OrderService {
         });
     }
 
-    async getRefundOrderItems(refundId: ID): Promise<OrderItem[]> {
-        const refund = await getEntityOrThrow(this.connection, Refund, refundId, {
+    async getRefundOrderItems(ctx: RequestContext, refundId: ID): Promise<OrderItem[]> {
+        const refund = await this.connection.getEntityOrThrow(ctx, Refund, refundId, {
             relations: ['orderItems'],
         });
         return refund.orderItems;
@@ -404,7 +401,8 @@ export class OrderService {
     }
 
     async getOrderPromotions(ctx: RequestContext, orderId: ID): Promise<Promotion[]> {
-        const order = await getEntityOrThrow(this.connection, Order, orderId, ctx.channelId, {
+        const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
+            channelId: ctx.channelId,
             relations: ['promotions'],
         });
         return order.promotions || [];
@@ -481,7 +479,10 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
-            throw new InternalServerError(payment.errorMessage);
+            // TODO: we need to return an Error response as per
+            // https://github.com/vendure-ecommerce/vendure/issues/437
+            // Throwing an error rolls back all changes, which we do not want.
+            // throw new InternalServerError(payment.errorMessage);
         }
 
         if (orderTotalIsCovered(order, 'Settled')) {
@@ -494,7 +495,9 @@ export class OrderService {
     }
 
     async settlePayment(ctx: RequestContext, paymentId: ID): Promise<Payment> {
-        const payment = await getEntityOrThrow(this.connection, Payment, paymentId, { relations: ['order'] });
+        const payment = await this.connection.getEntityOrThrow(ctx, Payment, paymentId, {
+            relations: ['order'],
+        });
         const settlePaymentResult = await this.paymentMethodService.settlePayment(
             ctx,
             payment,
@@ -554,8 +557,8 @@ export class OrderService {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await findOneInChannel(
-                this.connection,
+            const orderWithFulfillments = await this.connection.findOneInChannel(
+                ctx,
                 Order,
                 order.id,
                 ctx.channelId,
@@ -596,8 +599,8 @@ export class OrderService {
         return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
     }
 
-    async getFulfillmentOrderItems(id: ID): Promise<OrderItem[]> {
-        const fulfillment = await getEntityOrThrow(this.connection, Fulfillment, id, {
+    async getFulfillmentOrderItems(ctx: RequestContext, id: ID): Promise<OrderItem[]> {
+        const fulfillment = await this.connection.getEntityOrThrow(ctx, Fulfillment, id, {
             relations: ['orderItems'],
         });
         return fulfillment.orderItems;
@@ -697,7 +700,7 @@ export class OrderService {
         if (1 < orders.length) {
             throw new IllegalOperationError('error.order-lines-must-belong-to-same-order');
         }
-        const payment = await getEntityOrThrow(this.connection, Payment, input.paymentId, {
+        const payment = await this.connection.getEntityOrThrow(ctx, Payment, input.paymentId, {
             relations: ['order'],
         });
         if (orders && orders.length && !idsAreEqual(payment.order.id, orders[0].id)) {
@@ -721,7 +724,7 @@ export class OrderService {
     }
 
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
-        const refund = await getEntityOrThrow(this.connection, Refund, input.id, {
+        const refund = await this.connection.getEntityOrThrow(ctx, Refund, input.id, {
             relations: ['payment', 'payment.order'],
         });
         refund.transactionId = input.transactionId;

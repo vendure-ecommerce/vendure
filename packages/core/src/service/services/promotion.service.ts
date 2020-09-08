@@ -28,11 +28,8 @@ import { ConfigService } from '../../config/config.service';
 import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -75,7 +72,7 @@ export class PromotionService {
     }
 
     async findOne(ctx: RequestContext, adjustmentSourceId: ID): Promise<Promotion | undefined> {
-        return findOneInChannel(this.connection, Promotion, adjustmentSourceId, ctx.channelId, {
+        return this.connection.findOneInChannel(ctx, Promotion, adjustmentSourceId, ctx.channelId, {
             where: { deletedAt: null },
         });
     }
@@ -118,7 +115,9 @@ export class PromotionService {
     }
 
     async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
-        const promotion = await getEntityOrThrow(this.connection, Promotion, input.id, ctx.channelId);
+        const promotion = await this.connection.getEntityOrThrow(ctx, Promotion, input.id, {
+            channelId: ctx.channelId,
+        });
         const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
             updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
@@ -134,7 +133,7 @@ export class PromotionService {
     }
 
     async softDeletePromotion(ctx: RequestContext, promotionId: ID): Promise<DeletionResponse> {
-        await getEntityOrThrow(this.connection, Promotion, promotionId);
+        await this.connection.getEntityOrThrow(ctx, Promotion, promotionId);
         await this.connection
             .getRepository(ctx, Promotion)
             .update({ id: promotionId }, { deletedAt: new Date() });

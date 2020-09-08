@@ -1,4 +1,4 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Translated } from '../../../common/types/locale-types';
 import { Asset } from '../../../entity/asset/asset.entity';
@@ -49,9 +49,11 @@ export class ProductEntityResolver {
 
     @ResolveField()
     async optionGroups(
+        @Info() info: any,
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
+        const a = info;
         return this.productOptionGroupService.getOptionGroupsByProductId(ctx, product.id);
     }
 
@@ -71,12 +73,12 @@ export class ProductEntityResolver {
         if (product.featuredAsset) {
             return product.featuredAsset;
         }
-        return this.assetService.getFeaturedAsset(product);
+        return this.assetService.getFeaturedAsset(ctx, product);
     }
 
     @ResolveField()
     async assets(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset[] | undefined> {
-        return this.assetService.getEntityAssets(product);
+        return this.assetService.getEntityAssets(ctx, product);
     }
 }
 

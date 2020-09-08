@@ -15,12 +15,9 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { Collection } from '../../entity/collection/collection.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -81,14 +78,14 @@ export class CustomerGroupService {
     }
 
     async update(ctx: RequestContext, input: UpdateCustomerGroupInput): Promise<CustomerGroup> {
-        const customerGroup = await getEntityOrThrow(this.connection, CustomerGroup, input.id);
+        const customerGroup = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.id);
         const updatedCustomerGroup = patchEntity(customerGroup, input);
         await this.connection.getRepository(ctx, CustomerGroup).save(updatedCustomerGroup, { reload: false });
         return assertFound(this.findOne(ctx, customerGroup.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const group = await getEntityOrThrow(this.connection, CustomerGroup, id);
+        const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, id);
         try {
             await this.connection.getRepository(ctx, CustomerGroup).remove(group);
             return {
@@ -107,7 +104,7 @@ export class CustomerGroupService {
         input: MutationAddCustomersToGroupArgs,
     ): Promise<CustomerGroup> {
         const customers = await this.getCustomersFromIds(ctx, input.customerIds);
-        const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
+        const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
             if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
                 customer.groups.push(group);
@@ -131,7 +128,7 @@ export class CustomerGroupService {
         input: MutationRemoveCustomersFromGroupArgs,
     ): Promise<CustomerGroup> {
         const customers = await this.getCustomersFromIds(ctx, input.customerIds);
-        const group = await getEntityOrThrow(this.connection, CustomerGroup, input.customerGroupId);
+        const group = await this.connection.getEntityOrThrow(ctx, CustomerGroup, input.customerGroupId);
         for (const customer of customers) {
             if (!customer.groups.map(g => g.id).includes(input.customerGroupId)) {
                 throw new UserInputError('error.customer-does-not-belong-to-customer-group');

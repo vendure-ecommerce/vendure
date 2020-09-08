@@ -23,13 +23,11 @@ import { Asset } from '../../entity/asset/asset.entity';
 import { OrderableAsset } from '../../entity/asset/orderable-asset.entity';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 // tslint:disable-next-line:no-var-requires
@@ -79,26 +77,28 @@ export class AssetService {
     }
 
     async getFeaturedAsset<T extends Omit<EntityWithAssets, 'assets'>>(
+        ctx: RequestContext,
         entity: T,
     ): Promise<Asset | undefined> {
-        const entityType = Object.getPrototypeOf(entity).constructor;
+        const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
         const entityWithFeaturedAsset = await this.connection
-            .getRepository<EntityWithAssets>(entityType)
+            .getRepository(ctx, entityType)
             .findOne(entity.id, {
                 relations: ['featuredAsset'],
             });
         return (entityWithFeaturedAsset && entityWithFeaturedAsset.featuredAsset) || undefined;
     }
 
-    async getEntityAssets<T extends EntityWithAssets>(entity: T): Promise<Asset[] | undefined> {
+    async getEntityAssets<T extends EntityWithAssets>(
+        ctx: RequestContext,
+        entity: T,
+    ): Promise<Asset[] | undefined> {
         let assets = entity.assets;
         if (!assets) {
-            const entityType = Object.getPrototypeOf(entity).constructor;
-            const entityWithAssets = await this.connection
-                .getRepository<EntityWithAssets>(entityType)
-                .findOne(entity.id, {
-                    relations: ['assets'],
-                });
+            const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
+            const entityWithAssets = await this.connection.getRepository(ctx, entityType).findOne(entity.id, {
+                relations: ['assets'],
+            });
             assets = (entityWithAssets && entityWithAssets.assets) || [];
         }
         return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
@@ -170,7 +170,7 @@ export class AssetService {
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
-        const asset = await getEntityOrThrow(this.connection, Asset, input.id);
+        const asset = await this.connection.getEntityOrThrow(ctx, Asset, input.id);
         if (input.focalPoint) {
             const to3dp = (x: number) => +x.toFixed(3);
             input.focalPoint.x = to3dp(input.focalPoint.x);

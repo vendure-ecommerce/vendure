@@ -32,6 +32,7 @@ import { SessionService } from '../../../service/services/session.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class ShopOrderResolver {
@@ -122,6 +123,7 @@ export class ShopOrderResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async setOrderShippingAddress(
@@ -138,6 +140,7 @@ export class ShopOrderResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async setOrderBillingAddress(
@@ -166,6 +169,7 @@ export class ShopOrderResolver {
         return [];
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async setOrderShippingMethod(
@@ -180,6 +184,7 @@ export class ShopOrderResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async setOrderCustomFields(
@@ -204,6 +209,7 @@ export class ShopOrderResolver {
         return [];
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async transitionOrderToState(
@@ -216,6 +222,7 @@ export class ShopOrderResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async addItemToOrder(
@@ -232,6 +239,7 @@ export class ShopOrderResolver {
         );
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async adjustOrderLine(
@@ -251,6 +259,7 @@ export class ShopOrderResolver {
         );
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async removeOrderLine(
@@ -261,6 +270,7 @@ export class ShopOrderResolver {
         return this.orderService.removeItemFromOrder(ctx, order.id, args.orderLineId);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async removeAllOrderLines(@Ctx() ctx: RequestContext): Promise<Order> {
@@ -268,6 +278,7 @@ export class ShopOrderResolver {
         return this.orderService.removeAllItemsFromOrder(ctx, order.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async applyCouponCode(
@@ -278,6 +289,7 @@ export class ShopOrderResolver {
         return this.orderService.applyCouponCode(ctx, order.id, args.couponCode);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async removeCouponCode(
@@ -288,6 +300,7 @@ export class ShopOrderResolver {
         return this.orderService.removeCouponCode(ctx, order.id, args.couponCode);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateOrder, Permission.Owner)
     async addPaymentToOrder(@Ctx() ctx: RequestContext, @Args() args: MutationAddPaymentToOrderArgs) {
@@ -324,6 +337,7 @@ export class ShopOrderResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async setCustomerForOrder(@Ctx() ctx: RequestContext, @Args() args: MutationSetCustomerForOrderArgs) {

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateTaxRateInput,
     DeletionResponse,
@@ -7,7 +6,6 @@ import {
     UpdateTaxRateInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -21,7 +19,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
@@ -69,11 +66,11 @@ export class TaxRateService {
 
     async create(ctx: RequestContext, input: CreateTaxRateInput): Promise<TaxRate> {
         const taxRate = new TaxRate(input);
-        taxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
-        taxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+        taxRate.category = await this.connection.getEntityOrThrow(ctx, TaxCategory, input.categoryId);
+        taxRate.zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId);
         if (input.customerGroupId) {
-            taxRate.customerGroup = await getEntityOrThrow(
-                this.connection,
+            taxRate.customerGroup = await this.connection.getEntityOrThrow(
+                ctx,
                 CustomerGroup,
                 input.customerGroupId,
             );
@@ -92,27 +89,36 @@ export class TaxRateService {
         }
         const updatedTaxRate = patchEntity(taxRate, input);
         if (input.categoryId) {
-            updatedTaxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
+            updatedTaxRate.category = await this.connection.getEntityOrThrow(
+                ctx,
+                TaxCategory,
+                input.categoryId,
+            );
         }
         if (input.zoneId) {
-            updatedTaxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+            updatedTaxRate.zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId);
         }
         if (input.customerGroupId) {
-            updatedTaxRate.customerGroup = await getEntityOrThrow(
-                this.connection,
+            updatedTaxRate.customerGroup = await this.connection.getEntityOrThrow(
+                ctx,
                 CustomerGroup,
                 input.customerGroupId,
             );
         }
         await this.connection.getRepository(ctx, TaxRate).save(updatedTaxRate, { reload: false });
         await this.updateActiveTaxRates(ctx);
+
+        // Commit the transaction so that the worker process can access the updated
+        // TaxRate when updating its own tax rate cache.
+        await this.connection.commitOpenTransaction(ctx);
         await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
+
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
         return assertFound(this.findOne(ctx, taxRate.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const taxRate = await getEntityOrThrow(this.connection, TaxRate, id);
+        const taxRate = await this.connection.getEntityOrThrow(ctx, TaxRate, id);
         try {
             await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
             return {

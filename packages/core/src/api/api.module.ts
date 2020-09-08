@@ -30,7 +30,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             apiPath: configService.apiOptions.shopApiPath,
             playground: configService.apiOptions.shopApiPlayground,
             debug: configService.apiOptions.shopApiDebug,
-            typePaths: ['type', 'shop-api', 'common'].map((p) =>
+            typePaths: ['type', 'shop-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
             resolverModule: ShopApiModule,
@@ -40,7 +40,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
             apiPath: configService.apiOptions.adminApiPath,
             playground: configService.apiOptions.adminApiPlayground,
             debug: configService.apiOptions.adminApiDebug,
-            typePaths: ['type', 'admin-api', 'common'].map((p) =>
+            typePaths: ['type', 'admin-api', 'common'].map(p =>
                 path.join(__dirname, 'schema', p, '*.graphql'),
             ),
             resolverModule: AdminApiModule,

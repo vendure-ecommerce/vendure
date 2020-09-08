@@ -14,7 +14,6 @@ import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
-import { getEntityOrThrow } from '../utils/get-entity-or-throw';
 import {
     orderItemsAreAllCancelled,
     orderItemsAreFulfilled,
@@ -82,17 +81,27 @@ export class OrderStateMachine {
             }
         }
         if (toState === 'PartiallyFulfilled') {
-            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await this.connection.getEntityOrThrow(
+                data.ctx,
+                Order,
+                data.order.id,
+                {
+                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+                },
+            );
             if (!orderItemsArePartiallyFulfilled(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-some-order-items-fulfilled`;
             }
         }
         if (toState === 'Fulfilled') {
-            const orderWithFulfillments = await getEntityOrThrow(this.connection, Order, data.order.id, {
-                relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-            });
+            const orderWithFulfillments = await this.connection.getEntityOrThrow(
+                data.ctx,
+                Order,
+                data.order.id,
+                {
+                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+                },
+            );
             if (!orderItemsAreFulfilled(orderWithFulfillments)) {
                 return `error.cannot-transition-unless-all-order-items-fulfilled`;
             }

@@ -13,6 +13,7 @@ import { TaxCategoryService } from '../../../service/services/tax-category.servi
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('TaxCategory')
 export class TaxCategoryResolver {
@@ -33,6 +34,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.findOne(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createTaxCategory(
@@ -42,6 +44,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.create(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateTaxCategory(
@@ -51,6 +54,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.update(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteTaxCategory(

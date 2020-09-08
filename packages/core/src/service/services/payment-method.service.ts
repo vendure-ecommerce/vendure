@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigArg,
     ConfigArgInput,
@@ -9,7 +8,6 @@ import {
 import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
@@ -27,7 +25,6 @@ import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -64,7 +61,7 @@ export class PaymentMethodService {
     }
 
     async update(ctx: RequestContext, input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
-        const paymentMethod = await getEntityOrThrow(this.connection, PaymentMethod, input.id);
+        const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, input.id);
         const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['configArgs']));
         if (input.configArgs) {
             const handler = this.configService.paymentOptions.paymentMethodHandlers.find(

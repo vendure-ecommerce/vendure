@@ -104,7 +104,7 @@ describe('Facet resolver', () => {
         });
 
         expect(createFacetValues.length).toBe(2);
-        expect(pick(createFacetValues[0], ['code', 'facet', 'name'])).toEqual({
+        expect(pick(createFacetValues.find(fv => fv.code === 'pc')!, ['code', 'facet', 'name'])).toEqual({
             code: 'pc',
             facet: {
                 id: 'T_2',
@@ -112,7 +112,7 @@ describe('Facet resolver', () => {
             },
             name: 'PC Speakers',
         });
-        expect(pick(createFacetValues[1], ['code', 'facet', 'name'])).toEqual({
+        expect(pick(createFacetValues.find(fv => fv.code === 'hi-fi')!, ['code', 'facet', 'name'])).toEqual({
             code: 'hi-fi',
             facet: {
                 id: 'T_2',

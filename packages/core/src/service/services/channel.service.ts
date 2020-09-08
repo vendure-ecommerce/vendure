@@ -24,7 +24,6 @@ import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
 import { Zone } from '../../entity/zone/zone.entity';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -68,11 +67,11 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T> {
-        const entity = await getEntityOrThrow(this.connection, entityType, entityId, {
+        const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
             relations: ['channels'],
         });
         for (const id of channelIds) {
-            const channel = await getEntityOrThrow(this.connection, Channel, id);
+            const channel = await this.connection.getEntityOrThrow(ctx, Channel, id);
             entity.channels.push(channel);
         }
         await this.connection.getRepository(ctx, entityType).save(entity as any, { reload: false });
@@ -88,7 +87,7 @@ export class ChannelService {
         entityId: ID,
         channelIds: ID[],
     ): Promise<T> {
-        const entity = await getEntityOrThrow(this.connection, entityType, entityId, {
+        const entity = await this.connection.getEntityOrThrow(ctx, entityType, entityId, {
             relations: ['channels'],
         });
         for (const id of channelIds) {
@@ -140,17 +139,21 @@ export class ChannelService {
     async create(ctx: RequestContext, input: CreateChannelInput): Promise<Channel> {
         const channel = new Channel(input);
         if (input.defaultTaxZoneId) {
-            channel.defaultTaxZone = await getEntityOrThrow(this.connection, Zone, input.defaultTaxZoneId);
+            channel.defaultTaxZone = await this.connection.getEntityOrThrow(
+                ctx,
+                Zone,
+                input.defaultTaxZoneId,
+            );
         }
         if (input.defaultShippingZoneId) {
-            channel.defaultShippingZone = await getEntityOrThrow(
-                this.connection,
+            channel.defaultShippingZone = await this.connection.getEntityOrThrow(
+                ctx,
                 Zone,
                 input.defaultShippingZoneId,
             );
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
-        await this.updateAllChannels();
+        await this.updateAllChannels(ctx);
         return channel;
     }
 
@@ -171,26 +174,26 @@ export class ChannelService {
         }
         const updatedChannel = patchEntity(channel, input);
         if (input.defaultTaxZoneId) {
-            updatedChannel.defaultTaxZone = await getEntityOrThrow(
-                this.connection,
+            updatedChannel.defaultTaxZone = await this.connection.getEntityOrThrow(
+                ctx,
                 Zone,
                 input.defaultTaxZoneId,
             );
         }
         if (input.defaultShippingZoneId) {
-            updatedChannel.defaultShippingZone = await getEntityOrThrow(
-                this.connection,
+            updatedChannel.defaultShippingZone = await this.connection.getEntityOrThrow(
+                ctx,
                 Zone,
                 input.defaultShippingZoneId,
             );
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
-        await this.updateAllChannels();
+        await this.updateAllChannels(ctx);
         return assertFound(this.findOne(ctx, channel.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        await getEntityOrThrow(this.connection, Channel, id);
+        await this.connection.getEntityOrThrow(ctx, Channel, id);
         await this.connection.getRepository(ctx, Channel).delete(id);
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,

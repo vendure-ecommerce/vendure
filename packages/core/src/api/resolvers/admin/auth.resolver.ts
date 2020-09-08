@@ -16,6 +16,7 @@ import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
@@ -29,6 +30,7 @@ export class AuthResolver extends BaseAuthResolver {
         super(authService, userService, administratorService, configService);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     login(
@@ -40,6 +42,7 @@ export class AuthResolver extends BaseAuthResolver {
         return super.login(args, ctx, req, res);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     authenticate(
@@ -51,6 +54,7 @@ export class AuthResolver extends BaseAuthResolver {
         return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     logout(

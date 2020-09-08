@@ -105,7 +105,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map((hit) => this.mapProductToSearchResult(hit)),
+                items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         } else {
@@ -115,7 +115,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map((hit) => this.mapVariantToSearchResult(hit)),
+                items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         }
@@ -155,11 +155,11 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
         const facetValues = await this.facetValueService.findByIds(
-            buckets.map((b) => b.key),
-            ctx.languageCode,
+            ctx,
+            buckets.map(b => b.key),
         );
         return facetValues.map((facetValue, index) => {
-            const bucket = buckets.find((b) => b.key.toString() === facetValue.id.toString());
+            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             return {
                 facetValue,
                 count: bucket ? bucket.doc_count : 0,
@@ -233,8 +233,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 min: aggregations.minPriceWithTax.value || 0,
                 max: aggregations.maxPriceWithTax.value || 0,
             },
-            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
-            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
+            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
         };
     }
 

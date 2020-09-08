@@ -33,6 +33,7 @@ import {
     RefundOrder,
     SettlePayment,
     SettleRefund,
+    SortOrder,
     StockMovementType,
     UpdateOrderNote,
     UpdateProductVariants,
@@ -107,7 +108,7 @@ describe('Orders resolver', () => {
 
     it('orders', async () => {
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map((o) => o.id)).toEqual(['T_1', 'T_2']);
+        expect(result.orders.items.map(o => o.id)).toEqual(['T_1', 'T_2']);
     });
 
     it('order', async () => {
@@ -191,7 +192,7 @@ describe('Orders resolver', () => {
         it('order history contains expected entries', async () => {
             const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
                 GET_ORDER_HISTORY,
-                { id: 'T_2' },
+                { id: 'T_2', options: { sort: { id: SortOrder.ASC } } },
             );
             expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
                 {
@@ -248,7 +249,7 @@ describe('Orders resolver', () => {
                     CREATE_FULFILLMENT,
                     {
                         input: {
-                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                             method: 'Test',
                         },
                     },
@@ -286,7 +287,7 @@ describe('Orders resolver', () => {
                     CREATE_FULFILLMENT,
                     {
                         input: {
-                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
                             method: 'Test',
                         },
                     },
@@ -306,7 +307,7 @@ describe('Orders resolver', () => {
                 CreateFulfillment.Variables
             >(CREATE_FULFILLMENT, {
                 input: {
-                    lines: lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     method: 'Test1',
                     trackingCode: '111',
                 },
@@ -314,10 +315,12 @@ describe('Orders resolver', () => {
 
             expect(fulfillOrder!.method).toBe('Test1');
             expect(fulfillOrder!.trackingCode).toBe('111');
-            expect(fulfillOrder!.orderItems).toEqual([
-                { id: lines[0].items[0].id },
-                { id: lines[1].items[0].id },
-            ]);
+
+            const line0ItemIds = lines[0].items.map(i => i.id);
+            const line1ItemIds = lines[1].items.map(i => i.id);
+            expect(fulfillOrder!.orderItems.length).toBe(2);
+            expect(line0ItemIds).toContain(fulfillOrder!.orderItems[0].id);
+            expect(line1ItemIds).toContain(fulfillOrder!.orderItems[1].id);
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
@@ -328,10 +331,10 @@ describe('Orders resolver', () => {
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
             expect(
                 result.order!.lines[1].items.filter(
-                    (i) => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
+                    i => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
                 ).length,
             ).toBe(1);
-            expect(result.order!.lines[1].items.filter((i) => i.fulfillment == null).length).toBe(2);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(2);
         });
 
         it('creates a second partial fulfillment', async () => {
@@ -356,8 +359,8 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
             expect(result.order!.state).toBe('PartiallyFulfilled');
-            expect(result.order!.lines[1].items.filter((i) => i.fulfillment != null).length).toBe(2);
-            expect(result.order!.lines[1].items.filter((i) => i.fulfillment == null).length).toBe(1);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment != null).length).toBe(2);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(1);
         });
 
         it(
@@ -394,7 +397,7 @@ describe('Orders resolver', () => {
                 (items, line) => [...items, ...line.items],
                 [] as OrderItemFragment[],
             );
-            const unfulfilledItem = order!.lines[1].items.find((i) => i.fulfillment == null)!;
+            const unfulfilledItem = order!.lines[1].items.find(i => i.fulfillment == null)!;
 
             const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
@@ -484,7 +487,8 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
 
-            expect(order!.fulfillments).toEqual([
+            const sortedFulfillments = order!.fulfillments?.sort((a, b) => (a.id < b.id ? -1 : 1));
+            expect(sortedFulfillments).toEqual([
                 { id: 'T_1', method: 'Test1' },
                 { id: 'T_2', method: 'Test2' },
                 { id: 'T_3', method: 'Test3' },
@@ -512,8 +516,12 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
 
-            expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }, { id: 'T_4' }]);
-            expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_5' }]);
+            const getFulfillment = (id: string): GetOrderFulfillmentItems.Fulfillments => {
+                return order?.fulfillments?.find(f => f.id === id)!;
+            };
+            expect(getFulfillment('T_1').orderItems).toEqual([{ id: 'T_3' }, { id: 'T_4' }]);
+            expect(getFulfillment('T_2').orderItems).toEqual([{ id: 'T_5' }]);
+            expect(getFulfillment('T_3').orderItems).toEqual([{ id: 'T_6' }]);
         });
     });
 
@@ -605,7 +613,11 @@ describe('Orders resolver', () => {
                     },
                 },
             );
-            expect(cancelOrder.lines.map((l) => l.items.map(pick(['id', 'cancelled'])))).toEqual([
+            expect(
+                cancelOrder.lines.map(l =>
+                    l.items.map(pick(['id', 'cancelled'])).sort((a, b) => (a.id > b.id ? 1 : -1)),
+                ),
+            ).toEqual([
                 [
                     { id: 'T_11', cancelled: true },
                     { id: 'T_12', cancelled: true },
@@ -675,7 +687,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     },
                 });
             }, 'Cannot cancel OrderLines from an Order in the "AddingItems" state'),
@@ -692,7 +704,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     },
                 });
             }, 'Cannot cancel OrderLines from an Order in the "ArrangingPayment" state'),
@@ -722,7 +734,7 @@ describe('Orders resolver', () => {
                 await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                     input: {
                         orderId,
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
                     },
                 });
             }, 'Nothing to cancel'),
@@ -754,7 +766,7 @@ describe('Orders resolver', () => {
                 {
                     input: {
                         orderId,
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                         reason: 'cancel reason 1',
                     },
                 },
@@ -798,7 +810,7 @@ describe('Orders resolver', () => {
             await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
                 input: {
                     orderId,
-                    lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                     reason: 'cancel reason 2',
                 },
             });
@@ -914,7 +926,7 @@ describe('Orders resolver', () => {
 
                 await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
                     input: {
-                        lines: order.lines.map((l) => ({ orderLineId: l.id, quantity: 1 })),
+                        lines: order.lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
                         shipping: 0,
                         adjustment: 0,
                         paymentId,
@@ -940,7 +952,7 @@ describe('Orders resolver', () => {
 
                 await adminClient.query<RefundOrder.Mutation, RefundOrder.Variables>(REFUND_ORDER, {
                     input: {
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: 0 })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
                         shipping: 0,
                         adjustment: 0,
                         paymentId,
@@ -979,7 +991,7 @@ describe('Orders resolver', () => {
                     REFUND_ORDER,
                     {
                         input: {
-                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                             shipping: 100,
                             adjustment: 0,
                             paymentId: 'T_1',
@@ -997,7 +1009,7 @@ describe('Orders resolver', () => {
                 REFUND_ORDER,
                 {
                     input: {
-                        lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
+                        lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                         shipping: order!.shipping,
                         adjustment: 0,
                         reason: 'foo',
@@ -1024,7 +1036,7 @@ describe('Orders resolver', () => {
                     REFUND_ORDER,
                     {
                         input: {
-                            lines: order!.lines.map((l) => ({ orderLineId: l.id, quantity: l.quantity })),
+                            lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
                             shipping: order!.shipping,
                             adjustment: 0,
                             paymentId,

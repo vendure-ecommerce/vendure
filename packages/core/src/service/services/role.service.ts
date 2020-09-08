@@ -25,11 +25,9 @@ import {
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Channel } from '../../entity/channel/channel.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { Role } from '../../entity/role/role.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { getUserChannelsPermissions } from '../helpers/utils/get-user-channels-permissions';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -98,14 +96,14 @@ export class RoleService {
      * Returns true if the User has the specified permission on that Channel
      */
     async userHasPermissionOnChannel(
-        userId: ID | null | undefined,
+        ctx: RequestContext,
         channelId: ID,
         permission: Permission,
     ): Promise<boolean> {
-        if (userId == null) {
+        if (ctx.activeUserId == null) {
             return false;
         }
-        const user = await getEntityOrThrow(this.connection, User, userId, {
+        const user = await this.connection.getEntityOrThrow(ctx, User, ctx.activeUserId, {
             relations: ['roles', 'roles.channels'],
         });
         const userChannels = getUserChannelsPermissions(user);
@@ -124,7 +122,7 @@ export class RoleService {
 
         let targetChannels: Channel[] = [];
         if (input.channelIds) {
-            targetChannels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
+            targetChannels = await this.getPermittedChannels(ctx, input.channelIds, ctx.activeUserId);
         } else {
             targetChannels = [ctx.channel];
         }
@@ -148,7 +146,7 @@ export class RoleService {
                 : undefined,
         });
         if (input.channelIds && ctx.activeUserId) {
-            updatedRole.channels = await this.getPermittedChannels(input.channelIds, ctx.activeUserId);
+            updatedRole.channels = await this.getPermittedChannels(ctx, input.channelIds, ctx.activeUserId);
         }
         await this.connection.getRepository(ctx, Role).save(updatedRole, { reload: false });
         return assertFound(this.findOne(ctx, role.id));
@@ -172,12 +170,16 @@ export class RoleService {
         await this.channelService.assignToChannels(ctx, Role, roleId, [channelId]);
     }
 
-    private async getPermittedChannels(channelIds: ID[], activeUserId: ID): Promise<Channel[]> {
+    private async getPermittedChannels(
+        ctx: RequestContext,
+        channelIds: ID[],
+        activeUserId: ID,
+    ): Promise<Channel[]> {
         let permittedChannels: Channel[] = [];
         for (const channelId of channelIds) {
-            const channel = await getEntityOrThrow(this.connection, Channel, channelId);
+            const channel = await this.connection.getEntityOrThrow(ctx, Channel, channelId);
             const hasPermission = await this.userHasPermissionOnChannel(
-                activeUserId,
+                ctx,
                 channelId,
                 Permission.CreateAdministrator,
             );

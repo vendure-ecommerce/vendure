@@ -31,7 +31,7 @@ class TestUserService {
                 passwordHash: 'abc',
             }),
         );
-        const user = this.connection.getRepository(User).save(
+        const user = await this.connection.getRepository(ctx, User).save(
             new User({
                 authenticationMethods: [authMethod],
                 identifier,

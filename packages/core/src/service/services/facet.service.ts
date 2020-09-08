@@ -13,12 +13,10 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { Collection } from '../../entity/collection/collection.entity';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -110,7 +108,7 @@ export class FacetService {
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
-        const facet = await getEntityOrThrow(this.connection, Facet, id, { relations: ['values'] });
+        const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, { relations: ['values'] });
         let productCount = 0;
         let variantCount = 0;
         if (facet.values.length) {

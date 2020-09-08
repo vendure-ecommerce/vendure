@@ -16,6 +16,7 @@ import { AdministratorService } from '../../../service/services/administrator.se
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Administrator')
 export class AdministratorResolver {
@@ -39,6 +40,7 @@ export class AdministratorResolver {
         return this.administratorService.findOne(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     createAdministrator(
@@ -49,6 +51,7 @@ export class AdministratorResolver {
         return this.administratorService.create(ctx, input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     updateAdministrator(
@@ -59,6 +62,7 @@ export class AdministratorResolver {
         return this.administratorService.update(ctx, input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
     assignRoleToAdministrator(
@@ -68,6 +72,7 @@ export class AdministratorResolver {
         return this.administratorService.assignRole(ctx, args.administratorId, args.roleId);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeleteAdministrator)
     deleteAdministrator(

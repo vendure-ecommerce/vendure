@@ -12,12 +12,11 @@ import { UserInputError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
-import { Address, Collection, ProductOptionGroup } from '../../entity';
+import { Address } from '../../entity';
 import { CountryTranslation } from '../../entity/country/country-translation.entity';
 import { Country } from '../../entity/country/country.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -74,7 +73,7 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache();
+        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
@@ -85,12 +84,12 @@ export class CountryService {
             entityType: Country,
             translationType: CountryTranslation,
         });
-        await this.zoneService.updateZonesCache();
+        await this.zoneService.updateZonesCache(ctx);
         return assertFound(this.findOne(ctx, country.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const country = await getEntityOrThrow(this.connection, Country, id);
+        const country = await this.connection.getEntityOrThrow(ctx, Country, id);
         const addressesUsingCountry = await this.connection
             .getRepository(ctx, Address)
             .createQueryBuilder('address')
@@ -103,7 +102,7 @@ export class CountryService {
                 message: ctx.translate('message.country-used-in-addresses', { count: addressesUsingCountry }),
             };
         } else {
-            await this.zoneService.updateZonesCache();
+            await this.zoneService.updateZonesCache(ctx);
             await this.connection.getRepository(ctx, Country).remove(country);
             return {
                 result: DeletionResult.DELETED,

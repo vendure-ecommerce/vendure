@@ -1,5 +1,4 @@
-import { Injectable, OnModuleInit, Optional } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import {
     ConfigurableOperation,
     ConfigurableOperationDefinition,
@@ -14,7 +13,6 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { Connection } from 'typeorm';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
 import { IllegalOperationError, UserInputError } from '../../common/error/errors';
@@ -26,7 +24,6 @@ import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
 import { Collection } from '../../entity/collection/collection.entity';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
@@ -39,8 +36,6 @@ import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -123,9 +118,16 @@ export class CollectionService implements OnModuleInit {
 
     async findOne(ctx: RequestContext, collectionId: ID): Promise<Translated<Collection> | undefined> {
         const relations = ['featuredAsset', 'assets', 'channels', 'parent'];
-        const collection = await findOneInChannel(this.connection, Collection, collectionId, ctx.channelId, {
-            relations,
-        });
+        const collection = await this.connection.findOneInChannel(
+            ctx,
+            Collection,
+            collectionId,
+            ctx.channelId,
+            {
+                relations,
+                loadEagerRelations: true,
+            },
+        );
         if (!collection) {
             return;
         }
@@ -325,7 +327,9 @@ export class CollectionService implements OnModuleInit {
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const collection = await getEntityOrThrow(this.connection, Collection, id, ctx.channelId);
+        const collection = await this.connection.getEntityOrThrow(ctx, Collection, id, {
+            channelId: ctx.channelId,
+        });
         const descendants = await this.getDescendants(ctx, collection.id);
         for (const coll of [...descendants.reverse(), collection]) {
             const affectedVariantIds = await this.getCollectionProductVariantIds(coll);
@@ -338,15 +342,10 @@ export class CollectionService implements OnModuleInit {
     }
 
     async move(ctx: RequestContext, input: MoveCollectionInput): Promise<Translated<Collection>> {
-        const target = await getEntityOrThrow(
-            this.connection,
-            Collection,
-            input.collectionId,
-            ctx.channelId,
-            {
-                relations: ['parent'],
-            },
-        );
+        const target = await this.connection.getEntityOrThrow(ctx, Collection, input.collectionId, {
+            channelId: ctx.channelId,
+            relations: ['parent'],
+        });
         const descendants = await this.getDescendants(ctx, input.collectionId);
 
         if (

@@ -13,12 +13,11 @@ import { RequestContext } from '../../api/common/request-context';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
-import { Collection, Product, ProductVariant } from '../../entity';
+import { Product, ProductVariant } from '../../entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -103,11 +102,11 @@ export class FacetValueService {
         let result: DeletionResult;
 
         if (!isInUse) {
-            const facetValue = await getEntityOrThrow(this.connection, FacetValue, id);
+            const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
             result = DeletionResult.DELETED;
         } else if (force) {
-            const facetValue = await getEntityOrThrow(this.connection, FacetValue, id);
+            const facetValue = await this.connection.getEntityOrThrow(ctx, FacetValue, id);
             await this.connection.getRepository(ctx, FacetValue).remove(facetValue);
             message = ctx.translate('message.facet-value-force-deleted', i18nVars);
             result = DeletionResult.DELETED;

@@ -9,6 +9,7 @@ import {
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
@@ -26,8 +27,6 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -82,7 +81,7 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const product = await findOneInChannel(this.connection, Product, productId, ctx.channelId, {
+        const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
             relations: this.relations,
             where: {
                 deletedAt: null,
@@ -95,18 +94,26 @@ export class ProductService {
     }
 
     async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
-        return findByIdsInChannel(this.connection, Product, productIds, ctx.channelId, {
-            relations: this.relations,
-        }).then(products =>
-            products.map(product =>
-                translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
-            ),
-        );
+        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
+            .leftJoin('product.channels', 'channel')
+            .andWhere('product.id IN (:...ids)', { ids: productIds })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getMany()
+            .then(products =>
+                products.map(product =>
+                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                ),
+            );
     }
 
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
-        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId, {
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             relations: ['channels'],
+            channelId: ctx.channelId,
         });
         return product.channels;
     }
@@ -155,7 +162,7 @@ export class ProductService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
-        await getEntityOrThrow(this.connection, Product, input.id);
+        await this.connection.getEntityOrThrow(ctx, Product, input.id);
         await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.update({
             ctx,
@@ -175,7 +182,9 @@ export class ProductService {
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
-        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+        });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
@@ -189,7 +198,7 @@ export class ProductService {
         input: AssignProductsToChannelInput,
     ): Promise<Array<Translated<Product>>> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx.activeUserId,
+            ctx,
             input.channelId,
             Permission.UpdateCatalog,
         );
@@ -225,7 +234,7 @@ export class ProductService {
         input: RemoveProductsFromChannelInput,
     ): Promise<Array<Translated<Product>>> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx.activeUserId,
+            ctx,
             input.channelId,
             Permission.UpdateCatalog,
         );

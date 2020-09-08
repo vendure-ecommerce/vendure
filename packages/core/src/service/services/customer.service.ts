@@ -26,7 +26,6 @@ import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authenticati
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
-import { Collection } from '../../entity/collection/collection.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -38,7 +37,6 @@ import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -383,7 +381,7 @@ export class CustomerService {
     }
 
     async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
-        const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id);
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         await this.historyService.createHistoryEntryForCustomer({
@@ -453,7 +451,7 @@ export class CustomerService {
     }
 
     async updateAddress(ctx: RequestContext, input: UpdateAddressInput): Promise<Address> {
-        const address = await getEntityOrThrow(this.connection, Address, input.id, {
+        const address = await this.connection.getEntityOrThrow(ctx, Address, input.id, {
             relations: ['customer', 'country'],
         });
         if (input.countryCode && input.countryCode !== address.country.code) {
@@ -478,7 +476,7 @@ export class CustomerService {
     }
 
     async deleteAddress(ctx: RequestContext, id: ID): Promise<boolean> {
-        const address = await getEntityOrThrow(this.connection, Address, id, {
+        const address = await this.connection.getEntityOrThrow(ctx, Address, id, {
             relations: ['customer', 'country'],
         });
         address.country = translateDeep(address.country, ctx.languageCode);
@@ -496,7 +494,7 @@ export class CustomerService {
     }
 
     async softDelete(ctx: RequestContext, customerId: ID): Promise<DeletionResponse> {
-        const customer = await getEntityOrThrow(this.connection, Customer, customerId);
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, customerId);
         await this.connection
             .getRepository(ctx, Customer)
             .update({ id: customerId }, { deletedAt: new Date() });
@@ -508,7 +506,7 @@ export class CustomerService {
     }
 
     async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput): Promise<Customer> {
-        const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id);
         await this.historyService.createHistoryEntryForCustomer(
             {
                 ctx,

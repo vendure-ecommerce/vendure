@@ -13,7 +13,6 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -47,7 +46,7 @@ export class ProductOptionService {
         const productOptionGroup =
             group instanceof ProductOptionGroup
                 ? group
-                : await getEntityOrThrow(this.connection, ProductOptionGroup, group);
+                : await this.connection.getEntityOrThrow(ctx, ProductOptionGroup, group);
         const option = await this.translatableSaver.create({
             ctx,
             input,

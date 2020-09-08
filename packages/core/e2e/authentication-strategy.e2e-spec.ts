@@ -100,7 +100,9 @@ describe('AuthenticationStrategy', () => {
                 id: newCustomerId,
             });
 
-            expect(customer?.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(
+                customer?.history.items.sort((a, b) => (a.id > b.id ? 1 : -1)).map(pick(['type', 'data'])),
+            ).toEqual([
                 {
                     type: HistoryEntryType.CUSTOMER_REGISTERED,
                     data: {

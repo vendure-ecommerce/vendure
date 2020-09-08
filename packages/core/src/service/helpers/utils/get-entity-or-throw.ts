@@ -12,6 +12,8 @@ import { findOneInChannel } from './channel-aware-orm-utils';
  * Attempts to find an entity of the given type and id, and throws an error if not found.
  * If the entity is a ChannelAware type, then the `channelId` must be supplied or else
  * the function will "fail" by resolving to the `never` type.
+ *
+ * @deprecated Use {@link TransactionalConnection}.getEntityOrThrow() instead.
  */
 export async function getEntityOrThrow<T extends VendureEntity>(
     connection: TransactionalConnection,

@@ -14,6 +14,7 @@ import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('GlobalSettings')
 export class GlobalSettingsResolver {
@@ -53,6 +54,7 @@ export class GlobalSettingsResolver {
         };
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateGlobalSettings(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateGlobalSettingsArgs) {

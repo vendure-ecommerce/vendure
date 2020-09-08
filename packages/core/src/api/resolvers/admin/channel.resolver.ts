@@ -14,6 +14,7 @@ import { RoleService } from '../../../service/services/role.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Channel')
 export class ChannelResolver {
@@ -37,6 +38,7 @@ export class ChannelResolver {
         return ctx.channel;
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async createChannel(
@@ -51,6 +53,7 @@ export class ChannelResolver {
         return channel;
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async updateChannel(
@@ -60,6 +63,7 @@ export class ChannelResolver {
         return this.channelService.update(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async deleteChannel(

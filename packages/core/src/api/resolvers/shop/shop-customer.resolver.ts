@@ -14,6 +14,7 @@ import { CustomerService } from '../../../service/services/customer.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class ShopCustomerResolver {
@@ -28,6 +29,7 @@ export class ShopCustomerResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomer(
@@ -41,6 +43,7 @@ export class ShopCustomerResolver {
         });
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async createCustomerAddress(
@@ -51,6 +54,7 @@ export class ShopCustomerResolver {
         return this.customerService.createAddress(ctx, customer.id, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerAddress(
@@ -65,6 +69,7 @@ export class ShopCustomerResolver {
         return this.customerService.updateAddress(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async deleteCustomerAddress(

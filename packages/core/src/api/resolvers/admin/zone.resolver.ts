@@ -15,6 +15,7 @@ import { ZoneService } from '../../../service/services/zone.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Zone')
 export class ZoneResolver {
@@ -32,18 +33,21 @@ export class ZoneResolver {
         return this.zoneService.findOne(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createZone(@Ctx() ctx: RequestContext, @Args() args: MutationCreateZoneArgs): Promise<Zone> {
         return this.zoneService.create(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateZone(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateZoneArgs): Promise<Zone> {
         return this.zoneService.update(ctx, args.input);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteZone(
@@ -53,6 +57,7 @@ export class ZoneResolver {
         return this.zoneService.delete(ctx, args.id);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async addMembersToZone(
@@ -62,6 +67,7 @@ export class ZoneResolver {
         return this.zoneService.addMembersToZone(ctx, args);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async removeMembersFromZone(

@@ -34,6 +34,7 @@ import { RequestContext } from '../../common/request-context';
 import { setSessionToken } from '../../common/set-session-token';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
@@ -54,6 +55,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         );
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     login(
@@ -66,6 +68,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return super.login(args, ctx, req, res);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     authenticate(
@@ -77,6 +80,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     logout(
@@ -93,6 +97,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return super.me(ctx, 'shop');
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     async registerCustomerAccount(
@@ -103,6 +108,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.customerService.registerCustomerAccount(ctx, args.input).then(() => true);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     async verifyCustomerAccount(
@@ -139,6 +145,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     async refreshCustomerVerification(
@@ -149,12 +156,14 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: MutationRequestPasswordResetArgs) {
         return this.customerService.requestPasswordReset(ctx, args.emailAddress).then(() => true);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Public)
     async resetPassword(
@@ -185,6 +194,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerPassword(
@@ -207,6 +217,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return result;
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async requestUpdateCustomerEmailAddress(
@@ -217,10 +228,11 @@ export class ShopAuthResolver extends BaseAuthResolver {
         if (!ctx.activeUserId) {
             throw new ForbiddenError();
         }
-        await this.authService.verifyUserPassword(ctx.activeUserId, args.password);
+        await this.authService.verifyUserPassword(ctx, ctx.activeUserId, args.password);
         return this.customerService.requestUpdateEmailAddress(ctx, ctx.activeUserId, args.newEmailAddress);
     }
 
+    @Transaction
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerEmailAddress(

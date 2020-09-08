@@ -18,6 +18,7 @@ import { EventBus } from '../../../event-bus/event-bus';
 import { WorkerService } from '../../../worker/worker.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
@@ -39,7 +40,7 @@ describe('OrderCalculator', () => {
                 TaxCalculator,
                 TaxRateService,
                 { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
-                { provide: Connection, useClass: MockConnection },
+                { provide: TransactionalConnection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventBus, useValue: { publish: () => ({}) } },

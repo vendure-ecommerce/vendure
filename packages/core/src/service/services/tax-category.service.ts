@@ -10,10 +10,8 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { assertFound } from '../../common/utils';
-import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { TaxCategory } from '../../entity/tax-category/tax-category.entity';
 import { TaxRate } from '../../entity/tax-rate/tax-rate.entity';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -46,7 +44,7 @@ export class TaxCategoryService {
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const taxCategory = await getEntityOrThrow(this.connection, TaxCategory, id);
+        const taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, id);
         const dependentRates = await this.connection
             .getRepository(ctx, TaxRate)
             .count({ where: { category: id } });
