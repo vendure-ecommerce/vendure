@@ -40,9 +40,11 @@ export class AuthGuard implements CanActivate {
         const isPublic = !!permissions && permissions.includes(Permission.Public);
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         const session = await this.getSession(req, res, hasOwnerPermission);
-        const requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+        let requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
         (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
 
+        // In case the session does not have an activeChannelId or the activeChannelId
+        // does not correspond to the current channel, the activeChannelId on the session is set
         if (session && (!session.activeChannelId || session.activeChannelId !== requestContext.channelId)) {
             await this.sessionService.setActiveChannel(session, requestContext.channel);
             if (requestContext.activeUserId) {
@@ -51,13 +53,16 @@ export class AuthGuard implements CanActivate {
                     requestContext.activeUserId,
                     false,
                 );
+                // To avoid assigning the customer to the active channel on every request,
+                // it is only done on the first request and whenever the channel changes
                 if (customer) {
                     await this.channelService.assignToChannels(Customer, customer.id, [
                         requestContext.channelId,
                     ]);
                 }
             }
-            return this.canActivate(context);
+            requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+            (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
         }
 
         if (authDisabled || !permissions || isPublic) {
