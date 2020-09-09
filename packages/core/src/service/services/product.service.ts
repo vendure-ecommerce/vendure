@@ -18,6 +18,7 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { Channel } from '../../entity/channel/channel.entity';
+import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
@@ -108,6 +109,15 @@ export class ProductService {
             relations: ['channels'],
         });
         return product.channels;
+    }
+
+    getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
+        return this.connection
+            .getRepository(Product)
+            .findOne(productId, { relations: ['facetValues', 'facetValues.facet'] })
+            .then(variant =>
+                !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
+            );
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {

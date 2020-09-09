@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
@@ -276,18 +276,22 @@ describe('Custom fields', () => {
             }
         `);
 
+        const customFields = {
+            stringWithDefault: 'hello',
+            localeStringWithDefault: 'hola',
+            intWithDefault: 5,
+            floatWithDefault: 5.5,
+            booleanWithDefault: true,
+            dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
+            // MySQL does not support defaults on TEXT fields, which is what "simple-json" uses
+            // internally. See https://stackoverflow.com/q/3466872/772859
+            stringListWithDefault: testConfig.dbConnectionOptions.type === 'mysql' ? null : ['cat'],
+        };
+
         expect(product).toEqual({
             id: 'T_1',
             name: 'Laptop',
-            customFields: {
-                stringWithDefault: 'hello',
-                localeStringWithDefault: 'hola',
-                intWithDefault: 5,
-                floatWithDefault: 5.5,
-                booleanWithDefault: true,
-                dateTimeWithDefault: '2019-04-30T12:59:16.415Z',
-                stringListWithDefault: ['cat'],
-            },
+            customFields,
         });
     });
 

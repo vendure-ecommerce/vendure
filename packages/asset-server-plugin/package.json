@@ -1,6 +1,6 @@
 {
   "name": "@vendure/asset-server-plugin",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
@@ -23,7 +23,7 @@
     "@types/node-fetch": "^2.5.4",
     "@types/sharp": "^0.24.0",
     "@vendure/common": "^0.15.0",
-    "@vendure/core": "^0.15.0",
+    "@vendure/core": "^0.15.1",
     "aws-sdk": "^2.670.0",
     "express": "^4.16.4",
     "node-fetch": "^2.6.0",

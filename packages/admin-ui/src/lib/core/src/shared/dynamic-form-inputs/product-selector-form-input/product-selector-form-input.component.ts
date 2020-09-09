@@ -40,7 +40,7 @@ export class ProductSelectorFormInputComponent implements FormInputComponent, On
         this.selection$ = this.formControl.valueChanges.pipe(
             startWith(this.formControl.value),
             switchMap(value => {
-                if (Array.isArray(value)) {
+                if (Array.isArray(value) && 0 < value.length) {
                     return forkJoin(
                         value.map(id =>
                             this.dataService.product

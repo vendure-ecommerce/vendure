@@ -111,6 +111,7 @@
             [isDefaultBilling]="defaultBillingAddressId === addressForm.value.id"
             [isDefaultShipping]="defaultShippingAddressId === addressForm.value.id"
             [addressForm]="addressForm"
+            [customFields]="addressCustomFields"
             (setAsDefaultBilling)="setDefaultBillingAddressId($event)"
             (setAsDefaultShipping)="setDefaultShippingAddressId($event)"
         ></vdr-address-card>

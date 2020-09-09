@@ -17,53 +17,12 @@
     </div>
     <div class="card-block">
         <div class="card-text">
-            <vdr-formatted-address [address]="address" *ngIf="!editing"></vdr-formatted-address>
-            <form [formGroup]="addressForm" *ngIf="editing">
-                <clr-input-container>
-                    <label>{{ 'customer.full-name' | translate }}</label>
-                    <input formControlName="fullName" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.street-line-1' | translate }}</label>
-                    <input formControlName="streetLine1" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.street-line-2' | translate }}</label>
-                    <input formControlName="streetLine2" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.city' | translate }}</label>
-                    <input formControlName="city" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.province' | translate }}</label>
-                    <input formControlName="province" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.postal-code' | translate }}</label>
-                    <input formControlName="postalCode" type="text" clrInput />
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.country' | translate }}</label>
-                    <select name="countryCode" formControlName="countryCode" clrInput clrSelect>
-                        <option *ngFor="let country of availableCountries" [value]="country.code">
-                            {{ country.name }}
-                        </option>
-                    </select>
-                </clr-input-container>
-                <clr-input-container>
-                    <label>{{ 'customer.phone-number' | translate }}</label>
-                    <input formControlName="phoneNumber" type="text" clrInput />
-                </clr-input-container>
-            </form>
+            <vdr-formatted-address [address]="address"></vdr-formatted-address>
         </div>
     </div>
     <div class="card-footer">
         <vdr-entity-info [entity]="address"></vdr-entity-info>
-        <button class="btn btn-sm btn-link" *ngIf="editing" (click)="editing = false">
-            {{ 'common.done' | translate }}
-        </button>
-        <button class="btn btn-sm btn-link" *ngIf="!editing" (click)="editing = true">
+        <button class="btn btn-sm btn-link" (click)="editAddress()">
             {{ 'common.edit' | translate }}
         </button>
         <vdr-dropdown>
@@ -75,7 +34,7 @@
                 <button
                     vdrDropdownItem
                     class="button"
-                    [disabled]="isDefaultShipping || editing"
+                    [disabled]="isDefaultShipping"
                     (click)="setAsDefaultShippingAddress()"
                 >
                     {{ 'customer.set-as-default-shipping-address' | translate }}
@@ -83,7 +42,7 @@
                 <button
                     vdrDropdownItem
                     class="button"
-                    [disabled]="isDefaultBilling || editing"
+                    [disabled]="isDefaultBilling"
                     (click)="setAsDefaultBillingAddress()"
                 >
                     {{ 'customer.set-as-default-billing-address' | translate }}

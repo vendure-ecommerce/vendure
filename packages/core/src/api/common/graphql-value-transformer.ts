@@ -114,6 +114,9 @@ export class GraphqlValueTransformer {
                         currentNode = currentNode.parent;
                     }
                 }
+                if (node.kind === 'FragmentDefinition') {
+                    currentNode = rootNode;
+                }
             },
         };
         for (const operation of document.definitions) {

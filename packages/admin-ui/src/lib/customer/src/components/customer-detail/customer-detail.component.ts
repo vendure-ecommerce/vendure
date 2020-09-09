@@ -49,6 +49,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     customFields: CustomFieldConfig[];
+    addressCustomFields: CustomFieldConfig[];
     availableCountries$: Observable<GetAvailableCountries.Items[]>;
     orders$: Observable<GetCustomer.Items[]>;
     ordersCount$: Observable<number>;
@@ -74,6 +75,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         super(route, router, serverConfigService, dataService);
 
         this.customFields = this.getCustomFieldConfig('Customer');
+        this.addressCustomFields = this.getCustomFieldConfig('Address');
         this.detailForm = this.formBuilder.group({
             customer: this.formBuilder.group({
                 title: '',
@@ -245,6 +247,7 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                                     phoneNumber: address.phoneNumber,
                                     defaultShippingAddress: this.defaultShippingAddressId === address.id,
                                     defaultBillingAddress: this.defaultBillingAddressId === address.id,
+                                    customFields: address.customFields,
                                 };
                                 if (!address.id) {
                                     saveOperations.push(
@@ -403,14 +406,28 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
         if (entity.addresses) {
             const addressesArray = new FormArray([]);
             for (const address of entity.addresses) {
-                addressesArray.push(
-                    this.formBuilder.group({ ...address, countryCode: address.country.code }),
-                );
+                const { customFields, ...rest } = address as any;
+                const addressGroup = this.formBuilder.group({
+                    ...rest,
+                    countryCode: address.country.code,
+                });
+                addressesArray.push(addressGroup);
                 if (address.defaultShippingAddress) {
                     this.defaultShippingAddressId = address.id;
                 }
                 if (address.defaultBillingAddress) {
                     this.defaultBillingAddressId = address.id;
+                }
+
+                if (this.addressCustomFields.length) {
+                    const customFieldsGroup = this.formBuilder.group({});
+                    for (const fieldDef of this.addressCustomFields) {
+                        const key = fieldDef.name;
+                        const value = (address as any).customFields?.[key];
+                        const control = new FormControl(value);
+                        customFieldsGroup.addControl(key, control);
+                    }
+                    addressGroup.addControl('customFields', customFieldsGroup);
                 }
             }
             this.detailForm.setControl('addresses', addressesArray);

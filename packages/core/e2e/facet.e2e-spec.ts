@@ -247,7 +247,7 @@ describe('Facet resolver', () => {
                 },
             ]);
 
-            expect(result2.facet!.values[0]).toEqual(facetValueToDelete);
+            expect(result2.facet!.values.find(v => v.id === facetValueToDelete.id)).toBeDefined();
         });
 
         it('deleteFacetValues for FacetValue in use can be force deleted', async () => {

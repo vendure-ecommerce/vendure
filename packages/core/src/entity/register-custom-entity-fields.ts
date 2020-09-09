@@ -3,7 +3,7 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Column, ColumnOptions, ColumnType, ConnectionOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 
-import { CustomFields } from '../config/custom-field/custom-field-types';
+import { CustomFieldConfig, CustomFields } from '../config/custom-field/custom-field-types';
 import { Logger } from '../config/logger/vendure-logger';
 import { VendureConfig } from '../config/vendure-config';
 
@@ -54,12 +54,7 @@ function registerCustomFieldsForEntity(
             const registerColumn = () => {
                 const options: ColumnOptions = {
                     type: list ? 'simple-json' : getColumnType(dbEngine, type),
-                    default:
-                        list && defaultValue
-                            ? JSON.stringify(defaultValue)
-                            : type === 'datetime'
-                            ? formatDefaultDatetime(dbEngine, defaultValue)
-                            : defaultValue,
+                    default: getDefault(customField, dbEngine),
                     name,
                     nullable: nullable === false ? false : true,
                 };
@@ -149,6 +144,22 @@ function getColumnType(dbEngine: ConnectionOptions['type'], type: CustomFieldTyp
             assertNever(type);
     }
     return 'varchar';
+}
+
+function getDefault(customField: CustomFieldConfig, dbEngine: ConnectionOptions['type']) {
+    const { name, type, list, defaultValue, nullable } = customField;
+    if (list && defaultValue) {
+        if (dbEngine === 'mysql') {
+            // MySQL does not support defaults on TEXT fields, which is what "simple-json" uses
+            // internally. See https://stackoverflow.com/q/3466872/772859
+            Logger.warn(
+                `MySQL does not support default values on list fields (${name}). No default will be set.`,
+            );
+            return undefined;
+        }
+        return JSON.stringify(defaultValue);
+    }
+    return type === 'datetime' ? formatDefaultDatetime(dbEngine, defaultValue) : defaultValue;
 }
 
 /**

@@ -4,6 +4,7 @@ import { SharedModule } from '@vendure/admin-ui/core';
 
 import { AddCustomerToGroupDialogComponent } from './components/add-customer-to-group-dialog/add-customer-to-group-dialog.component';
 import { AddressCardComponent } from './components/address-card/address-card.component';
+import { AddressDetailDialogComponent } from './components/address-detail-dialog/address-detail-dialog.component';
 import { CustomerDetailComponent } from './components/customer-detail/customer-detail.component';
 import { CustomerGroupDetailDialogComponent } from './components/customer-group-detail-dialog/customer-group-detail-dialog.component';
 import { CustomerGroupListComponent } from './components/customer-group-list/customer-group-list.component';
@@ -27,6 +28,7 @@ import { customerRoutes } from './customer.routes';
         CustomerGroupMemberListComponent,
         SelectCustomerGroupDialogComponent,
         CustomerHistoryComponent,
+        AddressDetailDialogComponent,
     ],
     exports: [AddressCardComponent],
 })
