@@ -71,7 +71,7 @@ export class AssetFileInputComponent implements OnInit {
         this.dragging = false;
         this.overDropZone = false;
         const files = Array.from(event.dataTransfer ? event.dataTransfer.items : [])
-            .map(i => i.getAsFile())
+            .map((i) => i.getAsFile())
             .filter(notNullOrUndefined);
         this.selectFiles.emit(files);
     }

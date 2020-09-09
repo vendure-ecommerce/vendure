@@ -1234,10 +1234,12 @@ export type FloatCustomFieldConfig = CustomField & {
 
 export type Fulfillment = Node & {
     __typename?: 'Fulfillment';
+    nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
 };
@@ -1313,9 +1315,10 @@ export enum HistoryEntryType {
     CUSTOMER_NOTE = 'CUSTOMER_NOTE',
     ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
     ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
-    ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+    ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
     ORDER_CANCELLATION = 'ORDER_CANCELLATION',
     ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+    ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
     ORDER_NOTE = 'ORDER_NOTE',
     ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
@@ -1869,6 +1872,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
+    transitionFulfillmentToState: Fulfillment;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -2158,6 +2162,11 @@ export type MutationDeleteOrderNoteArgs = {
 };
 
 export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationTransitionFulfillmentToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
 };

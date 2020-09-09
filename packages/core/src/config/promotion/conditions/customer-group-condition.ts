@@ -34,9 +34,9 @@ export const customerGroup = new PromotionCondition({
         let groupIds = cache.get(customerId);
         if (!groupIds) {
             const groups = await customerService.getCustomerGroups(customerId);
-            groupIds = groups.map(g => g.id);
+            groupIds = groups.map((g) => g.id);
             cache.set(customerId, groupIds);
         }
-        return !!groupIds.find(id => idsAreEqual(id, args.customerGroupId));
+        return !!groupIds.find((id) => idsAreEqual(id, args.customerGroupId));
     },
 });

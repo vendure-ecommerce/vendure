@@ -13,6 +13,7 @@ type Mutation {
     updateOrderNote(input: UpdateOrderNoteInput!): HistoryEntry!
     deleteOrderNote(id: ID!): DeletionResponse!
     transitionOrderToState(id: ID!, state: String!): Order
+    transitionFulfillmentToState(id: ID!, state: String!): Fulfillment!
     setOrderCustomFields(input: UpdateOrderInput!): Order
 }
 

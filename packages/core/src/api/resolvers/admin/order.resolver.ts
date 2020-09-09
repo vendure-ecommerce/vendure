@@ -8,6 +8,7 @@ import {
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
+    MutationTransitionFulfillmentToStateArgs,
     MutationTransitionOrderToStateArgs,
     MutationUpdateOrderNoteArgs,
     Permission,
@@ -17,6 +18,7 @@ import {
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Order } from '../../../entity/order/order.entity';
+import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
@@ -101,5 +103,14 @@ export class OrderResolver {
         @Args() args: MutationTransitionOrderToStateArgs,
     ) {
         return this.orderService.transitionToState(ctx, args.id, args.state as OrderState);
+    }
+
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async transitionFulfillmentToState(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationTransitionFulfillmentToStateArgs,
+    ) {
+        return this.orderService.transitionFulfillmentToState(ctx, args.id, args.state as FulfillmentState);
     }
 }

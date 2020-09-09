@@ -31,13 +31,13 @@ export class ProductSelectorComponent implements OnInit {
             debounceTime(200),
             distinctUntilChanged(),
             tap(() => (this.searchLoading = true)),
-            switchMap(term => {
+            switchMap((term) => {
                 if (!term) {
                     return of([]);
                 }
                 return this.dataService.product
                     .productSelectorSearch(term, 10)
-                    .mapSingle(result => result.search.items);
+                    .mapSingle((result) => result.search.items);
             }),
             tap(() => (this.searchLoading = false)),
         );

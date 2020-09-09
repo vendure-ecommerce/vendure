@@ -53,7 +53,7 @@ export function buildElasticBody(
         const operator = facetValueOperator === LogicalOperator.AND ? 'must' : 'should';
         query.bool.filter = query.bool.filter.concat([
             {
-                bool: { [operator]: facetValueIds.map(id => ({ term: { facetValueIds: id } })) },
+                bool: { [operator]: facetValueIds.map((id) => ({ term: { facetValueIds: id } })) },
             },
         ]);
     }

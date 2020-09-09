@@ -28,7 +28,7 @@ export class CustomerGroupFormInputComponent implements FormInputComponent, OnIn
             .getCustomerGroupList({
                 take: 9999,
             })
-            .mapSingle(res => res.customerGroups.items)
+            .mapSingle((res) => res.customerGroups.items)
             .pipe(startWith([]));
     }
 

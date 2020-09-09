@@ -36,7 +36,7 @@ export class TestOrderBuilderComponent implements OnInit {
         if (this.lines) {
             this.orderLinesChange.emit(this.lines);
         }
-        this.dataService.settings.getActiveChannel('cache-first').single$.subscribe(result => {
+        this.dataService.settings.getActiveChannel('cache-first').single$.subscribe((result) => {
             this.currencyCode = result.activeChannel.currencyCode;
         });
     }
@@ -48,7 +48,7 @@ export class TestOrderBuilderComponent implements OnInit {
     }
 
     private addToLines(result: ProductSelectorSearch.Items) {
-        if (!this.lines.find(l => l.id === result.productVariantId)) {
+        if (!this.lines.find((l) => l.id === result.productVariantId)) {
             this.lines.push({
                 id: result.productVariantId,
                 name: result.productVariantName,
@@ -69,7 +69,7 @@ export class TestOrderBuilderComponent implements OnInit {
     }
 
     removeLine(line: TestOrderLine) {
-        this.lines = this.lines.filter(l => l.id !== line.id);
+        this.lines = this.lines.filter((l) => l.id !== line.id);
         this.persistToLocalStorage();
         this.orderLinesChange.emit(this.lines);
     }

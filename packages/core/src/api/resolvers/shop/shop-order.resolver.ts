@@ -57,7 +57,7 @@ export class ShopOrderResolver {
                 skip: 0,
                 take: 99999,
             })
-            .then(data => data.items);
+            .then((data) => data.items);
     }
 
     @Query()

@@ -75,7 +75,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
 
     @Column() enabled: boolean;
 
-    @ManyToMany(type => Channel)
+    @ManyToMany((type) => Channel)
     @JoinTable()
     channels: Channel[];
 

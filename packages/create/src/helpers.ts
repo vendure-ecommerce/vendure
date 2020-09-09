@@ -344,8 +344,9 @@ async function checkPostgresDbExists(options: any, root: string): Promise<true> 
 function throwConnectionError(err: any) {
     throw new Error(
         `Could not connect to the database. ` +
-            `Please check the connection settings in your Vendure config.\n[${err.message ||
-                err.toString()}]`,
+            `Please check the connection settings in your Vendure config.\n[${
+                err.message || err.toString()
+            }]`,
     );
 }
 

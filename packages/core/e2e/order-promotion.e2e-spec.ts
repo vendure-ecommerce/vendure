@@ -15,7 +15,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
@@ -174,7 +174,7 @@ describe('Promotions applied to Orders', () => {
         it('order history records application', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
+            expect(activeOrder!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
@@ -211,7 +211,7 @@ describe('Promotions applied to Orders', () => {
         it('order history records removal', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
+            expect(activeOrder!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
@@ -236,7 +236,7 @@ describe('Promotions applied to Orders', () => {
                 couponCode: 'NOT_THERE',
             });
 
-            expect(removeCouponCode!.history.items.map(i => omit(i, ['id']))).toEqual([
+            expect(removeCouponCode!.history.items.map((i) => omit(i, ['id']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
@@ -522,7 +522,7 @@ describe('Promotions applied to Orders', () => {
             });
 
             function getItemSale1Line(lines: TestOrderFragment.Lines[]): TestOrderFragment.Lines {
-                return lines.find(l => l.productVariant.id === getVariantBySlug('item-sale-1').id)!;
+                return lines.find((l) => l.productVariant.id === getVariantBySlug('item-sale-1').id)!;
             }
             expect(addItemToOrder!.adjustments.length).toBe(0);
             expect(getItemSale1Line(addItemToOrder!.lines).adjustments.length).toBe(2); // 2x tax
@@ -653,7 +653,7 @@ describe('Promotions applied to Orders', () => {
 
             expect(apply1?.lines[0].adjustments.length).toBe(2);
             expect(
-                apply1?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+                apply1?.lines[0].adjustments.find((a) => a.type === AdjustmentType.PROMOTION)?.description,
             ).toBe('item promo');
             expect(apply1?.adjustments.length).toBe(0);
 
@@ -667,7 +667,7 @@ describe('Promotions applied to Orders', () => {
 
             expect(apply2?.lines[0].adjustments.length).toBe(2);
             expect(
-                apply2?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
+                apply2?.lines[0].adjustments.find((a) => a.type === AdjustmentType.PROMOTION)?.description,
             ).toBe('item promo');
             expect(apply2?.adjustments.length).toBe(1);
             expect(apply2?.adjustments[0].description).toBe('order promo');
@@ -892,7 +892,7 @@ describe('Promotions applied to Orders', () => {
     function getVariantBySlug(
         slug: 'item-1' | 'item-12' | 'item-60' | 'item-sale-1' | 'item-sale-12',
     ): GetPromoProducts.Variants {
-        return products.find(p => p.slug === slug)!.variants[0];
+        return products.find((p) => p.slug === slug)!.variants[0];
     }
 
     async function deletePromotion(promotionId: string) {

@@ -96,5 +96,5 @@ export function registerCustomFieldComponent(
  * Registers the default form input components.
  */
 export function registerDefaultFormInputs(): FactoryProvider[] {
-    return defaultFormInputs.map(cmp => registerFormInputComponent(cmp.id, cmp));
+    return defaultFormInputs.map((cmp) => registerFormInputComponent(cmp.id, cmp));
 }
