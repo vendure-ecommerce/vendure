@@ -20,6 +20,7 @@ export class FulfillmentService {
         private fulfillmentStateMachine: FulfillmentStateMachine,
         private eventBus: EventBus,
     ) {}
+
     async create(input: DeepPartial<Fulfillment>): Promise<Fulfillment> {
         const newFulfillment = new Fulfillment({
             ...input,
@@ -27,15 +28,18 @@ export class FulfillmentService {
         });
         return this.connection.getRepository(Fulfillment).save(newFulfillment);
     }
+
     async findOneOrThrow(id: ID, relations: string[] = ['orderItems']): Promise<Fulfillment> {
         return await getEntityOrThrow(this.connection, Fulfillment, id, {
             relations,
         });
     }
+
     async getOrderItemsByFulfillmentId(id: ID): Promise<OrderItem[]> {
         const fulfillment = await this.findOneOrThrow(id);
         return fulfillment.orderItems;
     }
+
     async transitionToState(
         ctx: RequestContext,
         fulfillmentId: ID,
@@ -61,6 +65,7 @@ export class FulfillmentService {
 
         return { fulfillment, orders, fromState, toState: state };
     }
+
     getNextStates(fulfillment: Fulfillment): ReadonlyArray<FulfillmentState> {
         return this.fulfillmentStateMachine.getNextStates(fulfillment);
     }
