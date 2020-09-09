@@ -15,9 +15,13 @@ import {
     TransitFulfillment,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import {
+    CREATE_FULFILLMENT,
+    GET_CUSTOMER_LIST,
+    GET_ORDER_FULFILLMENTS,
+    TRANSIT_FULFILLMENT,
+} from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
-import { CREATE_FULFILLMENT, GET_ORDER_FULFILLMENTS, TRANSIT_FULFILLMENT } from './order.e2e-spec';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 const initSpy = jest.fn();

@@ -40,10 +40,13 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
+    CREATE_FULFILLMENT,
     GET_CUSTOMER_LIST,
     GET_ORDER,
+    GET_ORDER_FULFILLMENTS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
+    TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
@@ -1372,43 +1375,6 @@ export const SETTLE_PAYMENT = gql`
             id
             state
             metadata
-        }
-    }
-`;
-
-export const CREATE_FULFILLMENT = gql`
-    mutation CreateFulfillment($input: FulfillOrderInput!) {
-        fulfillOrder(input: $input) {
-            id
-            method
-            state
-            trackingCode
-            orderItems {
-                id
-            }
-        }
-    }
-`;
-
-export const TRANSIT_FULFILLMENT = gql`
-    mutation TransitFulfillment($id: ID!, $state: String!) {
-        transitionFulfillmentToState(id: $id, state: $state) {
-            id
-            state
-        }
-    }
-`;
-export const GET_ORDER_FULFILLMENTS = gql`
-    query GetOrderFulfillments($id: ID!) {
-        order(id: $id) {
-            id
-            state
-            fulfillments {
-                id
-                state
-                nextStates
-                method
-            }
         }
     }
 `;
