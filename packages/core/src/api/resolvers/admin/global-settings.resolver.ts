@@ -41,8 +41,8 @@ export class GlobalSettingsResolver {
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
             exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields
-                .filter(c => !c.internal)
-                .map(c => ({ ...c, list: !!c.list as any }));
+                .filter((c) => !c.internal)
+                .map((c) => ({ ...c, list: !!c.list as any }));
         }
         return {
             customFieldConfig: exposedCustomFieldConfig,
@@ -60,12 +60,12 @@ export class GlobalSettingsResolver {
         if (availableLanguages) {
             const channels = await this.channelService.findAll();
             const unavailableDefaults = channels.filter(
-                c => !availableLanguages.includes(c.defaultLanguageCode),
+                (c) => !availableLanguages.includes(c.defaultLanguageCode),
             );
             if (unavailableDefaults.length) {
                 throw new UserInputError('error.cannot-set-default-language-as-unavailable', {
-                    language: unavailableDefaults.map(c => c.defaultLanguageCode).join(', '),
-                    channelCode: unavailableDefaults.map(c => c.code).join(', '),
+                    language: unavailableDefaults.map((c) => c.defaultLanguageCode).join(', '),
+                    channelCode: unavailableDefaults.map((c) => c.code).join(', '),
                 });
             }
         }

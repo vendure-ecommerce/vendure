@@ -436,3 +436,39 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
     }
     ${CUSTOMER_GROUP_FRAGMENT}
 `;
+export const CREATE_FULFILLMENT = gql`
+    mutation CreateFulfillment($input: FulfillOrderInput!) {
+        fulfillOrder(input: $input) {
+            id
+            method
+            state
+            trackingCode
+            orderItems {
+                id
+            }
+        }
+    }
+`;
+
+export const TRANSIT_FULFILLMENT = gql`
+    mutation TransitFulfillment($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            id
+            state
+        }
+    }
+`;
+export const GET_ORDER_FULFILLMENTS = gql`
+    query GetOrderFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            state
+            fulfillments {
+                id
+                state
+                nextStates
+                method
+            }
+        }
+    }
+`;

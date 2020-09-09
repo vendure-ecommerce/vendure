@@ -15,7 +15,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 import {
     AssignProductsToChannel,
     CreateChannel,
@@ -152,7 +152,7 @@ describe('Elasticsearch plugin', () => {
                 },
             },
         );
-        expect(result.search.items.map(i => i.productName)).toEqual([
+        expect(result.search.items.map((i) => i.productName)).toEqual([
             'Instant Camera',
             'Camera Lens',
             'SLR Camera',
@@ -173,7 +173,7 @@ describe('Elasticsearch plugin', () => {
                 },
             },
         );
-        expect(result.search.items.map(i => i.productName)).toEqual([
+        expect(result.search.items.map((i) => i.productName)).toEqual([
             'Clacky Keyboard',
             'Curvy Monitor',
             'Gaming PC',
@@ -198,7 +198,7 @@ describe('Elasticsearch plugin', () => {
                 },
             },
         );
-        expect(result.search.items.map(i => i.productName)).toEqual([
+        expect(result.search.items.map((i) => i.productName)).toEqual([
             'Bonsai Tree',
             'Camera Lens',
             'Clacky Keyboard',
@@ -225,7 +225,7 @@ describe('Elasticsearch plugin', () => {
                 },
             },
         );
-        expect(result.search.items.map(i => i.productName)).toEqual([
+        expect(result.search.items.map((i) => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
             'Bonsai Tree',
@@ -242,7 +242,7 @@ describe('Elasticsearch plugin', () => {
                 },
             },
         );
-        expect(result.search.items.map(i => i.productName)).toEqual([
+        expect(result.search.items.map((i) => i.productName)).toEqual([
             'Spiky Cactus',
             'Orchid',
             'Bonsai Tree',
@@ -432,7 +432,7 @@ describe('Elasticsearch plugin', () => {
                     },
                 },
             );
-            expect(result.search.items.map(i => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
+            expect(result.search.items.map((i) => i.productVariantId)).toEqual(['T_1', 'T_2', 'T_4']);
         });
 
         it('encodes collectionIds', async () => {
@@ -474,7 +474,7 @@ describe('Elasticsearch plugin', () => {
             it('updates index when ProductVariants are changed', async () => {
                 await awaitRunningJobs(adminClient);
                 const { search } = await doAdminSearchQuery({ term: 'drive', groupByProduct: false });
-                expect(search.items.map(i => i.sku)).toEqual([
+                expect(search.items.map((i) => i.sku)).toEqual([
                     'IHD455T1',
                     'IHD455T2',
                     'IHD455T3',
@@ -485,7 +485,7 @@ describe('Elasticsearch plugin', () => {
                 await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
                     UPDATE_PRODUCT_VARIANTS,
                     {
-                        input: search.items.map(i => ({
+                        input: search.items.map((i) => ({
                             id: i.productVariantId,
                             sku: i.sku + '_updated',
                         })),
@@ -498,7 +498,7 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 });
 
-                expect(search2.items.map(i => i.sku)).toEqual([
+                expect(search2.items.map((i) => i.sku)).toEqual([
                     'IHD455T1_updated',
                     'IHD455T2_updated',
                     'IHD455T3_updated',
@@ -524,7 +524,7 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 });
 
-                expect(search2.items.map(i => i.sku).sort()).toEqual([
+                expect(search2.items.map((i) => i.sku).sort()).toEqual([
                     'IHD455T2_updated',
                     'IHD455T3_updated',
                     'IHD455T4_updated',
@@ -541,7 +541,7 @@ describe('Elasticsearch plugin', () => {
                 });
                 await awaitRunningJobs(adminClient);
                 const result = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
-                expect(result.search.items.map(i => i.productName).sort()).toEqual([
+                expect(result.search.items.map((i) => i.productName).sort()).toEqual([
                     'Clacky Keyboard',
                     'Curvy Monitor',
                     'Gaming PC',
@@ -552,7 +552,7 @@ describe('Elasticsearch plugin', () => {
 
             it('updates index when a Product is deleted', async () => {
                 const { search } = await doAdminSearchQuery({ facetValueIds: ['T_2'], groupByProduct: true });
-                expect(search.items.map(i => i.productId).sort()).toEqual([
+                expect(search.items.map((i) => i.productId).sort()).toEqual([
                     'T_2',
                     'T_3',
                     'T_4',
@@ -567,7 +567,7 @@ describe('Elasticsearch plugin', () => {
                     facetValueIds: ['T_2'],
                     groupByProduct: true,
                 });
-                expect(search2.items.map(i => i.productId).sort()).toEqual(['T_2', 'T_3', 'T_4', 'T_6']);
+                expect(search2.items.map((i) => i.productId).sort()).toEqual(['T_2', 'T_3', 'T_4', 'T_6']);
             });
 
             it('updates index when a Collection is changed', async () => {
@@ -599,7 +599,7 @@ describe('Elasticsearch plugin', () => {
                 await awaitRunningJobs(adminClient);
                 const result1 = await doAdminSearchQuery({ collectionId: 'T_2', groupByProduct: true });
 
-                expect(result1.search.items.map(i => i.productName)).toEqual([
+                expect(result1.search.items.map((i) => i.productName)).toEqual([
                     'Road Bike',
                     'Skipping Rope',
                     'Boxing Gloves',
@@ -611,7 +611,7 @@ describe('Elasticsearch plugin', () => {
 
                 const result2 = await doAdminSearchQuery({ collectionSlug: 'plants', groupByProduct: true });
 
-                expect(result2.search.items.map(i => i.productName)).toEqual([
+                expect(result2.search.items.map((i) => i.productName)).toEqual([
                     'Road Bike',
                     'Skipping Rope',
                     'Boxing Gloves',
@@ -660,7 +660,7 @@ describe('Elasticsearch plugin', () => {
                     collectionId: createCollection.id,
                     groupByProduct: true,
                 });
-                expect(result.search.items.map(i => i.productName)).toEqual([
+                expect(result.search.items.map((i) => i.productName)).toEqual([
                     'Instant Camera',
                     'Camera Lens',
                     'Tripod',
@@ -756,7 +756,7 @@ describe('Elasticsearch plugin', () => {
                     groupByProduct: false,
                 });
 
-                const variantToDelete = s1.items.find(i => i.sku === 'IHD455T2_updated')!;
+                const variantToDelete = s1.items.find((i) => i.sku === 'IHD455T2_updated')!;
 
                 const { deleteProductVariant } = await adminClient.query<
                     DeleteProductVariant.Mutation,
@@ -878,7 +878,7 @@ describe('Elasticsearch plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
-                expect(search.items.map(i => i.productId).sort()).toEqual(['T_1', 'T_2']);
+                expect(search.items.map((i) => i.productId).sort()).toEqual(['T_1', 'T_2']);
             });
 
             it('removing product from channel', async () => {
@@ -896,7 +896,7 @@ describe('Elasticsearch plugin', () => {
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
-                expect(search.items.map(i => i.productId)).toEqual(['T_1']);
+                expect(search.items.map((i) => i.productId)).toEqual(['T_1']);
             });
 
             it('reindexes in channel', async () => {
@@ -912,7 +912,7 @@ describe('Elasticsearch plugin', () => {
                 expect(job!.state).toBe(JobState.COMPLETED);
 
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
-                expect(search.items.map(i => i.productId).sort()).toEqual(['T_1']);
+                expect(search.items.map((i) => i.productId).sort()).toEqual(['T_1']);
             });
         });
     });

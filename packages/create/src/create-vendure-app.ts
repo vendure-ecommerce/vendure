@@ -38,7 +38,7 @@ program
     .version(packageJson.version)
     .arguments('<project-directory>')
     .usage(`${chalk.green('<project-directory>')} [options]`)
-    .action(name => {
+    .action((name) => {
         projectName = name;
     })
     .option(
@@ -124,7 +124,7 @@ async function createApp(
         {
             title: 'Installing dependencies',
             task: (() => {
-                return new Observable(subscriber => {
+                return new Observable((subscriber) => {
                     subscriber.next('Creating package.json');
                     fs.writeFileSync(
                         path.join(root, 'package.json'),
@@ -145,14 +145,14 @@ async function createApp(
                             }
                         })
                         .then(() => subscriber.complete())
-                        .catch(err => subscriber.error(err));
+                        .catch((err) => subscriber.error(err));
                 });
             }) as any,
         },
         {
             title: 'Generating app scaffold',
-            task: ctx => {
-                return new Observable(subscriber => {
+            task: (ctx) => {
+                return new Observable((subscriber) => {
                     fs.ensureDirSync(path.join(root, 'src'));
                     const assetPath = (fileName: string) => path.join(__dirname, '../assets', fileName);
                     const srcPathScript = (fileName: string): string =>
@@ -187,13 +187,13 @@ async function createApp(
                             subscriber.next(`Copied email templates`);
                             subscriber.complete();
                         })
-                        .catch(err => subscriber.error(err));
+                        .catch((err) => subscriber.error(err));
                 });
             },
         },
         {
             title: 'Initializing server',
-            task: async ctx => {
+            task: async (ctx) => {
                 try {
                     if (usingTs) {
                         // register ts-node so that the config file can be loaded
@@ -252,11 +252,11 @@ async function createApp(
                     if (isCi) {
                         console.log('[CI] Pausing before close...');
                     }
-                    await new Promise(resolve => setTimeout(resolve, isCi ? 30000 : 2000));
+                    await new Promise((resolve) => setTimeout(resolve, isCi ? 30000 : 2000));
                     await app.close();
                     if (isCi) {
                         console.log('[CI] Pausing after close...');
-                        await new Promise(resolve => setTimeout(resolve, 10000));
+                        await new Promise((resolve) => setTimeout(resolve, 10000));
                     }
                 } catch (e) {
                     console.log(e);

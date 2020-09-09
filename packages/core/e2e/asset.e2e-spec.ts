@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -65,7 +65,7 @@ describe('Asset resolver', () => {
         );
 
         expect(assets.totalItems).toBe(4);
-        expect(assets.items.map(a => omit(a, ['id']))).toEqual([
+        expect(assets.items.map((a) => omit(a, ['id']))).toEqual([
             {
                 fileSize: 1680,
                 mimeType: 'image/jpeg',
@@ -130,33 +130,33 @@ describe('Asset resolver', () => {
             const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
                 mutation: CREATE_ASSETS,
                 filePaths: filesToUpload,
-                mapVariables: filePaths => ({
-                    input: filePaths.map(p => ({ file: null })),
+                mapVariables: (filePaths) => ({
+                    input: filePaths.map((p) => ({ file: null })),
                 }),
             });
 
-            expect(createAssets.map(a => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1))).toEqual(
-                [
-                    {
-                        fileSize: 1680,
-                        focalPoint: null,
-                        mimeType: 'image/jpeg',
-                        name: 'pps1.jpg',
-                        preview: 'test-url/test-assets/pps1__preview.jpg',
-                        source: 'test-url/test-assets/pps1.jpg',
-                        type: 'IMAGE',
-                    },
-                    {
-                        fileSize: 1680,
-                        focalPoint: null,
-                        mimeType: 'image/jpeg',
-                        name: 'pps2.jpg',
-                        preview: 'test-url/test-assets/pps2__preview.jpg',
-                        source: 'test-url/test-assets/pps2.jpg',
-                        type: 'IMAGE',
-                    },
-                ],
-            );
+            expect(
+                createAssets.map((a) => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1)),
+            ).toEqual([
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'image/jpeg',
+                    name: 'pps1.jpg',
+                    preview: 'test-url/test-assets/pps1__preview.jpg',
+                    source: 'test-url/test-assets/pps1.jpg',
+                    type: 'IMAGE',
+                },
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'image/jpeg',
+                    name: 'pps2.jpg',
+                    preview: 'test-url/test-assets/pps2__preview.jpg',
+                    source: 'test-url/test-assets/pps2.jpg',
+                    type: 'IMAGE',
+                },
+            ]);
 
             createdAssetId = createAssets[0].id;
         });
@@ -166,12 +166,12 @@ describe('Asset resolver', () => {
             const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
                 mutation: CREATE_ASSETS,
                 filePaths: filesToUpload,
-                mapVariables: filePaths => ({
-                    input: filePaths.map(p => ({ file: null })),
+                mapVariables: (filePaths) => ({
+                    input: filePaths.map((p) => ({ file: null })),
                 }),
             });
 
-            expect(createAssets.map(a => omit(a, ['id']))).toEqual([
+            expect(createAssets.map((a) => omit(a, ['id']))).toEqual([
                 {
                     fileSize: 1680,
                     focalPoint: null,
@@ -191,8 +191,8 @@ describe('Asset resolver', () => {
                 const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
                     mutation: CREATE_ASSETS,
                     filePaths: filesToUpload,
-                    mapVariables: filePaths => ({
-                        input: filePaths.map(p => ({ file: null })),
+                    mapVariables: (filePaths) => ({
+                        input: filePaths.map((p) => ({ file: null })),
                     }),
                 });
             }, `The MIME type 'text/plain' is not permitted.`),

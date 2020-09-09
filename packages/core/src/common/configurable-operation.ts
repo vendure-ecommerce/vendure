@@ -358,9 +358,9 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
 }
 
 function localizeString(stringArray: LocalizedStringArray, languageCode: LanguageCode): string {
-    let match = stringArray.find(x => x.languageCode === languageCode);
+    let match = stringArray.find((x) => x.languageCode === languageCode);
     if (!match) {
-        match = stringArray.find(x => x.languageCode === DEFAULT_LANGUAGE_CODE);
+        match = stringArray.find((x) => x.languageCode === DEFAULT_LANGUAGE_CODE);
     }
     if (!match) {
         match = stringArray[0];
@@ -375,7 +375,7 @@ function coerceValueToType<T extends ConfigArgs>(
 ): ConfigArgValues<T>[keyof T] {
     if (isList) {
         try {
-            return (JSON.parse(value) as string[]).map(v => coerceValueToType(v, type, false)) as any;
+            return (JSON.parse(value) as string[]).map((v) => coerceValueToType(v, type, false)) as any;
         } catch (err) {
             throw new InternalServerError(err.message);
         }

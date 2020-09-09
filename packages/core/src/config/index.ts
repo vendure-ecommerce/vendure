@@ -30,4 +30,5 @@ export * from './shipping-method/default-shipping-calculator';
 export * from './shipping-method/default-shipping-eligibility-checker';
 export * from './shipping-method/shipping-calculator';
 export * from './shipping-method/shipping-eligibility-checker';
+export * from './fulfillment/custom-fulfillment-process';
 export * from './vendure-config';

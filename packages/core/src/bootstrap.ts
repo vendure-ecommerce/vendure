@@ -211,7 +211,7 @@ export async function getAllEntities(userConfig: Partial<VendureConfig>): Promis
     // Check to ensure that no plugins are defining entities with names
     // which conflict with existing entities.
     for (const pluginEntity of pluginEntities) {
-        if (allEntities.find(e => e.name === pluginEntity.name)) {
+        if (allEntities.find((e) => e.name === pluginEntity.name)) {
             throw new InternalServerError(`error.entity-name-conflict`, { entityName: pluginEntity.name });
         } else {
             allEntities.push(pluginEntity);
@@ -236,7 +236,7 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
             } else if (typeof exposedHeaders === 'string') {
                 exposedHeadersWithAuthKey = exposedHeaders
                     .split(',')
-                    .map(x => x.trim())
+                    .map((x) => x.trim())
                     .concat(authTokenHeaderKey);
             } else {
                 exposedHeadersWithAuthKey = exposedHeaders.concat(authTokenHeaderKey);
@@ -316,18 +316,18 @@ function logWelcomeMessage(config: RuntimeVendureConfig) {
     apiCliGreetings.push(...getProxyMiddlewareCliGreetings(config));
     const columnarGreetings = arrangeCliGreetingsInColumns(apiCliGreetings);
     const title = `Vendure server (v${version}) now running on port ${port}`;
-    const maxLineLength = Math.max(title.length, ...columnarGreetings.map(l => l.length));
+    const maxLineLength = Math.max(title.length, ...columnarGreetings.map((l) => l.length));
     const titlePadLength = title.length < maxLineLength ? Math.floor((maxLineLength - title.length) / 2) : 0;
     Logger.info(`=`.repeat(maxLineLength));
     Logger.info(title.padStart(title.length + titlePadLength));
     Logger.info('-'.repeat(maxLineLength).padStart(titlePadLength));
-    columnarGreetings.forEach(line => Logger.info(line));
+    columnarGreetings.forEach((line) => Logger.info(line));
     Logger.info(`=`.repeat(maxLineLength));
 }
 
 function arrangeCliGreetingsInColumns(lines: Array<[string, string]>): string[] {
-    const columnWidth = Math.max(...lines.map(l => l[0].length)) + 2;
-    return lines.map(l => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
+    const columnWidth = Math.max(...lines.map((l) => l[0].length)) + 2;
+    return lines.map((l) => `${(l[0] + ':').padEnd(columnWidth)}${l[1]}`);
 }
 
 /**
@@ -379,7 +379,7 @@ async function validateDbTablesForWorker(worker: INestMicroservice) {
             Logger.verbose(
                 `Table structure could not be verified, trying again after ${pollIntervalMs}ms (attempt ${attempts} of ${maxAttempts})`,
             );
-            await new Promise(resolve1 => setTimeout(resolve1, pollIntervalMs));
+            await new Promise((resolve1) => setTimeout(resolve1, pollIntervalMs));
         }
         reject(`Could not validate DB table structure. Aborting bootstrap.`);
     });
@@ -396,7 +396,7 @@ function checkForDeprecatedOptions(config: Partial<VendureConfig>) {
         'middleware',
         'apolloServerPlugins',
     ];
-    const deprecatedOptionsUsed = deprecatedApiOptions.filter(option => config.hasOwnProperty(option));
+    const deprecatedOptionsUsed = deprecatedApiOptions.filter((option) => config.hasOwnProperty(option));
     if (deprecatedOptionsUsed.length) {
         throw new Error(
             `The following VendureConfig options are deprecated: ${deprecatedOptionsUsed.join(', ')}\n` +

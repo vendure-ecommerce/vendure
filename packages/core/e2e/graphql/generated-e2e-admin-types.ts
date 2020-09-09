@@ -1234,10 +1234,12 @@ export type FloatCustomFieldConfig = CustomField & {
 
 export type Fulfillment = Node & {
     __typename?: 'Fulfillment';
+    nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
 };
@@ -1313,9 +1315,10 @@ export enum HistoryEntryType {
     CUSTOMER_NOTE = 'CUSTOMER_NOTE',
     ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
     ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
-    ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+    ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
     ORDER_CANCELLATION = 'ORDER_CANCELLATION',
     ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+    ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
     ORDER_NOTE = 'ORDER_NOTE',
     ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
@@ -1869,6 +1872,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
+    transitionFulfillmentToState: Fulfillment;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -2158,6 +2162,11 @@ export type MutationDeleteOrderNoteArgs = {
 };
 
 export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationTransitionFulfillmentToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
 };
@@ -4438,6 +4447,15 @@ export type UpdateFacetValuesMutation = { __typename?: 'Mutation' } & {
     updateFacetValues: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
 };
 
+export type AdminTransitionMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
+};
+
 export type AdministratorFragment = { __typename?: 'Administrator' } & Pick<
     Administrator,
     'id' | 'firstName' | 'lastName' | 'emailAddress'
@@ -5146,9 +5164,19 @@ export type CreateFulfillmentMutationVariables = {
 };
 
 export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
-    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method' | 'trackingCode'> & {
-            orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
-        };
+    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<
+        Fulfillment,
+        'id' | 'method' | 'state' | 'trackingCode'
+    > & { orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>> };
+};
+
+export type TransitFulfillmentMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type TransitFulfillmentMutation = { __typename?: 'Mutation' } & {
+    transitionFulfillmentToState: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'>;
 };
 
 export type GetOrderFulfillmentsQueryVariables = {
@@ -5157,9 +5185,14 @@ export type GetOrderFulfillmentsQueryVariables = {
 
 export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                 fulfillments?: Maybe<
-                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                    Array<
+                        { __typename?: 'Fulfillment' } & Pick<
+                            Fulfillment,
+                            'id' | 'state' | 'nextStates' | 'method'
+                        >
+                    >
                 >;
             }
     >;
@@ -5170,9 +5203,14 @@ export type GetOrderListFulfillmentsQueryVariables = {};
 export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & {
         items: Array<
-            { __typename?: 'Order' } & Pick<Order, 'id'> & {
+            { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                     fulfillments?: Maybe<
-                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                        Array<
+                            { __typename?: 'Fulfillment' } & Pick<
+                                Fulfillment,
+                                'id' | 'state' | 'nextStates' | 'method'
+                            >
+                        >
                     >;
                 }
         >;
@@ -5185,10 +5223,10 @@ export type GetOrderFulfillmentItemsQueryVariables = {
 
 export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                 fulfillments?: Maybe<
                     Array<
-                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'> & {
+                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'> & {
                                 orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
                             }
                     >
@@ -6370,6 +6408,12 @@ export namespace UpdateFacetValues {
     export type UpdateFacetValues = FacetValueFragment;
 }
 
+export namespace AdminTransition {
+    export type Variables = AdminTransitionMutationVariables;
+    export type Mutation = AdminTransitionMutation;
+    export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
+}
+
 export namespace Administrator {
     export type Fragment = AdministratorFragment;
     export type User = AdministratorFragment['user'];
@@ -6819,6 +6863,12 @@ export namespace CreateFulfillment {
     export type Mutation = CreateFulfillmentMutation;
     export type FulfillOrder = CreateFulfillmentMutation['fulfillOrder'];
     export type OrderItems = NonNullable<CreateFulfillmentMutation['fulfillOrder']['orderItems'][0]>;
+}
+
+export namespace TransitFulfillment {
+    export type Variables = TransitFulfillmentMutationVariables;
+    export type Mutation = TransitFulfillmentMutation;
+    export type TransitionFulfillmentToState = TransitFulfillmentMutation['transitionFulfillmentToState'];
 }
 
 export namespace GetOrderFulfillments {

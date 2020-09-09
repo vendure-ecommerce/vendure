@@ -27,7 +27,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.facet.getFacets(...args).refetchOnChannelChange(),
-            data => data.facets,
+            (data) => data.facets,
         );
     }
 
@@ -42,12 +42,12 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
     deleteFacet(facetValueId: string) {
         this.showModalAndDelete(facetValueId)
             .pipe(
-                switchMap(response => {
+                switchMap((response) => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(facetValueId, response.message || '').pipe(
-                            map(r => r.result === DeletionResult.DELETED),
+                            map((r) => r.result === DeletionResult.DELETED),
                         );
                     }
                 }),
@@ -61,7 +61,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                     });
                     this.refresh();
                 },
-                err => {
+                (err) => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'FacetValue',
                     });
@@ -80,8 +80,8 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap(res => (res ? this.dataService.facet.deleteFacet(facetId, !!message) : EMPTY)),
-                map(res => res.deleteFacet),
+                switchMap((res) => (res ? this.dataService.facet.deleteFacet(facetId, !!message) : EMPTY)),
+                map((res) => res.deleteFacet),
             );
     }
 }

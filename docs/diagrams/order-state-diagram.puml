@@ -27,12 +27,12 @@ state AdminAPI {
         PaymentSettled: provider, i.e. the transaction is complete.
     }
 
-    state PartiallyFulfilled {
-        PartiallyFulfilled: One or more OrderItems have been dispatched to the Customer
+    state PartiallyDelivered {
+        PartiallyDelivered: One or more OrderItems have been dispatched to the Customer
     }
 
-    state Fulfilled #9d9 {
-        Fulfilled: All OrderItems have been dispatched to the Customer
+    state Delivered #9d9 {
+        Delivered: All OrderItems have been dispatched to the Customer
     }
 
 
@@ -41,7 +41,7 @@ state AdminAPI {
     }
     Cancelled --> [*]
 
-    Fulfilled --> [*]
+    Delivered --> [*]
 }
 
 
@@ -50,15 +50,15 @@ ArrangingPayment --> AddingItems: transitionOrderToState
 ArrangingPayment --> PaymentAuthorized: addPaymentToOrder
 ArrangingPayment -----> PaymentSettled: addPaymentToOrder
 PaymentAuthorized --> PaymentSettled: settlePayment
-PaymentSettled --> Fulfilled: fulfillOrder
-PaymentSettled --> PartiallyFulfilled: fulfillOrder
-PartiallyFulfilled --> PartiallyFulfilled: fulfillOrder
-PartiallyFulfilled --> Fulfilled: fulfillOrder
+PaymentSettled --> Delivered: fulfillOrder
+PaymentSettled --> PartiallyDelivered: fulfillOrder
+PartiallyDelivered --> PartiallyDelivered: fulfillOrder
+PartiallyDelivered --> Delivered: fulfillOrder
 
 PaymentAuthorized --> Cancelled: cancelOrder
 PaymentSettled --> Cancelled: cancelOrder
-PartiallyFulfilled --> Cancelled: cancelOrder
-Fulfilled --> Cancelled: cancelOrder
+PartiallyDelivered --> Cancelled: cancelOrder
+Delivered --> Cancelled: cancelOrder
 
 
 

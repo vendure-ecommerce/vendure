@@ -22,7 +22,7 @@ export class OrderListComponent extends BaseListComponent<GetOrderList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.order.getOrders(...args).refetchOnChannelChange(),
-            data => data.orders,
+            (data) => data.orders,
             (skip, take) => {
                 const stateFilter = this.stateFilter.value;
                 const state = stateFilter === 'all' ? null : { eq: stateFilter };

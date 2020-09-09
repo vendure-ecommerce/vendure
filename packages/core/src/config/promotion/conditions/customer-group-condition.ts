@@ -38,6 +38,6 @@ export const customerGroup = new PromotionCondition({
             groupIds = groups.map(g => g.id);
             cache.set(customerId, groupIds);
         }
-        return !!groupIds.find(id => idsAreEqual(id, args.customerGroupId));
+        return !!groupIds.find((id) => idsAreEqual(id, args.customerGroupId));
     },
 });

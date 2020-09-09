@@ -60,9 +60,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: '',
         cookieOptions: {
-            secret: Math.random()
-                .toString(36)
-                .substr(3),
+            secret: Math.random().toString(36).substr(3),
             httpOnly: true,
         },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,

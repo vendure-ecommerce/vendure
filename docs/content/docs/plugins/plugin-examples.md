@@ -234,7 +234,7 @@ export class OrderAnalyticsPlugin implements OnVendureBootstrap {
    */
   onVendureBootstrap() {
     this.eventBus.ofType(OrderStateTransitionEvent).subscribe(event => {
-      if (event.toState === 'Fulfilled') {
+      if (event.toState === 'Delivered') {
         this.workerService.send(new ProcessOrderMessage({ orderId: event.order.id })).subscribe();
       }
     });

@@ -78,7 +78,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             .take(take)
             .skip(skip)
             .getRawMany()
-            .then(res => res.map(r => mapToSearchResult(r, ctx.channel.currencyCode)));
+            .then((res) => res.map((r) => mapToSearchResult(r, ctx.channel.currencyCode)));
     }
 
     async getTotalCount(ctx: RequestContext, input: SearchInput, enabledOnly: boolean): Promise<number> {
@@ -97,7 +97,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
             .setParameters(innerQb.getParameters());
-        return totalItemsQb.getRawOne().then(res => res.total);
+        return totalItemsQb.getRawOne().then((res) => res.total);
     }
 
     private applyTermAndFilters(
@@ -120,7 +120,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
                 'score',
             )
                 .andWhere(
-                    new Brackets(qb1 => {
+                    new Brackets((qb1) => {
                         qb1.where('sku LIKE :like_term')
                             .orWhere('productName LIKE :like_term')
                             .orWhere('productVariantName LIKE :like_term')
@@ -131,7 +131,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         }
         if (facetValueIds?.length) {
             qb.andWhere(
-                new Brackets(qb1 => {
+                new Brackets((qb1) => {
                     for (const id of facetValueIds) {
                         const placeholder = '_' + id;
                         const clause = `(',' || facetValueIds || ',') LIKE :${placeholder}`;

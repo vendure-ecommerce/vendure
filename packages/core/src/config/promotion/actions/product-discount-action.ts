@@ -33,5 +33,5 @@ export const productsPercentageDiscount = new PromotionItemAction({
 });
 
 function lineContainsIds(ids: ID[], line: OrderLine): boolean {
-    return !!ids.find(id => idsAreEqual(id, line.productVariant.id));
+    return !!ids.find((id) => idsAreEqual(id, line.productVariant.id));
 }

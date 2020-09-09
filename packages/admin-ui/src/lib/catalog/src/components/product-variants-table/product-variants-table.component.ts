@@ -29,7 +29,7 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.subscription = this.formArray.valueChanges
             .pipe(
-                map(value => value.length),
+                map((value) => value.length),
                 debounceTime(1),
                 distinctUntilChanged(),
             )
@@ -47,7 +47,7 @@ export class ProductVariantsTableComponent implements OnInit, OnDestroy {
     }
 
     optionGroupName(optionGroupId: string): string | undefined {
-        const group = this.optionGroups.find(g => g.id === optionGroupId);
+        const group = this.optionGroups.find((g) => g.id === optionGroupId);
         return group && group.name;
     }
 
