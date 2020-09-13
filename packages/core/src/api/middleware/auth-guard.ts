@@ -12,6 +12,7 @@ import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
+import { RequestContext } from '../common/request-context';
 import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
 import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
@@ -41,11 +42,37 @@ export class AuthGuard implements CanActivate {
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         const session = await this.getSession(req, res, hasOwnerPermission);
         let requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+
+        const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
+        if (requestContextShouldBeReinitialized) {
+            requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+        }
         (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
 
+        if (authDisabled || !permissions || isPublic) {
+            return true;
+        } else {
+            const canActivate = requestContext.isAuthorized || requestContext.authorizedAsOwnerOnly;
+            if (!canActivate) {
+                throw new ForbiddenError();
+            } else {
+                return canActivate;
+            }
+        }
+    }
+
+    private async setActiveChannel(
+        requestContext: RequestContext,
+        session?: CachedSession,
+    ): Promise<boolean> {
+        if (!session) {
+            return false;
+        }
         // In case the session does not have an activeChannelId or the activeChannelId
         // does not correspond to the current channel, the activeChannelId on the session is set
-        if (session && (!session.activeChannelId || session.activeChannelId !== requestContext.channelId)) {
+        const activeChannelShouldBeSet =
+            !session.activeChannelId || session.activeChannelId !== requestContext.channelId;
+        if (activeChannelShouldBeSet) {
             await this.sessionService.setActiveChannel(session, requestContext.channel);
             if (requestContext.activeUserId) {
                 const customer = await this.customerService.findOneByUserId(
@@ -61,20 +88,9 @@ export class AuthGuard implements CanActivate {
                     ]);
                 }
             }
-            requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
-            (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
-        }
-
-        if (authDisabled || !permissions || isPublic) {
             return true;
-        } else {
-            const canActivate = requestContext.isAuthorized || requestContext.authorizedAsOwnerOnly;
-            if (!canActivate) {
-                throw new ForbiddenError();
-            } else {
-                return canActivate;
-            }
         }
+        return false;
     }
 
     private async getSession(
