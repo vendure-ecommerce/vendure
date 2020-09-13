@@ -73,7 +73,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         this.subscription.add(
             this.formArray.valueChanges
                 .pipe(
-                    map(value => value.length),
+                    map((value) => value.length),
                     debounceTime(1),
                     distinctUntilChanged(),
                 )
@@ -109,7 +109,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     getTaxCategoryName(group: FormGroup): string {
         const control = group.get(['taxCategoryId']);
         if (control && this.taxCategories) {
-            const match = this.taxCategories.find(t => t.id === control.value);
+            const match = this.taxCategories.find((t) => t.id === control.value);
             return match ? match.name : '';
         }
         return '';
@@ -124,7 +124,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             variantId,
             ...event,
         });
-        const index = this.variants.findIndex(v => v.id === variantId);
+        const index = this.variants.findIndex((v) => v.id === variantId);
         this.formArray.at(index).markAsDirty();
     }
 
@@ -132,7 +132,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         if (this.areAllSelected()) {
             this.selectedVariantIds = [];
         } else {
-            this.selectedVariantIds = this.variants.map(v => v.id);
+            this.selectedVariantIds = this.variants.map((v) => v.id);
         }
         this.selectionChange.emit(this.selectedVariantIds);
     }
@@ -148,10 +148,10 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     }
 
     optionGroupName(optionGroupId: string): string | undefined {
-        const group = this.optionGroups.find(g => g.id === optionGroupId);
+        const group = this.optionGroups.find((g) => g.id === optionGroupId);
         if (group) {
             const translation =
-                group?.translations.find(t => t.languageCode === this.activeLanguage) ??
+                group?.translations.find((t) => t.languageCode === this.activeLanguage) ??
                 group.translations[0];
             return translation.name;
         }
@@ -159,17 +159,17 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
 
     optionName(option: ProductOptionFragment) {
         const translation =
-            option.translations.find(t => t.languageCode === this.activeLanguage) ?? option.translations[0];
+            option.translations.find((t) => t.languageCode === this.activeLanguage) ?? option.translations[0];
         return translation.name;
     }
 
     pendingFacetValues(variant: ProductWithVariants.Variants) {
         if (this.facets) {
             const formFacetValueIds = this.getFacetValueIds(variant.id);
-            const variantFacetValueIds = variant.facetValues.map(fv => fv.id);
+            const variantFacetValueIds = variant.facetValues.map((fv) => fv.id);
             return formFacetValueIds
-                .filter(x => !variantFacetValueIds.includes(x))
-                .map(id => this.facetValues.find(fv => fv.id === id))
+                .filter((x) => !variantFacetValueIds.includes(x))
+                .map((id) => this.facetValues.find((fv) => fv.id === id))
                 .filter(notNullOrUndefined);
         } else {
             return [];
@@ -178,11 +178,11 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
 
     existingFacetValues(variant: ProductWithVariants.Variants) {
         const formFacetValueIds = this.getFacetValueIds(variant.id);
-        const intersection = [...formFacetValueIds].filter(x =>
-            variant.facetValues.map(fv => fv.id).includes(x),
+        const intersection = [...formFacetValueIds].filter((x) =>
+            variant.facetValues.map((fv) => fv.id).includes(x),
         );
         return intersection
-            .map(id => variant.facetValues.find(fv => fv.id === id))
+            .map((id) => variant.facetValues.find((fv) => fv.id === id))
             .filter(notNullOrUndefined);
     }
 
@@ -190,7 +190,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         const formGroup = this.formGroupMap.get(variant.id);
         if (formGroup) {
             const newValue = (formGroup.value as VariantFormValue).facetValueIds.filter(
-                id => id !== facetValueId,
+                (id) => id !== facetValueId,
             );
             formGroup.patchValue({
                 facetValueIds: newValue,
@@ -213,7 +213,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                     customFields: this.customOptionFields,
                 },
             })
-            .subscribe(result => {
+            .subscribe((result) => {
                 if (result) {
                     this.updateProductOption.emit(result);
                 }

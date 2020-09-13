@@ -72,9 +72,9 @@ export class Populator {
                 ],
                 isPrivate: collectionDef.private || false,
                 parentId,
-                assetIds: assets.map(a => a.id.toString()),
+                assetIds: assets.map((a) => a.id.toString()),
                 featuredAssetId: assets.length ? assets[0].id.toString() : undefined,
-                filters: (collectionDef.filters || []).map(filter =>
+                filters: (collectionDef.filters || []).map((filter) =>
                     this.processFilterDefinition(filter, allFacetValues),
                 ),
             });
@@ -82,7 +82,7 @@ export class Populator {
         }
         // Wait for the created collection operations to complete before running
         // the reindex of the search index.
-        await new Promise(resolve => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, 50));
         await this.searchService.reindex(ctx);
     }
 
@@ -93,9 +93,9 @@ export class Populator {
         switch (filter.code) {
             case 'facet-value-filter':
                 const facetValueIds = filter.args.facetValueNames
-                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .map((name) => allFacetValues.find((fv) => fv.name === name))
                     .filter(notNullOrUndefined)
-                    .map(fv => fv.id);
+                    .map((fv) => fv.id);
                 return {
                     code: filter.code,
                     arguments: [

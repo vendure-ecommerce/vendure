@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AddOptionGroupToProduct,
@@ -138,7 +138,7 @@ describe('Product resolver', () => {
                 },
             );
 
-            expect(result.products.items.map(p => p.name)).toEqual([
+            expect(result.products.items.map((p) => p.name)).toEqual([
                 'Bonsai Tree',
                 'Boxing Gloves',
                 'Camera Lens',
@@ -192,7 +192,7 @@ describe('Product resolver', () => {
                 },
             );
 
-            expect(result.products.items.map(p => p.name)).toEqual([
+            expect(result.products.items.map((p) => p.name)).toEqual([
                 'Bonsai Tree',
                 'Boxing Gloves',
                 'Camera Lens',
@@ -365,7 +365,7 @@ describe('Product resolver', () => {
                 },
             );
             expect(omit(result.createProduct, ['translations'])).toMatchSnapshot();
-            expect(result.createProduct.translations.map(t => t.description).sort()).toEqual([
+            expect(result.createProduct.translations.map((t) => t.description).sort()).toEqual([
                 'A baked potato',
                 'Eine baked Erdapfel',
             ]);
@@ -376,7 +376,7 @@ describe('Product resolver', () => {
             const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
                 GET_ASSET_LIST,
             );
-            const assetIds = assetsResult.assets.items.slice(0, 2).map(a => a.id);
+            const assetIds = assetsResult.assets.items.slice(0, 2).map((a) => a.id);
             const featuredAssetId = assetsResult.assets.items[0].id;
 
             const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
@@ -396,7 +396,7 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
+            expect(result.createProduct.assets.map((a) => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
             newProductWithAssets = result.createProduct;
         });
@@ -424,7 +424,7 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.updateProduct.translations.map(t => t.description).sort()).toEqual([
+            expect(result.updateProduct.translations.map((t) => t.description).sort()).toEqual([
                 'A blob of mashed potato',
                 'Eine blob von gemashed Erdapfel',
             ]);
@@ -524,13 +524,14 @@ describe('Product resolver', () => {
             );
             expect(result.updateProduct.translations.length).toBe(2);
             expect(
-                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.de)!.name,
+                result.updateProduct.translations.find((t) => t.languageCode === LanguageCode.de)!.name,
             ).toBe('de Mashed Potato');
             expect(
-                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.en)!.name,
+                result.updateProduct.translations.find((t) => t.languageCode === LanguageCode.en)!.name,
             ).toBe('en Very Mashed Potato');
             expect(
-                result.updateProduct.translations.find(t => t.languageCode === LanguageCode.en)!.description,
+                result.updateProduct.translations.find((t) => t.languageCode === LanguageCode.en)!
+                    .description,
             ).toBe('Possibly the final baked potato');
         });
 
@@ -538,7 +539,7 @@ describe('Product resolver', () => {
             const assetsResult = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
                 GET_ASSET_LIST,
             );
-            const assetIds = assetsResult.assets.items.map(a => a.id);
+            const assetIds = assetsResult.assets.items.map((a) => a.id);
             const featuredAssetId = assetsResult.assets.items[2].id;
 
             const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
@@ -551,7 +552,7 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.updateProduct.assets.map(a => a.id)).toEqual(assetIds);
+            expect(result.updateProduct.assets.map((a) => a.id)).toEqual(assetIds);
             expect(result.updateProduct.featuredAsset!.id).toBe(featuredAssetId);
         });
 
@@ -587,7 +588,7 @@ describe('Product resolver', () => {
                     },
                 },
             );
-            expect(result.updateProduct.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
+            expect(result.updateProduct.assets.map((a) => a.id)).toEqual(['T_1', 'T_2']);
         });
 
         it('updateProduct updates FacetValues', async () => {
@@ -844,8 +845,8 @@ describe('Product resolver', () => {
                         },
                     ],
                 });
-                const variant2 = createProductVariants.find(v => v!.name === 'Variant 2')!;
-                const variant3 = createProductVariants.find(v => v!.name === 'Variant 3')!;
+                const variant2 = createProductVariants.find((v) => v!.name === 'Variant 2')!;
+                const variant3 = createProductVariants.find((v) => v!.name === 'Variant 3')!;
                 expect(variant2.options.map(pick(['id']))).toContainEqual({ id: optionGroup2.options[1].id });
                 expect(variant2.options.map(pick(['id']))).toContainEqual({ id: optionGroup3.options[0].id });
                 expect(variant3.options.map(pick(['id']))).toContainEqual({ id: optionGroup2.options[1].id });
@@ -916,7 +917,7 @@ describe('Product resolver', () => {
                     fail('no updated variant returned.');
                     return;
                 }
-                expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_1', 'T_2']);
+                expect(updatedVariant.assets.map((a) => a.id)).toEqual(['T_1', 'T_2']);
                 expect(updatedVariant.featuredAsset!.id).toBe('T_2');
             });
 
@@ -939,7 +940,7 @@ describe('Product resolver', () => {
                     fail('no updated variant returned.');
                     return;
                 }
-                expect(updatedVariant.assets.map(a => a.id)).toEqual(['T_4', 'T_3']);
+                expect(updatedVariant.assets.map((a) => a.id)).toEqual(['T_4', 'T_3']);
                 expect(updatedVariant.featuredAsset!.id).toBe('T_4');
             });
 
@@ -1018,7 +1019,7 @@ describe('Product resolver', () => {
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
-                const sortedVariantIds = result1.product!.variants.map(v => v.id).sort();
+                const sortedVariantIds = result1.product!.variants.map((v) => v.id).sort();
                 expect(sortedVariantIds).toEqual(['T_35', 'T_36', 'T_37']);
 
                 const { deleteProductVariant } = await adminClient.query<
@@ -1036,9 +1037,9 @@ describe('Product resolver', () => {
                 >(GET_PRODUCT_WITH_VARIANTS, {
                     id: newProduct.id,
                 });
-                expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
+                expect(result2.product!.variants.map((v) => v.id).sort()).toEqual(['T_36', 'T_37']);
 
-                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+                deletedVariant = result1.product?.variants.find((v) => v.id === 'T_35')!;
             });
 
             /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
@@ -1058,8 +1059,8 @@ describe('Product resolver', () => {
                 });
 
                 expect(createProductVariants.length).toBe(1);
-                expect(createProductVariants[0]!.options.map(o => o.code)).toEqual(
-                    deletedVariant.options.map(o => o.code),
+                expect(createProductVariants[0]!.options.map((o) => o.code)).toEqual(
+                    deletedVariant.options.map((o) => o.code),
                 );
             });
         });
@@ -1108,7 +1109,7 @@ describe('Product resolver', () => {
             const result = await adminClient.query<GetProductList.Query>(GET_PRODUCT_LIST);
 
             expect(result.products.items.length).toBe(allProducts.length - 1);
-            expect(result.products.items.map(c => c.id).includes(productToDelete.id)).toBe(false);
+            expect(result.products.items.map((c) => c.id).includes(productToDelete.id)).toBe(false);
         });
 
         it(

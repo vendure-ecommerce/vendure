@@ -38,7 +38,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                 kind: Kind.FIELD,
                 selectionSet: {
                     kind: Kind.SELECTION_SET,
-                    selections: customFieldsForType.map(customField => {
+                    selections: customFieldsForType.map((customField) => {
                         return {
                             kind: Kind.FIELD,
                             name: {
@@ -50,11 +50,11 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                 },
             });
 
-            const localeStrings = customFieldsForType.filter(field => field.type === 'localeString');
+            const localeStrings = customFieldsForType.filter((field) => field.type === 'localeString');
 
             const translationsField = fragmentDef.selectionSet.selections
                 .filter(isFieldNode)
-                .find(field => field.name.value === 'translations');
+                .find((field) => field.name.value === 'translations');
 
             if (localeStrings.length && translationsField && translationsField.selectionSet) {
                 (translationsField.selectionSet.selections as SelectionNode[]).push({
@@ -65,7 +65,7 @@ export function addCustomFields(documentNode: DocumentNode, customFields: Custom
                     kind: Kind.FIELD,
                     selectionSet: {
                         kind: Kind.SELECTION_SET,
-                        selections: localeStrings.map(customField => {
+                        selections: localeStrings.map((customField) => {
                             return {
                                 kind: Kind.FIELD,
                                 name: {

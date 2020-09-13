@@ -29,7 +29,7 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
 
     requestDidStart(): GraphQLRequestListener {
         return {
-            willSendResponse: requestContext => {
+            willSendResponse: (requestContext) => {
                 const { document } = requestContext;
                 if (document) {
                     const data = requestContext.response.data;

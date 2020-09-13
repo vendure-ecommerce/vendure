@@ -100,16 +100,16 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
         this.populateMinutes();
         this.calendarView$ = this.datetimePickerService.calendarView$;
         this.current$ = this.datetimePickerService.viewing$.pipe(
-            map(date => ({
+            map((date) => ({
                 date,
                 month: date.getMonth() + 1,
                 year: date.getFullYear(),
             })),
         );
         this.selected$ = this.datetimePickerService.selected$;
-        this.selectedHours$ = this.selected$.pipe(map(date => date && date.getHours()));
-        this.selectedMinutes$ = this.selected$.pipe(map(date => date && date.getMinutes()));
-        this.subscription = this.datetimePickerService.selected$.subscribe(val => {
+        this.selectedHours$ = this.selected$.pipe(map((date) => date && date.getHours()));
+        this.selectedMinutes$ = this.selected$.pipe(map((date) => date && date.getMinutes()));
+        this.subscription = this.datetimePickerService.selected$.subscribe((val) => {
             if (this.onChange) {
                 this.onChange(val == null ? val : val.toISOString());
             }
@@ -117,7 +117,7 @@ export class DatetimePickerComponent implements ControlValueAccessor, AfterViewI
     }
 
     ngAfterViewInit(): void {
-        this.dropdownComponent.onOpenChange(isOpen => {
+        this.dropdownComponent.onOpenChange((isOpen) => {
             if (isOpen) {
                 this.calendarTable.nativeElement.focus();
             }

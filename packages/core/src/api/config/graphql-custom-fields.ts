@@ -32,15 +32,15 @@ export function addGraphQLCustomFields(
 
     for (const entityName of Object.keys(customFieldConfig)) {
         const customEntityFields = (customFieldConfig[entityName as keyof CustomFields] || []).filter(
-            config => {
+            (config) => {
                 return !config.internal && (publicOnly === true ? config.public !== false : true);
             },
         );
 
-        const localeStringFields = customEntityFields.filter(field => field.type === 'localeString');
-        const nonLocaleStringFields = customEntityFields.filter(field => field.type !== 'localeString');
-        const writeableLocaleStringFields = localeStringFields.filter(field => !field.readonly);
-        const writeableNonLocaleStringFields = nonLocaleStringFields.filter(field => !field.readonly);
+        const localeStringFields = customEntityFields.filter((field) => field.type === 'localeString');
+        const nonLocaleStringFields = customEntityFields.filter((field) => field.type !== 'localeString');
+        const writeableLocaleStringFields = localeStringFields.filter((field) => !field.readonly);
+        const writeableNonLocaleStringFields = nonLocaleStringFields.filter((field) => !field.readonly);
 
         if (schema.getType(entityName)) {
             if (customEntityFields.length) {
@@ -207,7 +207,7 @@ export function addRegisterCustomerCustomFieldsInput(
     if (!customerCustomFields || customerCustomFields.length === 0) {
         return schema;
     }
-    const publicWritableCustomFields = customerCustomFields.filter(fieldDef => {
+    const publicWritableCustomFields = customerCustomFields.filter((fieldDef) => {
         return fieldDef.public !== false && !fieldDef.readonly && !fieldDef.internal;
     });
     if (publicWritableCustomFields.length < 1) {
@@ -282,7 +282,7 @@ type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'I
  */
 function mapToFields(fieldDefs: CustomFieldConfig[], typeFn: (fieldType: CustomFieldType) => string): string {
     return fieldDefs
-        .map(field => {
+        .map((field) => {
             const primitiveType = typeFn(field.type);
             const finalType = field.list ? `[${primitiveType}!]` : primitiveType;
             return `${field.name}: ${finalType}`;

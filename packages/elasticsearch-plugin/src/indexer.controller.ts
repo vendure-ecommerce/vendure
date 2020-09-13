@@ -117,7 +117,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             await this.deleteProductInternal(productId, ctx.channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.deleteVariantsInternal(
-                variants.map(v => v.id),
+                variants.map((v) => v.id),
                 ctx.channelId,
             );
             return true;
@@ -139,7 +139,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.updateVariantsInternal(
                 ctx,
-                variants.map(v => v.id),
+                variants.map((v) => v.id),
                 channelId,
             );
             return true;
@@ -160,7 +160,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             await this.deleteProductInternal(productId, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.deleteVariantsInternal(
-                variants.map(v => v.id),
+                variants.map((v) => v.id),
                 channelId,
             );
             return true;
@@ -194,7 +194,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             const variants = await this.connection
                 .getRepository(ProductVariant)
                 .findByIds(variantIds, { relations: ['product'] });
-            const productIds = unique(variants.map(v => v.product.id));
+            const productIds = unique(variants.map((v) => v.product.id));
             for (const productId of productIds) {
                 await this.updateProductInternal(ctx, productId, ctx.channelId);
             }
@@ -211,7 +211,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const ctx = RequestContext.deserialize(rawContext);
         const { batchSize } = this.options;
 
-        return asyncObservable(async observer => {
+        return asyncObservable(async (observer) => {
             return this.asyncQueue.push(async () => {
                 const timeStart = Date.now();
                 if (ids.length) {
@@ -266,7 +266,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const ctx = RequestContext.deserialize(rawContext);
         const { batchSize } = this.options;
 
-        return asyncObservable(async observer => {
+        return asyncObservable(async (observer) => {
             return this.asyncQueue.push(async () => {
                 const timeStart = Date.now();
 
@@ -469,7 +469,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         if (updatedVariants.length) {
             // When ProductVariants change, we need to update the corresponding Product index
             // since e.g. price changes must be reflected on the Product level too.
-            const productIdsOfVariants = unique(updatedVariants.map(v => v.productId));
+            const productIdsOfVariants = unique(updatedVariants.map((v) => v.productId));
             for (const variantProductId of productIdsOfVariants) {
                 await this.updateProductInternal(ctx, variantProductId, channelId);
             }
@@ -492,7 +492,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         });
         if (product) {
             updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
-                product.variants.map(v => v.id),
+                product.variants.map((v) => v.id),
                 {
                     relations: variantRelations,
                     where: {
@@ -501,7 +501,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 },
             );
             if (product.enabled === false) {
-                updatedProductVariants.forEach(v => (v.enabled = false));
+                updatedProductVariants.forEach((v) => (v.enabled = false));
             }
         }
         if (updatedProductVariants.length) {
@@ -524,7 +524,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
     private async deleteVariantsInternal(variantIds: ID[], channelId: ID) {
         Logger.verbose(`Deleting ${variantIds.length} ProductVariants`, loggerCtx);
-        const operations: BulkOperation[] = variantIds.map(id => ({
+        const operations: BulkOperation[] = variantIds.map((id) => ({
             delete: { _id: this.getId(id, channelId) },
         }));
         await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
@@ -549,7 +549,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                     `Some errors occurred running bulk operations on ${indexType}! Set logger to "debug" to print all errors.`,
                     loggerCtx,
                 );
-                body.items.forEach(item => {
+                body.items.forEach((item) => {
                     if (item.index) {
                         Logger.debug(JSON.stringify(item.index.error, null, 2), loggerCtx);
                     }
@@ -623,8 +623,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
      */
     private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
         return variants
-            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
+            .map((v) => this.productVariantService.applyChannelPriceAndTax(v, ctx))
+            .map((v) => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
     private createVariantIndexItem(v: ProductVariant, channelId: ID): VariantIndexItem {
@@ -649,10 +649,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             currencyCode: v.currencyCode,
             description: v.product.description,
             facetIds: this.getFacetIds([v]),
-            channelIds: v.product.channels.map(c => c.id),
+            channelIds: v.product.channels.map((c) => c.id),
             facetValueIds: this.getFacetValueIds([v]),
-            collectionIds: v.collections.map(c => c.id.toString()),
-            collectionSlugs: v.collections.map(c => c.slug),
+            collectionIds: v.collections.map((c) => c.id.toString()),
+            collectionSlugs: v.collections.map((c) => c.slug),
             enabled: v.enabled && v.product.enabled,
         };
         const customMappings = Object.entries(this.options.customProductVariantMappings);
@@ -664,11 +664,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
     private createProductIndexItem(variants: ProductVariant[], channelId: ID): ProductIndexItem {
         const first = variants[0];
-        const prices = variants.map(v => v.price);
-        const pricesWithTax = variants.map(v => v.priceWithTax);
+        const prices = variants.map((v) => v.price);
+        const pricesWithTax = variants.map((v) => v.priceWithTax);
         const productAsset = first.product.featuredAsset;
-        const variantAsset = variants.filter(v => v.featuredAsset).length
-            ? variants.filter(v => v.featuredAsset)[0].featuredAsset
+        const variantAsset = variants.filter((v) => v.featuredAsset).length
+            ? variants.filter((v) => v.featuredAsset)[0].featuredAsset
             : null;
         const item: ProductIndexItem = {
             channelId,
@@ -692,13 +692,16 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             description: first.product.description,
             facetIds: this.getFacetIds(variants),
             facetValueIds: this.getFacetValueIds(variants),
-            collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
+            collectionIds: variants.reduce(
+                (ids, v) => [...ids, ...v.collections.map((c) => c.id)],
+                [] as ID[],
+            ),
             collectionSlugs: variants.reduce(
-                (ids, v) => [...ids, ...v.collections.map(c => c.slug)],
+                (ids, v) => [...ids, ...v.collections.map((c) => c.slug)],
                 [] as string[],
             ),
-            channelIds: first.product.channels.map(c => c.id),
-            enabled: variants.some(v => v.enabled) && first.product.enabled,
+            channelIds: first.product.channels.map((c) => c.id),
+            enabled: variants.some((v) => v.enabled) && first.product.enabled,
         };
 
         const customMappings = Object.entries(this.options.customProductMappings);

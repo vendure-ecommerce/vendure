@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { unique } from '@vendure/common/lib/unique';
-
 import { OrderDetail } from '@vendure/admin-ui/core';
+import { unique } from '@vendure/common/lib/unique';
 
 export type FulfillmentStatus = 'full' | 'partial' | 'none';
 
@@ -20,7 +19,7 @@ export class LineFulfillmentComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
         if (this.line) {
-            this.fulfilledCount = this.getFulfilledCount(this.line);
+            this.fulfilledCount = this.getDeliveredCount(this.line);
             this.fulfillmentStatus = this.getFulfillmentStatus(this.fulfilledCount, this.line.items.length);
             this.fulfillments = this.getFulfillments(this.line);
         }
@@ -29,7 +28,7 @@ export class LineFulfillmentComponent implements OnChanges {
     /**
      * Returns the number of items in an OrderLine which are fulfilled.
      */
-    private getFulfilledCount(line: OrderDetail.Lines): number {
+    private getDeliveredCount(line: OrderDetail.Lines): number {
         return line.items.reduce((sum, item) => sum + (item.fulfillment ? 1 : 0), 0);
     }
 
@@ -57,18 +56,15 @@ export class LineFulfillmentComponent implements OnChanges {
                 }
             }
         }
-        const all = line.items.reduce(
-            (fulfillments, item) => {
-                return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
-            },
-            [] as OrderDetail.Fulfillments[],
-        );
+        const all = line.items.reduce((fulfillments, item) => {
+            return item.fulfillment ? [...fulfillments, item.fulfillment] : fulfillments;
+        }, [] as OrderDetail.Fulfillments[]);
 
         return Object.entries(counts).map(([id, count]) => {
             return {
                 count,
                 // tslint:disable-next-line:no-non-null-assertion
-                fulfillment: all.find(f => f.id === id)!,
+                fulfillment: all.find((f) => f.id === id)!,
             };
         });
     }

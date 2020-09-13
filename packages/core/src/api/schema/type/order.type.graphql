@@ -120,6 +120,7 @@ type Fulfillment implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     orderItems: [OrderItem!]!
+    state: String!
     method: String!
     trackingCode: String
 }

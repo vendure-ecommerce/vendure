@@ -47,10 +47,10 @@ export class ServerConfigService {
             .query<GetServerConfig.Query>(GET_SERVER_CONFIG)
             .single$.toPromise()
             .then(
-                result => {
+                (result) => {
                     this._serverConfig = result.globalSettings.serverConfig;
                 },
-                err => {
+                (err) => {
                     // Let the error fall through to be caught by the http interceptor.
                 },
             );
@@ -59,7 +59,7 @@ export class ServerConfigService {
     getAvailableLanguages() {
         return this.baseDataService
             .query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS, {}, 'cache-first')
-            .mapSingle(res => res.globalSettings.availableLanguages);
+            .mapSingle((res) => res.globalSettings.availableLanguages);
     }
 
     /**
