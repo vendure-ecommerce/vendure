@@ -67,7 +67,7 @@ export class CustomerAdminEntityResolver {
         if (customer.groups) {
             return customer.groups;
         }
-        return this.customerService.getCustomerGroups(customer.id);
+        return this.customerService.getCustomerGroups(ctx, customer.id);
     }
 
     @ResolveField()

@@ -24,7 +24,7 @@ export class ShopCustomerResolver {
     async activeCustomer(@Ctx() ctx: RequestContext): Promise<Customer | undefined> {
         const userId = ctx.activeUserId;
         if (userId) {
-            return this.customerService.findOneByUserId(userId);
+            return this.customerService.findOneByUserId(ctx, userId);
         }
     }
 
@@ -87,7 +87,7 @@ export class ShopCustomerResolver {
         if (!userId) {
             throw new ForbiddenError();
         }
-        const customer = await this.customerService.findOneByUserId(userId);
+        const customer = await this.customerService.findOneByUserId(ctx, userId);
         if (!customer) {
             throw new InternalServerError(`error.no-customer-found-for-current-user`);
         }

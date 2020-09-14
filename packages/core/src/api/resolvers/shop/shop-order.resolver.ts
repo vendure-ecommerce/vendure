@@ -333,7 +333,7 @@ export class ShopOrderResolver {
             }
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
-                const customer = await this.customerService.createOrUpdate(args.input, true);
+                const customer = await this.customerService.createOrUpdate(ctx, args.input, true);
                 return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
             }
         }

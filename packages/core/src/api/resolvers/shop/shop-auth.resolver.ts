@@ -50,7 +50,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     ) {
         super(authService, userService, administratorService, configService);
         this.nativeAuthStrategyIsConfigured = !!this.configService.authOptions.shopAuthenticationStrategy.find(
-            (strategy) => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
+            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
         );
     }
 
@@ -194,7 +194,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         this.requireNativeAuthStrategy();
         const result = await super.updatePassword(ctx, args.currentPassword, args.newPassword);
         if (result && ctx.activeUserId) {
-            const customer = await this.customerService.findOneByUserId(ctx.activeUserId);
+            const customer = await this.customerService.findOneByUserId(ctx, ctx.activeUserId);
             if (customer) {
                 await this.historyService.createHistoryEntryForCustomer({
                     ctx,
@@ -234,7 +234,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     private requireNativeAuthStrategy() {
         if (!this.nativeAuthStrategyIsConfigured) {
             const authStrategyNames = this.configService.authOptions.shopAuthenticationStrategy
-                .map((s) => s.name)
+                .map(s => s.name)
                 .join(', ');
             const errorMessage =
                 'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Shop API.\n' +

@@ -1,6 +1,7 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { idsAreEqual } from '../../../common/utils';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
@@ -20,7 +21,7 @@ export const containsProducts = new PromotionCondition({
             label: [{ languageCode: LanguageCode.en, value: 'Product variants' }],
         },
     },
-    async check(order: Order, args) {
+    async check(ctx: RequestContext, order: Order, args) {
         const ids = args.productVariantIds;
         let matches = 0;
         for (const line of order.lines) {

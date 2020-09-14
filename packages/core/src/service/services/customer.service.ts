@@ -28,6 +28,7 @@ import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authenticati
 import { ConfigService } from '../../config/config.service';
 import { Address } from '../../entity/address/address.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
+import { Channel } from '../../entity/channel/channel.entity';
 import { CustomerGroup } from '../../entity/customer-group/customer-group.entity';
 import { Customer } from '../../entity/customer/customer.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
@@ -39,10 +40,12 @@ import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
+import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
 import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 
+import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { HistoryService } from './history.service';
 import { UserService } from './user.service';
@@ -57,29 +60,47 @@ export class CustomerService {
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
         private historyService: HistoryService,
+        private channelService: ChannelService,
     ) {}
 
-    findAll(options: ListQueryOptions<Customer> | undefined): Promise<PaginatedList<Customer>> {
+    findAll(
+        ctx: RequestContext,
+        options: ListQueryOptions<Customer> | undefined,
+    ): Promise<PaginatedList<Customer>> {
         return this.listQueryBuilder
-            .build(Customer, options, { where: { deletedAt: null } })
+            .build(Customer, options, {
+                relations: ['channels'],
+                channelId: ctx.channelId,
+                where: { deletedAt: null },
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
 
-    findOne(id: ID): Promise<Customer | undefined> {
-        return this.connection.getRepository(Customer).findOne(id, { where: { deletedAt: null } });
-    }
-
-    findOneByUserId(userId: ID): Promise<Customer | undefined> {
-        return this.connection.getRepository(Customer).findOne({
+    findOne(ctx: RequestContext, id: ID): Promise<Customer | undefined> {
+        return findOneInChannel(this.connection, Customer, id, ctx.channelId, {
             where: {
-                user: { id: userId },
                 deletedAt: null,
             },
         });
     }
 
-    findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {
+    findOneByUserId(ctx: RequestContext, userId: ID, filterOnChannel = true): Promise<Customer | undefined> {
+        let query = this.connection
+            .getRepository(Customer)
+            .createQueryBuilder('customer')
+            .leftJoin('customer.channels', 'channel')
+            .leftJoinAndSelect('customer.user', 'user')
+            .where('user.id = :userId', { userId })
+            .andWhere('customer.deletedAt is null');
+        if (filterOnChannel) {
+            query = query.andWhere('channel.id = :channelId', { channelId: ctx.channelId });
+        }
+        return query.getOne();
+    }
+
+    async findAddressesByCustomerId(ctx: RequestContext, customerId: ID): Promise<Address[]> {
+        await getEntityOrThrow(this.connection, Customer, customerId, ctx.channelId);
         return this.connection
             .getRepository(Address)
             .createQueryBuilder('address')
@@ -95,10 +116,19 @@ export class CustomerService {
             });
     }
 
-    async getCustomerGroups(customerId: ID): Promise<CustomerGroup[]> {
-        const customerWithGroups = await this.connection
-            .getRepository(Customer)
-            .findOne(customerId, { relations: ['groups'] });
+    async getCustomerGroups(ctx: RequestContext, customerId: ID): Promise<CustomerGroup[]> {
+        const customerWithGroups = await findOneInChannel(
+            this.connection,
+            Customer,
+            customerId,
+            ctx.channelId,
+            {
+                relations: ['groups'],
+                where: {
+                    deletedAt: null,
+                },
+            },
+        );
         if (customerWithGroups) {
             return customerWithGroups.groups;
         } else {
@@ -110,7 +140,21 @@ export class CustomerService {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
+        const existingCustomerInChannel = await this.connection
+            .getRepository(Customer)
+            .createQueryBuilder('customer')
+            .leftJoin('customer.channels', 'channel')
+            .where('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+            .andWhere('customer.deletedAt is null')
+            .getOne();
+
+        if (existingCustomerInChannel) {
+            throw new UserInputError(`error.email-address-must-be-unique`);
+        }
+
         const existingCustomer = await this.connection.getRepository(Customer).findOne({
+            relations: ['channels'],
             where: {
                 emailAddress: input.emailAddress,
                 deletedAt: null,
@@ -123,7 +167,13 @@ export class CustomerService {
             },
         });
 
-        if (existingCustomer || existingUser) {
+        if (existingCustomer && existingUser) {
+            // Customer already exists, bring to this Channel
+            const updatedCustomer = patchEntity(existingCustomer, input);
+            updatedCustomer.channels.push(ctx.channel);
+            return this.connection.getRepository(Customer).save(updatedCustomer);
+        } else if (existingCustomer || existingUser) {
+            // Not sure when this situation would occur
             throw new UserInputError(`error.email-address-must-be-unique`);
         }
         customer.user = await this.userService.createCustomerUser(input.emailAddress, password);
@@ -136,7 +186,8 @@ export class CustomerService {
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
         }
-        const createdCustomer = await await this.connection.getRepository(Customer).save(customer);
+        this.channelService.assignToCurrentChannel(customer, ctx);
+        const createdCustomer = await this.connection.getRepository(Customer).save(customer);
 
         await this.historyService.createHistoryEntryForCustomer({
             ctx,
@@ -178,7 +229,7 @@ export class CustomerService {
             }
         }
         const customFields = (input as any).customFields;
-        const customer = await this.createOrUpdate({
+        const customer = await this.createOrUpdate(ctx, {
             emailAddress: input.emailAddress,
             title: input.title || '',
             firstName: input.firstName || '',
@@ -241,7 +292,7 @@ export class CustomerService {
     ): Promise<Customer | undefined> {
         const user = await this.userService.verifyUserByToken(verificationToken, password);
         if (user) {
-            const customer = await this.findOneByUserId(user.id);
+            const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
@@ -253,7 +304,7 @@ export class CustomerService {
                     strategy: NATIVE_AUTH_STRATEGY_NAME,
                 },
             });
-            return this.findOneByUserId(user.id);
+            return this.findOneByUserId(ctx, user.id);
         }
     }
 
@@ -261,7 +312,7 @@ export class CustomerService {
         const user = await this.userService.setPasswordResetToken(emailAddress);
         if (user) {
             this.eventBus.publish(new PasswordResetEvent(ctx, user));
-            const customer = await this.findOneByUserId(user.id);
+            const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
@@ -281,7 +332,7 @@ export class CustomerService {
     ): Promise<Customer | undefined> {
         const user = await this.userService.resetPasswordByToken(passwordResetToken, password);
         if (user) {
-            const customer = await this.findOneByUserId(user.id);
+            const customer = await this.findOneByUserId(ctx, user.id);
             if (!customer) {
                 throw new InternalServerError('error.cannot-locate-customer-for-user');
             }
@@ -308,7 +359,7 @@ export class CustomerService {
         if (!user) {
             return false;
         }
-        const customer = await this.findOneByUserId(user.id);
+        const customer = await this.findOneByUserId(ctx, user.id);
         if (!customer) {
             return false;
         }
@@ -352,7 +403,7 @@ export class CustomerService {
         if (!user) {
             return false;
         }
-        const customer = await this.findOneByUserId(user.id);
+        const customer = await this.findOneByUserId(ctx, user.id);
         if (!customer) {
             return false;
         }
@@ -372,9 +423,9 @@ export class CustomerService {
     }
 
     async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
-        const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        const customer = await getEntityOrThrow(this.connection, Customer, input.id, ctx.channelId);
         const updatedCustomer = patchEntity(customer, input);
-        await this.connection.getRepository(Customer).save(customer, { reload: false });
+        await this.connection.getRepository(Customer).save(updatedCustomer, { reload: false });
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
@@ -383,19 +434,21 @@ export class CustomerService {
                 input,
             },
         });
-        return assertFound(this.findOne(customer.id));
+        return assertFound(this.findOne(ctx, customer.id));
     }
 
     /**
      * For guest checkouts, we assume that a matching email address is the same customer.
      */
     async createOrUpdate(
+        ctx: RequestContext,
         input: Partial<CreateCustomerInput> & { emailAddress: string },
         throwOnExistingUser: boolean = false,
     ): Promise<Customer> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         let customer: Customer;
         const existing = await this.connection.getRepository(Customer).findOne({
+            relations: ['channels'],
             where: {
                 emailAddress: input.emailAddress,
                 deletedAt: null,
@@ -407,21 +460,20 @@ export class CustomerService {
                 throw new IllegalOperationError('error.cannot-use-registered-email-address-for-guest-order');
             }
             customer = patchEntity(existing, input);
+            customer.channels.push(await getEntityOrThrow(this.connection, Channel, ctx.channelId));
         } else {
             customer = new Customer(input);
+            this.channelService.assignToCurrentChannel(customer, ctx);
         }
         return this.connection.getRepository(Customer).save(customer);
     }
 
     async createAddress(ctx: RequestContext, customerId: ID, input: CreateAddressInput): Promise<Address> {
-        const customer = await this.connection.manager.findOne(Customer, customerId, {
+        const customer = await getEntityOrThrow(this.connection, Customer, customerId, ctx.channelId, {
             where: { deletedAt: null },
             relations: ['addresses'],
         });
 
-        if (!customer) {
-            throw new EntityNotFoundError('Customer', customerId);
-        }
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
         const address = new Address({
             ...input,
@@ -444,6 +496,15 @@ export class CustomerService {
         const address = await getEntityOrThrow(this.connection, Address, input.id, {
             relations: ['customer', 'country'],
         });
+        const customer = await findOneInChannel(
+            this.connection,
+            Customer,
+            address.customer.id,
+            ctx.channelId,
+        );
+        if (!customer) {
+            throw new EntityNotFoundError('Address', input.id);
+        }
         if (input.countryCode && input.countryCode !== address.country.code) {
             address.country = await this.countryService.findOneByCode(ctx, input.countryCode);
         } else {
@@ -469,6 +530,15 @@ export class CustomerService {
         const address = await getEntityOrThrow(this.connection, Address, id, {
             relations: ['customer', 'country'],
         });
+        const customer = await findOneInChannel(
+            this.connection,
+            Customer,
+            address.customer.id,
+            ctx.channelId,
+        );
+        if (!customer) {
+            throw new EntityNotFoundError('Address', id);
+        }
         address.country = translateDeep(address.country, ctx.languageCode);
         await this.reassignDefaultsForDeletedAddress(address);
         await this.historyService.createHistoryEntryForCustomer({
@@ -483,8 +553,8 @@ export class CustomerService {
         return true;
     }
 
-    async softDelete(customerId: ID): Promise<DeletionResponse> {
-        const customer = await getEntityOrThrow(this.connection, Customer, customerId);
+    async softDelete(ctx: RequestContext, customerId: ID): Promise<DeletionResponse> {
+        const customer = await getEntityOrThrow(this.connection, Customer, customerId, ctx.channelId);
         await this.connection.getRepository(Customer).update({ id: customerId }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
         await this.userService.softDelete(customer.user!.id);
@@ -494,7 +564,7 @@ export class CustomerService {
     }
 
     async addNoteToCustomer(ctx: RequestContext, input: AddNoteToCustomerInput): Promise<Customer> {
-        const customer = await getEntityOrThrow(this.connection, Customer, input.id);
+        const customer = await getEntityOrThrow(this.connection, Customer, input.id, ctx.channelId);
         await this.historyService.createHistoryEntryForCustomer(
             {
                 ctx,

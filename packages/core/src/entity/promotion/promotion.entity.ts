@@ -2,6 +2,7 @@ import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/comm
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
@@ -127,7 +128,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
     }
 
-    async test(order: Order): Promise<boolean> {
+    async test(ctx: RequestContext, order: Order): Promise<boolean> {
         if (this.endsAt && this.endsAt < new Date()) {
             return false;
         }
@@ -139,7 +140,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
-            if (!promotionCondition || !(await promotionCondition.check(order, condition.args))) {
+            if (!promotionCondition || !(await promotionCondition.check(ctx, order, condition.args))) {
                 return false;
             }
         }

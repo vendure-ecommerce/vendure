@@ -40,6 +40,7 @@ export type CachedSession = {
     activeOrderId?: ID;
     authenticationStrategy?: string;
     user?: CachedSessionUser;
+    activeChannelId?: ID;
 };
 
 /**

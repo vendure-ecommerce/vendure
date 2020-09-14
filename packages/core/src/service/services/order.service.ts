@@ -220,7 +220,7 @@ export class OrderService {
     }
 
     async getActiveOrderForUser(ctx: RequestContext, userId: ID): Promise<Order | undefined> {
-        const customer = await this.customerService.findOneByUserId(userId);
+        const customer = await this.customerService.findOneByUserId(ctx, userId);
         if (customer) {
             const activeOrder = await this.connection
                 .createQueryBuilder(Order, 'order')
@@ -252,7 +252,7 @@ export class OrderService {
             currencyCode: ctx.channel.currencyCode,
         });
         if (userId) {
-            const customer = await this.customerService.findOneByUserId(userId);
+            const customer = await this.customerService.findOneByUserId(ctx, userId);
             if (customer) {
                 newOrder.customer = customer;
             }
@@ -827,7 +827,7 @@ export class OrderService {
                 order = await this.addItemToOrder(ctx, order.id, line.productVariantId, line.quantity);
             }
         }
-        const customer = await this.customerService.findOneByUserId(user.id);
+        const customer = await this.customerService.findOneByUserId(ctx, user.id);
         if (order && customer) {
             order.customer = customer;
             await this.connection.getRepository(Order).save(order, { reload: false });

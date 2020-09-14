@@ -10,6 +10,7 @@ import { Customer } from '../../../entity/customer/customer.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
 import { AdministratorService } from '../../services/administrator.service';
+import { ChannelService } from '../../services/channel.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
@@ -29,6 +30,7 @@ export class ExternalAuthenticationService {
         private historyService: HistoryService,
         private customerService: CustomerService,
         private administratorService: AdministratorService,
+        private channelService: ChannelService,
     ) {}
 
     /**
@@ -36,12 +38,16 @@ export class ExternalAuthenticationService {
      * Looks up a User based on their identifier from an external authentication
      * provider, ensuring this User is associated with a Customer account.
      */
-    async findCustomerUser(strategy: string, externalIdentifier: string): Promise<User | undefined> {
+    async findCustomerUser(
+        ctx: RequestContext,
+        strategy: string,
+        externalIdentifier: string,
+    ): Promise<User | undefined> {
         const user = await this.findUser(strategy, externalIdentifier);
 
         if (user) {
             // Ensure this User is associated with a Customer
-            const customer = await this.customerService.findOneByUserId(user.id);
+            const customer = await this.customerService.findOneByUserId(ctx, user.id);
             if (customer) {
                 return user;
             }
@@ -99,14 +105,14 @@ export class ExternalAuthenticationService {
         newUser.authenticationMethods = [authMethod];
         const savedUser = await this.connection.manager.save(newUser);
 
-        const customer = await this.connection.manager.save(
-            new Customer({
-                emailAddress: config.emailAddress,
-                firstName: config.firstName,
-                lastName: config.lastName,
-                user: savedUser,
-            }),
-        );
+        const customer = new Customer({
+            emailAddress: config.emailAddress,
+            firstName: config.firstName,
+            lastName: config.lastName,
+            user: savedUser,
+        });
+        this.channelService.assignToCurrentChannel(customer, ctx);
+        await this.connection.manager.save(customer);
 
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,

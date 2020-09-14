@@ -52,7 +52,7 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
         });
     }
@@ -170,7 +170,7 @@ describe('Customer resolver', () => {
             });
 
             expect(result.customer!.addresses!.length).toBe(2);
-            firstCustomerAddressIds = result.customer!.addresses!.map((a) => a.id).sort();
+            firstCustomerAddressIds = result.customer!.addresses!.map(a => a.id).sort();
         });
 
         it('updateCustomerAddress updates the country', async () => {
@@ -209,7 +209,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress = result2.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[1],
+                a => a.id !== firstCustomerAddressIds[1],
             )[0]!;
             expect(otherAddress.defaultShippingAddress).toBe(false);
             expect(otherAddress.defaultBillingAddress).toBe(false);
@@ -233,7 +233,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress2 = result4.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[0],
+                a => a.id !== firstCustomerAddressIds[0],
             )[0]!;
             expect(otherAddress2.defaultShippingAddress).toBe(false);
             expect(otherAddress2.defaultBillingAddress).toBe(false);
@@ -336,10 +336,10 @@ describe('Customer resolver', () => {
             );
             expect(customer!.addresses!.length).toBe(2);
             const defaultAddress = customer!.addresses!.filter(
-                (a) => a.defaultBillingAddress && a.defaultShippingAddress,
+                a => a.defaultBillingAddress && a.defaultShippingAddress,
             );
             const otherAddress = customer!.addresses!.filter(
-                (a) => !a.defaultBillingAddress && !a.defaultShippingAddress,
+                a => !a.defaultBillingAddress && !a.defaultShippingAddress,
             );
             expect(defaultAddress.length).toBe(1);
             expect(otherAddress.length).toBe(1);
@@ -448,7 +448,7 @@ describe('Customer resolver', () => {
                 GET_CUSTOMER_LIST,
             );
 
-            expect(result.customers.items.map((c) => c.id).includes(thirdCustomer.id)).toBe(false);
+            expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
         });
 
         it(
@@ -593,7 +593,7 @@ const GET_CUSTOMER_WITH_USER = gql`
     }
 `;
 
-const CREATE_ADDRESS = gql`
+export const CREATE_ADDRESS = gql`
     mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {
         createCustomerAddress(customerId: $id, input: $input) {
             id
@@ -615,7 +615,7 @@ const CREATE_ADDRESS = gql`
     }
 `;
 
-const UPDATE_ADDRESS = gql`
+export const UPDATE_ADDRESS = gql`
     mutation UpdateAddress($input: UpdateAddressInput!) {
         updateCustomerAddress(input: $input) {
             id
@@ -660,7 +660,7 @@ export const UPDATE_CUSTOMER = gql`
     ${CUSTOMER_FRAGMENT}
 `;
 
-const DELETE_CUSTOMER = gql`
+export const DELETE_CUSTOMER = gql`
     mutation DeleteCustomer($id: ID!) {
         deleteCustomer(id: $id) {
             result
