@@ -58,7 +58,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     createShippingMethod(
@@ -69,7 +69,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.create(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     updateShippingMethod(
@@ -80,7 +80,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     deleteShippingMethod(

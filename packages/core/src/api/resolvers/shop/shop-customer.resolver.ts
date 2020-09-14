@@ -29,7 +29,7 @@ export class ShopCustomerResolver {
         }
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomer(
@@ -43,7 +43,7 @@ export class ShopCustomerResolver {
         });
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async createCustomerAddress(
@@ -54,7 +54,7 @@ export class ShopCustomerResolver {
         return this.customerService.createAddress(ctx, customer.id, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerAddress(
@@ -69,7 +69,7 @@ export class ShopCustomerResolver {
         return this.customerService.updateAddress(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async deleteCustomerAddress(

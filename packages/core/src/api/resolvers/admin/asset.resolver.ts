@@ -33,7 +33,7 @@ export class AssetResolver {
         return this.assetService.findAll(ctx, args.options || undefined);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createAssets(@Ctx() ctx: RequestContext, @Args() args: MutationCreateAssetsArgs): Promise<Asset[]> {
@@ -52,21 +52,21 @@ export class AssetResolver {
         return assets;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateAsset(@Ctx() ctx: RequestContext, @Args() { input }: MutationUpdateAssetArgs) {
         return this.assetService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteAsset(@Ctx() ctx: RequestContext, @Args() { id, force }: MutationDeleteAssetArgs) {
         return this.assetService.delete(ctx, [id], force || undefined);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteAssets(@Ctx() ctx: RequestContext, @Args() { ids, force }: MutationDeleteAssetsArgs) {

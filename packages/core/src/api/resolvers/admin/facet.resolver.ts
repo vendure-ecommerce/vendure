@@ -51,7 +51,7 @@ export class FacetResolver {
         return this.facetService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createFacet(
@@ -70,7 +70,7 @@ export class FacetResolver {
         return facet;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateFacet(
@@ -81,7 +81,7 @@ export class FacetResolver {
         return this.facetService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteFacet(
@@ -91,7 +91,7 @@ export class FacetResolver {
         return this.facetService.delete(ctx, args.id, args.force || false);
     }
 
-    // @Transaction
+    // @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createFacetValues(
@@ -112,7 +112,7 @@ export class FacetResolver {
         );
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateFacetValues(
@@ -123,7 +123,7 @@ export class FacetResolver {
         return Promise.all(input.map(facetValue => this.facetValueService.update(ctx, facetValue)));
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteFacetValues(

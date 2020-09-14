@@ -57,7 +57,7 @@ export class PromotionResolver {
         return this.promotionService.getPromotionActions(ctx);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreatePromotion)
     createPromotion(
@@ -75,7 +75,7 @@ export class PromotionResolver {
         return this.promotionService.createPromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdatePromotion)
     updatePromotion(
@@ -97,7 +97,7 @@ export class PromotionResolver {
         return this.promotionService.updatePromotion(ctx, args.input).then(this.encodeConditionsAndActions);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeletePromotion)
     deletePromotion(

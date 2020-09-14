@@ -41,7 +41,7 @@ export class CustomerGroupResolver {
         return this.customerGroupService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCustomer)
     async createCustomerGroup(
@@ -51,7 +51,7 @@ export class CustomerGroupResolver {
         return this.customerGroupService.create(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomerGroup(
@@ -61,7 +61,7 @@ export class CustomerGroupResolver {
         return this.customerGroupService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomerGroup(
@@ -71,7 +71,7 @@ export class CustomerGroupResolver {
         return this.customerGroupService.delete(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async addCustomersToGroup(
@@ -81,7 +81,7 @@ export class CustomerGroupResolver {
         return this.customerGroupService.addCustomersToGroup(ctx, args);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async removeCustomersFromGroup(

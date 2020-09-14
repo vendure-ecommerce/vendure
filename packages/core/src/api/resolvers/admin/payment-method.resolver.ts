@@ -36,7 +36,7 @@ export class PaymentMethodResolver {
         return this.paymentMethodService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     updatePaymentMethod(

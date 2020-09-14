@@ -55,7 +55,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         );
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     login(
@@ -68,7 +68,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return super.login(args, ctx, req, res);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     authenticate(
@@ -80,7 +80,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     logout(
@@ -97,7 +97,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return super.me(ctx, 'shop');
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     async registerCustomerAccount(
@@ -108,7 +108,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.customerService.registerCustomerAccount(ctx, args.input).then(() => true);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     async verifyCustomerAccount(
@@ -145,7 +145,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     async refreshCustomerVerification(
@@ -156,14 +156,14 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: MutationRequestPasswordResetArgs) {
         return this.customerService.requestPasswordReset(ctx, args.emailAddress).then(() => true);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     async resetPassword(
@@ -194,7 +194,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerPassword(
@@ -217,7 +217,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return result;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async requestUpdateCustomerEmailAddress(
@@ -232,7 +232,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return this.customerService.requestUpdateEmailAddress(ctx, ctx.activeUserId, args.newEmailAddress);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Owner)
     async updateCustomerEmailAddress(

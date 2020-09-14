@@ -44,7 +44,7 @@ export class ProductOptionResolver {
         return this.productOptionGroupService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOptionGroup(
@@ -63,7 +63,7 @@ export class ProductOptionResolver {
         return group;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductOptionGroup(
@@ -74,7 +74,7 @@ export class ProductOptionResolver {
         return this.productOptionGroupService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOption(
@@ -85,7 +85,7 @@ export class ProductOptionResolver {
         return this.productOptionService.create(ctx, input.productOptionGroupId, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductOption(

@@ -18,7 +18,6 @@ import { ApiSharedModule } from '../api-internal-modules';
 import { IdCodecService } from '../common/id-codec.service';
 import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
-import { TransactionPlugin } from '../middleware/transaction-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
 import { generateAuthenticationTypes } from './generate-auth-types';
@@ -147,7 +146,6 @@ async function createGraphQLOptions(
             new IdCodecPlugin(idCodecService),
             new TranslateErrorsPlugin(i18nService),
             new AssetInterceptorPlugin(configService),
-            new TransactionPlugin(),
             ...configService.apiOptions.apolloServerPlugins,
         ],
     } as GqlModuleOptions;

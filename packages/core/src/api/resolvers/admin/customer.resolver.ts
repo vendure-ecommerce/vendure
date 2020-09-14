@@ -48,7 +48,7 @@ export class CustomerResolver {
         return this.customerService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCustomer)
     async createCustomer(
@@ -59,7 +59,7 @@ export class CustomerResolver {
         return this.customerService.create(ctx, input, password || undefined);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomer(
@@ -70,7 +70,7 @@ export class CustomerResolver {
         return this.customerService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCustomer)
     async createCustomerAddress(
@@ -81,7 +81,7 @@ export class CustomerResolver {
         return this.customerService.createAddress(ctx, customerId, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomerAddress(
@@ -92,7 +92,7 @@ export class CustomerResolver {
         return this.customerService.updateAddress(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomerAddress(
@@ -103,7 +103,7 @@ export class CustomerResolver {
         return this.customerService.deleteAddress(ctx, id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomer(
@@ -113,21 +113,21 @@ export class CustomerResolver {
         return this.customerService.softDelete(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async addNoteToCustomer(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToCustomerArgs) {
         return this.customerService.addNoteToCustomer(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateCustomerNoteArgs) {
         return this.customerService.updateCustomerNote(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async deleteCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteCustomerNoteArgs) {

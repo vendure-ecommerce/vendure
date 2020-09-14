@@ -40,7 +40,7 @@ export class AdministratorResolver {
         return this.administratorService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     createAdministrator(
@@ -51,7 +51,7 @@ export class AdministratorResolver {
         return this.administratorService.create(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     updateAdministrator(
@@ -62,7 +62,7 @@ export class AdministratorResolver {
         return this.administratorService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
     assignRoleToAdministrator(
@@ -72,7 +72,7 @@ export class AdministratorResolver {
         return this.administratorService.assignRole(ctx, args.administratorId, args.roleId);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteAdministrator)
     deleteAdministrator(

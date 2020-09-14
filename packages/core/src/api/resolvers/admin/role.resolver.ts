@@ -33,7 +33,7 @@ export class RoleResolver {
         return this.roleService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateAdministrator)
     createRole(@Ctx() ctx: RequestContext, @Args() args: MutationCreateRoleArgs): Promise<Role> {
@@ -41,7 +41,7 @@ export class RoleResolver {
         return this.roleService.create(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateAdministrator)
     updateRole(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateRoleArgs): Promise<Role> {
@@ -49,7 +49,7 @@ export class RoleResolver {
         return this.roleService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteAdministrator)
     deleteRole(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteRoleArgs): Promise<DeletionResponse> {

@@ -33,7 +33,7 @@ export class TaxRateResolver {
         return this.taxRateService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createTaxRate(
@@ -43,7 +43,7 @@ export class TaxRateResolver {
         return this.taxRateService.create(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateTaxRate(
@@ -53,7 +53,7 @@ export class TaxRateResolver {
         return this.taxRateService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteTaxRate(

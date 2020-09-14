@@ -75,7 +75,7 @@ export class ProductResolver {
         return this.productVariantService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProduct(
@@ -86,7 +86,7 @@ export class ProductResolver {
         return this.productService.create(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProduct(
@@ -97,7 +97,7 @@ export class ProductResolver {
         return await this.productService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteProduct(
@@ -107,7 +107,7 @@ export class ProductResolver {
         return this.productService.softDelete(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async addOptionGroupToProduct(
@@ -118,7 +118,7 @@ export class ProductResolver {
         return this.productService.addOptionGroupToProduct(ctx, productId, optionGroupId);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async removeOptionGroupFromProduct(
@@ -129,7 +129,7 @@ export class ProductResolver {
         return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async createProductVariants(
@@ -140,7 +140,7 @@ export class ProductResolver {
         return this.productVariantService.create(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductVariants(
@@ -151,7 +151,7 @@ export class ProductResolver {
         return this.productVariantService.update(ctx, input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteProductVariant(
@@ -161,7 +161,7 @@ export class ProductResolver {
         return this.productVariantService.softDelete(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async assignProductsToChannel(
@@ -171,7 +171,7 @@ export class ProductResolver {
         return this.productService.assignProductsToChannel(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async removeProductsFromChannel(

@@ -38,7 +38,7 @@ export class ChannelResolver {
         return ctx.channel;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async createChannel(
@@ -53,7 +53,7 @@ export class ChannelResolver {
         return channel;
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async updateChannel(
@@ -63,7 +63,7 @@ export class ChannelResolver {
         return this.channelService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.SuperAdmin)
     async deleteChannel(

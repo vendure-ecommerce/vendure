@@ -33,21 +33,21 @@ export class ZoneResolver {
         return this.zoneService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createZone(@Ctx() ctx: RequestContext, @Args() args: MutationCreateZoneArgs): Promise<Zone> {
         return this.zoneService.create(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateZone(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateZoneArgs): Promise<Zone> {
         return this.zoneService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteZone(
@@ -57,7 +57,7 @@ export class ZoneResolver {
         return this.zoneService.delete(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async addMembersToZone(
@@ -67,7 +67,7 @@ export class ZoneResolver {
         return this.zoneService.addMembersToZone(ctx, args);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async removeMembersFromZone(

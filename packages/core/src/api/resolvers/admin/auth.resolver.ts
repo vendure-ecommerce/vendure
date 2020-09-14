@@ -30,7 +30,7 @@ export class AuthResolver extends BaseAuthResolver {
         super(authService, userService, administratorService, configService);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     login(
@@ -42,7 +42,7 @@ export class AuthResolver extends BaseAuthResolver {
         return super.login(args, ctx, req, res);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     authenticate(
@@ -54,7 +54,7 @@ export class AuthResolver extends BaseAuthResolver {
         return this.authenticateAndCreateSession(ctx, args, req, res);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     logout(

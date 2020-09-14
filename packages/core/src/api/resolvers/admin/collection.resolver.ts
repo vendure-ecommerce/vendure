@@ -75,7 +75,7 @@ export class CollectionResolver {
         return this.encodeFilters(collection);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createCollection(
@@ -87,7 +87,7 @@ export class CollectionResolver {
         return this.collectionService.create(ctx, input).then(this.encodeFilters);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateCollection(
@@ -99,7 +99,7 @@ export class CollectionResolver {
         return this.collectionService.update(ctx, input).then(this.encodeFilters);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async moveCollection(
@@ -110,7 +110,7 @@ export class CollectionResolver {
         return this.collectionService.move(ctx, input).then(this.encodeFilters);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteCollection(

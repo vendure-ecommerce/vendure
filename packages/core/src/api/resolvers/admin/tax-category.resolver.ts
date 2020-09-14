@@ -34,7 +34,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.findOne(ctx, args.id);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createTaxCategory(
@@ -44,7 +44,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.create(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateTaxCategory(
@@ -54,7 +54,7 @@ export class TaxCategoryResolver {
         return this.taxCategoryService.update(ctx, args.input);
     }
 
-    @Transaction
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteTaxCategory(

@@ -5,14 +5,12 @@ import {
     Connection,
     EntityManager,
     EntitySchema,
-    FindManyOptions,
     FindOneOptions,
     FindOptionsUtils,
     getRepository,
     ObjectType,
     Repository,
 } from 'typeorm';
-import { RepositoryFactory } from 'typeorm/repository/RepositoryFactory';
 
 import { RequestContext } from '../../api/common/request-context';
 import { TRANSACTION_MANAGER_KEY } from '../../common/constants';
@@ -20,6 +18,9 @@ import { EntityNotFoundError } from '../../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { VendureEntity } from '../../entity/base/base.entity';
 
+/**
+ * @docsCategory data-access
+ */
 export interface FindEntityOptions extends FindOneOptions {
     channelId?: ID;
 }
@@ -72,10 +73,9 @@ export class TransactionalConnection {
         maybeTarget?: ObjectType<Entity> | EntitySchema<Entity> | string,
     ): Repository<Entity> {
         if (ctxOrTarget instanceof RequestContext) {
-            const transactionManager = (ctxOrTarget as any)[TRANSACTION_MANAGER_KEY];
-            if (transactionManager && maybeTarget) {
-                const metadata = this.connection.getMetadata(maybeTarget);
-                return new RepositoryFactory().create(transactionManager, metadata);
+            const transactionManager = this.getTransactionManager(ctxOrTarget);
+            if (transactionManager && maybeTarget && !transactionManager.queryRunner?.isReleased) {
+                return transactionManager.getRepository(maybeTarget);
             } else {
                 // tslint:disable-next-line:no-non-null-assertion
                 return getRepository(maybeTarget!);
@@ -88,17 +88,35 @@ export class TransactionalConnection {
 
     /**
      * @description
+     * Manually start a transaction if one is not already in progress. This method should be used in
+     * conjunction with the `'manual'` mode of the {@link Transaction} decorator.
+     */
+    async startTransaction(ctx: RequestContext) {
+        const transactionManager = this.getTransactionManager(ctx);
+        if (transactionManager?.queryRunner?.isTransactionActive === false) {
+            await transactionManager.queryRunner.startTransaction();
+        }
+    }
+
+    /**
+     * @description
      * Manually commits any open transaction. Should be very rarely needed, since the {@link Transaction} decorator
      * and the {@link TransactionInterceptor} take care of this automatically. Use-cases include situations
-     * in which the worker thread needs to access changes made in the current transaction.
+     * in which the worker thread needs to access changes made in the current transaction, or when using the
+     * Transaction decorator in manual mode.
      */
     async commitOpenTransaction(ctx: RequestContext) {
-        const transactionManager: EntityManager = (ctx as any)[TRANSACTION_MANAGER_KEY];
-        if (transactionManager.queryRunner?.isTransactionActive) {
+        const transactionManager = this.getTransactionManager(ctx);
+        if (transactionManager?.queryRunner?.isTransactionActive) {
             await transactionManager.queryRunner.commitTransaction();
         }
     }
 
+    /**
+     * @description
+     * Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
+     * is found.
+     */
     async getEntityOrThrow<T extends VendureEntity>(
         ctx: RequestContext,
         entityType: Type<T>,
@@ -121,6 +139,7 @@ export class TransactionalConnection {
     }
 
     /**
+     * @description
      * Like the TypeOrm `Repository.findOne()` method, but limits the results to
      * the given Channel.
      */
@@ -145,6 +164,7 @@ export class TransactionalConnection {
     }
 
     /**
+     * @description
      * Like the TypeOrm `Repository.findByIds()` method, but limits the results to
      * the given Channel.
      */
@@ -172,5 +192,9 @@ export class TransactionalConnection {
             .andWhere('entity.id IN (:...ids)', { ids })
             .andWhere('channel.id = :channelId', { channelId })
             .getMany();
+    }
+
+    private getTransactionManager(ctx: RequestContext): EntityManager | undefined {
+        return (ctx as any)[TRANSACTION_MANAGER_KEY];
     }
 }
