@@ -62,7 +62,7 @@ export class FulfillmentService {
         const orders = ordersInOrderItems.filter((v, i, a) => a.findIndex(t => t.id === v.id) === i);
         const fromState = fulfillment.state;
         await this.fulfillmentStateMachine.transition(ctx, fulfillment, orders, state);
-        await this.connection.getRepository(Fulfillment).save(fulfillment, { reload: false });
+        await this.connection.getRepository(ctx, Fulfillment).save(fulfillment, { reload: false });
         this.eventBus.publish(new FulfillmentStateTransitionEvent(fromState, state, ctx, fulfillment));
 
         return { fulfillment, orders, fromState, toState: state };

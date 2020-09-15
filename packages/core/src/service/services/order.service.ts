@@ -465,6 +465,7 @@ export class OrderService {
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
     }
+
     async transitionFulfillmentToState(
         ctx: RequestContext,
         fulfillmentId: ID,
@@ -476,30 +477,36 @@ export class OrderService {
             state,
         );
         await Promise.all(
-            orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order.id, fromState, toState)),
+            orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
         );
         return fulfillment;
     }
+
     private async handleFulfillmentStateTransitByOrder(
         ctx: RequestContext,
-        orderId: ID,
+        order: Order,
         fromState: FulfillmentState,
         toState: FulfillmentState,
     ): Promise<void> {
+        const nextOrderStates = this.getNextOrderStates(order);
+
+        const transitionOrderIfStateAvailable = (state: OrderState) =>
+            nextOrderStates.includes(state) && this.transitionToState(ctx, order.id, state);
+
         if (fromState === 'Pending' && toState === 'Shipped') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, orderId);
+            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
             if (orderItemsAreShipped(orderWithFulfillment)) {
-                await this.transitionToState(ctx, orderId, 'Shipped');
+                await transitionOrderIfStateAvailable('Shipped');
             } else {
-                await this.transitionToState(ctx, orderId, 'PartiallyShipped');
+                await transitionOrderIfStateAvailable('PartiallyShipped');
             }
         }
         if (fromState === 'Shipped' && toState === 'Delivered') {
-            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, orderId);
+            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
             if (orderItemsAreDelivered(orderWithFulfillment)) {
-                await this.transitionToState(ctx, orderId, 'Delivered');
+                await transitionOrderIfStateAvailable('Delivered');
             } else {
-                await this.transitionToState(ctx, orderId, 'PartiallyDelivered');
+                await transitionOrderIfStateAvailable('PartiallyDelivered');
             }
         }
     }

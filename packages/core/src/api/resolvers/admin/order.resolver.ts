@@ -116,6 +116,7 @@ export class OrderResolver {
         return this.orderService.transitionToState(ctx, args.id, args.state as OrderState);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateOrder)
     async transitionFulfillmentToState(
