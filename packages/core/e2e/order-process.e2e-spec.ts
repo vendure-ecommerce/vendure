@@ -1,7 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { CustomOrderProcess, mergeConfig, OrderState } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -18,7 +17,7 @@ import {
     SetShippingMethod,
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
-import { GET_ORDER } from './graphql/shared-definitions';
+import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
@@ -400,13 +399,3 @@ describe('Order process', () => {
         });
     });
 });
-
-export const ADMIN_TRANSITION_TO_STATE = gql`
-    mutation AdminTransition($id: ID!, $state: String!) {
-        transitionOrderToState(id: $id, state: $state) {
-            id
-            state
-            nextStates
-        }
-    }
-`;

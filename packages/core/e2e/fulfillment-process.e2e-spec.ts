@@ -230,13 +230,3 @@ describe('Fulfillment process', () => {
         });
     });
 });
-
-export const ADMIN_TRANSITION_TO_STATE = gql`
-    mutation AdminTransition($id: ID!, $state: String!) {
-        transitionOrderToState(id: $id, state: $state) {
-            id
-            state
-            nextStates
-        }
-    }
-`;

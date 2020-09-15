@@ -1,12 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
-import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
     AddCustomersToGroup,
     CreateAddress,
@@ -26,12 +24,18 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { Register } from './graphql/generated-e2e-shop-types';
 import {
+    ADD_CUSTOMERS_TO_GROUP,
+    CREATE_ADDRESS,
     CREATE_CHANNEL,
+    CREATE_CUSTOMER,
     CREATE_CUSTOMER_GROUP,
-    CUSTOMER_GROUP_FRAGMENT,
+    DELETE_CUSTOMER,
+    GET_CUSTOMER_GROUP,
     GET_CUSTOMER_LIST,
     ME,
     REMOVE_CUSTOMERS_FROM_GROUP,
+    UPDATE_ADDRESS,
+    UPDATE_CUSTOMER,
 } from './graphql/shared-definitions';
 import { DELETE_ADDRESS, REGISTER_ACCOUNT } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -338,150 +342,3 @@ describe('ChannelAware Customers', () => {
         });
     });
 });
-
-export const CREATE_ADDRESS = gql`
-    mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {
-        createCustomerAddress(customerId: $id, input: $input) {
-            id
-            fullName
-            company
-            streetLine1
-            streetLine2
-            city
-            province
-            postalCode
-            country {
-                code
-                name
-            }
-            phoneNumber
-            defaultShippingAddress
-            defaultBillingAddress
-        }
-    }
-`;
-
-export const UPDATE_ADDRESS = gql`
-    mutation UpdateAddress($input: UpdateAddressInput!) {
-        updateCustomerAddress(input: $input) {
-            id
-            defaultShippingAddress
-            defaultBillingAddress
-            country {
-                code
-                name
-            }
-        }
-    }
-`;
-
-export const CREATE_CUSTOMER = gql`
-    mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
-        createCustomer(input: $input, password: $password) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER = gql`
-    mutation UpdateCustomer($input: UpdateCustomerInput!) {
-        updateCustomer(input: $input) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-export const DELETE_CUSTOMER = gql`
-    mutation DeleteCustomer($id: ID!) {
-        deleteCustomer(id: $id) {
-            result
-        }
-    }
-`;
-
-export const UPDATE_CUSTOMER_NOTE = gql`
-    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
-        updateCustomerNote(input: $input) {
-            id
-            data
-            isPublic
-        }
-    }
-`;
-
-export const DELETE_CUSTOMER_NOTE = gql`
-    mutation DeleteCustomerNote($id: ID!) {
-        deleteCustomerNote(id: $id) {
-            result
-            message
-        }
-    }
-`;
-
-export const UPDATE_CUSTOMER_GROUP = gql`
-    mutation UpdateCustomerGroup($input: UpdateCustomerGroupInput!) {
-        updateCustomerGroup(input: $input) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const DELETE_CUSTOMER_GROUP = gql`
-    mutation DeleteCustomerGroup($id: ID!) {
-        deleteCustomerGroup(id: $id) {
-            result
-            message
-        }
-    }
-`;
-
-export const GET_CUSTOMER_GROUPS = gql`
-    query GetCustomerGroups($options: CustomerGroupListOptions) {
-        customerGroups(options: $options) {
-            items {
-                id
-                name
-            }
-            totalItems
-        }
-    }
-`;
-
-export const GET_CUSTOMER_GROUP = gql`
-    query GetCustomerGroup($id: ID!, $options: CustomerListOptions) {
-        customerGroup(id: $id) {
-            id
-            name
-            customers(options: $options) {
-                items {
-                    id
-                }
-                totalItems
-            }
-        }
-    }
-`;
-
-export const ADD_CUSTOMERS_TO_GROUP = gql`
-    mutation AddCustomersToGroup($groupId: ID!, $customerIds: [ID!]!) {
-        addCustomersToGroup(customerGroupId: $groupId, customerIds: $customerIds) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const GET_CUSTOMER_WITH_GROUPS = gql`
-    query GetCustomerWithGroups($id: ID!) {
-        customer(id: $id) {
-            id
-            groups {
-                id
-                name
-            }
-        }
-    }
-`;

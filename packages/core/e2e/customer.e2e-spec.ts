@@ -35,7 +35,18 @@ import {
     UpdateCustomerNote,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER, GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import {
+    CREATE_ADDRESS,
+    CREATE_CUSTOMER,
+    DELETE_CUSTOMER,
+    DELETE_CUSTOMER_NOTE,
+    GET_CUSTOMER,
+    GET_CUSTOMER_HISTORY,
+    GET_CUSTOMER_LIST,
+    UPDATE_ADDRESS,
+    UPDATE_CUSTOMER,
+    UPDATE_CUSTOMER_NOTE,
+} from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -593,42 +604,6 @@ const GET_CUSTOMER_WITH_USER = gql`
     }
 `;
 
-export const CREATE_ADDRESS = gql`
-    mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {
-        createCustomerAddress(customerId: $id, input: $input) {
-            id
-            fullName
-            company
-            streetLine1
-            streetLine2
-            city
-            province
-            postalCode
-            country {
-                code
-                name
-            }
-            phoneNumber
-            defaultShippingAddress
-            defaultBillingAddress
-        }
-    }
-`;
-
-export const UPDATE_ADDRESS = gql`
-    mutation UpdateAddress($input: UpdateAddressInput!) {
-        updateCustomerAddress(input: $input) {
-            id
-            defaultShippingAddress
-            defaultBillingAddress
-            country {
-                code
-                name
-            }
-        }
-    }
-`;
-
 const GET_CUSTOMER_ORDERS = gql`
     query GetCustomerOrders($id: ID!) {
         customer(id: $id) {
@@ -642,32 +617,6 @@ const GET_CUSTOMER_ORDERS = gql`
     }
 `;
 
-export const CREATE_CUSTOMER = gql`
-    mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
-        createCustomer(input: $input, password: $password) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER = gql`
-    mutation UpdateCustomer($input: UpdateCustomerInput!) {
-        updateCustomer(input: $input) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-export const DELETE_CUSTOMER = gql`
-    mutation DeleteCustomer($id: ID!) {
-        deleteCustomer(id: $id) {
-            result
-        }
-    }
-`;
-
 const ADD_NOTE_TO_CUSTOMER = gql`
     mutation AddNoteToCustomer($input: AddNoteToCustomerInput!) {
         addNoteToCustomer(input: $input) {
@@ -675,23 +624,4 @@ const ADD_NOTE_TO_CUSTOMER = gql`
         }
     }
     ${CUSTOMER_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER_NOTE = gql`
-    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
-        updateCustomerNote(input: $input) {
-            id
-            data
-            isPublic
-        }
-    }
-`;
-
-export const DELETE_CUSTOMER_NOTE = gql`
-    mutation DeleteCustomerNote($id: ID!) {
-        deleteCustomerNote(id: $id) {
-            result
-            message
-        }
-    }
 `;
