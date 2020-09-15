@@ -10,6 +10,8 @@ export class OrderStateI18nTokenPipe implements PipeTransform {
         ArrangingPayment: _('order.state-arranging-payment'),
         PaymentAuthorized: _('order.state-payment-authorized'),
         PaymentSettled: _('order.state-payment-settled'),
+        PartiallyShipped: _('order.state-partially-shipped'),
+        Shipped: _('order.state-shipped'),
         PartiallyDelivered: _('order.state-partially-delivered'),
         Delivered: _('order.state-delivered'),
         Cancelled: _('order.state-cancelled'),

@@ -211,6 +211,15 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
             });
     }
 
+    transitionFulfillment(id: string, state: string) {
+        this.dataService.order
+            .transitionFulfillmentToState(id, state)
+            .pipe(switchMap(result => this.refetchOrder(result)))
+            .subscribe(() => {
+                this.notificationService.success(_('order.successfully-updated-fulfillment'));
+            });
+    }
+
     cancelOrRefund(order: OrderDetail.Fragment) {
         if (order.state === 'PaymentAuthorized' || order.active === true) {
             this.cancelOrder(order);

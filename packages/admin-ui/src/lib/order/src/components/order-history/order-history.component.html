@@ -60,7 +60,7 @@
                     {{
                         'order.history-payment-transition'
                             | translate
-                                : { from: entry.data.from, to: entry.data.to, id: entry.data.paymentId }
+                                : { from: entry.data.from, to: entry.data.to, id: getPayment(entry)?.transactionId }
                     }}
                 </ng-template>
             </ng-container>
@@ -82,10 +82,33 @@
                 </vdr-history-entry-detail>
             </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT">
-                <div class="title">
-                    {{ 'order.history-fulfillment-created' | translate }}
-                </div>
-                {{ 'order.tracking-code' | translate }}: {{ getFulfillment(entry)?.trackingCode }}
+                {{ 'order.history-fulfillment-created' | translate }}
+                <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
+                    <vdr-fulfillment-detail
+                        [fulfillmentId]="fulfillment.id"
+                        [order]="order"
+                    ></vdr-fulfillment-detail>
+                </vdr-history-entry-detail>
+            </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_FULFILLMENT_TRANSITION">
+                <ng-container *ngIf="entry.data.to === 'Delivered'">
+                    <div class="title">
+                        {{ 'order.history-fulfillment-delivered' | translate }}
+                    </div>
+                    {{ 'order.tracking-code' | translate }}: {{ getFulfillment(entry)?.trackingCode }}
+                </ng-container>
+                <ng-container *ngIf="entry.data.to === 'Shipped'">
+                    <div class="title">
+                        {{ 'order.history-fulfillment-shipped' | translate }}
+                    </div>
+                    {{ 'order.tracking-code' | translate }}: {{ getFulfillment(entry)?.trackingCode }}
+                </ng-container>
+                <ng-container *ngIf="entry.data.to !== 'Delivered' && entry.data.to !== 'Shipped'">
+                    {{
+                        'order.history-fulfillment-transition'
+                            | translate: { from: entry.data.from, to: entry.data.to }
+                    }}
+                </ng-container>
                 <vdr-history-entry-detail *ngIf="getFulfillment(entry) as fulfillment">
                     <vdr-fulfillment-detail
                         [fulfillmentId]="fulfillment.id"
@@ -149,5 +172,9 @@
             </ng-container>
         </ng-container>
     </vdr-timeline-entry>
-    <vdr-timeline-entry [isLast]="true"></vdr-timeline-entry>
+    <vdr-timeline-entry [isLast]="true" [createdAt]="order.createdAt" [featured]="true">
+        <div class="title">
+            {{ 'order.history-order-created' | translate }}
+        </div>
+    </vdr-timeline-entry>
 </div>

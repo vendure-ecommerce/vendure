@@ -33,6 +33,11 @@ export class OrderHistoryComponent {
                 return 'error';
             }
         }
+        if (entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) {
+            if (entry.data.to === 'Delivered') {
+                return 'success';
+            }
+        }
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
             if (entry.data.to === 'Declined') {
                 return 'error';
@@ -62,8 +67,13 @@ export class OrderHistoryComponent {
         if (entry.type === HistoryEntryType.ORDER_NOTE) {
             return 'note';
         }
-        if (entry.type === HistoryEntryType.ORDER_FULFILLMENT) {
-            return 'truck';
+        if (entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) {
+            if (entry.data.to === 'Shipped') {
+                return 'truck';
+            }
+            if (entry.data.to === 'Delivered') {
+                return 'truck';
+            }
         }
     }
 
@@ -78,7 +88,8 @@ export class OrderHistoryComponent {
             }
             case HistoryEntryType.ORDER_PAYMENT_TRANSITION:
                 return entry.data.to === 'Settled';
-            case HistoryEntryType.ORDER_FULFILLMENT:
+            case HistoryEntryType.ORDER_FULFILLMENT_TRANSITION:
+                return entry.data.to === 'Delivered' || entry.data.to === 'Shipped';
             case HistoryEntryType.ORDER_NOTE:
                 return true;
             default:
@@ -87,7 +98,11 @@ export class OrderHistoryComponent {
     }
 
     getFulfillment(entry: GetOrderHistory.Items): OrderDetail.Fulfillments | undefined {
-        if (entry.type === HistoryEntryType.ORDER_FULFILLMENT && this.order.fulfillments) {
+        if (
+            (entry.type === HistoryEntryType.ORDER_FULFILLMENT ||
+                entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) &&
+            this.order.fulfillments
+        ) {
             return this.order.fulfillments.find(f => f.id === entry.data.fulfillmentId);
         }
     }

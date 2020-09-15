@@ -56,6 +56,8 @@ export const ORDER_FRAGMENT = gql`
 export const FULFILLMENT_FRAGMENT = gql`
     fragment Fulfillment on Fulfillment {
         id
+        state
+        nextStates
         createdAt
         updatedAt
         method
@@ -309,4 +311,13 @@ export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
         }
     }
     ${ORDER_FRAGMENT}
+`;
+
+export const TRANSITION_FULFILLMENT_TO_STATE = gql`
+    mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            ...Fulfillment
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
 `;

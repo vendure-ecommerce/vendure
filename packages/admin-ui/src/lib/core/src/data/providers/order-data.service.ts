@@ -15,6 +15,7 @@ import {
     SettlePayment,
     SettleRefund,
     SettleRefundInput,
+    TransitionFulfillmentToState,
     TransitionOrderToState,
     UpdateOrderCustomFields,
     UpdateOrderInput,
@@ -32,6 +33,7 @@ import {
     REFUND_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
+    TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
@@ -78,6 +80,16 @@ export class OrderDataService {
                 input,
             },
         );
+    }
+
+    transitionFulfillmentToState(id: string, state: string) {
+        return this.baseDataService.mutate<
+            TransitionFulfillmentToState.Mutation,
+            TransitionFulfillmentToState.Variables
+        >(TRANSITION_FULFILLMENT_TO_STATE, {
+            id,
+            state,
+        });
     }
 
     cancelOrder(input: CancelOrderInput) {

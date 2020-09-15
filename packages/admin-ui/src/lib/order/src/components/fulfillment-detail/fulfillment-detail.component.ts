@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-
 import { OrderDetail } from '@vendure/admin-ui/core';
 
 @Component({

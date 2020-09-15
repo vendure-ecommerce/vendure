@@ -4841,7 +4841,7 @@ export type OrderFragment = (
 
 export type FulfillmentFragment = (
   { __typename?: 'Fulfillment' }
-  & Pick<Fulfillment, 'id' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>
+  & Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>
 );
 
 export type OrderLineFragment = (
@@ -5092,6 +5092,20 @@ export type UpdateOrderCustomFieldsMutation = (
     { __typename?: 'Order' }
     & OrderFragment
   )> }
+);
+
+export type TransitionFulfillmentToStateMutationVariables = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type TransitionFulfillmentToStateMutation = (
+  { __typename?: 'Mutation' }
+  & { transitionFulfillmentToState: (
+    { __typename?: 'Fulfillment' }
+    & FulfillmentFragment
+  ) }
 );
 
 export type AssetFragment = (
@@ -7450,6 +7464,12 @@ export namespace UpdateOrderCustomFields {
   export type Variables = UpdateOrderCustomFieldsMutationVariables;
   export type Mutation = UpdateOrderCustomFieldsMutation;
   export type SetOrderCustomFields = OrderFragment;
+}
+
+export namespace TransitionFulfillmentToState {
+  export type Variables = TransitionFulfillmentToStateMutationVariables;
+  export type Mutation = TransitionFulfillmentToStateMutation;
+  export type TransitionFulfillmentToState = FulfillmentFragment;
 }
 
 export namespace Asset {
