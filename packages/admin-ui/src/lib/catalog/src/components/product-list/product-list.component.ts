@@ -123,6 +123,9 @@ export class ProductListComponent
             })
             .pipe(
                 switchMap(response => (response ? this.dataService.product.deleteProduct(productId) : EMPTY)),
+                // Short delay to allow the product to be removed from the search index before
+                // refreshing.
+                delay(500),
             )
             .subscribe(
                 () => {

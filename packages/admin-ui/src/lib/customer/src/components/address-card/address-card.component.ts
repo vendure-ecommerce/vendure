@@ -1,7 +1,16 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { CustomFieldConfig, GetAvailableCountries, ModalService } from '@vendure/admin-ui/core';
 
-import { GetAvailableCountries } from '@vendure/admin-ui/core';
+import { AddressDetailDialogComponent } from '../address-detail-dialog/address-detail-dialog.component';
 
 @Component({
     selector: 'vdr-address-card',
@@ -10,18 +19,20 @@ import { GetAvailableCountries } from '@vendure/admin-ui/core';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddressCardComponent implements OnInit {
-    editing = false;
     @Input() addressForm: FormGroup;
+    @Input() customFields: CustomFieldConfig;
     @Input() availableCountries: GetAvailableCountries.Items[] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
     @Output() setAsDefaultBilling = new EventEmitter<string>();
 
+    constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
+
     ngOnInit(): void {
         const streetLine1 = this.addressForm.get('streetLine1') as FormControl;
         if (!streetLine1.value) {
-            this.editing = true;
+            this.editAddress();
         }
     }
 
@@ -41,5 +52,21 @@ export class AddressCardComponent implements OnInit {
     setAsDefaultShippingAddress() {
         this.setAsDefaultShipping.emit(this.addressForm.value.id);
         this.addressForm.markAsDirty();
+    }
+
+    editAddress() {
+        this.modalService
+            .fromComponent(AddressDetailDialogComponent, {
+                locals: {
+                    addressForm: this.addressForm,
+                    customFields: this.customFields,
+                    availableCountries: this.availableCountries,
+                },
+                size: 'md',
+                closable: true,
+            })
+            .subscribe(() => {
+                this.changeDetector.markForCheck();
+            });
     }
 }

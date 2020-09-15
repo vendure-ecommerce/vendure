@@ -3753,6 +3753,16 @@ export type GetAssetQuery = { __typename?: 'Query' } & {
     asset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'width' | 'height'> & AssetFragment>;
 };
 
+export type AssetFragFirstFragment = { __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>;
+
+export type GetAssetFragmentFirstQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetAssetFragmentFirstQuery = { __typename?: 'Query' } & {
+    asset?: Maybe<{ __typename?: 'Asset' } & AssetFragFirstFragment>;
+};
+
 export type CreateAssetsMutationVariables = {
     input: Array<CreateAssetInput>;
 };
@@ -6053,6 +6063,16 @@ export namespace GetAsset {
     export type Variables = GetAssetQueryVariables;
     export type Query = GetAssetQuery;
     export type Asset = AssetFragment;
+}
+
+export namespace AssetFragFirst {
+    export type Fragment = AssetFragFirstFragment;
+}
+
+export namespace GetAssetFragmentFirst {
+    export type Variables = GetAssetFragmentFirstQueryVariables;
+    export type Query = GetAssetFragmentFirstQuery;
+    export type Asset = AssetFragFirstFragment;
 }
 
 export namespace CreateAssets {
