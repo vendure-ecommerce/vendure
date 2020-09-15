@@ -9,6 +9,7 @@ import { Customer } from '../../../entity/customer/customer.entity';
 import { Role } from '../../../entity/role/role.entity';
 import { User } from '../../../entity/user/user.entity';
 import { AdministratorService } from '../../services/administrator.service';
+import { ChannelService } from '../../services/channel.service';
 import { CustomerService } from '../../services/customer.service';
 import { HistoryService } from '../../services/history.service';
 import { RoleService } from '../../services/role.service';
@@ -29,6 +30,7 @@ export class ExternalAuthenticationService {
         private historyService: HistoryService,
         private customerService: CustomerService,
         private administratorService: AdministratorService,
+        private channelService: ChannelService,
     ) {}
 
     /**
@@ -107,14 +109,14 @@ export class ExternalAuthenticationService {
         newUser.authenticationMethods = [authMethod];
         const savedUser = await this.connection.getRepository(ctx, User).save(newUser);
 
-        const customer = await this.connection.getRepository(ctx, Customer).save(
-            new Customer({
-                emailAddress: config.emailAddress,
-                firstName: config.firstName,
-                lastName: config.lastName,
-                user: savedUser,
-            }),
-        );
+        const customer = new Customer({
+            emailAddress: config.emailAddress,
+            firstName: config.firstName,
+            lastName: config.lastName,
+            user: savedUser,
+        });
+        this.channelService.assignToCurrentChannel(customer, ctx);
+        await this.connection.getRepository(ctx, Customer).save(customer);
 
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,

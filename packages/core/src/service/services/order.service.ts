@@ -45,6 +45,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
@@ -55,7 +56,8 @@ import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import {
     orderItemsAreAllCancelled,
-    orderItemsAreFulfilled,
+    orderItemsAreDelivered,
+    orderItemsAreShipped,
     orderTotalIsCovered,
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -65,6 +67,7 @@ import { TransactionalConnection } from '../transaction/transactional-connection
 import { ChannelService } from './channel.service';
 import { CountryService } from './country.service';
 import { CustomerService } from './customer.service';
+import { FulfillmentService } from './fulfillment.service';
 import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
 import { ProductVariantService } from './product-variant.service';
@@ -85,6 +88,7 @@ export class OrderService {
         private orderMerger: OrderMerger,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
+        private fulfillmentService: FulfillmentService,
         private listQueryBuilder: ListQueryBuilder,
         private stockMovementService: StockMovementService,
         private refundStateMachine: RefundStateMachine,
@@ -461,6 +465,44 @@ export class OrderService {
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
     }
+    async transitionFulfillmentToState(
+        ctx: RequestContext,
+        fulfillmentId: ID,
+        state: FulfillmentState,
+    ): Promise<Fulfillment> {
+        const { fulfillment, fromState, toState, orders } = await this.fulfillmentService.transitionToState(
+            ctx,
+            fulfillmentId,
+            state,
+        );
+        await Promise.all(
+            orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order.id, fromState, toState)),
+        );
+        return fulfillment;
+    }
+    private async handleFulfillmentStateTransitByOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        fromState: FulfillmentState,
+        toState: FulfillmentState,
+    ): Promise<void> {
+        if (fromState === 'Pending' && toState === 'Shipped') {
+            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, orderId);
+            if (orderItemsAreShipped(orderWithFulfillment)) {
+                await this.transitionToState(ctx, orderId, 'Shipped');
+            } else {
+                await this.transitionToState(ctx, orderId, 'PartiallyShipped');
+            }
+        }
+        if (fromState === 'Shipped' && toState === 'Delivered') {
+            const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, orderId);
+            if (orderItemsAreDelivered(orderWithFulfillment)) {
+                await this.transitionToState(ctx, orderId, 'Delivered');
+            } else {
+                await this.transitionToState(ctx, orderId, 'PartiallyDelivered');
+            }
+        }
+    }
 
     async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
@@ -535,45 +577,25 @@ export class OrderService {
         );
 
         for (const order of orders) {
-            if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled') {
+            if (order.state !== 'PaymentSettled' && order.state !== 'PartiallyDelivered') {
                 throw new IllegalOperationError('error.create-fulfillment-orders-must-be-settled');
             }
         }
-
-        const fulfillment = await this.connection.getRepository(ctx, Fulfillment).save(
-            new Fulfillment({
-                trackingCode: input.trackingCode,
-                method: input.method,
-                orderItems: items,
-            }),
-        );
+        const fulfillment = await this.fulfillmentService.create(ctx, {
+            trackingCode: input.trackingCode,
+            method: input.method,
+            orderItems: items,
+        });
 
         for (const order of orders) {
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
                 orderId: order.id,
-                type: HistoryEntryType.ORDER_FULLFILLMENT,
+                type: HistoryEntryType.ORDER_FULFILLMENT,
                 data: {
                     fulfillmentId: fulfillment.id,
                 },
             });
-            const orderWithFulfillments = await this.connection.findOneInChannel(
-                ctx,
-                Order,
-                order.id,
-                ctx.channelId,
-                {
-                    relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
-                },
-            );
-            if (!orderWithFulfillments) {
-                throw new InternalServerError('error.could-not-find-order');
-            }
-            if (orderItemsAreFulfilled(orderWithFulfillments)) {
-                await this.transitionToState(ctx, order.id, 'Fulfilled');
-            } else {
-                await this.transitionToState(ctx, order.id, 'PartiallyFulfilled');
-            }
         }
         return fulfillment;
     }
@@ -598,14 +620,6 @@ export class OrderService {
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
         return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
     }
-
-    async getFulfillmentOrderItems(ctx: RequestContext, id: ID): Promise<OrderItem[]> {
-        const fulfillment = await this.connection.getEntityOrThrow(ctx, Fulfillment, id, {
-            relations: ['orderItems'],
-        });
-        return fulfillment.orderItems;
-    }
-
     async cancelOrder(ctx: RequestContext, input: CancelOrderInput): Promise<Order> {
         let allOrderItemsCancelled = false;
         if (input.lines != null) {
@@ -925,6 +939,12 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
         return order;
+    }
+
+    private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {
+        return await this.connection.getEntityOrThrow(ctx, Order, orderId, {
+            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+        });
     }
 
     private async getOrdersAndItemsFromLines(

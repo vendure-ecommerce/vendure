@@ -1234,10 +1234,12 @@ export type FloatCustomFieldConfig = CustomField & {
 
 export type Fulfillment = Node & {
     __typename?: 'Fulfillment';
+    nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     orderItems: Array<OrderItem>;
+    state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
 };
@@ -1313,9 +1315,10 @@ export enum HistoryEntryType {
     CUSTOMER_NOTE = 'CUSTOMER_NOTE',
     ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
     ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
-    ORDER_FULLFILLMENT = 'ORDER_FULLFILLMENT',
+    ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
     ORDER_CANCELLATION = 'ORDER_CANCELLATION',
     ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+    ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
     ORDER_NOTE = 'ORDER_NOTE',
     ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
@@ -1869,6 +1872,7 @@ export type Mutation = {
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<Order>;
+    transitionFulfillmentToState: Fulfillment;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -2158,6 +2162,11 @@ export type MutationDeleteOrderNoteArgs = {
 };
 
 export type MutationTransitionOrderToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationTransitionFulfillmentToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
 };
@@ -4020,6 +4029,142 @@ export type CreateCountryMutation = { __typename?: 'Mutation' } & {
     createCountry: { __typename?: 'Country' } & CountryFragment;
 };
 
+export type CreateAddressMutationVariables = {
+    id: Scalars['ID'];
+    input: CreateAddressInput;
+};
+
+export type CreateAddressMutation = { __typename?: 'Mutation' } & {
+    createCustomerAddress: { __typename?: 'Address' } & Pick<
+        Address,
+        | 'id'
+        | 'fullName'
+        | 'company'
+        | 'streetLine1'
+        | 'streetLine2'
+        | 'city'
+        | 'province'
+        | 'postalCode'
+        | 'phoneNumber'
+        | 'defaultShippingAddress'
+        | 'defaultBillingAddress'
+    > & { country: { __typename?: 'Country' } & Pick<Country, 'code' | 'name'> };
+};
+
+export type UpdateAddressMutationVariables = {
+    input: UpdateAddressInput;
+};
+
+export type UpdateAddressMutation = { __typename?: 'Mutation' } & {
+    updateCustomerAddress: { __typename?: 'Address' } & Pick<
+        Address,
+        'id' | 'defaultShippingAddress' | 'defaultBillingAddress'
+    > & { country: { __typename?: 'Country' } & Pick<Country, 'code' | 'name'> };
+};
+
+export type CreateCustomerMutationVariables = {
+    input: CreateCustomerInput;
+    password?: Maybe<Scalars['String']>;
+};
+
+export type CreateCustomerMutation = { __typename?: 'Mutation' } & {
+    createCustomer: { __typename?: 'Customer' } & CustomerFragment;
+};
+
+export type UpdateCustomerMutationVariables = {
+    input: UpdateCustomerInput;
+};
+
+export type UpdateCustomerMutation = { __typename?: 'Mutation' } & {
+    updateCustomer: { __typename?: 'Customer' } & CustomerFragment;
+};
+
+export type DeleteCustomerMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
+    deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
+};
+
+export type UpdateCustomerNoteMutationVariables = {
+    input: UpdateCustomerNoteInput;
+};
+
+export type UpdateCustomerNoteMutation = { __typename?: 'Mutation' } & {
+    updateCustomerNote: { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
+};
+
+export type DeleteCustomerNoteMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteCustomerNoteMutation = { __typename?: 'Mutation' } & {
+    deleteCustomerNote: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type UpdateCustomerGroupMutationVariables = {
+    input: UpdateCustomerGroupInput;
+};
+
+export type UpdateCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    updateCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type DeleteCustomerGroupMutationVariables = {
+    id: Scalars['ID'];
+};
+
+export type DeleteCustomerGroupMutation = { __typename?: 'Mutation' } & {
+    deleteCustomerGroup: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+};
+
+export type GetCustomerGroupsQueryVariables = {
+    options?: Maybe<CustomerGroupListOptions>;
+};
+
+export type GetCustomerGroupsQuery = { __typename?: 'Query' } & {
+    customerGroups: { __typename?: 'CustomerGroupList' } & Pick<CustomerGroupList, 'totalItems'> & {
+            items: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+        };
+};
+
+export type GetCustomerGroupQueryVariables = {
+    id: Scalars['ID'];
+    options?: Maybe<CustomerListOptions>;
+};
+
+export type GetCustomerGroupQuery = { __typename?: 'Query' } & {
+    customerGroup?: Maybe<
+        { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
+                customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
+                        items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
+                    };
+            }
+    >;
+};
+
+export type AddCustomersToGroupMutationVariables = {
+    groupId: Scalars['ID'];
+    customerIds: Array<Scalars['ID']>;
+};
+
+export type AddCustomersToGroupMutation = { __typename?: 'Mutation' } & {
+    addCustomersToGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
+};
+
+export type GetCustomerWithGroupsQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetCustomerWithGroupsQuery = { __typename?: 'Query' } & {
+    customer?: Maybe<
+        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
+                groups: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
+            }
+    >;
+};
+
 export type UpdateCustomerGroupMutationVariables = {
     input: UpdateCustomerGroupInput;
 };
@@ -4436,6 +4581,15 @@ export type UpdateFacetValuesMutationVariables = {
 
 export type UpdateFacetValuesMutation = { __typename?: 'Mutation' } & {
     updateFacetValues: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
+};
+
+export type AdminTransitionMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
+    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
 };
 
 export type AdministratorFragment = { __typename?: 'Administrator' } & Pick<
@@ -5079,6 +5233,45 @@ export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
     removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
 };
 
+export type CreateFulfillmentMutationVariables = {
+    input: FulfillOrderInput;
+};
+
+export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
+    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<
+        Fulfillment,
+        'id' | 'method' | 'state' | 'trackingCode'
+    > & { orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>> };
+};
+
+export type TransitFulfillmentMutationVariables = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type TransitFulfillmentMutation = { __typename?: 'Mutation' } & {
+    transitionFulfillmentToState: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'>;
+};
+
+export type GetOrderFulfillmentsQueryVariables = {
+    id: Scalars['ID'];
+};
+
+export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
+    order?: Maybe<
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
+                fulfillments?: Maybe<
+                    Array<
+                        { __typename?: 'Fulfillment' } & Pick<
+                            Fulfillment,
+                            'id' | 'state' | 'nextStates' | 'method'
+                        >
+                    >
+                >;
+            }
+    >;
+};
+
 export type UpdateOptionGroupMutationVariables = {
     input: UpdateProductOptionGroupInput;
 };
@@ -5141,38 +5334,19 @@ export type SettlePaymentMutation = { __typename?: 'Mutation' } & {
     settlePayment: { __typename?: 'Payment' } & Pick<Payment, 'id' | 'state' | 'metadata'>;
 };
 
-export type CreateFulfillmentMutationVariables = {
-    input: FulfillOrderInput;
-};
-
-export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
-    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method' | 'trackingCode'> & {
-            orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
-        };
-};
-
-export type GetOrderFulfillmentsQueryVariables = {
-    id: Scalars['ID'];
-};
-
-export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
-    order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
-                fulfillments?: Maybe<
-                    Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
-                >;
-            }
-    >;
-};
-
 export type GetOrderListFulfillmentsQueryVariables = {};
 
 export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
     orders: { __typename?: 'OrderList' } & {
         items: Array<
-            { __typename?: 'Order' } & Pick<Order, 'id'> & {
+            { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                     fulfillments?: Maybe<
-                        Array<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'method'>>
+                        Array<
+                            { __typename?: 'Fulfillment' } & Pick<
+                                Fulfillment,
+                                'id' | 'state' | 'nextStates' | 'method'
+                            >
+                        >
                     >;
                 }
         >;
@@ -5185,10 +5359,10 @@ export type GetOrderFulfillmentItemsQueryVariables = {
 
 export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
+        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
                 fulfillments?: Maybe<
                     Array<
-                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'> & {
+                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'> & {
                                 orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
                             }
                     >
@@ -6083,6 +6257,92 @@ export namespace CreateCountry {
     export type CreateCountry = CountryFragment;
 }
 
+export namespace CreateAddress {
+    export type Variables = CreateAddressMutationVariables;
+    export type Mutation = CreateAddressMutation;
+    export type CreateCustomerAddress = CreateAddressMutation['createCustomerAddress'];
+    export type Country = CreateAddressMutation['createCustomerAddress']['country'];
+}
+
+export namespace UpdateAddress {
+    export type Variables = UpdateAddressMutationVariables;
+    export type Mutation = UpdateAddressMutation;
+    export type UpdateCustomerAddress = UpdateAddressMutation['updateCustomerAddress'];
+    export type Country = UpdateAddressMutation['updateCustomerAddress']['country'];
+}
+
+export namespace CreateCustomer {
+    export type Variables = CreateCustomerMutationVariables;
+    export type Mutation = CreateCustomerMutation;
+    export type CreateCustomer = CustomerFragment;
+}
+
+export namespace UpdateCustomer {
+    export type Variables = UpdateCustomerMutationVariables;
+    export type Mutation = UpdateCustomerMutation;
+    export type UpdateCustomer = CustomerFragment;
+}
+
+export namespace DeleteCustomer {
+    export type Variables = DeleteCustomerMutationVariables;
+    export type Mutation = DeleteCustomerMutation;
+    export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
+}
+
+export namespace UpdateCustomerNote {
+    export type Variables = UpdateCustomerNoteMutationVariables;
+    export type Mutation = UpdateCustomerNoteMutation;
+    export type UpdateCustomerNote = UpdateCustomerNoteMutation['updateCustomerNote'];
+}
+
+export namespace DeleteCustomerNote {
+    export type Variables = DeleteCustomerNoteMutationVariables;
+    export type Mutation = DeleteCustomerNoteMutation;
+    export type DeleteCustomerNote = DeleteCustomerNoteMutation['deleteCustomerNote'];
+}
+
+export namespace UpdateCustomerGroup {
+    export type Variables = UpdateCustomerGroupMutationVariables;
+    export type Mutation = UpdateCustomerGroupMutation;
+    export type UpdateCustomerGroup = CustomerGroupFragment;
+}
+
+export namespace DeleteCustomerGroup {
+    export type Variables = DeleteCustomerGroupMutationVariables;
+    export type Mutation = DeleteCustomerGroupMutation;
+    export type DeleteCustomerGroup = DeleteCustomerGroupMutation['deleteCustomerGroup'];
+}
+
+export namespace GetCustomerGroups {
+    export type Variables = GetCustomerGroupsQueryVariables;
+    export type Query = GetCustomerGroupsQuery;
+    export type CustomerGroups = GetCustomerGroupsQuery['customerGroups'];
+    export type Items = NonNullable<GetCustomerGroupsQuery['customerGroups']['items'][0]>;
+}
+
+export namespace GetCustomerGroup {
+    export type Variables = GetCustomerGroupQueryVariables;
+    export type Query = GetCustomerGroupQuery;
+    export type CustomerGroup = NonNullable<GetCustomerGroupQuery['customerGroup']>;
+    export type Customers = NonNullable<GetCustomerGroupQuery['customerGroup']>['customers'];
+    export type Items = NonNullable<
+        NonNullable<GetCustomerGroupQuery['customerGroup']>['customers']['items'][0]
+    >;
+}
+
+export namespace AddCustomersToGroup {
+    export type Variables = AddCustomersToGroupMutationVariables;
+    export type Mutation = AddCustomersToGroupMutation;
+    export type AddCustomersToGroup = CustomerGroupFragment;
+}
+
+export namespace GetCustomerWithGroups {
+    export type Variables = GetCustomerWithGroupsQueryVariables;
+    export type Query = GetCustomerWithGroupsQuery;
+    export type Customer = NonNullable<GetCustomerWithGroupsQuery['customer']>;
+    export type Groups = NonNullable<NonNullable<GetCustomerWithGroupsQuery['customer']>['groups'][0]>;
+}
+
 export namespace UpdateCustomerGroup {
     export type Variables = UpdateCustomerGroupMutationVariables;
     export type Mutation = UpdateCustomerGroupMutation;
@@ -6368,6 +6628,12 @@ export namespace UpdateFacetValues {
     export type Variables = UpdateFacetValuesMutationVariables;
     export type Mutation = UpdateFacetValuesMutation;
     export type UpdateFacetValues = FacetValueFragment;
+}
+
+export namespace AdminTransition {
+    export type Variables = AdminTransitionMutationVariables;
+    export type Mutation = AdminTransitionMutation;
+    export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
 }
 
 export namespace Administrator {
@@ -6768,6 +7034,28 @@ export namespace RemoveCustomersFromGroup {
     export type RemoveCustomersFromGroup = CustomerGroupFragment;
 }
 
+export namespace CreateFulfillment {
+    export type Variables = CreateFulfillmentMutationVariables;
+    export type Mutation = CreateFulfillmentMutation;
+    export type FulfillOrder = CreateFulfillmentMutation['fulfillOrder'];
+    export type OrderItems = NonNullable<CreateFulfillmentMutation['fulfillOrder']['orderItems'][0]>;
+}
+
+export namespace TransitFulfillment {
+    export type Variables = TransitFulfillmentMutationVariables;
+    export type Mutation = TransitFulfillmentMutation;
+    export type TransitionFulfillmentToState = TransitFulfillmentMutation['transitionFulfillmentToState'];
+}
+
+export namespace GetOrderFulfillments {
+    export type Variables = GetOrderFulfillmentsQueryVariables;
+    export type Query = GetOrderFulfillmentsQuery;
+    export type Order = NonNullable<GetOrderFulfillmentsQuery['order']>;
+    export type Fulfillments = NonNullable<
+        NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[0]
+    >;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -6812,22 +7100,6 @@ export namespace SettlePayment {
     export type Variables = SettlePaymentMutationVariables;
     export type Mutation = SettlePaymentMutation;
     export type SettlePayment = SettlePaymentMutation['settlePayment'];
-}
-
-export namespace CreateFulfillment {
-    export type Variables = CreateFulfillmentMutationVariables;
-    export type Mutation = CreateFulfillmentMutation;
-    export type FulfillOrder = CreateFulfillmentMutation['fulfillOrder'];
-    export type OrderItems = NonNullable<CreateFulfillmentMutation['fulfillOrder']['orderItems'][0]>;
-}
-
-export namespace GetOrderFulfillments {
-    export type Variables = GetOrderFulfillmentsQueryVariables;
-    export type Query = GetOrderFulfillmentsQuery;
-    export type Order = NonNullable<GetOrderFulfillmentsQuery['order']>;
-    export type Fulfillments = NonNullable<
-        NonNullable<NonNullable<GetOrderFulfillmentsQuery['order']>['fulfillments']>[0]
-    >;
 }
 
 export namespace GetOrderListFulfillments {

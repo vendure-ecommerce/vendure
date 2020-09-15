@@ -131,6 +131,7 @@ export class SessionService implements EntitySubscriberInterface {
             token: session.token,
             expires: session.expires,
             activeOrderId: session.activeOrderId,
+            activeChannelId: session.activeChannelId,
         };
         if (this.isAuthenticatedSession(session)) {
             serializedSession.authenticationStrategy = session.authenticationStrategy;
@@ -195,6 +196,20 @@ export class SessionService implements EntitySubscriberInterface {
                 await this.configService.authOptions.sessionCacheStrategy.set(updatedSerializedSession);
                 return updatedSerializedSession;
             }
+        }
+        return serializedSession;
+    }
+
+    async setActiveChannel(serializedSession: CachedSession, channel: Channel): Promise<CachedSession> {
+        const session = await this.connection
+            .getRepository(Session)
+            .findOne(serializedSession.id, { relations: ['user', 'user.roles', 'user.roles.channels'] });
+        if (session) {
+            session.activeChannel = channel;
+            await this.connection.getRepository(Session).save(session, { reload: false });
+            const updatedSerializedSession = this.serializeSession(session);
+            await this.sessionCacheStrategy.set(updatedSerializedSession);
+            return updatedSerializedSession;
         }
         return serializedSession;
     }

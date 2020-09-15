@@ -21,10 +21,10 @@ import {
     CREATE_CHANNEL,
     GET_CUSTOMER_LIST,
     GET_ORDER,
+    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
-import { GET_ORDERS_LIST } from './order.e2e-spec';
 
 describe('Channelaware orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);

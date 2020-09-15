@@ -15,7 +15,7 @@
         <button
             class="btn btn-primary"
             (click)="fulfillOrder()"
-            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled'"
+            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyDelivered'"
         >
             {{ 'order.fulfill-order' | translate }}
         </button>
@@ -273,10 +273,7 @@
                     </div>
                     <div class="card-block">
                         <div class="fulfillment-detail" *ngFor="let fulfillment of order.fulfillments">
-                            <vdr-fulfillment-detail
-                                [fulfillmentId]="fulfillment.id"
-                                [order]="order"
-                            ></vdr-fulfillment-detail>
+                            <vdr-fulfillment-detail [fulfillmentId]="fulfillment.id" [order]="order"></vdr-fulfillment-detail>
                         </div>
                     </div>
                 </div>

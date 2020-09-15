@@ -146,7 +146,7 @@ describe('OrderCalculator', () => {
             args: { minimum: { type: 'int' } },
             code: 'order_total_condition',
             description: [{ languageCode: LanguageCode.en, value: '' }],
-            check(order, args) {
+            check(ctx, order, args) {
                 return args.minimum <= order.total;
             },
         });
@@ -359,7 +359,7 @@ describe('OrderCalculator', () => {
                         value: 'Passes if any order line has at least the minimum quantity',
                     },
                 ],
-                check(_order, args) {
+                check(ctx, _order, args) {
                     for (const line of _order.lines) {
                         if (args.minimum <= line.quantity) {
                             return true;

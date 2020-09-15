@@ -8,6 +8,7 @@ import {
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
+    ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
@@ -435,4 +436,54 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
         }
     }
     ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const CREATE_FULFILLMENT = gql`
+    mutation CreateFulfillment($input: FulfillOrderInput!) {
+        fulfillOrder(input: $input) {
+            id
+            method
+            state
+            trackingCode
+            orderItems {
+                id
+            }
+        }
+    }
+`;
+
+export const TRANSIT_FULFILLMENT = gql`
+    mutation TransitFulfillment($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            id
+            state
+        }
+    }
+`;
+
+export const GET_ORDER_FULFILLMENTS = gql`
+    query GetOrderFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            state
+            fulfillments {
+                id
+                state
+                nextStates
+                method
+            }
+        }
+    }
+`;
+
+export const GET_ORDERS_LIST = gql`
+    query GetOrderList($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                ...Order
+            }
+            totalItems
+        }
+    }
+    ${ORDER_FRAGMENT}
 `;

@@ -50,7 +50,9 @@ export class CustomerGroupService {
         return this.listQueryBuilder
             .build(Customer, options, { ctx })
             .leftJoin('customer.groups', 'group')
+            .leftJoin('customer.channels', 'channel')
             .andWhere('group.id = :groupId', { groupId: customerGroupId })
+            .andWhere('channel.id =:channelId', { channelId: ctx.channelId })
             .getManyAndCount()
             .then(([items, totalItems]) => ({ items, totalItems }));
     }
@@ -147,9 +149,18 @@ export class CustomerGroupService {
         return assertFound(this.findOne(ctx, group.id));
     }
 
-    private getCustomersFromIds(ctx: RequestContext, ids: ID[]): Promise<Customer[]> {
+    private getCustomersFromIds(ctx: RequestContext, ids: ID[]): Promise<Customer[]> | Customer[] {
+        if (ids.length === 0) {
+            return new Array<Customer>();
+        } // TypeORM throws error when list is empty
         return this.connection
             .getRepository(ctx, Customer)
-            .findByIds(ids, { where: { deletedAt: null }, relations: ['groups'] });
+            .createQueryBuilder('customer')
+            .leftJoin('customer.channels', 'channel')
+            .leftJoinAndSelect('customer.groups', 'group')
+            .where('customer.id IN (:...customerIds)', { customerIds: ids })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .andWhere('customer.deletedAt is null')
+            .getMany();
     }
 }

@@ -71,7 +71,7 @@ export class OrderDataService {
         });
     }
 
-    createFullfillment(input: FulfillOrderInput) {
+    createFulfillment(input: FulfillOrderInput) {
         return this.baseDataService.mutate<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
             CREATE_FULFILLMENT,
             {

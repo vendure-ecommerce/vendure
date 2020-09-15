@@ -13,7 +13,6 @@ import {
     singleStageRefundablePaymentMethod,
     twoStagePaymentMethod,
 } from './fixtures/test-payment-methods';
-import { ORDER_FRAGMENT } from './graphql/fragments';
 import {
     AddNoteToOrder,
     CancelOrder,
@@ -29,21 +28,25 @@ import {
     GetProductWithVariants,
     GetStockMovement,
     HistoryEntryType,
-    OrderItemFragment,
     RefundOrder,
     SettlePayment,
     SettleRefund,
     SortOrder,
     StockMovementType,
+    TransitFulfillment,
     UpdateOrderNote,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import { AddItemToOrder, DeletionResult, GetActiveOrder } from './graphql/generated-e2e-shop-types';
 import {
+    CREATE_FULFILLMENT,
     GET_CUSTOMER_LIST,
     GET_ORDER,
+    GET_ORDER_FULFILLMENTS,
+    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
+    TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
@@ -295,7 +298,7 @@ describe('Orders resolver', () => {
             }, 'Nothing to fulfill'),
         );
 
-        it('creates a partial fulfillment', async () => {
+        it('creates the first fulfillment', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
@@ -307,60 +310,60 @@ describe('Orders resolver', () => {
                 CreateFulfillment.Variables
             >(CREATE_FULFILLMENT, {
                 input: {
-                    lines: lines.map(l => ({ orderLineId: l.id, quantity: 1 })),
+                    lines: [{ orderLineId: lines[0].id, quantity: lines[0].quantity }],
                     method: 'Test1',
                     trackingCode: '111',
                 },
             });
 
+            expect(fulfillOrder!.id).toBe('T_1');
             expect(fulfillOrder!.method).toBe('Test1');
             expect(fulfillOrder!.trackingCode).toBe('111');
-
-            const line0ItemIds = lines[0].items.map(i => i.id);
-            const line1ItemIds = lines[1].items.map(i => i.id);
-            expect(fulfillOrder!.orderItems.length).toBe(2);
-            expect(line0ItemIds).toContain(fulfillOrder!.orderItems[0].id);
-            expect(line1ItemIds).toContain(fulfillOrder!.orderItems[1].id);
+            expect(fulfillOrder!.state).toBe('Pending');
+            expect(fulfillOrder!.orderItems).toEqual([{ id: lines[0].items[0].id }]);
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-
-            expect(result.order!.state).toBe('PartiallyFulfilled');
 
             expect(result.order!.lines[0].items[0].fulfillment!.id).toBe(fulfillOrder!.id);
             expect(
                 result.order!.lines[1].items.filter(
                     i => i.fulfillment && i.fulfillment.id === fulfillOrder.id,
                 ).length,
-            ).toBe(1);
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(2);
+            ).toBe(0);
+            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(3);
         });
 
-        it('creates a second partial fulfillment', async () => {
+        it('creates the second fulfillment', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(order!.state).toBe('PartiallyFulfilled');
-            const lines = order!.lines;
+
+            const unfulfilledItems =
+                order?.lines.filter(l => {
+                    const items = l.items.filter(i => i.fulfillment === null);
+                    return items.length > 0 ? true : false;
+                }) || [];
 
             const { fulfillOrder } = await adminClient.query<
                 CreateFulfillment.Mutation,
                 CreateFulfillment.Variables
             >(CREATE_FULFILLMENT, {
                 input: {
-                    lines: [{ orderLineId: lines[1].id, quantity: 1 }],
+                    lines: unfulfilledItems.map(l => ({
+                        orderLineId: l.id,
+                        quantity: l.items.length,
+                    })),
                     method: 'Test2',
                     trackingCode: '222',
                 },
             });
 
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
-                id: 'T_2',
-            });
-            expect(result.order!.state).toBe('PartiallyFulfilled');
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment != null).length).toBe(2);
-            expect(result.order!.lines[1].items.filter(i => i.fulfillment == null).length).toBe(1);
+            expect(fulfillOrder!.id).toBe('T_2');
+            expect(fulfillOrder!.method).toBe('Test2');
+            expect(fulfillOrder!.trackingCode).toBe('222');
+            expect(fulfillOrder!.state).toBe('Pending');
         });
 
         it(
@@ -369,7 +372,6 @@ describe('Orders resolver', () => {
                 const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                     id: 'T_2',
                 });
-                expect(order!.state).toBe('PartiallyFulfilled');
                 await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
                     CREATE_FULFILLMENT,
                     {
@@ -386,43 +388,69 @@ describe('Orders resolver', () => {
                 );
             }, 'One or more OrderItems have already been fulfilled'),
         );
+        it('transits the first fulfillment from created to Shipped and automatically change the order state to PartiallyShipped', async () => {
+            const fulfillment = await adminClient.query<
+                TransitFulfillment.Mutation,
+                TransitFulfillment.Variables
+            >(TRANSIT_FULFILLMENT, {
+                id: 'T_1',
+                state: 'Shipped',
+            });
+            expect(fulfillment.transitionFulfillmentToState?.id).toBe('T_1');
+            expect(fulfillment.transitionFulfillmentToState?.state).toBe('Shipped');
 
-        it('completes fulfillment', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(order!.state).toBe('PartiallyFulfilled');
-
-            const orderItems = order!.lines.reduce(
-                (items, line) => [...items, ...line.items],
-                [] as OrderItemFragment[],
-            );
-            const unfulfilledItem = order!.lines[1].items.find(i => i.fulfillment == null)!;
-
-            const { fulfillOrder } = await adminClient.query<
-                CreateFulfillment.Mutation,
-                CreateFulfillment.Variables
-            >(CREATE_FULFILLMENT, {
-                input: {
-                    lines: [
-                        {
-                            orderLineId: order!.lines[1].id,
-                            quantity: 1,
-                        },
-                    ],
-                    method: 'Test3',
-                    trackingCode: '333',
-                },
+            expect(order?.state).toBe('PartiallyShipped');
+        });
+        it('transits the second fulfillment from created to Shipped and automatically change the order state to Shipped', async () => {
+            const fulfillment = await adminClient.query<
+                TransitFulfillment.Mutation,
+                TransitFulfillment.Variables
+            >(TRANSIT_FULFILLMENT, {
+                id: 'T_2',
+                state: 'Shipped',
             });
+            expect(fulfillment.transitionFulfillmentToState?.id).toBe('T_2');
+            expect(fulfillment.transitionFulfillmentToState?.state).toBe('Shipped');
 
-            expect(fulfillOrder!.method).toBe('Test3');
-            expect(fulfillOrder!.trackingCode).toBe('333');
-            expect(fulfillOrder!.orderItems).toEqual([{ id: unfulfilledItem.id }]);
-
-            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: 'T_2',
             });
-            expect(result.order!.state).toBe('Fulfilled');
+            expect(order?.state).toBe('Shipped');
+        });
+        it('transits the first fulfillment from Shipped to Delivered and change the order state to PartiallyDelivered', async () => {
+            const fulfillment = await adminClient.query<
+                TransitFulfillment.Mutation,
+                TransitFulfillment.Variables
+            >(TRANSIT_FULFILLMENT, {
+                id: 'T_1',
+                state: 'Delivered',
+            });
+            expect(fulfillment.transitionFulfillmentToState?.id).toBe('T_1');
+            expect(fulfillment.transitionFulfillmentToState?.state).toBe('Delivered');
+
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+            expect(order?.state).toBe('PartiallyDelivered');
+        });
+        it('transits the second fulfillment from Shipped to Delivered and change the order state to Delivered', async () => {
+            const fulfillment = await adminClient.query<
+                TransitFulfillment.Mutation,
+                TransitFulfillment.Variables
+            >(TRANSIT_FULFILLMENT, {
+                id: 'T_2',
+                state: 'Delivered',
+            });
+            expect(fulfillment.transitionFulfillmentToState?.id).toBe('T_2');
+            expect(fulfillment.transitionFulfillmentToState?.state).toBe('Delivered');
+
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+            expect(order?.state).toBe('Delivered');
         });
 
         it('order history contains expected entries', async () => {
@@ -437,49 +465,81 @@ describe('Orders resolver', () => {
             );
             expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
                 {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
                     data: {
                         fulfillmentId: 'T_1',
                     },
+                    type: HistoryEntryType.ORDER_FULFILLMENT,
                 },
                 {
-                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
-                    data: {
-                        from: 'PaymentSettled',
-                        to: 'PartiallyFulfilled',
-                    },
-                },
-
-                {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
                     data: {
                         fulfillmentId: 'T_2',
                     },
+                    type: HistoryEntryType.ORDER_FULFILLMENT,
                 },
                 {
+                    data: {
+                        from: 'Pending',
+                        fulfillmentId: 'T_1',
+                        to: 'Shipped',
+                    },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
+                },
+                {
+                    data: {
+                        from: 'PaymentSettled',
+                        to: 'PartiallyShipped',
+                    },
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
-                    data: {
-                        from: 'PartiallyFulfilled',
-                        to: 'PartiallyFulfilled',
-                    },
                 },
                 {
-                    type: HistoryEntryType.ORDER_FULLFILLMENT,
                     data: {
-                        fulfillmentId: 'T_3',
+                        from: 'Pending',
+                        fulfillmentId: 'T_2',
+                        to: 'Shipped',
                     },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
                 },
                 {
+                    data: {
+                        from: 'PartiallyShipped',
+                        to: 'Shipped',
+                    },
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                },
+                {
                     data: {
-                        from: 'PartiallyFulfilled',
-                        to: 'Fulfilled',
+                        from: 'Shipped',
+                        fulfillmentId: 'T_1',
+                        to: 'Delivered',
                     },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
+                },
+                {
+                    data: {
+                        from: 'Shipped',
+                        to: 'PartiallyDelivered',
+                    },
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                },
+                {
+                    data: {
+                        from: 'Shipped',
+                        fulfillmentId: 'T_2',
+                        to: 'Delivered',
+                    },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
+                },
+                {
+                    data: {
+                        from: 'PartiallyDelivered',
+                        to: 'Delivered',
+                    },
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
                 },
             ]);
         });
 
-        it('order.fullfillments resolver for single order', async () => {
+        it('order.fulfillments resolver for single order', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,
                 GetOrderFulfillments.Variables
@@ -487,41 +547,33 @@ describe('Orders resolver', () => {
                 id: 'T_2',
             });
 
-            const sortedFulfillments = order!.fulfillments?.sort((a, b) => (a.id < b.id ? -1 : 1));
-            expect(sortedFulfillments).toEqual([
-                { id: 'T_1', method: 'Test1' },
-                { id: 'T_2', method: 'Test2' },
-                { id: 'T_3', method: 'Test3' },
+            expect(order!.fulfillments).toEqual([
+                { id: 'T_1', method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
+                { id: 'T_2', method: 'Test2', state: 'Delivered', nextStates: ['Cancelled'] },
             ]);
         });
 
-        it('order.fullfillments resolver for order list', async () => {
+        it('order.fulfillments resolver for order list', async () => {
             const { orders } = await adminClient.query<GetOrderListFulfillments.Query>(
                 GET_ORDER_LIST_FULFILLMENTS,
             );
 
             expect(orders.items[0].fulfillments).toEqual([]);
             expect(orders.items[1].fulfillments).toEqual([
-                { id: 'T_1', method: 'Test1' },
-                { id: 'T_2', method: 'Test2' },
-                { id: 'T_3', method: 'Test3' },
+                { id: 'T_1', method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
+                { id: 'T_2', method: 'Test2', state: 'Delivered', nextStates: ['Cancelled'] },
             ]);
         });
 
-        it('order.fullfillments.orderItems resolver', async () => {
+        it('order.fulfillments.orderItems resolver', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillmentItems.Query,
                 GetOrderFulfillmentItems.Variables
             >(GET_ORDER_FULFILLMENT_ITEMS, {
                 id: 'T_2',
             });
-
-            const getFulfillment = (id: string): GetOrderFulfillmentItems.Fulfillments => {
-                return order?.fulfillments?.find(f => f.id === id)!;
-            };
-            expect(getFulfillment('T_1').orderItems).toEqual([{ id: 'T_3' }, { id: 'T_4' }]);
-            expect(getFulfillment('T_2').orderItems).toEqual([{ id: 'T_5' }]);
-            expect(getFulfillment('T_3').orderItems).toEqual([{ id: 'T_6' }]);
+            expect(order!.fulfillments![0].orderItems).toEqual([{ id: 'T_3' }]);
+            expect(order!.fulfillments![1].orderItems).toEqual([{ id: 'T_4' }, { id: 'T_5' }, { id: 'T_6' }]);
         });
     });
 
@@ -1308,18 +1360,6 @@ async function createTestOrder(
     return { product, productVariantId, orderId };
 }
 
-export const GET_ORDERS_LIST = gql`
-    query GetOrderList($options: OrderListOptions) {
-        orders(options: $options) {
-            items {
-                ...Order
-            }
-            totalItems
-        }
-    }
-    ${ORDER_FRAGMENT}
-`;
-
 export const SETTLE_PAYMENT = gql`
     mutation SettlePayment($id: ID!) {
         settlePayment(id: $id) {
@@ -1330,38 +1370,16 @@ export const SETTLE_PAYMENT = gql`
     }
 `;
 
-export const CREATE_FULFILLMENT = gql`
-    mutation CreateFulfillment($input: FulfillOrderInput!) {
-        fulfillOrder(input: $input) {
-            id
-            method
-            trackingCode
-            orderItems {
-                id
-            }
-        }
-    }
-`;
-
-export const GET_ORDER_FULFILLMENTS = gql`
-    query GetOrderFulfillments($id: ID!) {
-        order(id: $id) {
-            id
-            fulfillments {
-                id
-                method
-            }
-        }
-    }
-`;
-
 export const GET_ORDER_LIST_FULFILLMENTS = gql`
     query GetOrderListFulfillments {
         orders {
             items {
                 id
+                state
                 fulfillments {
                     id
+                    state
+                    nextStates
                     method
                 }
             }
@@ -1373,8 +1391,10 @@ export const GET_ORDER_FULFILLMENT_ITEMS = gql`
     query GetOrderFulfillmentItems($id: ID!) {
         order(id: $id) {
             id
+            state
             fulfillments {
                 id
+                state
                 orderItems {
                     id
                 }
