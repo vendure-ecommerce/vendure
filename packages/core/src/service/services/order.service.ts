@@ -493,7 +493,7 @@ export class OrderService {
         const transitionOrderIfStateAvailable = (state: OrderState) =>
             nextOrderStates.includes(state) && this.transitionToState(ctx, order.id, state);
 
-        if (fromState === 'Pending' && toState === 'Shipped') {
+        if (toState === 'Shipped') {
             const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
             if (orderItemsAreShipped(orderWithFulfillment)) {
                 await transitionOrderIfStateAvailable('Shipped');
@@ -501,7 +501,7 @@ export class OrderService {
                 await transitionOrderIfStateAvailable('PartiallyShipped');
             }
         }
-        if (fromState === 'Shipped' && toState === 'Delivered') {
+        if (toState === 'Delivered') {
             const orderWithFulfillment = await this.getOrderWithFulfillments(ctx, order.id);
             if (orderItemsAreDelivered(orderWithFulfillment)) {
                 await transitionOrderIfStateAvailable('Delivered');
