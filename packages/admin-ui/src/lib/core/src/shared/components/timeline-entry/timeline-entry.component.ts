@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    HostBinding,
+    Input,
+    OnInit,
+    Output,
+} from '@angular/core';
+import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 
 export type TimelineDisplayType = 'success' | 'error' | 'warning' | 'default' | 'muted';
 
@@ -15,6 +24,14 @@ export class TimelineEntryComponent {
     @Input() featured: boolean;
     @Input() iconShape?: string | [string, string];
     @Input() isLast?: boolean;
+    @HostBinding('class.collapsed')
+    @Input()
+    collapsed = false;
+    @Output() expandClick = new EventEmitter();
+
+    get timelineTitle(): string {
+        return this.collapsed ? _('common.expand-entries') : _('common.collapse-entries');
+    }
 
     getIconShape() {
         if (this.iconShape) {

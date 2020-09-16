@@ -1,6 +1,6 @@
 <h4>{{ 'order.order-history' | translate }}</h4>
-<div class="entry-list">
-    <vdr-timeline-entry iconShape="note" displayType="muted">
+<div class="entry-list" [class.expanded]="expanded">
+    <vdr-timeline-entry iconShape="note" displayType="muted" [featured]="true">
         <div class="note-entry">
             <textarea [(ngModel)]="note" name="note" class="note"></textarea>
             <button class="btn btn-secondary" [disabled]="!note" (click)="addNoteToOrder()">
@@ -27,6 +27,8 @@
         [createdAt]="entry.createdAt"
         [name]="getName(entry)"
         [featured]="isFeatured(entry)"
+        [collapsed]="!expanded && !isFeatured(entry)"
+        (expandClick)="expanded = !expanded"
     >
         <ng-container [ngSwitch]="entry.type">
             <ng-container *ngSwitchCase="type.ORDER_STATE_TRANSITION">

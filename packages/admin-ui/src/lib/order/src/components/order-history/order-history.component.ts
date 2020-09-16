@@ -22,6 +22,7 @@ export class OrderHistoryComponent {
     @Output() deleteNote = new EventEmitter<HistoryEntry>();
     note = '';
     noteIsPrivate = true;
+    expanded = false;
     readonly type = HistoryEntryType;
 
     getDisplayType(entry: GetOrderHistory.Items): TimelineDisplayType {

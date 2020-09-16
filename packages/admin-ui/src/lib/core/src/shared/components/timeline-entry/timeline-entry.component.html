@@ -1,8 +1,14 @@
-<div [ngClass]="displayType" [class.has-custom-icon]="!!iconShape" class="entry" [class.last]="isLast === true">
-    <div class="timeline">
+<div
+    [ngClass]="displayType"
+    [class.has-custom-icon]="!!iconShape"
+    class="entry"
+    [class.last]="isLast === true"
+    [class.collapsed]="collapsed"
+>
+    <div class="timeline" (click)="expandClick.emit()" [title]="timelineTitle | translate">
         <div class="custom-icon">
             <clr-icon
-                *ngIf="iconShape"
+                *ngIf="iconShape && !collapsed"
                 [attr.shape]="getIconShape()"
                 [ngClass]="getIconClass()"
                 size="24"

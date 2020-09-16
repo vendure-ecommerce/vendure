@@ -1,18 +1,32 @@
 @import "variables";
 
+:host {
+    display: block;
+
+    &:first-of-type {
+        .timeline {
+            &:before {
+                border-left-color: $color-grey-100;
+            }
+        }
+        .entry-body {
+            max-height: initial;
+        }
+    }
+}
 .entry {
     display: flex;
 }
 .timeline {
     border-left: 2px solid $color-primary-100;
-    padding-bottom: 24px;
+    padding-bottom: 8px;
     position: relative;
 
     &:before {
         content: '';
         position: absolute;
         width: 2px;
-        height: 10px;
+        height: 32px;
         left: -2px;
         border-left: 2px solid $color-primary-100;
     }
@@ -26,7 +40,9 @@
         border: 1px solid $color-grey-400;
         position: absolute;
         left: -5px;
-        top: 4px;
+        top: 32px;
+        transition: top 0.2s;
+        cursor: pointer;
     }
 
     .custom-icon {
@@ -34,7 +50,7 @@
         width: 32px;
         height: 32px;
         left: -17px;
-        top: -4px;
+        top: 32px;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
@@ -60,11 +76,14 @@
 
 .entry-body {
     flex: 1;
-    padding-bottom: 24px;
+    padding-top: 24px;
     padding-left: 12px;
     line-height: 16px;
     margin-left: 12px;
     color: $color-grey-500;
+    overflow: visible;
+    max-height: 100px;
+    transition: max-height 0.2s, padding-top 0.2s, opacity 0.2s 0.2s;
 }
 
 .featured-entry ::ng-deep {
@@ -124,5 +143,20 @@
     .timeline:after {
         background-color: $color-warning-200;
         border: 1px solid $color-warning-400;
+    }
+}
+
+.collapsed {
+    .entry-body {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        padding-top: 0;
+    }
+    .timeline {
+        border-left-color: transparent;
+    }
+    .timeline:after {
+        top: 0;
     }
 }
