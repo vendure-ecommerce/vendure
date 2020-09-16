@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    CreateAssetResult,
     MutationCreateAssetsArgs,
     MutationDeleteAssetArgs,
     MutationDeleteAssetsArgs,
@@ -36,15 +37,18 @@ export class AssetResolver {
     @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createAssets(@Ctx() ctx: RequestContext, @Args() args: MutationCreateAssetsArgs): Promise<Asset[]> {
+    async createAssets(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateAssetsArgs,
+    ): Promise<CreateAssetResult[]> {
         // TODO: Currently we validate _all_ mime types up-front due to limitations
         // with the existing error handling mechanisms. With a solution as described
         // in https://github.com/vendure-ecommerce/vendure/issues/437 we could defer
         // this check to the individual processing of a single Asset.
-        await this.assetService.validateInputMimeTypes(args.input);
+        // await this.assetService.validateInputMimeTypes(args.input);
         // TODO: Is there some way to parellelize this while still preserving
         // the order of files in the upload? Non-deterministic IDs mess up the e2e test snapshots.
-        const assets: Asset[] = [];
+        const assets: CreateAssetResult[] = [];
         for (const input of args.input) {
             const asset = await this.assetService.create(ctx, input);
             assets.push(asset);

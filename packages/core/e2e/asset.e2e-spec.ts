@@ -26,7 +26,6 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_ASSET,
 } from './graphql/shared-definitions';
-import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 describe('Asset resolver', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -137,6 +136,10 @@ describe('Asset resolver', () => {
     });
 
     describe('createAssets', () => {
+        function isAsset(input: CreateAssets.CreateAssets): input is CreateAssets.AssetInlineFragment {
+            return input.hasOwnProperty('name');
+        }
+
         it('permitted types by mime type', async () => {
             const filesToUpload = [
                 path.join(__dirname, 'fixtures/assets/pps1.jpg'),
@@ -150,30 +153,30 @@ describe('Asset resolver', () => {
                 }),
             });
 
-            expect(createAssets.map(a => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1))).toEqual(
-                [
-                    {
-                        fileSize: 1680,
-                        focalPoint: null,
-                        mimeType: 'image/jpeg',
-                        name: 'pps1.jpg',
-                        preview: 'test-url/test-assets/pps1__preview.jpg',
-                        source: 'test-url/test-assets/pps1.jpg',
-                        type: 'IMAGE',
-                    },
-                    {
-                        fileSize: 1680,
-                        focalPoint: null,
-                        mimeType: 'image/jpeg',
-                        name: 'pps2.jpg',
-                        preview: 'test-url/test-assets/pps2__preview.jpg',
-                        source: 'test-url/test-assets/pps2.jpg',
-                        type: 'IMAGE',
-                    },
-                ],
-            );
+            expect(createAssets.length).toBe(2);
+            const results = createAssets.filter(isAsset);
+            expect(results.map(a => omit(a, ['id'])).sort((a, b) => (a.name < b.name ? -1 : 1))).toEqual([
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'image/jpeg',
+                    name: 'pps1.jpg',
+                    preview: 'test-url/test-assets/pps1__preview.jpg',
+                    source: 'test-url/test-assets/pps1.jpg',
+                    type: 'IMAGE',
+                },
+                {
+                    fileSize: 1680,
+                    focalPoint: null,
+                    mimeType: 'image/jpeg',
+                    name: 'pps2.jpg',
+                    preview: 'test-url/test-assets/pps2__preview.jpg',
+                    source: 'test-url/test-assets/pps2.jpg',
+                    type: 'IMAGE',
+                },
+            ]);
 
-            createdAssetId = createAssets[0].id;
+            createdAssetId = results[0].id;
         });
 
         it('permitted type by file extension', async () => {
@@ -186,7 +189,9 @@ describe('Asset resolver', () => {
                 }),
             });
 
-            expect(createAssets.map(a => omit(a, ['id']))).toEqual([
+            expect(createAssets.length).toBe(1);
+            const results = createAssets.filter(isAsset);
+            expect(results.map(a => omit(a, ['id']))).toEqual([
                 {
                     fileSize: 1680,
                     focalPoint: null,
@@ -199,19 +204,23 @@ describe('Asset resolver', () => {
             ]);
         });
 
-        it(
-            'not permitted type',
-            assertThrowsWithMessage(async () => {
-                const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.txt')];
-                const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
-                    mutation: CREATE_ASSETS,
-                    filePaths: filesToUpload,
-                    mapVariables: filePaths => ({
-                        input: filePaths.map(p => ({ file: null })),
-                    }),
-                });
-            }, `The MIME type 'text/plain' is not permitted.`),
-        );
+        it('not permitted type', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/dummy.txt')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
+                }),
+            });
+
+            expect(createAssets.length).toBe(1);
+            expect(createAssets[0]).toEqual({
+                message: 'error.mime-type-not-permitted',
+                mimeType: 'text/plain',
+                fileName: 'dummy.txt',
+            });
+        });
     });
 
     describe('updateAsset', () => {
@@ -375,9 +384,16 @@ export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
-            focalPoint {
-                x
-                y
+            ... on Asset {
+                focalPoint {
+                    x
+                    y
+                }
+            }
+            ... on MimeTypeError {
+                message
+                fileName
+                mimeType
             }
         }
     }

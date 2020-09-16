@@ -1,6 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
-
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -8,8 +8,11 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
   DateTime: any;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
+  /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
@@ -27,7 +30,7 @@ export type AddNoteToOrderInput = {
 };
 
 export type Address = Node & {
-   __typename?: 'Address';
+  __typename?: 'Address';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -46,7 +49,7 @@ export type Address = Node & {
 };
 
 export type Adjustment = {
-   __typename?: 'Adjustment';
+  __typename?: 'Adjustment';
   adjustmentSource: Scalars['String'];
   type: AdjustmentType;
   description: Scalars['String'];
@@ -64,7 +67,7 @@ export enum AdjustmentType {
 }
 
 export type Administrator = Node & {
-   __typename?: 'Administrator';
+  __typename?: 'Administrator';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -83,7 +86,7 @@ export type AdministratorFilterParameter = {
 };
 
 export type AdministratorList = PaginatedList & {
-   __typename?: 'AdministratorList';
+  __typename?: 'AdministratorList';
   items: Array<Administrator>;
   totalItems: Scalars['Int'];
 };
@@ -105,7 +108,7 @@ export type AdministratorSortParameter = {
 };
 
 export type Asset = Node & {
-   __typename?: 'Asset';
+  __typename?: 'Asset';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -134,7 +137,7 @@ export type AssetFilterParameter = {
 };
 
 export type AssetList = PaginatedList & {
-   __typename?: 'AssetList';
+  __typename?: 'AssetList';
   items: Array<Asset>;
   totalItems: Scalars['Int'];
 };
@@ -176,7 +179,7 @@ export type AuthenticationInput = {
 };
 
 export type AuthenticationMethod = Node & {
-   __typename?: 'AuthenticationMethod';
+  __typename?: 'AuthenticationMethod';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -184,7 +187,7 @@ export type AuthenticationMethod = Node & {
 };
 
 export type BooleanCustomFieldConfig = CustomField & {
-   __typename?: 'BooleanCustomFieldConfig';
+  __typename?: 'BooleanCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -199,7 +202,7 @@ export type BooleanOperators = {
 };
 
 export type Cancellation = Node & StockMovement & {
-   __typename?: 'Cancellation';
+  __typename?: 'Cancellation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -218,7 +221,7 @@ export type CancelOrderInput = {
 };
 
 export type Channel = Node & {
-   __typename?: 'Channel';
+  __typename?: 'Channel';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -232,7 +235,7 @@ export type Channel = Node & {
 };
 
 export type Collection = Node & {
-   __typename?: 'Collection';
+  __typename?: 'Collection';
   isPrivate: Scalars['Boolean'];
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
@@ -259,7 +262,7 @@ export type CollectionProductVariantsArgs = {
 };
 
 export type CollectionBreadcrumb = {
-   __typename?: 'CollectionBreadcrumb';
+  __typename?: 'CollectionBreadcrumb';
   id: Scalars['ID'];
   name: Scalars['String'];
   slug: Scalars['String'];
@@ -277,7 +280,7 @@ export type CollectionFilterParameter = {
 };
 
 export type CollectionList = PaginatedList & {
-   __typename?: 'CollectionList';
+  __typename?: 'CollectionList';
   items: Array<Collection>;
   totalItems: Scalars['Int'];
 };
@@ -300,7 +303,7 @@ export type CollectionSortParameter = {
 };
 
 export type CollectionTranslation = {
-   __typename?: 'CollectionTranslation';
+  __typename?: 'CollectionTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -311,13 +314,13 @@ export type CollectionTranslation = {
 };
 
 export type ConfigArg = {
-   __typename?: 'ConfigArg';
+  __typename?: 'ConfigArg';
   name: Scalars['String'];
   value: Scalars['String'];
 };
 
 export type ConfigArgDefinition = {
-   __typename?: 'ConfigArgDefinition';
+  __typename?: 'ConfigArgDefinition';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -332,13 +335,13 @@ export type ConfigArgInput = {
 };
 
 export type ConfigurableOperation = {
-   __typename?: 'ConfigurableOperation';
+  __typename?: 'ConfigurableOperation';
   code: Scalars['String'];
   args: Array<ConfigArg>;
 };
 
 export type ConfigurableOperationDefinition = {
-   __typename?: 'ConfigurableOperationDefinition';
+  __typename?: 'ConfigurableOperationDefinition';
   code: Scalars['String'];
   args: Array<ConfigArgDefinition>;
   description: Scalars['String'];
@@ -350,7 +353,7 @@ export type ConfigurableOperationInput = {
 };
 
 export type Coordinate = {
-   __typename?: 'Coordinate';
+  __typename?: 'Coordinate';
   x: Scalars['Float'];
   y: Scalars['Float'];
 };
@@ -361,7 +364,7 @@ export type CoordinateInput = {
 };
 
 export type Country = Node & {
-   __typename?: 'Country';
+  __typename?: 'Country';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -382,7 +385,7 @@ export type CountryFilterParameter = {
 };
 
 export type CountryList = PaginatedList & {
-   __typename?: 'CountryList';
+  __typename?: 'CountryList';
   items: Array<Country>;
   totalItems: Scalars['Int'];
 };
@@ -403,7 +406,7 @@ export type CountrySortParameter = {
 };
 
 export type CountryTranslation = {
-   __typename?: 'CountryTranslation';
+  __typename?: 'CountryTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -443,6 +446,8 @@ export type CreateAdministratorInput = {
 export type CreateAssetInput = {
   file: Scalars['Upload'];
 };
+
+export type CreateAssetResult = Asset | MimeTypeError;
 
 export type CreateChannelInput = {
   code: Scalars['String'];
@@ -928,14 +933,14 @@ export enum CurrencyCode {
 }
 
 export type CurrentUser = {
-   __typename?: 'CurrentUser';
+  __typename?: 'CurrentUser';
   channels: Array<CurrentUserChannel>;
   id: Scalars['ID'];
   identifier: Scalars['String'];
 };
 
 export type CurrentUserChannel = {
-   __typename?: 'CurrentUserChannel';
+  __typename?: 'CurrentUserChannel';
   code: Scalars['String'];
   id: Scalars['ID'];
   permissions: Array<Permission>;
@@ -950,7 +955,7 @@ export type CurrentUserChannelInput = {
 };
 
 export type Customer = Node & {
-   __typename?: 'Customer';
+  __typename?: 'Customer';
   groups: Array<CustomerGroup>;
   history: HistoryEntryList;
   id: Scalars['ID'];
@@ -988,7 +993,7 @@ export type CustomerFilterParameter = {
 };
 
 export type CustomerGroup = Node & {
-   __typename?: 'CustomerGroup';
+  __typename?: 'CustomerGroup';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1008,7 +1013,7 @@ export type CustomerGroupFilterParameter = {
 };
 
 export type CustomerGroupList = PaginatedList & {
-   __typename?: 'CustomerGroupList';
+  __typename?: 'CustomerGroupList';
   items: Array<CustomerGroup>;
   totalItems: Scalars['Int'];
 };
@@ -1028,7 +1033,7 @@ export type CustomerGroupSortParameter = {
 };
 
 export type CustomerList = PaginatedList & {
-   __typename?: 'CustomerList';
+  __typename?: 'CustomerList';
   items: Array<Customer>;
   totalItems: Scalars['Int'];
 };
@@ -1064,7 +1069,7 @@ export type CustomField = {
 export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
-   __typename?: 'CustomFields';
+  __typename?: 'CustomFields';
   Address: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
@@ -1099,7 +1104,7 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
-   __typename?: 'DateTimeCustomFieldConfig';
+  __typename?: 'DateTimeCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -1113,7 +1118,7 @@ export type DateTimeCustomFieldConfig = CustomField & {
 };
 
 export type DeletionResponse = {
-   __typename?: 'DeletionResponse';
+  __typename?: 'DeletionResponse';
   result: DeletionResult;
   message?: Maybe<Scalars['String']>;
 };
@@ -1125,8 +1130,18 @@ export enum DeletionResult {
   NOT_DELETED = 'NOT_DELETED'
 }
 
+export enum ErrorCode {
+  UnknownError = 'UnknownError',
+  MimeTypeError = 'MimeTypeError'
+}
+
+export type ErrorResult = {
+  code: ErrorCode;
+  message: Scalars['String'];
+};
+
 export type Facet = Node & {
-   __typename?: 'Facet';
+  __typename?: 'Facet';
   isPrivate: Scalars['Boolean'];
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
@@ -1149,7 +1164,7 @@ export type FacetFilterParameter = {
 };
 
 export type FacetList = PaginatedList & {
-   __typename?: 'FacetList';
+  __typename?: 'FacetList';
   items: Array<Facet>;
   totalItems: Scalars['Int'];
 };
@@ -1170,7 +1185,7 @@ export type FacetSortParameter = {
 };
 
 export type FacetTranslation = {
-   __typename?: 'FacetTranslation';
+  __typename?: 'FacetTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1186,7 +1201,7 @@ export type FacetTranslationInput = {
 };
 
 export type FacetValue = Node & {
-   __typename?: 'FacetValue';
+  __typename?: 'FacetValue';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1203,13 +1218,13 @@ export type FacetValue = Node & {
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
-   __typename?: 'FacetValueResult';
+  __typename?: 'FacetValueResult';
   facetValue: FacetValue;
   count: Scalars['Int'];
 };
 
 export type FacetValueTranslation = {
-   __typename?: 'FacetValueTranslation';
+  __typename?: 'FacetValueTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1225,7 +1240,7 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
-   __typename?: 'FloatCustomFieldConfig';
+  __typename?: 'FloatCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -1239,7 +1254,7 @@ export type FloatCustomFieldConfig = CustomField & {
 };
 
 export type Fulfillment = Node & {
-   __typename?: 'Fulfillment';
+  __typename?: 'Fulfillment';
   nextStates: Array<Scalars['String']>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
@@ -1257,7 +1272,7 @@ export type FulfillOrderInput = {
 };
 
 export type GlobalSettings = {
-   __typename?: 'GlobalSettings';
+  __typename?: 'GlobalSettings';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1268,7 +1283,7 @@ export type GlobalSettings = {
 };
 
 export type HistoryEntry = Node & {
-   __typename?: 'HistoryEntry';
+  __typename?: 'HistoryEntry';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1286,7 +1301,7 @@ export type HistoryEntryFilterParameter = {
 };
 
 export type HistoryEntryList = PaginatedList & {
-   __typename?: 'HistoryEntryList';
+  __typename?: 'HistoryEntryList';
   items: Array<HistoryEntry>;
   totalItems: Scalars['Int'];
 };
@@ -1331,14 +1346,14 @@ export enum HistoryEntryType {
 }
 
 export type ImportInfo = {
-   __typename?: 'ImportInfo';
+  __typename?: 'ImportInfo';
   errors?: Maybe<Array<Scalars['String']>>;
   processed: Scalars['Int'];
   imported: Scalars['Int'];
 };
 
 export type IntCustomFieldConfig = CustomField & {
-   __typename?: 'IntCustomFieldConfig';
+  __typename?: 'IntCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -1352,7 +1367,7 @@ export type IntCustomFieldConfig = CustomField & {
 };
 
 export type Job = Node & {
-   __typename?: 'Job';
+  __typename?: 'Job';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   startedAt?: Maybe<Scalars['DateTime']>;
@@ -1379,7 +1394,7 @@ export type JobFilterParameter = {
 };
 
 export type JobList = PaginatedList & {
-   __typename?: 'JobList';
+  __typename?: 'JobList';
   items: Array<Job>;
   totalItems: Scalars['Int'];
 };
@@ -1392,7 +1407,7 @@ export type JobListOptions = {
 };
 
 export type JobQueue = {
-   __typename?: 'JobQueue';
+  __typename?: 'JobQueue';
   name: Scalars['String'];
   running: Scalars['Boolean'];
 };
@@ -1749,7 +1764,7 @@ export enum LanguageCode {
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
-   __typename?: 'LocaleStringCustomFieldConfig';
+  __typename?: 'LocaleStringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -1762,7 +1777,7 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocalizedString = {
-   __typename?: 'LocalizedString';
+  __typename?: 'LocalizedString';
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
@@ -1773,8 +1788,16 @@ export enum LogicalOperator {
 }
 
 export type LoginResult = {
-   __typename?: 'LoginResult';
+  __typename?: 'LoginResult';
   user: CurrentUser;
+};
+
+export type MimeTypeError = ErrorResult & {
+  __typename?: 'MimeTypeError';
+  code: ErrorCode;
+  message: Scalars['String'];
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
 };
 
 export type MoveCollectionInput = {
@@ -1784,7 +1807,7 @@ export type MoveCollectionInput = {
 };
 
 export type Mutation = {
-   __typename?: 'Mutation';
+  __typename?: 'Mutation';
   /** Add Customers to a CustomerGroup */
   addCustomersToGroup: CustomerGroup;
   /** Add members to a Zone */
@@ -1803,7 +1826,7 @@ export type Mutation = {
   /** Create a new Administrator */
   createAdministrator: Administrator;
   /** Create a new Asset */
-  createAssets: Array<Asset>;
+  createAssets: Array<CreateAssetResult>;
   /** Create a new Channel */
   createChannel: Channel;
   /** Create a new Collection */
@@ -2448,7 +2471,7 @@ export type NativeAuthInput = {
 };
 
 export type NetworkStatus = {
-   __typename?: 'NetworkStatus';
+  __typename?: 'NetworkStatus';
   inFlightRequests: Scalars['Int'];
 };
 
@@ -2471,7 +2494,7 @@ export type NumberRange = {
 };
 
 export type Order = Node & {
-   __typename?: 'Order';
+  __typename?: 'Order';
   nextStates: Array<Scalars['String']>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
@@ -2511,7 +2534,7 @@ export type OrderHistoryArgs = {
 };
 
 export type OrderAddress = {
-   __typename?: 'OrderAddress';
+  __typename?: 'OrderAddress';
   fullName?: Maybe<Scalars['String']>;
   company?: Maybe<Scalars['String']>;
   streetLine1?: Maybe<Scalars['String']>;
@@ -2540,7 +2563,7 @@ export type OrderFilterParameter = {
 };
 
 export type OrderItem = Node & {
-   __typename?: 'OrderItem';
+  __typename?: 'OrderItem';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2555,7 +2578,7 @@ export type OrderItem = Node & {
 };
 
 export type OrderLine = Node & {
-   __typename?: 'OrderLine';
+  __typename?: 'OrderLine';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2577,7 +2600,7 @@ export type OrderLineInput = {
 };
 
 export type OrderList = PaginatedList & {
-   __typename?: 'OrderList';
+  __typename?: 'OrderList';
   items: Array<Order>;
   totalItems: Scalars['Int'];
 };
@@ -2590,7 +2613,7 @@ export type OrderListOptions = {
 };
 
 export type OrderProcessState = {
-   __typename?: 'OrderProcessState';
+  __typename?: 'OrderProcessState';
   name: Scalars['String'];
   to: Array<Scalars['String']>;
 };
@@ -2615,7 +2638,7 @@ export type PaginatedList = {
 };
 
 export type Payment = Node & {
-   __typename?: 'Payment';
+  __typename?: 'Payment';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2629,7 +2652,7 @@ export type Payment = Node & {
 };
 
 export type PaymentMethod = Node & {
-   __typename?: 'PaymentMethod';
+  __typename?: 'PaymentMethod';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2647,7 +2670,7 @@ export type PaymentMethodFilterParameter = {
 };
 
 export type PaymentMethodList = PaginatedList & {
-   __typename?: 'PaymentMethodList';
+  __typename?: 'PaymentMethodList';
   items: Array<PaymentMethod>;
   totalItems: Scalars['Int'];
 };
@@ -2711,13 +2734,13 @@ export enum Permission {
 
 /** The price range where the result has more than one price */
 export type PriceRange = {
-   __typename?: 'PriceRange';
+  __typename?: 'PriceRange';
   min: Scalars['Int'];
   max: Scalars['Int'];
 };
 
 export type Product = Node & {
-   __typename?: 'Product';
+  __typename?: 'Product';
   enabled: Scalars['Boolean'];
   channels: Array<Channel>;
   id: Scalars['ID'];
@@ -2748,7 +2771,7 @@ export type ProductFilterParameter = {
 };
 
 export type ProductList = PaginatedList & {
-   __typename?: 'ProductList';
+  __typename?: 'ProductList';
   items: Array<Product>;
   totalItems: Scalars['Int'];
 };
@@ -2761,7 +2784,7 @@ export type ProductListOptions = {
 };
 
 export type ProductOption = Node & {
-   __typename?: 'ProductOption';
+  __typename?: 'ProductOption';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2775,7 +2798,7 @@ export type ProductOption = Node & {
 };
 
 export type ProductOptionGroup = Node & {
-   __typename?: 'ProductOptionGroup';
+  __typename?: 'ProductOptionGroup';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2788,7 +2811,7 @@ export type ProductOptionGroup = Node & {
 };
 
 export type ProductOptionGroupTranslation = {
-   __typename?: 'ProductOptionGroupTranslation';
+  __typename?: 'ProductOptionGroupTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2804,7 +2827,7 @@ export type ProductOptionGroupTranslationInput = {
 };
 
 export type ProductOptionTranslation = {
-   __typename?: 'ProductOptionTranslation';
+  __typename?: 'ProductOptionTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2829,7 +2852,7 @@ export type ProductSortParameter = {
 };
 
 export type ProductTranslation = {
-   __typename?: 'ProductTranslation';
+  __typename?: 'ProductTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2849,7 +2872,7 @@ export type ProductTranslationInput = {
 };
 
 export type ProductVariant = Node & {
-   __typename?: 'ProductVariant';
+  __typename?: 'ProductVariant';
   enabled: Scalars['Boolean'];
   stockOnHand: Scalars['Int'];
   trackInventory: Scalars['Boolean'];
@@ -2897,7 +2920,7 @@ export type ProductVariantFilterParameter = {
 };
 
 export type ProductVariantList = PaginatedList & {
-   __typename?: 'ProductVariantList';
+  __typename?: 'ProductVariantList';
   items: Array<ProductVariant>;
   totalItems: Scalars['Int'];
 };
@@ -2922,7 +2945,7 @@ export type ProductVariantSortParameter = {
 };
 
 export type ProductVariantTranslation = {
-   __typename?: 'ProductVariantTranslation';
+  __typename?: 'ProductVariantTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2938,7 +2961,7 @@ export type ProductVariantTranslationInput = {
 };
 
 export type Promotion = Node & {
-   __typename?: 'Promotion';
+  __typename?: 'Promotion';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2964,7 +2987,7 @@ export type PromotionFilterParameter = {
 };
 
 export type PromotionList = PaginatedList & {
-   __typename?: 'PromotionList';
+  __typename?: 'PromotionList';
   items: Array<Promotion>;
   totalItems: Scalars['Int'];
 };
@@ -2988,7 +3011,7 @@ export type PromotionSortParameter = {
 };
 
 export type Query = {
-   __typename?: 'Query';
+  __typename?: 'Query';
   activeChannel: Channel;
   administrator?: Maybe<Administrator>;
   administrators: AdministratorList;
@@ -3254,7 +3277,7 @@ export type QueryZoneArgs = {
 };
 
 export type Refund = Node & {
-   __typename?: 'Refund';
+  __typename?: 'Refund';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3285,7 +3308,7 @@ export type RemoveProductsFromChannelInput = {
 };
 
 export type Return = Node & StockMovement & {
-   __typename?: 'Return';
+  __typename?: 'Return';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3296,7 +3319,7 @@ export type Return = Node & StockMovement & {
 };
 
 export type Role = Node & {
-   __typename?: 'Role';
+  __typename?: 'Role';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3314,7 +3337,7 @@ export type RoleFilterParameter = {
 };
 
 export type RoleList = PaginatedList & {
-   __typename?: 'RoleList';
+  __typename?: 'RoleList';
   items: Array<Role>;
   totalItems: Scalars['Int'];
 };
@@ -3335,7 +3358,7 @@ export type RoleSortParameter = {
 };
 
 export type Sale = Node & StockMovement & {
-   __typename?: 'Sale';
+  __typename?: 'Sale';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3358,19 +3381,19 @@ export type SearchInput = {
 };
 
 export type SearchReindexResponse = {
-   __typename?: 'SearchReindexResponse';
+  __typename?: 'SearchReindexResponse';
   success: Scalars['Boolean'];
 };
 
 export type SearchResponse = {
-   __typename?: 'SearchResponse';
+  __typename?: 'SearchResponse';
   items: Array<SearchResult>;
   totalItems: Scalars['Int'];
   facetValues: Array<FacetValueResult>;
 };
 
 export type SearchResult = {
-   __typename?: 'SearchResult';
+  __typename?: 'SearchResult';
   enabled: Scalars['Boolean'];
   /** An array of ids of the Collections in which this result appears */
   channelIds: Array<Scalars['ID']>;
@@ -3399,7 +3422,7 @@ export type SearchResult = {
 };
 
 export type SearchResultAsset = {
-   __typename?: 'SearchResultAsset';
+  __typename?: 'SearchResultAsset';
   id: Scalars['ID'];
   preview: Scalars['String'];
   focalPoint?: Maybe<Coordinate>;
@@ -3414,7 +3437,7 @@ export type SearchResultSortParameter = {
 };
 
 export type ServerConfig = {
-   __typename?: 'ServerConfig';
+  __typename?: 'ServerConfig';
   orderProcess: Array<OrderProcessState>;
   permittedAssetTypes: Array<Scalars['String']>;
   customFieldConfig: CustomFields;
@@ -3426,7 +3449,7 @@ export type SettleRefundInput = {
 };
 
 export type ShippingMethod = Node & {
-   __typename?: 'ShippingMethod';
+  __typename?: 'ShippingMethod';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3445,7 +3468,7 @@ export type ShippingMethodFilterParameter = {
 };
 
 export type ShippingMethodList = PaginatedList & {
-   __typename?: 'ShippingMethodList';
+  __typename?: 'ShippingMethodList';
   items: Array<ShippingMethod>;
   totalItems: Scalars['Int'];
 };
@@ -3458,7 +3481,7 @@ export type ShippingMethodListOptions = {
 };
 
 export type ShippingMethodQuote = {
-   __typename?: 'ShippingMethodQuote';
+  __typename?: 'ShippingMethodQuote';
   id: Scalars['ID'];
   price: Scalars['Int'];
   priceWithTax: Scalars['Int'];
@@ -3476,7 +3499,7 @@ export type ShippingMethodSortParameter = {
 
 /** The price value where the result has a single price */
 export type SinglePrice = {
-   __typename?: 'SinglePrice';
+  __typename?: 'SinglePrice';
   value: Scalars['Int'];
 };
 
@@ -3486,7 +3509,7 @@ export enum SortOrder {
 }
 
 export type StockAdjustment = Node & StockMovement & {
-   __typename?: 'StockAdjustment';
+  __typename?: 'StockAdjustment';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3507,7 +3530,7 @@ export type StockMovement = {
 export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
 
 export type StockMovementList = {
-   __typename?: 'StockMovementList';
+  __typename?: 'StockMovementList';
   items: Array<StockMovementItem>;
   totalItems: Scalars['Int'];
 };
@@ -3526,7 +3549,7 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
-   __typename?: 'StringCustomFieldConfig';
+  __typename?: 'StringCustomFieldConfig';
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
@@ -3540,7 +3563,7 @@ export type StringCustomFieldConfig = CustomField & {
 };
 
 export type StringFieldOption = {
-   __typename?: 'StringFieldOption';
+  __typename?: 'StringFieldOption';
   value: Scalars['String'];
   label?: Maybe<Array<LocalizedString>>;
 };
@@ -3551,7 +3574,7 @@ export type StringOperators = {
 };
 
 export type TaxCategory = Node & {
-   __typename?: 'TaxCategory';
+  __typename?: 'TaxCategory';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3559,7 +3582,7 @@ export type TaxCategory = Node & {
 };
 
 export type TaxRate = Node & {
-   __typename?: 'TaxRate';
+  __typename?: 'TaxRate';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3580,7 +3603,7 @@ export type TaxRateFilterParameter = {
 };
 
 export type TaxRateList = PaginatedList & {
-   __typename?: 'TaxRateList';
+  __typename?: 'TaxRateList';
   items: Array<TaxRate>;
   totalItems: Scalars['Int'];
 };
@@ -3618,7 +3641,7 @@ export type TestShippingMethodOrderLineInput = {
 };
 
 export type TestShippingMethodQuote = {
-   __typename?: 'TestShippingMethodQuote';
+  __typename?: 'TestShippingMethodQuote';
   price: Scalars['Int'];
   priceWithTax: Scalars['Int'];
   description: Scalars['String'];
@@ -3626,13 +3649,13 @@ export type TestShippingMethodQuote = {
 };
 
 export type TestShippingMethodResult = {
-   __typename?: 'TestShippingMethodResult';
+  __typename?: 'TestShippingMethodResult';
   eligible: Scalars['Boolean'];
   quote?: Maybe<TestShippingMethodQuote>;
 };
 
 export type UiState = {
-   __typename?: 'UiState';
+  __typename?: 'UiState';
   language: LanguageCode;
 };
 
@@ -3854,7 +3877,7 @@ export type UpdateZoneInput = {
 
 
 export type User = Node & {
-   __typename?: 'User';
+  __typename?: 'User';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3867,7 +3890,7 @@ export type User = Node & {
 };
 
 export type UserStatus = {
-   __typename?: 'UserStatus';
+  __typename?: 'UserStatus';
   username: Scalars['String'];
   isLoggedIn: Scalars['Boolean'];
   loginTime: Scalars['String'];
@@ -3884,7 +3907,7 @@ export type UserStatusInput = {
 };
 
 export type Zone = Node & {
-   __typename?: 'Zone';
+  __typename?: 'Zone';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -3914,9 +3937,9 @@ export type AdministratorFragment = (
   ) }
 );
 
-export type GetAdministratorsQueryVariables = {
+export type GetAdministratorsQueryVariables = Exact<{
   options?: Maybe<AdministratorListOptions>;
-};
+}>;
 
 
 export type GetAdministratorsQuery = (
@@ -3931,9 +3954,9 @@ export type GetAdministratorsQuery = (
   ) }
 );
 
-export type GetAdministratorQueryVariables = {
+export type GetAdministratorQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetAdministratorQuery = (
@@ -3944,9 +3967,9 @@ export type GetAdministratorQuery = (
   )> }
 );
 
-export type CreateAdministratorMutationVariables = {
+export type CreateAdministratorMutationVariables = Exact<{
   input: CreateAdministratorInput;
-};
+}>;
 
 
 export type CreateAdministratorMutation = (
@@ -3957,9 +3980,9 @@ export type CreateAdministratorMutation = (
   ) }
 );
 
-export type UpdateAdministratorMutationVariables = {
+export type UpdateAdministratorMutationVariables = Exact<{
   input: UpdateAdministratorInput;
-};
+}>;
 
 
 export type UpdateAdministratorMutation = (
@@ -3970,9 +3993,9 @@ export type UpdateAdministratorMutation = (
   ) }
 );
 
-export type DeleteAdministratorMutationVariables = {
+export type DeleteAdministratorMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteAdministratorMutation = (
@@ -3983,9 +4006,9 @@ export type DeleteAdministratorMutation = (
   ) }
 );
 
-export type GetRolesQueryVariables = {
+export type GetRolesQueryVariables = Exact<{
   options?: Maybe<RoleListOptions>;
-};
+}>;
 
 
 export type GetRolesQuery = (
@@ -4000,9 +4023,9 @@ export type GetRolesQuery = (
   ) }
 );
 
-export type GetRoleQueryVariables = {
+export type GetRoleQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetRoleQuery = (
@@ -4013,9 +4036,9 @@ export type GetRoleQuery = (
   )> }
 );
 
-export type CreateRoleMutationVariables = {
+export type CreateRoleMutationVariables = Exact<{
   input: CreateRoleInput;
-};
+}>;
 
 
 export type CreateRoleMutation = (
@@ -4026,9 +4049,9 @@ export type CreateRoleMutation = (
   ) }
 );
 
-export type UpdateRoleMutationVariables = {
+export type UpdateRoleMutationVariables = Exact<{
   input: UpdateRoleInput;
-};
+}>;
 
 
 export type UpdateRoleMutation = (
@@ -4039,9 +4062,9 @@ export type UpdateRoleMutation = (
   ) }
 );
 
-export type DeleteRoleMutationVariables = {
+export type DeleteRoleMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteRoleMutation = (
@@ -4052,10 +4075,10 @@ export type DeleteRoleMutation = (
   ) }
 );
 
-export type AssignRoleToAdministratorMutationVariables = {
+export type AssignRoleToAdministratorMutationVariables = Exact<{
   administratorId: Scalars['ID'];
   roleId: Scalars['ID'];
-};
+}>;
 
 
 export type AssignRoleToAdministratorMutation = (
@@ -4075,11 +4098,11 @@ export type CurrentUserFragment = (
   )> }
 );
 
-export type AttemptLoginMutationVariables = {
+export type AttemptLoginMutationVariables = Exact<{
   username: Scalars['String'];
   password: Scalars['String'];
   rememberMe: Scalars['Boolean'];
-};
+}>;
 
 
 export type AttemptLoginMutation = (
@@ -4093,7 +4116,7 @@ export type AttemptLoginMutation = (
   ) }
 );
 
-export type LogOutMutationVariables = {};
+export type LogOutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type LogOutMutation = (
@@ -4101,7 +4124,7 @@ export type LogOutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
-export type GetCurrentUserQueryVariables = {};
+export type GetCurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCurrentUserQuery = (
@@ -4112,7 +4135,7 @@ export type GetCurrentUserQuery = (
   )> }
 );
 
-export type RequestStartedMutationVariables = {};
+export type RequestStartedMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RequestStartedMutation = (
@@ -4120,7 +4143,7 @@ export type RequestStartedMutation = (
   & Pick<Mutation, 'requestStarted'>
 );
 
-export type RequestCompletedMutationVariables = {};
+export type RequestCompletedMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type RequestCompletedMutation = (
@@ -4137,9 +4160,9 @@ export type UserStatusFragment = (
   )> }
 );
 
-export type SetAsLoggedInMutationVariables = {
+export type SetAsLoggedInMutationVariables = Exact<{
   input: UserStatusInput;
-};
+}>;
 
 
 export type SetAsLoggedInMutation = (
@@ -4150,7 +4173,7 @@ export type SetAsLoggedInMutation = (
   ) }
 );
 
-export type SetAsLoggedOutMutationVariables = {};
+export type SetAsLoggedOutMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type SetAsLoggedOutMutation = (
@@ -4161,9 +4184,9 @@ export type SetAsLoggedOutMutation = (
   ) }
 );
 
-export type SetUiLanguageMutationVariables = {
+export type SetUiLanguageMutationVariables = Exact<{
   languageCode: LanguageCode;
-};
+}>;
 
 
 export type SetUiLanguageMutation = (
@@ -4171,7 +4194,7 @@ export type SetUiLanguageMutation = (
   & Pick<Mutation, 'setUiLanguage'>
 );
 
-export type GetNetworkStatusQueryVariables = {};
+export type GetNetworkStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetNetworkStatusQuery = (
@@ -4182,7 +4205,7 @@ export type GetNetworkStatusQuery = (
   ) }
 );
 
-export type GetUserStatusQueryVariables = {};
+export type GetUserStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUserStatusQuery = (
@@ -4193,7 +4216,7 @@ export type GetUserStatusQuery = (
   ) }
 );
 
-export type GetUiStateQueryVariables = {};
+export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetUiStateQuery = (
@@ -4204,9 +4227,9 @@ export type GetUiStateQuery = (
   ) }
 );
 
-export type SetActiveChannelMutationVariables = {
+export type SetActiveChannelMutationVariables = Exact<{
   channelId: Scalars['ID'];
-};
+}>;
 
 
 export type SetActiveChannelMutation = (
@@ -4217,9 +4240,9 @@ export type SetActiveChannelMutation = (
   ) }
 );
 
-export type UpdateUserChannelsMutationVariables = {
+export type UpdateUserChannelsMutationVariables = Exact<{
   channels: Array<CurrentUserChannelInput>;
-};
+}>;
 
 
 export type UpdateUserChannelsMutation = (
@@ -4230,7 +4253,7 @@ export type UpdateUserChannelsMutation = (
   ) }
 );
 
-export type GetCollectionFiltersQueryVariables = {};
+export type GetCollectionFiltersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetCollectionFiltersQuery = (
@@ -4265,9 +4288,9 @@ export type CollectionFragment = (
   )>> }
 );
 
-export type GetCollectionListQueryVariables = {
+export type GetCollectionListQueryVariables = Exact<{
   options?: Maybe<CollectionListOptions>;
-};
+}>;
 
 
 export type GetCollectionListQuery = (
@@ -4289,9 +4312,9 @@ export type GetCollectionListQuery = (
   ) }
 );
 
-export type GetCollectionQueryVariables = {
+export type GetCollectionQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetCollectionQuery = (
@@ -4302,9 +4325,9 @@ export type GetCollectionQuery = (
   )> }
 );
 
-export type CreateCollectionMutationVariables = {
+export type CreateCollectionMutationVariables = Exact<{
   input: CreateCollectionInput;
-};
+}>;
 
 
 export type CreateCollectionMutation = (
@@ -4315,9 +4338,9 @@ export type CreateCollectionMutation = (
   ) }
 );
 
-export type UpdateCollectionMutationVariables = {
+export type UpdateCollectionMutationVariables = Exact<{
   input: UpdateCollectionInput;
-};
+}>;
 
 
 export type UpdateCollectionMutation = (
@@ -4328,9 +4351,9 @@ export type UpdateCollectionMutation = (
   ) }
 );
 
-export type MoveCollectionMutationVariables = {
+export type MoveCollectionMutationVariables = Exact<{
   input: MoveCollectionInput;
-};
+}>;
 
 
 export type MoveCollectionMutation = (
@@ -4341,9 +4364,9 @@ export type MoveCollectionMutation = (
   ) }
 );
 
-export type DeleteCollectionMutationVariables = {
+export type DeleteCollectionMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteCollectionMutation = (
@@ -4354,10 +4377,10 @@ export type DeleteCollectionMutation = (
   ) }
 );
 
-export type GetCollectionContentsQueryVariables = {
+export type GetCollectionContentsQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<ProductVariantListOptions>;
-};
+}>;
 
 
 export type GetCollectionContentsQuery = (
@@ -4397,9 +4420,9 @@ export type CustomerFragment = (
   )>> }
 );
 
-export type GetCustomerListQueryVariables = {
+export type GetCustomerListQueryVariables = Exact<{
   options?: Maybe<CustomerListOptions>;
-};
+}>;
 
 
 export type GetCustomerListQuery = (
@@ -4418,10 +4441,10 @@ export type GetCustomerListQuery = (
   ) }
 );
 
-export type GetCustomerQueryVariables = {
+export type GetCustomerQueryVariables = Exact<{
   id: Scalars['ID'];
   orderListOptions?: Maybe<OrderListOptions>;
-};
+}>;
 
 
 export type GetCustomerQuery = (
@@ -4443,10 +4466,10 @@ export type GetCustomerQuery = (
   )> }
 );
 
-export type CreateCustomerMutationVariables = {
+export type CreateCustomerMutationVariables = Exact<{
   input: CreateCustomerInput;
   password?: Maybe<Scalars['String']>;
-};
+}>;
 
 
 export type CreateCustomerMutation = (
@@ -4457,9 +4480,9 @@ export type CreateCustomerMutation = (
   ) }
 );
 
-export type UpdateCustomerMutationVariables = {
+export type UpdateCustomerMutationVariables = Exact<{
   input: UpdateCustomerInput;
-};
+}>;
 
 
 export type UpdateCustomerMutation = (
@@ -4470,9 +4493,9 @@ export type UpdateCustomerMutation = (
   ) }
 );
 
-export type DeleteCustomerMutationVariables = {
+export type DeleteCustomerMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteCustomerMutation = (
@@ -4483,10 +4506,10 @@ export type DeleteCustomerMutation = (
   ) }
 );
 
-export type CreateCustomerAddressMutationVariables = {
+export type CreateCustomerAddressMutationVariables = Exact<{
   customerId: Scalars['ID'];
   input: CreateAddressInput;
-};
+}>;
 
 
 export type CreateCustomerAddressMutation = (
@@ -4497,9 +4520,9 @@ export type CreateCustomerAddressMutation = (
   ) }
 );
 
-export type UpdateCustomerAddressMutationVariables = {
+export type UpdateCustomerAddressMutationVariables = Exact<{
   input: UpdateAddressInput;
-};
+}>;
 
 
 export type UpdateCustomerAddressMutation = (
@@ -4510,9 +4533,9 @@ export type UpdateCustomerAddressMutation = (
   ) }
 );
 
-export type CreateCustomerGroupMutationVariables = {
+export type CreateCustomerGroupMutationVariables = Exact<{
   input: CreateCustomerGroupInput;
-};
+}>;
 
 
 export type CreateCustomerGroupMutation = (
@@ -4523,9 +4546,9 @@ export type CreateCustomerGroupMutation = (
   ) }
 );
 
-export type UpdateCustomerGroupMutationVariables = {
+export type UpdateCustomerGroupMutationVariables = Exact<{
   input: UpdateCustomerGroupInput;
-};
+}>;
 
 
 export type UpdateCustomerGroupMutation = (
@@ -4536,9 +4559,9 @@ export type UpdateCustomerGroupMutation = (
   ) }
 );
 
-export type DeleteCustomerGroupMutationVariables = {
+export type DeleteCustomerGroupMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteCustomerGroupMutation = (
@@ -4549,9 +4572,9 @@ export type DeleteCustomerGroupMutation = (
   ) }
 );
 
-export type GetCustomerGroupsQueryVariables = {
+export type GetCustomerGroupsQueryVariables = Exact<{
   options?: Maybe<CustomerGroupListOptions>;
-};
+}>;
 
 
 export type GetCustomerGroupsQuery = (
@@ -4566,10 +4589,10 @@ export type GetCustomerGroupsQuery = (
   ) }
 );
 
-export type GetCustomerGroupWithCustomersQueryVariables = {
+export type GetCustomerGroupWithCustomersQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<CustomerListOptions>;
-};
+}>;
 
 
 export type GetCustomerGroupWithCustomersQuery = (
@@ -4588,10 +4611,10 @@ export type GetCustomerGroupWithCustomersQuery = (
   )> }
 );
 
-export type AddCustomersToGroupMutationVariables = {
+export type AddCustomersToGroupMutationVariables = Exact<{
   groupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
-};
+}>;
 
 
 export type AddCustomersToGroupMutation = (
@@ -4602,10 +4625,10 @@ export type AddCustomersToGroupMutation = (
   ) }
 );
 
-export type RemoveCustomersFromGroupMutationVariables = {
+export type RemoveCustomersFromGroupMutationVariables = Exact<{
   groupId: Scalars['ID'];
   customerIds: Array<Scalars['ID']>;
-};
+}>;
 
 
 export type RemoveCustomersFromGroupMutation = (
@@ -4616,10 +4639,10 @@ export type RemoveCustomersFromGroupMutation = (
   ) }
 );
 
-export type GetCustomerHistoryQueryVariables = {
+export type GetCustomerHistoryQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<HistoryEntryListOptions>;
-};
+}>;
 
 
 export type GetCustomerHistoryQuery = (
@@ -4642,9 +4665,9 @@ export type GetCustomerHistoryQuery = (
   )> }
 );
 
-export type AddNoteToCustomerMutationVariables = {
+export type AddNoteToCustomerMutationVariables = Exact<{
   input: AddNoteToCustomerInput;
-};
+}>;
 
 
 export type AddNoteToCustomerMutation = (
@@ -4655,9 +4678,9 @@ export type AddNoteToCustomerMutation = (
   ) }
 );
 
-export type UpdateCustomerNoteMutationVariables = {
+export type UpdateCustomerNoteMutationVariables = Exact<{
   input: UpdateCustomerNoteInput;
-};
+}>;
 
 
 export type UpdateCustomerNoteMutation = (
@@ -4668,9 +4691,9 @@ export type UpdateCustomerNoteMutation = (
   ) }
 );
 
-export type DeleteCustomerNoteMutationVariables = {
+export type DeleteCustomerNoteMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteCustomerNoteMutation = (
@@ -4705,9 +4728,9 @@ export type FacetWithValuesFragment = (
   )> }
 );
 
-export type CreateFacetMutationVariables = {
+export type CreateFacetMutationVariables = Exact<{
   input: CreateFacetInput;
-};
+}>;
 
 
 export type CreateFacetMutation = (
@@ -4718,9 +4741,9 @@ export type CreateFacetMutation = (
   ) }
 );
 
-export type UpdateFacetMutationVariables = {
+export type UpdateFacetMutationVariables = Exact<{
   input: UpdateFacetInput;
-};
+}>;
 
 
 export type UpdateFacetMutation = (
@@ -4731,10 +4754,10 @@ export type UpdateFacetMutation = (
   ) }
 );
 
-export type DeleteFacetMutationVariables = {
+export type DeleteFacetMutationVariables = Exact<{
   id: Scalars['ID'];
   force?: Maybe<Scalars['Boolean']>;
-};
+}>;
 
 
 export type DeleteFacetMutation = (
@@ -4745,9 +4768,9 @@ export type DeleteFacetMutation = (
   ) }
 );
 
-export type CreateFacetValuesMutationVariables = {
+export type CreateFacetValuesMutationVariables = Exact<{
   input: Array<CreateFacetValueInput>;
-};
+}>;
 
 
 export type CreateFacetValuesMutation = (
@@ -4758,9 +4781,9 @@ export type CreateFacetValuesMutation = (
   )> }
 );
 
-export type UpdateFacetValuesMutationVariables = {
+export type UpdateFacetValuesMutationVariables = Exact<{
   input: Array<UpdateFacetValueInput>;
-};
+}>;
 
 
 export type UpdateFacetValuesMutation = (
@@ -4771,10 +4794,10 @@ export type UpdateFacetValuesMutation = (
   )> }
 );
 
-export type DeleteFacetValuesMutationVariables = {
+export type DeleteFacetValuesMutationVariables = Exact<{
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
-};
+}>;
 
 
 export type DeleteFacetValuesMutation = (
@@ -4785,9 +4808,9 @@ export type DeleteFacetValuesMutation = (
   )> }
 );
 
-export type GetFacetListQueryVariables = {
+export type GetFacetListQueryVariables = Exact<{
   options?: Maybe<FacetListOptions>;
-};
+}>;
 
 
 export type GetFacetListQuery = (
@@ -4802,9 +4825,9 @@ export type GetFacetListQuery = (
   ) }
 );
 
-export type GetFacetWithValuesQueryVariables = {
+export type GetFacetWithValuesQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetFacetWithValuesQuery = (
@@ -4907,9 +4930,9 @@ export type OrderDetailFragment = (
   )>> }
 );
 
-export type GetOrderListQueryVariables = {
+export type GetOrderListQueryVariables = Exact<{
   options?: Maybe<OrderListOptions>;
-};
+}>;
 
 
 export type GetOrderListQuery = (
@@ -4924,9 +4947,9 @@ export type GetOrderListQuery = (
   ) }
 );
 
-export type GetOrderQueryVariables = {
+export type GetOrderQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetOrderQuery = (
@@ -4937,9 +4960,9 @@ export type GetOrderQuery = (
   )> }
 );
 
-export type SettlePaymentMutationVariables = {
+export type SettlePaymentMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type SettlePaymentMutation = (
@@ -4950,9 +4973,9 @@ export type SettlePaymentMutation = (
   ) }
 );
 
-export type CreateFulfillmentMutationVariables = {
+export type CreateFulfillmentMutationVariables = Exact<{
   input: FulfillOrderInput;
-};
+}>;
 
 
 export type CreateFulfillmentMutation = (
@@ -4963,9 +4986,9 @@ export type CreateFulfillmentMutation = (
   ) }
 );
 
-export type CancelOrderMutationVariables = {
+export type CancelOrderMutationVariables = Exact<{
   input: CancelOrderInput;
-};
+}>;
 
 
 export type CancelOrderMutation = (
@@ -4976,9 +4999,9 @@ export type CancelOrderMutation = (
   ) }
 );
 
-export type RefundOrderMutationVariables = {
+export type RefundOrderMutationVariables = Exact<{
   input: RefundOrderInput;
-};
+}>;
 
 
 export type RefundOrderMutation = (
@@ -4989,9 +5012,9 @@ export type RefundOrderMutation = (
   ) }
 );
 
-export type SettleRefundMutationVariables = {
+export type SettleRefundMutationVariables = Exact<{
   input: SettleRefundInput;
-};
+}>;
 
 
 export type SettleRefundMutation = (
@@ -5002,10 +5025,10 @@ export type SettleRefundMutation = (
   ) }
 );
 
-export type GetOrderHistoryQueryVariables = {
+export type GetOrderHistoryQueryVariables = Exact<{
   id: Scalars['ID'];
   options?: Maybe<HistoryEntryListOptions>;
-};
+}>;
 
 
 export type GetOrderHistoryQuery = (
@@ -5028,9 +5051,9 @@ export type GetOrderHistoryQuery = (
   )> }
 );
 
-export type AddNoteToOrderMutationVariables = {
+export type AddNoteToOrderMutationVariables = Exact<{
   input: AddNoteToOrderInput;
-};
+}>;
 
 
 export type AddNoteToOrderMutation = (
@@ -5041,9 +5064,9 @@ export type AddNoteToOrderMutation = (
   ) }
 );
 
-export type UpdateOrderNoteMutationVariables = {
+export type UpdateOrderNoteMutationVariables = Exact<{
   input: UpdateOrderNoteInput;
-};
+}>;
 
 
 export type UpdateOrderNoteMutation = (
@@ -5054,9 +5077,9 @@ export type UpdateOrderNoteMutation = (
   ) }
 );
 
-export type DeleteOrderNoteMutationVariables = {
+export type DeleteOrderNoteMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteOrderNoteMutation = (
@@ -5067,10 +5090,10 @@ export type DeleteOrderNoteMutation = (
   ) }
 );
 
-export type TransitionOrderToStateMutationVariables = {
+export type TransitionOrderToStateMutationVariables = Exact<{
   id: Scalars['ID'];
   state: Scalars['String'];
-};
+}>;
 
 
 export type TransitionOrderToStateMutation = (
@@ -5081,9 +5104,9 @@ export type TransitionOrderToStateMutation = (
   )> }
 );
 
-export type UpdateOrderCustomFieldsMutationVariables = {
+export type UpdateOrderCustomFieldsMutationVariables = Exact<{
   input: UpdateOrderInput;
-};
+}>;
 
 
 export type UpdateOrderCustomFieldsMutation = (
@@ -5094,10 +5117,10 @@ export type UpdateOrderCustomFieldsMutation = (
   )> }
 );
 
-export type TransitionFulfillmentToStateMutationVariables = {
+export type TransitionFulfillmentToStateMutationVariables = Exact<{
   id: Scalars['ID'];
   state: Scalars['String'];
-};
+}>;
 
 
 export type TransitionFulfillmentToStateMutation = (
@@ -5213,9 +5236,9 @@ export type ProductOptionGroupWithOptionsFragment = (
   )> }
 );
 
-export type UpdateProductMutationVariables = {
+export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
-};
+}>;
 
 
 export type UpdateProductMutation = (
@@ -5226,9 +5249,9 @@ export type UpdateProductMutation = (
   ) }
 );
 
-export type CreateProductMutationVariables = {
+export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
-};
+}>;
 
 
 export type CreateProductMutation = (
@@ -5239,9 +5262,9 @@ export type CreateProductMutation = (
   ) }
 );
 
-export type DeleteProductMutationVariables = {
+export type DeleteProductMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteProductMutation = (
@@ -5252,9 +5275,9 @@ export type DeleteProductMutation = (
   ) }
 );
 
-export type CreateProductVariantsMutationVariables = {
+export type CreateProductVariantsMutationVariables = Exact<{
   input: Array<CreateProductVariantInput>;
-};
+}>;
 
 
 export type CreateProductVariantsMutation = (
@@ -5265,9 +5288,9 @@ export type CreateProductVariantsMutation = (
   )>> }
 );
 
-export type UpdateProductVariantsMutationVariables = {
+export type UpdateProductVariantsMutationVariables = Exact<{
   input: Array<UpdateProductVariantInput>;
-};
+}>;
 
 
 export type UpdateProductVariantsMutation = (
@@ -5278,9 +5301,9 @@ export type UpdateProductVariantsMutation = (
   )>> }
 );
 
-export type CreateProductOptionGroupMutationVariables = {
+export type CreateProductOptionGroupMutationVariables = Exact<{
   input: CreateProductOptionGroupInput;
-};
+}>;
 
 
 export type CreateProductOptionGroupMutation = (
@@ -5291,9 +5314,9 @@ export type CreateProductOptionGroupMutation = (
   ) }
 );
 
-export type GetProductOptionGroupQueryVariables = {
+export type GetProductOptionGroupQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetProductOptionGroupQuery = (
@@ -5304,9 +5327,9 @@ export type GetProductOptionGroupQuery = (
   )> }
 );
 
-export type AddOptionToGroupMutationVariables = {
+export type AddOptionToGroupMutationVariables = Exact<{
   input: CreateProductOptionInput;
-};
+}>;
 
 
 export type AddOptionToGroupMutation = (
@@ -5317,10 +5340,10 @@ export type AddOptionToGroupMutation = (
   ) }
 );
 
-export type AddOptionGroupToProductMutationVariables = {
+export type AddOptionGroupToProductMutationVariables = Exact<{
   productId: Scalars['ID'];
   optionGroupId: Scalars['ID'];
-};
+}>;
 
 
 export type AddOptionGroupToProductMutation = (
@@ -5339,10 +5362,10 @@ export type AddOptionGroupToProductMutation = (
   ) }
 );
 
-export type RemoveOptionGroupFromProductMutationVariables = {
+export type RemoveOptionGroupFromProductMutationVariables = Exact<{
   productId: Scalars['ID'];
   optionGroupId: Scalars['ID'];
-};
+}>;
 
 
 export type RemoveOptionGroupFromProductMutation = (
@@ -5361,9 +5384,9 @@ export type RemoveOptionGroupFromProductMutation = (
   ) }
 );
 
-export type GetProductWithVariantsQueryVariables = {
+export type GetProductWithVariantsQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetProductWithVariantsQuery = (
@@ -5374,9 +5397,9 @@ export type GetProductWithVariantsQuery = (
   )> }
 );
 
-export type GetProductListQueryVariables = {
+export type GetProductListQueryVariables = Exact<{
   options?: Maybe<ProductListOptions>;
-};
+}>;
 
 
 export type GetProductListQuery = (
@@ -5395,9 +5418,9 @@ export type GetProductListQuery = (
   ) }
 );
 
-export type GetProductOptionGroupsQueryVariables = {
+export type GetProductOptionGroupsQueryVariables = Exact<{
   filterTerm?: Maybe<Scalars['String']>;
-};
+}>;
 
 
 export type GetProductOptionGroupsQuery = (
@@ -5412,9 +5435,9 @@ export type GetProductOptionGroupsQuery = (
   )> }
 );
 
-export type GetAssetListQueryVariables = {
+export type GetAssetListQueryVariables = Exact<{
   options?: Maybe<AssetListOptions>;
-};
+}>;
 
 
 export type GetAssetListQuery = (
@@ -5429,9 +5452,9 @@ export type GetAssetListQuery = (
   ) }
 );
 
-export type GetAssetQueryVariables = {
+export type GetAssetQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetAssetQuery = (
@@ -5442,9 +5465,9 @@ export type GetAssetQuery = (
   )> }
 );
 
-export type CreateAssetsMutationVariables = {
+export type CreateAssetsMutationVariables = Exact<{
   input: Array<CreateAssetInput>;
-};
+}>;
 
 
 export type CreateAssetsMutation = (
@@ -5452,12 +5475,15 @@ export type CreateAssetsMutation = (
   & { createAssets: Array<(
     { __typename?: 'Asset' }
     & AssetFragment
+  ) | (
+    { __typename?: 'MimeTypeError' }
+    & Pick<MimeTypeError, 'message'>
   )> }
 );
 
-export type UpdateAssetMutationVariables = {
+export type UpdateAssetMutationVariables = Exact<{
   input: UpdateAssetInput;
-};
+}>;
 
 
 export type UpdateAssetMutation = (
@@ -5468,10 +5494,10 @@ export type UpdateAssetMutation = (
   ) }
 );
 
-export type DeleteAssetsMutationVariables = {
+export type DeleteAssetsMutationVariables = Exact<{
   ids: Array<Scalars['ID']>;
   force?: Maybe<Scalars['Boolean']>;
-};
+}>;
 
 
 export type DeleteAssetsMutation = (
@@ -5482,9 +5508,9 @@ export type DeleteAssetsMutation = (
   ) }
 );
 
-export type SearchProductsQueryVariables = {
+export type SearchProductsQueryVariables = Exact<{
   input: SearchInput;
-};
+}>;
 
 
 export type SearchProductsQuery = (
@@ -5525,10 +5551,10 @@ export type SearchProductsQuery = (
   ) }
 );
 
-export type ProductSelectorSearchQueryVariables = {
+export type ProductSelectorSearchQueryVariables = Exact<{
   term: Scalars['String'];
   take: Scalars['Int'];
-};
+}>;
 
 
 export type ProductSelectorSearchQuery = (
@@ -5556,9 +5582,9 @@ export type ProductSelectorSearchQuery = (
   ) }
 );
 
-export type UpdateProductOptionMutationVariables = {
+export type UpdateProductOptionMutationVariables = Exact<{
   input: UpdateProductOptionInput;
-};
+}>;
 
 
 export type UpdateProductOptionMutation = (
@@ -5569,9 +5595,9 @@ export type UpdateProductOptionMutation = (
   ) }
 );
 
-export type DeleteProductVariantMutationVariables = {
+export type DeleteProductVariantMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteProductVariantMutation = (
@@ -5582,9 +5608,9 @@ export type DeleteProductVariantMutation = (
   ) }
 );
 
-export type GetProductVariantOptionsQueryVariables = {
+export type GetProductVariantOptionsQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetProductVariantOptionsQuery = (
@@ -5610,9 +5636,9 @@ export type GetProductVariantOptionsQuery = (
   )> }
 );
 
-export type AssignProductsToChannelMutationVariables = {
+export type AssignProductsToChannelMutationVariables = Exact<{
   input: AssignProductsToChannelInput;
-};
+}>;
 
 
 export type AssignProductsToChannelMutation = (
@@ -5627,9 +5653,9 @@ export type AssignProductsToChannelMutation = (
   )> }
 );
 
-export type RemoveProductsFromChannelMutationVariables = {
+export type RemoveProductsFromChannelMutationVariables = Exact<{
   input: RemoveProductsFromChannelInput;
-};
+}>;
 
 
 export type RemoveProductsFromChannelMutation = (
@@ -5644,9 +5670,9 @@ export type RemoveProductsFromChannelMutation = (
   )> }
 );
 
-export type GetProductVariantQueryVariables = {
+export type GetProductVariantQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetProductVariantQuery = (
@@ -5681,9 +5707,9 @@ export type PromotionFragment = (
   )> }
 );
 
-export type GetPromotionListQueryVariables = {
+export type GetPromotionListQueryVariables = Exact<{
   options?: Maybe<PromotionListOptions>;
-};
+}>;
 
 
 export type GetPromotionListQuery = (
@@ -5698,9 +5724,9 @@ export type GetPromotionListQuery = (
   ) }
 );
 
-export type GetPromotionQueryVariables = {
+export type GetPromotionQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetPromotionQuery = (
@@ -5711,7 +5737,7 @@ export type GetPromotionQuery = (
   )> }
 );
 
-export type GetAdjustmentOperationsQueryVariables = {};
+export type GetAdjustmentOperationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAdjustmentOperationsQuery = (
@@ -5725,9 +5751,9 @@ export type GetAdjustmentOperationsQuery = (
   )> }
 );
 
-export type CreatePromotionMutationVariables = {
+export type CreatePromotionMutationVariables = Exact<{
   input: CreatePromotionInput;
-};
+}>;
 
 
 export type CreatePromotionMutation = (
@@ -5738,9 +5764,9 @@ export type CreatePromotionMutation = (
   ) }
 );
 
-export type UpdatePromotionMutationVariables = {
+export type UpdatePromotionMutationVariables = Exact<{
   input: UpdatePromotionInput;
-};
+}>;
 
 
 export type UpdatePromotionMutation = (
@@ -5751,9 +5777,9 @@ export type UpdatePromotionMutation = (
   ) }
 );
 
-export type DeletePromotionMutationVariables = {
+export type DeletePromotionMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeletePromotionMutation = (
@@ -5773,9 +5799,9 @@ export type CountryFragment = (
   )> }
 );
 
-export type GetCountryListQueryVariables = {
+export type GetCountryListQueryVariables = Exact<{
   options?: Maybe<CountryListOptions>;
-};
+}>;
 
 
 export type GetCountryListQuery = (
@@ -5790,7 +5816,7 @@ export type GetCountryListQuery = (
   ) }
 );
 
-export type GetAvailableCountriesQueryVariables = {};
+export type GetAvailableCountriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetAvailableCountriesQuery = (
@@ -5804,9 +5830,9 @@ export type GetAvailableCountriesQuery = (
   ) }
 );
 
-export type GetCountryQueryVariables = {
+export type GetCountryQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetCountryQuery = (
@@ -5817,9 +5843,9 @@ export type GetCountryQuery = (
   )> }
 );
 
-export type CreateCountryMutationVariables = {
+export type CreateCountryMutationVariables = Exact<{
   input: CreateCountryInput;
-};
+}>;
 
 
 export type CreateCountryMutation = (
@@ -5830,9 +5856,9 @@ export type CreateCountryMutation = (
   ) }
 );
 
-export type UpdateCountryMutationVariables = {
+export type UpdateCountryMutationVariables = Exact<{
   input: UpdateCountryInput;
-};
+}>;
 
 
 export type UpdateCountryMutation = (
@@ -5843,9 +5869,9 @@ export type UpdateCountryMutation = (
   ) }
 );
 
-export type DeleteCountryMutationVariables = {
+export type DeleteCountryMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteCountryMutation = (
@@ -5865,7 +5891,7 @@ export type ZoneFragment = (
   )> }
 );
 
-export type GetZonesQueryVariables = {};
+export type GetZonesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetZonesQuery = (
@@ -5880,9 +5906,9 @@ export type GetZonesQuery = (
   )> }
 );
 
-export type GetZoneQueryVariables = {
+export type GetZoneQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetZoneQuery = (
@@ -5893,9 +5919,9 @@ export type GetZoneQuery = (
   )> }
 );
 
-export type CreateZoneMutationVariables = {
+export type CreateZoneMutationVariables = Exact<{
   input: CreateZoneInput;
-};
+}>;
 
 
 export type CreateZoneMutation = (
@@ -5906,9 +5932,9 @@ export type CreateZoneMutation = (
   ) }
 );
 
-export type UpdateZoneMutationVariables = {
+export type UpdateZoneMutationVariables = Exact<{
   input: UpdateZoneInput;
-};
+}>;
 
 
 export type UpdateZoneMutation = (
@@ -5919,9 +5945,9 @@ export type UpdateZoneMutation = (
   ) }
 );
 
-export type DeleteZoneMutationVariables = {
+export type DeleteZoneMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteZoneMutation = (
@@ -5932,10 +5958,10 @@ export type DeleteZoneMutation = (
   ) }
 );
 
-export type AddMembersToZoneMutationVariables = {
+export type AddMembersToZoneMutationVariables = Exact<{
   zoneId: Scalars['ID'];
   memberIds: Array<Scalars['ID']>;
-};
+}>;
 
 
 export type AddMembersToZoneMutation = (
@@ -5946,10 +5972,10 @@ export type AddMembersToZoneMutation = (
   ) }
 );
 
-export type RemoveMembersFromZoneMutationVariables = {
+export type RemoveMembersFromZoneMutationVariables = Exact<{
   zoneId: Scalars['ID'];
   memberIds: Array<Scalars['ID']>;
-};
+}>;
 
 
 export type RemoveMembersFromZoneMutation = (
@@ -5965,7 +5991,7 @@ export type TaxCategoryFragment = (
   & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>
 );
 
-export type GetTaxCategoriesQueryVariables = {};
+export type GetTaxCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetTaxCategoriesQuery = (
@@ -5976,9 +6002,9 @@ export type GetTaxCategoriesQuery = (
   )> }
 );
 
-export type GetTaxCategoryQueryVariables = {
+export type GetTaxCategoryQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetTaxCategoryQuery = (
@@ -5989,9 +6015,9 @@ export type GetTaxCategoryQuery = (
   )> }
 );
 
-export type CreateTaxCategoryMutationVariables = {
+export type CreateTaxCategoryMutationVariables = Exact<{
   input: CreateTaxCategoryInput;
-};
+}>;
 
 
 export type CreateTaxCategoryMutation = (
@@ -6002,9 +6028,9 @@ export type CreateTaxCategoryMutation = (
   ) }
 );
 
-export type UpdateTaxCategoryMutationVariables = {
+export type UpdateTaxCategoryMutationVariables = Exact<{
   input: UpdateTaxCategoryInput;
-};
+}>;
 
 
 export type UpdateTaxCategoryMutation = (
@@ -6015,9 +6041,9 @@ export type UpdateTaxCategoryMutation = (
   ) }
 );
 
-export type DeleteTaxCategoryMutationVariables = {
+export type DeleteTaxCategoryMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteTaxCategoryMutation = (
@@ -6043,9 +6069,9 @@ export type TaxRateFragment = (
   )> }
 );
 
-export type GetTaxRateListQueryVariables = {
+export type GetTaxRateListQueryVariables = Exact<{
   options?: Maybe<TaxRateListOptions>;
-};
+}>;
 
 
 export type GetTaxRateListQuery = (
@@ -6060,9 +6086,9 @@ export type GetTaxRateListQuery = (
   ) }
 );
 
-export type GetTaxRateQueryVariables = {
+export type GetTaxRateQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetTaxRateQuery = (
@@ -6073,9 +6099,9 @@ export type GetTaxRateQuery = (
   )> }
 );
 
-export type CreateTaxRateMutationVariables = {
+export type CreateTaxRateMutationVariables = Exact<{
   input: CreateTaxRateInput;
-};
+}>;
 
 
 export type CreateTaxRateMutation = (
@@ -6086,9 +6112,9 @@ export type CreateTaxRateMutation = (
   ) }
 );
 
-export type UpdateTaxRateMutationVariables = {
+export type UpdateTaxRateMutationVariables = Exact<{
   input: UpdateTaxRateInput;
-};
+}>;
 
 
 export type UpdateTaxRateMutation = (
@@ -6099,9 +6125,9 @@ export type UpdateTaxRateMutation = (
   ) }
 );
 
-export type DeleteTaxRateMutationVariables = {
+export type DeleteTaxRateMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteTaxRateMutation = (
@@ -6124,7 +6150,7 @@ export type ChannelFragment = (
   )> }
 );
 
-export type GetChannelsQueryVariables = {};
+export type GetChannelsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetChannelsQuery = (
@@ -6135,9 +6161,9 @@ export type GetChannelsQuery = (
   )> }
 );
 
-export type GetChannelQueryVariables = {
+export type GetChannelQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetChannelQuery = (
@@ -6148,7 +6174,7 @@ export type GetChannelQuery = (
   )> }
 );
 
-export type GetActiveChannelQueryVariables = {};
+export type GetActiveChannelQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetActiveChannelQuery = (
@@ -6159,9 +6185,9 @@ export type GetActiveChannelQuery = (
   ) }
 );
 
-export type CreateChannelMutationVariables = {
+export type CreateChannelMutationVariables = Exact<{
   input: CreateChannelInput;
-};
+}>;
 
 
 export type CreateChannelMutation = (
@@ -6172,9 +6198,9 @@ export type CreateChannelMutation = (
   ) }
 );
 
-export type UpdateChannelMutationVariables = {
+export type UpdateChannelMutationVariables = Exact<{
   input: UpdateChannelInput;
-};
+}>;
 
 
 export type UpdateChannelMutation = (
@@ -6185,9 +6211,9 @@ export type UpdateChannelMutation = (
   ) }
 );
 
-export type DeleteChannelMutationVariables = {
+export type DeleteChannelMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteChannelMutation = (
@@ -6210,9 +6236,9 @@ export type PaymentMethodFragment = (
   ) }
 );
 
-export type GetPaymentMethodListQueryVariables = {
+export type GetPaymentMethodListQueryVariables = Exact<{
   options: PaymentMethodListOptions;
-};
+}>;
 
 
 export type GetPaymentMethodListQuery = (
@@ -6227,9 +6253,9 @@ export type GetPaymentMethodListQuery = (
   ) }
 );
 
-export type GetPaymentMethodQueryVariables = {
+export type GetPaymentMethodQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetPaymentMethodQuery = (
@@ -6240,9 +6266,9 @@ export type GetPaymentMethodQuery = (
   )> }
 );
 
-export type UpdatePaymentMethodMutationVariables = {
+export type UpdatePaymentMethodMutationVariables = Exact<{
   input: UpdatePaymentMethodInput;
-};
+}>;
 
 
 export type UpdatePaymentMethodMutation = (
@@ -6258,7 +6284,7 @@ export type GlobalSettingsFragment = (
   & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>
 );
 
-export type GetGlobalSettingsQueryVariables = {};
+export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetGlobalSettingsQuery = (
@@ -6269,9 +6295,9 @@ export type GetGlobalSettingsQuery = (
   ) }
 );
 
-export type UpdateGlobalSettingsMutationVariables = {
+export type UpdateGlobalSettingsMutationVariables = Exact<{
   input: UpdateGlobalSettingsInput;
-};
+}>;
 
 
 export type UpdateGlobalSettingsMutation = (
@@ -6431,7 +6457,7 @@ type CustomFields_DateTimeCustomFieldConfig_Fragment = (
 
 export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment;
 
-export type GetServerConfigQueryVariables = {};
+export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetServerConfigQuery = (
@@ -6709,9 +6735,9 @@ export type JobInfoFragment = (
   & Pick<Job, 'id' | 'createdAt' | 'startedAt' | 'settledAt' | 'queueName' | 'state' | 'isSettled' | 'progress' | 'duration' | 'data' | 'result' | 'error'>
 );
 
-export type GetJobInfoQueryVariables = {
+export type GetJobInfoQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetJobInfoQuery = (
@@ -6722,9 +6748,9 @@ export type GetJobInfoQuery = (
   )> }
 );
 
-export type GetAllJobsQueryVariables = {
+export type GetAllJobsQueryVariables = Exact<{
   options?: Maybe<JobListOptions>;
-};
+}>;
 
 
 export type GetAllJobsQuery = (
@@ -6739,9 +6765,9 @@ export type GetAllJobsQuery = (
   ) }
 );
 
-export type GetJobsByIdQueryVariables = {
+export type GetJobsByIdQueryVariables = Exact<{
   ids: Array<Scalars['ID']>;
-};
+}>;
 
 
 export type GetJobsByIdQuery = (
@@ -6752,7 +6778,7 @@ export type GetJobsByIdQuery = (
   )> }
 );
 
-export type GetJobQueueListQueryVariables = {};
+export type GetJobQueueListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetJobQueueListQuery = (
@@ -6763,7 +6789,7 @@ export type GetJobQueueListQuery = (
   )> }
 );
 
-export type ReindexMutationVariables = {};
+export type ReindexMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ReindexMutation = (
@@ -6804,9 +6830,9 @@ export type ShippingMethodFragment = (
   ) }
 );
 
-export type GetShippingMethodListQueryVariables = {
+export type GetShippingMethodListQueryVariables = Exact<{
   options?: Maybe<ShippingMethodListOptions>;
-};
+}>;
 
 
 export type GetShippingMethodListQuery = (
@@ -6821,9 +6847,9 @@ export type GetShippingMethodListQuery = (
   ) }
 );
 
-export type GetShippingMethodQueryVariables = {
+export type GetShippingMethodQueryVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type GetShippingMethodQuery = (
@@ -6834,7 +6860,7 @@ export type GetShippingMethodQuery = (
   )> }
 );
 
-export type GetShippingMethodOperationsQueryVariables = {};
+export type GetShippingMethodOperationsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetShippingMethodOperationsQuery = (
@@ -6848,9 +6874,9 @@ export type GetShippingMethodOperationsQuery = (
   )> }
 );
 
-export type CreateShippingMethodMutationVariables = {
+export type CreateShippingMethodMutationVariables = Exact<{
   input: CreateShippingMethodInput;
-};
+}>;
 
 
 export type CreateShippingMethodMutation = (
@@ -6861,9 +6887,9 @@ export type CreateShippingMethodMutation = (
   ) }
 );
 
-export type UpdateShippingMethodMutationVariables = {
+export type UpdateShippingMethodMutationVariables = Exact<{
   input: UpdateShippingMethodInput;
-};
+}>;
 
 
 export type UpdateShippingMethodMutation = (
@@ -6874,9 +6900,9 @@ export type UpdateShippingMethodMutation = (
   ) }
 );
 
-export type DeleteShippingMethodMutationVariables = {
+export type DeleteShippingMethodMutationVariables = Exact<{
   id: Scalars['ID'];
-};
+}>;
 
 
 export type DeleteShippingMethodMutation = (
@@ -6887,9 +6913,9 @@ export type DeleteShippingMethodMutation = (
   ) }
 );
 
-export type TestShippingMethodQueryVariables = {
+export type TestShippingMethodQueryVariables = Exact<{
   input: TestShippingMethodInput;
-};
+}>;
 
 
 export type TestShippingMethodQuery = (
@@ -6904,9 +6930,9 @@ export type TestShippingMethodQuery = (
   ) }
 );
 
-export type TestEligibleShippingMethodsQueryVariables = {
+export type TestEligibleShippingMethodsQueryVariables = Exact<{
   input: TestEligibleShippingMethodsInput;
-};
+}>;
 
 
 export type TestEligibleShippingMethodsQuery = (
@@ -6919,97 +6945,95 @@ export type TestEligibleShippingMethodsQuery = (
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
-type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
-
 export namespace Role {
   export type Fragment = RoleFragment;
-  export type Channels = (NonNullable<RoleFragment['channels'][0]>);
+  export type Channels = NonNullable<(NonNullable<RoleFragment['channels']>)[number]>;
 }
 
 export namespace Administrator {
   export type Fragment = AdministratorFragment;
-  export type User = AdministratorFragment['user'];
-  export type Roles = RoleFragment;
+  export type User = (NonNullable<AdministratorFragment['user']>);
+  export type Roles = NonNullable<(NonNullable<(NonNullable<AdministratorFragment['user']>)['roles']>)[number]>;
 }
 
 export namespace GetAdministrators {
   export type Variables = GetAdministratorsQueryVariables;
   export type Query = GetAdministratorsQuery;
-  export type Administrators = GetAdministratorsQuery['administrators'];
-  export type Items = AdministratorFragment;
+  export type Administrators = (NonNullable<GetAdministratorsQuery['administrators']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetAdministratorsQuery['administrators']>)['items']>)[number]>;
 }
 
 export namespace GetAdministrator {
   export type Variables = GetAdministratorQueryVariables;
   export type Query = GetAdministratorQuery;
-  export type Administrator = AdministratorFragment;
+  export type Administrator = (NonNullable<GetAdministratorQuery['administrator']>);
 }
 
 export namespace CreateAdministrator {
   export type Variables = CreateAdministratorMutationVariables;
   export type Mutation = CreateAdministratorMutation;
-  export type CreateAdministrator = AdministratorFragment;
+  export type CreateAdministrator = (NonNullable<CreateAdministratorMutation['createAdministrator']>);
 }
 
 export namespace UpdateAdministrator {
   export type Variables = UpdateAdministratorMutationVariables;
   export type Mutation = UpdateAdministratorMutation;
-  export type UpdateAdministrator = AdministratorFragment;
+  export type UpdateAdministrator = (NonNullable<UpdateAdministratorMutation['updateAdministrator']>);
 }
 
 export namespace DeleteAdministrator {
   export type Variables = DeleteAdministratorMutationVariables;
   export type Mutation = DeleteAdministratorMutation;
-  export type DeleteAdministrator = DeleteAdministratorMutation['deleteAdministrator'];
+  export type DeleteAdministrator = (NonNullable<DeleteAdministratorMutation['deleteAdministrator']>);
 }
 
 export namespace GetRoles {
   export type Variables = GetRolesQueryVariables;
   export type Query = GetRolesQuery;
-  export type Roles = GetRolesQuery['roles'];
-  export type Items = RoleFragment;
+  export type Roles = (NonNullable<GetRolesQuery['roles']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetRolesQuery['roles']>)['items']>)[number]>;
 }
 
 export namespace GetRole {
   export type Variables = GetRoleQueryVariables;
   export type Query = GetRoleQuery;
-  export type Role = RoleFragment;
+  export type Role = (NonNullable<GetRoleQuery['role']>);
 }
 
 export namespace CreateRole {
   export type Variables = CreateRoleMutationVariables;
   export type Mutation = CreateRoleMutation;
-  export type CreateRole = RoleFragment;
+  export type CreateRole = (NonNullable<CreateRoleMutation['createRole']>);
 }
 
 export namespace UpdateRole {
   export type Variables = UpdateRoleMutationVariables;
   export type Mutation = UpdateRoleMutation;
-  export type UpdateRole = RoleFragment;
+  export type UpdateRole = (NonNullable<UpdateRoleMutation['updateRole']>);
 }
 
 export namespace DeleteRole {
   export type Variables = DeleteRoleMutationVariables;
   export type Mutation = DeleteRoleMutation;
-  export type DeleteRole = DeleteRoleMutation['deleteRole'];
+  export type DeleteRole = (NonNullable<DeleteRoleMutation['deleteRole']>);
 }
 
 export namespace AssignRoleToAdministrator {
   export type Variables = AssignRoleToAdministratorMutationVariables;
   export type Mutation = AssignRoleToAdministratorMutation;
-  export type AssignRoleToAdministrator = AdministratorFragment;
+  export type AssignRoleToAdministrator = (NonNullable<AssignRoleToAdministratorMutation['assignRoleToAdministrator']>);
 }
 
 export namespace CurrentUser {
   export type Fragment = CurrentUserFragment;
-  export type Channels = (NonNullable<CurrentUserFragment['channels'][0]>);
+  export type Channels = NonNullable<(NonNullable<CurrentUserFragment['channels']>)[number]>;
 }
 
 export namespace AttemptLogin {
   export type Variables = AttemptLoginMutationVariables;
   export type Mutation = AttemptLoginMutation;
-  export type Login = AttemptLoginMutation['login'];
-  export type User = CurrentUserFragment;
+  export type Login = (NonNullable<AttemptLoginMutation['login']>);
+  export type User = (NonNullable<(NonNullable<AttemptLoginMutation['login']>)['user']>);
 }
 
 export namespace LogOut {
@@ -7020,7 +7044,7 @@ export namespace LogOut {
 export namespace GetCurrentUser {
   export type Variables = GetCurrentUserQueryVariables;
   export type Query = GetCurrentUserQuery;
-  export type Me = CurrentUserFragment;
+  export type Me = (NonNullable<GetCurrentUserQuery['me']>);
 }
 
 export namespace RequestStarted {
@@ -7035,19 +7059,19 @@ export namespace RequestCompleted {
 
 export namespace UserStatus {
   export type Fragment = UserStatusFragment;
-  export type Channels = (NonNullable<UserStatusFragment['channels'][0]>);
+  export type Channels = NonNullable<(NonNullable<UserStatusFragment['channels']>)[number]>;
 }
 
 export namespace SetAsLoggedIn {
   export type Variables = SetAsLoggedInMutationVariables;
   export type Mutation = SetAsLoggedInMutation;
-  export type SetAsLoggedIn = UserStatusFragment;
+  export type SetAsLoggedIn = (NonNullable<SetAsLoggedInMutation['setAsLoggedIn']>);
 }
 
 export namespace SetAsLoggedOut {
   export type Variables = SetAsLoggedOutMutationVariables;
   export type Mutation = SetAsLoggedOutMutation;
-  export type SetAsLoggedOut = UserStatusFragment;
+  export type SetAsLoggedOut = (NonNullable<SetAsLoggedOutMutation['setAsLoggedOut']>);
 }
 
 export namespace SetUiLanguage {
@@ -7058,285 +7082,285 @@ export namespace SetUiLanguage {
 export namespace GetNetworkStatus {
   export type Variables = GetNetworkStatusQueryVariables;
   export type Query = GetNetworkStatusQuery;
-  export type NetworkStatus = GetNetworkStatusQuery['networkStatus'];
+  export type NetworkStatus = (NonNullable<GetNetworkStatusQuery['networkStatus']>);
 }
 
 export namespace GetUserStatus {
   export type Variables = GetUserStatusQueryVariables;
   export type Query = GetUserStatusQuery;
-  export type UserStatus = UserStatusFragment;
+  export type UserStatus = (NonNullable<GetUserStatusQuery['userStatus']>);
 }
 
 export namespace GetUiState {
   export type Variables = GetUiStateQueryVariables;
   export type Query = GetUiStateQuery;
-  export type UiState = GetUiStateQuery['uiState'];
+  export type UiState = (NonNullable<GetUiStateQuery['uiState']>);
 }
 
 export namespace SetActiveChannel {
   export type Variables = SetActiveChannelMutationVariables;
   export type Mutation = SetActiveChannelMutation;
-  export type SetActiveChannel = UserStatusFragment;
+  export type SetActiveChannel = (NonNullable<SetActiveChannelMutation['setActiveChannel']>);
 }
 
 export namespace UpdateUserChannels {
   export type Variables = UpdateUserChannelsMutationVariables;
   export type Mutation = UpdateUserChannelsMutation;
-  export type UpdateUserChannels = UserStatusFragment;
+  export type UpdateUserChannels = (NonNullable<UpdateUserChannelsMutation['updateUserChannels']>);
 }
 
 export namespace GetCollectionFilters {
   export type Variables = GetCollectionFiltersQueryVariables;
   export type Query = GetCollectionFiltersQuery;
-  export type CollectionFilters = ConfigurableOperationDefFragment;
+  export type CollectionFilters = NonNullable<(NonNullable<GetCollectionFiltersQuery['collectionFilters']>)[number]>;
 }
 
 export namespace Collection {
   export type Fragment = CollectionFragment;
-  export type FeaturedAsset = AssetFragment;
-  export type Assets = AssetFragment;
-  export type Filters = ConfigurableOperationFragment;
-  export type Translations = (NonNullable<CollectionFragment['translations'][0]>);
+  export type FeaturedAsset = (NonNullable<CollectionFragment['featuredAsset']>);
+  export type Assets = NonNullable<(NonNullable<CollectionFragment['assets']>)[number]>;
+  export type Filters = NonNullable<(NonNullable<CollectionFragment['filters']>)[number]>;
+  export type Translations = NonNullable<(NonNullable<CollectionFragment['translations']>)[number]>;
   export type Parent = (NonNullable<CollectionFragment['parent']>);
-  export type Children = (NonNullable<(NonNullable<CollectionFragment['children']>)[0]>);
+  export type Children = NonNullable<(NonNullable<CollectionFragment['children']>)[number]>;
 }
 
 export namespace GetCollectionList {
   export type Variables = GetCollectionListQueryVariables;
   export type Query = GetCollectionListQuery;
-  export type Collections = GetCollectionListQuery['collections'];
-  export type Items = (NonNullable<GetCollectionListQuery['collections']['items'][0]>);
-  export type FeaturedAsset = AssetFragment;
-  export type Parent = (NonNullable<(NonNullable<GetCollectionListQuery['collections']['items'][0]>)['parent']>);
+  export type Collections = (NonNullable<GetCollectionListQuery['collections']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetCollectionListQuery['collections']>)['items']>)[number]>;
+  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetCollectionListQuery['collections']>)['items']>)[number]>['featuredAsset']>);
+  export type Parent = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetCollectionListQuery['collections']>)['items']>)[number]>['parent']>);
 }
 
 export namespace GetCollection {
   export type Variables = GetCollectionQueryVariables;
   export type Query = GetCollectionQuery;
-  export type Collection = CollectionFragment;
+  export type Collection = (NonNullable<GetCollectionQuery['collection']>);
 }
 
 export namespace CreateCollection {
   export type Variables = CreateCollectionMutationVariables;
   export type Mutation = CreateCollectionMutation;
-  export type CreateCollection = CollectionFragment;
+  export type CreateCollection = (NonNullable<CreateCollectionMutation['createCollection']>);
 }
 
 export namespace UpdateCollection {
   export type Variables = UpdateCollectionMutationVariables;
   export type Mutation = UpdateCollectionMutation;
-  export type UpdateCollection = CollectionFragment;
+  export type UpdateCollection = (NonNullable<UpdateCollectionMutation['updateCollection']>);
 }
 
 export namespace MoveCollection {
   export type Variables = MoveCollectionMutationVariables;
   export type Mutation = MoveCollectionMutation;
-  export type MoveCollection = CollectionFragment;
+  export type MoveCollection = (NonNullable<MoveCollectionMutation['moveCollection']>);
 }
 
 export namespace DeleteCollection {
   export type Variables = DeleteCollectionMutationVariables;
   export type Mutation = DeleteCollectionMutation;
-  export type DeleteCollection = DeleteCollectionMutation['deleteCollection'];
+  export type DeleteCollection = (NonNullable<DeleteCollectionMutation['deleteCollection']>);
 }
 
 export namespace GetCollectionContents {
   export type Variables = GetCollectionContentsQueryVariables;
   export type Query = GetCollectionContentsQuery;
   export type Collection = (NonNullable<GetCollectionContentsQuery['collection']>);
-  export type ProductVariants = (NonNullable<GetCollectionContentsQuery['collection']>)['productVariants'];
-  export type Items = (NonNullable<(NonNullable<GetCollectionContentsQuery['collection']>)['productVariants']['items'][0]>);
+  export type ProductVariants = (NonNullable<(NonNullable<GetCollectionContentsQuery['collection']>)['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCollectionContentsQuery['collection']>)['productVariants']>)['items']>)[number]>;
 }
 
 export namespace Address {
   export type Fragment = AddressFragment;
-  export type Country = AddressFragment['country'];
+  export type Country = (NonNullable<AddressFragment['country']>);
 }
 
 export namespace Customer {
   export type Fragment = CustomerFragment;
   export type User = (NonNullable<CustomerFragment['user']>);
-  export type Addresses = AddressFragment;
+  export type Addresses = NonNullable<(NonNullable<CustomerFragment['addresses']>)[number]>;
 }
 
 export namespace GetCustomerList {
   export type Variables = GetCustomerListQueryVariables;
   export type Query = GetCustomerListQuery;
-  export type Customers = GetCustomerListQuery['customers'];
-  export type Items = (NonNullable<GetCustomerListQuery['customers']['items'][0]>);
-  export type User = (NonNullable<(NonNullable<GetCustomerListQuery['customers']['items'][0]>)['user']>);
+  export type Customers = (NonNullable<GetCustomerListQuery['customers']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetCustomerListQuery['customers']>)['items']>)[number]>;
+  export type User = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetCustomerListQuery['customers']>)['items']>)[number]>['user']>);
 }
 
 export namespace GetCustomer {
   export type Variables = GetCustomerQueryVariables;
   export type Query = GetCustomerQuery;
-  export type Customer = CustomerFragment;
-  export type Groups = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['groups'][0]>);
-  export type Orders = (NonNullable<GetCustomerQuery['customer']>)['orders'];
-  export type Items = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']['items'][0]>);
+  export type Customer = (NonNullable<GetCustomerQuery['customer']>);
+  export type Groups = NonNullable<(NonNullable<(NonNullable<GetCustomerQuery['customer']>)['groups']>)[number]>;
+  export type Orders = (NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerQuery['customer']>)['orders']>)['items']>)[number]>;
 }
 
 export namespace CreateCustomer {
   export type Variables = CreateCustomerMutationVariables;
   export type Mutation = CreateCustomerMutation;
-  export type CreateCustomer = CustomerFragment;
+  export type CreateCustomer = (NonNullable<CreateCustomerMutation['createCustomer']>);
 }
 
 export namespace UpdateCustomer {
   export type Variables = UpdateCustomerMutationVariables;
   export type Mutation = UpdateCustomerMutation;
-  export type UpdateCustomer = CustomerFragment;
+  export type UpdateCustomer = (NonNullable<UpdateCustomerMutation['updateCustomer']>);
 }
 
 export namespace DeleteCustomer {
   export type Variables = DeleteCustomerMutationVariables;
   export type Mutation = DeleteCustomerMutation;
-  export type DeleteCustomer = DeleteCustomerMutation['deleteCustomer'];
+  export type DeleteCustomer = (NonNullable<DeleteCustomerMutation['deleteCustomer']>);
 }
 
 export namespace CreateCustomerAddress {
   export type Variables = CreateCustomerAddressMutationVariables;
   export type Mutation = CreateCustomerAddressMutation;
-  export type CreateCustomerAddress = AddressFragment;
+  export type CreateCustomerAddress = (NonNullable<CreateCustomerAddressMutation['createCustomerAddress']>);
 }
 
 export namespace UpdateCustomerAddress {
   export type Variables = UpdateCustomerAddressMutationVariables;
   export type Mutation = UpdateCustomerAddressMutation;
-  export type UpdateCustomerAddress = AddressFragment;
+  export type UpdateCustomerAddress = (NonNullable<UpdateCustomerAddressMutation['updateCustomerAddress']>);
 }
 
 export namespace CreateCustomerGroup {
   export type Variables = CreateCustomerGroupMutationVariables;
   export type Mutation = CreateCustomerGroupMutation;
-  export type CreateCustomerGroup = CreateCustomerGroupMutation['createCustomerGroup'];
+  export type CreateCustomerGroup = (NonNullable<CreateCustomerGroupMutation['createCustomerGroup']>);
 }
 
 export namespace UpdateCustomerGroup {
   export type Variables = UpdateCustomerGroupMutationVariables;
   export type Mutation = UpdateCustomerGroupMutation;
-  export type UpdateCustomerGroup = UpdateCustomerGroupMutation['updateCustomerGroup'];
+  export type UpdateCustomerGroup = (NonNullable<UpdateCustomerGroupMutation['updateCustomerGroup']>);
 }
 
 export namespace DeleteCustomerGroup {
   export type Variables = DeleteCustomerGroupMutationVariables;
   export type Mutation = DeleteCustomerGroupMutation;
-  export type DeleteCustomerGroup = DeleteCustomerGroupMutation['deleteCustomerGroup'];
+  export type DeleteCustomerGroup = (NonNullable<DeleteCustomerGroupMutation['deleteCustomerGroup']>);
 }
 
 export namespace GetCustomerGroups {
   export type Variables = GetCustomerGroupsQueryVariables;
   export type Query = GetCustomerGroupsQuery;
-  export type CustomerGroups = GetCustomerGroupsQuery['customerGroups'];
-  export type Items = (NonNullable<GetCustomerGroupsQuery['customerGroups']['items'][0]>);
+  export type CustomerGroups = (NonNullable<GetCustomerGroupsQuery['customerGroups']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetCustomerGroupsQuery['customerGroups']>)['items']>)[number]>;
 }
 
 export namespace GetCustomerGroupWithCustomers {
   export type Variables = GetCustomerGroupWithCustomersQueryVariables;
   export type Query = GetCustomerGroupWithCustomersQuery;
   export type CustomerGroup = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>);
-  export type Customers = (NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers'];
-  export type Items = (NonNullable<(NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers']['items'][0]>);
+  export type Customers = (NonNullable<(NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerGroupWithCustomersQuery['customerGroup']>)['customers']>)['items']>)[number]>;
 }
 
 export namespace AddCustomersToGroup {
   export type Variables = AddCustomersToGroupMutationVariables;
   export type Mutation = AddCustomersToGroupMutation;
-  export type AddCustomersToGroup = AddCustomersToGroupMutation['addCustomersToGroup'];
+  export type AddCustomersToGroup = (NonNullable<AddCustomersToGroupMutation['addCustomersToGroup']>);
 }
 
 export namespace RemoveCustomersFromGroup {
   export type Variables = RemoveCustomersFromGroupMutationVariables;
   export type Mutation = RemoveCustomersFromGroupMutation;
-  export type RemoveCustomersFromGroup = RemoveCustomersFromGroupMutation['removeCustomersFromGroup'];
+  export type RemoveCustomersFromGroup = (NonNullable<RemoveCustomersFromGroupMutation['removeCustomersFromGroup']>);
 }
 
 export namespace GetCustomerHistory {
   export type Variables = GetCustomerHistoryQueryVariables;
   export type Query = GetCustomerHistoryQuery;
   export type Customer = (NonNullable<GetCustomerHistoryQuery['customer']>);
-  export type History = (NonNullable<GetCustomerHistoryQuery['customer']>)['history'];
-  export type Items = (NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>);
-  export type Administrator = (NonNullable<(NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']['items'][0]>)['administrator']>);
+  export type History = (NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']>)['items']>)[number]>;
+  export type Administrator = (NonNullable<NonNullable<(NonNullable<(NonNullable<(NonNullable<GetCustomerHistoryQuery['customer']>)['history']>)['items']>)[number]>['administrator']>);
 }
 
 export namespace AddNoteToCustomer {
   export type Variables = AddNoteToCustomerMutationVariables;
   export type Mutation = AddNoteToCustomerMutation;
-  export type AddNoteToCustomer = AddNoteToCustomerMutation['addNoteToCustomer'];
+  export type AddNoteToCustomer = (NonNullable<AddNoteToCustomerMutation['addNoteToCustomer']>);
 }
 
 export namespace UpdateCustomerNote {
   export type Variables = UpdateCustomerNoteMutationVariables;
   export type Mutation = UpdateCustomerNoteMutation;
-  export type UpdateCustomerNote = UpdateCustomerNoteMutation['updateCustomerNote'];
+  export type UpdateCustomerNote = (NonNullable<UpdateCustomerNoteMutation['updateCustomerNote']>);
 }
 
 export namespace DeleteCustomerNote {
   export type Variables = DeleteCustomerNoteMutationVariables;
   export type Mutation = DeleteCustomerNoteMutation;
-  export type DeleteCustomerNote = DeleteCustomerNoteMutation['deleteCustomerNote'];
+  export type DeleteCustomerNote = (NonNullable<DeleteCustomerNoteMutation['deleteCustomerNote']>);
 }
 
 export namespace FacetValue {
   export type Fragment = FacetValueFragment;
-  export type Translations = (NonNullable<FacetValueFragment['translations'][0]>);
-  export type Facet = FacetValueFragment['facet'];
+  export type Translations = NonNullable<(NonNullable<FacetValueFragment['translations']>)[number]>;
+  export type Facet = (NonNullable<FacetValueFragment['facet']>);
 }
 
 export namespace FacetWithValues {
   export type Fragment = FacetWithValuesFragment;
-  export type Translations = (NonNullable<FacetWithValuesFragment['translations'][0]>);
-  export type Values = FacetValueFragment;
+  export type Translations = NonNullable<(NonNullable<FacetWithValuesFragment['translations']>)[number]>;
+  export type Values = NonNullable<(NonNullable<FacetWithValuesFragment['values']>)[number]>;
 }
 
 export namespace CreateFacet {
   export type Variables = CreateFacetMutationVariables;
   export type Mutation = CreateFacetMutation;
-  export type CreateFacet = FacetWithValuesFragment;
+  export type CreateFacet = (NonNullable<CreateFacetMutation['createFacet']>);
 }
 
 export namespace UpdateFacet {
   export type Variables = UpdateFacetMutationVariables;
   export type Mutation = UpdateFacetMutation;
-  export type UpdateFacet = FacetWithValuesFragment;
+  export type UpdateFacet = (NonNullable<UpdateFacetMutation['updateFacet']>);
 }
 
 export namespace DeleteFacet {
   export type Variables = DeleteFacetMutationVariables;
   export type Mutation = DeleteFacetMutation;
-  export type DeleteFacet = DeleteFacetMutation['deleteFacet'];
+  export type DeleteFacet = (NonNullable<DeleteFacetMutation['deleteFacet']>);
 }
 
 export namespace CreateFacetValues {
   export type Variables = CreateFacetValuesMutationVariables;
   export type Mutation = CreateFacetValuesMutation;
-  export type CreateFacetValues = FacetValueFragment;
+  export type CreateFacetValues = NonNullable<(NonNullable<CreateFacetValuesMutation['createFacetValues']>)[number]>;
 }
 
 export namespace UpdateFacetValues {
   export type Variables = UpdateFacetValuesMutationVariables;
   export type Mutation = UpdateFacetValuesMutation;
-  export type UpdateFacetValues = FacetValueFragment;
+  export type UpdateFacetValues = NonNullable<(NonNullable<UpdateFacetValuesMutation['updateFacetValues']>)[number]>;
 }
 
 export namespace DeleteFacetValues {
   export type Variables = DeleteFacetValuesMutationVariables;
   export type Mutation = DeleteFacetValuesMutation;
-  export type DeleteFacetValues = (NonNullable<DeleteFacetValuesMutation['deleteFacetValues'][0]>);
+  export type DeleteFacetValues = NonNullable<(NonNullable<DeleteFacetValuesMutation['deleteFacetValues']>)[number]>;
 }
 
 export namespace GetFacetList {
   export type Variables = GetFacetListQueryVariables;
   export type Query = GetFacetListQuery;
-  export type Facets = GetFacetListQuery['facets'];
-  export type Items = FacetWithValuesFragment;
+  export type Facets = (NonNullable<GetFacetListQuery['facets']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetFacetListQuery['facets']>)['items']>)[number]>;
 }
 
 export namespace GetFacetWithValues {
   export type Variables = GetFacetWithValuesQueryVariables;
   export type Query = GetFacetWithValuesQuery;
-  export type Facet = FacetWithValuesFragment;
+  export type Facet = (NonNullable<GetFacetWithValuesQuery['facet']>);
 }
 
 export namespace Adjustment {
@@ -7363,113 +7387,113 @@ export namespace Fulfillment {
 export namespace OrderLine {
   export type Fragment = OrderLineFragment;
   export type FeaturedAsset = (NonNullable<OrderLineFragment['featuredAsset']>);
-  export type ProductVariant = OrderLineFragment['productVariant'];
-  export type Adjustments = AdjustmentFragment;
-  export type Items = (NonNullable<OrderLineFragment['items'][0]>);
-  export type Fulfillment = FulfillmentFragment;
+  export type ProductVariant = (NonNullable<OrderLineFragment['productVariant']>);
+  export type Adjustments = NonNullable<(NonNullable<OrderLineFragment['adjustments']>)[number]>;
+  export type Items = NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>;
+  export type Fulfillment = (NonNullable<NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>['fulfillment']>);
 }
 
 export namespace OrderDetail {
   export type Fragment = OrderDetailFragment;
   export type Customer = (NonNullable<OrderDetailFragment['customer']>);
-  export type Lines = OrderLineFragment;
-  export type Adjustments = AdjustmentFragment;
-  export type Promotions = (NonNullable<OrderDetailFragment['promotions'][0]>);
+  export type Lines = NonNullable<(NonNullable<OrderDetailFragment['lines']>)[number]>;
+  export type Adjustments = NonNullable<(NonNullable<OrderDetailFragment['adjustments']>)[number]>;
+  export type Promotions = NonNullable<(NonNullable<OrderDetailFragment['promotions']>)[number]>;
   export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
-  export type ShippingAddress = OrderAddressFragment;
-  export type BillingAddress = OrderAddressFragment;
-  export type Payments = (NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>);
-  export type Refunds = (NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>);
-  export type OrderItems = (NonNullable<(NonNullable<(NonNullable<(NonNullable<OrderDetailFragment['payments']>)[0]>)['refunds'][0]>)['orderItems'][0]>);
-  export type Fulfillments = FulfillmentFragment;
+  export type ShippingAddress = (NonNullable<OrderDetailFragment['shippingAddress']>);
+  export type BillingAddress = (NonNullable<OrderDetailFragment['billingAddress']>);
+  export type Payments = NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>;
+  export type Refunds = NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>['refunds']>)[number]>;
+  export type OrderItems = NonNullable<(NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>['refunds']>)[number]>['orderItems']>)[number]>;
+  export type Fulfillments = NonNullable<(NonNullable<OrderDetailFragment['fulfillments']>)[number]>;
 }
 
 export namespace GetOrderList {
   export type Variables = GetOrderListQueryVariables;
   export type Query = GetOrderListQuery;
-  export type Orders = GetOrderListQuery['orders'];
-  export type Items = OrderFragment;
+  export type Orders = (NonNullable<GetOrderListQuery['orders']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetOrderListQuery['orders']>)['items']>)[number]>;
 }
 
 export namespace GetOrder {
   export type Variables = GetOrderQueryVariables;
   export type Query = GetOrderQuery;
-  export type Order = OrderDetailFragment;
+  export type Order = (NonNullable<GetOrderQuery['order']>);
 }
 
 export namespace SettlePayment {
   export type Variables = SettlePaymentMutationVariables;
   export type Mutation = SettlePaymentMutation;
-  export type SettlePayment = SettlePaymentMutation['settlePayment'];
+  export type SettlePayment = (NonNullable<SettlePaymentMutation['settlePayment']>);
 }
 
 export namespace CreateFulfillment {
   export type Variables = CreateFulfillmentMutationVariables;
   export type Mutation = CreateFulfillmentMutation;
-  export type FulfillOrder = FulfillmentFragment;
+  export type FulfillOrder = (NonNullable<CreateFulfillmentMutation['fulfillOrder']>);
 }
 
 export namespace CancelOrder {
   export type Variables = CancelOrderMutationVariables;
   export type Mutation = CancelOrderMutation;
-  export type CancelOrder = OrderDetailFragment;
+  export type CancelOrder = (NonNullable<CancelOrderMutation['cancelOrder']>);
 }
 
 export namespace RefundOrder {
   export type Variables = RefundOrderMutationVariables;
   export type Mutation = RefundOrderMutation;
-  export type RefundOrder = RefundFragment;
+  export type RefundOrder = (NonNullable<RefundOrderMutation['refundOrder']>);
 }
 
 export namespace SettleRefund {
   export type Variables = SettleRefundMutationVariables;
   export type Mutation = SettleRefundMutation;
-  export type SettleRefund = RefundFragment;
+  export type SettleRefund = (NonNullable<SettleRefundMutation['settleRefund']>);
 }
 
 export namespace GetOrderHistory {
   export type Variables = GetOrderHistoryQueryVariables;
   export type Query = GetOrderHistoryQuery;
   export type Order = (NonNullable<GetOrderHistoryQuery['order']>);
-  export type History = (NonNullable<GetOrderHistoryQuery['order']>)['history'];
-  export type Items = (NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>);
-  export type Administrator = (NonNullable<(NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']['items'][0]>)['administrator']>);
+  export type History = (NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']>)['items']>)[number]>;
+  export type Administrator = (NonNullable<NonNullable<(NonNullable<(NonNullable<(NonNullable<GetOrderHistoryQuery['order']>)['history']>)['items']>)[number]>['administrator']>);
 }
 
 export namespace AddNoteToOrder {
   export type Variables = AddNoteToOrderMutationVariables;
   export type Mutation = AddNoteToOrderMutation;
-  export type AddNoteToOrder = AddNoteToOrderMutation['addNoteToOrder'];
+  export type AddNoteToOrder = (NonNullable<AddNoteToOrderMutation['addNoteToOrder']>);
 }
 
 export namespace UpdateOrderNote {
   export type Variables = UpdateOrderNoteMutationVariables;
   export type Mutation = UpdateOrderNoteMutation;
-  export type UpdateOrderNote = UpdateOrderNoteMutation['updateOrderNote'];
+  export type UpdateOrderNote = (NonNullable<UpdateOrderNoteMutation['updateOrderNote']>);
 }
 
 export namespace DeleteOrderNote {
   export type Variables = DeleteOrderNoteMutationVariables;
   export type Mutation = DeleteOrderNoteMutation;
-  export type DeleteOrderNote = DeleteOrderNoteMutation['deleteOrderNote'];
+  export type DeleteOrderNote = (NonNullable<DeleteOrderNoteMutation['deleteOrderNote']>);
 }
 
 export namespace TransitionOrderToState {
   export type Variables = TransitionOrderToStateMutationVariables;
   export type Mutation = TransitionOrderToStateMutation;
-  export type TransitionOrderToState = OrderFragment;
+  export type TransitionOrderToState = (NonNullable<TransitionOrderToStateMutation['transitionOrderToState']>);
 }
 
 export namespace UpdateOrderCustomFields {
   export type Variables = UpdateOrderCustomFieldsMutationVariables;
   export type Mutation = UpdateOrderCustomFieldsMutation;
-  export type SetOrderCustomFields = OrderFragment;
+  export type SetOrderCustomFields = (NonNullable<UpdateOrderCustomFieldsMutation['setOrderCustomFields']>);
 }
 
 export namespace TransitionFulfillmentToState {
   export type Variables = TransitionFulfillmentToStateMutationVariables;
   export type Mutation = TransitionFulfillmentToStateMutation;
-  export type TransitionFulfillmentToState = FulfillmentFragment;
+  export type TransitionFulfillmentToState = (NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>);
 }
 
 export namespace Asset {
@@ -7479,366 +7503,367 @@ export namespace Asset {
 
 export namespace ProductOptionGroup {
   export type Fragment = ProductOptionGroupFragment;
-  export type Translations = (NonNullable<ProductOptionGroupFragment['translations'][0]>);
+  export type Translations = NonNullable<(NonNullable<ProductOptionGroupFragment['translations']>)[number]>;
 }
 
 export namespace ProductOption {
   export type Fragment = ProductOptionFragment;
-  export type Translations = (NonNullable<ProductOptionFragment['translations'][0]>);
+  export type Translations = NonNullable<(NonNullable<ProductOptionFragment['translations']>)[number]>;
 }
 
 export namespace ProductVariant {
   export type Fragment = ProductVariantFragment;
-  export type TaxRateApplied = ProductVariantFragment['taxRateApplied'];
-  export type TaxCategory = ProductVariantFragment['taxCategory'];
-  export type Options = ProductOptionFragment;
-  export type FacetValues = (NonNullable<ProductVariantFragment['facetValues'][0]>);
-  export type Facet = (NonNullable<ProductVariantFragment['facetValues'][0]>)['facet'];
-  export type FeaturedAsset = AssetFragment;
-  export type Assets = AssetFragment;
-  export type Translations = (NonNullable<ProductVariantFragment['translations'][0]>);
+  export type TaxRateApplied = (NonNullable<ProductVariantFragment['taxRateApplied']>);
+  export type TaxCategory = (NonNullable<ProductVariantFragment['taxCategory']>);
+  export type Options = NonNullable<(NonNullable<ProductVariantFragment['options']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<ProductVariantFragment['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<ProductVariantFragment['facetValues']>)[number]>['facet']>);
+  export type FeaturedAsset = (NonNullable<ProductVariantFragment['featuredAsset']>);
+  export type Assets = NonNullable<(NonNullable<ProductVariantFragment['assets']>)[number]>;
+  export type Translations = NonNullable<(NonNullable<ProductVariantFragment['translations']>)[number]>;
 }
 
 export namespace ProductWithVariants {
   export type Fragment = ProductWithVariantsFragment;
-  export type FeaturedAsset = AssetFragment;
-  export type Assets = AssetFragment;
-  export type Translations = (NonNullable<ProductWithVariantsFragment['translations'][0]>);
-  export type OptionGroups = ProductOptionGroupFragment;
-  export type Variants = ProductVariantFragment;
-  export type FacetValues = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>);
-  export type Facet = (NonNullable<ProductWithVariantsFragment['facetValues'][0]>)['facet'];
-  export type Channels = (NonNullable<ProductWithVariantsFragment['channels'][0]>);
+  export type FeaturedAsset = (NonNullable<ProductWithVariantsFragment['featuredAsset']>);
+  export type Assets = NonNullable<(NonNullable<ProductWithVariantsFragment['assets']>)[number]>;
+  export type Translations = NonNullable<(NonNullable<ProductWithVariantsFragment['translations']>)[number]>;
+  export type OptionGroups = NonNullable<(NonNullable<ProductWithVariantsFragment['optionGroups']>)[number]>;
+  export type Variants = NonNullable<(NonNullable<ProductWithVariantsFragment['variants']>)[number]>;
+  export type FacetValues = NonNullable<(NonNullable<ProductWithVariantsFragment['facetValues']>)[number]>;
+  export type Facet = (NonNullable<NonNullable<(NonNullable<ProductWithVariantsFragment['facetValues']>)[number]>['facet']>);
+  export type Channels = NonNullable<(NonNullable<ProductWithVariantsFragment['channels']>)[number]>;
 }
 
 export namespace ProductOptionGroupWithOptions {
   export type Fragment = ProductOptionGroupWithOptionsFragment;
-  export type Translations = (NonNullable<ProductOptionGroupWithOptionsFragment['translations'][0]>);
-  export type Options = (NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>);
-  export type _Translations = (NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['options'][0]>)['translations'][0]>);
+  export type Translations = NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['translations']>)[number]>;
+  export type Options = NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['options']>)[number]>;
+  export type _Translations = NonNullable<(NonNullable<NonNullable<(NonNullable<ProductOptionGroupWithOptionsFragment['options']>)[number]>['translations']>)[number]>;
 }
 
 export namespace UpdateProduct {
   export type Variables = UpdateProductMutationVariables;
   export type Mutation = UpdateProductMutation;
-  export type UpdateProduct = ProductWithVariantsFragment;
+  export type UpdateProduct = (NonNullable<UpdateProductMutation['updateProduct']>);
 }
 
 export namespace CreateProduct {
   export type Variables = CreateProductMutationVariables;
   export type Mutation = CreateProductMutation;
-  export type CreateProduct = ProductWithVariantsFragment;
+  export type CreateProduct = (NonNullable<CreateProductMutation['createProduct']>);
 }
 
 export namespace DeleteProduct {
   export type Variables = DeleteProductMutationVariables;
   export type Mutation = DeleteProductMutation;
-  export type DeleteProduct = DeleteProductMutation['deleteProduct'];
+  export type DeleteProduct = (NonNullable<DeleteProductMutation['deleteProduct']>);
 }
 
 export namespace CreateProductVariants {
   export type Variables = CreateProductVariantsMutationVariables;
   export type Mutation = CreateProductVariantsMutation;
-  export type CreateProductVariants = ProductVariantFragment;
+  export type CreateProductVariants = NonNullable<(NonNullable<CreateProductVariantsMutation['createProductVariants']>)[number]>;
 }
 
 export namespace UpdateProductVariants {
   export type Variables = UpdateProductVariantsMutationVariables;
   export type Mutation = UpdateProductVariantsMutation;
-  export type UpdateProductVariants = ProductVariantFragment;
+  export type UpdateProductVariants = NonNullable<(NonNullable<UpdateProductVariantsMutation['updateProductVariants']>)[number]>;
 }
 
 export namespace CreateProductOptionGroup {
   export type Variables = CreateProductOptionGroupMutationVariables;
   export type Mutation = CreateProductOptionGroupMutation;
-  export type CreateProductOptionGroup = ProductOptionGroupWithOptionsFragment;
+  export type CreateProductOptionGroup = (NonNullable<CreateProductOptionGroupMutation['createProductOptionGroup']>);
 }
 
 export namespace GetProductOptionGroup {
   export type Variables = GetProductOptionGroupQueryVariables;
   export type Query = GetProductOptionGroupQuery;
-  export type ProductOptionGroup = ProductOptionGroupWithOptionsFragment;
+  export type ProductOptionGroup = (NonNullable<GetProductOptionGroupQuery['productOptionGroup']>);
 }
 
 export namespace AddOptionToGroup {
   export type Variables = AddOptionToGroupMutationVariables;
   export type Mutation = AddOptionToGroupMutation;
-  export type CreateProductOption = AddOptionToGroupMutation['createProductOption'];
+  export type CreateProductOption = (NonNullable<AddOptionToGroupMutation['createProductOption']>);
 }
 
 export namespace AddOptionGroupToProduct {
   export type Variables = AddOptionGroupToProductMutationVariables;
   export type Mutation = AddOptionGroupToProductMutation;
-  export type AddOptionGroupToProduct = AddOptionGroupToProductMutation['addOptionGroupToProduct'];
-  export type OptionGroups = (NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']['optionGroups'][0]>);
-  export type Options = (NonNullable<(NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']['optionGroups'][0]>)['options'][0]>);
+  export type AddOptionGroupToProduct = (NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']>);
+  export type OptionGroups = NonNullable<(NonNullable<(NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']>)['optionGroups']>)[number]>;
+  export type Options = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']>)['optionGroups']>)[number]>['options']>)[number]>;
 }
 
 export namespace RemoveOptionGroupFromProduct {
   export type Variables = RemoveOptionGroupFromProductMutationVariables;
   export type Mutation = RemoveOptionGroupFromProductMutation;
-  export type RemoveOptionGroupFromProduct = RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct'];
-  export type OptionGroups = (NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']['optionGroups'][0]>);
-  export type Options = (NonNullable<(NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']['optionGroups'][0]>)['options'][0]>);
+  export type RemoveOptionGroupFromProduct = (NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']>);
+  export type OptionGroups = NonNullable<(NonNullable<(NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']>)['optionGroups']>)[number]>;
+  export type Options = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']>)['optionGroups']>)[number]>['options']>)[number]>;
 }
 
 export namespace GetProductWithVariants {
   export type Variables = GetProductWithVariantsQueryVariables;
   export type Query = GetProductWithVariantsQuery;
-  export type Product = ProductWithVariantsFragment;
+  export type Product = (NonNullable<GetProductWithVariantsQuery['product']>);
 }
 
 export namespace GetProductList {
   export type Variables = GetProductListQueryVariables;
   export type Query = GetProductListQuery;
-  export type Products = GetProductListQuery['products'];
-  export type Items = (NonNullable<GetProductListQuery['products']['items'][0]>);
-  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductListQuery['products']['items'][0]>)['featuredAsset']>);
+  export type Products = (NonNullable<GetProductListQuery['products']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductListQuery['products']>)['items']>)[number]>;
+  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductListQuery['products']>)['items']>)[number]>['featuredAsset']>);
 }
 
 export namespace GetProductOptionGroups {
   export type Variables = GetProductOptionGroupsQueryVariables;
   export type Query = GetProductOptionGroupsQuery;
-  export type ProductOptionGroups = (NonNullable<GetProductOptionGroupsQuery['productOptionGroups'][0]>);
-  export type Options = (NonNullable<(NonNullable<GetProductOptionGroupsQuery['productOptionGroups'][0]>)['options'][0]>);
+  export type ProductOptionGroups = NonNullable<(NonNullable<GetProductOptionGroupsQuery['productOptionGroups']>)[number]>;
+  export type Options = NonNullable<(NonNullable<NonNullable<(NonNullable<GetProductOptionGroupsQuery['productOptionGroups']>)[number]>['options']>)[number]>;
 }
 
 export namespace GetAssetList {
   export type Variables = GetAssetListQueryVariables;
   export type Query = GetAssetListQuery;
-  export type Assets = GetAssetListQuery['assets'];
-  export type Items = AssetFragment;
+  export type Assets = (NonNullable<GetAssetListQuery['assets']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetAssetListQuery['assets']>)['items']>)[number]>;
 }
 
 export namespace GetAsset {
   export type Variables = GetAssetQueryVariables;
   export type Query = GetAssetQuery;
-  export type Asset = AssetFragment;
+  export type Asset = (NonNullable<GetAssetQuery['asset']>);
 }
 
 export namespace CreateAssets {
   export type Variables = CreateAssetsMutationVariables;
   export type Mutation = CreateAssetsMutation;
-  export type CreateAssets = AssetFragment;
+  export type CreateAssets = NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>;
+  export type ErrorResultInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'ErrorResult' }>);
 }
 
 export namespace UpdateAsset {
   export type Variables = UpdateAssetMutationVariables;
   export type Mutation = UpdateAssetMutation;
-  export type UpdateAsset = AssetFragment;
+  export type UpdateAsset = (NonNullable<UpdateAssetMutation['updateAsset']>);
 }
 
 export namespace DeleteAssets {
   export type Variables = DeleteAssetsMutationVariables;
   export type Mutation = DeleteAssetsMutation;
-  export type DeleteAssets = DeleteAssetsMutation['deleteAssets'];
+  export type DeleteAssets = (NonNullable<DeleteAssetsMutation['deleteAssets']>);
 }
 
 export namespace SearchProducts {
   export type Variables = SearchProductsQueryVariables;
   export type Query = SearchProductsQuery;
-  export type Search = SearchProductsQuery['search'];
-  export type Items = (NonNullable<SearchProductsQuery['search']['items'][0]>);
-  export type ProductAsset = (NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
-  export type ProductVariantAsset = (NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productVariantAsset']>);
-  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']['items'][0]>)['productVariantAsset']>)['focalPoint']>);
-  export type FacetValues = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>);
-  export type FacetValue = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue'];
-  export type Facet = (NonNullable<SearchProductsQuery['search']['facetValues'][0]>)['facetValue']['facet'];
+  export type Search = (NonNullable<SearchProductsQuery['search']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['items']>)[number]>;
+  export type ProductAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['items']>)[number]>['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['items']>)[number]>['productAsset']>)['focalPoint']>);
+  export type ProductVariantAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['items']>)[number]>['productVariantAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['items']>)[number]>['productVariantAsset']>)['focalPoint']>);
+  export type FacetValues = NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['facetValues']>)[number]>;
+  export type FacetValue = (NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['facetValues']>)[number]>['facetValue']>);
+  export type Facet = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<SearchProductsQuery['search']>)['facetValues']>)[number]>['facetValue']>)['facet']>);
 }
 
 export namespace ProductSelectorSearch {
   export type Variables = ProductSelectorSearchQueryVariables;
   export type Query = ProductSelectorSearchQuery;
-  export type Search = ProductSelectorSearchQuery['search'];
-  export type Items = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>);
-  export type ProductAsset = (NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['productAsset']>)['focalPoint']>);
-  export type Price = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'];
-  export type SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['price'], '__typename'>, { __typename: 'SinglePrice' }>);
-  export type PriceWithTax = (NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'];
-  export type _SinglePriceInlineFragment = (DiscriminateUnion<RequireField<(NonNullable<ProductSelectorSearchQuery['search']['items'][0]>)['priceWithTax'], '__typename'>, { __typename: 'SinglePrice' }>);
+  export type Search = (NonNullable<ProductSelectorSearchQuery['search']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>;
+  export type ProductAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['productAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['productAsset']>)['focalPoint']>);
+  export type Price = (NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['price']>);
+  export type SinglePriceInlineFragment = (DiscriminateUnion<(NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['price']>), { __typename?: 'SinglePrice' }>);
+  export type PriceWithTax = (NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['priceWithTax']>);
+  export type _SinglePriceInlineFragment = (DiscriminateUnion<(NonNullable<NonNullable<(NonNullable<(NonNullable<ProductSelectorSearchQuery['search']>)['items']>)[number]>['priceWithTax']>), { __typename?: 'SinglePrice' }>);
 }
 
 export namespace UpdateProductOption {
   export type Variables = UpdateProductOptionMutationVariables;
   export type Mutation = UpdateProductOptionMutation;
-  export type UpdateProductOption = ProductOptionFragment;
+  export type UpdateProductOption = (NonNullable<UpdateProductOptionMutation['updateProductOption']>);
 }
 
 export namespace DeleteProductVariant {
   export type Variables = DeleteProductVariantMutationVariables;
   export type Mutation = DeleteProductVariantMutation;
-  export type DeleteProductVariant = DeleteProductVariantMutation['deleteProductVariant'];
+  export type DeleteProductVariant = (NonNullable<DeleteProductVariantMutation['deleteProductVariant']>);
 }
 
 export namespace GetProductVariantOptions {
   export type Variables = GetProductVariantOptionsQueryVariables;
   export type Query = GetProductVariantOptionsQuery;
   export type Product = (NonNullable<GetProductVariantOptionsQuery['product']>);
-  export type OptionGroups = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups'][0]>);
-  export type Options = ProductOptionFragment;
-  export type Variants = (NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>);
-  export type _Options = (NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants'][0]>)['options'][0]>);
+  export type OptionGroups = NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups']>)[number]>;
+  export type Options = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['optionGroups']>)[number]>['options']>)[number]>;
+  export type Variants = NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants']>)[number]>;
+  export type _Options = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantOptionsQuery['product']>)['variants']>)[number]>['options']>)[number]>;
 }
 
 export namespace AssignProductsToChannel {
   export type Variables = AssignProductsToChannelMutationVariables;
   export type Mutation = AssignProductsToChannelMutation;
-  export type AssignProductsToChannel = (NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>);
-  export type Channels = (NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel'][0]>)['channels'][0]>);
+  export type AssignProductsToChannel = NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel']>)[number]>;
+  export type Channels = NonNullable<(NonNullable<NonNullable<(NonNullable<AssignProductsToChannelMutation['assignProductsToChannel']>)[number]>['channels']>)[number]>;
 }
 
 export namespace RemoveProductsFromChannel {
   export type Variables = RemoveProductsFromChannelMutationVariables;
   export type Mutation = RemoveProductsFromChannelMutation;
-  export type RemoveProductsFromChannel = (NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>);
-  export type Channels = (NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel'][0]>)['channels'][0]>);
+  export type RemoveProductsFromChannel = NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel']>)[number]>;
+  export type Channels = NonNullable<(NonNullable<NonNullable<(NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel']>)[number]>['channels']>)[number]>;
 }
 
 export namespace GetProductVariant {
   export type Variables = GetProductVariantQueryVariables;
   export type Query = GetProductVariantQuery;
   export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
-  export type Product = (NonNullable<GetProductVariantQuery['productVariant']>)['product'];
-  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']['featuredAsset']>)['focalPoint']>);
+  export type Product = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace Promotion {
   export type Fragment = PromotionFragment;
-  export type Conditions = ConfigurableOperationFragment;
-  export type Actions = ConfigurableOperationFragment;
+  export type Conditions = NonNullable<(NonNullable<PromotionFragment['conditions']>)[number]>;
+  export type Actions = NonNullable<(NonNullable<PromotionFragment['actions']>)[number]>;
 }
 
 export namespace GetPromotionList {
   export type Variables = GetPromotionListQueryVariables;
   export type Query = GetPromotionListQuery;
-  export type Promotions = GetPromotionListQuery['promotions'];
-  export type Items = PromotionFragment;
+  export type Promotions = (NonNullable<GetPromotionListQuery['promotions']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetPromotionListQuery['promotions']>)['items']>)[number]>;
 }
 
 export namespace GetPromotion {
   export type Variables = GetPromotionQueryVariables;
   export type Query = GetPromotionQuery;
-  export type Promotion = PromotionFragment;
+  export type Promotion = (NonNullable<GetPromotionQuery['promotion']>);
 }
 
 export namespace GetAdjustmentOperations {
   export type Variables = GetAdjustmentOperationsQueryVariables;
   export type Query = GetAdjustmentOperationsQuery;
-  export type PromotionConditions = ConfigurableOperationDefFragment;
-  export type PromotionActions = ConfigurableOperationDefFragment;
+  export type PromotionConditions = NonNullable<(NonNullable<GetAdjustmentOperationsQuery['promotionConditions']>)[number]>;
+  export type PromotionActions = NonNullable<(NonNullable<GetAdjustmentOperationsQuery['promotionActions']>)[number]>;
 }
 
 export namespace CreatePromotion {
   export type Variables = CreatePromotionMutationVariables;
   export type Mutation = CreatePromotionMutation;
-  export type CreatePromotion = PromotionFragment;
+  export type CreatePromotion = (NonNullable<CreatePromotionMutation['createPromotion']>);
 }
 
 export namespace UpdatePromotion {
   export type Variables = UpdatePromotionMutationVariables;
   export type Mutation = UpdatePromotionMutation;
-  export type UpdatePromotion = PromotionFragment;
+  export type UpdatePromotion = (NonNullable<UpdatePromotionMutation['updatePromotion']>);
 }
 
 export namespace DeletePromotion {
   export type Variables = DeletePromotionMutationVariables;
   export type Mutation = DeletePromotionMutation;
-  export type DeletePromotion = DeletePromotionMutation['deletePromotion'];
+  export type DeletePromotion = (NonNullable<DeletePromotionMutation['deletePromotion']>);
 }
 
 export namespace Country {
   export type Fragment = CountryFragment;
-  export type Translations = (NonNullable<CountryFragment['translations'][0]>);
+  export type Translations = NonNullable<(NonNullable<CountryFragment['translations']>)[number]>;
 }
 
 export namespace GetCountryList {
   export type Variables = GetCountryListQueryVariables;
   export type Query = GetCountryListQuery;
-  export type Countries = GetCountryListQuery['countries'];
-  export type Items = (NonNullable<GetCountryListQuery['countries']['items'][0]>);
+  export type Countries = (NonNullable<GetCountryListQuery['countries']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetCountryListQuery['countries']>)['items']>)[number]>;
 }
 
 export namespace GetAvailableCountries {
   export type Variables = GetAvailableCountriesQueryVariables;
   export type Query = GetAvailableCountriesQuery;
-  export type Countries = GetAvailableCountriesQuery['countries'];
-  export type Items = (NonNullable<GetAvailableCountriesQuery['countries']['items'][0]>);
+  export type Countries = (NonNullable<GetAvailableCountriesQuery['countries']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetAvailableCountriesQuery['countries']>)['items']>)[number]>;
 }
 
 export namespace GetCountry {
   export type Variables = GetCountryQueryVariables;
   export type Query = GetCountryQuery;
-  export type Country = CountryFragment;
+  export type Country = (NonNullable<GetCountryQuery['country']>);
 }
 
 export namespace CreateCountry {
   export type Variables = CreateCountryMutationVariables;
   export type Mutation = CreateCountryMutation;
-  export type CreateCountry = CountryFragment;
+  export type CreateCountry = (NonNullable<CreateCountryMutation['createCountry']>);
 }
 
 export namespace UpdateCountry {
   export type Variables = UpdateCountryMutationVariables;
   export type Mutation = UpdateCountryMutation;
-  export type UpdateCountry = CountryFragment;
+  export type UpdateCountry = (NonNullable<UpdateCountryMutation['updateCountry']>);
 }
 
 export namespace DeleteCountry {
   export type Variables = DeleteCountryMutationVariables;
   export type Mutation = DeleteCountryMutation;
-  export type DeleteCountry = DeleteCountryMutation['deleteCountry'];
+  export type DeleteCountry = (NonNullable<DeleteCountryMutation['deleteCountry']>);
 }
 
 export namespace Zone {
   export type Fragment = ZoneFragment;
-  export type Members = CountryFragment;
+  export type Members = NonNullable<(NonNullable<ZoneFragment['members']>)[number]>;
 }
 
 export namespace GetZones {
   export type Variables = GetZonesQueryVariables;
   export type Query = GetZonesQuery;
-  export type Zones = (NonNullable<GetZonesQuery['zones'][0]>);
-  export type Members = (NonNullable<(NonNullable<GetZonesQuery['zones'][0]>)['members'][0]>);
+  export type Zones = NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>;
+  export type Members = NonNullable<(NonNullable<NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>['members']>)[number]>;
 }
 
 export namespace GetZone {
   export type Variables = GetZoneQueryVariables;
   export type Query = GetZoneQuery;
-  export type Zone = ZoneFragment;
+  export type Zone = (NonNullable<GetZoneQuery['zone']>);
 }
 
 export namespace CreateZone {
   export type Variables = CreateZoneMutationVariables;
   export type Mutation = CreateZoneMutation;
-  export type CreateZone = ZoneFragment;
+  export type CreateZone = (NonNullable<CreateZoneMutation['createZone']>);
 }
 
 export namespace UpdateZone {
   export type Variables = UpdateZoneMutationVariables;
   export type Mutation = UpdateZoneMutation;
-  export type UpdateZone = ZoneFragment;
+  export type UpdateZone = (NonNullable<UpdateZoneMutation['updateZone']>);
 }
 
 export namespace DeleteZone {
   export type Variables = DeleteZoneMutationVariables;
   export type Mutation = DeleteZoneMutation;
-  export type DeleteZone = DeleteZoneMutation['deleteZone'];
+  export type DeleteZone = (NonNullable<DeleteZoneMutation['deleteZone']>);
 }
 
 export namespace AddMembersToZone {
   export type Variables = AddMembersToZoneMutationVariables;
   export type Mutation = AddMembersToZoneMutation;
-  export type AddMembersToZone = ZoneFragment;
+  export type AddMembersToZone = (NonNullable<AddMembersToZoneMutation['addMembersToZone']>);
 }
 
 export namespace RemoveMembersFromZone {
   export type Variables = RemoveMembersFromZoneMutationVariables;
   export type Mutation = RemoveMembersFromZoneMutation;
-  export type RemoveMembersFromZone = ZoneFragment;
+  export type RemoveMembersFromZone = (NonNullable<RemoveMembersFromZoneMutation['removeMembersFromZone']>);
 }
 
 export namespace TaxCategory {
@@ -7848,69 +7873,69 @@ export namespace TaxCategory {
 export namespace GetTaxCategories {
   export type Variables = GetTaxCategoriesQueryVariables;
   export type Query = GetTaxCategoriesQuery;
-  export type TaxCategories = TaxCategoryFragment;
+  export type TaxCategories = NonNullable<(NonNullable<GetTaxCategoriesQuery['taxCategories']>)[number]>;
 }
 
 export namespace GetTaxCategory {
   export type Variables = GetTaxCategoryQueryVariables;
   export type Query = GetTaxCategoryQuery;
-  export type TaxCategory = TaxCategoryFragment;
+  export type TaxCategory = (NonNullable<GetTaxCategoryQuery['taxCategory']>);
 }
 
 export namespace CreateTaxCategory {
   export type Variables = CreateTaxCategoryMutationVariables;
   export type Mutation = CreateTaxCategoryMutation;
-  export type CreateTaxCategory = TaxCategoryFragment;
+  export type CreateTaxCategory = (NonNullable<CreateTaxCategoryMutation['createTaxCategory']>);
 }
 
 export namespace UpdateTaxCategory {
   export type Variables = UpdateTaxCategoryMutationVariables;
   export type Mutation = UpdateTaxCategoryMutation;
-  export type UpdateTaxCategory = TaxCategoryFragment;
+  export type UpdateTaxCategory = (NonNullable<UpdateTaxCategoryMutation['updateTaxCategory']>);
 }
 
 export namespace DeleteTaxCategory {
   export type Variables = DeleteTaxCategoryMutationVariables;
   export type Mutation = DeleteTaxCategoryMutation;
-  export type DeleteTaxCategory = DeleteTaxCategoryMutation['deleteTaxCategory'];
+  export type DeleteTaxCategory = (NonNullable<DeleteTaxCategoryMutation['deleteTaxCategory']>);
 }
 
 export namespace TaxRate {
   export type Fragment = TaxRateFragment;
-  export type Category = TaxRateFragment['category'];
-  export type Zone = TaxRateFragment['zone'];
+  export type Category = (NonNullable<TaxRateFragment['category']>);
+  export type Zone = (NonNullable<TaxRateFragment['zone']>);
   export type CustomerGroup = (NonNullable<TaxRateFragment['customerGroup']>);
 }
 
 export namespace GetTaxRateList {
   export type Variables = GetTaxRateListQueryVariables;
   export type Query = GetTaxRateListQuery;
-  export type TaxRates = GetTaxRateListQuery['taxRates'];
-  export type Items = TaxRateFragment;
+  export type TaxRates = (NonNullable<GetTaxRateListQuery['taxRates']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetTaxRateListQuery['taxRates']>)['items']>)[number]>;
 }
 
 export namespace GetTaxRate {
   export type Variables = GetTaxRateQueryVariables;
   export type Query = GetTaxRateQuery;
-  export type TaxRate = TaxRateFragment;
+  export type TaxRate = (NonNullable<GetTaxRateQuery['taxRate']>);
 }
 
 export namespace CreateTaxRate {
   export type Variables = CreateTaxRateMutationVariables;
   export type Mutation = CreateTaxRateMutation;
-  export type CreateTaxRate = TaxRateFragment;
+  export type CreateTaxRate = (NonNullable<CreateTaxRateMutation['createTaxRate']>);
 }
 
 export namespace UpdateTaxRate {
   export type Variables = UpdateTaxRateMutationVariables;
   export type Mutation = UpdateTaxRateMutation;
-  export type UpdateTaxRate = TaxRateFragment;
+  export type UpdateTaxRate = (NonNullable<UpdateTaxRateMutation['updateTaxRate']>);
 }
 
 export namespace DeleteTaxRate {
   export type Variables = DeleteTaxRateMutationVariables;
   export type Mutation = DeleteTaxRateMutation;
-  export type DeleteTaxRate = DeleteTaxRateMutation['deleteTaxRate'];
+  export type DeleteTaxRate = (NonNullable<DeleteTaxRateMutation['deleteTaxRate']>);
 }
 
 export namespace Channel {
@@ -7922,62 +7947,62 @@ export namespace Channel {
 export namespace GetChannels {
   export type Variables = GetChannelsQueryVariables;
   export type Query = GetChannelsQuery;
-  export type Channels = ChannelFragment;
+  export type Channels = NonNullable<(NonNullable<GetChannelsQuery['channels']>)[number]>;
 }
 
 export namespace GetChannel {
   export type Variables = GetChannelQueryVariables;
   export type Query = GetChannelQuery;
-  export type Channel = ChannelFragment;
+  export type Channel = (NonNullable<GetChannelQuery['channel']>);
 }
 
 export namespace GetActiveChannel {
   export type Variables = GetActiveChannelQueryVariables;
   export type Query = GetActiveChannelQuery;
-  export type ActiveChannel = ChannelFragment;
+  export type ActiveChannel = (NonNullable<GetActiveChannelQuery['activeChannel']>);
 }
 
 export namespace CreateChannel {
   export type Variables = CreateChannelMutationVariables;
   export type Mutation = CreateChannelMutation;
-  export type CreateChannel = ChannelFragment;
+  export type CreateChannel = (NonNullable<CreateChannelMutation['createChannel']>);
 }
 
 export namespace UpdateChannel {
   export type Variables = UpdateChannelMutationVariables;
   export type Mutation = UpdateChannelMutation;
-  export type UpdateChannel = ChannelFragment;
+  export type UpdateChannel = (NonNullable<UpdateChannelMutation['updateChannel']>);
 }
 
 export namespace DeleteChannel {
   export type Variables = DeleteChannelMutationVariables;
   export type Mutation = DeleteChannelMutation;
-  export type DeleteChannel = DeleteChannelMutation['deleteChannel'];
+  export type DeleteChannel = (NonNullable<DeleteChannelMutation['deleteChannel']>);
 }
 
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
-  export type ConfigArgs = (NonNullable<PaymentMethodFragment['configArgs'][0]>);
-  export type Definition = ConfigurableOperationDefFragment;
+  export type ConfigArgs = NonNullable<(NonNullable<PaymentMethodFragment['configArgs']>)[number]>;
+  export type Definition = (NonNullable<PaymentMethodFragment['definition']>);
 }
 
 export namespace GetPaymentMethodList {
   export type Variables = GetPaymentMethodListQueryVariables;
   export type Query = GetPaymentMethodListQuery;
-  export type PaymentMethods = GetPaymentMethodListQuery['paymentMethods'];
-  export type Items = PaymentMethodFragment;
+  export type PaymentMethods = (NonNullable<GetPaymentMethodListQuery['paymentMethods']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetPaymentMethodListQuery['paymentMethods']>)['items']>)[number]>;
 }
 
 export namespace GetPaymentMethod {
   export type Variables = GetPaymentMethodQueryVariables;
   export type Query = GetPaymentMethodQuery;
-  export type PaymentMethod = PaymentMethodFragment;
+  export type PaymentMethod = (NonNullable<GetPaymentMethodQuery['paymentMethod']>);
 }
 
 export namespace UpdatePaymentMethod {
   export type Variables = UpdatePaymentMethodMutationVariables;
   export type Mutation = UpdatePaymentMethodMutation;
-  export type UpdatePaymentMethod = PaymentMethodFragment;
+  export type UpdatePaymentMethod = (NonNullable<UpdatePaymentMethodMutation['updatePaymentMethod']>);
 }
 
 export namespace GlobalSettings {
@@ -7987,78 +8012,78 @@ export namespace GlobalSettings {
 export namespace GetGlobalSettings {
   export type Variables = GetGlobalSettingsQueryVariables;
   export type Query = GetGlobalSettingsQuery;
-  export type GlobalSettings = GlobalSettingsFragment;
+  export type GlobalSettings = (NonNullable<GetGlobalSettingsQuery['globalSettings']>);
 }
 
 export namespace UpdateGlobalSettings {
   export type Variables = UpdateGlobalSettingsMutationVariables;
   export type Mutation = UpdateGlobalSettingsMutation;
-  export type UpdateGlobalSettings = GlobalSettingsFragment;
+  export type UpdateGlobalSettings = (NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>);
 }
 
 export namespace CustomFieldConfig {
   export type Fragment = CustomFieldConfigFragment;
-  export type Description = (NonNullable<(NonNullable<CustomFieldConfigFragment['description']>)[0]>);
-  export type Label = (NonNullable<(NonNullable<CustomFieldConfigFragment['label']>)[0]>);
+  export type Description = NonNullable<(NonNullable<CustomFieldConfigFragment['description']>)[number]>;
+  export type Label = NonNullable<(NonNullable<CustomFieldConfigFragment['label']>)[number]>;
 }
 
 export namespace StringCustomField {
-  export type Fragment = CustomFieldConfigFragment;
-  export type Options = (NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[0]>);
-  export type Label = (NonNullable<(NonNullable<(NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[0]>)['label']>)[0]>);
+  export type Fragment = StringCustomFieldFragment;
+  export type Options = NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[number]>;
+  export type Label = NonNullable<(NonNullable<NonNullable<(NonNullable<StringCustomFieldFragment['options']>)[number]>['label']>)[number]>;
 }
 
 export namespace LocaleStringCustomField {
-  export type Fragment = CustomFieldConfigFragment;
+  export type Fragment = LocaleStringCustomFieldFragment;
 }
 
 export namespace BooleanCustomField {
-  export type Fragment = CustomFieldConfigFragment;
+  export type Fragment = BooleanCustomFieldFragment;
 }
 
 export namespace IntCustomField {
-  export type Fragment = CustomFieldConfigFragment;
+  export type Fragment = IntCustomFieldFragment;
 }
 
 export namespace FloatCustomField {
-  export type Fragment = CustomFieldConfigFragment;
+  export type Fragment = FloatCustomFieldFragment;
 }
 
 export namespace DateTimeCustomField {
-  export type Fragment = CustomFieldConfigFragment;
+  export type Fragment = DateTimeCustomFieldFragment;
 }
 
 export namespace CustomFields {
   export type Fragment = CustomFieldsFragment;
-  export type StringCustomFieldConfigInlineFragment = StringCustomFieldFragment;
-  export type LocaleStringCustomFieldConfigInlineFragment = LocaleStringCustomFieldFragment;
-  export type BooleanCustomFieldConfigInlineFragment = BooleanCustomFieldFragment;
-  export type IntCustomFieldConfigInlineFragment = IntCustomFieldFragment;
-  export type FloatCustomFieldConfigInlineFragment = FloatCustomFieldFragment;
-  export type DateTimeCustomFieldConfigInlineFragment = DateTimeCustomFieldFragment;
+  export type StringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'StringCustomFieldConfig' }>);
+  export type LocaleStringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'LocaleStringCustomFieldConfig' }>);
+  export type BooleanCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'BooleanCustomFieldConfig' }>);
+  export type IntCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'IntCustomFieldConfig' }>);
+  export type FloatCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'FloatCustomFieldConfig' }>);
+  export type DateTimeCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'DateTimeCustomFieldConfig' }>);
 }
 
 export namespace GetServerConfig {
   export type Variables = GetServerConfigQueryVariables;
   export type Query = GetServerConfigQuery;
-  export type GlobalSettings = GetServerConfigQuery['globalSettings'];
-  export type ServerConfig = GetServerConfigQuery['globalSettings']['serverConfig'];
-  export type OrderProcess = (NonNullable<GetServerConfigQuery['globalSettings']['serverConfig']['orderProcess'][0]>);
-  export type CustomFieldConfig = GetServerConfigQuery['globalSettings']['serverConfig']['customFieldConfig'];
-  export type Address = CustomFieldsFragment;
-  export type Collection = CustomFieldsFragment;
-  export type Customer = CustomFieldsFragment;
-  export type Facet = CustomFieldsFragment;
-  export type FacetValue = CustomFieldsFragment;
-  export type _GlobalSettings = CustomFieldsFragment;
-  export type Order = CustomFieldsFragment;
-  export type OrderLine = CustomFieldsFragment;
-  export type Product = CustomFieldsFragment;
-  export type ProductOption = CustomFieldsFragment;
-  export type ProductOptionGroup = CustomFieldsFragment;
-  export type ProductVariant = CustomFieldsFragment;
-  export type ShippingMethod = CustomFieldsFragment;
-  export type User = CustomFieldsFragment;
+  export type GlobalSettings = (NonNullable<GetServerConfigQuery['globalSettings']>);
+  export type ServerConfig = (NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>);
+  export type OrderProcess = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['orderProcess']>)[number]>;
+  export type CustomFieldConfig = (NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>);
+  export type Address = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Address']>)[number]>;
+  export type Collection = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Collection']>)[number]>;
+  export type Customer = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Customer']>)[number]>;
+  export type Facet = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Facet']>)[number]>;
+  export type FacetValue = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['FacetValue']>)[number]>;
+  export type _GlobalSettings = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['GlobalSettings']>)[number]>;
+  export type Order = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Order']>)[number]>;
+  export type OrderLine = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['OrderLine']>)[number]>;
+  export type Product = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Product']>)[number]>;
+  export type ProductOption = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductOption']>)[number]>;
+  export type ProductOptionGroup = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductOptionGroup']>)[number]>;
+  export type ProductVariant = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ProductVariant']>)[number]>;
+  export type ShippingMethod = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['ShippingMethod']>)[number]>;
+  export type User = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['User']>)[number]>;
 }
 
 export namespace JobInfo {
@@ -8068,97 +8093,97 @@ export namespace JobInfo {
 export namespace GetJobInfo {
   export type Variables = GetJobInfoQueryVariables;
   export type Query = GetJobInfoQuery;
-  export type Job = JobInfoFragment;
+  export type Job = (NonNullable<GetJobInfoQuery['job']>);
 }
 
 export namespace GetAllJobs {
   export type Variables = GetAllJobsQueryVariables;
   export type Query = GetAllJobsQuery;
-  export type Jobs = GetAllJobsQuery['jobs'];
-  export type Items = JobInfoFragment;
+  export type Jobs = (NonNullable<GetAllJobsQuery['jobs']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetAllJobsQuery['jobs']>)['items']>)[number]>;
 }
 
 export namespace GetJobsById {
   export type Variables = GetJobsByIdQueryVariables;
   export type Query = GetJobsByIdQuery;
-  export type JobsById = JobInfoFragment;
+  export type JobsById = NonNullable<(NonNullable<GetJobsByIdQuery['jobsById']>)[number]>;
 }
 
 export namespace GetJobQueueList {
   export type Variables = GetJobQueueListQueryVariables;
   export type Query = GetJobQueueListQuery;
-  export type JobQueues = (NonNullable<GetJobQueueListQuery['jobQueues'][0]>);
+  export type JobQueues = NonNullable<(NonNullable<GetJobQueueListQuery['jobQueues']>)[number]>;
 }
 
 export namespace Reindex {
   export type Variables = ReindexMutationVariables;
   export type Mutation = ReindexMutation;
-  export type Reindex = JobInfoFragment;
+  export type Reindex = (NonNullable<ReindexMutation['reindex']>);
 }
 
 export namespace ConfigurableOperation {
   export type Fragment = ConfigurableOperationFragment;
-  export type Args = (NonNullable<ConfigurableOperationFragment['args'][0]>);
+  export type Args = NonNullable<(NonNullable<ConfigurableOperationFragment['args']>)[number]>;
 }
 
 export namespace ConfigurableOperationDef {
   export type Fragment = ConfigurableOperationDefFragment;
-  export type Args = (NonNullable<ConfigurableOperationDefFragment['args'][0]>);
+  export type Args = NonNullable<(NonNullable<ConfigurableOperationDefFragment['args']>)[number]>;
 }
 
 export namespace ShippingMethod {
   export type Fragment = ShippingMethodFragment;
-  export type Checker = ConfigurableOperationFragment;
-  export type Calculator = ConfigurableOperationFragment;
+  export type Checker = (NonNullable<ShippingMethodFragment['checker']>);
+  export type Calculator = (NonNullable<ShippingMethodFragment['calculator']>);
 }
 
 export namespace GetShippingMethodList {
   export type Variables = GetShippingMethodListQueryVariables;
   export type Query = GetShippingMethodListQuery;
-  export type ShippingMethods = GetShippingMethodListQuery['shippingMethods'];
-  export type Items = ShippingMethodFragment;
+  export type ShippingMethods = (NonNullable<GetShippingMethodListQuery['shippingMethods']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetShippingMethodListQuery['shippingMethods']>)['items']>)[number]>;
 }
 
 export namespace GetShippingMethod {
   export type Variables = GetShippingMethodQueryVariables;
   export type Query = GetShippingMethodQuery;
-  export type ShippingMethod = ShippingMethodFragment;
+  export type ShippingMethod = (NonNullable<GetShippingMethodQuery['shippingMethod']>);
 }
 
 export namespace GetShippingMethodOperations {
   export type Variables = GetShippingMethodOperationsQueryVariables;
   export type Query = GetShippingMethodOperationsQuery;
-  export type ShippingEligibilityCheckers = ConfigurableOperationDefFragment;
-  export type ShippingCalculators = ConfigurableOperationDefFragment;
+  export type ShippingEligibilityCheckers = NonNullable<(NonNullable<GetShippingMethodOperationsQuery['shippingEligibilityCheckers']>)[number]>;
+  export type ShippingCalculators = NonNullable<(NonNullable<GetShippingMethodOperationsQuery['shippingCalculators']>)[number]>;
 }
 
 export namespace CreateShippingMethod {
   export type Variables = CreateShippingMethodMutationVariables;
   export type Mutation = CreateShippingMethodMutation;
-  export type CreateShippingMethod = ShippingMethodFragment;
+  export type CreateShippingMethod = (NonNullable<CreateShippingMethodMutation['createShippingMethod']>);
 }
 
 export namespace UpdateShippingMethod {
   export type Variables = UpdateShippingMethodMutationVariables;
   export type Mutation = UpdateShippingMethodMutation;
-  export type UpdateShippingMethod = ShippingMethodFragment;
+  export type UpdateShippingMethod = (NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>);
 }
 
 export namespace DeleteShippingMethod {
   export type Variables = DeleteShippingMethodMutationVariables;
   export type Mutation = DeleteShippingMethodMutation;
-  export type DeleteShippingMethod = DeleteShippingMethodMutation['deleteShippingMethod'];
+  export type DeleteShippingMethod = (NonNullable<DeleteShippingMethodMutation['deleteShippingMethod']>);
 }
 
 export namespace TestShippingMethod {
   export type Variables = TestShippingMethodQueryVariables;
   export type Query = TestShippingMethodQuery;
-  export type TestShippingMethod = TestShippingMethodQuery['testShippingMethod'];
-  export type Quote = (NonNullable<TestShippingMethodQuery['testShippingMethod']['quote']>);
+  export type TestShippingMethod = (NonNullable<TestShippingMethodQuery['testShippingMethod']>);
+  export type Quote = (NonNullable<(NonNullable<TestShippingMethodQuery['testShippingMethod']>)['quote']>);
 }
 
 export namespace TestEligibleShippingMethods {
   export type Variables = TestEligibleShippingMethodsQueryVariables;
   export type Query = TestEligibleShippingMethodsQuery;
-  export type TestEligibleShippingMethods = (NonNullable<TestEligibleShippingMethodsQuery['testEligibleShippingMethods'][0]>);
+  export type TestEligibleShippingMethods = NonNullable<(NonNullable<TestEligibleShippingMethodsQuery['testEligibleShippingMethods']>)[number]>;
 }

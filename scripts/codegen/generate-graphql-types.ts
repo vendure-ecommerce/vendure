@@ -50,13 +50,29 @@ Promise.all([
             },
             strict: true,
         };
-        const commonPlugins = [{ add: '// tslint:disable' }, 'typescript'];
+        const disableTsLintPlugin = { add: { content: '// tslint:disable' } };
+        const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
+        const commonPlugins = [disableTsLintPlugin, 'typescript'];
         const clientPlugins = [...commonPlugins, 'typescript-operations', 'typescript-compatibility'];
 
         return generate({
             overwrite: true,
             generates: {
-                [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
+                [path.join(
+                    __dirname,
+                    '../../packages/core/src/common/error/generated-graphql-admin-errors.ts',
+                )]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                },
+                [path.join(
+                    __dirname,
+                    '../../packages/core/src/common/error/generated-graphql-shop-errors.ts',
+                )]: {
+                    schema: [SHOP_SCHEMA_OUTPUT_FILE],
+                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                },
+                /*[path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ADMIN_QUERY_FILES,
                     plugins: clientPlugins,
@@ -101,7 +117,7 @@ Promise.all([
                 )]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
-                    plugins: [{ add: '// tslint:disable' }, 'fragment-matcher'],
+                    plugins: [disableTsLintPlugin, 'fragment-matcher'],
                     config,
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
@@ -112,6 +128,7 @@ Promise.all([
                         scalars: {
                             ID: 'string | number',
                         },
+                        maybeValue: 'T',
                     },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
@@ -122,8 +139,9 @@ Promise.all([
                         scalars: {
                             ID: 'string | number',
                         },
+                        maybeValue: 'T',
                     },
-                },
+                },*/
             },
         });
     })

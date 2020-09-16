@@ -1,6 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
-
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -8,8 +8,11 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
+    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
+    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
+    /** The `Upload` scalar type represents a file upload. */
     Upload: any;
 };
 
@@ -442,6 +445,8 @@ export type CreateAdministratorInput = {
 export type CreateAssetInput = {
     file: Scalars['Upload'];
 };
+
+export type CreateAssetResult = Asset | MimeTypeError;
 
 export type CreateChannelInput = {
     code: Scalars['String'];
@@ -1119,6 +1124,16 @@ export enum DeletionResult {
     NOT_DELETED = 'NOT_DELETED',
 }
 
+export enum ErrorCode {
+    UnknownError = 'UnknownError',
+    MimeTypeError = 'MimeTypeError',
+}
+
+export type ErrorResult = {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type Facet = Node & {
     __typename?: 'Facet';
     isPrivate: Scalars['Boolean'];
@@ -1770,6 +1785,14 @@ export type LoginResult = {
     user: CurrentUser;
 };
 
+export type MimeTypeError = ErrorResult & {
+    __typename?: 'MimeTypeError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    fileName: Scalars['String'];
+    mimeType: Scalars['String'];
+};
+
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
     parentId: Scalars['ID'];
@@ -1787,7 +1810,7 @@ export type Mutation = {
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
     /** Create a new Asset */
-    createAssets: Array<Asset>;
+    createAssets: Array<CreateAssetResult>;
     /** Update an existing Asset */
     updateAsset: Asset;
     /** Delete an Asset */
@@ -3699,36 +3722,48 @@ export type Zone = Node & {
     members: Array<Country>;
 };
 
-export type CreateAssetsMutationVariables = {
+export type CreateAssetsMutationVariables = Exact<{
     input: Array<CreateAssetInput>;
-};
+}>;
 
 export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
     createAssets: Array<
-        { __typename?: 'Asset' } & Pick<Asset, 'id' | 'name' | 'source' | 'preview'> & {
-                focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
-            }
+        | ({ __typename?: 'Asset' } & Pick<Asset, 'id' | 'name' | 'source' | 'preview'> & {
+                  focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
+              })
+        | { __typename?: 'MimeTypeError' }
     >;
 };
 
-export type DeleteAssetMutationVariables = {
+export type DeleteAssetMutationVariables = Exact<{
     id: Scalars['ID'];
     force: Scalars['Boolean'];
-};
+}>;
 
 export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
     deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
 };
 
+type DiscriminateUnion<T, U> = T extends U ? T : never;
+
 export namespace CreateAssets {
     export type Variables = CreateAssetsMutationVariables;
     export type Mutation = CreateAssetsMutation;
-    export type CreateAssets = NonNullable<CreateAssetsMutation['createAssets'][0]>;
-    export type FocalPoint = NonNullable<NonNullable<CreateAssetsMutation['createAssets'][0]>['focalPoint']>;
+    export type CreateAssets = NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>;
+    export type AssetInlineFragment = DiscriminateUnion<
+        NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+        { __typename?: 'Asset' }
+    >;
+    export type FocalPoint = NonNullable<
+        DiscriminateUnion<
+            NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+            { __typename?: 'Asset' }
+        >['focalPoint']
+    >;
 }
 
 export namespace DeleteAsset {
     export type Variables = DeleteAssetMutationVariables;
     export type Mutation = DeleteAssetMutation;
-    export type DeleteAsset = DeleteAssetMutation['deleteAsset'];
+    export type DeleteAsset = NonNullable<DeleteAssetMutation['deleteAsset']>;
 }

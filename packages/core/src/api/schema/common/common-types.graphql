@@ -81,6 +81,15 @@ enum SortOrder {
     DESC
 }
 
+enum ErrorCode {
+    UnknownError
+}
+
+interface ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
 input StringOperators {
     eq: String
     contains: String

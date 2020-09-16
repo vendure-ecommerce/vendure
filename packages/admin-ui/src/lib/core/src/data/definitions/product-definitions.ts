@@ -371,6 +371,9 @@ export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
+            ... on ErrorResult {
+                message
+            }
         }
     }
     ${ASSET_FRAGMENT}

@@ -346,13 +346,16 @@ export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
     }
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
+
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
             ...Asset
-            focalPoint {
-                x
-                y
+            ... on Asset {
+                focalPoint {
+                    x
+                    y
+                }
             }
         }
     }

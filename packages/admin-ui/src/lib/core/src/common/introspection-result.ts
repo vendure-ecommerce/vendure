@@ -278,6 +278,27 @@ const result: IntrospectionResultData = {
                     },
                 ],
             },
+            {
+                kind: 'UNION',
+                name: 'CreateAssetResult',
+                possibleTypes: [
+                    {
+                        name: 'Asset',
+                    },
+                    {
+                        name: 'MimeTypeError',
+                    },
+                ],
+            },
+            {
+                kind: 'INTERFACE',
+                name: 'ErrorResult',
+                possibleTypes: [
+                    {
+                        name: 'MimeTypeError',
+                    },
+                ],
+            },
         ],
     },
 };

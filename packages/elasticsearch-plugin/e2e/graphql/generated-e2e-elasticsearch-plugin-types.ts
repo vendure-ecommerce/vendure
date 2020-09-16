@@ -1,6 +1,6 @@
 // tslint:disable
 export type Maybe<T> = T | null;
-
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
     ID: string;
@@ -8,8 +8,11 @@ export type Scalars = {
     Boolean: boolean;
     Int: number;
     Float: number;
+    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
     DateTime: any;
+    /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
     JSON: any;
+    /** The `Upload` scalar type represents a file upload. */
     Upload: any;
 };
 
@@ -442,6 +445,8 @@ export type CreateAdministratorInput = {
 export type CreateAssetInput = {
     file: Scalars['Upload'];
 };
+
+export type CreateAssetResult = Asset | MimeTypeError;
 
 export type CreateChannelInput = {
     code: Scalars['String'];
@@ -1119,6 +1124,16 @@ export enum DeletionResult {
     NOT_DELETED = 'NOT_DELETED',
 }
 
+export enum ErrorCode {
+    UnknownError = 'UnknownError',
+    MimeTypeError = 'MimeTypeError',
+}
+
+export type ErrorResult = {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type Facet = Node & {
     __typename?: 'Facet';
     isPrivate: Scalars['Boolean'];
@@ -1770,6 +1785,14 @@ export type LoginResult = {
     user: CurrentUser;
 };
 
+export type MimeTypeError = ErrorResult & {
+    __typename?: 'MimeTypeError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    fileName: Scalars['String'];
+    mimeType: Scalars['String'];
+};
+
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
     parentId: Scalars['ID'];
@@ -1787,7 +1810,7 @@ export type Mutation = {
     /** Assign a Role to an Administrator */
     assignRoleToAdministrator: Administrator;
     /** Create a new Asset */
-    createAssets: Array<Asset>;
+    createAssets: Array<CreateAssetResult>;
     /** Update an existing Asset */
     updateAsset: Asset;
     /** Delete an Asset */
@@ -3699,9 +3722,9 @@ export type Zone = Node & {
     members: Array<Country>;
 };
 
-export type SearchProductsAdminQueryVariables = {
+export type SearchProductsAdminQueryVariables = Exact<{
     input: SearchInput;
-};
+}>;
 
 export type SearchProductsAdminQuery = { __typename?: 'Query' } & {
     search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
@@ -3742,9 +3765,9 @@ export type SearchProductsAdminQuery = { __typename?: 'Query' } & {
         };
 };
 
-export type SearchFacetValuesQueryVariables = {
+export type SearchFacetValuesQueryVariables = Exact<{
     input: SearchInput;
-};
+}>;
 
 export type SearchFacetValuesQuery = { __typename?: 'Query' } & {
     search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
@@ -3756,9 +3779,9 @@ export type SearchFacetValuesQuery = { __typename?: 'Query' } & {
         };
 };
 
-export type SearchGetPricesQueryVariables = {
+export type SearchGetPricesQueryVariables = Exact<{
     input: SearchInput;
-};
+}>;
 
 export type SearchGetPricesQuery = { __typename?: 'Query' } & {
     search: { __typename?: 'SearchResponse' } & {
@@ -3775,7 +3798,7 @@ export type SearchGetPricesQuery = { __typename?: 'Query' } & {
     };
 };
 
-export type ReindexMutationVariables = {};
+export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
 
 export type ReindexMutation = { __typename?: 'Mutation' } & {
     reindex: { __typename?: 'Job' } & Pick<
@@ -3784,9 +3807,9 @@ export type ReindexMutation = { __typename?: 'Mutation' } & {
     >;
 };
 
-export type GetJobInfoQueryVariables = {
+export type GetJobInfoQueryVariables = Exact<{
     id: Scalars['ID'];
-};
+}>;
 
 export type GetJobInfoQuery = { __typename?: 'Query' } & {
     job?: Maybe<
@@ -3796,25 +3819,35 @@ export type GetJobInfoQuery = { __typename?: 'Query' } & {
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
-type RequireField<T, TNames extends string> = T & { [P in TNames]: (T & { [name: string]: never })[P] };
-
 export namespace SearchProductsAdmin {
     export type Variables = SearchProductsAdminQueryVariables;
     export type Query = SearchProductsAdminQuery;
-    export type Search = SearchProductsAdminQuery['search'];
-    export type Items = NonNullable<SearchProductsAdminQuery['search']['items'][0]>;
+    export type Search = NonNullable<SearchProductsAdminQuery['search']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<SearchProductsAdminQuery['search']>['items']>[number]
+    >;
     export type ProductAsset = NonNullable<
-        NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productAsset']
+        NonNullable<
+            NonNullable<NonNullable<SearchProductsAdminQuery['search']>['items']>[number]
+        >['productAsset']
     >;
     export type FocalPoint = NonNullable<
-        NonNullable<NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productAsset']>['focalPoint']
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<SearchProductsAdminQuery['search']>['items']>[number]
+            >['productAsset']
+        >['focalPoint']
     >;
     export type ProductVariantAsset = NonNullable<
-        NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productVariantAsset']
+        NonNullable<
+            NonNullable<NonNullable<SearchProductsAdminQuery['search']>['items']>[number]
+        >['productVariantAsset']
     >;
     export type _FocalPoint = NonNullable<
         NonNullable<
-            NonNullable<SearchProductsAdminQuery['search']['items'][0]>['productVariantAsset']
+            NonNullable<
+                NonNullable<NonNullable<SearchProductsAdminQuery['search']>['items']>[number]
+            >['productVariantAsset']
         >['focalPoint']
     >;
 }
@@ -3822,40 +3855,64 @@ export namespace SearchProductsAdmin {
 export namespace SearchFacetValues {
     export type Variables = SearchFacetValuesQueryVariables;
     export type Query = SearchFacetValuesQuery;
-    export type Search = SearchFacetValuesQuery['search'];
-    export type FacetValues = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>;
-    export type FacetValue = NonNullable<SearchFacetValuesQuery['search']['facetValues'][0]>['facetValue'];
+    export type Search = NonNullable<SearchFacetValuesQuery['search']>;
+    export type FacetValues = NonNullable<
+        NonNullable<NonNullable<SearchFacetValuesQuery['search']>['facetValues']>[number]
+    >;
+    export type FacetValue = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<SearchFacetValuesQuery['search']>['facetValues']>[number]
+        >['facetValue']
+    >;
 }
 
 export namespace SearchGetPrices {
     export type Variables = SearchGetPricesQueryVariables;
     export type Query = SearchGetPricesQuery;
-    export type Search = SearchGetPricesQuery['search'];
-    export type Items = NonNullable<SearchGetPricesQuery['search']['items'][0]>;
-    export type Price = NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'];
+    export type Search = NonNullable<SearchGetPricesQuery['search']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]
+    >;
+    export type Price = NonNullable<
+        NonNullable<NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]>['price']
+    >;
     export type PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
-        { __typename: 'PriceRange' }
+        NonNullable<
+            NonNullable<NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]>['price']
+        >,
+        { __typename?: 'PriceRange' }
     >;
     export type SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['price'], '__typename'>,
-        { __typename: 'SinglePrice' }
+        NonNullable<
+            NonNullable<NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]>['price']
+        >,
+        { __typename?: 'SinglePrice' }
     >;
-    export type PriceWithTax = NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'];
+    export type PriceWithTax = NonNullable<
+        NonNullable<NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]>['priceWithTax']
+    >;
     export type _PriceRangeInlineFragment = DiscriminateUnion<
-        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
-        { __typename: 'PriceRange' }
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]
+            >['priceWithTax']
+        >,
+        { __typename?: 'PriceRange' }
     >;
     export type _SinglePriceInlineFragment = DiscriminateUnion<
-        RequireField<NonNullable<SearchGetPricesQuery['search']['items'][0]>['priceWithTax'], '__typename'>,
-        { __typename: 'SinglePrice' }
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<SearchGetPricesQuery['search']>['items']>[number]
+            >['priceWithTax']
+        >,
+        { __typename?: 'SinglePrice' }
     >;
 }
 
 export namespace Reindex {
     export type Variables = ReindexMutationVariables;
     export type Mutation = ReindexMutation;
-    export type Reindex = ReindexMutation['reindex'];
+    export type Reindex = NonNullable<ReindexMutation['reindex']>;
 }
 
 export namespace GetJobInfo {
