@@ -50,6 +50,10 @@ Promise.all([
             },
             strict: true,
         };
+        const e2eConfig = {
+            ...config,
+            skipTypename: true,
+        };
         const disableTsLintPlugin = { add: { content: '// tslint:disable' } };
         const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
         const commonPlugins = [disableTsLintPlugin, 'typescript'];
@@ -72,17 +76,17 @@ Promise.all([
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
                 },
-                /*[path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
+                [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ADMIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     documents: E2E_SHOP_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(
                     __dirname,
@@ -91,7 +95,7 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(
                     __dirname,
@@ -100,26 +104,26 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ASSET_SERVER_PLUGIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
-                [path.join(
-                    __dirname,
-                    '../../packages/admin-ui/src/lib/core/src/common/generated-types.ts',
-                )]: {
-                    schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
-                    documents: CLIENT_QUERY_FILES,
-                    plugins: clientPlugins,
-                    config,
-                },
-                [path.join(
-                    __dirname,
-                    '../../packages/admin-ui/src/lib/core/src/common/introspection-result.ts',
-                )]: {
-                    schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
-                    documents: CLIENT_QUERY_FILES,
-                    plugins: [disableTsLintPlugin, 'fragment-matcher'],
-                    config,
-                },
+                // [path.join(
+                //     __dirname,
+                //     '../../packages/admin-ui/src/lib/core/src/common/generated-types.ts',
+                // )]: {
+                //     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
+                //     documents: CLIENT_QUERY_FILES,
+                //     plugins: clientPlugins,
+                //     config,
+                // },
+                // [path.join(
+                //     __dirname,
+                //     '../../packages/admin-ui/src/lib/core/src/common/introspection-result.ts',
+                // )]: {
+                //     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
+                //     documents: CLIENT_QUERY_FILES,
+                //     plugins: [disableTsLintPlugin, 'fragment-matcher'],
+                //     config,
+                // },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     plugins: commonPlugins,
@@ -141,7 +145,7 @@ Promise.all([
                         },
                         maybeValue: 'T',
                     },
-                },*/
+                },
             },
         });
     })

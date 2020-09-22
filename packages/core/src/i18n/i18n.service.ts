@@ -7,6 +7,7 @@ import ICU from 'i18next-icu';
 import Backend from 'i18next-node-fs-backend';
 import path from 'path';
 
+import { GraphQLErrorResult } from '../common/error/error-result';
 import { ConfigService } from '../config/config.service';
 
 import { I18nError } from './i18n-error';
@@ -68,5 +69,20 @@ export class I18nService implements OnModuleInit {
         }
 
         return error;
+    }
+
+    /**
+     * Translates the message of an ErrorResult
+     */
+    translateErrorResult(req: I18nRequest, error: GraphQLErrorResult) {
+        const t: TFunction = req.t;
+        let translation: string = error.message;
+        const key = `errorResult.${error.message}`;
+        try {
+            translation = t(key, error as any);
+        } catch (e) {
+            translation += ` (Translation format error: ${e.message})`;
+        }
+        error.message = translation;
     }
 }

@@ -1,5 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -15,7 +20,7 @@ import {
     GetProductWithVariants,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, GetActiveOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
@@ -120,6 +125,10 @@ describe('Channelaware orders', () => {
         await server.destroy();
     });
 
+    const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
+        UpdatedOrderFragment
+    >(input => !!input.lines);
+
     it('creates order on current channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
@@ -129,6 +138,7 @@ describe('Channelaware orders', () => {
                 quantity: 1,
             },
         );
+        orderResultGuard.assertSuccess(addItemToOrder);
 
         expect(addItemToOrder!.lines.length).toBe(1);
         expect(addItemToOrder!.lines[0].quantity).toBe(1);
@@ -151,6 +161,7 @@ describe('Channelaware orders', () => {
                 quantity: 1,
             },
         );
+        orderResultGuard.assertSuccess(addItemToOrder);
 
         expect(addItemToOrder!.lines.length).toBe(1);
         expect(addItemToOrder!.lines[0].quantity).toBe(1);

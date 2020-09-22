@@ -72,45 +72,45 @@ export class OrderStateMachine {
     private async onTransitionStart(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         if (toState === 'ArrangingPayment') {
             if (data.order.lines.length === 0) {
-                return `error.cannot-transition-to-payment-when-order-is-empty`;
+                return `message.cannot-transition-to-payment-when-order-is-empty`;
             }
             if (!data.order.customer) {
-                return `error.cannot-transition-to-payment-without-customer`;
+                return `message.cannot-transition-to-payment-without-customer`;
             }
         }
         if (toState === 'PaymentAuthorized' && !orderTotalIsCovered(data.order, 'Authorized')) {
-            return `error.cannot-transition-without-authorized-payments`;
+            return `message.cannot-transition-without-authorized-payments`;
         }
         if (toState === 'PaymentSettled' && !orderTotalIsCovered(data.order, 'Settled')) {
-            return `error.cannot-transition-without-settled-payments`;
+            return `message.cannot-transition-without-settled-payments`;
         }
         if (toState === 'Cancelled' && fromState !== 'AddingItems' && fromState !== 'ArrangingPayment') {
             if (!orderItemsAreAllCancelled(data.order)) {
-                return `error.cannot-transition-unless-all-cancelled`;
+                return `message.cannot-transition-unless-all-cancelled`;
             }
         }
         if (toState === 'PartiallyShipped') {
             const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
             if (!orderItemsArePartiallyShipped(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-some-order-items-shipped`;
+                return `message.cannot-transition-unless-some-order-items-shipped`;
             }
         }
         if (toState === 'Shipped') {
             const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
             if (!orderItemsAreShipped(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-all-order-items-shipped`;
+                return `message.cannot-transition-unless-all-order-items-shipped`;
             }
         }
         if (toState === 'PartiallyDelivered') {
             const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
             if (!orderItemsArePartiallyDelivered(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-some-order-items-delivered`;
+                return `message.cannot-transition-unless-some-order-items-delivered`;
             }
         }
         if (toState === 'Delivered') {
             const orderWithFulfillments = await this.findOrderWithFulfillments(data.ctx, data.order.id);
             if (!orderItemsAreDelivered(orderWithFulfillments)) {
-                return `error.cannot-transition-unless-all-order-items-delivered`;
+                return `message.cannot-transition-unless-all-order-items-delivered`;
             }
         }
     }
@@ -181,7 +181,7 @@ export class OrderStateMachine {
                         );
                     }
                 }
-                throw new IllegalOperationError(message || 'error.cannot-transition-order-from-to', {
+                throw new IllegalOperationError(message || 'message.cannot-transition-order-from-to', {
                     fromState,
                     toState,
                 });

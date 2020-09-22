@@ -50,26 +50,18 @@ export const TEST_ORDER_FRAGMENT = gql`
     }
 `;
 
-export const ADD_ITEM_TO_ORDER = gql`
-    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
-        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+export const UPDATED_ORDER_FRAGMENT = gql`
+    fragment UpdatedOrder on Order {
+        id
+        code
+        state
+        active
+        total
+        lines {
             id
-            code
-            state
-            active
-            total
-            lines {
+            quantity
+            productVariant {
                 id
-                quantity
-                productVariant {
-                    id
-                }
-                adjustments {
-                    adjustmentSource
-                    amount
-                    description
-                    type
-                }
             }
             adjustments {
                 adjustmentSource
@@ -78,7 +70,26 @@ export const ADD_ITEM_TO_ORDER = gql`
                 type
             }
         }
+        adjustments {
+            adjustmentSource
+            amount
+            description
+            type
+        }
     }
+`;
+
+export const ADD_ITEM_TO_ORDER = gql`
+    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!) {
+        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
+            ...UpdatedOrder
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
+        }
+    }
+    ${UPDATED_ORDER_FRAGMENT}
 `;
 export const SEARCH_PRODUCTS_SHOP = gql`
     query SearchProductsShop($input: SearchInput!) {
@@ -108,47 +119,105 @@ export const SEARCH_PRODUCTS_SHOP = gql`
 `;
 export const REGISTER_ACCOUNT = gql`
     mutation Register($input: RegisterCustomerInput!) {
-        registerCustomerAccount(input: $input)
-    }
-`;
-export const VERIFY_EMAIL = gql`
-    mutation Verify($password: String, $token: String!) {
-        verifyCustomerAccount(password: $password, token: $token) {
-            user {
-                id
-                identifier
+        registerCustomerAccount(input: $input) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
             }
         }
     }
 `;
+
+export const CURRENT_USER_FRAGMENT = gql`
+    fragment CurrentUserShop on CurrentUser {
+        id
+        identifier
+        channels {
+            code
+            token
+            permissions
+        }
+    }
+`;
+
+export const VERIFY_EMAIL = gql`
+    mutation Verify($password: String, $token: String!) {
+        verifyCustomerAccount(password: $password, token: $token) {
+            ...CurrentUserShop
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;
+
 export const REFRESH_TOKEN = gql`
     mutation RefreshToken($emailAddress: String!) {
-        refreshCustomerVerification(emailAddress: $emailAddress)
+        refreshCustomerVerification(emailAddress: $emailAddress) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
     }
 `;
 export const REQUEST_PASSWORD_RESET = gql`
     mutation RequestPasswordReset($identifier: String!) {
-        requestPasswordReset(emailAddress: $identifier)
+        requestPasswordReset(emailAddress: $identifier) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
     }
 `;
 export const RESET_PASSWORD = gql`
     mutation ResetPassword($token: String!, $password: String!) {
         resetPassword(token: $token, password: $password) {
-            user {
-                id
-                identifier
+            ...CurrentUserShop
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
+    }
+    ${CURRENT_USER_FRAGMENT}
+`;
+export const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
+    mutation RequestUpdateEmailAddress($password: String!, $newEmailAddress: String!) {
+        requestUpdateCustomerEmailAddress(password: $password, newEmailAddress: $newEmailAddress) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
             }
         }
     }
 `;
-export const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
-    mutation RequestUpdateEmailAddress($password: String!, $newEmailAddress: String!) {
-        requestUpdateCustomerEmailAddress(password: $password, newEmailAddress: $newEmailAddress)
-    }
-`;
 export const UPDATE_EMAIL_ADDRESS = gql`
     mutation UpdateEmailAddress($token: String!) {
-        updateCustomerEmailAddress(token: $token)
+        updateCustomerEmailAddress(token: $token) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
     }
 `;
 export const GET_ACTIVE_CUSTOMER = gql`
@@ -182,7 +251,9 @@ export const UPDATE_ADDRESS = gql`
 `;
 export const DELETE_ADDRESS = gql`
     mutation DeleteAddressShop($id: ID!) {
-        deleteCustomerAddress(id: $id)
+        deleteCustomerAddress(id: $id) {
+            success
+        }
     }
 `;
 
@@ -198,7 +269,15 @@ export const UPDATE_CUSTOMER = gql`
 
 export const UPDATE_PASSWORD = gql`
     mutation UpdatePassword($old: String!, $new: String!) {
-        updateCustomerPassword(currentPassword: $old, newPassword: $new)
+        updateCustomerPassword(currentPassword: $old, newPassword: $new) {
+            ... on Success {
+                success
+            }
+            ... on ErrorResult {
+                code
+                message
+            }
+        }
     }
 `;
 
@@ -215,6 +294,10 @@ export const ADJUST_ITEM_QUANTITY = gql`
     mutation AdjustItemQuantity($orderLineId: ID!, $quantity: Int!) {
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
             ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
@@ -224,6 +307,10 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
     mutation RemoveItemFromOrder($orderLineId: ID!) {
         removeOrderLine(orderLineId: $orderLineId) {
             ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
@@ -242,12 +329,27 @@ export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
 export const SET_SHIPPING_METHOD = gql`
     mutation SetShippingMethod($id: ID!) {
         setOrderShippingMethod(shippingMethodId: $id) {
-            shipping
-            shippingMethod {
-                id
-                code
-                description
+            ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode: code
+                message
             }
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
+export const ACTIVE_ORDER_CUSTOMER = gql`
+    fragment ActiveOrderCustomer on Order {
+        id
+        customer {
+            id
+            emailAddress
+            firstName
+            lastName
+        }
+        lines {
+            id
         }
     }
 `;
@@ -255,15 +357,14 @@ export const SET_SHIPPING_METHOD = gql`
 export const SET_CUSTOMER = gql`
     mutation SetCustomerForOrder($input: CreateCustomerInput!) {
         setCustomerForOrder(input: $input) {
-            id
-            customer {
-                id
-                emailAddress
-                firstName
-                lastName
+            ...ActiveOrderCustomer
+            ... on ErrorResult {
+                errorCode: code
+                message
             }
         }
     }
+    ${ACTIVE_ORDER_CUSTOMER}
 `;
 
 export const GET_ORDER_BY_CODE = gql`
@@ -300,10 +401,17 @@ export const GET_AVAILABLE_COUNTRIES = gql`
 export const TRANSITION_TO_STATE = gql`
     mutation TransitionToState($state: String!) {
         transitionOrderToState(state: $state) {
-            id
-            state
+            ...TestOrderFragment
+            ... on OrderStateTransitionError {
+                errorCode: code
+                message
+                transitionError
+                fromState
+                toState
+            }
         }
     }
+    ${TEST_ORDER_FRAGMENT}
 `;
 
 export const SET_SHIPPING_ADDRESS = gql`
@@ -342,21 +450,47 @@ export const SET_BILLING_ADDRESS = gql`
     }
 `;
 
-export const ADD_PAYMENT = gql`
-    mutation AddPaymentToOrder($input: PaymentInput!) {
-        addPaymentToOrder(input: $input) {
-            ...TestOrderFragment
-            payments {
-                id
-                transactionId
-                method
-                amount
-                state
-                metadata
-            }
+export const TEST_ORDER_WITH_PAYMENTS_FRAGMENT = gql`
+    fragment TestOrderWithPayments on Order {
+        ...TestOrderFragment
+        payments {
+            id
+            transactionId
+            method
+            amount
+            state
+            metadata
         }
     }
     ${TEST_ORDER_FRAGMENT}
+`;
+
+export const GET_ACTIVE_ORDER_WITH_PAYMENTS = gql`
+    query GetActiveOrderWithPayments {
+        activeOrder {
+            ...TestOrderWithPayments
+        }
+    }
+    ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}
+`;
+
+export const ADD_PAYMENT = gql`
+    mutation AddPaymentToOrder($input: PaymentInput!) {
+        addPaymentToOrder(input: $input) {
+            ...TestOrderWithPayments
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
+            ... on PaymentDeclinedError {
+                paymentErrorMessage
+            }
+            ... on PaymentFailedError {
+                paymentErrorMessage
+            }
+        }
+    }
+    ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}
 `;
 
 export const GET_ACTIVE_ORDER_PAYMENTS = gql`
@@ -413,6 +547,10 @@ export const APPLY_COUPON_CODE = gql`
     mutation ApplyCouponCode($couponCode: String!) {
         applyCouponCode(couponCode: $couponCode) {
             ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}
@@ -431,6 +569,10 @@ export const REMOVE_ALL_ORDER_LINES = gql`
     mutation RemoveAllOrderLines {
         removeAllOrderLines {
             ...TestOrderFragment
+            ... on ErrorResult {
+                errorCode: code
+                message
+            }
         }
     }
     ${TEST_ORDER_FRAGMENT}

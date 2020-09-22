@@ -9,7 +9,7 @@ import {
     mergeConfig,
     VendurePlugin,
 } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -34,7 +34,7 @@ import {
     UpdateCustomer,
     UpdateCustomerNote,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
 import {
     CREATE_ADDRESS,
     CREATE_CUSTOMER,
@@ -331,13 +331,15 @@ describe('Customer resolver', () => {
             >(
                 gql`
                     mutation DeleteCustomerAddress($id: ID!) {
-                        deleteCustomerAddress(id: $id)
+                        deleteCustomerAddress(id: $id) {
+                            success
+                        }
                     }
                 `,
                 { id: firstCustomerThirdAddressId },
             );
 
-            expect(deleteCustomerAddress).toBe(true);
+            expect(deleteCustomerAddress.success).toBe(true);
 
             const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
                 GET_CUSTOMER,
@@ -358,6 +360,10 @@ describe('Customer resolver', () => {
     });
 
     describe('orders', () => {
+        const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
+            UpdatedOrderFragment
+        >(input => !!input.lines);
+
         it(`lists that user\'s orders`, async () => {
             // log in as first customer
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
@@ -369,6 +375,7 @@ describe('Customer resolver', () => {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
 
             const { customer } = await adminClient.query<
                 GetCustomerOrders.Query,

@@ -641,9 +641,15 @@ export const GET_CUSTOMER_WITH_GROUPS = gql`
 export const ADMIN_TRANSITION_TO_STATE = gql`
     mutation AdminTransition($id: ID!, $state: String!) {
         transitionOrderToState(id: $id, state: $state) {
-            id
-            state
-            nextStates
+            ...Order
+            ... on OrderStateTransitionError {
+                errorCode: code
+                message
+                transitionError
+                fromState
+                toState
+            }
         }
     }
+    ${ORDER_FRAGMENT}
 `;

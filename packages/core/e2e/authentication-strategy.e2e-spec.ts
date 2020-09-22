@@ -1,6 +1,6 @@
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -160,6 +160,10 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('registerCustomerAccount with external email', async () => {
+            const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard<{
+                success: boolean;
+            }>(input => input.success != null);
+
             const { registerCustomerAccount } = await shopClient.query<Register.Mutation, Register.Variables>(
                 REGISTER_ACCOUNT,
                 {
@@ -168,8 +172,9 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             );
+            successErrorGuard.assertSuccess(registerCustomerAccount);
 
-            expect(registerCustomerAccount).toBe(true);
+            expect(registerCustomerAccount.success).toBe(true);
             const { customer } = await adminClient.query<
                 GetCustomerUserAuth.Query,
                 GetCustomerUserAuth.Variables

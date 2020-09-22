@@ -1123,8 +1123,9 @@ export enum DeletionResult {
 }
 
 export enum ErrorCode {
-  UnknownError = 'UnknownError',
-  MimeTypeError = 'MimeTypeError'
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+  MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
+  ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR'
 }
 
 export type ErrorResult = {
@@ -1865,7 +1866,7 @@ export type Mutation = {
   /** Update an existing Address */
   updateCustomerAddress: Address;
   /** Update an existing Address */
-  deleteCustomerAddress: Scalars['Boolean'];
+  deleteCustomerAddress: Success;
   addNoteToCustomer: Customer;
   updateCustomerNote: HistoryEntry;
   deleteCustomerNote: DeletionResponse;
@@ -1893,7 +1894,7 @@ export type Mutation = {
   addNoteToOrder: Order;
   updateOrderNote: HistoryEntry;
   deleteOrderNote: DeletionResponse;
-  transitionOrderToState?: Maybe<Order>;
+  transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
   transitionFulfillmentToState: Fulfillment;
   setOrderCustomFields?: Maybe<Order>;
   /** Update an existing PaymentMethod */
@@ -2590,6 +2591,16 @@ export type OrderSortParameter = {
   shippingWithTax?: Maybe<SortOrder>;
   totalBeforeTax?: Maybe<SortOrder>;
   total?: Maybe<SortOrder>;
+};
+
+/** Returned if there is an error in transitioning the Order state */
+export type OrderStateTransitionError = ErrorResult & {
+  __typename?: 'OrderStateTransitionError';
+  code: ErrorCode;
+  message: Scalars['String'];
+  transitionError: Scalars['String'];
+  fromState: Scalars['String'];
+  toState: Scalars['String'];
 };
 
 export type PaginatedList = {
@@ -3530,6 +3541,12 @@ export type StringOperators = {
   contains?: Maybe<Scalars['String']>;
 };
 
+/** Indicates that an operation succeeded, where we do not want to return any more specific information. */
+export type Success = {
+  __typename?: 'Success';
+  success: Scalars['Boolean'];
+};
+
 export type TaxCategory = Node & {
   __typename?: 'TaxCategory';
   id: Scalars['ID'];
@@ -3610,6 +3627,8 @@ export type TestShippingMethodResult = {
   eligible: Scalars['Boolean'];
   quote?: Maybe<TestShippingMethodQuote>;
 };
+
+export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type UpdateAddressInput = {
   id: Scalars['ID'];

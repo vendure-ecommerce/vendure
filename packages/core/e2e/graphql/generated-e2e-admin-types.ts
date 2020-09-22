@@ -29,7 +29,6 @@ export type AddNoteToOrderInput = {
 };
 
 export type Address = Node & {
-    __typename?: 'Address';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -48,7 +47,6 @@ export type Address = Node & {
 };
 
 export type Adjustment = {
-    __typename?: 'Adjustment';
     adjustmentSource: Scalars['String'];
     type: AdjustmentType;
     description: Scalars['String'];
@@ -66,7 +64,6 @@ export enum AdjustmentType {
 }
 
 export type Administrator = Node & {
-    __typename?: 'Administrator';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -85,7 +82,6 @@ export type AdministratorFilterParameter = {
 };
 
 export type AdministratorList = PaginatedList & {
-    __typename?: 'AdministratorList';
     items: Array<Administrator>;
     totalItems: Scalars['Int'];
 };
@@ -107,7 +103,6 @@ export type AdministratorSortParameter = {
 };
 
 export type Asset = Node & {
-    __typename?: 'Asset';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -136,7 +131,6 @@ export type AssetFilterParameter = {
 };
 
 export type AssetList = PaginatedList & {
-    __typename?: 'AssetList';
     items: Array<Asset>;
     totalItems: Scalars['Int'];
 };
@@ -178,7 +172,6 @@ export type AuthenticationInput = {
 };
 
 export type AuthenticationMethod = Node & {
-    __typename?: 'AuthenticationMethod';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -186,7 +179,6 @@ export type AuthenticationMethod = Node & {
 };
 
 export type BooleanCustomFieldConfig = CustomField & {
-    __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -202,7 +194,6 @@ export type BooleanOperators = {
 
 export type Cancellation = Node &
     StockMovement & {
-        __typename?: 'Cancellation';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -221,7 +212,6 @@ export type CancelOrderInput = {
 };
 
 export type Channel = Node & {
-    __typename?: 'Channel';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -235,7 +225,6 @@ export type Channel = Node & {
 };
 
 export type Collection = Node & {
-    __typename?: 'Collection';
     isPrivate: Scalars['Boolean'];
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -261,7 +250,6 @@ export type CollectionProductVariantsArgs = {
 };
 
 export type CollectionBreadcrumb = {
-    __typename?: 'CollectionBreadcrumb';
     id: Scalars['ID'];
     name: Scalars['String'];
     slug: Scalars['String'];
@@ -279,7 +267,6 @@ export type CollectionFilterParameter = {
 };
 
 export type CollectionList = PaginatedList & {
-    __typename?: 'CollectionList';
     items: Array<Collection>;
     totalItems: Scalars['Int'];
 };
@@ -302,7 +289,6 @@ export type CollectionSortParameter = {
 };
 
 export type CollectionTranslation = {
-    __typename?: 'CollectionTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -313,13 +299,11 @@ export type CollectionTranslation = {
 };
 
 export type ConfigArg = {
-    __typename?: 'ConfigArg';
     name: Scalars['String'];
     value: Scalars['String'];
 };
 
 export type ConfigArgDefinition = {
-    __typename?: 'ConfigArgDefinition';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -334,13 +318,11 @@ export type ConfigArgInput = {
 };
 
 export type ConfigurableOperation = {
-    __typename?: 'ConfigurableOperation';
     code: Scalars['String'];
     args: Array<ConfigArg>;
 };
 
 export type ConfigurableOperationDefinition = {
-    __typename?: 'ConfigurableOperationDefinition';
     code: Scalars['String'];
     args: Array<ConfigArgDefinition>;
     description: Scalars['String'];
@@ -352,7 +334,6 @@ export type ConfigurableOperationInput = {
 };
 
 export type Coordinate = {
-    __typename?: 'Coordinate';
     x: Scalars['Float'];
     y: Scalars['Float'];
 };
@@ -363,7 +344,6 @@ export type CoordinateInput = {
 };
 
 export type Country = Node & {
-    __typename?: 'Country';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -384,7 +364,6 @@ export type CountryFilterParameter = {
 };
 
 export type CountryList = PaginatedList & {
-    __typename?: 'CountryList';
     items: Array<Country>;
     totalItems: Scalars['Int'];
 };
@@ -405,7 +384,6 @@ export type CountrySortParameter = {
 };
 
 export type CountryTranslation = {
-    __typename?: 'CountryTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -932,14 +910,12 @@ export enum CurrencyCode {
 }
 
 export type CurrentUser = {
-    __typename?: 'CurrentUser';
     id: Scalars['ID'];
     identifier: Scalars['String'];
     channels: Array<CurrentUserChannel>;
 };
 
 export type CurrentUserChannel = {
-    __typename?: 'CurrentUserChannel';
     id: Scalars['ID'];
     token: Scalars['String'];
     code: Scalars['String'];
@@ -947,7 +923,6 @@ export type CurrentUserChannel = {
 };
 
 export type Customer = Node & {
-    __typename?: 'Customer';
     groups: Array<CustomerGroup>;
     history: HistoryEntryList;
     id: Scalars['ID'];
@@ -983,7 +958,6 @@ export type CustomerFilterParameter = {
 };
 
 export type CustomerGroup = Node & {
-    __typename?: 'CustomerGroup';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1002,7 +976,6 @@ export type CustomerGroupFilterParameter = {
 };
 
 export type CustomerGroupList = PaginatedList & {
-    __typename?: 'CustomerGroupList';
     items: Array<CustomerGroup>;
     totalItems: Scalars['Int'];
 };
@@ -1022,7 +995,6 @@ export type CustomerGroupSortParameter = {
 };
 
 export type CustomerList = PaginatedList & {
-    __typename?: 'CustomerList';
     items: Array<Customer>;
     totalItems: Scalars['Int'];
 };
@@ -1064,7 +1036,6 @@ export type CustomFieldConfig =
     | DateTimeCustomFieldConfig;
 
 export type CustomFields = {
-    __typename?: 'CustomFields';
     Address: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
@@ -1098,7 +1069,6 @@ export type DateRange = {
  * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
  */
 export type DateTimeCustomFieldConfig = CustomField & {
-    __typename?: 'DateTimeCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -1112,7 +1082,6 @@ export type DateTimeCustomFieldConfig = CustomField & {
 };
 
 export type DeletionResponse = {
-    __typename?: 'DeletionResponse';
     result: DeletionResult;
     message?: Maybe<Scalars['String']>;
 };
@@ -1125,8 +1094,9 @@ export enum DeletionResult {
 }
 
 export enum ErrorCode {
-    UnknownError = 'UnknownError',
-    MimeTypeError = 'MimeTypeError',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
+    ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
 }
 
 export type ErrorResult = {
@@ -1135,7 +1105,6 @@ export type ErrorResult = {
 };
 
 export type Facet = Node & {
-    __typename?: 'Facet';
     isPrivate: Scalars['Boolean'];
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -1158,7 +1127,6 @@ export type FacetFilterParameter = {
 };
 
 export type FacetList = PaginatedList & {
-    __typename?: 'FacetList';
     items: Array<Facet>;
     totalItems: Scalars['Int'];
 };
@@ -1179,7 +1147,6 @@ export type FacetSortParameter = {
 };
 
 export type FacetTranslation = {
-    __typename?: 'FacetTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1195,7 +1162,6 @@ export type FacetTranslationInput = {
 };
 
 export type FacetValue = Node & {
-    __typename?: 'FacetValue';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1212,13 +1178,11 @@ export type FacetValue = Node & {
  * by the search, and in what quantity.
  */
 export type FacetValueResult = {
-    __typename?: 'FacetValueResult';
     facetValue: FacetValue;
     count: Scalars['Int'];
 };
 
 export type FacetValueTranslation = {
-    __typename?: 'FacetValueTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1234,7 +1198,6 @@ export type FacetValueTranslationInput = {
 };
 
 export type FloatCustomFieldConfig = CustomField & {
-    __typename?: 'FloatCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -1248,7 +1211,6 @@ export type FloatCustomFieldConfig = CustomField & {
 };
 
 export type Fulfillment = Node & {
-    __typename?: 'Fulfillment';
     nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -1266,7 +1228,6 @@ export type FulfillOrderInput = {
 };
 
 export type GlobalSettings = {
-    __typename?: 'GlobalSettings';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1277,7 +1238,6 @@ export type GlobalSettings = {
 };
 
 export type HistoryEntry = Node & {
-    __typename?: 'HistoryEntry';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -1295,7 +1255,6 @@ export type HistoryEntryFilterParameter = {
 };
 
 export type HistoryEntryList = PaginatedList & {
-    __typename?: 'HistoryEntryList';
     items: Array<HistoryEntry>;
     totalItems: Scalars['Int'];
 };
@@ -1340,14 +1299,12 @@ export enum HistoryEntryType {
 }
 
 export type ImportInfo = {
-    __typename?: 'ImportInfo';
     errors?: Maybe<Array<Scalars['String']>>;
     processed: Scalars['Int'];
     imported: Scalars['Int'];
 };
 
 export type IntCustomFieldConfig = CustomField & {
-    __typename?: 'IntCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -1361,7 +1318,6 @@ export type IntCustomFieldConfig = CustomField & {
 };
 
 export type Job = Node & {
-    __typename?: 'Job';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     startedAt?: Maybe<Scalars['DateTime']>;
@@ -1388,7 +1344,6 @@ export type JobFilterParameter = {
 };
 
 export type JobList = PaginatedList & {
-    __typename?: 'JobList';
     items: Array<Job>;
     totalItems: Scalars['Int'];
 };
@@ -1401,7 +1356,6 @@ export type JobListOptions = {
 };
 
 export type JobQueue = {
-    __typename?: 'JobQueue';
     name: Scalars['String'];
     running: Scalars['Boolean'];
 };
@@ -1757,7 +1711,6 @@ export enum LanguageCode {
 }
 
 export type LocaleStringCustomFieldConfig = CustomField & {
-    __typename?: 'LocaleStringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -1770,7 +1723,6 @@ export type LocaleStringCustomFieldConfig = CustomField & {
 };
 
 export type LocalizedString = {
-    __typename?: 'LocalizedString';
     languageCode: LanguageCode;
     value: Scalars['String'];
 };
@@ -1781,12 +1733,10 @@ export enum LogicalOperator {
 }
 
 export type LoginResult = {
-    __typename?: 'LoginResult';
     user: CurrentUser;
 };
 
 export type MimeTypeError = ErrorResult & {
-    __typename?: 'MimeTypeError';
     code: ErrorCode;
     message: Scalars['String'];
     fileName: Scalars['String'];
@@ -1800,7 +1750,6 @@ export type MoveCollectionInput = {
 };
 
 export type Mutation = {
-    __typename?: 'Mutation';
     /** Create a new Administrator */
     createAdministrator: Administrator;
     /** Update an existing Administrator */
@@ -1866,7 +1815,7 @@ export type Mutation = {
     /** Update an existing Address */
     updateCustomerAddress: Address;
     /** Update an existing Address */
-    deleteCustomerAddress: Scalars['Boolean'];
+    deleteCustomerAddress: Success;
     addNoteToCustomer: Customer;
     updateCustomerNote: HistoryEntry;
     deleteCustomerNote: DeletionResponse;
@@ -1894,7 +1843,7 @@ export type Mutation = {
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
-    transitionOrderToState?: Maybe<Order>;
+    transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     transitionFulfillmentToState: Fulfillment;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
@@ -2366,7 +2315,6 @@ export type NumberRange = {
 };
 
 export type Order = Node & {
-    __typename?: 'Order';
     nextStates: Array<Scalars['String']>;
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -2405,7 +2353,6 @@ export type OrderHistoryArgs = {
 };
 
 export type OrderAddress = {
-    __typename?: 'OrderAddress';
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
     streetLine1?: Maybe<Scalars['String']>;
@@ -2434,7 +2381,6 @@ export type OrderFilterParameter = {
 };
 
 export type OrderItem = Node & {
-    __typename?: 'OrderItem';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2449,7 +2395,6 @@ export type OrderItem = Node & {
 };
 
 export type OrderLine = Node & {
-    __typename?: 'OrderLine';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2471,7 +2416,6 @@ export type OrderLineInput = {
 };
 
 export type OrderList = PaginatedList & {
-    __typename?: 'OrderList';
     items: Array<Order>;
     totalItems: Scalars['Int'];
 };
@@ -2484,7 +2428,6 @@ export type OrderListOptions = {
 };
 
 export type OrderProcessState = {
-    __typename?: 'OrderProcessState';
     name: Scalars['String'];
     to: Array<Scalars['String']>;
 };
@@ -2503,13 +2446,21 @@ export type OrderSortParameter = {
     total?: Maybe<SortOrder>;
 };
 
+/** Returned if there is an error in transitioning the Order state */
+export type OrderStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 export type PaginatedList = {
     items: Array<Node>;
     totalItems: Scalars['Int'];
 };
 
 export type Payment = Node & {
-    __typename?: 'Payment';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2523,7 +2474,6 @@ export type Payment = Node & {
 };
 
 export type PaymentMethod = Node & {
-    __typename?: 'PaymentMethod';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2541,7 +2491,6 @@ export type PaymentMethodFilterParameter = {
 };
 
 export type PaymentMethodList = PaginatedList & {
-    __typename?: 'PaymentMethodList';
     items: Array<PaymentMethod>;
     totalItems: Scalars['Int'];
 };
@@ -2605,13 +2554,11 @@ export enum Permission {
 
 /** The price range where the result has more than one price */
 export type PriceRange = {
-    __typename?: 'PriceRange';
     min: Scalars['Int'];
     max: Scalars['Int'];
 };
 
 export type Product = Node & {
-    __typename?: 'Product';
     enabled: Scalars['Boolean'];
     channels: Array<Channel>;
     id: Scalars['ID'];
@@ -2642,7 +2589,6 @@ export type ProductFilterParameter = {
 };
 
 export type ProductList = PaginatedList & {
-    __typename?: 'ProductList';
     items: Array<Product>;
     totalItems: Scalars['Int'];
 };
@@ -2655,7 +2601,6 @@ export type ProductListOptions = {
 };
 
 export type ProductOption = Node & {
-    __typename?: 'ProductOption';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2669,7 +2614,6 @@ export type ProductOption = Node & {
 };
 
 export type ProductOptionGroup = Node & {
-    __typename?: 'ProductOptionGroup';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2682,7 +2626,6 @@ export type ProductOptionGroup = Node & {
 };
 
 export type ProductOptionGroupTranslation = {
-    __typename?: 'ProductOptionGroupTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2698,7 +2641,6 @@ export type ProductOptionGroupTranslationInput = {
 };
 
 export type ProductOptionTranslation = {
-    __typename?: 'ProductOptionTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2723,7 +2665,6 @@ export type ProductSortParameter = {
 };
 
 export type ProductTranslation = {
-    __typename?: 'ProductTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2743,7 +2684,6 @@ export type ProductTranslationInput = {
 };
 
 export type ProductVariant = Node & {
-    __typename?: 'ProductVariant';
     enabled: Scalars['Boolean'];
     stockOnHand: Scalars['Int'];
     trackInventory: Scalars['Boolean'];
@@ -2790,7 +2730,6 @@ export type ProductVariantFilterParameter = {
 };
 
 export type ProductVariantList = PaginatedList & {
-    __typename?: 'ProductVariantList';
     items: Array<ProductVariant>;
     totalItems: Scalars['Int'];
 };
@@ -2815,7 +2754,6 @@ export type ProductVariantSortParameter = {
 };
 
 export type ProductVariantTranslation = {
-    __typename?: 'ProductVariantTranslation';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2831,7 +2769,6 @@ export type ProductVariantTranslationInput = {
 };
 
 export type Promotion = Node & {
-    __typename?: 'Promotion';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -2857,7 +2794,6 @@ export type PromotionFilterParameter = {
 };
 
 export type PromotionList = PaginatedList & {
-    __typename?: 'PromotionList';
     items: Array<Promotion>;
     totalItems: Scalars['Int'];
 };
@@ -2881,7 +2817,6 @@ export type PromotionSortParameter = {
 };
 
 export type Query = {
-    __typename?: 'Query';
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
     /** Get a list of Assets */
@@ -3104,7 +3039,6 @@ export type QueryZoneArgs = {
 };
 
 export type Refund = Node & {
-    __typename?: 'Refund';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3136,7 +3070,6 @@ export type RemoveProductsFromChannelInput = {
 
 export type Return = Node &
     StockMovement & {
-        __typename?: 'Return';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -3147,7 +3080,6 @@ export type Return = Node &
     };
 
 export type Role = Node & {
-    __typename?: 'Role';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3165,7 +3097,6 @@ export type RoleFilterParameter = {
 };
 
 export type RoleList = PaginatedList & {
-    __typename?: 'RoleList';
     items: Array<Role>;
     totalItems: Scalars['Int'];
 };
@@ -3187,7 +3118,6 @@ export type RoleSortParameter = {
 
 export type Sale = Node &
     StockMovement & {
-        __typename?: 'Sale';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -3210,19 +3140,16 @@ export type SearchInput = {
 };
 
 export type SearchReindexResponse = {
-    __typename?: 'SearchReindexResponse';
     success: Scalars['Boolean'];
 };
 
 export type SearchResponse = {
-    __typename?: 'SearchResponse';
     items: Array<SearchResult>;
     totalItems: Scalars['Int'];
     facetValues: Array<FacetValueResult>;
 };
 
 export type SearchResult = {
-    __typename?: 'SearchResult';
     enabled: Scalars['Boolean'];
     /** An array of ids of the Collections in which this result appears */
     channelIds: Array<Scalars['ID']>;
@@ -3251,7 +3178,6 @@ export type SearchResult = {
 };
 
 export type SearchResultAsset = {
-    __typename?: 'SearchResultAsset';
     id: Scalars['ID'];
     preview: Scalars['String'];
     focalPoint?: Maybe<Coordinate>;
@@ -3266,7 +3192,6 @@ export type SearchResultSortParameter = {
 };
 
 export type ServerConfig = {
-    __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
     permittedAssetTypes: Array<Scalars['String']>;
     customFieldConfig: CustomFields;
@@ -3278,7 +3203,6 @@ export type SettleRefundInput = {
 };
 
 export type ShippingMethod = Node & {
-    __typename?: 'ShippingMethod';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3297,7 +3221,6 @@ export type ShippingMethodFilterParameter = {
 };
 
 export type ShippingMethodList = PaginatedList & {
-    __typename?: 'ShippingMethodList';
     items: Array<ShippingMethod>;
     totalItems: Scalars['Int'];
 };
@@ -3310,7 +3233,6 @@ export type ShippingMethodListOptions = {
 };
 
 export type ShippingMethodQuote = {
-    __typename?: 'ShippingMethodQuote';
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
@@ -3328,7 +3250,6 @@ export type ShippingMethodSortParameter = {
 
 /** The price value where the result has a single price */
 export type SinglePrice = {
-    __typename?: 'SinglePrice';
     value: Scalars['Int'];
 };
 
@@ -3339,7 +3260,6 @@ export enum SortOrder {
 
 export type StockAdjustment = Node &
     StockMovement & {
-        __typename?: 'StockAdjustment';
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
         updatedAt: Scalars['DateTime'];
@@ -3360,7 +3280,6 @@ export type StockMovement = {
 export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
 
 export type StockMovementList = {
-    __typename?: 'StockMovementList';
     items: Array<StockMovementItem>;
     totalItems: Scalars['Int'];
 };
@@ -3379,7 +3298,6 @@ export enum StockMovementType {
 }
 
 export type StringCustomFieldConfig = CustomField & {
-    __typename?: 'StringCustomFieldConfig';
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
@@ -3393,7 +3311,6 @@ export type StringCustomFieldConfig = CustomField & {
 };
 
 export type StringFieldOption = {
-    __typename?: 'StringFieldOption';
     value: Scalars['String'];
     label?: Maybe<Array<LocalizedString>>;
 };
@@ -3403,8 +3320,12 @@ export type StringOperators = {
     contains?: Maybe<Scalars['String']>;
 };
 
+/** Indicates that an operation succeeded, where we do not want to return any more specific information. */
+export type Success = {
+    success: Scalars['Boolean'];
+};
+
 export type TaxCategory = Node & {
-    __typename?: 'TaxCategory';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3412,7 +3333,6 @@ export type TaxCategory = Node & {
 };
 
 export type TaxRate = Node & {
-    __typename?: 'TaxRate';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3433,7 +3353,6 @@ export type TaxRateFilterParameter = {
 };
 
 export type TaxRateList = PaginatedList & {
-    __typename?: 'TaxRateList';
     items: Array<TaxRate>;
     totalItems: Scalars['Int'];
 };
@@ -3471,7 +3390,6 @@ export type TestShippingMethodOrderLineInput = {
 };
 
 export type TestShippingMethodQuote = {
-    __typename?: 'TestShippingMethodQuote';
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
     description: Scalars['String'];
@@ -3479,10 +3397,11 @@ export type TestShippingMethodQuote = {
 };
 
 export type TestShippingMethodResult = {
-    __typename?: 'TestShippingMethodResult';
     eligible: Scalars['Boolean'];
     quote?: Maybe<TestShippingMethodQuote>;
 };
+
+export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type UpdateAddressInput = {
     id: Scalars['ID'];
@@ -3701,7 +3620,6 @@ export type UpdateZoneInput = {
 };
 
 export type User = Node & {
-    __typename?: 'User';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3714,7 +3632,6 @@ export type User = Node & {
 };
 
 export type Zone = Node & {
-    __typename?: 'Zone';
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
@@ -3726,76 +3643,60 @@ export type GetAdministratorsQueryVariables = Exact<{
     options?: Maybe<AdministratorListOptions>;
 }>;
 
-export type GetAdministratorsQuery = { __typename?: 'Query' } & {
-    administrators: { __typename?: 'AdministratorList' } & Pick<AdministratorList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Administrator' } & AdministratorFragment>;
-        };
+export type GetAdministratorsQuery = {
+    administrators: Pick<AdministratorList, 'totalItems'> & { items: Array<AdministratorFragment> };
 };
 
 export type GetAdministratorQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetAdministratorQuery = { __typename?: 'Query' } & {
-    administrator?: Maybe<{ __typename?: 'Administrator' } & AdministratorFragment>;
-};
+export type GetAdministratorQuery = { administrator?: Maybe<AdministratorFragment> };
 
 export type UpdateAdministratorMutationVariables = Exact<{
     input: UpdateAdministratorInput;
 }>;
 
-export type UpdateAdministratorMutation = { __typename?: 'Mutation' } & {
-    updateAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
-};
+export type UpdateAdministratorMutation = { updateAdministrator: AdministratorFragment };
 
 export type DeleteAdministratorMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteAdministratorMutation = { __typename?: 'Mutation' } & {
-    deleteAdministrator: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
+export type DeleteAdministratorMutation = {
+    deleteAdministrator: Pick<DeletionResponse, 'message' | 'result'>;
 };
 
 export type Q1QueryVariables = Exact<{ [key: string]: never }>;
 
-export type Q1Query = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
-};
+export type Q1Query = { product?: Maybe<Pick<Product, 'id' | 'name'>> };
 
 export type Q2QueryVariables = Exact<{ [key: string]: never }>;
 
-export type Q2Query = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'name'>>;
-};
+export type Q2Query = { product?: Maybe<Pick<Product, 'id' | 'name'>> };
 
 export type GetAssetQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetAssetQuery = { __typename?: 'Query' } & {
-    asset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'width' | 'height'> & AssetFragment>;
-};
+export type GetAssetQuery = { asset?: Maybe<Pick<Asset, 'width' | 'height'> & AssetFragment> };
 
-export type AssetFragFirstFragment = { __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>;
+export type AssetFragFirstFragment = Pick<Asset, 'id' | 'preview'>;
 
 export type GetAssetFragmentFirstQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetAssetFragmentFirstQuery = { __typename?: 'Query' } & {
-    asset?: Maybe<{ __typename?: 'Asset' } & AssetFragFirstFragment>;
-};
+export type GetAssetFragmentFirstQuery = { asset?: Maybe<AssetFragFirstFragment> };
 
 export type CreateAssetsMutationVariables = Exact<{
     input: Array<CreateAssetInput>;
 }>;
 
-export type CreateAssetsMutation = { __typename?: 'Mutation' } & {
+export type CreateAssetsMutation = {
     createAssets: Array<
-        | ({ __typename?: 'Asset' } & {
-              focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
-          } & AssetFragment)
-        | ({ __typename?: 'MimeTypeError' } & Pick<MimeTypeError, 'message' | 'fileName' | 'mimeType'>)
+        | ({ focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>> } & AssetFragment)
+        | Pick<MimeTypeError, 'message' | 'fileName' | 'mimeType'>
     >;
 };
 
@@ -3803,99 +3704,69 @@ export type CanCreateCustomerMutationVariables = Exact<{
     input: CreateCustomerInput;
 }>;
 
-export type CanCreateCustomerMutation = { __typename?: 'Mutation' } & {
-    createCustomer: { __typename?: 'Customer' } & Pick<Customer, 'id'>;
-};
+export type CanCreateCustomerMutation = { createCustomer: Pick<Customer, 'id'> };
 
 export type GetCustomerCountQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCustomerCountQuery = { __typename?: 'Query' } & {
-    customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'>;
-};
+export type GetCustomerCountQuery = { customers: Pick<CustomerList, 'totalItems'> };
 
 export type AuthenticateMutationVariables = Exact<{
     input: AuthenticationInput;
 }>;
 
-export type AuthenticateMutation = { __typename?: 'Mutation' } & {
-    authenticate: { __typename?: 'LoginResult' } & {
-        user: { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'>;
-    };
-};
+export type AuthenticateMutation = { authenticate: { user: Pick<CurrentUser, 'id' | 'identifier'> } };
 
 export type GetCustomersQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCustomersQuery = { __typename?: 'Query' } & {
-    customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'emailAddress'>>;
-        };
+export type GetCustomersQuery = {
+    customers: Pick<CustomerList, 'totalItems'> & { items: Array<Pick<Customer, 'id' | 'emailAddress'>> };
 };
 
 export type GetCustomerUserAuthQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCustomerUserAuthQuery = { __typename?: 'Query' } & {
+export type GetCustomerUserAuthQuery = {
     customer?: Maybe<
-        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                user?: Maybe<
-                    { __typename?: 'User' } & Pick<User, 'id' | 'verified'> & {
-                            authenticationMethods: Array<
-                                { __typename?: 'AuthenticationMethod' } & Pick<
-                                    AuthenticationMethod,
-                                    'id' | 'strategy'
-                                >
-                            >;
-                        }
-                >;
-            }
+        Pick<Customer, 'id'> & {
+            user?: Maybe<
+                Pick<User, 'id' | 'verified'> & {
+                    authenticationMethods: Array<Pick<AuthenticationMethod, 'id' | 'strategy'>>;
+                }
+            >;
+        }
     >;
 };
 
 export type GetChannelsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetChannelsQuery = { __typename?: 'Query' } & {
-    channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>>;
-};
+export type GetChannelsQuery = { channels: Array<Pick<Channel, 'id' | 'code' | 'token'>> };
 
 export type DeleteChannelMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteChannelMutation = { __typename?: 'Mutation' } & {
-    deleteChannel: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'message' | 'result'>;
-};
+export type DeleteChannelMutation = { deleteChannel: Pick<DeletionResponse, 'message' | 'result'> };
 
 export type UpdateGlobalSettingsMutationVariables = Exact<{
     input: UpdateGlobalSettingsInput;
 }>;
 
-export type UpdateGlobalSettingsMutation = { __typename?: 'Mutation' } & {
-    updateGlobalSettings: { __typename?: 'GlobalSettings' } & Pick<
-        GlobalSettings,
-        'id' | 'availableLanguages'
-    >;
+export type UpdateGlobalSettingsMutation = {
+    updateGlobalSettings: Pick<GlobalSettings, 'id' | 'availableLanguages'>;
 };
 
 export type GetCollectionsWithAssetsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCollectionsWithAssetsQuery = { __typename?: 'Query' } & {
-    collections: { __typename?: 'CollectionList' } & {
-        items: Array<
-            { __typename?: 'Collection' } & { assets: Array<{ __typename?: 'Asset' } & Pick<Asset, 'name'>> }
-        >;
-    };
+export type GetCollectionsWithAssetsQuery = {
+    collections: { items: Array<{ assets: Array<Pick<Asset, 'name'>> }> };
 };
 
 export type GetProductsWithVariantIdsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProductsWithVariantIdsQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<
-            { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                    variants: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
-                }
-        >;
+export type GetProductsWithVariantIdsQuery = {
+    products: {
+        items: Array<Pick<Product, 'id' | 'name'> & { variants: Array<Pick<ProductVariant, 'id' | 'name'>> }>;
     };
 };
 
@@ -3904,13 +3775,9 @@ export type GetCollectionQueryVariables = Exact<{
     slug?: Maybe<Scalars['String']>;
 }>;
 
-export type GetCollectionQuery = { __typename?: 'Query' } & {
+export type GetCollectionQuery = {
     collection?: Maybe<
-        { __typename?: 'Collection' } & {
-            productVariants: { __typename?: 'ProductVariantList' } & {
-                items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
-            };
-        } & CollectionFragment
+        { productVariants: { items: Array<Pick<ProductVariant, 'id' | 'name'>> } } & CollectionFragment
     >;
 };
 
@@ -3918,28 +3785,18 @@ export type MoveCollectionMutationVariables = Exact<{
     input: MoveCollectionInput;
 }>;
 
-export type MoveCollectionMutation = { __typename?: 'Mutation' } & {
-    moveCollection: { __typename?: 'Collection' } & CollectionFragment;
-};
+export type MoveCollectionMutation = { moveCollection: CollectionFragment };
 
 export type GetFacetValuesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetFacetValuesQuery = { __typename?: 'Query' } & {
-    facets: { __typename?: 'FacetList' } & {
-        items: Array<
-            { __typename?: 'Facet' } & { values: Array<{ __typename?: 'FacetValue' } & FacetValueFragment> }
-        >;
-    };
-};
+export type GetFacetValuesQuery = { facets: { items: Array<{ values: Array<FacetValueFragment> }> } };
 
 export type GetCollectionsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCollectionsQuery = { __typename?: 'Query' } & {
-    collections: { __typename?: 'CollectionList' } & {
+export type GetCollectionsQuery = {
+    collections: {
         items: Array<
-            { __typename?: 'Collection' } & Pick<Collection, 'id' | 'name' | 'position'> & {
-                    parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-                }
+            Pick<Collection, 'id' | 'name' | 'position'> & { parent?: Maybe<Pick<Collection, 'id' | 'name'>> }
         >;
     };
 };
@@ -3948,58 +3805,45 @@ export type GetCollectionProductsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCollectionProductsQuery = { __typename?: 'Query' } & {
-    collection?: Maybe<
-        { __typename?: 'Collection' } & {
-            productVariants: { __typename?: 'ProductVariantList' } & {
-                items: Array<
-                    { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name' | 'productId'> & {
-                            facetValues: Array<{ __typename?: 'FacetValue' } & Pick<FacetValue, 'code'>>;
-                        }
-                >;
-            };
-        }
-    >;
+export type GetCollectionProductsQuery = {
+    collection?: Maybe<{
+        productVariants: {
+            items: Array<
+                Pick<ProductVariant, 'id' | 'name' | 'productId'> & {
+                    facetValues: Array<Pick<FacetValue, 'code'>>;
+                }
+            >;
+        };
+    }>;
 };
 
 export type CreateCollectionSelectVariantsMutationVariables = Exact<{
     input: CreateCollectionInput;
 }>;
 
-export type CreateCollectionSelectVariantsMutation = { __typename?: 'Mutation' } & {
-    createCollection: { __typename?: 'Collection' } & Pick<Collection, 'id'> & {
-            productVariants: { __typename?: 'ProductVariantList' } & Pick<
-                ProductVariantList,
-                'totalItems'
-            > & { items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'name'>> };
+export type CreateCollectionSelectVariantsMutation = {
+    createCollection: Pick<Collection, 'id'> & {
+        productVariants: Pick<ProductVariantList, 'totalItems'> & {
+            items: Array<Pick<ProductVariant, 'name'>>;
         };
+    };
 };
 
 export type GetCollectionBreadcrumbsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCollectionBreadcrumbsQuery = { __typename?: 'Query' } & {
-    collection?: Maybe<
-        { __typename?: 'Collection' } & {
-            breadcrumbs: Array<
-                { __typename?: 'CollectionBreadcrumb' } & Pick<CollectionBreadcrumb, 'id' | 'name' | 'slug'>
-            >;
-        }
-    >;
+export type GetCollectionBreadcrumbsQuery = {
+    collection?: Maybe<{ breadcrumbs: Array<Pick<CollectionBreadcrumb, 'id' | 'name' | 'slug'>> }>;
 };
 
 export type GetCollectionsForProductsQueryVariables = Exact<{
     term: Scalars['String'];
 }>;
 
-export type GetCollectionsForProductsQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<
-            { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                    collections: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-                }
-        >;
+export type GetCollectionsForProductsQuery = {
+    products: {
+        items: Array<Pick<Product, 'id' | 'name'> & { collections: Array<Pick<Collection, 'id' | 'name'>> }>;
     };
 };
 
@@ -4007,35 +3851,27 @@ export type DeleteCollectionMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCollectionMutation = { __typename?: 'Mutation' } & {
-    deleteCollection: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteCollectionMutation = { deleteCollection: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type GetProductCollectionsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetProductCollectionsQuery = { __typename?: 'Query' } & {
-    product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                collections: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-            }
-    >;
+export type GetProductCollectionsQuery = {
+    product?: Maybe<Pick<Product, 'id'> & { collections: Array<Pick<Collection, 'id' | 'name'>> }>;
 };
 
 export type GetProductCollectionsWithParentQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetProductCollectionsWithParentQuery = { __typename?: 'Query' } & {
+export type GetProductCollectionsWithParentQuery = {
     product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                collections: Array<
-                    { __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'> & {
-                            parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-                        }
-                >;
-            }
+        Pick<Product, 'id'> & {
+            collections: Array<
+                Pick<Collection, 'id' | 'name'> & { parent?: Maybe<Pick<Collection, 'id' | 'name'>> }
+            >;
+        }
     >;
 };
 
@@ -4043,267 +3879,191 @@ export type DeleteCountryMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCountryMutation = { __typename?: 'Mutation' } & {
-    deleteCountry: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteCountryMutation = { deleteCountry: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type GetCountryQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCountryQuery = { __typename?: 'Query' } & {
-    country?: Maybe<{ __typename?: 'Country' } & CountryFragment>;
-};
+export type GetCountryQuery = { country?: Maybe<CountryFragment> };
 
 export type CreateCountryMutationVariables = Exact<{
     input: CreateCountryInput;
 }>;
 
-export type CreateCountryMutation = { __typename?: 'Mutation' } & {
-    createCountry: { __typename?: 'Country' } & CountryFragment;
-};
+export type CreateCountryMutation = { createCountry: CountryFragment };
 
 export type DeleteCustomerAddressMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCustomerAddressMutation = { __typename?: 'Mutation' } & Pick<
-    Mutation,
-    'deleteCustomerAddress'
->;
+export type DeleteCustomerAddressMutation = { deleteCustomerAddress: Pick<Success, 'success'> };
 
 export type GetCustomerWithUserQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCustomerWithUserQuery = { __typename?: 'Query' } & {
-    customer?: Maybe<
-        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified'>>;
-            }
-    >;
+export type GetCustomerWithUserQuery = {
+    customer?: Maybe<Pick<Customer, 'id'> & { user?: Maybe<Pick<User, 'id' | 'identifier' | 'verified'>> }>;
 };
 
 export type GetCustomerOrdersQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCustomerOrdersQuery = { __typename?: 'Query' } & {
-    customer?: Maybe<
-        { __typename?: 'Customer' } & {
-            orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
-                    items: Array<{ __typename?: 'Order' } & Pick<Order, 'id'>>;
-                };
-        }
-    >;
+export type GetCustomerOrdersQuery = {
+    customer?: Maybe<{ orders: Pick<OrderList, 'totalItems'> & { items: Array<Pick<Order, 'id'>> } }>;
 };
 
 export type AddNoteToCustomerMutationVariables = Exact<{
     input: AddNoteToCustomerInput;
 }>;
 
-export type AddNoteToCustomerMutation = { __typename?: 'Mutation' } & {
-    addNoteToCustomer: { __typename?: 'Customer' } & CustomerFragment;
-};
+export type AddNoteToCustomerMutation = { addNoteToCustomer: CustomerFragment };
 
 export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
 
-export type ReindexMutation = { __typename?: 'Mutation' } & {
-    reindex: { __typename?: 'Job' } & Pick<Job, 'id'>;
-};
+export type ReindexMutation = { reindex: Pick<Job, 'id'> };
 
 export type SearchProductsAdminQueryVariables = Exact<{
     input: SearchInput;
 }>;
 
-export type SearchProductsAdminQuery = { __typename?: 'Query' } & {
-    search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'SearchResult' } & Pick<
-                    SearchResult,
-                    | 'enabled'
-                    | 'productId'
-                    | 'productName'
-                    | 'productPreview'
-                    | 'productVariantId'
-                    | 'productVariantName'
-                    | 'productVariantPreview'
-                    | 'sku'
-                >
-            >;
-        };
+export type SearchProductsAdminQuery = {
+    search: Pick<SearchResponse, 'totalItems'> & {
+        items: Array<
+            Pick<
+                SearchResult,
+                | 'enabled'
+                | 'productId'
+                | 'productName'
+                | 'productPreview'
+                | 'productVariantId'
+                | 'productVariantName'
+                | 'productVariantPreview'
+                | 'sku'
+            >
+        >;
+    };
 };
 
 export type SearchFacetValuesQueryVariables = Exact<{
     input: SearchInput;
 }>;
 
-export type SearchFacetValuesQuery = { __typename?: 'Query' } & {
-    search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
-            facetValues: Array<
-                { __typename?: 'FacetValueResult' } & Pick<FacetValueResult, 'count'> & {
-                        facetValue: { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'name'>;
-                    }
-            >;
-        };
+export type SearchFacetValuesQuery = {
+    search: Pick<SearchResponse, 'totalItems'> & {
+        facetValues: Array<Pick<FacetValueResult, 'count'> & { facetValue: Pick<FacetValue, 'id' | 'name'> }>;
+    };
 };
 
 export type SearchGetAssetsQueryVariables = Exact<{
     input: SearchInput;
 }>;
 
-export type SearchGetAssetsQuery = { __typename?: 'Query' } & {
-    search: { __typename?: 'SearchResponse' } & Pick<SearchResponse, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'SearchResult' } & Pick<
-                    SearchResult,
-                    'productId' | 'productName' | 'productVariantName'
-                > & {
-                        productAsset?: Maybe<
-                            { __typename?: 'SearchResultAsset' } & Pick<
-                                SearchResultAsset,
-                                'id' | 'preview'
-                            > & {
-                                    focalPoint?: Maybe<
-                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
-                                    >;
-                                }
-                        >;
-                        productVariantAsset?: Maybe<
-                            { __typename?: 'SearchResultAsset' } & Pick<
-                                SearchResultAsset,
-                                'id' | 'preview'
-                            > & {
-                                    focalPoint?: Maybe<
-                                        { __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>
-                                    >;
-                                }
-                        >;
+export type SearchGetAssetsQuery = {
+    search: Pick<SearchResponse, 'totalItems'> & {
+        items: Array<
+            Pick<SearchResult, 'productId' | 'productName' | 'productVariantName'> & {
+                productAsset?: Maybe<
+                    Pick<SearchResultAsset, 'id' | 'preview'> & {
+                        focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
                     }
-            >;
-        };
+                >;
+                productVariantAsset?: Maybe<
+                    Pick<SearchResultAsset, 'id' | 'preview'> & {
+                        focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
+                    }
+                >;
+            }
+        >;
+    };
 };
 
 export type SearchGetPricesQueryVariables = Exact<{
     input: SearchInput;
 }>;
 
-export type SearchGetPricesQuery = { __typename?: 'Query' } & {
-    search: { __typename?: 'SearchResponse' } & {
-        items: Array<
-            { __typename?: 'SearchResult' } & {
-                price:
-                    | ({ __typename?: 'PriceRange' } & Pick<PriceRange, 'min' | 'max'>)
-                    | ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>);
-                priceWithTax:
-                    | ({ __typename?: 'PriceRange' } & Pick<PriceRange, 'min' | 'max'>)
-                    | ({ __typename?: 'SinglePrice' } & Pick<SinglePrice, 'value'>);
-            }
-        >;
+export type SearchGetPricesQuery = {
+    search: {
+        items: Array<{
+            price: Pick<PriceRange, 'min' | 'max'> | Pick<SinglePrice, 'value'>;
+            priceWithTax: Pick<PriceRange, 'min' | 'max'> | Pick<SinglePrice, 'value'>;
+        }>;
     };
 };
 
 export type IdTest1QueryVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest1Query = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
-    };
-};
+export type IdTest1Query = { products: { items: Array<Pick<Product, 'id'>> } };
 
 export type IdTest2QueryVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest2Query = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
+export type IdTest2Query = {
+    products: {
         items: Array<
-            { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                    variants: Array<
-                        { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'> & {
-                                options: Array<
-                                    { __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'name'>
-                                >;
-                            }
-                    >;
-                }
+            Pick<Product, 'id'> & {
+                variants: Array<
+                    Pick<ProductVariant, 'id'> & { options: Array<Pick<ProductOption, 'id' | 'name'>> }
+                >;
+            }
         >;
     };
 };
 
 export type IdTest3QueryVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest3Query = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
-};
+export type IdTest3Query = { product?: Maybe<Pick<Product, 'id'>> };
 
 export type IdTest4MutationVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest4Mutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
-        };
+export type IdTest4Mutation = {
+    updateProduct: Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
 };
 
 export type IdTest5MutationVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest5Mutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id' | 'name'>;
-};
+export type IdTest5Mutation = { updateProduct: Pick<Product, 'id' | 'name'> };
 
 export type IdTest6QueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type IdTest6Query = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
-};
+export type IdTest6Query = { product?: Maybe<Pick<Product, 'id'>> };
 
 export type IdTest7MutationVariables = Exact<{
     input: UpdateProductInput;
 }>;
 
-export type IdTest7Mutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
-        };
+export type IdTest7Mutation = {
+    updateProduct: Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
 };
 
 export type IdTest8MutationVariables = Exact<{
     input: UpdateProductInput;
 }>;
 
-export type IdTest8Mutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id' | 'name'>;
-};
+export type IdTest8Mutation = { updateProduct: Pick<Product, 'id' | 'name'> };
 
 export type IdTest9QueryVariables = Exact<{ [key: string]: never }>;
 
-export type IdTest9Query = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<{ __typename?: 'Product' } & ProdFragmentFragment>;
-    };
-};
+export type IdTest9Query = { products: { items: Array<ProdFragmentFragment> } };
 
-export type ProdFragmentFragment = { __typename?: 'Product' } & Pick<Product, 'id'> & {
-        featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id'>>;
-    };
+export type ProdFragmentFragment = Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
 
 export type GetFacetWithValuesQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetFacetWithValuesQuery = { __typename?: 'Query' } & {
-    facet?: Maybe<{ __typename?: 'Facet' } & FacetWithValuesFragment>;
-};
+export type GetFacetWithValuesQuery = { facet?: Maybe<FacetWithValuesFragment> };
 
 export type DeleteFacetValuesMutationVariables = Exact<{
     ids: Array<Scalars['ID']>;
     force?: Maybe<Scalars['Boolean']>;
 }>;
 
-export type DeleteFacetValuesMutation = { __typename?: 'Mutation' } & {
-    deleteFacetValues: Array<
-        { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>
-    >;
+export type DeleteFacetValuesMutation = {
+    deleteFacetValues: Array<Pick<DeletionResponse, 'result' | 'message'>>;
 };
 
 export type DeleteFacetMutationVariables = Exact<{
@@ -4311,57 +4071,40 @@ export type DeleteFacetMutationVariables = Exact<{
     force?: Maybe<Scalars['Boolean']>;
 }>;
 
-export type DeleteFacetMutation = { __typename?: 'Mutation' } & {
-    deleteFacet: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteFacetMutation = { deleteFacet: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type GetProductListWithVariantsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProductListWithVariantsQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                        variants: Array<
-                            { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>
-                        >;
-                    }
-            >;
-        };
+export type GetProductListWithVariantsQuery = {
+    products: Pick<ProductList, 'totalItems'> & {
+        items: Array<Pick<Product, 'id' | 'name'> & { variants: Array<Pick<ProductVariant, 'id' | 'name'>> }>;
+    };
 };
 
 export type CreateFacetValuesMutationVariables = Exact<{
     input: Array<CreateFacetValueInput>;
 }>;
 
-export type CreateFacetValuesMutation = { __typename?: 'Mutation' } & {
-    createFacetValues: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
-};
+export type CreateFacetValuesMutation = { createFacetValues: Array<FacetValueFragment> };
 
 export type UpdateFacetValuesMutationVariables = Exact<{
     input: Array<UpdateFacetValueInput>;
 }>;
 
-export type UpdateFacetValuesMutation = { __typename?: 'Mutation' } & {
-    updateFacetValues: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
+export type UpdateFacetValuesMutation = { updateFacetValues: Array<FacetValueFragment> };
+
+export type AdministratorFragment = Pick<Administrator, 'id' | 'firstName' | 'lastName' | 'emailAddress'> & {
+    user: Pick<User, 'id' | 'identifier' | 'lastLogin'> & {
+        roles: Array<Pick<Role, 'id' | 'code' | 'description' | 'permissions'>>;
+    };
 };
 
-export type AdministratorFragment = { __typename?: 'Administrator' } & Pick<
-    Administrator,
-    'id' | 'firstName' | 'lastName' | 'emailAddress'
-> & {
-        user: { __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'lastLogin'> & {
-                roles: Array<
-                    { __typename?: 'Role' } & Pick<Role, 'id' | 'code' | 'description' | 'permissions'>
-                >;
-            };
-    };
-
-export type AssetFragment = { __typename?: 'Asset' } & Pick<
+export type AssetFragment = Pick<
     Asset,
     'id' | 'name' | 'fileSize' | 'mimeType' | 'type' | 'preview' | 'source'
 >;
 
-export type ProductVariantFragment = { __typename?: 'ProductVariant' } & Pick<
+export type ProductVariantFragment = Pick<
     ProductVariant,
     | 'id'
     | 'enabled'
@@ -4375,113 +4118,63 @@ export type ProductVariantFragment = { __typename?: 'ProductVariant' } & Pick<
     | 'trackInventory'
     | 'sku'
 > & {
-        taxRateApplied: { __typename?: 'TaxRate' } & Pick<TaxRate, 'id' | 'name' | 'value'>;
-        taxCategory: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
-        options: Array<
-            { __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name'>
-        >;
-        facetValues: Array<
-            { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & {
-                    facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
-                }
-        >;
-        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
-        assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
-        translations: Array<
-            { __typename?: 'ProductVariantTranslation' } & Pick<
-                ProductVariantTranslation,
-                'id' | 'languageCode' | 'name'
-            >
-        >;
-    };
+    taxRateApplied: Pick<TaxRate, 'id' | 'name' | 'value'>;
+    taxCategory: Pick<TaxCategory, 'id' | 'name'>;
+    options: Array<Pick<ProductOption, 'id' | 'code' | 'languageCode' | 'name'>>;
+    facetValues: Array<Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: Pick<Facet, 'id' | 'name'> }>;
+    featuredAsset?: Maybe<AssetFragment>;
+    assets: Array<AssetFragment>;
+    translations: Array<Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>>;
+};
 
-export type ProductWithVariantsFragment = { __typename?: 'Product' } & Pick<
+export type ProductWithVariantsFragment = Pick<
     Product,
     'id' | 'enabled' | 'languageCode' | 'name' | 'slug' | 'description'
 > & {
-        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
-        assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
-        translations: Array<
-            { __typename?: 'ProductTranslation' } & Pick<
-                ProductTranslation,
-                'languageCode' | 'name' | 'slug' | 'description'
-            >
-        >;
-        optionGroups: Array<
-            { __typename?: 'ProductOptionGroup' } & Pick<
-                ProductOptionGroup,
-                'id' | 'languageCode' | 'code' | 'name'
-            >
-        >;
-        variants: Array<{ __typename?: 'ProductVariant' } & ProductVariantFragment>;
-        facetValues: Array<
-            { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code' | 'name'> & {
-                    facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
-                }
-        >;
-        channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code'>>;
-    };
+    featuredAsset?: Maybe<AssetFragment>;
+    assets: Array<AssetFragment>;
+    translations: Array<Pick<ProductTranslation, 'languageCode' | 'name' | 'slug' | 'description'>>;
+    optionGroups: Array<Pick<ProductOptionGroup, 'id' | 'languageCode' | 'code' | 'name'>>;
+    variants: Array<ProductVariantFragment>;
+    facetValues: Array<Pick<FacetValue, 'id' | 'code' | 'name'> & { facet: Pick<Facet, 'id' | 'name'> }>;
+    channels: Array<Pick<Channel, 'id' | 'code'>>;
+};
 
-export type RoleFragment = { __typename?: 'Role' } & Pick<
-    Role,
-    'id' | 'code' | 'description' | 'permissions'
-> & { channels: Array<{ __typename?: 'Channel' } & Pick<Channel, 'id' | 'code' | 'token'>> };
+export type RoleFragment = Pick<Role, 'id' | 'code' | 'description' | 'permissions'> & {
+    channels: Array<Pick<Channel, 'id' | 'code' | 'token'>>;
+};
 
-export type ConfigurableOperationFragment = { __typename?: 'ConfigurableOperation' } & Pick<
-    ConfigurableOperation,
-    'code'
-> & { args: Array<{ __typename?: 'ConfigArg' } & Pick<ConfigArg, 'name' | 'value'>> };
+export type ConfigurableOperationFragment = Pick<ConfigurableOperation, 'code'> & {
+    args: Array<Pick<ConfigArg, 'name' | 'value'>>;
+};
 
-export type CollectionFragment = { __typename?: 'Collection' } & Pick<
+export type CollectionFragment = Pick<
     Collection,
     'id' | 'name' | 'slug' | 'description' | 'isPrivate' | 'languageCode'
 > & {
-        featuredAsset?: Maybe<{ __typename?: 'Asset' } & AssetFragment>;
-        assets: Array<{ __typename?: 'Asset' } & AssetFragment>;
-        filters: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-        translations: Array<
-            { __typename?: 'CollectionTranslation' } & Pick<
-                CollectionTranslation,
-                'id' | 'languageCode' | 'name' | 'slug' | 'description'
-            >
-        >;
-        parent?: Maybe<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-        children?: Maybe<Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>>;
-    };
+    featuredAsset?: Maybe<AssetFragment>;
+    assets: Array<AssetFragment>;
+    filters: Array<ConfigurableOperationFragment>;
+    translations: Array<Pick<CollectionTranslation, 'id' | 'languageCode' | 'name' | 'slug' | 'description'>>;
+    parent?: Maybe<Pick<Collection, 'id' | 'name'>>;
+    children?: Maybe<Array<Pick<Collection, 'id' | 'name'>>>;
+};
 
-export type FacetValueFragment = { __typename?: 'FacetValue' } & Pick<
-    FacetValue,
-    'id' | 'languageCode' | 'code' | 'name'
-> & {
-        translations: Array<
-            { __typename?: 'FacetValueTranslation' } & Pick<
-                FacetValueTranslation,
-                'id' | 'languageCode' | 'name'
-            >
-        >;
-        facet: { __typename?: 'Facet' } & Pick<Facet, 'id' | 'name'>;
-    };
+export type FacetValueFragment = Pick<FacetValue, 'id' | 'languageCode' | 'code' | 'name'> & {
+    translations: Array<Pick<FacetValueTranslation, 'id' | 'languageCode' | 'name'>>;
+    facet: Pick<Facet, 'id' | 'name'>;
+};
 
-export type FacetWithValuesFragment = { __typename?: 'Facet' } & Pick<
-    Facet,
-    'id' | 'languageCode' | 'isPrivate' | 'code' | 'name'
-> & {
-        translations: Array<
-            { __typename?: 'FacetTranslation' } & Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>
-        >;
-        values: Array<{ __typename?: 'FacetValue' } & FacetValueFragment>;
-    };
+export type FacetWithValuesFragment = Pick<Facet, 'id' | 'languageCode' | 'isPrivate' | 'code' | 'name'> & {
+    translations: Array<Pick<FacetTranslation, 'id' | 'languageCode' | 'name'>>;
+    values: Array<FacetValueFragment>;
+};
 
-export type CountryFragment = { __typename?: 'Country' } & Pick<
-    Country,
-    'id' | 'code' | 'name' | 'enabled'
-> & {
-        translations: Array<
-            { __typename?: 'CountryTranslation' } & Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>
-        >;
-    };
+export type CountryFragment = Pick<Country, 'id' | 'code' | 'name' | 'enabled'> & {
+    translations: Array<Pick<CountryTranslation, 'id' | 'languageCode' | 'name'>>;
+};
 
-export type AddressFragment = { __typename?: 'Address' } & Pick<
+export type AddressFragment = Pick<
     Address,
     | 'id'
     | 'fullName'
@@ -4494,22 +4187,19 @@ export type AddressFragment = { __typename?: 'Address' } & Pick<
     | 'phoneNumber'
     | 'defaultShippingAddress'
     | 'defaultBillingAddress'
-> & { country: { __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name'> };
+> & { country: Pick<Country, 'id' | 'code' | 'name'> };
 
-export type CustomerFragment = { __typename?: 'Customer' } & Pick<
+export type CustomerFragment = Pick<
     Customer,
     'id' | 'title' | 'firstName' | 'lastName' | 'phoneNumber' | 'emailAddress'
 > & {
-        user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>>;
-        addresses?: Maybe<Array<{ __typename?: 'Address' } & AddressFragment>>;
-    };
+    user?: Maybe<Pick<User, 'id' | 'identifier' | 'verified' | 'lastLogin'>>;
+    addresses?: Maybe<Array<AddressFragment>>;
+};
 
-export type AdjustmentFragment = { __typename?: 'Adjustment' } & Pick<
-    Adjustment,
-    'adjustmentSource' | 'amount' | 'description' | 'type'
->;
+export type AdjustmentFragment = Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>;
 
-export type ShippingAddressFragment = { __typename?: 'OrderAddress' } & Pick<
+export type ShippingAddressFragment = Pick<
     OrderAddress,
     | 'fullName'
     | 'company'
@@ -4522,17 +4212,17 @@ export type ShippingAddressFragment = { __typename?: 'OrderAddress' } & Pick<
     | 'phoneNumber'
 >;
 
-export type OrderFragment = { __typename?: 'Order' } & Pick<
+export type OrderFragment = Pick<
     Order,
     'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'
-> & { customer?: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>> };
+> & { customer?: Maybe<Pick<Customer, 'id' | 'firstName' | 'lastName'>> };
 
-export type OrderItemFragment = { __typename?: 'OrderItem' } & Pick<
+export type OrderItemFragment = Pick<
     OrderItem,
     'id' | 'cancelled' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate'
-> & { fulfillment?: Maybe<{ __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id'>> };
+> & { fulfillment?: Maybe<Pick<Fulfillment, 'id'>> };
 
-export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
+export type OrderWithLinesFragment = Pick<
     Order,
     | 'id'
     | 'createdAt'
@@ -4547,228 +4237,168 @@ export type OrderWithLinesFragment = { __typename?: 'Order' } & Pick<
     | 'shipping'
     | 'total'
 > & {
-        customer?: Maybe<{ __typename?: 'Customer' } & Pick<Customer, 'id' | 'firstName' | 'lastName'>>;
-        lines: Array<
-            { __typename?: 'OrderLine' } & Pick<
-                OrderLine,
-                'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'
-            > & {
-                    featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'preview'>>;
-                    productVariant: { __typename?: 'ProductVariant' } & Pick<
-                        ProductVariant,
-                        'id' | 'name' | 'sku'
-                    >;
-                    items: Array<{ __typename?: 'OrderItem' } & OrderItemFragment>;
-                }
-        >;
-        adjustments: Array<{ __typename?: 'Adjustment' } & AdjustmentFragment>;
-        shippingMethod?: Maybe<
-            { __typename?: 'ShippingMethod' } & Pick<ShippingMethod, 'id' | 'code' | 'description'>
-        >;
-        shippingAddress?: Maybe<{ __typename?: 'OrderAddress' } & ShippingAddressFragment>;
-        payments?: Maybe<
-            Array<
-                { __typename?: 'Payment' } & Pick<
-                    Payment,
-                    'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'
-                >
-            >
-        >;
-    };
+    customer?: Maybe<Pick<Customer, 'id' | 'firstName' | 'lastName'>>;
+    lines: Array<
+        Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'> & {
+            featuredAsset?: Maybe<Pick<Asset, 'preview'>>;
+            productVariant: Pick<ProductVariant, 'id' | 'name' | 'sku'>;
+            items: Array<OrderItemFragment>;
+        }
+    >;
+    adjustments: Array<AdjustmentFragment>;
+    shippingMethod?: Maybe<Pick<ShippingMethod, 'id' | 'code' | 'description'>>;
+    shippingAddress?: Maybe<ShippingAddressFragment>;
+    payments?: Maybe<
+        Array<Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>>
+    >;
+};
 
-export type PromotionFragment = { __typename?: 'Promotion' } & Pick<
+export type PromotionFragment = Pick<
     Promotion,
     'id' | 'createdAt' | 'updatedAt' | 'couponCode' | 'startsAt' | 'endsAt' | 'name' | 'enabled'
-> & {
-        conditions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-        actions: Array<{ __typename?: 'ConfigurableOperation' } & ConfigurableOperationFragment>;
-    };
+> & { conditions: Array<ConfigurableOperationFragment>; actions: Array<ConfigurableOperationFragment> };
 
-export type ZoneFragment = { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'> & {
-        members: Array<{ __typename?: 'Country' } & CountryFragment>;
-    };
+export type ZoneFragment = Pick<Zone, 'id' | 'name'> & { members: Array<CountryFragment> };
 
-export type TaxRateFragment = { __typename?: 'TaxRate' } & Pick<
-    TaxRate,
-    'id' | 'name' | 'enabled' | 'value'
-> & {
-        category: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
-        zone: { __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>;
-        customerGroup?: Maybe<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
-    };
+export type TaxRateFragment = Pick<TaxRate, 'id' | 'name' | 'enabled' | 'value'> & {
+    category: Pick<TaxCategory, 'id' | 'name'>;
+    zone: Pick<Zone, 'id' | 'name'>;
+    customerGroup?: Maybe<Pick<CustomerGroup, 'id' | 'name'>>;
+};
 
-export type CurrentUserFragment = { __typename?: 'CurrentUser' } & Pick<CurrentUser, 'id' | 'identifier'> & {
-        channels: Array<
-            { __typename?: 'CurrentUserChannel' } & Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>
+export type CurrentUserFragment = Pick<CurrentUser, 'id' | 'identifier'> & {
+    channels: Array<Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>>;
+};
+
+export type VariantWithStockFragment = Pick<ProductVariant, 'id' | 'stockOnHand'> & {
+    stockMovements: Pick<StockMovementList, 'totalItems'> & {
+        items: Array<
+            | Pick<StockAdjustment, 'id' | 'type' | 'quantity'>
+            | Pick<Sale, 'id' | 'type' | 'quantity'>
+            | Pick<Cancellation, 'id' | 'type' | 'quantity'>
+            | Pick<Return, 'id' | 'type' | 'quantity'>
         >;
     };
-
-export type VariantWithStockFragment = { __typename?: 'ProductVariant' } & Pick<
-    ProductVariant,
-    'id' | 'stockOnHand'
-> & {
-        stockMovements: { __typename?: 'StockMovementList' } & Pick<StockMovementList, 'totalItems'> & {
-                items: Array<
-                    | ({ __typename?: 'StockAdjustment' } & Pick<StockAdjustment, 'id' | 'type' | 'quantity'>)
-                    | ({ __typename?: 'Sale' } & Pick<Sale, 'id' | 'type' | 'quantity'>)
-                    | ({ __typename?: 'Cancellation' } & Pick<Cancellation, 'id' | 'type' | 'quantity'>)
-                    | ({ __typename?: 'Return' } & Pick<Return, 'id' | 'type' | 'quantity'>)
-                >;
-            };
-    };
+};
 
 export type CreateAdministratorMutationVariables = Exact<{
     input: CreateAdministratorInput;
 }>;
 
-export type CreateAdministratorMutation = { __typename?: 'Mutation' } & {
-    createAdministrator: { __typename?: 'Administrator' } & AdministratorFragment;
-};
+export type CreateAdministratorMutation = { createAdministrator: AdministratorFragment };
 
 export type UpdateProductMutationVariables = Exact<{
     input: UpdateProductInput;
 }>;
 
-export type UpdateProductMutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & ProductWithVariantsFragment;
-};
+export type UpdateProductMutation = { updateProduct: ProductWithVariantsFragment };
 
 export type CreateProductMutationVariables = Exact<{
     input: CreateProductInput;
 }>;
 
-export type CreateProductMutation = { __typename?: 'Mutation' } & {
-    createProduct: { __typename?: 'Product' } & ProductWithVariantsFragment;
-};
+export type CreateProductMutation = { createProduct: ProductWithVariantsFragment };
 
 export type GetProductWithVariantsQueryVariables = Exact<{
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
 }>;
 
-export type GetProductWithVariantsQuery = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
-};
+export type GetProductWithVariantsQuery = { product?: Maybe<ProductWithVariantsFragment> };
 
 export type GetProductListQueryVariables = Exact<{
     options?: Maybe<ProductListOptions>;
 }>;
 
-export type GetProductListQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & Pick<ProductList, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'Product' } & Pick<Product, 'id' | 'languageCode' | 'name' | 'slug'> & {
-                        featuredAsset?: Maybe<{ __typename?: 'Asset' } & Pick<Asset, 'id' | 'preview'>>;
-                    }
-            >;
-        };
+export type GetProductListQuery = {
+    products: Pick<ProductList, 'totalItems'> & {
+        items: Array<
+            Pick<Product, 'id' | 'languageCode' | 'name' | 'slug'> & {
+                featuredAsset?: Maybe<Pick<Asset, 'id' | 'preview'>>;
+            }
+        >;
+    };
 };
 
 export type CreateProductVariantsMutationVariables = Exact<{
     input: Array<CreateProductVariantInput>;
 }>;
 
-export type CreateProductVariantsMutation = { __typename?: 'Mutation' } & {
-    createProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & ProductVariantFragment>>;
-};
+export type CreateProductVariantsMutation = { createProductVariants: Array<Maybe<ProductVariantFragment>> };
 
 export type UpdateProductVariantsMutationVariables = Exact<{
     input: Array<UpdateProductVariantInput>;
 }>;
 
-export type UpdateProductVariantsMutation = { __typename?: 'Mutation' } & {
-    updateProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & ProductVariantFragment>>;
-};
+export type UpdateProductVariantsMutation = { updateProductVariants: Array<Maybe<ProductVariantFragment>> };
 
 export type UpdateTaxRateMutationVariables = Exact<{
     input: UpdateTaxRateInput;
 }>;
 
-export type UpdateTaxRateMutation = { __typename?: 'Mutation' } & {
-    updateTaxRate: { __typename?: 'TaxRate' } & TaxRateFragment;
-};
+export type UpdateTaxRateMutation = { updateTaxRate: TaxRateFragment };
 
 export type CreateFacetMutationVariables = Exact<{
     input: CreateFacetInput;
 }>;
 
-export type CreateFacetMutation = { __typename?: 'Mutation' } & {
-    createFacet: { __typename?: 'Facet' } & FacetWithValuesFragment;
-};
+export type CreateFacetMutation = { createFacet: FacetWithValuesFragment };
 
 export type UpdateFacetMutationVariables = Exact<{
     input: UpdateFacetInput;
 }>;
 
-export type UpdateFacetMutation = { __typename?: 'Mutation' } & {
-    updateFacet: { __typename?: 'Facet' } & FacetWithValuesFragment;
-};
+export type UpdateFacetMutation = { updateFacet: FacetWithValuesFragment };
 
 export type GetCustomerListQueryVariables = Exact<{
     options?: Maybe<CustomerListOptions>;
 }>;
 
-export type GetCustomerListQuery = { __typename?: 'Query' } & {
-    customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'Customer' } & Pick<
-                    Customer,
-                    'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber'
-                > & { user?: Maybe<{ __typename?: 'User' } & Pick<User, 'id' | 'verified'>> }
-            >;
-        };
+export type GetCustomerListQuery = {
+    customers: Pick<CustomerList, 'totalItems'> & {
+        items: Array<
+            Pick<Customer, 'id' | 'title' | 'firstName' | 'lastName' | 'emailAddress' | 'phoneNumber'> & {
+                user?: Maybe<Pick<User, 'id' | 'verified'>>;
+            }
+        >;
+    };
 };
 
 export type GetAssetListQueryVariables = Exact<{
     options?: Maybe<AssetListOptions>;
 }>;
 
-export type GetAssetListQuery = { __typename?: 'Query' } & {
-    assets: { __typename?: 'AssetList' } & Pick<AssetList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Asset' } & AssetFragment>;
-        };
-};
+export type GetAssetListQuery = { assets: Pick<AssetList, 'totalItems'> & { items: Array<AssetFragment> } };
 
 export type CreateRoleMutationVariables = Exact<{
     input: CreateRoleInput;
 }>;
 
-export type CreateRoleMutation = { __typename?: 'Mutation' } & {
-    createRole: { __typename?: 'Role' } & RoleFragment;
-};
+export type CreateRoleMutation = { createRole: RoleFragment };
 
 export type CreateCollectionMutationVariables = Exact<{
     input: CreateCollectionInput;
 }>;
 
-export type CreateCollectionMutation = { __typename?: 'Mutation' } & {
-    createCollection: { __typename?: 'Collection' } & CollectionFragment;
-};
+export type CreateCollectionMutation = { createCollection: CollectionFragment };
 
 export type UpdateCollectionMutationVariables = Exact<{
     input: UpdateCollectionInput;
 }>;
 
-export type UpdateCollectionMutation = { __typename?: 'Mutation' } & {
-    updateCollection: { __typename?: 'Collection' } & CollectionFragment;
-};
+export type UpdateCollectionMutation = { updateCollection: CollectionFragment };
 
 export type GetCustomerQueryVariables = Exact<{
     id: Scalars['ID'];
     orderListOptions?: Maybe<OrderListOptions>;
 }>;
 
-export type GetCustomerQuery = { __typename?: 'Query' } & {
+export type GetCustomerQuery = {
     customer?: Maybe<
-        { __typename?: 'Customer' } & {
-            orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
-                    items: Array<
-                        { __typename?: 'Order' } & Pick<
-                            Order,
-                            'id' | 'code' | 'state' | 'total' | 'currencyCode' | 'updatedAt'
-                        >
-                    >;
-                };
+        {
+            orders: Pick<OrderList, 'totalItems'> & {
+                items: Array<Pick<Order, 'id' | 'code' | 'state' | 'total' | 'currencyCode' | 'updatedAt'>>;
+            };
         } & CustomerFragment
     >;
 };
@@ -4779,139 +4409,112 @@ export type AttemptLoginMutationVariables = Exact<{
     rememberMe?: Maybe<Scalars['Boolean']>;
 }>;
 
-export type AttemptLoginMutation = { __typename?: 'Mutation' } & {
-    login: { __typename?: 'LoginResult' } & { user: { __typename?: 'CurrentUser' } & CurrentUserFragment };
-};
+export type AttemptLoginMutation = { login: { user: CurrentUserFragment } };
 
 export type GetCountryListQueryVariables = Exact<{
     options?: Maybe<CountryListOptions>;
 }>;
 
-export type GetCountryListQuery = { __typename?: 'Query' } & {
-    countries: { __typename?: 'CountryList' } & Pick<CountryList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Country' } & Pick<Country, 'id' | 'code' | 'name' | 'enabled'>>;
-        };
+export type GetCountryListQuery = {
+    countries: Pick<CountryList, 'totalItems'> & {
+        items: Array<Pick<Country, 'id' | 'code' | 'name' | 'enabled'>>;
+    };
 };
 
 export type UpdateCountryMutationVariables = Exact<{
     input: UpdateCountryInput;
 }>;
 
-export type UpdateCountryMutation = { __typename?: 'Mutation' } & {
-    updateCountry: { __typename?: 'Country' } & CountryFragment;
-};
+export type UpdateCountryMutation = { updateCountry: CountryFragment };
 
 export type GetFacetListQueryVariables = Exact<{
     options?: Maybe<FacetListOptions>;
 }>;
 
-export type GetFacetListQuery = { __typename?: 'Query' } & {
-    facets: { __typename?: 'FacetList' } & Pick<FacetList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Facet' } & FacetWithValuesFragment>;
-        };
+export type GetFacetListQuery = {
+    facets: Pick<FacetList, 'totalItems'> & { items: Array<FacetWithValuesFragment> };
 };
 
 export type DeleteProductMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteProductMutation = { __typename?: 'Mutation' } & {
-    deleteProduct: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
+export type DeleteProductMutation = { deleteProduct: Pick<DeletionResponse, 'result'> };
 
 export type GetProductSimpleQueryVariables = Exact<{
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
 }>;
 
-export type GetProductSimpleQuery = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id' | 'slug'>>;
-};
+export type GetProductSimpleQuery = { product?: Maybe<Pick<Product, 'id' | 'slug'>> };
 
 export type GetStockMovementQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetStockMovementQuery = { __typename?: 'Query' } & {
-    product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                variants: Array<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>;
-            }
-    >;
+export type GetStockMovementQuery = {
+    product?: Maybe<Pick<Product, 'id'> & { variants: Array<VariantWithStockFragment> }>;
 };
 
 export type GetRunningJobsQueryVariables = Exact<{
     options?: Maybe<JobListOptions>;
 }>;
 
-export type GetRunningJobsQuery = { __typename?: 'Query' } & {
-    jobs: { __typename?: 'JobList' } & Pick<JobList, 'totalItems'> & {
-            items: Array<
-                { __typename?: 'Job' } & Pick<Job, 'id' | 'queueName' | 'state' | 'isSettled' | 'duration'>
-            >;
-        };
+export type GetRunningJobsQuery = {
+    jobs: Pick<JobList, 'totalItems'> & {
+        items: Array<Pick<Job, 'id' | 'queueName' | 'state' | 'isSettled' | 'duration'>>;
+    };
 };
 
 export type CreatePromotionMutationVariables = Exact<{
     input: CreatePromotionInput;
 }>;
 
-export type CreatePromotionMutation = { __typename?: 'Mutation' } & {
-    createPromotion: { __typename?: 'Promotion' } & PromotionFragment;
-};
+export type CreatePromotionMutation = { createPromotion: PromotionFragment };
 
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
-export type MeQuery = { __typename?: 'Query' } & {
-    me?: Maybe<{ __typename?: 'CurrentUser' } & CurrentUserFragment>;
-};
+export type MeQuery = { me?: Maybe<CurrentUserFragment> };
 
 export type CreateChannelMutationVariables = Exact<{
     input: CreateChannelInput;
 }>;
 
-export type CreateChannelMutation = { __typename?: 'Mutation' } & {
-    createChannel: { __typename?: 'Channel' } & Pick<
+export type CreateChannelMutation = {
+    createChannel: Pick<
         Channel,
         'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
-    > & {
-            defaultShippingZone?: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
-            defaultTaxZone?: Maybe<{ __typename?: 'Zone' } & Pick<Zone, 'id'>>;
-        };
+    > & { defaultShippingZone?: Maybe<Pick<Zone, 'id'>>; defaultTaxZone?: Maybe<Pick<Zone, 'id'>> };
 };
 
 export type DeleteProductVariantMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteProductVariantMutation = { __typename?: 'Mutation' } & {
-    deleteProductVariant: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+export type DeleteProductVariantMutation = {
+    deleteProductVariant: Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type AssignProductsToChannelMutationVariables = Exact<{
     input: AssignProductsToChannelInput;
 }>;
 
-export type AssignProductsToChannelMutation = { __typename?: 'Mutation' } & {
-    assignProductsToChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
-};
+export type AssignProductsToChannelMutation = { assignProductsToChannel: Array<ProductWithVariantsFragment> };
 
 export type RemoveProductsFromChannelMutationVariables = Exact<{
     input: RemoveProductsFromChannelInput;
 }>;
 
-export type RemoveProductsFromChannelMutation = { __typename?: 'Mutation' } & {
-    removeProductsFromChannel: Array<{ __typename?: 'Product' } & ProductWithVariantsFragment>;
+export type RemoveProductsFromChannelMutation = {
+    removeProductsFromChannel: Array<ProductWithVariantsFragment>;
 };
 
 export type UpdateAssetMutationVariables = Exact<{
     input: UpdateAssetInput;
 }>;
 
-export type UpdateAssetMutation = { __typename?: 'Mutation' } & {
-    updateAsset: { __typename?: 'Asset' } & {
-        focalPoint?: Maybe<{ __typename?: 'Coordinate' } & Pick<Coordinate, 'x' | 'y'>>;
-    } & AssetFragment;
+export type UpdateAssetMutation = {
+    updateAsset: { focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>> } & AssetFragment;
 };
 
 export type DeleteAssetMutationVariables = Exact<{
@@ -4919,19 +4522,14 @@ export type DeleteAssetMutationVariables = Exact<{
     force?: Maybe<Scalars['Boolean']>;
 }>;
 
-export type DeleteAssetMutation = { __typename?: 'Mutation' } & {
-    deleteAsset: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteAssetMutation = { deleteAsset: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type UpdateChannelMutationVariables = Exact<{
     input: UpdateChannelInput;
 }>;
 
-export type UpdateChannelMutation = { __typename?: 'Mutation' } & {
-    updateChannel: { __typename?: 'Channel' } & Pick<
-        Channel,
-        'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'
-    >;
+export type UpdateChannelMutation = {
+    updateChannel: Pick<Channel, 'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'>;
 };
 
 export type GetCustomerHistoryQueryVariables = Exact<{
@@ -4939,19 +4537,17 @@ export type GetCustomerHistoryQueryVariables = Exact<{
     options?: Maybe<HistoryEntryListOptions>;
 }>;
 
-export type GetCustomerHistoryQuery = { __typename?: 'Query' } & {
+export type GetCustomerHistoryQuery = {
     customer?: Maybe<
-        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                history: { __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & {
-                        items: Array<
-                            { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                                    administrator?: Maybe<
-                                        { __typename?: 'Administrator' } & Pick<Administrator, 'id'>
-                                    >;
-                                }
-                        >;
-                    };
-            }
+        Pick<Customer, 'id'> & {
+            history: Pick<HistoryEntryList, 'totalItems'> & {
+                items: Array<
+                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
+                        administrator?: Maybe<Pick<Administrator, 'id'>>;
+                    }
+                >;
+            };
+        }
     >;
 };
 
@@ -4959,42 +4555,33 @@ export type GetOrderQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetOrderQuery = { __typename?: 'Query' } & {
-    order?: Maybe<{ __typename?: 'Order' } & OrderWithLinesFragment>;
-};
+export type GetOrderQuery = { order?: Maybe<OrderWithLinesFragment> };
 
-export type CustomerGroupFragment = { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
-        customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-                items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-            };
-    };
+export type CustomerGroupFragment = Pick<CustomerGroup, 'id' | 'name'> & {
+    customers: Pick<CustomerList, 'totalItems'> & { items: Array<Pick<Customer, 'id'>> };
+};
 
 export type CreateCustomerGroupMutationVariables = Exact<{
     input: CreateCustomerGroupInput;
 }>;
 
-export type CreateCustomerGroupMutation = { __typename?: 'Mutation' } & {
-    createCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
+export type CreateCustomerGroupMutation = { createCustomerGroup: CustomerGroupFragment };
 
 export type RemoveCustomersFromGroupMutationVariables = Exact<{
     groupId: Scalars['ID'];
     customerIds: Array<Scalars['ID']>;
 }>;
 
-export type RemoveCustomersFromGroupMutation = { __typename?: 'Mutation' } & {
-    removeCustomersFromGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
+export type RemoveCustomersFromGroupMutation = { removeCustomersFromGroup: CustomerGroupFragment };
 
 export type CreateFulfillmentMutationVariables = Exact<{
     input: FulfillOrderInput;
 }>;
 
-export type CreateFulfillmentMutation = { __typename?: 'Mutation' } & {
-    fulfillOrder: { __typename?: 'Fulfillment' } & Pick<
-        Fulfillment,
-        'id' | 'method' | 'state' | 'trackingCode'
-    > & { orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>> };
+export type CreateFulfillmentMutation = {
+    fulfillOrder: Pick<Fulfillment, 'id' | 'method' | 'state' | 'trackingCode'> & {
+        orderItems: Array<Pick<OrderItem, 'id'>>;
+    };
 };
 
 export type TransitFulfillmentMutationVariables = Exact<{
@@ -5002,26 +4589,17 @@ export type TransitFulfillmentMutationVariables = Exact<{
     state: Scalars['String'];
 }>;
 
-export type TransitFulfillmentMutation = { __typename?: 'Mutation' } & {
-    transitionFulfillmentToState: { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'>;
-};
+export type TransitFulfillmentMutation = { transitionFulfillmentToState: Pick<Fulfillment, 'id' | 'state'> };
 
 export type GetOrderFulfillmentsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetOrderFulfillmentsQuery = { __typename?: 'Query' } & {
+export type GetOrderFulfillmentsQuery = {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
-                fulfillments?: Maybe<
-                    Array<
-                        { __typename?: 'Fulfillment' } & Pick<
-                            Fulfillment,
-                            'id' | 'state' | 'nextStates' | 'method'
-                        >
-                    >
-                >;
-            }
+        Pick<Order, 'id' | 'state'> & {
+            fulfillments?: Maybe<Array<Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'>>>;
+        }
     >;
 };
 
@@ -5029,19 +4607,15 @@ export type GetOrderListQueryVariables = Exact<{
     options?: Maybe<OrderListOptions>;
 }>;
 
-export type GetOrderListQuery = { __typename?: 'Query' } & {
-    orders: { __typename?: 'OrderList' } & Pick<OrderList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Order' } & OrderFragment>;
-        };
-};
+export type GetOrderListQuery = { orders: Pick<OrderList, 'totalItems'> & { items: Array<OrderFragment> } };
 
 export type CreateAddressMutationVariables = Exact<{
     id: Scalars['ID'];
     input: CreateAddressInput;
 }>;
 
-export type CreateAddressMutation = { __typename?: 'Mutation' } & {
-    createCustomerAddress: { __typename?: 'Address' } & Pick<
+export type CreateAddressMutation = {
+    createCustomerAddress: Pick<
         Address,
         | 'id'
         | 'fullName'
@@ -5054,18 +4628,17 @@ export type CreateAddressMutation = { __typename?: 'Mutation' } & {
         | 'phoneNumber'
         | 'defaultShippingAddress'
         | 'defaultBillingAddress'
-    > & { country: { __typename?: 'Country' } & Pick<Country, 'code' | 'name'> };
+    > & { country: Pick<Country, 'code' | 'name'> };
 };
 
 export type UpdateAddressMutationVariables = Exact<{
     input: UpdateAddressInput;
 }>;
 
-export type UpdateAddressMutation = { __typename?: 'Mutation' } & {
-    updateCustomerAddress: { __typename?: 'Address' } & Pick<
-        Address,
-        'id' | 'defaultShippingAddress' | 'defaultBillingAddress'
-    > & { country: { __typename?: 'Country' } & Pick<Country, 'code' | 'name'> };
+export type UpdateAddressMutation = {
+    updateCustomerAddress: Pick<Address, 'id' | 'defaultShippingAddress' | 'defaultBillingAddress'> & {
+        country: Pick<Country, 'code' | 'name'>;
+    };
 };
 
 export type CreateCustomerMutationVariables = Exact<{
@@ -5073,66 +4646,56 @@ export type CreateCustomerMutationVariables = Exact<{
     password?: Maybe<Scalars['String']>;
 }>;
 
-export type CreateCustomerMutation = { __typename?: 'Mutation' } & {
-    createCustomer: { __typename?: 'Customer' } & CustomerFragment;
-};
+export type CreateCustomerMutation = { createCustomer: CustomerFragment };
 
 export type UpdateCustomerMutationVariables = Exact<{
     input: UpdateCustomerInput;
 }>;
 
-export type UpdateCustomerMutation = { __typename?: 'Mutation' } & {
-    updateCustomer: { __typename?: 'Customer' } & CustomerFragment;
-};
+export type UpdateCustomerMutation = { updateCustomer: CustomerFragment };
 
 export type DeleteCustomerMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCustomerMutation = { __typename?: 'Mutation' } & {
-    deleteCustomer: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
+export type DeleteCustomerMutation = { deleteCustomer: Pick<DeletionResponse, 'result'> };
 
 export type UpdateCustomerNoteMutationVariables = Exact<{
     input: UpdateCustomerNoteInput;
 }>;
 
-export type UpdateCustomerNoteMutation = { __typename?: 'Mutation' } & {
-    updateCustomerNote: { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
+export type UpdateCustomerNoteMutation = {
+    updateCustomerNote: Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
 };
 
 export type DeleteCustomerNoteMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCustomerNoteMutation = { __typename?: 'Mutation' } & {
-    deleteCustomerNote: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteCustomerNoteMutation = { deleteCustomerNote: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type UpdateCustomerGroupMutationVariables = Exact<{
     input: UpdateCustomerGroupInput;
 }>;
 
-export type UpdateCustomerGroupMutation = { __typename?: 'Mutation' } & {
-    updateCustomerGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
+export type UpdateCustomerGroupMutation = { updateCustomerGroup: CustomerGroupFragment };
 
 export type DeleteCustomerGroupMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteCustomerGroupMutation = { __typename?: 'Mutation' } & {
-    deleteCustomerGroup: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+export type DeleteCustomerGroupMutation = {
+    deleteCustomerGroup: Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type GetCustomerGroupsQueryVariables = Exact<{
     options?: Maybe<CustomerGroupListOptions>;
 }>;
 
-export type GetCustomerGroupsQuery = { __typename?: 'Query' } & {
-    customerGroups: { __typename?: 'CustomerGroupList' } & Pick<CustomerGroupList, 'totalItems'> & {
-            items: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
-        };
+export type GetCustomerGroupsQuery = {
+    customerGroups: Pick<CustomerGroupList, 'totalItems'> & {
+        items: Array<Pick<CustomerGroup, 'id' | 'name'>>;
+    };
 };
 
 export type GetCustomerGroupQueryVariables = Exact<{
@@ -5140,13 +4703,11 @@ export type GetCustomerGroupQueryVariables = Exact<{
     options?: Maybe<CustomerListOptions>;
 }>;
 
-export type GetCustomerGroupQuery = { __typename?: 'Query' } & {
+export type GetCustomerGroupQuery = {
     customerGroup?: Maybe<
-        { __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'> & {
-                customers: { __typename?: 'CustomerList' } & Pick<CustomerList, 'totalItems'> & {
-                        items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-                    };
-            }
+        Pick<CustomerGroup, 'id' | 'name'> & {
+            customers: Pick<CustomerList, 'totalItems'> & { items: Array<Pick<Customer, 'id'>> };
+        }
     >;
 };
 
@@ -5155,20 +4716,14 @@ export type AddCustomersToGroupMutationVariables = Exact<{
     customerIds: Array<Scalars['ID']>;
 }>;
 
-export type AddCustomersToGroupMutation = { __typename?: 'Mutation' } & {
-    addCustomersToGroup: { __typename?: 'CustomerGroup' } & CustomerGroupFragment;
-};
+export type AddCustomersToGroupMutation = { addCustomersToGroup: CustomerGroupFragment };
 
 export type GetCustomerWithGroupsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetCustomerWithGroupsQuery = { __typename?: 'Query' } & {
-    customer?: Maybe<
-        { __typename?: 'Customer' } & Pick<Customer, 'id'> & {
-                groups: Array<{ __typename?: 'CustomerGroup' } & Pick<CustomerGroup, 'id' | 'name'>>;
-            }
-    >;
+export type GetCustomerWithGroupsQuery = {
+    customer?: Maybe<Pick<Customer, 'id'> & { groups: Array<Pick<CustomerGroup, 'id' | 'name'>> }>;
 };
 
 export type AdminTransitionMutationVariables = Exact<{
@@ -5176,41 +4731,37 @@ export type AdminTransitionMutationVariables = Exact<{
     state: Scalars['String'];
 }>;
 
-export type AdminTransitionMutation = { __typename?: 'Mutation' } & {
-    transitionOrderToState?: Maybe<{ __typename?: 'Order' } & Pick<Order, 'id' | 'state' | 'nextStates'>>;
+export type AdminTransitionMutation = {
+    transitionOrderToState?: Maybe<
+        | OrderFragment
+        | (Pick<OrderStateTransitionError, 'message' | 'transitionError' | 'fromState' | 'toState'> & {
+              errorCode: OrderStateTransitionError['code'];
+          })
+    >;
 };
 
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
 
-export type UpdateOptionGroupMutation = { __typename?: 'Mutation' } & {
-    updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id'>;
-};
+export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
 
 export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
 
-export type DeletePromotionAdHoc1Mutation = { __typename?: 'Mutation' } & {
-    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
+export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
 export type GetPromoProductsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetPromoProductsQuery = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
+export type GetPromoProductsQuery = {
+    products: {
         items: Array<
-            { __typename?: 'Product' } & Pick<Product, 'id' | 'slug'> & {
-                    variants: Array<
-                        { __typename?: 'ProductVariant' } & Pick<
-                            ProductVariant,
-                            'id' | 'price' | 'priceWithTax' | 'sku'
-                        > & {
-                                facetValues: Array<
-                                    { __typename?: 'FacetValue' } & Pick<FacetValue, 'id' | 'code'>
-                                >;
-                            }
-                    >;
-                }
+            Pick<Product, 'id' | 'slug'> & {
+                variants: Array<
+                    Pick<ProductVariant, 'id' | 'price' | 'priceWithTax' | 'sku'> & {
+                        facetValues: Array<Pick<FacetValue, 'id' | 'code'>>;
+                    }
+                >;
+            }
         >;
     };
 };
@@ -5219,25 +4770,16 @@ export type SettlePaymentMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type SettlePaymentMutation = { __typename?: 'Mutation' } & {
-    settlePayment: { __typename?: 'Payment' } & Pick<Payment, 'id' | 'state' | 'metadata'>;
-};
+export type SettlePaymentMutation = { settlePayment: Pick<Payment, 'id' | 'state' | 'metadata'> };
 
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetOrderListFulfillmentsQuery = { __typename?: 'Query' } & {
-    orders: { __typename?: 'OrderList' } & {
+export type GetOrderListFulfillmentsQuery = {
+    orders: {
         items: Array<
-            { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
-                    fulfillments?: Maybe<
-                        Array<
-                            { __typename?: 'Fulfillment' } & Pick<
-                                Fulfillment,
-                                'id' | 'state' | 'nextStates' | 'method'
-                            >
-                        >
-                    >;
-                }
+            Pick<Order, 'id' | 'state'> & {
+                fulfillments?: Maybe<Array<Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'>>>;
+            }
         >;
     };
 };
@@ -5246,17 +4788,13 @@ export type GetOrderFulfillmentItemsQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetOrderFulfillmentItemsQuery = { __typename?: 'Query' } & {
+export type GetOrderFulfillmentItemsQuery = {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id' | 'state'> & {
-                fulfillments?: Maybe<
-                    Array<
-                        { __typename?: 'Fulfillment' } & Pick<Fulfillment, 'id' | 'state'> & {
-                                orderItems: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id'>>;
-                            }
-                    >
-                >;
-            }
+        Pick<Order, 'id' | 'state'> & {
+            fulfillments?: Maybe<
+                Array<Pick<Fulfillment, 'id' | 'state'> & { orderItems: Array<Pick<OrderItem, 'id'>> }>
+            >;
+        }
     >;
 };
 
@@ -5264,33 +4802,26 @@ export type CancelOrderMutationVariables = Exact<{
     input: CancelOrderInput;
 }>;
 
-export type CancelOrderMutation = { __typename?: 'Mutation' } & {
-    cancelOrder: { __typename?: 'Order' } & Pick<Order, 'id'> & {
-            lines: Array<
-                { __typename?: 'OrderLine' } & Pick<OrderLine, 'quantity'> & {
-                        items: Array<{ __typename?: 'OrderItem' } & Pick<OrderItem, 'id' | 'cancelled'>>;
-                    }
-            >;
-        };
+export type CancelOrderMutation = {
+    cancelOrder: Pick<Order, 'id'> & {
+        lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
+    };
 };
 
 export type RefundOrderMutationVariables = Exact<{
     input: RefundOrderInput;
 }>;
 
-export type RefundOrderMutation = { __typename?: 'Mutation' } & {
-    refundOrder: { __typename?: 'Refund' } & Pick<
-        Refund,
-        'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
-    >;
+export type RefundOrderMutation = {
+    refundOrder: Pick<Refund, 'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'>;
 };
 
 export type SettleRefundMutationVariables = Exact<{
     input: SettleRefundInput;
 }>;
 
-export type SettleRefundMutation = { __typename?: 'Mutation' } & {
-    settleRefund: { __typename?: 'Refund' } & Pick<
+export type SettleRefundMutation = {
+    settleRefund: Pick<
         Refund,
         'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
     >;
@@ -5301,19 +4832,17 @@ export type GetOrderHistoryQueryVariables = Exact<{
     options?: Maybe<HistoryEntryListOptions>;
 }>;
 
-export type GetOrderHistoryQuery = { __typename?: 'Query' } & {
+export type GetOrderHistoryQuery = {
     order?: Maybe<
-        { __typename?: 'Order' } & Pick<Order, 'id'> & {
-                history: { __typename?: 'HistoryEntryList' } & Pick<HistoryEntryList, 'totalItems'> & {
-                        items: Array<
-                            { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                                    administrator?: Maybe<
-                                        { __typename?: 'Administrator' } & Pick<Administrator, 'id'>
-                                    >;
-                                }
-                        >;
-                    };
-            }
+        Pick<Order, 'id'> & {
+            history: Pick<HistoryEntryList, 'totalItems'> & {
+                items: Array<
+                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
+                        administrator?: Maybe<Pick<Administrator, 'id'>>;
+                    }
+                >;
+            };
+        }
     >;
 };
 
@@ -5321,82 +4850,53 @@ export type AddNoteToOrderMutationVariables = Exact<{
     input: AddNoteToOrderInput;
 }>;
 
-export type AddNoteToOrderMutation = { __typename?: 'Mutation' } & {
-    addNoteToOrder: { __typename?: 'Order' } & Pick<Order, 'id'>;
-};
+export type AddNoteToOrderMutation = { addNoteToOrder: Pick<Order, 'id'> };
 
 export type UpdateOrderNoteMutationVariables = Exact<{
     input: UpdateOrderNoteInput;
 }>;
 
-export type UpdateOrderNoteMutation = { __typename?: 'Mutation' } & {
-    updateOrderNote: { __typename?: 'HistoryEntry' } & Pick<HistoryEntry, 'id' | 'data' | 'isPublic'>;
-};
+export type UpdateOrderNoteMutation = { updateOrderNote: Pick<HistoryEntry, 'id' | 'data' | 'isPublic'> };
 
 export type DeleteOrderNoteMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteOrderNoteMutation = { __typename?: 'Mutation' } & {
-    deleteOrderNote: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteOrderNoteMutation = { deleteOrderNote: Pick<DeletionResponse, 'result' | 'message'> };
 
-export type ProductOptionGroupFragment = { __typename?: 'ProductOptionGroup' } & Pick<
-    ProductOptionGroup,
-    'id' | 'code' | 'name'
-> & {
-        options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code' | 'name'>>;
-        translations: Array<
-            { __typename?: 'ProductOptionGroupTranslation' } & Pick<
-                ProductOptionGroupTranslation,
-                'id' | 'languageCode' | 'name'
-            >
-        >;
-    };
+export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
+    options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
+    translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
+};
 
 export type CreateProductOptionGroupMutationVariables = Exact<{
     input: CreateProductOptionGroupInput;
 }>;
 
-export type CreateProductOptionGroupMutation = { __typename?: 'Mutation' } & {
-    createProductOptionGroup: { __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment;
-};
+export type CreateProductOptionGroupMutation = { createProductOptionGroup: ProductOptionGroupFragment };
 
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
 
-export type UpdateProductOptionGroupMutation = { __typename?: 'Mutation' } & {
-    updateProductOptionGroup: { __typename?: 'ProductOptionGroup' } & ProductOptionGroupFragment;
-};
+export type UpdateProductOptionGroupMutation = { updateProductOptionGroup: ProductOptionGroupFragment };
 
 export type CreateProductOptionMutationVariables = Exact<{
     input: CreateProductOptionInput;
 }>;
 
-export type CreateProductOptionMutation = { __typename?: 'Mutation' } & {
-    createProductOption: { __typename?: 'ProductOption' } & Pick<
-        ProductOption,
-        'id' | 'code' | 'name' | 'groupId'
-    > & {
-            translations: Array<
-                { __typename?: 'ProductOptionTranslation' } & Pick<
-                    ProductOptionTranslation,
-                    'id' | 'languageCode' | 'name'
-                >
-            >;
-        };
+export type CreateProductOptionMutation = {
+    createProductOption: Pick<ProductOption, 'id' | 'code' | 'name' | 'groupId'> & {
+        translations: Array<Pick<ProductOptionTranslation, 'id' | 'languageCode' | 'name'>>;
+    };
 };
 
 export type UpdateProductOptionMutationVariables = Exact<{
     input: UpdateProductOptionInput;
 }>;
 
-export type UpdateProductOptionMutation = { __typename?: 'Mutation' } & {
-    updateProductOption: { __typename?: 'ProductOption' } & Pick<
-        ProductOption,
-        'id' | 'code' | 'name' | 'groupId'
-    >;
+export type UpdateProductOptionMutation = {
+    updateProductOption: Pick<ProductOption, 'id' | 'code' | 'name' | 'groupId'>;
 };
 
 export type AddOptionGroupToProductMutationVariables = Exact<{
@@ -5404,14 +4904,12 @@ export type AddOptionGroupToProductMutationVariables = Exact<{
     optionGroupId: Scalars['ID'];
 }>;
 
-export type AddOptionGroupToProductMutation = { __typename?: 'Mutation' } & {
-    addOptionGroupToProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            optionGroups: Array<
-                { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & {
-                        options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
-                    }
-            >;
-        };
+export type AddOptionGroupToProductMutation = {
+    addOptionGroupToProduct: Pick<Product, 'id'> & {
+        optionGroups: Array<
+            Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
+        >;
+    };
 };
 
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
@@ -5419,25 +4917,21 @@ export type RemoveOptionGroupFromProductMutationVariables = Exact<{
     optionGroupId: Scalars['ID'];
 }>;
 
-export type RemoveOptionGroupFromProductMutation = { __typename?: 'Mutation' } & {
-    removeOptionGroupFromProduct: { __typename?: 'Product' } & Pick<Product, 'id'> & {
-            optionGroups: Array<
-                { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & {
-                        options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
-                    }
-            >;
-        };
+export type RemoveOptionGroupFromProductMutation = {
+    removeOptionGroupFromProduct: Pick<Product, 'id'> & {
+        optionGroups: Array<
+            Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
+        >;
+    };
 };
 
 export type GetOptionGroupQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetOptionGroupQuery = { __typename?: 'Query' } & {
+export type GetOptionGroupQuery = {
     productOptionGroup?: Maybe<
-        { __typename?: 'ProductOptionGroup' } & Pick<ProductOptionGroup, 'id' | 'code'> & {
-                options: Array<{ __typename?: 'ProductOption' } & Pick<ProductOption, 'id' | 'code'>>;
-            }
+        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
     >;
 };
 
@@ -5445,183 +4939,128 @@ export type GetProductVariantQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetProductVariantQuery = { __typename?: 'Query' } & {
-    productVariant?: Maybe<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
-};
+export type GetProductVariantQuery = { productVariant?: Maybe<Pick<ProductVariant, 'id' | 'name'>> };
 
 export type DeletePromotionMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeletePromotionMutation = { __typename?: 'Mutation' } & {
-    deletePromotion: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result'>;
-};
+export type DeletePromotionMutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
 export type GetPromotionListQueryVariables = Exact<{
     options?: Maybe<PromotionListOptions>;
 }>;
 
-export type GetPromotionListQuery = { __typename?: 'Query' } & {
-    promotions: { __typename?: 'PromotionList' } & Pick<PromotionList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Promotion' } & PromotionFragment>;
-        };
+export type GetPromotionListQuery = {
+    promotions: Pick<PromotionList, 'totalItems'> & { items: Array<PromotionFragment> };
 };
 
 export type GetPromotionQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetPromotionQuery = { __typename?: 'Query' } & {
-    promotion?: Maybe<{ __typename?: 'Promotion' } & PromotionFragment>;
-};
+export type GetPromotionQuery = { promotion?: Maybe<PromotionFragment> };
 
 export type UpdatePromotionMutationVariables = Exact<{
     input: UpdatePromotionInput;
 }>;
 
-export type UpdatePromotionMutation = { __typename?: 'Mutation' } & {
-    updatePromotion: { __typename?: 'Promotion' } & PromotionFragment;
-};
+export type UpdatePromotionMutation = { updatePromotion: PromotionFragment };
 
-export type ConfigurableOperationDefFragment = { __typename?: 'ConfigurableOperationDefinition' } & Pick<
+export type ConfigurableOperationDefFragment = Pick<
     ConfigurableOperationDefinition,
     'code' | 'description'
-> & {
-        args: Array<
-            { __typename?: 'ConfigArgDefinition' } & Pick<ConfigArgDefinition, 'name' | 'type' | 'ui'>
-        >;
-    };
+> & { args: Array<Pick<ConfigArgDefinition, 'name' | 'type' | 'ui'>> };
 
 export type GetAdjustmentOperationsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetAdjustmentOperationsQuery = { __typename?: 'Query' } & {
-    promotionActions: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
-    >;
-    promotionConditions: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & ConfigurableOperationDefFragment
-    >;
+export type GetAdjustmentOperationsQuery = {
+    promotionActions: Array<ConfigurableOperationDefFragment>;
+    promotionConditions: Array<ConfigurableOperationDefFragment>;
 };
 
 export type GetRolesQueryVariables = Exact<{
     options?: Maybe<RoleListOptions>;
 }>;
 
-export type GetRolesQuery = { __typename?: 'Query' } & {
-    roles: { __typename?: 'RoleList' } & Pick<RoleList, 'totalItems'> & {
-            items: Array<{ __typename?: 'Role' } & RoleFragment>;
-        };
-};
+export type GetRolesQuery = { roles: Pick<RoleList, 'totalItems'> & { items: Array<RoleFragment> } };
 
 export type GetRoleQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetRoleQuery = { __typename?: 'Query' } & {
-    role?: Maybe<{ __typename?: 'Role' } & RoleFragment>;
-};
+export type GetRoleQuery = { role?: Maybe<RoleFragment> };
 
 export type UpdateRoleMutationVariables = Exact<{
     input: UpdateRoleInput;
 }>;
 
-export type UpdateRoleMutation = { __typename?: 'Mutation' } & {
-    updateRole: { __typename?: 'Role' } & RoleFragment;
-};
+export type UpdateRoleMutation = { updateRole: RoleFragment };
 
 export type DeleteRoleMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteRoleMutation = { __typename?: 'Mutation' } & {
-    deleteRole: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteRoleMutation = { deleteRole: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
-export type LogoutMutation = { __typename?: 'Mutation' } & Pick<Mutation, 'logout'>;
+export type LogoutMutation = Pick<Mutation, 'logout'>;
 
-export type ShippingMethodFragment = { __typename?: 'ShippingMethod' } & Pick<
-    ShippingMethod,
-    'id' | 'code' | 'description'
-> & {
-        calculator: { __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'>;
-        checker: { __typename?: 'ConfigurableOperation' } & Pick<ConfigurableOperation, 'code'>;
-    };
+export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'description'> & {
+    calculator: Pick<ConfigurableOperation, 'code'>;
+    checker: Pick<ConfigurableOperation, 'code'>;
+};
 
 export type GetShippingMethodListQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetShippingMethodListQuery = { __typename?: 'Query' } & {
-    shippingMethods: { __typename?: 'ShippingMethodList' } & Pick<ShippingMethodList, 'totalItems'> & {
-            items: Array<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
-        };
+export type GetShippingMethodListQuery = {
+    shippingMethods: Pick<ShippingMethodList, 'totalItems'> & { items: Array<ShippingMethodFragment> };
 };
 
 export type GetShippingMethodQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetShippingMethodQuery = { __typename?: 'Query' } & {
-    shippingMethod?: Maybe<{ __typename?: 'ShippingMethod' } & ShippingMethodFragment>;
-};
+export type GetShippingMethodQuery = { shippingMethod?: Maybe<ShippingMethodFragment> };
 
 export type CreateShippingMethodMutationVariables = Exact<{
     input: CreateShippingMethodInput;
 }>;
 
-export type CreateShippingMethodMutation = { __typename?: 'Mutation' } & {
-    createShippingMethod: { __typename?: 'ShippingMethod' } & ShippingMethodFragment;
-};
+export type CreateShippingMethodMutation = { createShippingMethod: ShippingMethodFragment };
 
 export type UpdateShippingMethodMutationVariables = Exact<{
     input: UpdateShippingMethodInput;
 }>;
 
-export type UpdateShippingMethodMutation = { __typename?: 'Mutation' } & {
-    updateShippingMethod: { __typename?: 'ShippingMethod' } & ShippingMethodFragment;
-};
+export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
 
 export type DeleteShippingMethodMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteShippingMethodMutation = { __typename?: 'Mutation' } & {
-    deleteShippingMethod: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
+export type DeleteShippingMethodMutation = {
+    deleteShippingMethod: Pick<DeletionResponse, 'result' | 'message'>;
 };
 
 export type GetEligibilityCheckersQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetEligibilityCheckersQuery = { __typename?: 'Query' } & {
+export type GetEligibilityCheckersQuery = {
     shippingEligibilityCheckers: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & Pick<
-            ConfigurableOperationDefinition,
-            'code' | 'description'
-        > & {
-                args: Array<
-                    { __typename?: 'ConfigArgDefinition' } & Pick<
-                        ConfigArgDefinition,
-                        'name' | 'type' | 'description' | 'label' | 'ui'
-                    >
-                >;
-            }
+        Pick<ConfigurableOperationDefinition, 'code' | 'description'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type' | 'description' | 'label' | 'ui'>>;
+        }
     >;
 };
 
 export type GetCalculatorsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCalculatorsQuery = { __typename?: 'Query' } & {
+export type GetCalculatorsQuery = {
     shippingCalculators: Array<
-        { __typename?: 'ConfigurableOperationDefinition' } & Pick<
-            ConfigurableOperationDefinition,
-            'code' | 'description'
-        > & {
-                args: Array<
-                    { __typename?: 'ConfigArgDefinition' } & Pick<
-                        ConfigArgDefinition,
-                        'name' | 'type' | 'description' | 'label' | 'ui'
-                    >
-                >;
-            }
+        Pick<ConfigurableOperationDefinition, 'code' | 'description'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type' | 'description' | 'label' | 'ui'>>;
+        }
     >;
 };
 
@@ -5629,273 +5068,190 @@ export type TestShippingMethodQueryVariables = Exact<{
     input: TestShippingMethodInput;
 }>;
 
-export type TestShippingMethodQuery = { __typename?: 'Query' } & {
-    testShippingMethod: { __typename?: 'TestShippingMethodResult' } & Pick<
-        TestShippingMethodResult,
-        'eligible'
-    > & {
-            quote?: Maybe<
-                { __typename?: 'TestShippingMethodQuote' } & Pick<
-                    TestShippingMethodQuote,
-                    'price' | 'priceWithTax' | 'metadata'
-                >
-            >;
-        };
+export type TestShippingMethodQuery = {
+    testShippingMethod: Pick<TestShippingMethodResult, 'eligible'> & {
+        quote?: Maybe<Pick<TestShippingMethodQuote, 'price' | 'priceWithTax' | 'metadata'>>;
+    };
 };
 
 export type TestEligibleMethodsQueryVariables = Exact<{
     input: TestEligibleShippingMethodsInput;
 }>;
 
-export type TestEligibleMethodsQuery = { __typename?: 'Query' } & {
+export type TestEligibleMethodsQuery = {
     testEligibleShippingMethods: Array<
-        { __typename?: 'ShippingMethodQuote' } & Pick<
-            ShippingMethodQuote,
-            'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'
-        >
+        Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
     >;
 };
 
 export type GetMeQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetMeQuery = { __typename?: 'Query' } & {
-    me?: Maybe<{ __typename?: 'CurrentUser' } & Pick<CurrentUser, 'identifier'>>;
-};
+export type GetMeQuery = { me?: Maybe<Pick<CurrentUser, 'identifier'>> };
 
 export type GetProductsTake3QueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProductsTake3Query = { __typename?: 'Query' } & {
-    products: { __typename?: 'ProductList' } & {
-        items: Array<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
-    };
-};
+export type GetProductsTake3Query = { products: { items: Array<Pick<Product, 'id'>> } };
 
 export type GetProduct1QueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProduct1Query = { __typename?: 'Query' } & {
-    product?: Maybe<{ __typename?: 'Product' } & Pick<Product, 'id'>>;
-};
+export type GetProduct1Query = { product?: Maybe<Pick<Product, 'id'>> };
 
 export type GetProduct2VariantsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProduct2VariantsQuery = { __typename?: 'Query' } & {
-    product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id'> & {
-                variants: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
-            }
-    >;
+export type GetProduct2VariantsQuery = {
+    product?: Maybe<Pick<Product, 'id'> & { variants: Array<Pick<ProductVariant, 'id' | 'name'>> }>;
 };
 
 export type GetProductCollectionQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetProductCollectionQuery = { __typename?: 'Query' } & {
-    product?: Maybe<
-        { __typename?: 'Product' } & {
-            collections: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-        }
-    >;
+export type GetProductCollectionQuery = {
+    product?: Maybe<{ collections: Array<Pick<Collection, 'id' | 'name'>> }>;
 };
 
 export type DisableProductMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DisableProductMutation = { __typename?: 'Mutation' } & {
-    updateProduct: { __typename?: 'Product' } & Pick<Product, 'id'>;
-};
+export type DisableProductMutation = { updateProduct: Pick<Product, 'id'> };
 
 export type GetCollectionVariantsQueryVariables = Exact<{
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
 }>;
 
-export type GetCollectionVariantsQuery = { __typename?: 'Query' } & {
+export type GetCollectionVariantsQuery = {
     collection?: Maybe<
-        { __typename?: 'Collection' } & Pick<Collection, 'id'> & {
-                productVariants: { __typename?: 'ProductVariantList' } & {
-                    items: Array<{ __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id' | 'name'>>;
-                };
-            }
+        Pick<Collection, 'id'> & { productVariants: { items: Array<Pick<ProductVariant, 'id' | 'name'>> } }
     >;
 };
 
 export type GetCollectionListQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCollectionListQuery = { __typename?: 'Query' } & {
-    collections: { __typename?: 'CollectionList' } & {
-        items: Array<{ __typename?: 'Collection' } & Pick<Collection, 'id' | 'name'>>;
-    };
-};
+export type GetCollectionListQuery = { collections: { items: Array<Pick<Collection, 'id' | 'name'>> } };
 
 export type GetProductFacetValuesQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetProductFacetValuesQuery = { __typename?: 'Query' } & {
-    product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                facetValues: Array<{ __typename?: 'FacetValue' } & Pick<FacetValue, 'name'>>;
-            }
-    >;
+export type GetProductFacetValuesQuery = {
+    product?: Maybe<Pick<Product, 'id' | 'name'> & { facetValues: Array<Pick<FacetValue, 'name'>> }>;
 };
 
 export type GetVariantFacetValuesQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetVariantFacetValuesQuery = { __typename?: 'Query' } & {
+export type GetVariantFacetValuesQuery = {
     product?: Maybe<
-        { __typename?: 'Product' } & Pick<Product, 'id' | 'name'> & {
-                variants: Array<
-                    { __typename?: 'ProductVariant' } & Pick<ProductVariant, 'id'> & {
-                            facetValues: Array<{ __typename?: 'FacetValue' } & Pick<FacetValue, 'name'>>;
-                        }
-                >;
-            }
+        Pick<Product, 'id' | 'name'> & {
+            variants: Array<Pick<ProductVariant, 'id'> & { facetValues: Array<Pick<FacetValue, 'name'>> }>;
+        }
     >;
 };
 
 export type GetCustomerIdsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetCustomerIdsQuery = { __typename?: 'Query' } & {
-    customers: { __typename?: 'CustomerList' } & {
-        items: Array<{ __typename?: 'Customer' } & Pick<Customer, 'id'>>;
-    };
-};
+export type GetCustomerIdsQuery = { customers: { items: Array<Pick<Customer, 'id'>> } };
 
 export type UpdateStockMutationVariables = Exact<{
     input: Array<UpdateProductVariantInput>;
 }>;
 
-export type UpdateStockMutation = { __typename?: 'Mutation' } & {
-    updateProductVariants: Array<Maybe<{ __typename?: 'ProductVariant' } & VariantWithStockFragment>>;
-};
+export type UpdateStockMutation = { updateProductVariants: Array<Maybe<VariantWithStockFragment>> };
 
 export type GetTaxCategoryListQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetTaxCategoryListQuery = { __typename?: 'Query' } & {
-    taxCategories: Array<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
-};
+export type GetTaxCategoryListQuery = { taxCategories: Array<Pick<TaxCategory, 'id' | 'name'>> };
 
 export type GetTaxCategoryQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetTaxCategoryQuery = { __typename?: 'Query' } & {
-    taxCategory?: Maybe<{ __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>>;
-};
+export type GetTaxCategoryQuery = { taxCategory?: Maybe<Pick<TaxCategory, 'id' | 'name'>> };
 
 export type CreateTaxCategoryMutationVariables = Exact<{
     input: CreateTaxCategoryInput;
 }>;
 
-export type CreateTaxCategoryMutation = { __typename?: 'Mutation' } & {
-    createTaxCategory: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
-};
+export type CreateTaxCategoryMutation = { createTaxCategory: Pick<TaxCategory, 'id' | 'name'> };
 
 export type UpdateTaxCategoryMutationVariables = Exact<{
     input: UpdateTaxCategoryInput;
 }>;
 
-export type UpdateTaxCategoryMutation = { __typename?: 'Mutation' } & {
-    updateTaxCategory: { __typename?: 'TaxCategory' } & Pick<TaxCategory, 'id' | 'name'>;
-};
+export type UpdateTaxCategoryMutation = { updateTaxCategory: Pick<TaxCategory, 'id' | 'name'> };
 
 export type DeleteTaxCategoryMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteTaxCategoryMutation = { __typename?: 'Mutation' } & {
-    deleteTaxCategory: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteTaxCategoryMutation = { deleteTaxCategory: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type GetTaxRatesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetTaxRatesQuery = { __typename?: 'Query' } & {
-    taxRates: { __typename?: 'TaxRateList' } & Pick<TaxRateList, 'totalItems'> & {
-            items: Array<{ __typename?: 'TaxRate' } & TaxRateFragment>;
-        };
+export type GetTaxRatesQuery = {
+    taxRates: Pick<TaxRateList, 'totalItems'> & { items: Array<TaxRateFragment> };
 };
 
 export type GetTaxRateQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetTaxRateQuery = { __typename?: 'Query' } & {
-    taxRate?: Maybe<{ __typename?: 'TaxRate' } & TaxRateFragment>;
-};
+export type GetTaxRateQuery = { taxRate?: Maybe<TaxRateFragment> };
 
 export type CreateTaxRateMutationVariables = Exact<{
     input: CreateTaxRateInput;
 }>;
 
-export type CreateTaxRateMutation = { __typename?: 'Mutation' } & {
-    createTaxRate: { __typename?: 'TaxRate' } & TaxRateFragment;
-};
+export type CreateTaxRateMutation = { createTaxRate: TaxRateFragment };
 
 export type DeleteTaxRateMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteTaxRateMutation = { __typename?: 'Mutation' } & {
-    deleteTaxRate: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteTaxRateMutation = { deleteTaxRate: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type DeleteZoneMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type DeleteZoneMutation = { __typename?: 'Mutation' } & {
-    deleteZone: { __typename?: 'DeletionResponse' } & Pick<DeletionResponse, 'result' | 'message'>;
-};
+export type DeleteZoneMutation = { deleteZone: Pick<DeletionResponse, 'result' | 'message'> };
 
 export type GetZonesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetZonesQuery = { __typename?: 'Query' } & {
-    zones: Array<{ __typename?: 'Zone' } & Pick<Zone, 'id' | 'name'>>;
-};
+export type GetZonesQuery = { zones: Array<Pick<Zone, 'id' | 'name'>> };
 
 export type GetZoneQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetZoneQuery = { __typename?: 'Query' } & {
-    zone?: Maybe<{ __typename?: 'Zone' } & ZoneFragment>;
-};
+export type GetZoneQuery = { zone?: Maybe<ZoneFragment> };
 
 export type CreateZoneMutationVariables = Exact<{
     input: CreateZoneInput;
 }>;
 
-export type CreateZoneMutation = { __typename?: 'Mutation' } & {
-    createZone: { __typename?: 'Zone' } & ZoneFragment;
-};
+export type CreateZoneMutation = { createZone: ZoneFragment };
 
 export type UpdateZoneMutationVariables = Exact<{
     input: UpdateZoneInput;
 }>;
 
-export type UpdateZoneMutation = { __typename?: 'Mutation' } & {
-    updateZone: { __typename?: 'Zone' } & ZoneFragment;
-};
+export type UpdateZoneMutation = { updateZone: ZoneFragment };
 
 export type AddMembersToZoneMutationVariables = Exact<{
     zoneId: Scalars['ID'];
     memberIds: Array<Scalars['ID']>;
 }>;
 
-export type AddMembersToZoneMutation = { __typename?: 'Mutation' } & {
-    addMembersToZone: { __typename?: 'Zone' } & ZoneFragment;
-};
+export type AddMembersToZoneMutation = { addMembersToZone: ZoneFragment };
 
 export type RemoveMembersFromZoneMutationVariables = Exact<{
     zoneId: Scalars['ID'];
     memberIds: Array<Scalars['ID']>;
 }>;
 
-export type RemoveMembersFromZoneMutation = { __typename?: 'Mutation' } & {
-    removeMembersFromZone: { __typename?: 'Zone' } & ZoneFragment;
-};
+export type RemoveMembersFromZoneMutation = { removeMembersFromZone: ZoneFragment };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
@@ -6224,6 +5580,7 @@ export namespace CreateCountry {
 export namespace DeleteCustomerAddress {
     export type Variables = DeleteCustomerAddressMutationVariables;
     export type Mutation = DeleteCustomerAddressMutation;
+    export type DeleteCustomerAddress = NonNullable<DeleteCustomerAddressMutation['deleteCustomerAddress']>;
 }
 
 export namespace GetCustomerWithUser {
@@ -7066,6 +6423,10 @@ export namespace AdminTransition {
     export type Variables = AdminTransitionMutationVariables;
     export type Mutation = AdminTransitionMutation;
     export type TransitionOrderToState = NonNullable<AdminTransitionMutation['transitionOrderToState']>;
+    export type OrderStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<AdminTransitionMutation['transitionOrderToState']>,
+        { __typename?: 'OrderStateTransitionError' }
+    >;
 }
 
 export namespace UpdateOptionGroup {

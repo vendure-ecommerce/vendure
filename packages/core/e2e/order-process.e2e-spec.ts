@@ -1,20 +1,22 @@
 /* tslint:disable:no-non-null-assertion */
 import { CustomOrderProcess, mergeConfig, OrderState } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
-import { AdminTransition, GetOrder } from './graphql/generated-e2e-admin-types';
+import { AdminTransition, GetOrder, OrderFragment } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     AddPaymentToOrder,
+    ErrorCode,
     GetNextOrderStates,
     SetCustomerForOrder,
     SetShippingAddress,
     SetShippingMethod,
+    TestOrderFragmentFragment,
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
 import { ADMIN_TRANSITION_TO_STATE, GET_ORDER } from './graphql/shared-definitions';
@@ -81,6 +83,10 @@ describe('Order process', () => {
         },
     };
 
+    const orderErrorGuard: ErrorResultGuard<
+        TestOrderFragmentFragment | OrderFragment
+    > = createErrorResultGuard<TestOrderFragmentFragment | OrderFragment>(input => !!input.total);
+
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             orderOptions: { process: [customOrderProcess as any, customOrderProcess2 as any] },
@@ -130,6 +136,7 @@ describe('Order process', () => {
             >(TRANSITION_TO_STATE, {
                 state: 'ValidatingCustomer',
             });
+            orderErrorGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionStartSpy).toHaveBeenCalledTimes(1);
             expect(transitionEndSpy).not.toHaveBeenCalled();
@@ -155,17 +162,21 @@ describe('Order process', () => {
                 },
             );
 
-            try {
-                const { transitionOrderToState } = await shopClient.query<
-                    TransitionToState.Mutation,
-                    TransitionToState.Variables
-                >(TRANSITION_TO_STATE, {
-                    state: 'ValidatingCustomer',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(VALIDATION_ERROR_MESSAGE);
-            }
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, {
+                state: 'ValidatingCustomer',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "AddingItems" to "ValidatingCustomer"',
+            );
+            expect(transitionOrderToState!.errorCode).toBe(ErrorCode.ORDER_STATE_TRANSITION_ERROR);
+            expect(transitionOrderToState!.transitionError).toBe(VALIDATION_ERROR_MESSAGE);
+            expect(transitionOrderToState!.fromState).toBe('AddingItems');
+            expect(transitionOrderToState!.toState).toBe('ValidatingCustomer');
 
             expect(transitionStartSpy).toHaveBeenCalledTimes(1);
             expect(transitionErrorSpy).toHaveBeenCalledTimes(1);
@@ -197,6 +208,7 @@ describe('Order process', () => {
             >(TRANSITION_TO_STATE, {
                 state: 'ValidatingCustomer',
             });
+            orderErrorGuard.assertSuccess(transitionOrderToState);
 
             expect(transitionEndSpy).toHaveBeenCalledTimes(1);
             expect(transitionEndSpy.mock.calls[0].slice(0, 2)).toEqual(['AddingItems', 'ValidatingCustomer']);
@@ -227,7 +239,7 @@ describe('Order process', () => {
     });
 
     describe('Admin API transition constraints', () => {
-        let order: NonNullable<TransitionToState.Mutation['transitionOrderToState']>;
+        let order: NonNullable<TestOrderFragmentFragment>;
 
         beforeAll(async () => {
             await shopClient.asAnonymousUser();
@@ -268,32 +280,35 @@ describe('Order process', () => {
                     state: 'ValidatingCustomer',
                 },
             );
-            const result = await shopClient.query<TransitionToState.Mutation, TransitionToState.Variables>(
-                TRANSITION_TO_STATE,
-                {
-                    state: 'ArrangingPayment',
-                },
-            );
-            order = result.transitionOrderToState!;
+            const { transitionOrderToState } = await shopClient.query<
+                TransitionToState.Mutation,
+                TransitionToState.Variables
+            >(TRANSITION_TO_STATE, {
+                state: 'ArrangingPayment',
+            });
+            orderErrorGuard.assertSuccess(transitionOrderToState);
+
+            order = transitionOrderToState!;
         });
 
         it('cannot manually transition to PaymentAuthorized', async () => {
             expect(order.state).toBe('ArrangingPayment');
 
-            try {
-                const { transitionOrderToState } = await adminClient.query<
-                    AdminTransition.Mutation,
-                    AdminTransition.Variables
-                >(ADMIN_TRANSITION_TO_STATE, {
-                    id: order.id,
-                    state: 'PaymentAuthorized',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(
-                    'Cannot transition Order to the "PaymentAuthorized" state when the total is not covered by authorized Payments',
-                );
-            }
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'PaymentAuthorized',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "ArrangingPayment" to "PaymentAuthorized"',
+            );
+            expect(transitionOrderToState!.transitionError).toBe(
+                'Cannot transition Order to the "PaymentAuthorized" state when the total is not covered by authorized Payments',
+            );
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
@@ -302,20 +317,21 @@ describe('Order process', () => {
         });
 
         it('cannot manually transition to PaymentSettled', async () => {
-            try {
-                const { transitionOrderToState } = await adminClient.query<
-                    AdminTransition.Mutation,
-                    AdminTransition.Variables
-                >(ADMIN_TRANSITION_TO_STATE, {
-                    id: order.id,
-                    state: 'PaymentSettled',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(
-                    'Cannot transition Order to the "PaymentSettled" state when the total is not covered by settled Payments',
-                );
-            }
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'PaymentSettled',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "ArrangingPayment" to "PaymentSettled"',
+            );
+            expect(transitionOrderToState!.transitionError).toContain(
+                'Cannot transition Order to the "PaymentSettled" state when the total is not covered by settled Payments',
+            );
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
@@ -333,23 +349,26 @@ describe('Order process', () => {
                     metadata: {},
                 },
             });
+            orderErrorGuard.assertSuccess(addPaymentToOrder);
 
             expect(addPaymentToOrder?.state).toBe('PaymentSettled');
 
-            try {
-                const { transitionOrderToState } = await adminClient.query<
-                    AdminTransition.Mutation,
-                    AdminTransition.Variables
-                >(ADMIN_TRANSITION_TO_STATE, {
-                    id: order.id,
-                    state: 'Cancelled',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(
-                    'Cannot transition Order to the "Cancelled" state unless all OrderItems are cancelled',
-                );
-            }
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'Cancelled',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "PaymentSettled" to "Cancelled"',
+            );
+            expect(transitionOrderToState!.transitionError).toContain(
+                'Cannot transition Order to the "Cancelled" state unless all OrderItems are cancelled',
+            );
+
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
             });
@@ -357,20 +376,22 @@ describe('Order process', () => {
         });
 
         it('cannot manually transition to PartiallyDelivered', async () => {
-            try {
-                const { transitionOrderToState } = await adminClient.query<
-                    AdminTransition.Mutation,
-                    AdminTransition.Variables
-                >(ADMIN_TRANSITION_TO_STATE, {
-                    id: order.id,
-                    state: 'PartiallyDelivered',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(
-                    'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are delivered',
-                );
-            }
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'PartiallyDelivered',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "PaymentSettled" to "PartiallyDelivered"',
+            );
+            expect(transitionOrderToState!.transitionError).toContain(
+                'Cannot transition Order to the "PartiallyDelivered" state unless some OrderItems are delivered',
+            );
+
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
             });
@@ -378,20 +399,22 @@ describe('Order process', () => {
         });
 
         it('cannot manually transition to PartiallyDelivered', async () => {
-            try {
-                const { transitionOrderToState } = await adminClient.query<
-                    AdminTransition.Mutation,
-                    AdminTransition.Variables
-                >(ADMIN_TRANSITION_TO_STATE, {
-                    id: order.id,
-                    state: 'Delivered',
-                });
-                fail('Should have thrown');
-            } catch (e) {
-                expect(e.message).toContain(
-                    'Cannot transition Order to the "Delivered" state unless all OrderItems are delivered',
-                );
-            }
+            const { transitionOrderToState } = await adminClient.query<
+                AdminTransition.Mutation,
+                AdminTransition.Variables
+            >(ADMIN_TRANSITION_TO_STATE, {
+                id: order.id,
+                state: 'Delivered',
+            });
+            orderErrorGuard.assertErrorResult(transitionOrderToState);
+
+            expect(transitionOrderToState!.message).toBe(
+                'Cannot transition Order from "PaymentSettled" to "Delivered"',
+            );
+            expect(transitionOrderToState!.transitionError).toContain(
+                'Cannot transition Order to the "Delivered" state unless all OrderItems are delivered',
+            );
+
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: order.id,
             });

@@ -1,7 +1,7 @@
 /* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
 import { mergeConfig } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -10,6 +10,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
+    AssetFragment,
     CreateAssets,
     DeleteAsset,
     DeletionResult,
@@ -136,7 +137,7 @@ describe('Asset resolver', () => {
     });
 
     describe('createAssets', () => {
-        function isAsset(input: CreateAssets.CreateAssets): input is CreateAssets.AssetInlineFragment {
+        function isAsset(input: CreateAssets.CreateAssets): input is AssetFragment {
             return input.hasOwnProperty('name');
         }
 
@@ -216,7 +217,7 @@ describe('Asset resolver', () => {
 
             expect(createAssets.length).toBe(1);
             expect(createAssets[0]).toEqual({
-                message: 'error.mime-type-not-permitted',
+                message: `The MIME type 'text/plain' is not permitted.`,
                 mimeType: 'text/plain',
                 fileName: 'dummy.txt',
             });

@@ -120,7 +120,7 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: true,
+                synchronize: false,
                 type: 'mysql',
                 host: '127.0.0.1',
                 port: 3306,

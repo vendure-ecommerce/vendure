@@ -14,6 +14,7 @@ import {
     Permission,
     QueryCustomerArgs,
     QueryCustomersArgs,
+    Success,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -98,9 +99,10 @@ export class CustomerResolver {
     async deleteCustomerAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCustomerAddressArgs,
-    ): Promise<boolean> {
+    ): Promise<Success> {
         const { id } = args;
-        return this.customerService.deleteAddress(ctx, id);
+        const success = await this.customerService.deleteAddress(ctx, id);
+        return { success };
     }
 
     @Transaction()

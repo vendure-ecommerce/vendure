@@ -20,7 +20,7 @@ type Mutation {
     updateCustomerAddress(input: UpdateAddressInput!): Address!
 
     "Update an existing Address"
-    deleteCustomerAddress(id: ID!): Boolean!
+    deleteCustomerAddress(id: ID!): Success!
 
     addNoteToCustomer(input: AddNoteToCustomerInput!): Customer!
     updateCustomerNote(input: UpdateCustomerNoteInput!): HistoryEntry!

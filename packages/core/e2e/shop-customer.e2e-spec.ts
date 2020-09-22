@@ -1,12 +1,12 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 import { skip } from 'rxjs/operators';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AttemptLogin,
@@ -19,6 +19,7 @@ import {
     CreateAddressInput,
     CreateAddressShop,
     DeleteAddressShop,
+    ErrorCode,
     UpdateAddressInput,
     UpdateAddressShop,
     UpdateCustomer,
@@ -38,6 +39,10 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Shop customers', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
     let customer: GetCustomer.Customer;
+
+    const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard<{
+        success: boolean;
+    }>(input => input.success != null);
 
     beforeAll(async () => {
         await server.init({
@@ -252,12 +257,12 @@ describe('Shop customers', () => {
         );
 
         it('deleteCustomerAddress works', async () => {
-            const result = await shopClient.query<DeleteAddressShop.Mutation, DeleteAddressShop.Variables>(
-                DELETE_ADDRESS,
-                { id: 'T_3' },
-            );
+            const { deleteCustomerAddress } = await shopClient.query<
+                DeleteAddressShop.Mutation,
+                DeleteAddressShop.Variables
+            >(DELETE_ADDRESS, { id: 'T_3' });
 
-            expect(result.deleteCustomerAddress).toBe(true);
+            expect(deleteCustomerAddress.success).toBe(true);
         });
 
         it('customer history for CUSTOMER_ADDRESS_DELETED', async () => {
@@ -286,23 +291,28 @@ describe('Shop customers', () => {
             }, 'You are not currently authorized to perform this action'),
         );
 
-        it(
-            'updatePassword fails with incorrect current password',
-            assertThrowsWithMessage(async () => {
-                await shopClient.query<UpdatePassword.Mutation, UpdatePassword.Variables>(UPDATE_PASSWORD, {
-                    old: 'wrong',
-                    new: 'test2',
-                });
-            }, 'The credentials did not match. Please check and try again'),
-        );
+        it('updatePassword return error result with incorrect current password', async () => {
+            const { updateCustomerPassword } = await shopClient.query<
+                UpdatePassword.Mutation,
+                UpdatePassword.Variables
+            >(UPDATE_PASSWORD, {
+                old: 'wrong',
+                new: 'test2',
+            });
+            successErrorGuard.assertErrorResult(updateCustomerPassword);
+
+            expect(updateCustomerPassword.message).toBe('The provided credentials are invalid');
+            expect(updateCustomerPassword.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+        });
 
         it('updatePassword works', async () => {
-            const response = await shopClient.query<UpdatePassword.Mutation, UpdatePassword.Variables>(
-                UPDATE_PASSWORD,
-                { old: 'test', new: 'test2' },
-            );
+            const { updateCustomerPassword } = await shopClient.query<
+                UpdatePassword.Mutation,
+                UpdatePassword.Variables
+            >(UPDATE_PASSWORD, { old: 'test', new: 'test2' });
+            successErrorGuard.assertSuccess(updateCustomerPassword);
 
-            expect(response.updateCustomerPassword).toBe(true);
+            expect(updateCustomerPassword.success).toBe(true);
 
             // Log out and log in with new password
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'test2');

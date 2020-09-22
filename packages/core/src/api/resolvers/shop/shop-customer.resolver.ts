@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { MutationDeleteCustomerAddressArgs } from '@vendure/common/lib/generated-shop-types';
+import { MutationDeleteCustomerAddressArgs, Success } from '@vendure/common/lib/generated-shop-types';
 import {
     MutationCreateCustomerAddressArgs,
     MutationUpdateCustomerAddressArgs,
@@ -75,13 +75,14 @@ export class ShopCustomerResolver {
     async deleteCustomerAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCustomerAddressArgs,
-    ): Promise<boolean> {
+    ): Promise<Success> {
         const customer = await this.getCustomerForOwner(ctx);
         const customerAddresses = await this.customerService.findAddressesByCustomerId(ctx, customer.id);
         if (!customerAddresses.find(address => idsAreEqual(address.id, args.id))) {
             throw new ForbiddenError();
         }
-        return this.customerService.deleteAddress(ctx, args.id);
+        const success = await this.customerService.deleteAddress(ctx, args.id);
+        return { success };
     }
 
     /**

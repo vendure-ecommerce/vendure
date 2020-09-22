@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PaymentInput } from '@vendure/common/lib/generated-shop-types';
+import {
+    AddPaymentToOrderResult,
+    ApplyCouponCodeResult,
+    PaymentInput,
+    RemoveOrderItemsResult,
+    SetOrderShippingMethodResult,
+    UpdateOrderItemsResult,
+} from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToOrderInput,
     CancelOrderInput,
@@ -20,13 +27,22 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import {
     EntityNotFoundError,
     IllegalOperationError,
     InternalServerError,
-    OrderItemsLimitError,
     UserInputError,
 } from '../../common/error/errors';
+import {
+    NegativeQuantityError,
+    OrderLimitError,
+    OrderModificationError,
+    OrderPaymentStateError,
+    OrderStateTransitionError,
+    PaymentDeclinedError,
+    PaymentFailedError,
+} from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -276,11 +292,15 @@ export class OrderService {
         productVariantId: ID,
         quantity: number,
         customFields?: { [key: string]: any },
-    ): Promise<Order> {
-        this.assertQuantityIsPositive(quantity);
+    ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        this.assertAddingItemsState(order);
-        this.assertNotOverOrderItemsLimit(order, quantity);
+        const validationError =
+            this.assertQuantityIsPositive(quantity) ||
+            this.assertAddingItemsState(order) ||
+            this.assertNotOverOrderItemsLimit(order, quantity);
+        if (validationError) {
+            return validationError;
+        }
         const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
         let orderLine = order.lines.find(line => {
             return (
@@ -304,7 +324,7 @@ export class OrderService {
         orderLineId: ID,
         quantity?: number | null,
         customFields?: { [key: string]: any },
-    ): Promise<Order> {
+    ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const { priceCalculationStrategy } = this.configService.orderOptions;
         const order =
             orderIdOrOrder instanceof Order
@@ -314,11 +334,15 @@ export class OrderService {
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        this.assertAddingItemsState(order);
         if (quantity != null) {
-            this.assertQuantityIsPositive(quantity);
             const currentQuantity = orderLine.quantity;
-            this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
+            const validationError =
+                this.assertAddingItemsState(order) ||
+                this.assertQuantityIsPositive(quantity) ||
+                this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
+            if (validationError) {
+                return validationError;
+            }
             if (currentQuantity < quantity) {
                 if (!orderLine.items) {
                     orderLine.items = [];
@@ -349,9 +373,16 @@ export class OrderService {
         return this.applyPriceAdjustments(ctx, order, orderLine);
     }
 
-    async removeItemFromOrder(ctx: RequestContext, orderId: ID, orderLineId: ID): Promise<Order> {
+    async removeItemFromOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        orderLineId: ID,
+    ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        this.assertAddingItemsState(order);
+        const validationError = this.assertAddingItemsState(order);
+        if (validationError) {
+            return validationError;
+        }
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
         order.lines = order.lines.filter(line => !idsAreEqual(line.id, orderLineId));
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
@@ -359,31 +390,44 @@ export class OrderService {
         return updatedOrder;
     }
 
-    async removeAllItemsFromOrder(ctx: RequestContext, orderId: ID): Promise<Order> {
+    async removeAllItemsFromOrder(
+        ctx: RequestContext,
+        orderId: ID,
+    ): Promise<ErrorResultUnion<RemoveOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        this.assertAddingItemsState(order);
+        const validationError = this.assertAddingItemsState(order);
+        if (validationError) {
+            return validationError;
+        }
         await this.connection.getRepository(ctx, OrderLine).remove(order.lines);
         order.lines = [];
         const updatedOrder = await this.applyPriceAdjustments(ctx, order);
         return updatedOrder;
     }
 
-    async applyCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
+    async applyCouponCode(
+        ctx: RequestContext,
+        orderId: ID,
+        couponCode: string,
+    ): Promise<ErrorResultUnion<ApplyCouponCodeResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
             return order;
         }
-        const promotion = await this.promotionService.validateCouponCode(
+        const validationResult = await this.promotionService.validateCouponCode(
             ctx,
             couponCode,
             order.customer && order.customer.id,
         );
+        if (isGraphQlErrorResult(validationResult)) {
+            return validationResult;
+        }
         order.couponCodes.push(couponCode);
         await this.historyService.createHistoryEntryForOrder({
             ctx,
             orderId: order.id,
             type: HistoryEntryType.ORDER_COUPON_APPLIED,
-            data: { couponCode, promotionId: promotion.id },
+            data: { couponCode, promotionId: validationResult.id },
         });
         return this.applyPriceAdjustments(ctx, order);
     }
@@ -442,9 +486,16 @@ export class OrderService {
         }));
     }
 
-    async setShippingMethod(ctx: RequestContext, orderId: ID, shippingMethodId: ID): Promise<Order> {
+    async setShippingMethod(
+        ctx: RequestContext,
+        orderId: ID,
+        shippingMethodId: ID,
+    ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        this.assertAddingItemsState(order);
+        const validationError = this.assertAddingItemsState(order);
+        if (validationError) {
+            return validationError;
+        }
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
         if (!selectedMethod) {
@@ -456,11 +507,20 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
-    async transitionToState(ctx: RequestContext, orderId: ID, state: OrderState): Promise<Order> {
+    async transitionToState(
+        ctx: RequestContext,
+        orderId: ID,
+        state: OrderState,
+    ): Promise<Order | OrderStateTransitionError> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         order.payments = await this.getOrderPayments(ctx, orderId);
         const fromState = order.state;
-        await this.orderStateMachine.transition(ctx, order, state);
+        try {
+            await this.orderStateMachine.transition(ctx, order, state);
+        } catch (e) {
+            const transitionError = ctx.translate(e.message, { fromState, toState: state });
+            return new OrderStateTransitionError(transitionError, fromState, state);
+        }
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         this.eventBus.publish(new OrderStateTransitionEvent(fromState, state, ctx, order));
         return order;
@@ -511,10 +571,14 @@ export class OrderService {
         }
     }
 
-    async addPaymentToOrder(ctx: RequestContext, orderId: ID, input: PaymentInput): Promise<Order> {
+    async addPaymentToOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        input: PaymentInput,
+    ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.state !== 'ArrangingPayment') {
-            throw new IllegalOperationError(`error.payment-may-only-be-added-in-arrangingpayment-state`);
+            return new OrderPaymentStateError();
         }
         const payment = await this.paymentMethodService.createPayment(
             ctx,
@@ -528,10 +592,10 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
-            // TODO: we need to return an Error response as per
-            // https://github.com/vendure-ecommerce/vendure/issues/437
-            // Throwing an error rolls back all changes, which we do not want.
-            // throw new InternalServerError(payment.errorMessage);
+            return new PaymentFailedError(payment.errorMessage);
+        }
+        if (payment.state === 'Declined') {
+            return new PaymentDeclinedError(payment.errorMessage);
         }
 
         if (orderTotalIsCovered(order, 'Settled')) {
@@ -768,9 +832,12 @@ export class OrderService {
         if (order.couponCodes) {
             let codesRemoved = false;
             for (const couponCode of order.couponCodes.slice()) {
-                try {
-                    await this.promotionService.validateCouponCode(ctx, couponCode, customer.id);
-                } catch (err) {
+                const validationResult = await this.promotionService.validateCouponCode(
+                    ctx,
+                    couponCode,
+                    customer.id,
+                );
+                if (isGraphQlErrorResult(validationResult)) {
                     order.couponCodes = order.couponCodes.filter(c => c !== couponCode);
                     codesRemoved = true;
                 }
@@ -844,8 +911,12 @@ export class OrderService {
             await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
         }
         if (order && linesToInsert) {
+            const orderId = order.id;
             for (const line of linesToInsert) {
-                order = await this.addItemToOrder(ctx, order.id, line.productVariantId, line.quantity);
+                const result = await this.addItemToOrder(ctx, orderId, line.productVariantId, line.quantity);
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
             }
         }
         const customer = await this.customerService.findOneByUserId(ctx, user.id);
@@ -896,20 +967,20 @@ export class OrderService {
     }
 
     /**
-     * Throws if quantity is negative.
+     * Returns error if quantity is negative.
      */
     private assertQuantityIsPositive(quantity: number) {
         if (quantity < 0) {
-            throw new IllegalOperationError(`error.order-item-quantity-must-be-positive`, { quantity });
+            return new NegativeQuantityError();
         }
     }
 
     /**
-     * Throws if the Order is not in the "AddingItems" state.
+     * Returns error if the Order is not in the "AddingItems" state.
      */
     private assertAddingItemsState(order: Order) {
         if (order.state !== 'AddingItems') {
-            throw new IllegalOperationError(`error.order-contents-may-only-be-modified-in-addingitems-state`);
+            return new OrderModificationError();
         }
     }
 
@@ -921,7 +992,7 @@ export class OrderService {
         const currentItemsCount = order.lines.reduce((count, line) => count + line.quantity, 0);
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
-            throw new OrderItemsLimitError(orderItemsLimit);
+            return new OrderLimitError(orderItemsLimit);
         }
     }
 

@@ -1,5 +1,6 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    ErrorCode,
     LoginResult,
     MutationAuthenticateArgs,
     MutationLoginArgs,
@@ -12,16 +13,21 @@ import {
     MutationUpdateCustomerPasswordArgs,
     MutationVerifyCustomerAccountArgs,
     Permission,
+    RefreshCustomerVerificationResult,
+    RegisterCustomerAccountResult,
+    RequestPasswordResetResult,
+    RequestUpdateCustomerEmailAddressResult,
+    ResetPasswordResult,
+    UpdateCustomerEmailAddressResult,
+    UpdateCustomerPasswordResult,
+    VerifyCustomerAccountResult,
 } from '@vendure/common/lib/generated-shop-types';
 import { HistoryEntryType } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
-import {
-    ForbiddenError,
-    InternalServerError,
-    PasswordResetTokenError,
-    VerificationTokenError,
-} from '../../../common/error/errors';
+import { isGraphQlErrorResult } from '../../../common/error/error-result';
+import { ForbiddenError } from '../../../common/error/errors';
+import { NativeAuthStrategyError } from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
@@ -103,9 +109,21 @@ export class ShopAuthResolver extends BaseAuthResolver {
     async registerCustomerAccount(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRegisterCustomerAccountArgs,
-    ) {
-        this.requireNativeAuthStrategy();
-        return this.customerService.registerCustomerAccount(ctx, args.input).then(() => true);
+    ): Promise<RegisterCustomerAccountResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        const result = await this.customerService.registerCustomerAccount(ctx, args.input);
+        if (isGraphQlErrorResult(result)) {
+            if (result.code === ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR) {
+                // We do not want to reveal the email address conflict,
+                // otherwise account enumeration attacks become possible.
+                return { success: true };
+            }
+            return result;
+        }
+        return { success: true };
     }
 
     @Transaction()
@@ -116,33 +134,36 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: MutationVerifyCustomerAccountArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<LoginResult> {
-        this.requireNativeAuthStrategy();
+    ): Promise<VerifyCustomerAccountResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
         const { token, password } = args;
         const customer = await this.customerService.verifyCustomerEmailAddress(
             ctx,
             token,
             password || undefined,
         );
-        if (customer && customer.user) {
-            const session = await this.authService.createAuthenticatedSessionForUser(
-                ctx,
-                customer.user,
-                NATIVE_AUTH_STRATEGY_NAME,
-            );
-            setSessionToken({
-                req,
-                res,
-                authOptions: this.configService.authOptions,
-                rememberMe: true,
-                sessionToken: session.token,
-            });
-            return {
-                user: this.publiclyAccessibleUser(session.user),
-            };
-        } else {
-            throw new VerificationTokenError();
+        if (isGraphQlErrorResult(customer)) {
+            return customer;
         }
+        const session = await this.authService.createAuthenticatedSessionForUser(
+            ctx,
+            // We know that there is a user, since the Customer
+            // was found with the .getCustomerByUserId() method.
+            // tslint:disable-next-line:no-non-null-assertion
+            customer.user!,
+            NATIVE_AUTH_STRATEGY_NAME,
+        );
+        setSessionToken({
+            req,
+            res,
+            authOptions: this.configService.authOptions,
+            rememberMe: true,
+            sessionToken: session.token,
+        });
+        return this.publiclyAccessibleUser(session.user);
     }
 
     @Transaction()
@@ -151,16 +172,28 @@ export class ShopAuthResolver extends BaseAuthResolver {
     async refreshCustomerVerification(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRefreshCustomerVerificationArgs,
-    ) {
-        this.requireNativeAuthStrategy();
-        return this.customerService.refreshVerificationToken(ctx, args.emailAddress).then(() => true);
+    ): Promise<RefreshCustomerVerificationResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        await this.customerService.refreshVerificationToken(ctx, args.emailAddress);
+        return { success: true };
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    async requestPasswordReset(@Ctx() ctx: RequestContext, @Args() args: MutationRequestPasswordResetArgs) {
-        return this.customerService.requestPasswordReset(ctx, args.emailAddress).then(() => true);
+    async requestPasswordReset(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRequestPasswordResetArgs,
+    ): Promise<RequestPasswordResetResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        await this.customerService.requestPasswordReset(ctx, args.emailAddress);
+        return { success: true };
     }
 
     @Transaction()
@@ -171,27 +204,31 @@ export class ShopAuthResolver extends BaseAuthResolver {
         @Args() args: MutationResetPasswordArgs,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ) {
-        this.requireNativeAuthStrategy();
+    ): Promise<ResetPasswordResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
         const { token, password } = args;
-        const customer = await this.customerService.resetPassword(ctx, token, password);
-        if (customer && customer.user) {
-            return super.authenticateAndCreateSession(
-                ctx,
-                {
-                    input: {
-                        [NATIVE_AUTH_STRATEGY_NAME]: {
-                            username: customer.user.identifier,
-                            password: args.password,
-                        },
+        const result = await this.customerService.resetPassword(ctx, token, password);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+
+        const { user } = await super.authenticateAndCreateSession(
+            ctx,
+            {
+                input: {
+                    [NATIVE_AUTH_STRATEGY_NAME]: {
+                        username: result.identifier,
+                        password: args.password,
                     },
                 },
-                req,
-                res,
-            );
-        } else {
-            throw new PasswordResetTokenError();
-        }
+            },
+            req,
+            res,
+        );
+        return user;
     }
 
     @Transaction()
@@ -200,9 +237,15 @@ export class ShopAuthResolver extends BaseAuthResolver {
     async updateCustomerPassword(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerPasswordArgs,
-    ): Promise<boolean> {
-        this.requireNativeAuthStrategy();
+    ): Promise<UpdateCustomerPasswordResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
         const result = await super.updatePassword(ctx, args.currentPassword, args.newPassword);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
         if (result && ctx.activeUserId) {
             const customer = await this.customerService.findOneByUserId(ctx, ctx.activeUserId);
             if (customer) {
@@ -214,7 +257,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
                 });
             }
         }
-        return result;
+        return { success: result };
     }
 
     @Transaction()
@@ -223,13 +266,29 @@ export class ShopAuthResolver extends BaseAuthResolver {
     async requestUpdateCustomerEmailAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRequestUpdateCustomerEmailAddressArgs,
-    ): Promise<boolean> {
-        this.requireNativeAuthStrategy();
+    ): Promise<RequestUpdateCustomerEmailAddressResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
         if (!ctx.activeUserId) {
             throw new ForbiddenError();
         }
-        await this.authService.verifyUserPassword(ctx, ctx.activeUserId, args.password);
-        return this.customerService.requestUpdateEmailAddress(ctx, ctx.activeUserId, args.newEmailAddress);
+        const verify = await this.authService.verifyUserPassword(ctx, ctx.activeUserId, args.password);
+        if (isGraphQlErrorResult(verify)) {
+            return verify;
+        }
+        const result = await this.customerService.requestUpdateEmailAddress(
+            ctx,
+            ctx.activeUserId,
+            args.newEmailAddress,
+        );
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        return {
+            success: result,
+        };
     }
 
     @Transaction()
@@ -238,12 +297,19 @@ export class ShopAuthResolver extends BaseAuthResolver {
     async updateCustomerEmailAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerEmailAddressArgs,
-    ): Promise<boolean> {
-        this.requireNativeAuthStrategy();
-        return this.customerService.updateEmailAddress(ctx, args.token);
+    ): Promise<UpdateCustomerEmailAddressResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        const result = await this.customerService.updateEmailAddress(ctx, args.token);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        return { success: result };
     }
 
-    private requireNativeAuthStrategy() {
+    private requireNativeAuthStrategy(): NativeAuthStrategyError | undefined {
         if (!this.nativeAuthStrategyIsConfigured) {
             const authStrategyNames = this.configService.authOptions.shopAuthenticationStrategy
                 .map(s => s.name)
@@ -252,7 +318,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
                 'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Shop API.\n' +
                 `Currently the following AuthenticationStrategies are enabled: ${authStrategyNames}`;
             Logger.error(errorMessage);
-            throw new InternalServerError('error.');
+            return new NativeAuthStrategyError();
         }
     }
 }

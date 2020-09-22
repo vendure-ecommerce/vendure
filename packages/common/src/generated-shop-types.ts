@@ -16,6 +16,13 @@ export type Scalars = {
     Upload: any;
 };
 
+export type AddPaymentToOrderResult =
+    | Order
+    | OrderPaymentStateError
+    | PaymentFailedError
+    | PaymentDeclinedError
+    | OrderStateTransitionError;
+
 export type Address = Node & {
     __typename?: 'Address';
     id: Scalars['ID'];
@@ -69,6 +76,19 @@ export type AdministratorList = PaginatedList & {
     items: Array<Administrator>;
     totalItems: Scalars['Int'];
 };
+
+/** Retured when attemting to set the Customer for an Order when already logged in. */
+export type AlreadyLoggedInError = ErrorResult & {
+    __typename?: 'AlreadyLoggedInError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+export type ApplyCouponCodeResult =
+    | Order
+    | CouponCodeExpiredError
+    | CouponCodeInvalidError
+    | CouponCodeLimitError;
 
 export type Asset = Node & {
     __typename?: 'Asset';
@@ -297,6 +317,31 @@ export type CountryTranslation = {
     updatedAt: Scalars['DateTime'];
     languageCode: LanguageCode;
     name: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeExpiredError = ErrorResult & {
+    __typename?: 'CouponCodeExpiredError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeInvalidError = ErrorResult & {
+    __typename?: 'CouponCodeInvalidError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+};
+
+/** Returned if the provided coupon code is invalid */
+export type CouponCodeLimitError = ErrorResult & {
+    __typename?: 'CouponCodeLimitError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    couponCode: Scalars['String'];
+    limit: Scalars['Int'];
 };
 
 export type CreateAddressInput = {
@@ -807,9 +852,43 @@ export enum DeletionResult {
     NOT_DELETED = 'NOT_DELETED',
 }
 
+/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+export type EmailAddressConflictError = ErrorResult & {
+    __typename?: 'EmailAddressConflictError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export enum ErrorCode {
-    UnknownError = 'UnknownError',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
+    ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
+    NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
+    COUPON_CODE_EXPIRED_ERROR = 'COUPON_CODE_EXPIRED_ERROR',
+    COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
+    COUPON_CODE_LIMIT_ERROR = 'COUPON_CODE_LIMIT_ERROR',
+    ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
+    ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
+    PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
+    PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
+    ALREADY_LOGGED_IN_ERROR = 'ALREADY_LOGGED_IN_ERROR',
+    EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+    MISSING_PASSWORD_ERROR = 'MISSING_PASSWORD_ERROR',
+    NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
+    VERIFICATION_TOKEN_INVALID_ERROR = 'VERIFICATION_TOKEN_INVALID_ERROR',
+    VERIFICATION_TOKEN_EXPIRED_ERROR = 'VERIFICATION_TOKEN_EXPIRED_ERROR',
+    PASSWORD_ALREADY_SET_ERROR = 'PASSWORD_ALREADY_SET_ERROR',
+    INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+    IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR',
+    IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR',
+    PASSWORD_RESET_TOKEN_INVALID_ERROR = 'PASSWORD_RESET_TOKEN_INVALID_ERROR',
+    PASSWORD_RESET_TOKEN_EXPIRED_ERROR = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR',
 }
+
+export type ErrorResult = {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
 
 export type Facet = Node & {
     __typename?: 'Facet';
@@ -970,6 +1049,26 @@ export enum HistoryEntryType {
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
 }
 
+/**
+ * Retured if the token used to change a Customer's email address is valid, but has
+ * expired according to the `verificationTokenDuration` setting in the AuthOptions.
+ */
+export type IdentifierChangeTokenExpiredError = ErrorResult & {
+    __typename?: 'IdentifierChangeTokenExpiredError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/**
+ * Retured if the token used to change a Customer's email address is either
+ * invalid or does not match any expected tokens.
+ */
+export type IdentifierChangeTokenInvalidError = ErrorResult & {
+    __typename?: 'IdentifierChangeTokenInvalidError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type ImportInfo = {
     __typename?: 'ImportInfo';
     errors?: Maybe<Array<Scalars['String']>>;
@@ -989,6 +1088,13 @@ export type IntCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['Int']>;
     max?: Maybe<Scalars['Int']>;
     step?: Maybe<Scalars['Int']>;
+};
+
+/** Returned if the user credentials are not valid */
+export type InvalidCredentialsError = ErrorResult & {
+    __typename?: 'InvalidCredentialsError';
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 /**
@@ -1346,28 +1452,35 @@ export type LoginResult = {
     user: CurrentUser;
 };
 
+/** Retured when attemting to register or verify a customer account without a password, when one is required. */
+export type MissingPasswordError = ErrorResult & {
+    __typename?: 'MissingPasswordError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type Mutation = {
     __typename?: 'Mutation';
     /**
      * Adds an item to the order. If custom fields are defined on the OrderLine
      * entity, a third argument 'customFields' will be available.
      */
-    addItemToOrder?: Maybe<Order>;
+    addItemToOrder: UpdateOrderItemsResult;
     /** Remove an OrderLine from the Order */
-    removeOrderLine?: Maybe<Order>;
+    removeOrderLine: RemoveOrderItemsResult;
     /** Remove all OrderLine from the Order */
-    removeAllOrderLines?: Maybe<Order>;
+    removeAllOrderLines: RemoveOrderItemsResult;
     /**
      * Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a
      * third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available.
      */
-    adjustOrderLine?: Maybe<Order>;
+    adjustOrderLine: UpdateOrderItemsResult;
     /** Applies the given coupon code to the active Order */
-    applyCouponCode?: Maybe<Order>;
+    applyCouponCode: ApplyCouponCodeResult;
     /** Removes the given coupon code from the active Order */
     removeCouponCode?: Maybe<Order>;
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
-    transitionOrderToState?: Maybe<Order>;
+    transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     /** Sets the shipping address for this order */
     setOrderShippingAddress?: Maybe<Order>;
     /** Sets the billing address for this order */
@@ -1375,11 +1488,11 @@ export type Mutation = {
     /** Allows any custom fields to be set for the active order */
     setOrderCustomFields?: Maybe<Order>;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
-    setOrderShippingMethod?: Maybe<Order>;
+    setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Add a Payment to the Order */
-    addPaymentToOrder?: Maybe<Order>;
+    addPaymentToOrder?: Maybe<AddPaymentToOrderResult>;
     /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
-    setCustomerForOrder?: Maybe<Order>;
+    setCustomerForOrder?: Maybe<SetCustomerForOrderResult>;
     /**
      * Authenticates the user using the native authentication strategy. This mutation
      * is an alias for `authenticate({ native: { ... }})`
@@ -1389,11 +1502,6 @@ export type Mutation = {
     authenticate: LoginResult;
     /** End the current authenticated session */
     logout: Scalars['Boolean'];
-    /**
-     * Regenerate and send a verification token for a new Customer registration. Only
-     * applicable if `authOptions.requireVerification` is set to true.
-     */
-    refreshCustomerVerification: Scalars['Boolean'];
     /**
      * Register a Customer account with the given credentials. There are three possible registration flows:
      *
@@ -1415,7 +1523,12 @@ export type Mutation = {
      * 3. The Customer _must_ be registered _with_ a password. No further action is
      * needed - the Customer is able to authenticate immediately.
      */
-    registerCustomerAccount: Scalars['Boolean'];
+    registerCustomerAccount: RegisterCustomerAccountResult;
+    /**
+     * Regenerate and send a verification token for a new Customer registration. Only
+     * applicable if `authOptions.requireVerification` is set to true.
+     */
+    refreshCustomerVerification: RefreshCustomerVerificationResult;
     /** Update an existing Customer */
     updateCustomer: Customer;
     /** Create a new Customer Address */
@@ -1423,7 +1536,7 @@ export type Mutation = {
     /** Update an existing Address */
     updateCustomerAddress: Address;
     /** Delete an existing Address */
-    deleteCustomerAddress: Scalars['Boolean'];
+    deleteCustomerAddress: Success;
     /**
      * Verify a Customer email address with the token sent to that address. Only
      * applicable if `authOptions.requireVerification` is set to true.
@@ -1431,25 +1544,25 @@ export type Mutation = {
      * If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
      * provided here.
      */
-    verifyCustomerAccount: LoginResult;
+    verifyCustomerAccount: VerifyCustomerAccountResult;
     /** Update the password of the active Customer */
-    updateCustomerPassword?: Maybe<Scalars['Boolean']>;
+    updateCustomerPassword: UpdateCustomerPasswordResult;
     /**
      * Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
      * (as is the default), then the `identifierChangeToken` will be assigned to the current User and
      * a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email
      * that verification token to the Customer, which is then used to verify the change of email address.
      */
-    requestUpdateCustomerEmailAddress?: Maybe<Scalars['Boolean']>;
+    requestUpdateCustomerEmailAddress: RequestUpdateCustomerEmailAddressResult;
     /**
      * Confirm the update of the emailAddress with the provided token, which has been generated by the
      * `requestUpdateCustomerEmailAddress` mutation.
      */
-    updateCustomerEmailAddress?: Maybe<Scalars['Boolean']>;
+    updateCustomerEmailAddress: UpdateCustomerEmailAddressResult;
     /** Requests a password reset email to be sent */
-    requestPasswordReset?: Maybe<Scalars['Boolean']>;
+    requestPasswordReset?: Maybe<RequestPasswordResetResult>;
     /** Resets a Customer's password based on the provided token */
-    resetPassword: LoginResult;
+    resetPassword: ResetPasswordResult;
 };
 
 export type MutationAddItemToOrderArgs = {
@@ -1513,12 +1626,12 @@ export type MutationAuthenticateArgs = {
     rememberMe?: Maybe<Scalars['Boolean']>;
 };
 
-export type MutationRefreshCustomerVerificationArgs = {
-    emailAddress: Scalars['String'];
-};
-
 export type MutationRegisterCustomerAccountArgs = {
     input: RegisterCustomerInput;
+};
+
+export type MutationRefreshCustomerVerificationArgs = {
+    emailAddress: Scalars['String'];
 };
 
 export type MutationUpdateCustomerArgs = {
@@ -1568,6 +1681,20 @@ export type MutationResetPasswordArgs = {
 export type NativeAuthInput = {
     username: Scalars['String'];
     password: Scalars['String'];
+};
+
+/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+export type NativeAuthStrategyError = ErrorResult & {
+    __typename?: 'NativeAuthStrategyError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Retured when attemting to set a negative OrderLine quantity. */
+export type NegativeQuantityError = ErrorResult & {
+    __typename?: 'NegativeQuantityError';
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Node = {
@@ -1670,6 +1797,14 @@ export type OrderItem = Node & {
     refundId?: Maybe<Scalars['ID']>;
 };
 
+/** Retured when the maximum order size limit has been reached. */
+export type OrderLimitError = ErrorResult & {
+    __typename?: 'OrderLimitError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    maxItems: Scalars['Int'];
+};
+
 export type OrderLine = Node & {
     __typename?: 'OrderLine';
     id: Scalars['ID'];
@@ -1700,6 +1835,20 @@ export type OrderListOptions = {
     filter?: Maybe<OrderFilterParameter>;
 };
 
+/** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
+export type OrderModificationError = ErrorResult & {
+    __typename?: 'OrderModificationError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state. */
+export type OrderPaymentStateError = ErrorResult & {
+    __typename?: 'OrderPaymentStateError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type OrderProcessState = {
     __typename?: 'OrderProcessState';
     name: Scalars['String'];
@@ -1720,9 +1869,46 @@ export type OrderSortParameter = {
     total?: Maybe<SortOrder>;
 };
 
+/** Returned if there is an error in transitioning the Order state */
+export type OrderStateTransitionError = ErrorResult & {
+    __typename?: 'OrderStateTransitionError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 export type PaginatedList = {
     items: Array<Node>;
     totalItems: Scalars['Int'];
+};
+
+/** Retured when attemting to verify a customer account with a password, when a password has already been set. */
+export type PasswordAlreadySetError = ErrorResult & {
+    __typename?: 'PasswordAlreadySetError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/**
+ * Retured if the token used to reset a Customer's password is valid, but has
+ * expired according to the `verificationTokenDuration` setting in the AuthOptions.
+ */
+export type PasswordResetTokenExpiredError = ErrorResult & {
+    __typename?: 'PasswordResetTokenExpiredError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/**
+ * Retured if the token used to reset a Customer's password is either
+ * invalid or does not match any expected tokens.
+ */
+export type PasswordResetTokenInvalidError = ErrorResult & {
+    __typename?: 'PasswordResetTokenInvalidError';
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Payment = Node & {
@@ -1737,6 +1923,22 @@ export type Payment = Node & {
     errorMessage?: Maybe<Scalars['String']>;
     refunds: Array<Refund>;
     metadata?: Maybe<Scalars['JSON']>;
+};
+
+/** Returned when a Payment is declined by the payment provider. */
+export type PaymentDeclinedError = ErrorResult & {
+    __typename?: 'PaymentDeclinedError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
+};
+
+/** Returned when a Payment fails due to an error. */
+export type PaymentFailedError = ErrorResult & {
+    __typename?: 'PaymentFailedError';
+    code: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
 };
 
 /** Passed as input to the `addPaymentToOrder` mutation. */
@@ -2082,6 +2284,8 @@ export type QuerySearchArgs = {
     input: SearchInput;
 };
 
+export type RefreshCustomerVerificationResult = Success | NativeAuthStrategyError;
+
 export type Refund = Node & {
     __typename?: 'Refund';
     id: Scalars['ID'];
@@ -2100,6 +2304,8 @@ export type Refund = Node & {
     metadata?: Maybe<Scalars['JSON']>;
 };
 
+export type RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError;
+
 export type RegisterCustomerInput = {
     emailAddress: Scalars['String'];
     title?: Maybe<Scalars['String']>;
@@ -2108,6 +2314,22 @@ export type RegisterCustomerInput = {
     phoneNumber?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
 };
+
+export type RemoveOrderItemsResult = Order | OrderModificationError;
+
+export type RequestPasswordResetResult = Success | NativeAuthStrategyError;
+
+export type RequestUpdateCustomerEmailAddressResult =
+    | Success
+    | InvalidCredentialsError
+    | EmailAddressConflictError
+    | NativeAuthStrategyError;
+
+export type ResetPasswordResult =
+    | CurrentUser
+    | PasswordResetTokenInvalidError
+    | PasswordResetTokenExpiredError
+    | NativeAuthStrategyError;
 
 export type Return = Node &
     StockMovement & {
@@ -2222,6 +2444,10 @@ export type ServerConfig = {
     customFieldConfig: CustomFields;
 };
 
+export type SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError;
+
+export type SetOrderShippingMethodResult = Order | OrderModificationError;
+
 export type ShippingMethod = Node & {
     __typename?: 'ShippingMethod';
     id: Scalars['ID'];
@@ -2320,6 +2546,12 @@ export type StringOperators = {
     contains?: Maybe<Scalars['String']>;
 };
 
+/** Indicates that an operation succeeded, where we do not want to return any more specific information. */
+export type Success = {
+    __typename?: 'Success';
+    success: Scalars['Boolean'];
+};
+
 export type TaxCategory = Node & {
     __typename?: 'TaxCategory';
     id: Scalars['ID'];
@@ -2347,6 +2579,8 @@ export type TaxRateList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
+
 export type UpdateAddressInput = {
     id: Scalars['ID'];
     fullName?: Maybe<Scalars['String']>;
@@ -2363,6 +2597,12 @@ export type UpdateAddressInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerEmailAddressResult =
+    | Success
+    | IdentifierChangeTokenInvalidError
+    | IdentifierChangeTokenExpiredError
+    | NativeAuthStrategyError;
+
 export type UpdateCustomerInput = {
     title?: Maybe<Scalars['String']>;
     firstName?: Maybe<Scalars['String']>;
@@ -2371,9 +2611,13 @@ export type UpdateCustomerInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type UpdateCustomerPasswordResult = Success | InvalidCredentialsError | NativeAuthStrategyError;
+
 export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
 
 export type User = Node & {
     __typename?: 'User';
@@ -2387,6 +2631,34 @@ export type User = Node & {
     authenticationMethods: Array<AuthenticationMethod>;
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+/**
+ * Returned if the verification token (used to verify a Customer's email address) is valid, but has
+ * expired according to the `verificationTokenDuration` setting in the AuthOptions.
+ */
+export type VerificationTokenExpiredError = ErrorResult & {
+    __typename?: 'VerificationTokenExpiredError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/**
+ * Retured if the verification token (used to verify a Customer's email address) is either
+ * invalid or does not match any expected tokens.
+ */
+export type VerificationTokenInvalidError = ErrorResult & {
+    __typename?: 'VerificationTokenInvalidError';
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+export type VerifyCustomerAccountResult =
+    | CurrentUser
+    | VerificationTokenInvalidError
+    | VerificationTokenExpiredError
+    | MissingPasswordError
+    | PasswordAlreadySetError
+    | NativeAuthStrategyError;
 
 export type Zone = Node & {
     __typename?: 'Zone';

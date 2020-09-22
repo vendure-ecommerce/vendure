@@ -5,7 +5,6 @@ import {
     CreateAssetResult,
     DeletionResponse,
     DeletionResult,
-    ErrorResult,
     UpdateAssetInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
@@ -16,8 +15,9 @@ import path from 'path';
 import { Stream } from 'stream';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, UserInputError } from '../../common/error/errors';
-import { isGraphQLError, MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
+import { isGraphQlErrorResult } from '../../common/error/error-result';
+import { InternalServerError } from '../../common/error/errors';
+import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -152,27 +152,18 @@ export class AssetService {
         return entity;
     }
 
-    async validateInputMimeTypes(inputs: CreateAssetInput[]): Promise<void> {
-        for (const input of inputs) {
-            const { mimetype } = await input.file;
-            if (!this.validateMimeType(mimetype)) {
-                throw new UserInputError('error.mime-type-not-permitted', { mimetype });
-            }
-        }
-    }
-
     /**
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
     async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
         const { createReadStream, filename, mimetype } = await input.file;
         const stream = createReadStream();
-        const asset = await this.createAssetInternal(ctx, stream, filename, mimetype);
-        if (isGraphQLError(asset)) {
-            return asset;
+        const result = await this.createAssetInternal(ctx, stream, filename, mimetype);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
-        this.eventBus.publish(new AssetEvent(ctx, asset, 'created'));
-        return asset;
+        this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+        return result;
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
@@ -253,7 +244,7 @@ export class AssetService {
     ): Promise<CreateAssetResult> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
-            return new MimeTypeError('error.mime-type-not-permitted', filename, mimetype);
+            return new MimeTypeError(filename, mimetype);
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(filename);

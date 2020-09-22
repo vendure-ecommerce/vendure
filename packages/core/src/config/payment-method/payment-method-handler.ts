@@ -29,8 +29,24 @@ export type OnPaymentTransitionStartReturnType = ReturnType<
 export interface CreatePaymentResult {
     amount: number;
     state: Exclude<PaymentState, 'Refunded' | 'Error'>;
+    /**
+     * @description
+     * The unique payment reference code typically assigned by
+     * the payment provider.
+     */
     transactionId?: string;
+    /**
+     * @description
+     * If the payment is declined or fails for ome other reason, pass the
+     * relevant error message here, and it gets returned with the
+     * ErrorResponse of the `addPaymentToOrder` mutation.
+     */
     errorMessage?: string;
+    /**
+     * @description
+     * This field can be used to store other relevant data which is often
+     * provided by the payment provider.
+     */
     metadata?: PaymentMetadata;
 }
 

@@ -452,6 +452,7 @@ export const TAX_RATE_FRAGMENT = gql`
         }
     }
 `;
+
 export const CURRENT_USER_FRAGMENT = gql`
     fragment CurrentUser on CurrentUser {
         id
@@ -463,6 +464,7 @@ export const CURRENT_USER_FRAGMENT = gql`
         }
     }
 `;
+
 export const VARIANT_WITH_STOCK_FRAGMENT = gql`
     fragment VariantWithStock on ProductVariant {
         id

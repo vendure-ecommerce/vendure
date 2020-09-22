@@ -12,7 +12,7 @@ type Mutation {
     addNoteToOrder(input: AddNoteToOrderInput!): Order!
     updateOrderNote(input: UpdateOrderNoteInput!): HistoryEntry!
     deleteOrderNote(id: ID!): DeletionResponse!
-    transitionOrderToState(id: ID!, state: String!): Order
+    transitionOrderToState(id: ID!, state: String!): TransitionOrderToStateResult
     transitionFulfillmentToState(id: ID!, state: String!): Fulfillment!
     setOrderCustomFields(input: UpdateOrderInput!): Order
 }
@@ -72,3 +72,5 @@ input UpdateOrderNoteInput {
     note: String
     isPublic: Boolean
 }
+
+union TransitionOrderToStateResult = Order | OrderStateTransitionError

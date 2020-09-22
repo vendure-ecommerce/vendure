@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
+import {
+    RegisterCustomerAccountResult,
+    RegisterCustomerInput,
+    VerifyCustomerAccountResult,
+} from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToCustomerInput,
     CreateAddressInput,
@@ -14,12 +18,22 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
 import {
     EntityNotFoundError,
     IllegalOperationError,
     InternalServerError,
     UserInputError,
 } from '../../common/error/errors';
+import {
+    EmailAddressConflictError,
+    IdentifierChangeTokenExpiredError,
+    IdentifierChangeTokenInvalidError,
+    MissingPasswordError,
+    PasswordResetTokenExpiredError,
+    PasswordResetTokenInvalidError,
+    VerificationTokenInvalidError,
+} from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
@@ -176,7 +190,12 @@ export class CustomerService {
         if (password && password !== '') {
             const verificationToken = customer.user.getNativeAuthenticationMethod().verificationToken;
             if (verificationToken) {
-                customer.user = await this.userService.verifyUserByToken(ctx, verificationToken);
+                const result = await this.userService.verifyUserByToken(ctx, verificationToken);
+                if (isGraphQlErrorResult(result)) {
+                    // TODO: what to do with an error result here?
+                } else {
+                    customer.user = result;
+                }
             }
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
@@ -206,10 +225,13 @@ export class CustomerService {
         return createdCustomer;
     }
 
-    async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
+    async registerCustomerAccount(
+        ctx: RequestContext,
+        input: RegisterCustomerInput,
+    ): Promise<RegisterCustomerAccountResult | EmailAddressConflictError> {
         if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
-                throw new UserInputError(`error.missing-password-on-registration`);
+                return new MissingPasswordError();
             }
         }
         let user = await this.userService.getUserByEmailAddress(ctx, input.emailAddress);
@@ -220,7 +242,7 @@ export class CustomerService {
             if (hasNativeAuthMethod) {
                 // If the user has already been verified and has already
                 // registered with the native authentication strategy, do nothing.
-                return false;
+                return { success: true };
             }
         }
         const customFields = (input as any).customFields;
@@ -232,6 +254,9 @@ export class CustomerService {
             phoneNumber: input.phoneNumber || '',
             ...(customFields ? { customFields } : {}),
         });
+        if (isGraphQlErrorResult(customer)) {
+            return customer;
+        }
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
@@ -272,7 +297,7 @@ export class CustomerService {
                 },
             });
         }
-        return true;
+        return { success: true };
     }
 
     async refreshVerificationToken(ctx: RequestContext, emailAddress: string): Promise<void> {
@@ -289,23 +314,24 @@ export class CustomerService {
         ctx: RequestContext,
         verificationToken: string,
         password?: string,
-    ): Promise<Customer | undefined> {
-        const user = await this.userService.verifyUserByToken(ctx, verificationToken, password);
-        if (user) {
-            const customer = await this.findOneByUserId(ctx, user.id);
-            if (!customer) {
-                throw new InternalServerError('error.cannot-locate-customer-for-user');
-            }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {
-                    strategy: NATIVE_AUTH_STRATEGY_NAME,
-                },
-            });
-            return this.findOneByUserId(ctx, user.id);
+    ): Promise<ErrorResultUnion<VerifyCustomerAccountResult, Customer>> {
+        const result = await this.userService.verifyUserByToken(ctx, verificationToken, password);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
+        const customer = await this.findOneByUserId(ctx, result.id);
+        if (!customer) {
+            throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_VERIFIED,
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
+        });
+        return assertFound(this.findOneByUserId(ctx, result.id));
     }
 
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
@@ -329,34 +355,35 @@ export class CustomerService {
         ctx: RequestContext,
         passwordResetToken: string,
         password: string,
-    ): Promise<Customer | undefined> {
-        const user = await this.userService.resetPasswordByToken(ctx, passwordResetToken, password);
-        if (user) {
-            const customer = await this.findOneByUserId(ctx, user.id);
-            if (!customer) {
-                throw new InternalServerError('error.cannot-locate-customer-for-user');
-            }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
-                data: {},
-            });
-            return customer;
+    ): Promise<User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError> {
+        const result = await this.userService.resetPasswordByToken(ctx, passwordResetToken, password);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
+        const customer = await this.findOneByUserId(ctx, result.id);
+        if (!customer) {
+            throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
+            data: {},
+        });
+        return result;
     }
 
     async requestUpdateEmailAddress(
         ctx: RequestContext,
         userId: ID,
         newEmailAddress: string,
-    ): Promise<boolean> {
+    ): Promise<boolean | EmailAddressConflictError> {
         const userWithConflictingIdentifier = await this.userService.getUserByEmailAddress(
             ctx,
             newEmailAddress,
         );
         if (userWithConflictingIdentifier) {
-            throw new UserInputError('error.email-address-not-available');
+            return new EmailAddressConflictError();
         }
         const user = await this.userService.getUserById(ctx, userId);
         if (!user) {
@@ -401,8 +428,15 @@ export class CustomerService {
         }
     }
 
-    async updateEmailAddress(ctx: RequestContext, token: string): Promise<boolean> {
-        const { user, oldIdentifier } = await this.userService.changeIdentifierByToken(ctx, token);
+    async updateEmailAddress(
+        ctx: RequestContext,
+        token: string,
+    ): Promise<boolean | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError> {
+        const result = await this.userService.changeIdentifierByToken(ctx, token);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        const { user, oldIdentifier } = result;
         if (!user) {
             return false;
         }
@@ -448,8 +482,8 @@ export class CustomerService {
     async createOrUpdate(
         ctx: RequestContext,
         input: Partial<CreateCustomerInput> & { emailAddress: string },
-        throwOnExistingUser: boolean = false,
-    ): Promise<Customer> {
+        errorOnExistingUser: boolean = false,
+    ): Promise<Customer | EmailAddressConflictError> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         let customer: Customer;
         const existing = await this.connection.getRepository(ctx, Customer).findOne({
@@ -460,9 +494,9 @@ export class CustomerService {
             },
         });
         if (existing) {
-            if (existing.user && throwOnExistingUser) {
+            if (existing.user && errorOnExistingUser) {
                 // It is not permitted to modify an existing *registered* Customer
-                throw new IllegalOperationError('error.cannot-use-registered-email-address-for-guest-order');
+                return new EmailAddressConflictError();
             }
             customer = patchEntity(existing, input);
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));

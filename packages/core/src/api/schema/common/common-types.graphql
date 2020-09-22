@@ -82,7 +82,7 @@ enum SortOrder {
 }
 
 enum ErrorCode {
-    UnknownError
+    UNKNOWN_ERROR
 }
 
 interface ErrorResult {
@@ -182,4 +182,20 @@ input UpdateAddressInput {
     phoneNumber: String
     defaultShippingAddress: Boolean
     defaultBillingAddress: Boolean
+}
+
+"""
+Indicates that an operation succeeded, where we do not want to return any more specific information.
+"""
+type Success {
+    success: Boolean!
+}
+
+"Returned if there is an error in transitioning the Order state"
+type OrderStateTransitionError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    transitionError: String!
+    fromState: String!
+    toState: String!
 }

@@ -4,45 +4,62 @@
 import { ErrorCode } from '@vendure/common/lib/generated-types';
 
 export type Scalars = {
-    ID: string;
-    String: string;
-    Boolean: boolean;
-    Int: number;
-    Float: number;
-    DateTime: any;
-    JSON: any;
-    Upload: any;
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+  DateTime: any;
+  JSON: any;
+  Upload: any;
 };
 
 export class ErrorResult {
-    readonly __typename: string;
-    readonly code: ErrorCode;
-    message: Scalars['String'];
+  readonly __typename: string;
+  readonly code: ErrorCode;
+  message: Scalars['String'];
 }
 
 export class MimeTypeError extends ErrorResult {
-    readonly __typename = 'MimeTypeError';
-    readonly code = ErrorCode.MimeTypeError;
-    constructor(
-        public message: Scalars['String'],
-        public fileName: Scalars['String'],
-        public mimeType: Scalars['String'],
-    ) {
-        super();
-    }
+  readonly __typename = 'MimeTypeError';
+  readonly code = ErrorCode.MIME_TYPE_ERROR;
+  readonly message = 'MIME_TYPE_ERROR';
+  constructor(
+    public   fileName: Scalars['String'],
+    public   mimeType: Scalars['String'],
+  ) {
+    super();
+  }
 }
 
-const errorTypeNames = new Set(['MimeTypeError']);
-export function isGraphQLError(
-    input: any,
-): input is import('@vendure/common/lib/generated-types').ErrorResult {
-    return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
+export class OrderStateTransitionError extends ErrorResult {
+  readonly __typename = 'OrderStateTransitionError';
+  readonly code = ErrorCode.ORDER_STATE_TRANSITION_ERROR;
+  readonly message = 'ORDER_STATE_TRANSITION_ERROR';
+  constructor(
+    public   transitionError: Scalars['String'],
+    public   fromState: Scalars['String'],
+    public   toState: Scalars['String'],
+  ) {
+    super();
+  }
+}
+
+
+const errorTypeNames = new Set(['MimeTypeError', 'OrderStateTransitionError']);
+function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
+  return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
 
 export const adminErrorOperationTypeResolvers = {
-    CreateAssetResult: {
-        __resolveType(value: any) {
-            return isGraphQLError(value) ? (value as any).__typename : 'Asset';
-        },
+  CreateAssetResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Asset';
     },
+  },
+  TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
 };

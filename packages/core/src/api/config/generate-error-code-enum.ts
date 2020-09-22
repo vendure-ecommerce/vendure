@@ -23,7 +23,11 @@ export function generateErrorCodeEnum(typeDefsOrSchema: string | GraphQLSchema):
 
     const errorCodeEnum = `
         extend enum ErrorCode {
-            ${errorNodes.map(n => n?.name.value).join('\n')}
+            ${errorNodes.map(n => camelToUpperSnakeCase(n?.name.value || '')).join('\n')}
         }`;
     return extendSchema(schema, parse(errorCodeEnum));
+}
+
+function camelToUpperSnakeCase(input: string): string {
+    return input.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
 }

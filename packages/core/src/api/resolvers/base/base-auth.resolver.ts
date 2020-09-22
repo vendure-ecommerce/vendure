@@ -7,7 +7,8 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
-import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
+import { ForbiddenError, UnauthorizedError } from '../../../common/error/errors';
+import { InvalidCredentialsError } from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { User } from '../../../entity/user/user.entity';
@@ -119,10 +120,10 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         currentPassword: string,
         newPassword: string,
-    ): Promise<boolean> {
+    ): Promise<boolean | InvalidCredentialsError> {
         const { activeUserId } = ctx;
         if (!activeUserId) {
-            throw new InternalServerError(`error.no-active-user-id`);
+            throw new ForbiddenError();
         }
         return this.userService.updatePassword(ctx, activeUserId, currentPassword, newPassword);
     }
