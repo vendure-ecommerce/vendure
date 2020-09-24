@@ -1,3 +1,4 @@
+import { ErrorCode } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
@@ -10,8 +11,11 @@ import { NativeAuthenticationStrategy } from '../src/config/auth/native-authenti
 import { DefaultLogger } from '../src/config/logger/default-logger';
 
 import { TestAuthenticationStrategy, VALID_AUTH_TOKEN } from './fixtures/test-authentication-strategies';
+import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     Authenticate,
+    CurrentUser,
+    CurrentUserFragment,
     GetCustomerHistory,
     GetCustomers,
     GetCustomerUserAuth,
@@ -48,6 +52,10 @@ describe('AuthenticationStrategy', () => {
         await server.destroy();
     });
 
+    const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard<
+        CurrentUserFragment
+    >(input => input.identifier != null);
+
     describe('external auth', () => {
         const userData = {
             email: 'test@email.com',
@@ -56,24 +64,24 @@ describe('AuthenticationStrategy', () => {
         };
         let newCustomerId: string;
 
-        it(
-            'fails with a bad token',
-            assertThrowsWithMessage(async () => {
-                await shopClient.query(AUTHENTICATE, {
-                    input: {
-                        test_strategy: {
-                            token: 'bad-token',
-                        },
+        it('fails with a bad token', async () => {
+            const { authenticate } = await shopClient.query(AUTHENTICATE, {
+                input: {
+                    test_strategy: {
+                        token: 'bad-token',
                     },
-                });
-            }, 'The credentials did not match. Please check and try again'),
-        );
+                },
+            });
+
+            expect(authenticate.message).toBe('The provided credentials are invalid');
+            expect(authenticate.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+        });
 
         it('creates a new Customer with valid token', async () => {
             const { customers: before } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
             expect(before.totalItems).toBe(1);
 
-            const result = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+            const { authenticate } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
                 input: {
                     test_strategy: {
                         token: VALID_AUTH_TOKEN,
@@ -81,7 +89,9 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             });
-            expect(result.authenticate.user.identifier).toEqual(userData.email);
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(authenticate.identifier).toEqual(userData.email);
 
             const { customers: after } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
             expect(after.totalItems).toBe(2);
@@ -141,7 +151,7 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('logging in again re-uses created User & Customer', async () => {
-            const result = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
+            const { authenticate } = await shopClient.query<Authenticate.Mutation>(AUTHENTICATE, {
                 input: {
                     test_strategy: {
                         token: VALID_AUTH_TOKEN,
@@ -149,7 +159,9 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             });
-            expect(result.authenticate.user.identifier).toEqual(userData.email);
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(authenticate.identifier).toEqual(userData.email);
 
             const { customers: after } = await adminClient.query<GetCustomers.Query>(GET_CUSTOMERS);
             expect(after.totalItems).toBe(2);
@@ -210,12 +222,14 @@ describe('AuthenticationStrategy', () => {
 const AUTHENTICATE = gql`
     mutation Authenticate($input: AuthenticationInput!) {
         authenticate(input: $input) {
-            user {
-                id
-                identifier
+            ...CurrentUser
+            ... on ErrorResult {
+                code
+                message
             }
         }
     }
+    ${CURRENT_USER_FRAGMENT}
 `;
 
 const GET_CUSTOMERS = gql`

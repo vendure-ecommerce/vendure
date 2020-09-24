@@ -5,6 +5,7 @@ import {
     DeletionResponse,
     DeletionResult,
     Permission,
+    RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
@@ -12,7 +13,9 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion } from '../../common/error/error-result';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -282,17 +285,14 @@ export class ProductService {
         ctx: RequestContext,
         productId: ID,
         optionGroupId: ID,
-    ): Promise<Translated<Product>> {
+    ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
         if (product.variants.length) {
-            throw new UserInputError('error.cannot-remove-option-group-due-to-variants', {
-                code: optionGroup.code,
-                count: product.variants.length,
-            });
+            return new ProductOptionInUseError(optionGroup.code, product.variants.length);
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 

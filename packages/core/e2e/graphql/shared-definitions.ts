@@ -3,11 +3,13 @@ import gql from 'graphql-tag';
 import {
     ADMINISTRATOR_FRAGMENT,
     ASSET_FRAGMENT,
+    CHANNEL_FRAGMENT,
     COLLECTION_FRAGMENT,
     COUNTRY_FRAGMENT,
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
+    FULFILLMENT_FRAGMENT,
     ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
@@ -199,9 +201,7 @@ export const GET_CUSTOMER = gql`
 export const ATTEMPT_LOGIN = gql`
     mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
-            user {
-                ...CurrentUser
-            }
+            ...CurrentUser
         }
     }
     ${CURRENT_USER_FRAGMENT}
@@ -288,6 +288,10 @@ export const CREATE_PROMOTION = gql`
     mutation CreatePromotion($input: CreatePromotionInput!) {
         createPromotion(input: $input) {
             ...Promotion
+            ... on ErrorResult {
+                code
+                message
+            }
         }
     }
     ${PROMOTION_FRAGMENT}
@@ -304,20 +308,15 @@ export const ME = gql`
 export const CREATE_CHANNEL = gql`
     mutation CreateChannel($input: CreateChannelInput!) {
         createChannel(input: $input) {
-            id
-            code
-            token
-            currencyCode
-            defaultLanguageCode
-            defaultShippingZone {
-                id
+            ...Channel
+            ... on LanguageNotAvailableError {
+                errorCode: code
+                message
+                languageCode
             }
-            defaultTaxZone {
-                id
-            }
-            pricesIncludeTax
         }
     }
+    ${CHANNEL_FRAGMENT}
 `;
 
 export const DELETE_PRODUCT_VARIANT = gql`
@@ -374,12 +373,15 @@ export const DELETE_ASSET = gql`
 export const UPDATE_CHANNEL = gql`
     mutation UpdateChannel($input: UpdateChannelInput!) {
         updateChannel(input: $input) {
-            id
-            code
-            defaultLanguageCode
-            currencyCode
+            ...Channel
+            ... on LanguageNotAvailableError {
+                errorCode: code
+                message
+                languageCode
+            }
         }
     }
+    ${CHANNEL_FRAGMENT}
 `;
 
 export const GET_CUSTOMER_HISTORY = gql`
@@ -443,25 +445,31 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
 
 export const CREATE_FULFILLMENT = gql`
     mutation CreateFulfillment($input: FulfillOrderInput!) {
-        fulfillOrder(input: $input) {
-            id
-            method
-            state
-            trackingCode
-            orderItems {
-                id
+        addFulfillmentToOrder(input: $input) {
+            ...Fulfillment
+            ... on ErrorResult {
+                code
+                message
             }
         }
     }
+    ${FULFILLMENT_FRAGMENT}
 `;
 
 export const TRANSIT_FULFILLMENT = gql`
     mutation TransitFulfillment($id: ID!, $state: String!) {
         transitionFulfillmentToState(id: $id, state: $state) {
-            id
-            state
+            ...Fulfillment
+            ... on FulfillmentStateTransitionError {
+                code
+                message
+                transitionError
+                fromState
+                toState
+            }
         }
     }
+    ${FULFILLMENT_FRAGMENT}
 `;
 
 export const GET_ORDER_FULFILLMENTS = gql`
@@ -531,6 +539,10 @@ export const CREATE_CUSTOMER = gql`
     mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
         createCustomer(input: $input, password: $password) {
             ...Customer
+            ... on ErrorResult {
+                code
+                message
+            }
         }
     }
     ${CUSTOMER_FRAGMENT}
@@ -540,6 +552,10 @@ export const UPDATE_CUSTOMER = gql`
     mutation UpdateCustomer($input: UpdateCustomerInput!) {
         updateCustomer(input: $input) {
             ...Customer
+            ... on ErrorResult {
+                code
+                message
+            }
         }
     }
     ${CUSTOMER_FRAGMENT}

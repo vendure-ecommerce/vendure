@@ -1,9 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { MutationDeleteCustomerAddressArgs, Success } from '@vendure/common/lib/generated-shop-types';
+import {
+    MutationDeleteCustomerAddressArgs,
+    MutationUpdateCustomerArgs,
+    Success,
+} from '@vendure/common/lib/generated-shop-types';
 import {
     MutationCreateCustomerAddressArgs,
     MutationUpdateCustomerAddressArgs,
-    MutationUpdateCustomerArgs,
     Permission,
 } from '@vendure/common/lib/generated-types';
 

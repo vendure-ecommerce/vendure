@@ -34,7 +34,7 @@ export class TranslateErrorResultInterceptor implements NestInterceptor {
 
     private translateResult(req: any, result: unknown) {
         if (result instanceof AdminErrorResult || result instanceof ShopErrorResult) {
-            this.i18nService.translateErrorResult(req, result);
+            this.i18nService.translateErrorResult(req, result as any);
         }
     }
 }

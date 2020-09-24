@@ -4,16 +4,16 @@ type Query {
 }
 
 type Mutation {
-    settlePayment(id: ID!): Payment!
-    fulfillOrder(input: FulfillOrderInput!): Fulfillment!
-    cancelOrder(input: CancelOrderInput!): Order!
-    refundOrder(input: RefundOrderInput!): Refund!
-    settleRefund(input: SettleRefundInput!): Refund!
+    settlePayment(id: ID!): SettlePaymentResult!
+    addFulfillmentToOrder(input: FulfillOrderInput!): AddFulfillmentToOrderResult!
+    cancelOrder(input: CancelOrderInput!): CancelOrderResult!
+    refundOrder(input: RefundOrderInput!): RefundOrderResult!
+    settleRefund(input: SettleRefundInput!): SettleRefundResult!
     addNoteToOrder(input: AddNoteToOrderInput!): Order!
     updateOrderNote(input: UpdateOrderNoteInput!): HistoryEntry!
     deleteOrderNote(id: ID!): DeletionResponse!
     transitionOrderToState(id: ID!, state: String!): TransitionOrderToStateResult
-    transitionFulfillmentToState(id: ID!, state: String!): Fulfillment!
+    transitionFulfillmentToState(id: ID!, state: String!): TransitionFulfillmentToStateResult!
     setOrderCustomFields(input: UpdateOrderInput!): Order
 }
 
@@ -73,4 +73,116 @@ input UpdateOrderNoteInput {
     isPublic: Boolean
 }
 
+"Returned if the Payment settlement fails"
+type SettlePaymentError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    paymentErrorMessage: String!
+}
+
+"Returned if no OrderLines have been specified for the operation"
+type EmptyOrderLineSelectionError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned if the specified items are already part of a Fulfillment"
+type ItemsAlreadyFulfilledError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned if an operation has specified OrderLines from multiple Orders"
+type MultipleOrderError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned if an attempting to cancel lines from an Order which is still active"
+type CancelActiveOrderError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    orderState: String!
+}
+
+"Returned if an attempting to refund a Payment against OrderLines from a different Order"
+type PaymentOrderMismatchError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned if an attempting to refund an Order which is not in the expected state"
+type RefundOrderStateError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    orderState: String!
+}
+
+"Returned if an attempting to refund an Order but neither items nor shipping refund was specified"
+type NothingToRefundError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned if an attempting to refund an OrderItem which has already been refunded"
+type AlreadyRefundedError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    refundId: ID!
+}
+
+"Returned if the specified quantity of an OrderLine is greater than the number of items in that line"
+type QuantityTooGreatError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+"Returned when there is an error in transitioning the Refund state"
+type RefundStateTransitionError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    transitionError: String!
+    fromState: String!
+    toState: String!
+}
+
+"Returned when there is an error in transitioning the Payment state"
+type PaymentStateTransitionError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    transitionError: String!
+    fromState: String!
+    toState: String!
+}
+
+"Returned when there is an error in transitioning the Fulfillment state"
+type FulfillmentStateTransitionError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+    transitionError: String!
+    fromState: String!
+    toState: String!
+}
+
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
+union SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError
+union AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError
+union CancelOrderResult =
+      Order
+    | EmptyOrderLineSelectionError
+    | QuantityTooGreatError
+    | MultipleOrderError
+    | CancelActiveOrderError
+    | OrderStateTransitionError
+union RefundOrderResult =
+      Refund
+    | QuantityTooGreatError
+    | NothingToRefundError
+    | OrderStateTransitionError
+    | MultipleOrderError
+    | PaymentOrderMismatchError
+    | RefundOrderStateError
+    | AlreadyRefundedError
+    | RefundStateTransitionError
+union SettleRefundResult = Refund | RefundStateTransitionError
+union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError

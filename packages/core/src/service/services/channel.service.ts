@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import {
     CreateChannelInput,
+    CreateChannelResult,
     CurrencyCode,
     DeletionResponse,
     DeletionResult,
     UpdateChannelInput,
+    UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
-import {
-    ChannelNotFoundError,
-    EntityNotFoundError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
+import { ChannelNotFoundError, EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { LanguageNotAvailableError } from '../../common/error/generated-graphql-admin-errors';
 import { ChannelAware } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -136,8 +135,15 @@ export class ChannelService {
             .findOne(id, { relations: ['defaultShippingZone', 'defaultTaxZone'] });
     }
 
-    async create(ctx: RequestContext, input: CreateChannelInput): Promise<Channel> {
+    async create(
+        ctx: RequestContext,
+        input: CreateChannelInput,
+    ): Promise<ErrorResultUnion<CreateChannelResult, Channel>> {
         const channel = new Channel(input);
+        const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
+        if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
+            return defaultLanguageValidationResult;
+        }
         if (input.defaultTaxZoneId) {
             channel.defaultTaxZone = await this.connection.getEntityOrThrow(
                 ctx,
@@ -157,20 +163,17 @@ export class ChannelService {
         return channel;
     }
 
-    async update(ctx: RequestContext, input: UpdateChannelInput): Promise<Channel> {
+    async update(
+        ctx: RequestContext,
+        input: UpdateChannelInput,
+    ): Promise<ErrorResultUnion<UpdateChannelResult, Channel>> {
         const channel = await this.findOne(ctx, input.id);
         if (!channel) {
             throw new EntityNotFoundError('Channel', input.id);
         }
-        if (input.defaultLanguageCode) {
-            const availableLanguageCodes = await this.globalSettingsService
-                .getSettings(ctx)
-                .then(s => s.availableLanguages);
-            if (!availableLanguageCodes.includes(input.defaultLanguageCode)) {
-                throw new UserInputError('error.language-not-available-in-global-settings', {
-                    code: input.defaultLanguageCode,
-                });
-            }
+        const defaultLanguageValidationResult = await this.validateDefaultLanguageCode(ctx, input);
+        if (isGraphQlErrorResult(defaultLanguageValidationResult)) {
+            return defaultLanguageValidationResult;
         }
         const updatedChannel = patchEntity(channel, input);
         if (input.defaultTaxZoneId) {
@@ -227,6 +230,20 @@ export class ChannelService {
         } else if (defaultChannelToken && defaultChannel.token !== defaultChannelToken) {
             defaultChannel.token = defaultChannelToken;
             await this.connection.getRepository(Channel).save(defaultChannel, { reload: false });
+        }
+    }
+
+    private async validateDefaultLanguageCode(
+        ctx: RequestContext,
+        input: CreateChannelInput | UpdateChannelInput,
+    ): Promise<LanguageNotAvailableError | undefined> {
+        if (input.defaultLanguageCode) {
+            const availableLanguageCodes = await this.globalSettingsService
+                .getSettings(ctx)
+                .then(s => s.availableLanguages);
+            if (!availableLanguageCodes.includes(input.defaultLanguageCode)) {
+                return new LanguageNotAvailableError(input.defaultLanguageCode);
+            }
         }
     }
 

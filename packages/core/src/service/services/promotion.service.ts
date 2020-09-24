@@ -7,17 +7,20 @@ import {
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreatePromotionInput,
+    CreatePromotionResult,
     DeletionResponse,
     DeletionResult,
     UpdatePromotionInput,
+    UpdatePromotionResult,
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
-import { JustErrorResults } from '../../common/error/error-result';
+import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
 import { UserInputError } from '../../common/error/errors';
+import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
     CouponCodeExpiredError,
     CouponCodeInvalidError,
@@ -97,7 +100,10 @@ export class PromotionService {
         return this.activePromotions;
     }
 
-    async createPromotion(ctx: RequestContext, input: CreatePromotionInput): Promise<Promotion> {
+    async createPromotion(
+        ctx: RequestContext,
+        input: CreatePromotionInput,
+    ): Promise<ErrorResultUnion<CreatePromotionResult, Promotion>> {
         const promotion = new Promotion({
             name: input.name,
             enabled: input.enabled,
@@ -109,14 +115,19 @@ export class PromotionService {
             actions: input.actions.map(a => this.parseOperationArgs('action', a)),
             priorityScore: this.calculatePriorityScore(input),
         });
-        this.validatePromotionConditions(promotion);
+        if (promotion.conditions.length === 0 && !promotion.couponCode) {
+            return new MissingConditionsError();
+        }
         this.channelService.assignToCurrentChannel(promotion, ctx);
         const newPromotion = await this.connection.getRepository(ctx, Promotion).save(promotion);
         await this.updatePromotions();
         return assertFound(this.findOne(ctx, newPromotion.id));
     }
 
-    async updatePromotion(ctx: RequestContext, input: UpdatePromotionInput): Promise<Promotion> {
+    async updatePromotion(
+        ctx: RequestContext,
+        input: UpdatePromotionInput,
+    ): Promise<ErrorResultUnion<UpdatePromotionResult, Promotion>> {
         const promotion = await this.connection.getEntityOrThrow(ctx, Promotion, input.id, {
             channelId: ctx.channelId,
         });
@@ -127,7 +138,9 @@ export class PromotionService {
         if (input.actions) {
             updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
         }
-        this.validatePromotionConditions(updatedPromotion);
+        if (promotion.conditions.length === 0 && !promotion.couponCode) {
+            return new MissingConditionsError();
+        }
         promotion.priorityScore = this.calculatePriorityScore(input);
         await this.connection.getRepository(ctx, Promotion).save(updatedPromotion, { reload: false });
         await this.updatePromotions();
@@ -245,14 +258,5 @@ export class PromotionService {
         this.activePromotions = await this.connection.getRepository(Promotion).find({
             where: { enabled: true },
         });
-    }
-
-    /**
-     * Ensure the Promotion has at least one condition or a couponCode specified.
-     */
-    private validatePromotionConditions(promotion: Promotion) {
-        if (promotion.conditions.length === 0 && !promotion.couponCode) {
-            throw new UserInputError('error.promotion-must-have-conditions-or-coupon-code');
-        }
     }
 }

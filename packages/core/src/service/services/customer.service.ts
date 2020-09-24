@@ -2,29 +2,28 @@ import { Injectable } from '@nestjs/common';
 import {
     RegisterCustomerAccountResult,
     RegisterCustomerInput,
+    UpdateCustomerInput as UpdateCustomerShopInput,
     VerifyCustomerAccountResult,
 } from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToCustomerInput,
     CreateAddressInput,
     CreateCustomerInput,
+    CreateCustomerResult,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
     UpdateAddressInput,
     UpdateCustomerInput,
     UpdateCustomerNoteInput,
+    UpdateCustomerResult,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { EmailAddressConflictError as EmailAddressConflictAdminError } from '../../common/error/generated-graphql-admin-errors';
 import {
     EmailAddressConflictError,
     IdentifierChangeTokenExpiredError,
@@ -32,7 +31,6 @@ import {
     MissingPasswordError,
     PasswordResetTokenExpiredError,
     PasswordResetTokenInvalidError,
-    VerificationTokenInvalidError,
 } from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
@@ -145,7 +143,11 @@ export class CustomerService {
         }
     }
 
-    async create(ctx: RequestContext, input: CreateCustomerInput, password?: string): Promise<Customer> {
+    async create(
+        ctx: RequestContext,
+        input: CreateCustomerInput,
+        password?: string,
+    ): Promise<ErrorResultUnion<CreateCustomerResult, Customer>> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
@@ -159,7 +161,7 @@ export class CustomerService {
             .getOne();
 
         if (existingCustomerInChannel) {
-            throw new UserInputError(`error.email-address-must-be-unique`);
+            return new EmailAddressConflictAdminError();
         }
 
         const existingCustomer = await this.connection.getRepository(ctx, Customer).findOne({
@@ -183,7 +185,7 @@ export class CustomerService {
             return this.connection.getRepository(Customer).save(updatedCustomer);
         } else if (existingCustomer || existingUser) {
             // Not sure when this situation would occur
-            throw new UserInputError(`error.email-address-must-be-unique`);
+            return new EmailAddressConflictAdminError();
         }
         customer.user = await this.userService.createCustomerUser(ctx, input.emailAddress, password);
 
@@ -192,7 +194,9 @@ export class CustomerService {
             if (verificationToken) {
                 const result = await this.userService.verifyUserByToken(ctx, verificationToken);
                 if (isGraphQlErrorResult(result)) {
-                    // TODO: what to do with an error result here?
+                    // In theory this should never be reached, so we will just
+                    // throw the result
+                    throw result;
                 } else {
                     customer.user = result;
                 }
@@ -223,6 +227,50 @@ export class CustomerService {
             });
         }
         return createdCustomer;
+    }
+
+    async update(ctx: RequestContext, input: UpdateCustomerShopInput & { id: ID }): Promise<Customer>;
+    async update(
+        ctx: RequestContext,
+        input: UpdateCustomerInput,
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
+    async update(
+        ctx: RequestContext,
+        input: UpdateCustomerInput | (UpdateCustomerShopInput & { id: ID }),
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>> {
+        const hasEmailAddress = (i: any): i is UpdateCustomerInput & { emailAddress: string } =>
+            i.hasOwnProperty('emailAddress');
+
+        if (hasEmailAddress(input)) {
+            const existingCustomerInChannel = await this.connection
+                .getRepository(ctx, Customer)
+                .createQueryBuilder('customer')
+                .leftJoin('customer.channels', 'channel')
+                .where('channel.id = :channelId', { channelId: ctx.channelId })
+                .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                .andWhere('customer.id != :customerId', { customerId: input.id })
+                .andWhere('customer.deletedAt is null')
+                .getOne();
+
+            if (existingCustomerInChannel) {
+                return new EmailAddressConflictAdminError();
+            }
+        }
+
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
+            channelId: ctx.channelId,
+        });
+        const updatedCustomer = patchEntity(customer, input);
+        await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
+            data: {
+                input,
+            },
+        });
+        return assertFound(this.findOne(ctx, customer.id));
     }
 
     async registerCustomerAccount(
@@ -457,23 +505,6 @@ export class CustomerService {
             },
         });
         return true;
-    }
-
-    async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
-        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
-            channelId: ctx.channelId,
-        });
-        const updatedCustomer = patchEntity(customer, input);
-        await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
-        await this.historyService.createHistoryEntryForCustomer({
-            customerId: customer.id,
-            ctx,
-            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
-            data: {
-                input,
-            },
-        });
-        return assertFound(this.findOne(ctx, customer.id));
     }
 
     /**

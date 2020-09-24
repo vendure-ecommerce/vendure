@@ -69,11 +69,11 @@ type Mutation {
     "Set the Customer for the Order. Required only if the Customer is not currently logged in"
     setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult
     "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
     "Authenticates the user using a named authentication strategy"
-    authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
+    authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
     "End the current authenticated session"
-    logout: Boolean!
+    logout: Success!
     """
     Register a Customer account with the given credentials. There are three possible registration flows:
 
@@ -252,12 +252,6 @@ type AlreadyLoggedInError implements ErrorResult {
     message: String!
 }
 
-"Retured when attemting to create a Customer with an email address already registered to an existing User."
-type EmailAddressConflictError implements ErrorResult {
-    code: ErrorCode!
-    message: String!
-}
-
 "Retured when attemting to register or verify a customer account without a password, when one is required."
 type MissingPasswordError implements ErrorResult {
     code: ErrorCode!
@@ -266,12 +260,6 @@ type MissingPasswordError implements ErrorResult {
 
 "Retured when attemting to verify a customer account with a password, when a password has already been set."
 type PasswordAlreadySetError implements ErrorResult {
-    code: ErrorCode!
-    message: String!
-}
-
-"Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured."
-type NativeAuthStrategyError implements ErrorResult {
     code: ErrorCode!
     message: String!
 }
@@ -308,12 +296,6 @@ Retured if the token used to change a Customer's email address is valid, but has
 expired according to the `verificationTokenDuration` setting in the AuthOptions.
 """
 type IdentifierChangeTokenExpiredError implements ErrorResult {
-    code: ErrorCode!
-    message: String!
-}
-
-"Returned if the user credentials are not valid"
-type InvalidCredentialsError implements ErrorResult {
     code: ErrorCode!
     message: String!
 }
@@ -370,3 +352,5 @@ union UpdateCustomerEmailAddressResult =
     | NativeAuthStrategyError
 union RequestPasswordResetResult = Success | NativeAuthStrategyError
 union ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError
+union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError
+union AuthenticationResult = CurrentUser | InvalidCredentialsError

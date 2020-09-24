@@ -25,6 +25,7 @@ import {
     GetFacetList,
     GetPromoProducts,
     HistoryEntryType,
+    PromotionFragment,
     RemoveCustomersFromGroup,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -39,6 +40,7 @@ import {
     SetCustomerForOrder,
     TestOrderFragment,
     TestOrderFragmentFragment,
+    TestOrderWithPaymentsFragment,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
@@ -105,8 +107,8 @@ describe('Promotions applied to Orders', () => {
     describe('coupon codes', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
         const EXPIRED_COUPON_CODE = 'EXPIRED';
-        let promoFreeWithCoupon: CreatePromotion.CreatePromotion;
-        let promoFreeWithExpiredCoupon: CreatePromotion.CreatePromotion;
+        let promoFreeWithCoupon: PromotionFragment;
+        let promoFreeWithExpiredCoupon: PromotionFragment;
 
         beforeAll(async () => {
             promoFreeWithCoupon = await createPromotion({
@@ -696,7 +698,10 @@ describe('Promotions applied to Orders', () => {
 
     describe('per-customer usage limit', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
-        let promoWithUsageLimit: CreatePromotion.CreatePromotion;
+        const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard<
+            TestOrderWithPaymentsFragment
+        >(input => !!input.lines);
+        let promoWithUsageLimit: PromotionFragment;
 
         beforeAll(async () => {
             promoWithUsageLimit = await createPromotion({
@@ -758,6 +763,8 @@ describe('Promotions applied to Orders', () => {
 
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
                 orderCode = order.code;
@@ -831,6 +838,8 @@ describe('Promotions applied to Orders', () => {
 
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
             });
@@ -899,14 +908,14 @@ describe('Promotions applied to Orders', () => {
         await deletePromotion(deletedPromotion.id);
     }
 
-    async function createPromotion(input: CreatePromotionInput): Promise<CreatePromotion.CreatePromotion> {
+    async function createPromotion(input: CreatePromotionInput): Promise<PromotionFragment> {
         const result = await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
             CREATE_PROMOTION,
             {
                 input,
             },
         );
-        return result.createPromotion;
+        return result.createPromotion as PromotionFragment;
     }
 
     function getVariantBySlug(

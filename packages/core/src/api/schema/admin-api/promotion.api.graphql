@@ -6,8 +6,8 @@ type Query {
 }
 
 type Mutation {
-    createPromotion(input: CreatePromotionInput!): Promotion!
-    updatePromotion(input: UpdatePromotionInput!): Promotion!
+    createPromotion(input: CreatePromotionInput!): CreatePromotionResult!
+    updatePromotion(input: UpdatePromotionInput!): UpdatePromotionResult!
     deletePromotion(id: ID!): DeletionResponse!
 }
 
@@ -36,3 +36,12 @@ input UpdatePromotionInput {
     conditions: [ConfigurableOperationInput!]
     actions: [ConfigurableOperationInput!]
 }
+
+"Returned if a PromotionCondition has neither a couponCode nor any conditions set"
+type MissingConditionsError implements ErrorResult {
+    code: ErrorCode!
+    message: String!
+}
+
+union CreatePromotionResult = Promotion | MissingConditionsError
+union UpdatePromotionResult = Promotion | MissingConditionsError

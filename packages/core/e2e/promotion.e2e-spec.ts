@@ -1,22 +1,24 @@
 import { pick } from '@vendure/common/lib/pick';
 import { PromotionAction, PromotionCondition, PromotionOrderAction } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
     CreatePromotion,
     DeletePromotion,
     DeletionResult,
+    ErrorCode,
     GetAdjustmentOperations,
     GetPromotion,
     GetPromotionList,
     LanguageCode,
     Promotion,
+    PromotionFragment,
     UpdatePromotion,
 } from './graphql/generated-e2e-admin-types';
 import { CREATE_PROMOTION } from './graphql/shared-definitions';
@@ -48,6 +50,10 @@ describe('Promotion resolver', () => {
     ];
     let promotion: Promotion.Fragment;
 
+    const promotionGuard: ErrorResultGuard<PromotionFragment> = createErrorResultGuard<PromotionFragment>(
+        input => !!input.couponCode,
+    );
+
     beforeAll(async () => {
         await server.init({
             initialData,
@@ -62,100 +68,116 @@ describe('Promotion resolver', () => {
     });
 
     it('createPromotion', async () => {
-        const result = await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
-            CREATE_PROMOTION,
-            {
-                input: {
-                    name: 'test promotion',
-                    enabled: true,
-                    couponCode: 'TEST123',
-                    startsAt: new Date('2019-10-30T00:00:00.000Z'),
-                    endsAt: new Date('2019-12-01T00:00:00.000Z'),
-                    conditions: [
-                        {
-                            code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '500' }],
-                        },
-                    ],
-                    actions: [
-                        {
-                            code: promoAction.code,
-                            arguments: [
-                                {
-                                    name: 'facetValueIds',
-                                    value: '["T_1"]',
-                                },
-                            ],
-                        },
-                    ],
-                },
+        const { createPromotion } = await adminClient.query<
+            CreatePromotion.Mutation,
+            CreatePromotion.Variables
+        >(CREATE_PROMOTION, {
+            input: {
+                name: 'test promotion',
+                enabled: true,
+                couponCode: 'TEST123',
+                startsAt: new Date('2019-10-30T00:00:00.000Z'),
+                endsAt: new Date('2019-12-01T00:00:00.000Z'),
+                conditions: [
+                    {
+                        code: promoCondition.code,
+                        arguments: [{ name: 'arg', value: '500' }],
+                    },
+                ],
+                actions: [
+                    {
+                        code: promoAction.code,
+                        arguments: [
+                            {
+                                name: 'facetValueIds',
+                                value: '["T_1"]',
+                            },
+                        ],
+                    },
+                ],
             },
-        );
-        promotion = result.createPromotion;
+        });
+        promotionGuard.assertSuccess(createPromotion);
+
+        promotion = createPromotion;
         expect(pick(promotion, snapshotProps)).toMatchSnapshot();
     });
 
-    it(
-        'createPromotion throws with empty conditions and no couponCode',
-        assertThrowsWithMessage(async () => {
-            await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
-                input: {
-                    name: 'bad promotion',
-                    enabled: true,
-                    conditions: [],
-                    actions: [
-                        {
-                            code: promoAction.code,
-                            arguments: [
-                                {
-                                    name: 'facetValueIds',
-                                    value: '["T_1"]',
-                                },
-                            ],
-                        },
-                    ],
-                },
-            });
-        }, 'A Promotion must have either at least one condition or a coupon code set'),
-    );
-
-    it('updatePromotion', async () => {
-        const result = await adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(
-            UPDATE_PROMOTION,
-            {
-                input: {
-                    id: promotion.id,
-                    couponCode: 'TEST1235',
-                    startsAt: new Date('2019-05-30T22:00:00.000Z'),
-                    endsAt: new Date('2019-06-01T22:00:00.000Z'),
-                    conditions: [
-                        {
-                            code: promoCondition.code,
-                            arguments: [{ name: 'arg', value: '90' }],
-                        },
-                        {
-                            code: promoCondition2.code,
-                            arguments: [{ name: 'arg', value: '10' }],
-                        },
-                    ],
-                },
+    it('createPromotion return error result with empty conditions and no couponCode', async () => {
+        const { createPromotion } = await adminClient.query<
+            CreatePromotion.Mutation,
+            CreatePromotion.Variables
+        >(CREATE_PROMOTION, {
+            input: {
+                name: 'bad promotion',
+                enabled: true,
+                conditions: [],
+                actions: [
+                    {
+                        code: promoAction.code,
+                        arguments: [
+                            {
+                                name: 'facetValueIds',
+                                value: '["T_1"]',
+                            },
+                        ],
+                    },
+                ],
             },
+        });
+        promotionGuard.assertErrorResult(createPromotion);
+
+        expect(createPromotion.message).toBe(
+            'A Promotion must have either at least one condition or a coupon code set',
         );
-        expect(pick(result.updatePromotion, snapshotProps)).toMatchSnapshot();
+        expect(createPromotion.code).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
     });
 
-    it(
-        'updatePromotion throws with empty conditions and no couponCode',
-        assertThrowsWithMessage(async () => {
-            await adminClient.query<UpdatePromotion.Mutation, UpdatePromotion.Variables>(UPDATE_PROMOTION, {
-                input: {
-                    id: promotion.id,
-                    couponCode: '',
-                    conditions: [],
-                },
-            });
-        }, 'A Promotion must have either at least one condition or a coupon code set'),
-    );
+    it('updatePromotion', async () => {
+        const { updatePromotion } = await adminClient.query<
+            UpdatePromotion.Mutation,
+            UpdatePromotion.Variables
+        >(UPDATE_PROMOTION, {
+            input: {
+                id: promotion.id,
+                couponCode: 'TEST1235',
+                startsAt: new Date('2019-05-30T22:00:00.000Z'),
+                endsAt: new Date('2019-06-01T22:00:00.000Z'),
+                conditions: [
+                    {
+                        code: promoCondition.code,
+                        arguments: [{ name: 'arg', value: '90' }],
+                    },
+                    {
+                        code: promoCondition2.code,
+                        arguments: [{ name: 'arg', value: '10' }],
+                    },
+                ],
+            },
+        });
+        promotionGuard.assertSuccess(updatePromotion);
+
+        expect(pick(updatePromotion, snapshotProps)).toMatchSnapshot();
+    });
+
+    it('updatePromotion return error result with empty conditions and no couponCode', async () => {
+        const { updatePromotion } = await adminClient.query<
+            UpdatePromotion.Mutation,
+            UpdatePromotion.Variables
+        >(UPDATE_PROMOTION, {
+            input: {
+                id: promotion.id,
+                couponCode: '',
+                conditions: [],
+            },
+        });
+        promotionGuard.assertErrorResult(updatePromotion);
+
+        expect(updatePromotion.message).toBe(
+            'A Promotion must have either at least one condition or a coupon code set',
+        );
+        expect(updatePromotion.code).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
+    });
 
     it('promotion', async () => {
         const result = await adminClient.query<GetPromotion.Query, GetPromotion.Variables>(GET_PROMOTION, {
@@ -291,6 +313,10 @@ export const UPDATE_PROMOTION = gql`
     mutation UpdatePromotion($input: UpdatePromotionInput!) {
         updatePromotion(input: $input) {
             ...Promotion
+            ... on ErrorResult {
+                code
+                message
+            }
         }
     }
     ${PROMOTION_FRAGMENT}

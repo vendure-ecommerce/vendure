@@ -481,3 +481,33 @@ export const VARIANT_WITH_STOCK_FRAGMENT = gql`
         }
     }
 `;
+
+export const FULFILLMENT_FRAGMENT = gql`
+    fragment Fulfillment on Fulfillment {
+        id
+        state
+        nextStates
+        method
+        trackingCode
+        orderItems {
+            id
+        }
+    }
+`;
+
+export const CHANNEL_FRAGMENT = gql`
+    fragment Channel on Channel {
+        id
+        code
+        token
+        currencyCode
+        defaultLanguageCode
+        defaultShippingZone {
+            id
+        }
+        defaultTaxZone {
+            id
+        }
+        pricesIncludeTax
+    }
+`;

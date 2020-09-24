@@ -16,6 +16,11 @@ export type Scalars = {
     Upload: any;
 };
 
+export type AddFulfillmentToOrderResult =
+    | Fulfillment
+    | EmptyOrderLineSelectionError
+    | ItemsAlreadyFulfilledError;
+
 export type AddNoteToCustomerInput = {
     id: Scalars['ID'];
     note: Scalars['String'];
@@ -102,6 +107,13 @@ export type AdministratorSortParameter = {
     emailAddress?: Maybe<SortOrder>;
 };
 
+/** Returned if an attempting to refund an OrderItem which has already been refunded */
+export type AlreadyRefundedError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    refundId: Scalars['ID'];
+};
+
 export type Asset = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -178,6 +190,8 @@ export type AuthenticationMethod = Node & {
     strategy: Scalars['String'];
 };
 
+export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
+
 export type BooleanCustomFieldConfig = CustomField & {
     name: Scalars['String'];
     type: Scalars['String'];
@@ -190,6 +204,13 @@ export type BooleanCustomFieldConfig = CustomField & {
 
 export type BooleanOperators = {
     eq?: Maybe<Scalars['Boolean']>;
+};
+
+/** Returned if an attempting to cancel lines from an Order which is still active */
+export type CancelActiveOrderError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    orderState: Scalars['String'];
 };
 
 export type Cancellation = Node &
@@ -211,6 +232,14 @@ export type CancelOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type CancelOrderResult =
+    | Order
+    | EmptyOrderLineSelectionError
+    | QuantityTooGreatError
+    | MultipleOrderError
+    | CancelActiveOrderError
+    | OrderStateTransitionError;
+
 export type Channel = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -222,6 +251,17 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+};
+
+/**
+ * Returned when the default LanguageCode of a Channel is no longer found in the `availableLanguages`
+ * of the GlobalSettings
+ */
+export type ChannelDefaultLanguageError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    language: Scalars['String'];
+    channelCode: Scalars['String'];
 };
 
 export type Collection = Node & {
@@ -436,6 +476,8 @@ export type CreateChannelInput = {
     defaultShippingZoneId: Scalars['ID'];
 };
 
+export type CreateChannelResult = Channel | LanguageNotAvailableError;
+
 export type CreateCollectionInput = {
     isPrivate?: Maybe<Scalars['Boolean']>;
     featuredAssetId?: Maybe<Scalars['ID']>;
@@ -473,6 +515,8 @@ export type CreateCustomerInput = {
     emailAddress: Scalars['String'];
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type CreateCustomerResult = Customer | EmailAddressConflictError;
 
 export type CreateFacetInput = {
     code: Scalars['String'];
@@ -552,6 +596,8 @@ export type CreatePromotionInput = {
     conditions: Array<ConfigurableOperationInput>;
     actions: Array<ConfigurableOperationInput>;
 };
+
+export type CreatePromotionResult = Promotion | MissingConditionsError;
 
 export type CreateRoleInput = {
     code: Scalars['String'];
@@ -1093,10 +1139,42 @@ export enum DeletionResult {
     NOT_DELETED = 'NOT_DELETED',
 }
 
+/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+export type EmailAddressConflictError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if no OrderLines have been specified for the operation */
+export type EmptyOrderLineSelectionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export enum ErrorCode {
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
     MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
+    INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+    NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
+    LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
+    EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+    CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
+    SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+    PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
     ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
+    EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
+    ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+    QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
+    MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
+    CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
+    NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
+    PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
+    REFUND_ORDER_STATE_ERROR = 'REFUND_ORDER_STATE_ERROR',
+    ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
+    REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
+    FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+    PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
+    MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
 }
 
 export type ErrorResult = {
@@ -1221,6 +1299,15 @@ export type Fulfillment = Node & {
     trackingCode?: Maybe<Scalars['String']>;
 };
 
+/** Returned when there is an error in transitioning the Fulfillment state */
+export type FulfillmentStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 export type FulfillOrderInput = {
     lines: Array<OrderLineInput>;
     method: Scalars['String'];
@@ -1315,6 +1402,18 @@ export type IntCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['Int']>;
     max?: Maybe<Scalars['Int']>;
     step?: Maybe<Scalars['Int']>;
+};
+
+/** Returned if the user authentication credentials are not valid */
+export type InvalidCredentialsError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if the specified items are already part of a Fulfillment */
+export type ItemsAlreadyFulfilledError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Job = Node & {
@@ -1710,6 +1809,12 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export type LanguageNotAvailableError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    languageCode: Scalars['String'];
+};
+
 export type LocaleStringCustomFieldConfig = CustomField & {
     name: Scalars['String'];
     type: Scalars['String'];
@@ -1732,10 +1837,6 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-export type LoginResult = {
-    user: CurrentUser;
-};
-
 export type MimeTypeError = ErrorResult & {
     code: ErrorCode;
     message: Scalars['String'];
@@ -1743,10 +1844,22 @@ export type MimeTypeError = ErrorResult & {
     mimeType: Scalars['String'];
 };
 
+/** Returned if a PromotionCondition has neither a couponCode nor any conditions set */
+export type MissingConditionsError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
     parentId: Scalars['ID'];
     index: Scalars['Int'];
+};
+
+/** Returned if an operation has specified OrderLines from multiple Orders */
+export type MultipleOrderError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Mutation = {
@@ -1770,14 +1883,14 @@ export type Mutation = {
      * Authenticates the user using the native authentication strategy. This mutation
      * is an alias for `authenticate({ native: { ... }})`
      */
-    login: LoginResult;
+    login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
-    authenticate: LoginResult;
-    logout: Scalars['Boolean'];
+    authenticate: AuthenticationResult;
+    logout: Success;
     /** Create a new Channel */
-    createChannel: Channel;
+    createChannel: CreateChannelResult;
     /** Update an existing Channel */
-    updateChannel: Channel;
+    updateChannel: UpdateChannelResult;
     /** Delete a Channel */
     deleteChannel: DeletionResponse;
     /** Create a new Collection */
@@ -1805,9 +1918,9 @@ export type Mutation = {
     /** Remove Customers from a CustomerGroup */
     removeCustomersFromGroup: CustomerGroup;
     /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
-    createCustomer: Customer;
+    createCustomer: CreateCustomerResult;
     /** Update an existing Customer */
-    updateCustomer: Customer;
+    updateCustomer: UpdateCustomerResult;
     /** Delete a Customer */
     deleteCustomer: DeletionResponse;
     /** Create a new Address and associate it with the Customer specified by customerId */
@@ -1831,20 +1944,20 @@ export type Mutation = {
     updateFacetValues: Array<FacetValue>;
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
-    updateGlobalSettings: GlobalSettings;
+    updateGlobalSettings: UpdateGlobalSettingsResult;
     importProducts?: Maybe<ImportInfo>;
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
     removeSettledJobs: Scalars['Int'];
-    settlePayment: Payment;
-    fulfillOrder: Fulfillment;
-    cancelOrder: Order;
-    refundOrder: Refund;
-    settleRefund: Refund;
+    settlePayment: SettlePaymentResult;
+    addFulfillmentToOrder: AddFulfillmentToOrderResult;
+    cancelOrder: CancelOrderResult;
+    refundOrder: RefundOrderResult;
+    settleRefund: SettleRefundResult;
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
-    transitionFulfillmentToState: Fulfillment;
+    transitionFulfillmentToState: TransitionFulfillmentToStateResult;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -1866,7 +1979,7 @@ export type Mutation = {
     /** Add an OptionGroup to a Product */
     addOptionGroupToProduct: Product;
     /** Remove an OptionGroup from a Product */
-    removeOptionGroupFromProduct: Product;
+    removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
     createProductVariants: Array<Maybe<ProductVariant>>;
     /** Update existing ProductVariants */
@@ -1877,8 +1990,8 @@ export type Mutation = {
     assignProductsToChannel: Array<Product>;
     /** Removes Products from the specified Channel */
     removeProductsFromChannel: Array<Product>;
-    createPromotion: Promotion;
-    updatePromotion: Promotion;
+    createPromotion: CreatePromotionResult;
+    updatePromotion: UpdatePromotionResult;
     deletePromotion: DeletionResponse;
     /** Create a new Role */
     createRole: Role;
@@ -2105,7 +2218,7 @@ export type MutationSettlePaymentArgs = {
     id: Scalars['ID'];
 };
 
-export type MutationFulfillOrderArgs = {
+export type MutationAddFulfillmentToOrderArgs = {
     input: FulfillOrderInput;
 };
 
@@ -2291,13 +2404,27 @@ export type MutationRemoveMembersFromZoneArgs = {
     memberIds: Array<Scalars['ID']>;
 };
 
+export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
+
 export type NativeAuthInput = {
     username: Scalars['String'];
     password: Scalars['String'];
 };
 
+/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+export type NativeAuthStrategyError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type Node = {
     id: Scalars['ID'];
+};
+
+/** Returned if an attempting to refund an Order but neither items nor shipping refund was specified */
+export type NothingToRefundError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type NumberOperators = {
@@ -2509,6 +2636,21 @@ export type PaymentMethodSortParameter = {
     code?: Maybe<SortOrder>;
 };
 
+/** Returned if an attempting to refund a Payment against OrderLines from a different Order */
+export type PaymentOrderMismatchError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned when there is an error in transitioning the Payment state */
+export type PaymentStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 /**
  * "
  * @description
@@ -2638,6 +2780,13 @@ export type ProductOptionGroupTranslationInput = {
     languageCode: LanguageCode;
     name?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductOptionInUseError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    optionGroupCode: Scalars['String'];
+    productVariantCount: Scalars['Int'];
 };
 
 export type ProductOptionTranslation = {
@@ -2814,6 +2963,12 @@ export type PromotionSortParameter = {
     couponCode?: Maybe<SortOrder>;
     perCustomerUsageLimit?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
+};
+
+/** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
+export type QuantityTooGreatError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Query = {
@@ -3063,6 +3218,35 @@ export type RefundOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type RefundOrderResult =
+    | Refund
+    | QuantityTooGreatError
+    | NothingToRefundError
+    | OrderStateTransitionError
+    | MultipleOrderError
+    | PaymentOrderMismatchError
+    | RefundOrderStateError
+    | AlreadyRefundedError
+    | RefundStateTransitionError;
+
+/** Returned if an attempting to refund an Order which is not in the expected state */
+export type RefundOrderStateError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    orderState: Scalars['String'];
+};
+
+/** Returned when there is an error in transitioning the Refund state */
+export type RefundStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
+export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
 export type RemoveProductsFromChannelInput = {
     productIds: Array<Scalars['ID']>;
     channelId: Scalars['ID'];
@@ -3197,10 +3381,25 @@ export type ServerConfig = {
     customFieldConfig: CustomFields;
 };
 
+/** Returned if the Payment settlement fails */
+export type SettlePaymentError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
+};
+
+export type SettlePaymentResult =
+    | Payment
+    | SettlePaymentError
+    | PaymentStateTransitionError
+    | OrderStateTransitionError;
+
 export type SettleRefundInput = {
     id: Scalars['ID'];
     transactionId: Scalars['String'];
 };
+
+export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingMethod = Node & {
     id: Scalars['ID'];
@@ -3401,6 +3600,8 @@ export type TestShippingMethodResult = {
     quote?: Maybe<TestShippingMethodQuote>;
 };
 
+export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
+
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type UpdateAddressInput = {
@@ -3444,6 +3645,8 @@ export type UpdateChannelInput = {
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
 };
+
+export type UpdateChannelResult = Channel | LanguageNotAvailableError;
 
 export type UpdateCollectionInput = {
     id: Scalars['ID'];
@@ -3492,6 +3695,8 @@ export type UpdateCustomerNoteInput = {
     note: Scalars['String'];
 };
 
+export type UpdateCustomerResult = Customer | EmailAddressConflictError;
+
 export type UpdateFacetInput = {
     id: Scalars['ID'];
     isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3512,6 +3717,8 @@ export type UpdateGlobalSettingsInput = {
     trackInventory?: Maybe<Scalars['Boolean']>;
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguageError;
 
 export type UpdateOrderInput = {
     id: Scalars['ID'];
@@ -3581,6 +3788,8 @@ export type UpdatePromotionInput = {
     conditions?: Maybe<Array<ConfigurableOperationInput>>;
     actions?: Maybe<Array<ConfigurableOperationInput>>;
 };
+
+export type UpdatePromotionResult = Promotion | MissingConditionsError;
 
 export type UpdateRoleInput = {
     id: Scalars['ID'];
@@ -3714,7 +3923,9 @@ export type AuthenticateMutationVariables = Exact<{
     input: AuthenticationInput;
 }>;
 
-export type AuthenticateMutation = { authenticate: { user: Pick<CurrentUser, 'id' | 'identifier'> } };
+export type AuthenticateMutation = {
+    authenticate: CurrentUserFragment | Pick<InvalidCredentialsError, 'code' | 'message'>;
+};
 
 export type GetCustomersQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -3748,11 +3959,11 @@ export type DeleteChannelMutationVariables = Exact<{
 
 export type DeleteChannelMutation = { deleteChannel: Pick<DeletionResponse, 'message' | 'result'> };
 
-export type UpdateGlobalSettingsMutationVariables = Exact<{
+export type UpdateGlobalLanguagesMutationVariables = Exact<{
     input: UpdateGlobalSettingsInput;
 }>;
 
-export type UpdateGlobalSettingsMutation = {
+export type UpdateGlobalLanguagesMutation = {
     updateGlobalSettings: Pick<GlobalSettings, 'id' | 'availableLanguages'>;
 };
 
@@ -4093,6 +4304,34 @@ export type UpdateFacetValuesMutationVariables = Exact<{
 
 export type UpdateFacetValuesMutation = { updateFacetValues: Array<FacetValueFragment> };
 
+export type GlobalSettingsFragment = Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'> & {
+    serverConfig: Pick<ServerConfig, 'permittedAssetTypes'> & {
+        orderProcess: Array<Pick<OrderProcessState, 'name' | 'to'>>;
+        customFieldConfig: {
+            Customer: Array<
+                | Pick<StringCustomFieldConfig, 'name'>
+                | Pick<LocaleStringCustomFieldConfig, 'name'>
+                | Pick<IntCustomFieldConfig, 'name'>
+                | Pick<FloatCustomFieldConfig, 'name'>
+                | Pick<BooleanCustomFieldConfig, 'name'>
+                | Pick<DateTimeCustomFieldConfig, 'name'>
+            >;
+        };
+    };
+};
+
+export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetGlobalSettingsQuery = { globalSettings: GlobalSettingsFragment };
+
+export type UpdateGlobalSettingsMutationVariables = Exact<{
+    input: UpdateGlobalSettingsInput;
+}>;
+
+export type UpdateGlobalSettingsMutation = {
+    updateGlobalSettings: GlobalSettingsFragment | Pick<ChannelDefaultLanguageError, 'code' | 'message'>;
+};
+
 export type AdministratorFragment = Pick<Administrator, 'id' | 'firstName' | 'lastName' | 'emailAddress'> & {
     user: Pick<User, 'id' | 'identifier' | 'lastLogin'> & {
         roles: Array<Pick<Role, 'id' | 'code' | 'description' | 'permissions'>>;
@@ -4281,6 +4520,16 @@ export type VariantWithStockFragment = Pick<ProductVariant, 'id' | 'stockOnHand'
     };
 };
 
+export type FulfillmentFragment = Pick<
+    Fulfillment,
+    'id' | 'state' | 'nextStates' | 'method' | 'trackingCode'
+> & { orderItems: Array<Pick<OrderItem, 'id'>> };
+
+export type ChannelFragment = Pick<
+    Channel,
+    'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
+> & { defaultShippingZone?: Maybe<Pick<Zone, 'id'>>; defaultTaxZone?: Maybe<Pick<Zone, 'id'>> };
+
 export type CreateAdministratorMutationVariables = Exact<{
     input: CreateAdministratorInput;
 }>;
@@ -4409,7 +4658,7 @@ export type AttemptLoginMutationVariables = Exact<{
     rememberMe?: Maybe<Scalars['Boolean']>;
 }>;
 
-export type AttemptLoginMutation = { login: { user: CurrentUserFragment } };
+export type AttemptLoginMutation = { login: CurrentUserFragment };
 
 export type GetCountryListQueryVariables = Exact<{
     options?: Maybe<CountryListOptions>;
@@ -4470,7 +4719,9 @@ export type CreatePromotionMutationVariables = Exact<{
     input: CreatePromotionInput;
 }>;
 
-export type CreatePromotionMutation = { createPromotion: PromotionFragment };
+export type CreatePromotionMutation = {
+    createPromotion: PromotionFragment | Pick<MissingConditionsError, 'code' | 'message'>;
+};
 
 export type MeQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -4481,10 +4732,11 @@ export type CreateChannelMutationVariables = Exact<{
 }>;
 
 export type CreateChannelMutation = {
-    createChannel: Pick<
-        Channel,
-        'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
-    > & { defaultShippingZone?: Maybe<Pick<Zone, 'id'>>; defaultTaxZone?: Maybe<Pick<Zone, 'id'>> };
+    createChannel:
+        | ChannelFragment
+        | (Pick<LanguageNotAvailableError, 'message' | 'languageCode'> & {
+              errorCode: LanguageNotAvailableError['code'];
+          });
 };
 
 export type DeleteProductVariantMutationVariables = Exact<{
@@ -4529,7 +4781,11 @@ export type UpdateChannelMutationVariables = Exact<{
 }>;
 
 export type UpdateChannelMutation = {
-    updateChannel: Pick<Channel, 'id' | 'code' | 'defaultLanguageCode' | 'currencyCode'>;
+    updateChannel:
+        | ChannelFragment
+        | (Pick<LanguageNotAvailableError, 'message' | 'languageCode'> & {
+              errorCode: LanguageNotAvailableError['code'];
+          });
 };
 
 export type GetCustomerHistoryQueryVariables = Exact<{
@@ -4579,9 +4835,10 @@ export type CreateFulfillmentMutationVariables = Exact<{
 }>;
 
 export type CreateFulfillmentMutation = {
-    fulfillOrder: Pick<Fulfillment, 'id' | 'method' | 'state' | 'trackingCode'> & {
-        orderItems: Array<Pick<OrderItem, 'id'>>;
-    };
+    addFulfillmentToOrder:
+        | FulfillmentFragment
+        | Pick<EmptyOrderLineSelectionError, 'code' | 'message'>
+        | Pick<ItemsAlreadyFulfilledError, 'code' | 'message'>;
 };
 
 export type TransitFulfillmentMutationVariables = Exact<{
@@ -4589,7 +4846,14 @@ export type TransitFulfillmentMutationVariables = Exact<{
     state: Scalars['String'];
 }>;
 
-export type TransitFulfillmentMutation = { transitionFulfillmentToState: Pick<Fulfillment, 'id' | 'state'> };
+export type TransitFulfillmentMutation = {
+    transitionFulfillmentToState:
+        | FulfillmentFragment
+        | Pick<
+              FulfillmentStateTransitionError,
+              'code' | 'message' | 'transitionError' | 'fromState' | 'toState'
+          >;
+};
 
 export type GetOrderFulfillmentsQueryVariables = Exact<{
     id: Scalars['ID'];
@@ -4646,13 +4910,17 @@ export type CreateCustomerMutationVariables = Exact<{
     password?: Maybe<Scalars['String']>;
 }>;
 
-export type CreateCustomerMutation = { createCustomer: CustomerFragment };
+export type CreateCustomerMutation = {
+    createCustomer: CustomerFragment | Pick<EmailAddressConflictError, 'code' | 'message'>;
+};
 
 export type UpdateCustomerMutationVariables = Exact<{
     input: UpdateCustomerInput;
 }>;
 
-export type UpdateCustomerMutation = { updateCustomer: CustomerFragment };
+export type UpdateCustomerMutation = {
+    updateCustomer: CustomerFragment | Pick<EmailAddressConflictError, 'code' | 'message'>;
+};
 
 export type DeleteCustomerMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -4770,7 +5038,15 @@ export type SettlePaymentMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type SettlePaymentMutation = { settlePayment: Pick<Payment, 'id' | 'state' | 'metadata'> };
+export type SettlePaymentMutation = {
+    settlePayment:
+        | PaymentFragment
+        | Pick<SettlePaymentError, 'code' | 'message' | 'paymentErrorMessage'>
+        | Pick<PaymentStateTransitionError, 'code' | 'message'>
+        | Pick<OrderStateTransitionError, 'code' | 'message'>;
+};
+
+export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
 
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -4789,13 +5065,7 @@ export type GetOrderFulfillmentItemsQueryVariables = Exact<{
 }>;
 
 export type GetOrderFulfillmentItemsQuery = {
-    order?: Maybe<
-        Pick<Order, 'id' | 'state'> & {
-            fulfillments?: Maybe<
-                Array<Pick<Fulfillment, 'id' | 'state'> & { orderItems: Array<Pick<OrderItem, 'id'>> }>
-            >;
-        }
-    >;
+    order?: Maybe<Pick<Order, 'id' | 'state'> & { fulfillments?: Maybe<Array<FulfillmentFragment>> }>;
 };
 
 export type CancelOrderMutationVariables = Exact<{
@@ -4803,17 +5073,39 @@ export type CancelOrderMutationVariables = Exact<{
 }>;
 
 export type CancelOrderMutation = {
-    cancelOrder: Pick<Order, 'id'> & {
-        lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
-    };
+    cancelOrder:
+        | CanceledOrderFragment
+        | Pick<EmptyOrderLineSelectionError, 'code' | 'message'>
+        | Pick<QuantityTooGreatError, 'code' | 'message'>
+        | Pick<MultipleOrderError, 'code' | 'message'>
+        | Pick<CancelActiveOrderError, 'code' | 'message'>
+        | Pick<OrderStateTransitionError, 'code' | 'message'>;
 };
+
+export type CanceledOrderFragment = Pick<Order, 'id'> & {
+    lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
+};
+
+export type RefundFragment = Pick<
+    Refund,
+    'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
+>;
 
 export type RefundOrderMutationVariables = Exact<{
     input: RefundOrderInput;
 }>;
 
 export type RefundOrderMutation = {
-    refundOrder: Pick<Refund, 'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'>;
+    refundOrder:
+        | RefundFragment
+        | Pick<QuantityTooGreatError, 'code' | 'message'>
+        | Pick<NothingToRefundError, 'code' | 'message'>
+        | Pick<OrderStateTransitionError, 'code' | 'message'>
+        | Pick<MultipleOrderError, 'code' | 'message'>
+        | Pick<PaymentOrderMismatchError, 'code' | 'message'>
+        | Pick<RefundOrderStateError, 'code' | 'message'>
+        | Pick<AlreadyRefundedError, 'code' | 'message'>
+        | Pick<RefundStateTransitionError, 'code' | 'message'>;
 };
 
 export type SettleRefundMutationVariables = Exact<{
@@ -4821,10 +5113,7 @@ export type SettleRefundMutationVariables = Exact<{
 }>;
 
 export type SettleRefundMutation = {
-    settleRefund: Pick<
-        Refund,
-        'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
-    >;
+    settleRefund: RefundFragment | Pick<RefundStateTransitionError, 'code' | 'message'>;
 };
 
 export type GetOrderHistoryQueryVariables = Exact<{
@@ -4899,18 +5188,18 @@ export type UpdateProductOptionMutation = {
     updateProductOption: Pick<ProductOption, 'id' | 'code' | 'name' | 'groupId'>;
 };
 
+export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
+    optionGroups: Array<
+        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
+    >;
+};
+
 export type AddOptionGroupToProductMutationVariables = Exact<{
     productId: Scalars['ID'];
     optionGroupId: Scalars['ID'];
 }>;
 
-export type AddOptionGroupToProductMutation = {
-    addOptionGroupToProduct: Pick<Product, 'id'> & {
-        optionGroups: Array<
-            Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
-        >;
-    };
-};
+export type AddOptionGroupToProductMutation = { addOptionGroupToProduct: ProductWithOptionsFragment };
 
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
     productId: Scalars['ID'];
@@ -4918,11 +5207,9 @@ export type RemoveOptionGroupFromProductMutationVariables = Exact<{
 }>;
 
 export type RemoveOptionGroupFromProductMutation = {
-    removeOptionGroupFromProduct: Pick<Product, 'id'> & {
-        optionGroups: Array<
-            Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
-        >;
-    };
+    removeOptionGroupFromProduct:
+        | ProductWithOptionsFragment
+        | Pick<ProductOptionInUseError, 'code' | 'message' | 'optionGroupCode' | 'productVariantCount'>;
 };
 
 export type GetOptionGroupQueryVariables = Exact<{
@@ -4965,7 +5252,9 @@ export type UpdatePromotionMutationVariables = Exact<{
     input: UpdatePromotionInput;
 }>;
 
-export type UpdatePromotionMutation = { updatePromotion: PromotionFragment };
+export type UpdatePromotionMutation = {
+    updatePromotion: PromotionFragment | Pick<MissingConditionsError, 'code' | 'message'>;
+};
 
 export type ConfigurableOperationDefFragment = Pick<
     ConfigurableOperationDefinition,
@@ -5005,7 +5294,7 @@ export type DeleteRoleMutation = { deleteRole: Pick<DeletionResponse, 'result' |
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
-export type LogoutMutation = Pick<Mutation, 'logout'>;
+export type LogoutMutation = { logout: Pick<Success, 'success'> };
 
 export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'description'> & {
     calculator: Pick<ConfigurableOperation, 'code'>;
@@ -5334,6 +5623,10 @@ export namespace CanCreateCustomer {
     export type Variables = CanCreateCustomerMutationVariables;
     export type Mutation = CanCreateCustomerMutation;
     export type CreateCustomer = NonNullable<CanCreateCustomerMutation['createCustomer']>;
+    export type CustomerInlineFragment = DiscriminateUnion<
+        NonNullable<CanCreateCustomerMutation['createCustomer']>,
+        { __typename?: 'Customer' }
+    >;
 }
 
 export namespace GetCustomerCount {
@@ -5346,7 +5639,10 @@ export namespace Authenticate {
     export type Variables = AuthenticateMutationVariables;
     export type Mutation = AuthenticateMutation;
     export type Authenticate = NonNullable<AuthenticateMutation['authenticate']>;
-    export type User = NonNullable<NonNullable<AuthenticateMutation['authenticate']>['user']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<AuthenticateMutation['authenticate']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace GetCustomers {
@@ -5382,10 +5678,14 @@ export namespace DeleteChannel {
     export type DeleteChannel = NonNullable<DeleteChannelMutation['deleteChannel']>;
 }
 
-export namespace UpdateGlobalSettings {
-    export type Variables = UpdateGlobalSettingsMutationVariables;
-    export type Mutation = UpdateGlobalSettingsMutation;
-    export type UpdateGlobalSettings = NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>;
+export namespace UpdateGlobalLanguages {
+    export type Variables = UpdateGlobalLanguagesMutationVariables;
+    export type Mutation = UpdateGlobalLanguagesMutation;
+    export type UpdateGlobalSettings = NonNullable<UpdateGlobalLanguagesMutation['updateGlobalSettings']>;
+    export type GlobalSettingsInlineFragment = DiscriminateUnion<
+        NonNullable<UpdateGlobalLanguagesMutation['updateGlobalSettings']>,
+        { __typename?: 'GlobalSettings' }
+    >;
 }
 
 export namespace GetCollectionsWithAssets {
@@ -5841,6 +6141,48 @@ export namespace UpdateFacetValues {
     >;
 }
 
+export namespace GlobalSettings {
+    export type Fragment = GlobalSettingsFragment;
+    export type ServerConfig = NonNullable<GlobalSettingsFragment['serverConfig']>;
+    export type OrderProcess = NonNullable<
+        NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['orderProcess']>[number]
+    >;
+    export type CustomFieldConfig = NonNullable<
+        NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
+    >;
+    export type Customer = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']>['Customer']
+        >[number]
+    >;
+    export type CustomFieldInlineFragment = DiscriminateUnion<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
+                >['Customer']
+            >[number]
+        >,
+        { __typename?: 'CustomField' }
+    >;
+}
+
+export namespace GetGlobalSettings {
+    export type Variables = GetGlobalSettingsQueryVariables;
+    export type Query = GetGlobalSettingsQuery;
+    export type GlobalSettings = NonNullable<GetGlobalSettingsQuery['globalSettings']>;
+}
+
+export namespace UpdateGlobalSettings {
+    export type Variables = UpdateGlobalSettingsMutationVariables;
+    export type Mutation = UpdateGlobalSettingsMutation;
+    export type UpdateGlobalSettings = NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>,
+        { __typename?: 'ErrorResult' }
+    >;
+}
+
 export namespace Administrator {
     export type Fragment = AdministratorFragment;
     export type User = NonNullable<AdministratorFragment['user']>;
@@ -5999,6 +6341,17 @@ export namespace VariantWithStock {
     >;
 }
 
+export namespace Fulfillment {
+    export type Fragment = FulfillmentFragment;
+    export type OrderItems = NonNullable<NonNullable<FulfillmentFragment['orderItems']>[number]>;
+}
+
+export namespace Channel {
+    export type Fragment = ChannelFragment;
+    export type DefaultShippingZone = NonNullable<ChannelFragment['defaultShippingZone']>;
+    export type DefaultTaxZone = NonNullable<ChannelFragment['defaultTaxZone']>;
+}
+
 export namespace CreateAdministrator {
     export type Variables = CreateAdministratorMutationVariables;
     export type Mutation = CreateAdministratorMutation;
@@ -6122,7 +6475,6 @@ export namespace AttemptLogin {
     export type Variables = AttemptLoginMutationVariables;
     export type Mutation = AttemptLoginMutation;
     export type Login = NonNullable<AttemptLoginMutation['login']>;
-    export type User = NonNullable<NonNullable<AttemptLoginMutation['login']>['user']>;
 }
 
 export namespace GetCountryList {
@@ -6179,6 +6531,10 @@ export namespace CreatePromotion {
     export type Variables = CreatePromotionMutationVariables;
     export type Mutation = CreatePromotionMutation;
     export type CreatePromotion = NonNullable<CreatePromotionMutation['createPromotion']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CreatePromotionMutation['createPromotion']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace Me {
@@ -6191,11 +6547,9 @@ export namespace CreateChannel {
     export type Variables = CreateChannelMutationVariables;
     export type Mutation = CreateChannelMutation;
     export type CreateChannel = NonNullable<CreateChannelMutation['createChannel']>;
-    export type DefaultShippingZone = NonNullable<
-        NonNullable<CreateChannelMutation['createChannel']>['defaultShippingZone']
-    >;
-    export type DefaultTaxZone = NonNullable<
-        NonNullable<CreateChannelMutation['createChannel']>['defaultTaxZone']
+    export type LanguageNotAvailableErrorInlineFragment = DiscriminateUnion<
+        NonNullable<CreateChannelMutation['createChannel']>,
+        { __typename?: 'LanguageNotAvailableError' }
     >;
 }
 
@@ -6247,6 +6601,10 @@ export namespace UpdateChannel {
     export type Variables = UpdateChannelMutationVariables;
     export type Mutation = UpdateChannelMutation;
     export type UpdateChannel = NonNullable<UpdateChannelMutation['updateChannel']>;
+    export type LanguageNotAvailableErrorInlineFragment = DiscriminateUnion<
+        NonNullable<UpdateChannelMutation['updateChannel']>,
+        { __typename?: 'LanguageNotAvailableError' }
+    >;
 }
 
 export namespace GetCustomerHistory {
@@ -6297,9 +6655,10 @@ export namespace RemoveCustomersFromGroup {
 export namespace CreateFulfillment {
     export type Variables = CreateFulfillmentMutationVariables;
     export type Mutation = CreateFulfillmentMutation;
-    export type FulfillOrder = NonNullable<CreateFulfillmentMutation['fulfillOrder']>;
-    export type OrderItems = NonNullable<
-        NonNullable<NonNullable<CreateFulfillmentMutation['fulfillOrder']>['orderItems']>[number]
+    export type AddFulfillmentToOrder = NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>,
+        { __typename?: 'ErrorResult' }
     >;
 }
 
@@ -6308,6 +6667,10 @@ export namespace TransitFulfillment {
     export type Mutation = TransitFulfillmentMutation;
     export type TransitionFulfillmentToState = NonNullable<
         TransitFulfillmentMutation['transitionFulfillmentToState']
+    >;
+    export type FulfillmentStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<TransitFulfillmentMutation['transitionFulfillmentToState']>,
+        { __typename?: 'FulfillmentStateTransitionError' }
     >;
 }
 
@@ -6345,12 +6708,20 @@ export namespace CreateCustomer {
     export type Variables = CreateCustomerMutationVariables;
     export type Mutation = CreateCustomerMutation;
     export type CreateCustomer = NonNullable<CreateCustomerMutation['createCustomer']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CreateCustomerMutation['createCustomer']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace UpdateCustomer {
     export type Variables = UpdateCustomerMutationVariables;
     export type Mutation = UpdateCustomerMutation;
     export type UpdateCustomer = NonNullable<UpdateCustomerMutation['updateCustomer']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<UpdateCustomerMutation['updateCustomer']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace DeleteCustomer {
@@ -6472,6 +6843,18 @@ export namespace SettlePayment {
     export type Variables = SettlePaymentMutationVariables;
     export type Mutation = SettlePaymentMutation;
     export type SettlePayment = NonNullable<SettlePaymentMutation['settlePayment']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SettlePaymentMutation['settlePayment']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type SettlePaymentErrorInlineFragment = DiscriminateUnion<
+        NonNullable<SettlePaymentMutation['settlePayment']>,
+        { __typename?: 'SettlePaymentError' }
+    >;
+}
+
+export namespace Payment {
+    export type Fragment = PaymentFragment;
 }
 
 export namespace GetOrderListFulfillments {
@@ -6497,41 +6880,48 @@ export namespace GetOrderFulfillmentItems {
     export type Fulfillments = NonNullable<
         NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[number]
     >;
-    export type OrderItems = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[number]
-            >['orderItems']
-        >[number]
-    >;
 }
 
 export namespace CancelOrder {
     export type Variables = CancelOrderMutationVariables;
     export type Mutation = CancelOrderMutation;
     export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
-    export type Lines = NonNullable<
-        NonNullable<NonNullable<CancelOrderMutation['cancelOrder']>['lines']>[number]
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CancelOrderMutation['cancelOrder']>,
+        { __typename?: 'ErrorResult' }
     >;
+}
+
+export namespace CanceledOrder {
+    export type Fragment = CanceledOrderFragment;
+    export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
     export type Items = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<NonNullable<CancelOrderMutation['cancelOrder']>['lines']>[number]
-            >['items']
-        >[number]
+        NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
     >;
+}
+
+export namespace Refund {
+    export type Fragment = RefundFragment;
 }
 
 export namespace RefundOrder {
     export type Variables = RefundOrderMutationVariables;
     export type Mutation = RefundOrderMutation;
     export type RefundOrder = NonNullable<RefundOrderMutation['refundOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<RefundOrderMutation['refundOrder']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace SettleRefund {
     export type Variables = SettleRefundMutationVariables;
     export type Mutation = SettleRefundMutation;
     export type SettleRefund = NonNullable<SettleRefundMutation['settleRefund']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SettleRefundMutation['settleRefund']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace GetOrderHistory {
@@ -6604,25 +6994,21 @@ export namespace UpdateProductOption {
     export type UpdateProductOption = NonNullable<UpdateProductOptionMutation['updateProductOption']>;
 }
 
+export namespace ProductWithOptions {
+    export type Fragment = ProductWithOptionsFragment;
+    export type OptionGroups = NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>;
+    export type Options = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>['options']
+        >[number]
+    >;
+}
+
 export namespace AddOptionGroupToProduct {
     export type Variables = AddOptionGroupToProductMutationVariables;
     export type Mutation = AddOptionGroupToProductMutation;
     export type AddOptionGroupToProduct = NonNullable<
         AddOptionGroupToProductMutation['addOptionGroupToProduct']
-    >;
-    export type OptionGroups = NonNullable<
-        NonNullable<
-            NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']>['optionGroups']
-        >[number]
-    >;
-    export type Options = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<
-                    NonNullable<AddOptionGroupToProductMutation['addOptionGroupToProduct']>['optionGroups']
-                >[number]
-            >['options']
-        >[number]
     >;
 }
 
@@ -6632,21 +7018,9 @@ export namespace RemoveOptionGroupFromProduct {
     export type RemoveOptionGroupFromProduct = NonNullable<
         RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']
     >;
-    export type OptionGroups = NonNullable<
-        NonNullable<
-            NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']>['optionGroups']
-        >[number]
-    >;
-    export type Options = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<
-                    NonNullable<
-                        RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']
-                    >['optionGroups']
-                >[number]
-            >['options']
-        >[number]
+    export type ProductOptionInUseErrorInlineFragment = DiscriminateUnion<
+        NonNullable<RemoveOptionGroupFromProductMutation['removeOptionGroupFromProduct']>,
+        { __typename?: 'ProductOptionInUseError' }
     >;
 }
 
@@ -6690,6 +7064,10 @@ export namespace UpdatePromotion {
     export type Variables = UpdatePromotionMutationVariables;
     export type Mutation = UpdatePromotionMutation;
     export type UpdatePromotion = NonNullable<UpdatePromotionMutation['updatePromotion']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<UpdatePromotionMutation['updatePromotion']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace ConfigurableOperationDef {
@@ -6736,6 +7114,7 @@ export namespace DeleteRole {
 export namespace Logout {
     export type Variables = LogoutMutationVariables;
     export type Mutation = LogoutMutation;
+    export type Logout = NonNullable<LogoutMutation['logout']>;
 }
 
 export namespace ShippingMethod {

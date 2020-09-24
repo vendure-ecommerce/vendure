@@ -3,8 +3,9 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
-import { InvalidCredentialsError } from '../../common/error/generated-graphql-shop-errors';
+import { InternalServerError, NotVerifiedError } from '../../common/error/errors';
+import { InvalidCredentialsError } from '../../common/error/generated-graphql-admin-errors';
+import { InvalidCredentialsError as ShopInvalidCredentialsError } from '../../common/error/generated-graphql-shop-errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
     NATIVE_AUTH_STRATEGY_NAME,
@@ -42,7 +43,7 @@ export class AuthService {
         apiType: ApiType,
         authenticationMethod: string,
         authenticationData: any,
-    ): Promise<AuthenticatedSession> {
+    ): Promise<AuthenticatedSession | InvalidCredentialsError> {
         this.eventBus.publish(
             new AttemptedLoginEvent(
                 ctx,
@@ -55,7 +56,7 @@ export class AuthService {
         const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
         const user = await authenticationStrategy.authenticate(ctx, authenticationData);
         if (!user) {
-            throw new UnauthorizedError();
+            return new InvalidCredentialsError();
         }
         return this.createAuthenticatedSessionForUser(ctx, user, authenticationStrategy.name);
     }
@@ -100,7 +101,7 @@ export class AuthService {
         ctx: RequestContext,
         userId: ID,
         password: string,
-    ): Promise<boolean | InvalidCredentialsError> {
+    ): Promise<boolean | InvalidCredentialsError | ShopInvalidCredentialsError> {
         const nativeAuthenticationStrategy = this.getAuthenticationStrategy(
             'shop',
             NATIVE_AUTH_STRATEGY_NAME,

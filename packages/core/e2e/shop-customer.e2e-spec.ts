@@ -316,7 +316,7 @@ describe('Shop customers', () => {
 
             // Log out and log in with new password
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'test2');
-            expect(loginResult.user.identifier).toBe(customer.emailAddress);
+            expect(loginResult.identifier).toBe(customer.emailAddress);
         });
 
         it('customer history for CUSTOMER_PASSWORD_UPDATED', async () => {

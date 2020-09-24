@@ -1,20 +1,27 @@
 /* tslint:disable:no-non-null-assertion */
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
+    ChannelFragment,
     CreateAdministrator,
     CreateChannel,
     CreateRole,
     CurrencyCode,
     DeleteChannel,
     DeletionResult,
+    ErrorCode,
     GetChannels,
     GetCustomerList,
     GetProductWithVariants,
@@ -23,7 +30,7 @@ import {
     Permission,
     RemoveProductsFromChannel,
     UpdateChannel,
-    UpdateGlobalSettings,
+    UpdateGlobalLanguages,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -44,6 +51,10 @@ describe('Channels', () => {
     const THIRD_CHANNEL_TOKEN = 'third_channel_token';
     let secondChannelAdminRole: CreateRole.CreateRole;
     let customerUser: GetCustomerList.Items;
+
+    const channelGuard: ErrorResultGuard<ChannelFragment> = createErrorResultGuard<ChannelFragment>(
+        input => !!input.defaultLanguageCode,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -66,6 +77,30 @@ describe('Channels', () => {
         await server.destroy();
     });
 
+    it('createChannel returns error result defaultLanguageCode not available', async () => {
+        const { createChannel } = await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(
+            CREATE_CHANNEL,
+            {
+                input: {
+                    code: 'second-channel',
+                    token: SECOND_CHANNEL_TOKEN,
+                    defaultLanguageCode: LanguageCode.zh,
+                    currencyCode: CurrencyCode.GBP,
+                    pricesIncludeTax: true,
+                    defaultShippingZoneId: 'T_1',
+                    defaultTaxZoneId: 'T_1',
+                },
+            },
+        );
+        channelGuard.assertErrorResult(createChannel);
+
+        expect(createChannel.message).toBe(
+            'Language "zh" is not available. First enable it via GlobalSettings and try again',
+        );
+        expect(createChannel.errorCode).toBe(ErrorCode.LANGUAGE_NOT_AVAILABLE_ERROR);
+        expect(createChannel.languageCode).toBe('zh');
+    });
+
     it('create a new Channel', async () => {
         const { createChannel } = await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(
             CREATE_CHANNEL,
@@ -81,6 +116,7 @@ describe('Channels', () => {
                 },
             },
         );
+        channelGuard.assertSuccess(createChannel);
 
         expect(createChannel).toEqual({
             id: 'T_2',
@@ -356,21 +392,28 @@ describe('Channels', () => {
     });
 
     describe('setting defaultLanguage', () => {
-        it(
-            'throws if languageCode not in availableLanguages',
-            assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
-                    input: {
-                        id: 'T_1',
-                        defaultLanguageCode: LanguageCode.zh,
-                    },
-                });
-            }, 'Language "zh" is not available. First enable it via GlobalSettings and try again.'),
-        );
+        it('returns error result if languageCode not in availableLanguages', async () => {
+            const { updateChannel } = await adminClient.query<
+                UpdateChannel.Mutation,
+                UpdateChannel.Variables
+            >(UPDATE_CHANNEL, {
+                input: {
+                    id: 'T_1',
+                    defaultLanguageCode: LanguageCode.zh,
+                },
+            });
+            channelGuard.assertErrorResult(updateChannel);
+
+            expect(updateChannel.message).toBe(
+                'Language "zh" is not available. First enable it via GlobalSettings and try again',
+            );
+            expect(updateChannel.errorCode).toBe(ErrorCode.LANGUAGE_NOT_AVAILABLE_ERROR);
+            expect(updateChannel.languageCode).toBe('zh');
+        });
 
         it('allows setting to an available language', async () => {
-            await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-                UPDATE_GLOBAL_SETTINGS,
+            await adminClient.query<UpdateGlobalLanguages.Mutation, UpdateGlobalLanguages.Variables>(
+                UPDATE_GLOBAL_LANGUAGES,
                 {
                     input: {
                         availableLanguages: [LanguageCode.en, LanguageCode.zh],
@@ -390,20 +433,6 @@ describe('Channels', () => {
 
             expect(updateChannel.defaultLanguageCode).toBe(LanguageCode.zh);
         });
-
-        it(
-            'attempting to remove availableLanguage when used by a Channel throws',
-            assertThrowsWithMessage(async () => {
-                await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
-                    UPDATE_GLOBAL_SETTINGS,
-                    {
-                        input: {
-                            availableLanguages: [LanguageCode.en],
-                        },
-                    },
-                );
-            }, 'Cannot remove make language "zh" unavailable as it is used as the defaultLanguage by the channel "__default_channel__"'),
-        );
     });
 
     it('deleteChannel', async () => {
@@ -461,11 +490,13 @@ const DELETE_CHANNEL = gql`
     }
 `;
 
-const UPDATE_GLOBAL_SETTINGS = gql`
-    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
+const UPDATE_GLOBAL_LANGUAGES = gql`
+    mutation UpdateGlobalLanguages($input: UpdateGlobalSettingsInput!) {
         updateGlobalSettings(input: $input) {
-            id
-            availableLanguages
+            ... on GlobalSettings {
+                id
+                availableLanguages
+            }
         }
     }
 `;

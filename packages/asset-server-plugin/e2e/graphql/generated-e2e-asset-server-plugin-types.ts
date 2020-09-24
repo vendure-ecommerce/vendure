@@ -16,6 +16,11 @@ export type Scalars = {
     Upload: any;
 };
 
+export type AddFulfillmentToOrderResult =
+    | Fulfillment
+    | EmptyOrderLineSelectionError
+    | ItemsAlreadyFulfilledError;
+
 export type AddNoteToCustomerInput = {
     id: Scalars['ID'];
     note: Scalars['String'];
@@ -102,6 +107,13 @@ export type AdministratorSortParameter = {
     emailAddress?: Maybe<SortOrder>;
 };
 
+/** Returned if an attempting to refund an OrderItem which has already been refunded */
+export type AlreadyRefundedError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    refundId: Scalars['ID'];
+};
+
 export type Asset = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -178,6 +190,8 @@ export type AuthenticationMethod = Node & {
     strategy: Scalars['String'];
 };
 
+export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
+
 export type BooleanCustomFieldConfig = CustomField & {
     name: Scalars['String'];
     type: Scalars['String'];
@@ -190,6 +204,13 @@ export type BooleanCustomFieldConfig = CustomField & {
 
 export type BooleanOperators = {
     eq?: Maybe<Scalars['Boolean']>;
+};
+
+/** Returned if an attempting to cancel lines from an Order which is still active */
+export type CancelActiveOrderError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    orderState: Scalars['String'];
 };
 
 export type Cancellation = Node &
@@ -211,6 +232,14 @@ export type CancelOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type CancelOrderResult =
+    | Order
+    | EmptyOrderLineSelectionError
+    | QuantityTooGreatError
+    | MultipleOrderError
+    | CancelActiveOrderError
+    | OrderStateTransitionError;
+
 export type Channel = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -222,6 +251,17 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+};
+
+/**
+ * Returned when the default LanguageCode of a Channel is no longer found in the `availableLanguages`
+ * of the GlobalSettings
+ */
+export type ChannelDefaultLanguageError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    language: Scalars['String'];
+    channelCode: Scalars['String'];
 };
 
 export type Collection = Node & {
@@ -436,6 +476,8 @@ export type CreateChannelInput = {
     defaultShippingZoneId: Scalars['ID'];
 };
 
+export type CreateChannelResult = Channel | LanguageNotAvailableError;
+
 export type CreateCollectionInput = {
     isPrivate?: Maybe<Scalars['Boolean']>;
     featuredAssetId?: Maybe<Scalars['ID']>;
@@ -473,6 +515,8 @@ export type CreateCustomerInput = {
     emailAddress: Scalars['String'];
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type CreateCustomerResult = Customer | EmailAddressConflictError;
 
 export type CreateFacetInput = {
     code: Scalars['String'];
@@ -552,6 +596,8 @@ export type CreatePromotionInput = {
     conditions: Array<ConfigurableOperationInput>;
     actions: Array<ConfigurableOperationInput>;
 };
+
+export type CreatePromotionResult = Promotion | MissingConditionsError;
 
 export type CreateRoleInput = {
     code: Scalars['String'];
@@ -1093,10 +1139,42 @@ export enum DeletionResult {
     NOT_DELETED = 'NOT_DELETED',
 }
 
+/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+export type EmailAddressConflictError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if no OrderLines have been specified for the operation */
+export type EmptyOrderLineSelectionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export enum ErrorCode {
     UNKNOWN_ERROR = 'UNKNOWN_ERROR',
     MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
+    INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+    NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
+    LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
+    EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+    CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
+    SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+    PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
     ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
+    EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
+    ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+    QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
+    MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
+    CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
+    NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
+    PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
+    REFUND_ORDER_STATE_ERROR = 'REFUND_ORDER_STATE_ERROR',
+    ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
+    REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
+    FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+    PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
+    MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
 }
 
 export type ErrorResult = {
@@ -1221,6 +1299,15 @@ export type Fulfillment = Node & {
     trackingCode?: Maybe<Scalars['String']>;
 };
 
+/** Returned when there is an error in transitioning the Fulfillment state */
+export type FulfillmentStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 export type FulfillOrderInput = {
     lines: Array<OrderLineInput>;
     method: Scalars['String'];
@@ -1315,6 +1402,18 @@ export type IntCustomFieldConfig = CustomField & {
     min?: Maybe<Scalars['Int']>;
     max?: Maybe<Scalars['Int']>;
     step?: Maybe<Scalars['Int']>;
+};
+
+/** Returned if the user authentication credentials are not valid */
+export type InvalidCredentialsError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if the specified items are already part of a Fulfillment */
+export type ItemsAlreadyFulfilledError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Job = Node & {
@@ -1710,6 +1809,12 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
+export type LanguageNotAvailableError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    languageCode: Scalars['String'];
+};
+
 export type LocaleStringCustomFieldConfig = CustomField & {
     name: Scalars['String'];
     type: Scalars['String'];
@@ -1732,10 +1837,6 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-export type LoginResult = {
-    user: CurrentUser;
-};
-
 export type MimeTypeError = ErrorResult & {
     code: ErrorCode;
     message: Scalars['String'];
@@ -1743,10 +1844,22 @@ export type MimeTypeError = ErrorResult & {
     mimeType: Scalars['String'];
 };
 
+/** Returned if a PromotionCondition has neither a couponCode nor any conditions set */
+export type MissingConditionsError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type MoveCollectionInput = {
     collectionId: Scalars['ID'];
     parentId: Scalars['ID'];
     index: Scalars['Int'];
+};
+
+/** Returned if an operation has specified OrderLines from multiple Orders */
+export type MultipleOrderError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Mutation = {
@@ -1770,14 +1883,14 @@ export type Mutation = {
      * Authenticates the user using the native authentication strategy. This mutation
      * is an alias for `authenticate({ native: { ... }})`
      */
-    login: LoginResult;
+    login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
-    authenticate: LoginResult;
-    logout: Scalars['Boolean'];
+    authenticate: AuthenticationResult;
+    logout: Success;
     /** Create a new Channel */
-    createChannel: Channel;
+    createChannel: CreateChannelResult;
     /** Update an existing Channel */
-    updateChannel: Channel;
+    updateChannel: UpdateChannelResult;
     /** Delete a Channel */
     deleteChannel: DeletionResponse;
     /** Create a new Collection */
@@ -1805,9 +1918,9 @@ export type Mutation = {
     /** Remove Customers from a CustomerGroup */
     removeCustomersFromGroup: CustomerGroup;
     /** Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer. */
-    createCustomer: Customer;
+    createCustomer: CreateCustomerResult;
     /** Update an existing Customer */
-    updateCustomer: Customer;
+    updateCustomer: UpdateCustomerResult;
     /** Delete a Customer */
     deleteCustomer: DeletionResponse;
     /** Create a new Address and associate it with the Customer specified by customerId */
@@ -1831,20 +1944,20 @@ export type Mutation = {
     updateFacetValues: Array<FacetValue>;
     /** Delete one or more FacetValues */
     deleteFacetValues: Array<DeletionResponse>;
-    updateGlobalSettings: GlobalSettings;
+    updateGlobalSettings: UpdateGlobalSettingsResult;
     importProducts?: Maybe<ImportInfo>;
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
     removeSettledJobs: Scalars['Int'];
-    settlePayment: Payment;
-    fulfillOrder: Fulfillment;
-    cancelOrder: Order;
-    refundOrder: Refund;
-    settleRefund: Refund;
+    settlePayment: SettlePaymentResult;
+    addFulfillmentToOrder: AddFulfillmentToOrderResult;
+    cancelOrder: CancelOrderResult;
+    refundOrder: RefundOrderResult;
+    settleRefund: SettleRefundResult;
     addNoteToOrder: Order;
     updateOrderNote: HistoryEntry;
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
-    transitionFulfillmentToState: Fulfillment;
+    transitionFulfillmentToState: TransitionFulfillmentToStateResult;
     setOrderCustomFields?: Maybe<Order>;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
@@ -1866,7 +1979,7 @@ export type Mutation = {
     /** Add an OptionGroup to a Product */
     addOptionGroupToProduct: Product;
     /** Remove an OptionGroup from a Product */
-    removeOptionGroupFromProduct: Product;
+    removeOptionGroupFromProduct: RemoveOptionGroupFromProductResult;
     /** Create a set of ProductVariants based on the OptionGroups assigned to the given Product */
     createProductVariants: Array<Maybe<ProductVariant>>;
     /** Update existing ProductVariants */
@@ -1877,8 +1990,8 @@ export type Mutation = {
     assignProductsToChannel: Array<Product>;
     /** Removes Products from the specified Channel */
     removeProductsFromChannel: Array<Product>;
-    createPromotion: Promotion;
-    updatePromotion: Promotion;
+    createPromotion: CreatePromotionResult;
+    updatePromotion: UpdatePromotionResult;
     deletePromotion: DeletionResponse;
     /** Create a new Role */
     createRole: Role;
@@ -2105,7 +2218,7 @@ export type MutationSettlePaymentArgs = {
     id: Scalars['ID'];
 };
 
-export type MutationFulfillOrderArgs = {
+export type MutationAddFulfillmentToOrderArgs = {
     input: FulfillOrderInput;
 };
 
@@ -2291,13 +2404,27 @@ export type MutationRemoveMembersFromZoneArgs = {
     memberIds: Array<Scalars['ID']>;
 };
 
+export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
+
 export type NativeAuthInput = {
     username: Scalars['String'];
     password: Scalars['String'];
 };
 
+/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+export type NativeAuthStrategyError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type Node = {
     id: Scalars['ID'];
+};
+
+/** Returned if an attempting to refund an Order but neither items nor shipping refund was specified */
+export type NothingToRefundError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type NumberOperators = {
@@ -2509,6 +2636,21 @@ export type PaymentMethodSortParameter = {
     code?: Maybe<SortOrder>;
 };
 
+/** Returned if an attempting to refund a Payment against OrderLines from a different Order */
+export type PaymentOrderMismatchError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned when there is an error in transitioning the Payment state */
+export type PaymentStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
 /**
  * "
  * @description
@@ -2638,6 +2780,13 @@ export type ProductOptionGroupTranslationInput = {
     languageCode: LanguageCode;
     name?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductOptionInUseError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    optionGroupCode: Scalars['String'];
+    productVariantCount: Scalars['Int'];
 };
 
 export type ProductOptionTranslation = {
@@ -2814,6 +2963,12 @@ export type PromotionSortParameter = {
     couponCode?: Maybe<SortOrder>;
     perCustomerUsageLimit?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
+};
+
+/** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
+export type QuantityTooGreatError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
 };
 
 export type Query = {
@@ -3063,6 +3218,35 @@ export type RefundOrderInput = {
     reason?: Maybe<Scalars['String']>;
 };
 
+export type RefundOrderResult =
+    | Refund
+    | QuantityTooGreatError
+    | NothingToRefundError
+    | OrderStateTransitionError
+    | MultipleOrderError
+    | PaymentOrderMismatchError
+    | RefundOrderStateError
+    | AlreadyRefundedError
+    | RefundStateTransitionError;
+
+/** Returned if an attempting to refund an Order which is not in the expected state */
+export type RefundOrderStateError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    orderState: Scalars['String'];
+};
+
+/** Returned when there is an error in transitioning the Refund state */
+export type RefundStateTransitionError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
+export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
 export type RemoveProductsFromChannelInput = {
     productIds: Array<Scalars['ID']>;
     channelId: Scalars['ID'];
@@ -3197,10 +3381,25 @@ export type ServerConfig = {
     customFieldConfig: CustomFields;
 };
 
+/** Returned if the Payment settlement fails */
+export type SettlePaymentError = ErrorResult & {
+    code: ErrorCode;
+    message: Scalars['String'];
+    paymentErrorMessage: Scalars['String'];
+};
+
+export type SettlePaymentResult =
+    | Payment
+    | SettlePaymentError
+    | PaymentStateTransitionError
+    | OrderStateTransitionError;
+
 export type SettleRefundInput = {
     id: Scalars['ID'];
     transactionId: Scalars['String'];
 };
+
+export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingMethod = Node & {
     id: Scalars['ID'];
@@ -3401,6 +3600,8 @@ export type TestShippingMethodResult = {
     quote?: Maybe<TestShippingMethodQuote>;
 };
 
+export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
+
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type UpdateAddressInput = {
@@ -3444,6 +3645,8 @@ export type UpdateChannelInput = {
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
 };
+
+export type UpdateChannelResult = Channel | LanguageNotAvailableError;
 
 export type UpdateCollectionInput = {
     id: Scalars['ID'];
@@ -3492,6 +3695,8 @@ export type UpdateCustomerNoteInput = {
     note: Scalars['String'];
 };
 
+export type UpdateCustomerResult = Customer | EmailAddressConflictError;
+
 export type UpdateFacetInput = {
     id: Scalars['ID'];
     isPrivate?: Maybe<Scalars['Boolean']>;
@@ -3512,6 +3717,8 @@ export type UpdateGlobalSettingsInput = {
     trackInventory?: Maybe<Scalars['Boolean']>;
     customFields?: Maybe<Scalars['JSON']>;
 };
+
+export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguageError;
 
 export type UpdateOrderInput = {
     id: Scalars['ID'];
@@ -3581,6 +3788,8 @@ export type UpdatePromotionInput = {
     conditions?: Maybe<Array<ConfigurableOperationInput>>;
     actions?: Maybe<Array<ConfigurableOperationInput>>;
 };
+
+export type UpdatePromotionResult = Promotion | MissingConditionsError;
 
 export type UpdateRoleInput = {
     id: Scalars['ID'];

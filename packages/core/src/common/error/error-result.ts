@@ -52,5 +52,5 @@ export function isGraphQlErrorResult<T extends GraphQLErrorResult | U, U = any>(
 export function isGraphQlErrorResult<T, E extends VendureEntity>(
     input: ErrorResultUnion<T, E>,
 ): input is JustErrorResults<ErrorResultUnion<T, E>> {
-    return !!((input as any).code && (input as any).message != null) && (input as any).__typename;
+    return input && !!((input as any).code && (input as any).message != null) && (input as any).__typename;
 }

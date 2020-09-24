@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    CreateCustomerResult,
     DeletionResponse,
     MutationAddNoteToCustomerArgs,
-    MutationAddNoteToOrderArgs,
     MutationCreateCustomerAddressArgs,
     MutationCreateCustomerArgs,
     MutationDeleteCustomerAddressArgs,
@@ -15,9 +15,11 @@ import {
     QueryCustomerArgs,
     QueryCustomersArgs,
     Success,
+    UpdateCustomerResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -55,7 +57,7 @@ export class CustomerResolver {
     async createCustomer(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCustomerArgs,
-    ): Promise<Customer> {
+    ): Promise<ErrorResultUnion<CreateCustomerResult, Customer>> {
         const { input, password } = args;
         return this.customerService.create(ctx, input, password || undefined);
     }
@@ -66,7 +68,7 @@ export class CustomerResolver {
     async updateCustomer(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerArgs,
-    ): Promise<Customer> {
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>> {
         const { input } = args;
         return this.customerService.update(ctx, input);
     }

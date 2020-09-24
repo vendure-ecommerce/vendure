@@ -327,7 +327,9 @@ describe('Custom fields', () => {
             await adminClient.query(gql`
                 mutation {
                     updateCustomer(input: { id: "T_1", customFields: { score: 5 } }) {
-                        id
+                        ... on Customer {
+                            id
+                        }
                     }
                 }
             `);

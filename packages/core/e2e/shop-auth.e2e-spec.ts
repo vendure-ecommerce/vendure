@@ -245,12 +245,8 @@ describe('Shop auth & accounts', () => {
         });
 
         it('login fails before verification', async () => {
-            try {
-                await shopClient.asUserWithCredentials(emailAddress, '');
-                fail('should have thrown');
-            } catch (err) {
-                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
-            }
+            const result = await shopClient.asUserWithCredentials(emailAddress, '');
+            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('verification fails with wrong token', async () => {
@@ -508,7 +504,7 @@ describe('Shop auth & accounts', () => {
             expect(resetPassword.identifier).toBe(customer.emailAddress);
 
             const loginResult = await shopClient.asUserWithCredentials(customer.emailAddress, 'newPassword');
-            expect(loginResult.user.identifier).toBe(customer.emailAddress);
+            expect(loginResult.identifier).toBe(customer.emailAddress);
         });
 
         it('customer history for password reset', async () => {
@@ -624,12 +620,9 @@ describe('Shop auth & accounts', () => {
         });
 
         it('cannot login with new email address before verification', async () => {
-            try {
-                await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
-                fail('should have thrown');
-            } catch (err) {
-                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
-            }
+            const result = await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
+
+            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('return error result for bad token', async () => {
@@ -664,12 +657,9 @@ describe('Shop auth & accounts', () => {
         });
 
         it('cannot login with old email address after verification', async () => {
-            try {
-                await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
-                fail('should have thrown');
-            } catch (err) {
-                expect(getErrorCode(err)).toBe('UNAUTHORIZED');
-            }
+            const result = await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
+
+            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('customer history for email update', async () => {

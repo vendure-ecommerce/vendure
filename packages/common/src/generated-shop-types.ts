@@ -130,6 +130,8 @@ export type AuthenticationMethod = Node & {
     strategy: Scalars['String'];
 };
 
+export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
+
 export type BooleanCustomFieldConfig = CustomField & {
     __typename?: 'BooleanCustomFieldConfig';
     name: Scalars['String'];
@@ -873,12 +875,12 @@ export enum ErrorCode {
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
     ALREADY_LOGGED_IN_ERROR = 'ALREADY_LOGGED_IN_ERROR',
     EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
-    MISSING_PASSWORD_ERROR = 'MISSING_PASSWORD_ERROR',
+    INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
     NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
+    MISSING_PASSWORD_ERROR = 'MISSING_PASSWORD_ERROR',
     VERIFICATION_TOKEN_INVALID_ERROR = 'VERIFICATION_TOKEN_INVALID_ERROR',
     VERIFICATION_TOKEN_EXPIRED_ERROR = 'VERIFICATION_TOKEN_EXPIRED_ERROR',
     PASSWORD_ALREADY_SET_ERROR = 'PASSWORD_ALREADY_SET_ERROR',
-    INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
     IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR',
     IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR',
     PASSWORD_RESET_TOKEN_INVALID_ERROR = 'PASSWORD_RESET_TOKEN_INVALID_ERROR',
@@ -1090,7 +1092,7 @@ export type IntCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
-/** Returned if the user credentials are not valid */
+/** Returned if the user authentication credentials are not valid */
 export type InvalidCredentialsError = ErrorResult & {
     __typename?: 'InvalidCredentialsError';
     code: ErrorCode;
@@ -1447,11 +1449,6 @@ export enum LogicalOperator {
     OR = 'OR',
 }
 
-export type LoginResult = {
-    __typename?: 'LoginResult';
-    user: CurrentUser;
-};
-
 /** Retured when attemting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
     __typename?: 'MissingPasswordError';
@@ -1497,11 +1494,11 @@ export type Mutation = {
      * Authenticates the user using the native authentication strategy. This mutation
      * is an alias for `authenticate({ native: { ... }})`
      */
-    login: LoginResult;
+    login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
-    authenticate: LoginResult;
+    authenticate: AuthenticationResult;
     /** End the current authenticated session */
-    logout: Scalars['Boolean'];
+    logout: Success;
     /**
      * Register a Customer account with the given credentials. There are three possible registration flows:
      *
@@ -1677,6 +1674,8 @@ export type MutationResetPasswordArgs = {
     token: Scalars['String'];
     password: Scalars['String'];
 };
+
+export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
 
 export type NativeAuthInput = {
     username: Scalars['String'];

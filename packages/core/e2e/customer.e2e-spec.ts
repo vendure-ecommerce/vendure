@@ -21,10 +21,12 @@ import {
     AddNoteToCustomer,
     CreateAddress,
     CreateCustomer,
+    CustomerFragment,
     DeleteCustomer,
     DeleteCustomerAddress,
     DeleteCustomerNote,
     DeletionResult,
+    ErrorCode,
     GetCustomer,
     GetCustomerHistory,
     GetCustomerList,
@@ -77,6 +79,10 @@ describe('Customer resolver', () => {
     let firstCustomer: GetCustomerList.Items;
     let secondCustomer: GetCustomerList.Items;
     let thirdCustomer: GetCustomerList.Items;
+
+    const customerErrorGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard<CustomerFragment>(
+        input => !!input.emailAddress,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -400,6 +406,7 @@ describe('Customer resolver', () => {
                     lastName: 'Customer',
                 },
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(false);
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
@@ -420,27 +427,62 @@ describe('Customer resolver', () => {
                 },
                 password: 'test',
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(0);
         });
 
-        it(
-            'throws when using an existing, non-deleted emailAddress',
-            assertThrowsWithMessage(async () => {
-                const { createCustomer } = await adminClient.query<
-                    CreateCustomer.Mutation,
-                    CreateCustomer.Variables
-                >(CREATE_CUSTOMER, {
-                    input: {
-                        emailAddress: 'test2@test.com',
-                        firstName: 'New',
-                        lastName: 'Customer',
-                    },
-                    password: 'test',
-                });
-            }, 'The email address must be unique'),
-        );
+        it('return error result when using an existing, non-deleted emailAddress', async () => {
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: 'test2@test.com',
+                    firstName: 'New',
+                    lastName: 'Customer',
+                },
+                password: 'test',
+            });
+            customerErrorGuard.assertErrorResult(createCustomer);
+
+            expect(createCustomer.message).toBe('The email address is not available.');
+            expect(createCustomer.code).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+        });
+    });
+
+    describe('update', () => {
+        it('returns error result when emailAddress not available', async () => {
+            const { updateCustomer } = await adminClient.query<
+                UpdateCustomer.Mutation,
+                UpdateCustomer.Variables
+            >(UPDATE_CUSTOMER, {
+                input: {
+                    id: thirdCustomer.id,
+                    emailAddress: firstCustomer.emailAddress,
+                },
+            });
+            customerErrorGuard.assertErrorResult(updateCustomer);
+
+            expect(updateCustomer.message).toBe('The email address is not available.');
+            expect(updateCustomer.code).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+        });
+
+        it('succeeds when emailAddress is available', async () => {
+            const { updateCustomer } = await adminClient.query<
+                UpdateCustomer.Mutation,
+                UpdateCustomer.Variables
+            >(UPDATE_CUSTOMER, {
+                input: {
+                    id: thirdCustomer.id,
+                    emailAddress: 'unique-email@test.com',
+                },
+            });
+            customerErrorGuard.assertSuccess(updateCustomer);
+
+            expect(updateCustomer.emailAddress).toBe('unique-email@test.com');
+        });
     });
 
     describe('deletion', () => {
@@ -509,6 +551,7 @@ describe('Customer resolver', () => {
                     lastName: 'Customer',
                 },
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
             expect(createCustomer.firstName).toBe('Reusing Email');

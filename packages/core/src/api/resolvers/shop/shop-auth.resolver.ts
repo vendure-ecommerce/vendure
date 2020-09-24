@@ -1,7 +1,9 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    AuthenticationResult,
     ErrorCode,
-    LoginResult,
+    InvalidCredentialsError,
+    MissingPasswordError,
     MutationAuthenticateArgs,
     MutationLoginArgs,
     MutationRefreshCustomerVerificationArgs,
@@ -12,12 +14,14 @@ import {
     MutationUpdateCustomerEmailAddressArgs,
     MutationUpdateCustomerPasswordArgs,
     MutationVerifyCustomerAccountArgs,
+    NativeAuthenticationResult,
     Permission,
     RefreshCustomerVerificationResult,
     RegisterCustomerAccountResult,
     RequestPasswordResetResult,
     RequestUpdateCustomerEmailAddressResult,
     ResetPasswordResult,
+    Success,
     UpdateCustomerEmailAddressResult,
     UpdateCustomerPasswordResult,
     VerifyCustomerAccountResult,
@@ -30,7 +34,6 @@ import { ForbiddenError } from '../../../common/error/errors';
 import { NativeAuthStrategyError } from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
-import { Logger } from '../../../config/logger/vendure-logger';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -45,8 +48,6 @@ import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
 export class ShopAuthResolver extends BaseAuthResolver {
-    private readonly nativeAuthStrategyIsConfigured: boolean;
-
     constructor(
         authService: AuthService,
         userService: UserService,
@@ -56,44 +57,44 @@ export class ShopAuthResolver extends BaseAuthResolver {
         protected historyService: HistoryService,
     ) {
         super(authService, userService, administratorService, configService);
-        this.nativeAuthStrategyIsConfigured = !!this.configService.authOptions.shopAuthenticationStrategy.find(
-            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
-        );
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    login(
+    async login(
         @Args() args: MutationLoginArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<LoginResult> {
-        this.requireNativeAuthStrategy();
-        return super.login(args, ctx, req, res);
+    ): Promise<NativeAuthenticationResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        return (await super.login(args, ctx, req, res)) as AuthenticationResult;
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    authenticate(
+    async authenticate(
         @Args() args: MutationAuthenticateArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<LoginResult> {
-        return this.authenticateAndCreateSession(ctx, args, req, res);
+    ): Promise<AuthenticationResult> {
+        return (await this.authenticateAndCreateSession(ctx, args, req, res)) as AuthenticationResult;
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    logout(
+    async logout(
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<boolean> {
+    ): Promise<Success> {
         return super.logout(ctx, req, res);
     }
 
@@ -121,7 +122,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
                 // otherwise account enumeration attacks become possible.
                 return { success: true };
             }
-            return result;
+            return result as MissingPasswordError;
         }
         return { success: true };
     }
@@ -210,17 +211,17 @@ export class ShopAuthResolver extends BaseAuthResolver {
             return nativeAuthStrategyError;
         }
         const { token, password } = args;
-        const result = await this.customerService.resetPassword(ctx, token, password);
-        if (isGraphQlErrorResult(result)) {
-            return result;
+        const resetResult = await this.customerService.resetPassword(ctx, token, password);
+        if (isGraphQlErrorResult(resetResult)) {
+            return resetResult;
         }
 
-        const { user } = await super.authenticateAndCreateSession(
+        const authResult = await super.authenticateAndCreateSession(
             ctx,
             {
                 input: {
                     [NATIVE_AUTH_STRATEGY_NAME]: {
-                        username: result.identifier,
+                        username: resetResult.identifier,
                         password: args.password,
                     },
                 },
@@ -228,7 +229,11 @@ export class ShopAuthResolver extends BaseAuthResolver {
             req,
             res,
         );
-        return user;
+        if (isGraphQlErrorResult(authResult)) {
+            // This should never occur in theory
+            throw authResult;
+        }
+        return authResult;
     }
 
     @Transaction()
@@ -276,7 +281,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
         const verify = await this.authService.verifyUserPassword(ctx, ctx.activeUserId, args.password);
         if (isGraphQlErrorResult(verify)) {
-            return verify;
+            return verify as InvalidCredentialsError;
         }
         const result = await this.customerService.requestUpdateEmailAddress(
             ctx,
@@ -309,16 +314,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         return { success: result };
     }
 
-    private requireNativeAuthStrategy(): NativeAuthStrategyError | undefined {
-        if (!this.nativeAuthStrategyIsConfigured) {
-            const authStrategyNames = this.configService.authOptions.shopAuthenticationStrategy
-                .map(s => s.name)
-                .join(', ');
-            const errorMessage =
-                'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Shop API.\n' +
-                `Currently the following AuthenticationStrategies are enabled: ${authStrategyNames}`;
-            Logger.error(errorMessage);
-            return new NativeAuthStrategyError();
-        }
+    protected requireNativeAuthStrategy() {
+        return super.requireNativeAuthStrategy() as NativeAuthStrategyError | undefined;
     }
 }
