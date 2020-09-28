@@ -9,6 +9,7 @@ import {
     DataService,
     EditNoteDialogComponent,
     GetOrderHistory,
+    GetOrderQuery,
     HistoryEntry,
     ModalService,
     NotificationService,
@@ -132,9 +133,15 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     }
 
     transitionToState(state: string) {
-        this.dataService.order.transitionToState(this.id, state).subscribe(val => {
-            this.notificationService.success(_('order.transitioned-to-state-success'), { state });
-            this.fetchHistory.next();
+        this.dataService.order.transitionToState(this.id, state).subscribe(({ transitionOrderToState }) => {
+            switch (transitionOrderToState?.__typename) {
+                case 'Order':
+                    this.notificationService.success(_('order.transitioned-to-state-success'), { state });
+                    this.fetchHistory.next();
+                    break;
+                case 'OrderStateTransitionError':
+                    this.notificationService.error(transitionOrderToState.transitionError);
+            }
         });
     }
 
@@ -171,14 +178,20 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
 
     settlePayment(payment: OrderDetail.Payments) {
         this.dataService.order.settlePayment(payment.id).subscribe(({ settlePayment }) => {
-            if (settlePayment) {
-                if (settlePayment.state === 'Settled') {
-                    this.notificationService.success(_('order.settle-payment-success'));
-                } else {
-                    this.notificationService.error(_('order.settle-payment-error'));
-                }
-                this.dataService.order.getOrder(this.id).single$.subscribe();
-                this.fetchHistory.next();
+            switch (settlePayment.__typename) {
+                case 'Payment':
+                    if (settlePayment.state === 'Settled') {
+                        this.notificationService.success(_('order.settle-payment-success'));
+                    } else {
+                        this.notificationService.error(_('order.settle-payment-error'));
+                    }
+                    this.dataService.order.getOrder(this.id).single$.subscribe();
+                    this.fetchHistory.next();
+                    break;
+                case 'OrderStateTransitionError':
+                case 'PaymentStateTransitionError':
+                case 'SettlePaymentError':
+                    this.notificationService.error(settlePayment.message);
             }
         });
     }
@@ -362,15 +375,32 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                 switchMap(input => {
                     if (input) {
                         return this.dataService.order.refundOrder(omit(input, ['cancel'])).pipe(
-                            switchMap(result => {
-                                if (input.cancel.length) {
-                                    return this.dataService.order.cancelOrder({
-                                        orderId: this.id,
-                                        lines: input.cancel,
-                                        reason: input.reason,
-                                    });
-                                } else {
-                                    return of(result);
+                            switchMap(({ refundOrder }) => {
+                                switch (refundOrder.__typename) {
+                                    case 'Refund':
+                                        if (input.cancel.length) {
+                                            return this.dataService.order
+                                                .cancelOrder({
+                                                    orderId: this.id,
+                                                    lines: input.cancel,
+                                                    reason: input.reason,
+                                                })
+                                                .pipe(map(({ cancelOrder }) => cancelOrder));
+                                        } else {
+                                            return of(refundOrder);
+                                        }
+                                    case 'AlreadyRefundedError':
+                                    case 'OrderStateTransitionError':
+                                    case 'MultipleOrderError':
+                                    case 'NothingToRefundError':
+                                    case 'PaymentOrderMismatchError':
+                                    case 'QuantityTooGreatError':
+                                    case 'RefundOrderStateError':
+                                    case 'RefundStateTransitionError':
+                                        this.notificationService.error(refundOrder.message);
+                                    // tslint:disable-next-line:no-switch-case-fall-through
+                                    default:
+                                        return of(undefined);
                                 }
                             }),
                         );
@@ -378,16 +408,27 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                         return of(undefined);
                     }
                 }),
-                switchMap(result => this.refetchOrder(result)),
             )
             .subscribe(result => {
                 if (result) {
-                    this.notificationService.success(_('order.refund-order-success'));
+                    switch (result.__typename) {
+                        case 'Order':
+                        case 'Refund':
+                            this.refetchOrder(result).subscribe();
+                            this.notificationService.success(_('order.refund-order-success'));
+                            break;
+                        case 'QuantityTooGreatError':
+                        case 'MultipleOrderError':
+                        case 'OrderStateTransitionError':
+                        case 'CancelActiveOrderError':
+                        case 'EmptyOrderLineSelectionError':
+                            this.notificationService.error(result.message);
+                    }
                 }
             });
     }
 
-    private refetchOrder(result: object | undefined) {
+    private refetchOrder(result: object | undefined): Observable<GetOrderQuery | undefined> {
         this.fetchHistory.next();
         if (result) {
             return this.dataService.order.getOrder(this.id).single$;

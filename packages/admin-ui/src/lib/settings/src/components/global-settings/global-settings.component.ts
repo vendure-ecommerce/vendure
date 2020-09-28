@@ -7,7 +7,7 @@ import { CustomFieldConfig, GlobalSettings, LanguageCode, Permission } from '@ve
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ServerConfigService } from '@vendure/admin-ui/core';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-global-settings',
@@ -63,21 +63,23 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
 
         this.dataService.settings
             .updateGlobalSettings(this.detailForm.value)
-            .pipe(switchMap(() => this.serverConfigService.refreshGlobalSettings()))
-            .subscribe(
-                () => {
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'Settings',
-                    });
-                },
-                (err) => {
-                    this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'Settings',
-                    });
-                },
-            );
+            .pipe(
+                tap(({ updateGlobalSettings }) => {
+                    switch (updateGlobalSettings.__typename) {
+                        case 'GlobalSettings':
+                            this.detailForm.markAsPristine();
+                            this.changeDetector.markForCheck();
+                            this.notificationService.success(_('common.notify-update-success'), {
+                                entity: 'Settings',
+                            });
+                            break;
+                        case 'ChannelDefaultLanguageError':
+                            this.notificationService.error(updateGlobalSettings.message);
+                    }
+                }),
+                switchMap(() => this.serverConfigService.refreshGlobalSettings()),
+            )
+            .subscribe();
     }
 
     protected setFormValues(entity: GlobalSettings, languageCode: LanguageCode): void {

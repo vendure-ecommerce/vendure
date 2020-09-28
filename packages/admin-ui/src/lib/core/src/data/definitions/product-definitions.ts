@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
+
 export const ASSET_FRAGMENT = gql`
     fragment Asset on Asset {
         id
@@ -274,23 +276,27 @@ export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
         removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
-            createdAt
-            updatedAt
-            optionGroups {
+            ... on Product {
                 id
                 createdAt
                 updatedAt
-                code
-                options {
+                optionGroups {
                     id
                     createdAt
                     updatedAt
                     code
+                    options {
+                        id
+                        createdAt
+                        updatedAt
+                        code
+                    }
                 }
             }
+            ...ErrorResult
         }
     }
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const GET_PRODUCT_WITH_VARIANTS = gql`

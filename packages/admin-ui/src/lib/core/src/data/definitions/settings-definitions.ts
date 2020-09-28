@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 
-import { CONFIGURABLE_OPERATION_DEF_FRAGMENT } from './shared-definitions';
+import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, ERROR_RESULT_FRAGMENT } from './shared-definitions';
 
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
@@ -342,18 +342,22 @@ export const CREATE_CHANNEL = gql`
     mutation CreateChannel($input: CreateChannelInput!) {
         createChannel(input: $input) {
             ...Channel
+            ...ErrorResult
         }
     }
     ${CHANNEL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const UPDATE_CHANNEL = gql`
     mutation UpdateChannel($input: UpdateChannelInput!) {
         updateChannel(input: $input) {
             ...Channel
+            ...ErrorResult
         }
     }
     ${CHANNEL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const DELETE_CHANNEL = gql`
@@ -433,9 +437,11 @@ export const UPDATE_GLOBAL_SETTINGS = gql`
     mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
         updateGlobalSettings(input: $input) {
             ...GlobalSettings
+            ...ErrorResult
         }
     }
     ${GLOBAL_SETTINGS_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const CUSTOM_FIELD_CONFIG_FRAGMENT = gql`
