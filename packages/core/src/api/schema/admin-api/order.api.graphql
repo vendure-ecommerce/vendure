@@ -75,71 +75,71 @@ input UpdateOrderNoteInput {
 
 "Returned if the Payment settlement fails"
 type SettlePaymentError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     paymentErrorMessage: String!
 }
 
 "Returned if no OrderLines have been specified for the operation"
 type EmptyOrderLineSelectionError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if the specified items are already part of a Fulfillment"
 type ItemsAlreadyFulfilledError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if an operation has specified OrderLines from multiple Orders"
 type MultipleOrderError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if an attempting to cancel lines from an Order which is still active"
 type CancelActiveOrderError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     orderState: String!
 }
 
 "Returned if an attempting to refund a Payment against OrderLines from a different Order"
 type PaymentOrderMismatchError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if an attempting to refund an Order which is not in the expected state"
 type RefundOrderStateError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     orderState: String!
 }
 
 "Returned if an attempting to refund an Order but neither items nor shipping refund was specified"
 type NothingToRefundError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if an attempting to refund an OrderItem which has already been refunded"
 type AlreadyRefundedError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     refundId: ID!
 }
 
 "Returned if the specified quantity of an OrderLine is greater than the number of items in that line"
 type QuantityTooGreatError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned when there is an error in transitioning the Refund state"
 type RefundStateTransitionError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     transitionError: String!
     fromState: String!
@@ -148,7 +148,7 @@ type RefundStateTransitionError implements ErrorResult {
 
 "Returned when there is an error in transitioning the Payment state"
 type PaymentStateTransitionError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     transitionError: String!
     fromState: String!
@@ -157,7 +157,7 @@ type PaymentStateTransitionError implements ErrorResult {
 
 "Returned when there is an error in transitioning the Fulfillment state"
 type FulfillmentStateTransitionError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     transitionError: String!
     fromState: String!

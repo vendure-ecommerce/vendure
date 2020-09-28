@@ -289,7 +289,7 @@ export const CREATE_PROMOTION = gql`
         createPromotion(input: $input) {
             ...Promotion
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -310,7 +310,7 @@ export const CREATE_CHANNEL = gql`
         createChannel(input: $input) {
             ...Channel
             ... on LanguageNotAvailableError {
-                errorCode: code
+                errorCode
                 message
                 languageCode
             }
@@ -375,7 +375,7 @@ export const UPDATE_CHANNEL = gql`
         updateChannel(input: $input) {
             ...Channel
             ... on LanguageNotAvailableError {
-                errorCode: code
+                errorCode
                 message
                 languageCode
             }
@@ -448,7 +448,7 @@ export const CREATE_FULFILLMENT = gql`
         addFulfillmentToOrder(input: $input) {
             ...Fulfillment
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -461,7 +461,7 @@ export const TRANSIT_FULFILLMENT = gql`
         transitionFulfillmentToState(id: $id, state: $state) {
             ...Fulfillment
             ... on FulfillmentStateTransitionError {
-                code
+                errorCode
                 message
                 transitionError
                 fromState
@@ -540,7 +540,7 @@ export const CREATE_CUSTOMER = gql`
         createCustomer(input: $input, password: $password) {
             ...Customer
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -553,7 +553,7 @@ export const UPDATE_CUSTOMER = gql`
         updateCustomer(input: $input) {
             ...Customer
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -659,7 +659,7 @@ export const ADMIN_TRANSITION_TO_STATE = gql`
         transitionOrderToState(id: $id, state: $state) {
             ...Order
             ... on OrderStateTransitionError {
-                errorCode: code
+                errorCode
                 message
                 transitionError
                 fromState

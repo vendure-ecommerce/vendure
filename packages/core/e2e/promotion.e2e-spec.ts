@@ -130,7 +130,7 @@ describe('Promotion resolver', () => {
         expect(createPromotion.message).toBe(
             'A Promotion must have either at least one condition or a coupon code set',
         );
-        expect(createPromotion.code).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
+        expect(createPromotion.errorCode).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
     });
 
     it('updatePromotion', async () => {
@@ -176,7 +176,7 @@ describe('Promotion resolver', () => {
         expect(updatePromotion.message).toBe(
             'A Promotion must have either at least one condition or a coupon code set',
         );
-        expect(updatePromotion.code).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
+        expect(updatePromotion.errorCode).toBe(ErrorCode.MISSING_CONDITIONS_ERROR);
     });
 
     it('promotion', async () => {
@@ -314,7 +314,7 @@ export const UPDATE_PROMOTION = gql`
         updatePromotion(input: $input) {
             ...Promotion
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }

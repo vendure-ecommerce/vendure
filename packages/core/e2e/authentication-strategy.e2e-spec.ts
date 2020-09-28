@@ -74,7 +74,7 @@ describe('AuthenticationStrategy', () => {
             });
 
             expect(authenticate.message).toBe('The provided credentials are invalid');
-            expect(authenticate.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(authenticate.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('creates a new Customer with valid token', async () => {
@@ -224,7 +224,7 @@ const AUTHENTICATE = gql`
         authenticate(input: $input) {
             ...CurrentUser
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }

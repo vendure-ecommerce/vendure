@@ -86,7 +86,7 @@ enum ErrorCode {
 }
 
 interface ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
@@ -193,19 +193,19 @@ type Success {
 
 "Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured."
 type NativeAuthStrategyError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if the user authentication credentials are not valid"
 type InvalidCredentialsError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 
 "Returned if there is an error in transitioning the Order state"
 type OrderStateTransitionError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     transitionError: String!
     fromState: String!
@@ -214,6 +214,6 @@ type OrderStateTransitionError implements ErrorResult {
 
 "Retured when attemting to create a Customer with an email address already registered to an existing User."
 type EmailAddressConflictError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }

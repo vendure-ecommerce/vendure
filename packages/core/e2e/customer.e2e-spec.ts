@@ -448,7 +448,7 @@ describe('Customer resolver', () => {
             customerErrorGuard.assertErrorResult(createCustomer);
 
             expect(createCustomer.message).toBe('The email address is not available.');
-            expect(createCustomer.code).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+            expect(createCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
     });
 
@@ -466,7 +466,7 @@ describe('Customer resolver', () => {
             customerErrorGuard.assertErrorResult(updateCustomer);
 
             expect(updateCustomer.message).toBe('The email address is not available.');
-            expect(updateCustomer.code).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+            expect(updateCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
 
         it('succeeds when emailAddress is available', async () => {

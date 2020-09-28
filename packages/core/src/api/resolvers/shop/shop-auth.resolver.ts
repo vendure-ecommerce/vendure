@@ -117,7 +117,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         }
         const result = await this.customerService.registerCustomerAccount(ctx, args.input);
         if (isGraphQlErrorResult(result)) {
-            if (result.code === ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR) {
+            if (result.errorCode === ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR) {
                 // We do not want to reveal the email address conflict,
                 // otherwise account enumeration attacks become possible.
                 return { success: true };

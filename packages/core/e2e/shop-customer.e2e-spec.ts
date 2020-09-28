@@ -302,7 +302,7 @@ describe('Shop customers', () => {
             successErrorGuard.assertErrorResult(updateCustomerPassword);
 
             expect(updateCustomerPassword.message).toBe('The provided credentials are invalid');
-            expect(updateCustomerPassword.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(updateCustomerPassword.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('updatePassword works', async () => {

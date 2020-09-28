@@ -141,7 +141,7 @@ input RemoveProductsFromChannelInput {
 }
 
 type ProductOptionInUseError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     optionGroupCode: String!
     productVariantCount: Int!

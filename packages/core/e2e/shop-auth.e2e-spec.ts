@@ -246,7 +246,7 @@ describe('Shop auth & accounts', () => {
 
         it('login fails before verification', async () => {
             const result = await shopClient.asUserWithCredentials(emailAddress, '');
-            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(result.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('verification fails with wrong token', async () => {
@@ -260,7 +260,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
-            expect(verifyCustomerAccount.code).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
+            expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
         it('verification fails with no password', async () => {
@@ -273,7 +273,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.message).toBe(`A password must be provided.`);
-            expect(verifyCustomerAccount.code).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
+            expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
         });
 
         it('verification succeeds with password and correct token', async () => {
@@ -321,7 +321,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.message).toBe(`Verification token not recognized`);
-            expect(verifyCustomerAccount.code).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
+            expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_INVALID_ERROR);
         });
 
         it('customer history contains entries for registration & verification', async () => {
@@ -413,7 +413,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertErrorResult(verifyCustomerAccount);
 
             expect(verifyCustomerAccount.message).toBe(`A password has already been set during registration`);
-            expect(verifyCustomerAccount.code).toBe(ErrorCode.PASSWORD_ALREADY_SET_ERROR);
+            expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.PASSWORD_ALREADY_SET_ERROR);
         });
 
         it('verification succeeds with no password and correct token', async () => {
@@ -488,7 +488,7 @@ describe('Shop auth & accounts', () => {
             currentUserErrorGuard.assertErrorResult(resetPassword);
 
             expect(resetPassword.message).toBe(`Password reset token not recognized`);
-            expect(resetPassword.code).toBe(ErrorCode.PASSWORD_RESET_TOKEN_INVALID_ERROR);
+            expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_INVALID_ERROR);
         });
 
         it('resetPassword works with valid token', async () => {
@@ -577,7 +577,7 @@ describe('Shop auth & accounts', () => {
             successErrorGuard.assertErrorResult(requestUpdateCustomerEmailAddress);
 
             expect(requestUpdateCustomerEmailAddress.message).toBe('The provided credentials are invalid');
-            expect(requestUpdateCustomerEmailAddress.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(requestUpdateCustomerEmailAddress.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('return error result email address already in use', async () => {
@@ -597,7 +597,7 @@ describe('Shop auth & accounts', () => {
             successErrorGuard.assertErrorResult(requestUpdateCustomerEmailAddress);
 
             expect(requestUpdateCustomerEmailAddress.message).toBe('The email address is not available.');
-            expect(requestUpdateCustomerEmailAddress.code).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+            expect(requestUpdateCustomerEmailAddress.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
         });
 
         it('triggers event with token', async () => {
@@ -622,7 +622,7 @@ describe('Shop auth & accounts', () => {
         it('cannot login with new email address before verification', async () => {
             const result = await shopClient.asUserWithCredentials(NEW_EMAIL_ADDRESS, PASSWORD);
 
-            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(result.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('return error result for bad token', async () => {
@@ -633,7 +633,9 @@ describe('Shop auth & accounts', () => {
             successErrorGuard.assertErrorResult(updateCustomerEmailAddress);
 
             expect(updateCustomerEmailAddress.message).toBe('Identifier change token not recognized');
-            expect(updateCustomerEmailAddress.code).toBe(ErrorCode.IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR);
+            expect(updateCustomerEmailAddress.errorCode).toBe(
+                ErrorCode.IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR,
+            );
         });
 
         it('verify the new email address', async () => {
@@ -659,7 +661,7 @@ describe('Shop auth & accounts', () => {
         it('cannot login with old email address after verification', async () => {
             const result = await shopClient.asUserWithCredentials(customer.emailAddress, PASSWORD);
 
-            expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(result.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
         });
 
         it('customer history for email update', async () => {
@@ -826,7 +828,7 @@ describe('Expiring tokens', () => {
         expect(verifyCustomerAccount.message).toBe(
             `Verification token has expired. Use refreshCustomerVerification to send a new token.`,
         );
-        expect(verifyCustomerAccount.code).toBe(ErrorCode.VERIFICATION_TOKEN_EXPIRED_ERROR);
+        expect(verifyCustomerAccount.errorCode).toBe(ErrorCode.VERIFICATION_TOKEN_EXPIRED_ERROR);
     });
 
     it('attempting to reset password after token has expired returns error result', async () => {
@@ -862,7 +864,7 @@ describe('Expiring tokens', () => {
         currentUserErrorGuard.assertErrorResult(resetPassword);
 
         expect(resetPassword.message).toBe(`Password reset token has expired`);
-        expect(resetPassword.code).toBe(ErrorCode.PASSWORD_RESET_TOKEN_EXPIRED_ERROR);
+        expect(resetPassword.errorCode).toBe(ErrorCode.PASSWORD_RESET_TOKEN_EXPIRED_ERROR);
     });
 });
 
@@ -908,7 +910,7 @@ describe('Registration without email verification', () => {
         successErrorGuard.assertErrorResult(registerCustomerAccount);
 
         expect(registerCustomerAccount.message).toBe('A password must be provided.');
-        expect(registerCustomerAccount.code).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
+        expect(registerCustomerAccount.errorCode).toBe(ErrorCode.MISSING_PASSWORD_ERROR);
     });
 
     it('register a new account with password', async () => {

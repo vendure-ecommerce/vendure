@@ -177,7 +177,7 @@ describe('Orders resolver', () => {
             paymentGuard.assertErrorResult(settlePayment);
 
             expect(settlePayment.message).toBe('Settling the payment failed');
-            expect(settlePayment.code).toBe(ErrorCode.SETTLE_PAYMENT_ERROR);
+            expect(settlePayment.errorCode).toBe(ErrorCode.SETTLE_PAYMENT_ERROR);
             expect((settlePayment as any).paymentErrorMessage).toBe('Something went horribly wrong');
 
             const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -292,7 +292,7 @@ describe('Orders resolver', () => {
             fulfillmentGuard.assertErrorResult(addFulfillmentToOrder);
 
             expect(addFulfillmentToOrder.message).toBe('At least one OrderLine must be specified');
-            expect(addFulfillmentToOrder.code).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
+            expect(addFulfillmentToOrder.errorCode).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
         });
 
         it('returns error result if all quantities are zero', async () => {
@@ -312,7 +312,7 @@ describe('Orders resolver', () => {
             fulfillmentGuard.assertErrorResult(addFulfillmentToOrder);
 
             expect(addFulfillmentToOrder.message).toBe('At least one OrderLine must be specified');
-            expect(addFulfillmentToOrder.code).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
+            expect(addFulfillmentToOrder.errorCode).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
         });
 
         it('creates the first fulfillment', async () => {
@@ -408,7 +408,7 @@ describe('Orders resolver', () => {
             expect(addFulfillmentToOrder.message).toBe(
                 'One or more OrderItems are already part of a Fulfillment',
             );
-            expect(addFulfillmentToOrder.code).toBe(ErrorCode.ITEMS_ALREADY_FULFILLED_ERROR);
+            expect(addFulfillmentToOrder.errorCode).toBe(ErrorCode.ITEMS_ALREADY_FULFILLED_ERROR);
         });
 
         it('transits the first fulfillment from created to Shipped and automatically change the order state to PartiallyShipped', async () => {
@@ -787,7 +787,7 @@ describe('Orders resolver', () => {
             expect(cancelOrder.message).toBe(
                 'Cannot cancel OrderLines from an Order in the "AddingItems" state',
             );
-            expect(cancelOrder.code).toBe(ErrorCode.CANCEL_ACTIVE_ORDER_ERROR);
+            expect(cancelOrder.errorCode).toBe(ErrorCode.CANCEL_ACTIVE_ORDER_ERROR);
         });
 
         it('cannot cancel from ArrangingPayment state', async () => {
@@ -810,7 +810,7 @@ describe('Orders resolver', () => {
             expect(cancelOrder.message).toBe(
                 'Cannot cancel OrderLines from an Order in the "ArrangingPayment" state',
             );
-            expect(cancelOrder.code).toBe(ErrorCode.CANCEL_ACTIVE_ORDER_ERROR);
+            expect(cancelOrder.errorCode).toBe(ErrorCode.CANCEL_ACTIVE_ORDER_ERROR);
         });
 
         it('returns error result if lines are empty', async () => {
@@ -831,7 +831,7 @@ describe('Orders resolver', () => {
             orderGuard.assertErrorResult(cancelOrder);
 
             expect(cancelOrder.message).toBe('At least one OrderLine must be specified');
-            expect(cancelOrder.code).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
+            expect(cancelOrder.errorCode).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
         });
 
         it('returns error result if all quantities zero', async () => {
@@ -850,7 +850,7 @@ describe('Orders resolver', () => {
             orderGuard.assertErrorResult(cancelOrder);
 
             expect(cancelOrder.message).toBe('At least one OrderLine must be specified');
-            expect(cancelOrder.code).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
+            expect(cancelOrder.errorCode).toBe(ErrorCode.EMPTY_ORDER_LINE_SELECTION_ERROR);
         });
 
         it('partial cancellation', async () => {
@@ -935,7 +935,7 @@ describe('Orders resolver', () => {
             expect(cancelOrder.message).toBe(
                 'The specified quantity is greater than the available OrderItems',
             );
-            expect(cancelOrder.code).toBe(ErrorCode.QUANTITY_TOO_GREAT_ERROR);
+            expect(cancelOrder.errorCode).toBe(ErrorCode.QUANTITY_TOO_GREAT_ERROR);
         });
 
         it('complete cancellation', async () => {
@@ -1073,7 +1073,7 @@ describe('Orders resolver', () => {
             refundGuard.assertErrorResult(refundOrder);
 
             expect(refundOrder.message).toBe('Cannot refund an Order in the "PaymentAuthorized" state');
-            expect(refundOrder.code).toBe(ErrorCode.REFUND_ORDER_STATE_ERROR);
+            expect(refundOrder.errorCode).toBe(ErrorCode.REFUND_ORDER_STATE_ERROR);
         });
 
         it('returns error result if no lines and no shipping', async () => {
@@ -1104,7 +1104,7 @@ describe('Orders resolver', () => {
             refundGuard.assertErrorResult(refundOrder);
 
             expect(refundOrder.message).toBe('Nothing to refund');
-            expect(refundOrder.code).toBe(ErrorCode.NOTHING_TO_REFUND_ERROR);
+            expect(refundOrder.errorCode).toBe(ErrorCode.NOTHING_TO_REFUND_ERROR);
         });
 
         it(
@@ -1145,7 +1145,7 @@ describe('Orders resolver', () => {
             refundGuard.assertErrorResult(refundOrder);
 
             expect(refundOrder.message).toBe('The Payment and OrderLines do not belong to the same Order');
-            expect(refundOrder.code).toBe(ErrorCode.PAYMENT_ORDER_MISMATCH_ERROR);
+            expect(refundOrder.errorCode).toBe(ErrorCode.PAYMENT_ORDER_MISMATCH_ERROR);
         });
 
         it('creates a Refund to be manually settled', async () => {
@@ -1192,7 +1192,7 @@ describe('Orders resolver', () => {
             refundGuard.assertErrorResult(refundOrder);
 
             expect(refundOrder.message).toBe('Cannot refund an OrderItem which has already been refunded');
-            expect(refundOrder.code).toBe(ErrorCode.ALREADY_REFUNDED_ERROR);
+            expect(refundOrder.errorCode).toBe(ErrorCode.ALREADY_REFUNDED_ERROR);
         });
 
         it('manually settle a Refund', async () => {
@@ -1463,7 +1463,7 @@ export const SETTLE_PAYMENT = gql`
         settlePayment(id: $id) {
             ...Payment
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
             ... on SettlePaymentError {
@@ -1513,7 +1513,7 @@ export const CANCEL_ORDER = gql`
         cancelOrder(input: $input) {
             ...CanceledOrder
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -1547,7 +1547,7 @@ export const REFUND_ORDER = gql`
         refundOrder(input: $input) {
             ...Refund
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -1560,7 +1560,7 @@ export const SETTLE_REFUND = gql`
         settleRefund(input: $input) {
             ...Refund
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }

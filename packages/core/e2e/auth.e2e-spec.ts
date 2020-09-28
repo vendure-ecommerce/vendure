@@ -80,7 +80,7 @@ describe('Authorization & permissions', () => {
             it('cannot login', async () => {
                 const result = await adminClient.asUserWithCredentials(customerEmailAddress, 'test');
 
-                expect(result.code).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+                expect(result.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
             });
         });
 

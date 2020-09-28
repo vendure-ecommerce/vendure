@@ -84,7 +84,7 @@ export const ADD_ITEM_TO_ORDER = gql`
         addItemToOrder(productVariantId: $productVariantId, quantity: $quantity) {
             ...UpdatedOrder
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -124,7 +124,7 @@ export const REGISTER_ACCOUNT = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -148,7 +148,7 @@ export const VERIFY_EMAIL = gql`
         verifyCustomerAccount(password: $password, token: $token) {
             ...CurrentUserShop
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -163,7 +163,7 @@ export const REFRESH_TOKEN = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -176,7 +176,7 @@ export const REQUEST_PASSWORD_RESET = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -187,7 +187,7 @@ export const RESET_PASSWORD = gql`
         resetPassword(token: $token, password: $password) {
             ...CurrentUserShop
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -201,7 +201,7 @@ export const REQUEST_UPDATE_EMAIL_ADDRESS = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -214,7 +214,7 @@ export const UPDATE_EMAIL_ADDRESS = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -274,7 +274,7 @@ export const UPDATE_PASSWORD = gql`
                 success
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }
@@ -295,7 +295,7 @@ export const ADJUST_ITEM_QUANTITY = gql`
         adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity) {
             ...TestOrderFragment
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -308,7 +308,7 @@ export const REMOVE_ITEM_FROM_ORDER = gql`
         removeOrderLine(orderLineId: $orderLineId) {
             ...TestOrderFragment
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -331,7 +331,7 @@ export const SET_SHIPPING_METHOD = gql`
         setOrderShippingMethod(shippingMethodId: $id) {
             ...TestOrderFragment
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -359,7 +359,7 @@ export const SET_CUSTOMER = gql`
         setCustomerForOrder(input: $input) {
             ...ActiveOrderCustomer
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -403,7 +403,7 @@ export const TRANSITION_TO_STATE = gql`
         transitionOrderToState(state: $state) {
             ...TestOrderFragment
             ... on OrderStateTransitionError {
-                errorCode: code
+                errorCode
                 message
                 transitionError
                 fromState
@@ -479,7 +479,7 @@ export const ADD_PAYMENT = gql`
         addPaymentToOrder(input: $input) {
             ...TestOrderWithPayments
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
             ... on PaymentDeclinedError {
@@ -548,7 +548,7 @@ export const APPLY_COUPON_CODE = gql`
         applyCouponCode(couponCode: $couponCode) {
             ...TestOrderFragment
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }
@@ -570,7 +570,7 @@ export const REMOVE_ALL_ORDER_LINES = gql`
         removeAllOrderLines {
             ...TestOrderFragment
             ... on ErrorResult {
-                errorCode: code
+                errorCode
                 message
             }
         }

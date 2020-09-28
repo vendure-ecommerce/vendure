@@ -38,7 +38,7 @@ input UpdateChannelInput {
 
 "Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings"
 type LanguageNotAvailableError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     languageCode: String!
 }

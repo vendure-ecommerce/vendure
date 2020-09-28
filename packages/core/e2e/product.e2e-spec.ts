@@ -714,7 +714,7 @@ describe('Product resolver', () => {
             expect(removeOptionGroupFromProduct.message).toBe(
                 `Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants`,
             );
-            expect(removeOptionGroupFromProduct.code).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
+            expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
             expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
             expect(removeOptionGroupFromProduct.productVariantCount).toBe(2);
         });
@@ -1196,7 +1196,7 @@ export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
         removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
             ...ProductWithOptions
             ... on ProductOptionInUseError {
-                code
+                errorCode
                 message
                 optionGroupCode
                 productVariantCount

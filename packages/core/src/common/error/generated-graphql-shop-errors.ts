@@ -14,13 +14,13 @@ export type Scalars = {
 
 export class ErrorResult {
   readonly __typename: string;
-  readonly code: string;
+  readonly errorCode: string;
   message: Scalars['String'];
 }
 
 export class AlreadyLoggedInError extends ErrorResult {
   readonly __typename = 'AlreadyLoggedInError';
-  readonly code = 'ALREADY_LOGGED_IN_ERROR' as any;
+  readonly errorCode = 'ALREADY_LOGGED_IN_ERROR' as any;
   readonly message = 'ALREADY_LOGGED_IN_ERROR';
   constructor(
   ) {
@@ -30,7 +30,7 @@ export class AlreadyLoggedInError extends ErrorResult {
 
 export class CouponCodeExpiredError extends ErrorResult {
   readonly __typename = 'CouponCodeExpiredError';
-  readonly code = 'COUPON_CODE_EXPIRED_ERROR' as any;
+  readonly errorCode = 'COUPON_CODE_EXPIRED_ERROR' as any;
   readonly message = 'COUPON_CODE_EXPIRED_ERROR';
   constructor(
     public   couponCode: Scalars['String'],
@@ -41,7 +41,7 @@ export class CouponCodeExpiredError extends ErrorResult {
 
 export class CouponCodeInvalidError extends ErrorResult {
   readonly __typename = 'CouponCodeInvalidError';
-  readonly code = 'COUPON_CODE_INVALID_ERROR' as any;
+  readonly errorCode = 'COUPON_CODE_INVALID_ERROR' as any;
   readonly message = 'COUPON_CODE_INVALID_ERROR';
   constructor(
     public   couponCode: Scalars['String'],
@@ -52,7 +52,7 @@ export class CouponCodeInvalidError extends ErrorResult {
 
 export class CouponCodeLimitError extends ErrorResult {
   readonly __typename = 'CouponCodeLimitError';
-  readonly code = 'COUPON_CODE_LIMIT_ERROR' as any;
+  readonly errorCode = 'COUPON_CODE_LIMIT_ERROR' as any;
   readonly message = 'COUPON_CODE_LIMIT_ERROR';
   constructor(
     public   couponCode: Scalars['String'],
@@ -64,7 +64,7 @@ export class CouponCodeLimitError extends ErrorResult {
 
 export class EmailAddressConflictError extends ErrorResult {
   readonly __typename = 'EmailAddressConflictError';
-  readonly code = 'EMAIL_ADDRESS_CONFLICT_ERROR' as any;
+  readonly errorCode = 'EMAIL_ADDRESS_CONFLICT_ERROR' as any;
   readonly message = 'EMAIL_ADDRESS_CONFLICT_ERROR';
   constructor(
   ) {
@@ -74,7 +74,7 @@ export class EmailAddressConflictError extends ErrorResult {
 
 export class IdentifierChangeTokenExpiredError extends ErrorResult {
   readonly __typename = 'IdentifierChangeTokenExpiredError';
-  readonly code = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR' as any;
+  readonly errorCode = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR' as any;
   readonly message = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR';
   constructor(
   ) {
@@ -84,7 +84,7 @@ export class IdentifierChangeTokenExpiredError extends ErrorResult {
 
 export class IdentifierChangeTokenInvalidError extends ErrorResult {
   readonly __typename = 'IdentifierChangeTokenInvalidError';
-  readonly code = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR' as any;
+  readonly errorCode = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR' as any;
   readonly message = 'IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR';
   constructor(
   ) {
@@ -94,7 +94,7 @@ export class IdentifierChangeTokenInvalidError extends ErrorResult {
 
 export class InvalidCredentialsError extends ErrorResult {
   readonly __typename = 'InvalidCredentialsError';
-  readonly code = 'INVALID_CREDENTIALS_ERROR' as any;
+  readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   constructor(
   ) {
@@ -104,7 +104,7 @@ export class InvalidCredentialsError extends ErrorResult {
 
 export class MissingPasswordError extends ErrorResult {
   readonly __typename = 'MissingPasswordError';
-  readonly code = 'MISSING_PASSWORD_ERROR' as any;
+  readonly errorCode = 'MISSING_PASSWORD_ERROR' as any;
   readonly message = 'MISSING_PASSWORD_ERROR';
   constructor(
   ) {
@@ -114,7 +114,7 @@ export class MissingPasswordError extends ErrorResult {
 
 export class NativeAuthStrategyError extends ErrorResult {
   readonly __typename = 'NativeAuthStrategyError';
-  readonly code = 'NATIVE_AUTH_STRATEGY_ERROR' as any;
+  readonly errorCode = 'NATIVE_AUTH_STRATEGY_ERROR' as any;
   readonly message = 'NATIVE_AUTH_STRATEGY_ERROR';
   constructor(
   ) {
@@ -124,7 +124,7 @@ export class NativeAuthStrategyError extends ErrorResult {
 
 export class NegativeQuantityError extends ErrorResult {
   readonly __typename = 'NegativeQuantityError';
-  readonly code = 'NEGATIVE_QUANTITY_ERROR' as any;
+  readonly errorCode = 'NEGATIVE_QUANTITY_ERROR' as any;
   readonly message = 'NEGATIVE_QUANTITY_ERROR';
   constructor(
   ) {
@@ -134,7 +134,7 @@ export class NegativeQuantityError extends ErrorResult {
 
 export class OrderLimitError extends ErrorResult {
   readonly __typename = 'OrderLimitError';
-  readonly code = 'ORDER_LIMIT_ERROR' as any;
+  readonly errorCode = 'ORDER_LIMIT_ERROR' as any;
   readonly message = 'ORDER_LIMIT_ERROR';
   constructor(
     public   maxItems: Scalars['Int'],
@@ -145,7 +145,7 @@ export class OrderLimitError extends ErrorResult {
 
 export class OrderModificationError extends ErrorResult {
   readonly __typename = 'OrderModificationError';
-  readonly code = 'ORDER_MODIFICATION_ERROR' as any;
+  readonly errorCode = 'ORDER_MODIFICATION_ERROR' as any;
   readonly message = 'ORDER_MODIFICATION_ERROR';
   constructor(
   ) {
@@ -155,7 +155,7 @@ export class OrderModificationError extends ErrorResult {
 
 export class OrderPaymentStateError extends ErrorResult {
   readonly __typename = 'OrderPaymentStateError';
-  readonly code = 'ORDER_PAYMENT_STATE_ERROR' as any;
+  readonly errorCode = 'ORDER_PAYMENT_STATE_ERROR' as any;
   readonly message = 'ORDER_PAYMENT_STATE_ERROR';
   constructor(
   ) {
@@ -165,7 +165,7 @@ export class OrderPaymentStateError extends ErrorResult {
 
 export class OrderStateTransitionError extends ErrorResult {
   readonly __typename = 'OrderStateTransitionError';
-  readonly code = 'ORDER_STATE_TRANSITION_ERROR' as any;
+  readonly errorCode = 'ORDER_STATE_TRANSITION_ERROR' as any;
   readonly message = 'ORDER_STATE_TRANSITION_ERROR';
   constructor(
     public   transitionError: Scalars['String'],
@@ -178,7 +178,7 @@ export class OrderStateTransitionError extends ErrorResult {
 
 export class PasswordAlreadySetError extends ErrorResult {
   readonly __typename = 'PasswordAlreadySetError';
-  readonly code = 'PASSWORD_ALREADY_SET_ERROR' as any;
+  readonly errorCode = 'PASSWORD_ALREADY_SET_ERROR' as any;
   readonly message = 'PASSWORD_ALREADY_SET_ERROR';
   constructor(
   ) {
@@ -188,7 +188,7 @@ export class PasswordAlreadySetError extends ErrorResult {
 
 export class PasswordResetTokenExpiredError extends ErrorResult {
   readonly __typename = 'PasswordResetTokenExpiredError';
-  readonly code = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR' as any;
+  readonly errorCode = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR' as any;
   readonly message = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR';
   constructor(
   ) {
@@ -198,7 +198,7 @@ export class PasswordResetTokenExpiredError extends ErrorResult {
 
 export class PasswordResetTokenInvalidError extends ErrorResult {
   readonly __typename = 'PasswordResetTokenInvalidError';
-  readonly code = 'PASSWORD_RESET_TOKEN_INVALID_ERROR' as any;
+  readonly errorCode = 'PASSWORD_RESET_TOKEN_INVALID_ERROR' as any;
   readonly message = 'PASSWORD_RESET_TOKEN_INVALID_ERROR';
   constructor(
   ) {
@@ -208,7 +208,7 @@ export class PasswordResetTokenInvalidError extends ErrorResult {
 
 export class PaymentDeclinedError extends ErrorResult {
   readonly __typename = 'PaymentDeclinedError';
-  readonly code = 'PAYMENT_DECLINED_ERROR' as any;
+  readonly errorCode = 'PAYMENT_DECLINED_ERROR' as any;
   readonly message = 'PAYMENT_DECLINED_ERROR';
   constructor(
     public   paymentErrorMessage: Scalars['String'],
@@ -219,7 +219,7 @@ export class PaymentDeclinedError extends ErrorResult {
 
 export class PaymentFailedError extends ErrorResult {
   readonly __typename = 'PaymentFailedError';
-  readonly code = 'PAYMENT_FAILED_ERROR' as any;
+  readonly errorCode = 'PAYMENT_FAILED_ERROR' as any;
   readonly message = 'PAYMENT_FAILED_ERROR';
   constructor(
     public   paymentErrorMessage: Scalars['String'],
@@ -230,7 +230,7 @@ export class PaymentFailedError extends ErrorResult {
 
 export class VerificationTokenExpiredError extends ErrorResult {
   readonly __typename = 'VerificationTokenExpiredError';
-  readonly code = 'VERIFICATION_TOKEN_EXPIRED_ERROR' as any;
+  readonly errorCode = 'VERIFICATION_TOKEN_EXPIRED_ERROR' as any;
   readonly message = 'VERIFICATION_TOKEN_EXPIRED_ERROR';
   constructor(
   ) {
@@ -240,7 +240,7 @@ export class VerificationTokenExpiredError extends ErrorResult {
 
 export class VerificationTokenInvalidError extends ErrorResult {
   readonly __typename = 'VerificationTokenInvalidError';
-  readonly code = 'VERIFICATION_TOKEN_INVALID_ERROR' as any;
+  readonly errorCode = 'VERIFICATION_TOKEN_INVALID_ERROR' as any;
   readonly message = 'VERIFICATION_TOKEN_INVALID_ERROR';
   constructor(
   ) {

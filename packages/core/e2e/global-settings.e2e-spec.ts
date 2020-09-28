@@ -140,7 +140,7 @@ const UPDATE_GLOBAL_SETTINGS = gql`
         updateGlobalSettings(input: $input) {
             ...GlobalSettings
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }

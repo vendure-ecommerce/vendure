@@ -22,7 +22,7 @@ const LOGIN = gql`
                 }
             }
             ... on ErrorResult {
-                code
+                errorCode
                 message
             }
         }

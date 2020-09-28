@@ -56,8 +56,8 @@ const errorsVisitor: Visitor<any> = {
         return [
             `export class ${ERROR_INTERFACE_NAME} {`,
             `  readonly __typename: string;`,
-            `  readonly code: string;`,
-            ...node.fields.filter(f => !(f as any).includes('code:')).map(f => `${f};`),
+            `  readonly errorCode: string;`,
+            ...node.fields.filter(f => !(f as any).includes('errorCode:')).map(f => `${f};`),
             `}`,
         ].join('\n');
     },
@@ -78,11 +78,11 @@ const errorsVisitor: Visitor<any> = {
             // We cast this to "any" otherwise we need to specify it as type "ErrorCode",
             // which means shared ErrorResult classes e.g. OrderStateTransitionError
             // will not be compatible between the admin and shop variations.
-            `  readonly code = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
+            `  readonly errorCode = '${camelToUpperSnakeCase(node.name.value)}' as any;`,
             `  readonly message = '${camelToUpperSnakeCase(node.name.value)}';`,
             `  constructor(`,
             ...node.fields
-                .filter(f => !(f as any).includes('code:') && !(f as any).includes('message:'))
+                .filter(f => !(f as any).includes('errorCode:') && !(f as any).includes('message:'))
                 .map(f => `    public ${f},`),
             `  ) {`,
             `    super();`,

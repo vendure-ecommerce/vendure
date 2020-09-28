@@ -80,7 +80,7 @@ export type AdministratorList = PaginatedList & {
 /** Retured when attemting to set the Customer for an Order when already logged in. */
 export type AlreadyLoggedInError = ErrorResult & {
     __typename?: 'AlreadyLoggedInError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -324,7 +324,7 @@ export type CountryTranslation = {
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeExpiredError = ErrorResult & {
     __typename?: 'CouponCodeExpiredError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
 };
@@ -332,7 +332,7 @@ export type CouponCodeExpiredError = ErrorResult & {
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeInvalidError = ErrorResult & {
     __typename?: 'CouponCodeInvalidError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
 };
@@ -340,7 +340,7 @@ export type CouponCodeInvalidError = ErrorResult & {
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeLimitError = ErrorResult & {
     __typename?: 'CouponCodeLimitError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
     limit: Scalars['Int'];
@@ -857,7 +857,7 @@ export enum DeletionResult {
 /** Retured when attemting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
     __typename?: 'EmailAddressConflictError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -888,7 +888,7 @@ export enum ErrorCode {
 }
 
 export type ErrorResult = {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1057,7 +1057,7 @@ export enum HistoryEntryType {
  */
 export type IdentifierChangeTokenExpiredError = ErrorResult & {
     __typename?: 'IdentifierChangeTokenExpiredError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1067,7 +1067,7 @@ export type IdentifierChangeTokenExpiredError = ErrorResult & {
  */
 export type IdentifierChangeTokenInvalidError = ErrorResult & {
     __typename?: 'IdentifierChangeTokenInvalidError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1095,7 +1095,7 @@ export type IntCustomFieldConfig = CustomField & {
 /** Returned if the user authentication credentials are not valid */
 export type InvalidCredentialsError = ErrorResult & {
     __typename?: 'InvalidCredentialsError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1452,7 +1452,7 @@ export enum LogicalOperator {
 /** Retured when attemting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
     __typename?: 'MissingPasswordError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1685,14 +1685,14 @@ export type NativeAuthInput = {
 /** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
     __typename?: 'NativeAuthStrategyError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /** Retured when attemting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
     __typename?: 'NegativeQuantityError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1799,7 +1799,7 @@ export type OrderItem = Node & {
 /** Retured when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
     __typename?: 'OrderLimitError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     maxItems: Scalars['Int'];
 };
@@ -1837,14 +1837,14 @@ export type OrderListOptions = {
 /** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
 export type OrderModificationError = ErrorResult & {
     __typename?: 'OrderModificationError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /** Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state. */
 export type OrderPaymentStateError = ErrorResult & {
     __typename?: 'OrderPaymentStateError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1871,7 +1871,7 @@ export type OrderSortParameter = {
 /** Returned if there is an error in transitioning the Order state */
 export type OrderStateTransitionError = ErrorResult & {
     __typename?: 'OrderStateTransitionError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     transitionError: Scalars['String'];
     fromState: Scalars['String'];
@@ -1886,7 +1886,7 @@ export type PaginatedList = {
 /** Retured when attemting to verify a customer account with a password, when a password has already been set. */
 export type PasswordAlreadySetError = ErrorResult & {
     __typename?: 'PasswordAlreadySetError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1896,7 +1896,7 @@ export type PasswordAlreadySetError = ErrorResult & {
  */
 export type PasswordResetTokenExpiredError = ErrorResult & {
     __typename?: 'PasswordResetTokenExpiredError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1906,7 +1906,7 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
  */
 export type PasswordResetTokenInvalidError = ErrorResult & {
     __typename?: 'PasswordResetTokenInvalidError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1927,7 +1927,7 @@ export type Payment = Node & {
 /** Returned when a Payment is declined by the payment provider. */
 export type PaymentDeclinedError = ErrorResult & {
     __typename?: 'PaymentDeclinedError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     paymentErrorMessage: Scalars['String'];
 };
@@ -1935,7 +1935,7 @@ export type PaymentDeclinedError = ErrorResult & {
 /** Returned when a Payment fails due to an error. */
 export type PaymentFailedError = ErrorResult & {
     __typename?: 'PaymentFailedError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     paymentErrorMessage: Scalars['String'];
 };
@@ -2637,7 +2637,7 @@ export type User = Node & {
  */
 export type VerificationTokenExpiredError = ErrorResult & {
     __typename?: 'VerificationTokenExpiredError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -2647,7 +2647,7 @@ export type VerificationTokenExpiredError = ErrorResult & {
  */
 export type VerificationTokenInvalidError = ErrorResult & {
     __typename?: 'VerificationTokenInvalidError';
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 

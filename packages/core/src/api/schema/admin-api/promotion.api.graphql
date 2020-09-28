@@ -39,7 +39,7 @@ input UpdatePromotionInput {
 
 "Returned if a PromotionCondition has neither a couponCode nor any conditions set"
 type MissingConditionsError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
 }
 

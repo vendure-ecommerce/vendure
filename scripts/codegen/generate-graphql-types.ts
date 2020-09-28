@@ -106,24 +106,27 @@ Promise.all([
                     plugins: clientPlugins,
                     config: e2eConfig,
                 },
-                // [path.join(
-                //     __dirname,
-                //     '../../packages/admin-ui/src/lib/core/src/common/generated-types.ts',
-                // )]: {
-                //     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
-                //     documents: CLIENT_QUERY_FILES,
-                //     plugins: clientPlugins,
-                //     config,
-                // },
-                // [path.join(
-                //     __dirname,
-                //     '../../packages/admin-ui/src/lib/core/src/common/introspection-result.ts',
-                // )]: {
-                //     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
-                //     documents: CLIENT_QUERY_FILES,
-                //     plugins: [disableTsLintPlugin, 'fragment-matcher'],
-                //     config,
-                // },
+                [path.join(
+                    __dirname,
+                    '../../packages/admin-ui/src/lib/core/src/common/generated-types.ts',
+                )]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
+                    documents: CLIENT_QUERY_FILES,
+                    plugins: clientPlugins,
+                    config: {
+                        ...config,
+                        skipTypeNameForRoot: true,
+                    },
+                },
+                [path.join(
+                    __dirname,
+                    '../../packages/admin-ui/src/lib/core/src/common/introspection-result.ts',
+                )]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
+                    documents: CLIENT_QUERY_FILES,
+                    plugins: [disableTsLintPlugin, 'fragment-matcher'],
+                    config,
+                },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     plugins: commonPlugins,

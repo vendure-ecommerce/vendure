@@ -14,13 +14,13 @@ export type Scalars = {
 
 export class ErrorResult {
   readonly __typename: string;
-  readonly code: string;
+  readonly errorCode: string;
   message: Scalars['String'];
 }
 
 export class AlreadyRefundedError extends ErrorResult {
   readonly __typename = 'AlreadyRefundedError';
-  readonly code = 'ALREADY_REFUNDED_ERROR' as any;
+  readonly errorCode = 'ALREADY_REFUNDED_ERROR' as any;
   readonly message = 'ALREADY_REFUNDED_ERROR';
   constructor(
     public   refundId: Scalars['ID'],
@@ -31,7 +31,7 @@ export class AlreadyRefundedError extends ErrorResult {
 
 export class CancelActiveOrderError extends ErrorResult {
   readonly __typename = 'CancelActiveOrderError';
-  readonly code = 'CANCEL_ACTIVE_ORDER_ERROR' as any;
+  readonly errorCode = 'CANCEL_ACTIVE_ORDER_ERROR' as any;
   readonly message = 'CANCEL_ACTIVE_ORDER_ERROR';
   constructor(
     public   orderState: Scalars['String'],
@@ -42,7 +42,7 @@ export class CancelActiveOrderError extends ErrorResult {
 
 export class ChannelDefaultLanguageError extends ErrorResult {
   readonly __typename = 'ChannelDefaultLanguageError';
-  readonly code = 'CHANNEL_DEFAULT_LANGUAGE_ERROR' as any;
+  readonly errorCode = 'CHANNEL_DEFAULT_LANGUAGE_ERROR' as any;
   readonly message = 'CHANNEL_DEFAULT_LANGUAGE_ERROR';
   constructor(
     public   language: Scalars['String'],
@@ -54,7 +54,7 @@ export class ChannelDefaultLanguageError extends ErrorResult {
 
 export class EmailAddressConflictError extends ErrorResult {
   readonly __typename = 'EmailAddressConflictError';
-  readonly code = 'EMAIL_ADDRESS_CONFLICT_ERROR' as any;
+  readonly errorCode = 'EMAIL_ADDRESS_CONFLICT_ERROR' as any;
   readonly message = 'EMAIL_ADDRESS_CONFLICT_ERROR';
   constructor(
   ) {
@@ -64,7 +64,7 @@ export class EmailAddressConflictError extends ErrorResult {
 
 export class EmptyOrderLineSelectionError extends ErrorResult {
   readonly __typename = 'EmptyOrderLineSelectionError';
-  readonly code = 'EMPTY_ORDER_LINE_SELECTION_ERROR' as any;
+  readonly errorCode = 'EMPTY_ORDER_LINE_SELECTION_ERROR' as any;
   readonly message = 'EMPTY_ORDER_LINE_SELECTION_ERROR';
   constructor(
   ) {
@@ -74,7 +74,7 @@ export class EmptyOrderLineSelectionError extends ErrorResult {
 
 export class FulfillmentStateTransitionError extends ErrorResult {
   readonly __typename = 'FulfillmentStateTransitionError';
-  readonly code = 'FULFILLMENT_STATE_TRANSITION_ERROR' as any;
+  readonly errorCode = 'FULFILLMENT_STATE_TRANSITION_ERROR' as any;
   readonly message = 'FULFILLMENT_STATE_TRANSITION_ERROR';
   constructor(
     public   transitionError: Scalars['String'],
@@ -87,7 +87,7 @@ export class FulfillmentStateTransitionError extends ErrorResult {
 
 export class InvalidCredentialsError extends ErrorResult {
   readonly __typename = 'InvalidCredentialsError';
-  readonly code = 'INVALID_CREDENTIALS_ERROR' as any;
+  readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   constructor(
   ) {
@@ -97,7 +97,7 @@ export class InvalidCredentialsError extends ErrorResult {
 
 export class ItemsAlreadyFulfilledError extends ErrorResult {
   readonly __typename = 'ItemsAlreadyFulfilledError';
-  readonly code = 'ITEMS_ALREADY_FULFILLED_ERROR' as any;
+  readonly errorCode = 'ITEMS_ALREADY_FULFILLED_ERROR' as any;
   readonly message = 'ITEMS_ALREADY_FULFILLED_ERROR';
   constructor(
   ) {
@@ -107,7 +107,7 @@ export class ItemsAlreadyFulfilledError extends ErrorResult {
 
 export class LanguageNotAvailableError extends ErrorResult {
   readonly __typename = 'LanguageNotAvailableError';
-  readonly code = 'LANGUAGE_NOT_AVAILABLE_ERROR' as any;
+  readonly errorCode = 'LANGUAGE_NOT_AVAILABLE_ERROR' as any;
   readonly message = 'LANGUAGE_NOT_AVAILABLE_ERROR';
   constructor(
     public   languageCode: Scalars['String'],
@@ -118,7 +118,7 @@ export class LanguageNotAvailableError extends ErrorResult {
 
 export class MimeTypeError extends ErrorResult {
   readonly __typename = 'MimeTypeError';
-  readonly code = 'MIME_TYPE_ERROR' as any;
+  readonly errorCode = 'MIME_TYPE_ERROR' as any;
   readonly message = 'MIME_TYPE_ERROR';
   constructor(
     public   fileName: Scalars['String'],
@@ -130,7 +130,7 @@ export class MimeTypeError extends ErrorResult {
 
 export class MissingConditionsError extends ErrorResult {
   readonly __typename = 'MissingConditionsError';
-  readonly code = 'MISSING_CONDITIONS_ERROR' as any;
+  readonly errorCode = 'MISSING_CONDITIONS_ERROR' as any;
   readonly message = 'MISSING_CONDITIONS_ERROR';
   constructor(
   ) {
@@ -140,7 +140,7 @@ export class MissingConditionsError extends ErrorResult {
 
 export class MultipleOrderError extends ErrorResult {
   readonly __typename = 'MultipleOrderError';
-  readonly code = 'MULTIPLE_ORDER_ERROR' as any;
+  readonly errorCode = 'MULTIPLE_ORDER_ERROR' as any;
   readonly message = 'MULTIPLE_ORDER_ERROR';
   constructor(
   ) {
@@ -150,7 +150,7 @@ export class MultipleOrderError extends ErrorResult {
 
 export class NativeAuthStrategyError extends ErrorResult {
   readonly __typename = 'NativeAuthStrategyError';
-  readonly code = 'NATIVE_AUTH_STRATEGY_ERROR' as any;
+  readonly errorCode = 'NATIVE_AUTH_STRATEGY_ERROR' as any;
   readonly message = 'NATIVE_AUTH_STRATEGY_ERROR';
   constructor(
   ) {
@@ -160,7 +160,7 @@ export class NativeAuthStrategyError extends ErrorResult {
 
 export class NothingToRefundError extends ErrorResult {
   readonly __typename = 'NothingToRefundError';
-  readonly code = 'NOTHING_TO_REFUND_ERROR' as any;
+  readonly errorCode = 'NOTHING_TO_REFUND_ERROR' as any;
   readonly message = 'NOTHING_TO_REFUND_ERROR';
   constructor(
   ) {
@@ -170,7 +170,7 @@ export class NothingToRefundError extends ErrorResult {
 
 export class OrderStateTransitionError extends ErrorResult {
   readonly __typename = 'OrderStateTransitionError';
-  readonly code = 'ORDER_STATE_TRANSITION_ERROR' as any;
+  readonly errorCode = 'ORDER_STATE_TRANSITION_ERROR' as any;
   readonly message = 'ORDER_STATE_TRANSITION_ERROR';
   constructor(
     public   transitionError: Scalars['String'],
@@ -183,7 +183,7 @@ export class OrderStateTransitionError extends ErrorResult {
 
 export class PaymentOrderMismatchError extends ErrorResult {
   readonly __typename = 'PaymentOrderMismatchError';
-  readonly code = 'PAYMENT_ORDER_MISMATCH_ERROR' as any;
+  readonly errorCode = 'PAYMENT_ORDER_MISMATCH_ERROR' as any;
   readonly message = 'PAYMENT_ORDER_MISMATCH_ERROR';
   constructor(
   ) {
@@ -193,7 +193,7 @@ export class PaymentOrderMismatchError extends ErrorResult {
 
 export class PaymentStateTransitionError extends ErrorResult {
   readonly __typename = 'PaymentStateTransitionError';
-  readonly code = 'PAYMENT_STATE_TRANSITION_ERROR' as any;
+  readonly errorCode = 'PAYMENT_STATE_TRANSITION_ERROR' as any;
   readonly message = 'PAYMENT_STATE_TRANSITION_ERROR';
   constructor(
     public   transitionError: Scalars['String'],
@@ -206,7 +206,7 @@ export class PaymentStateTransitionError extends ErrorResult {
 
 export class ProductOptionInUseError extends ErrorResult {
   readonly __typename = 'ProductOptionInUseError';
-  readonly code = 'PRODUCT_OPTION_IN_USE_ERROR' as any;
+  readonly errorCode = 'PRODUCT_OPTION_IN_USE_ERROR' as any;
   readonly message = 'PRODUCT_OPTION_IN_USE_ERROR';
   constructor(
     public   optionGroupCode: Scalars['String'],
@@ -218,7 +218,7 @@ export class ProductOptionInUseError extends ErrorResult {
 
 export class QuantityTooGreatError extends ErrorResult {
   readonly __typename = 'QuantityTooGreatError';
-  readonly code = 'QUANTITY_TOO_GREAT_ERROR' as any;
+  readonly errorCode = 'QUANTITY_TOO_GREAT_ERROR' as any;
   readonly message = 'QUANTITY_TOO_GREAT_ERROR';
   constructor(
   ) {
@@ -228,7 +228,7 @@ export class QuantityTooGreatError extends ErrorResult {
 
 export class RefundOrderStateError extends ErrorResult {
   readonly __typename = 'RefundOrderStateError';
-  readonly code = 'REFUND_ORDER_STATE_ERROR' as any;
+  readonly errorCode = 'REFUND_ORDER_STATE_ERROR' as any;
   readonly message = 'REFUND_ORDER_STATE_ERROR';
   constructor(
     public   orderState: Scalars['String'],
@@ -239,7 +239,7 @@ export class RefundOrderStateError extends ErrorResult {
 
 export class RefundStateTransitionError extends ErrorResult {
   readonly __typename = 'RefundStateTransitionError';
-  readonly code = 'REFUND_STATE_TRANSITION_ERROR' as any;
+  readonly errorCode = 'REFUND_STATE_TRANSITION_ERROR' as any;
   readonly message = 'REFUND_STATE_TRANSITION_ERROR';
   constructor(
     public   transitionError: Scalars['String'],
@@ -252,7 +252,7 @@ export class RefundStateTransitionError extends ErrorResult {
 
 export class SettlePaymentError extends ErrorResult {
   readonly __typename = 'SettlePaymentError';
-  readonly code = 'SETTLE_PAYMENT_ERROR' as any;
+  readonly errorCode = 'SETTLE_PAYMENT_ERROR' as any;
   readonly message = 'SETTLE_PAYMENT_ERROR';
   constructor(
     public   paymentErrorMessage: Scalars['String'],

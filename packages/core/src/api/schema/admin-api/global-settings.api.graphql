@@ -16,7 +16,7 @@ Returned when the default LanguageCode of a Channel is no longer found in the `a
 of the GlobalSettings
 """
 type ChannelDefaultLanguageError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     language: String!
     channelCode: String!

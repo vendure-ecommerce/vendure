@@ -17,7 +17,7 @@ type Mutation {
 }
 
 type MimeTypeError implements ErrorResult {
-    code: ErrorCode!
+    errorCode: ErrorCode!
     message: String!
     fileName: String!
     mimeType: String!

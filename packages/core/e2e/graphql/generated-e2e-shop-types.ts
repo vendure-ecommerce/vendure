@@ -75,7 +75,7 @@ export type AdministratorList = PaginatedList & {
 
 /** Retured when attemting to set the Customer for an Order when already logged in. */
 export type AlreadyLoggedInError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -300,21 +300,21 @@ export type CountryTranslation = {
 
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeExpiredError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
 };
 
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeInvalidError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
 };
 
 /** Returned if the provided coupon code is invalid */
 export type CouponCodeLimitError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     couponCode: Scalars['String'];
     limit: Scalars['Int'];
@@ -822,7 +822,7 @@ export enum DeletionResult {
 
 /** Retured when attemting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -853,7 +853,7 @@ export enum ErrorCode {
 }
 
 export type ErrorResult = {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1010,7 +1010,7 @@ export enum HistoryEntryType {
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type IdentifierChangeTokenExpiredError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1019,7 +1019,7 @@ export type IdentifierChangeTokenExpiredError = ErrorResult & {
  * invalid or does not match any expected tokens.
  */
 export type IdentifierChangeTokenInvalidError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1044,7 +1044,7 @@ export type IntCustomFieldConfig = CustomField & {
 
 /** Returned if the user authentication credentials are not valid */
 export type InvalidCredentialsError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1398,7 +1398,7 @@ export enum LogicalOperator {
 
 /** Retured when attemting to register or verify a customer account without a password, when one is required. */
 export type MissingPasswordError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1629,13 +1629,13 @@ export type NativeAuthInput = {
 
 /** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /** Retured when attemting to set a negative OrderLine quantity. */
 export type NegativeQuantityError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1738,7 +1738,7 @@ export type OrderItem = Node & {
 
 /** Retured when the maximum order size limit has been reached. */
 export type OrderLimitError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     maxItems: Scalars['Int'];
 };
@@ -1773,13 +1773,13 @@ export type OrderListOptions = {
 
 /** Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state. */
 export type OrderModificationError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
 /** Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state. */
 export type OrderPaymentStateError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1804,7 +1804,7 @@ export type OrderSortParameter = {
 
 /** Returned if there is an error in transitioning the Order state */
 export type OrderStateTransitionError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     transitionError: Scalars['String'];
     fromState: Scalars['String'];
@@ -1818,7 +1818,7 @@ export type PaginatedList = {
 
 /** Retured when attemting to verify a customer account with a password, when a password has already been set. */
 export type PasswordAlreadySetError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1827,7 +1827,7 @@ export type PasswordAlreadySetError = ErrorResult & {
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type PasswordResetTokenExpiredError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1836,7 +1836,7 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
  * invalid or does not match any expected tokens.
  */
 export type PasswordResetTokenInvalidError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -1855,14 +1855,14 @@ export type Payment = Node & {
 
 /** Returned when a Payment is declined by the payment provider. */
 export type PaymentDeclinedError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     paymentErrorMessage: Scalars['String'];
 };
 
 /** Returned when a Payment fails due to an error. */
 export type PaymentFailedError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
     paymentErrorMessage: Scalars['String'];
 };
@@ -2525,7 +2525,7 @@ export type User = Node & {
  * expired according to the `verificationTokenDuration` setting in the AuthOptions.
  */
 export type VerificationTokenExpiredError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -2534,7 +2534,7 @@ export type VerificationTokenExpiredError = ErrorResult & {
  * invalid or does not match any expected tokens.
  */
 export type VerificationTokenInvalidError = ErrorResult & {
-    code: ErrorCode;
+    errorCode: ErrorCode;
     message: Scalars['String'];
 };
 
@@ -2588,9 +2588,9 @@ export type AddItemToOrderMutationVariables = Exact<{
 export type AddItemToOrderMutation = {
     addItemToOrder:
         | UpdatedOrderFragment
-        | (Pick<OrderModificationError, 'message'> & { errorCode: OrderModificationError['code'] })
-        | (Pick<OrderLimitError, 'message'> & { errorCode: OrderLimitError['code'] })
-        | (Pick<NegativeQuantityError, 'message'> & { errorCode: NegativeQuantityError['code'] });
+        | Pick<OrderModificationError, 'errorCode' | 'message'>
+        | Pick<OrderLimitError, 'errorCode' | 'message'>
+        | Pick<NegativeQuantityError, 'errorCode' | 'message'>;
 };
 
 export type SearchProductsShopQueryVariables = Exact<{
@@ -2622,8 +2622,8 @@ export type RegisterMutationVariables = Exact<{
 export type RegisterMutation = {
     registerCustomerAccount:
         | Pick<Success, 'success'>
-        | Pick<MissingPasswordError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<MissingPasswordError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type CurrentUserShopFragment = Pick<CurrentUser, 'id' | 'identifier'> & {
@@ -2638,11 +2638,11 @@ export type VerifyMutationVariables = Exact<{
 export type VerifyMutation = {
     verifyCustomerAccount:
         | CurrentUserShopFragment
-        | Pick<VerificationTokenInvalidError, 'code' | 'message'>
-        | Pick<VerificationTokenExpiredError, 'code' | 'message'>
-        | Pick<MissingPasswordError, 'code' | 'message'>
-        | Pick<PasswordAlreadySetError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<VerificationTokenInvalidError, 'errorCode' | 'message'>
+        | Pick<VerificationTokenExpiredError, 'errorCode' | 'message'>
+        | Pick<MissingPasswordError, 'errorCode' | 'message'>
+        | Pick<PasswordAlreadySetError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type RefreshTokenMutationVariables = Exact<{
@@ -2650,7 +2650,9 @@ export type RefreshTokenMutationVariables = Exact<{
 }>;
 
 export type RefreshTokenMutation = {
-    refreshCustomerVerification: Pick<Success, 'success'> | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+    refreshCustomerVerification:
+        | Pick<Success, 'success'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type RequestPasswordResetMutationVariables = Exact<{
@@ -2659,7 +2661,7 @@ export type RequestPasswordResetMutationVariables = Exact<{
 
 export type RequestPasswordResetMutation = {
     requestPasswordReset?: Maybe<
-        Pick<Success, 'success'> | Pick<NativeAuthStrategyError, 'code' | 'message'>
+        Pick<Success, 'success'> | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>
     >;
 };
 
@@ -2671,9 +2673,9 @@ export type ResetPasswordMutationVariables = Exact<{
 export type ResetPasswordMutation = {
     resetPassword:
         | CurrentUserShopFragment
-        | Pick<PasswordResetTokenInvalidError, 'code' | 'message'>
-        | Pick<PasswordResetTokenExpiredError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<PasswordResetTokenInvalidError, 'errorCode' | 'message'>
+        | Pick<PasswordResetTokenExpiredError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type RequestUpdateEmailAddressMutationVariables = Exact<{
@@ -2684,9 +2686,9 @@ export type RequestUpdateEmailAddressMutationVariables = Exact<{
 export type RequestUpdateEmailAddressMutation = {
     requestUpdateCustomerEmailAddress:
         | Pick<Success, 'success'>
-        | Pick<InvalidCredentialsError, 'code' | 'message'>
-        | Pick<EmailAddressConflictError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<InvalidCredentialsError, 'errorCode' | 'message'>
+        | Pick<EmailAddressConflictError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type UpdateEmailAddressMutationVariables = Exact<{
@@ -2696,9 +2698,9 @@ export type UpdateEmailAddressMutationVariables = Exact<{
 export type UpdateEmailAddressMutation = {
     updateCustomerEmailAddress:
         | Pick<Success, 'success'>
-        | Pick<IdentifierChangeTokenInvalidError, 'code' | 'message'>
-        | Pick<IdentifierChangeTokenExpiredError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<IdentifierChangeTokenInvalidError, 'errorCode' | 'message'>
+        | Pick<IdentifierChangeTokenExpiredError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type GetActiveCustomerQueryVariables = Exact<{ [key: string]: never }>;
@@ -2741,8 +2743,8 @@ export type UpdatePasswordMutationVariables = Exact<{
 export type UpdatePasswordMutation = {
     updateCustomerPassword:
         | Pick<Success, 'success'>
-        | Pick<InvalidCredentialsError, 'code' | 'message'>
-        | Pick<NativeAuthStrategyError, 'code' | 'message'>;
+        | Pick<InvalidCredentialsError, 'errorCode' | 'message'>
+        | Pick<NativeAuthStrategyError, 'errorCode' | 'message'>;
 };
 
 export type GetActiveOrderQueryVariables = Exact<{ [key: string]: never }>;
@@ -2757,9 +2759,9 @@ export type AdjustItemQuantityMutationVariables = Exact<{
 export type AdjustItemQuantityMutation = {
     adjustOrderLine:
         | TestOrderFragmentFragment
-        | (Pick<OrderModificationError, 'message'> & { errorCode: OrderModificationError['code'] })
-        | (Pick<OrderLimitError, 'message'> & { errorCode: OrderLimitError['code'] })
-        | (Pick<NegativeQuantityError, 'message'> & { errorCode: NegativeQuantityError['code'] });
+        | Pick<OrderModificationError, 'errorCode' | 'message'>
+        | Pick<OrderLimitError, 'errorCode' | 'message'>
+        | Pick<NegativeQuantityError, 'errorCode' | 'message'>;
 };
 
 export type RemoveItemFromOrderMutationVariables = Exact<{
@@ -2767,9 +2769,7 @@ export type RemoveItemFromOrderMutationVariables = Exact<{
 }>;
 
 export type RemoveItemFromOrderMutation = {
-    removeOrderLine:
-        | TestOrderFragmentFragment
-        | (Pick<OrderModificationError, 'message'> & { errorCode: OrderModificationError['code'] });
+    removeOrderLine: TestOrderFragmentFragment | Pick<OrderModificationError, 'errorCode' | 'message'>;
 };
 
 export type GetShippingMethodsQueryVariables = Exact<{ [key: string]: never }>;
@@ -2783,9 +2783,7 @@ export type SetShippingMethodMutationVariables = Exact<{
 }>;
 
 export type SetShippingMethodMutation = {
-    setOrderShippingMethod:
-        | TestOrderFragmentFragment
-        | (Pick<OrderModificationError, 'message'> & { errorCode: OrderModificationError['code'] });
+    setOrderShippingMethod: TestOrderFragmentFragment | Pick<OrderModificationError, 'errorCode' | 'message'>;
 };
 
 export type ActiveOrderCustomerFragment = Pick<Order, 'id'> & {
@@ -2800,8 +2798,8 @@ export type SetCustomerForOrderMutationVariables = Exact<{
 export type SetCustomerForOrderMutation = {
     setCustomerForOrder?: Maybe<
         | ActiveOrderCustomerFragment
-        | (Pick<AlreadyLoggedInError, 'message'> & { errorCode: AlreadyLoggedInError['code'] })
-        | (Pick<EmailAddressConflictError, 'message'> & { errorCode: EmailAddressConflictError['code'] })
+        | Pick<AlreadyLoggedInError, 'errorCode' | 'message'>
+        | Pick<EmailAddressConflictError, 'errorCode' | 'message'>
     >;
 };
 
@@ -2830,9 +2828,10 @@ export type TransitionToStateMutationVariables = Exact<{
 export type TransitionToStateMutation = {
     transitionOrderToState?: Maybe<
         | TestOrderFragmentFragment
-        | (Pick<OrderStateTransitionError, 'message' | 'transitionError' | 'fromState' | 'toState'> & {
-              errorCode: OrderStateTransitionError['code'];
-          })
+        | Pick<
+              OrderStateTransitionError,
+              'errorCode' | 'message' | 'transitionError' | 'fromState' | 'toState'
+          >
     >;
 };
 
@@ -2899,14 +2898,10 @@ export type AddPaymentToOrderMutationVariables = Exact<{
 export type AddPaymentToOrderMutation = {
     addPaymentToOrder?: Maybe<
         | TestOrderWithPaymentsFragment
-        | (Pick<OrderPaymentStateError, 'message'> & { errorCode: OrderPaymentStateError['code'] })
-        | (Pick<PaymentFailedError, 'message' | 'paymentErrorMessage'> & {
-              errorCode: PaymentFailedError['code'];
-          })
-        | (Pick<PaymentDeclinedError, 'message' | 'paymentErrorMessage'> & {
-              errorCode: PaymentDeclinedError['code'];
-          })
-        | (Pick<OrderStateTransitionError, 'message'> & { errorCode: OrderStateTransitionError['code'] })
+        | Pick<OrderPaymentStateError, 'errorCode' | 'message'>
+        | Pick<PaymentFailedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
+        | Pick<PaymentDeclinedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>
     >;
 };
 
@@ -2952,9 +2947,9 @@ export type ApplyCouponCodeMutationVariables = Exact<{
 export type ApplyCouponCodeMutation = {
     applyCouponCode:
         | TestOrderFragmentFragment
-        | (Pick<CouponCodeExpiredError, 'message'> & { errorCode: CouponCodeExpiredError['code'] })
-        | (Pick<CouponCodeInvalidError, 'message'> & { errorCode: CouponCodeInvalidError['code'] })
-        | (Pick<CouponCodeLimitError, 'message'> & { errorCode: CouponCodeLimitError['code'] });
+        | Pick<CouponCodeExpiredError, 'errorCode' | 'message'>
+        | Pick<CouponCodeInvalidError, 'errorCode' | 'message'>
+        | Pick<CouponCodeLimitError, 'errorCode' | 'message'>;
 };
 
 export type RemoveCouponCodeMutationVariables = Exact<{
@@ -2966,9 +2961,7 @@ export type RemoveCouponCodeMutation = { removeCouponCode?: Maybe<TestOrderFragm
 export type RemoveAllOrderLinesMutationVariables = Exact<{ [key: string]: never }>;
 
 export type RemoveAllOrderLinesMutation = {
-    removeAllOrderLines:
-        | TestOrderFragmentFragment
-        | (Pick<OrderModificationError, 'message'> & { errorCode: OrderModificationError['code'] });
+    removeAllOrderLines: TestOrderFragmentFragment | Pick<OrderModificationError, 'errorCode' | 'message'>;
 };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;

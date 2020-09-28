@@ -13,6 +13,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import { ROLE_FRAGMENT } from './graphql/fragments';
 import {
+    ChannelFragment,
     CreateChannel,
     CreateRole,
     CurrencyCode,
@@ -280,7 +281,7 @@ describe('Role resolver', () => {
     });
 
     describe('multi-channel', () => {
-        let secondChannel: CreateChannel.CreateChannel;
+        let secondChannel: ChannelFragment;
         let multiChannelRole: CreateRole.CreateRole;
 
         beforeAll(async () => {

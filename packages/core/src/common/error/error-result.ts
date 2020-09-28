@@ -1,5 +1,5 @@
 import { ErrorResult as GraphQLErrorResultShop } from '@vendure/common/lib/generated-shop-types';
-import { ErrorResult as GraphQLErrorResultAdmin } from '@vendure/common/lib/generated-types';
+import { ErrorResult, ErrorResult as GraphQLErrorResultAdmin } from '@vendure/common/lib/generated-types';
 
 import { VendureEntity } from '../../entity/base/base.entity';
 
@@ -52,5 +52,12 @@ export function isGraphQlErrorResult<T extends GraphQLErrorResult | U, U = any>(
 export function isGraphQlErrorResult<T, E extends VendureEntity>(
     input: ErrorResultUnion<T, E>,
 ): input is JustErrorResults<ErrorResultUnion<T, E>> {
-    return input && !!((input as any).code && (input as any).message != null) && (input as any).__typename;
+    return (
+        input &&
+        !!(
+            ((input as unknown) as GraphQLErrorResult).errorCode &&
+            ((input as unknown) as GraphQLErrorResult).message != null
+        ) &&
+        (input as any).__typename
+    );
 }

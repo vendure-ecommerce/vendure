@@ -111,7 +111,7 @@ export type AdministratorSortParameter = {
 /** Returned if an attempting to refund an OrderItem which has already been refunded */
 export type AlreadyRefundedError = ErrorResult & {
   __typename?: 'AlreadyRefundedError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   refundId: Scalars['ID'];
 };
@@ -215,7 +215,7 @@ export type BooleanOperators = {
 /** Returned if an attempting to cancel lines from an Order which is still active */
 export type CancelActiveOrderError = ErrorResult & {
   __typename?: 'CancelActiveOrderError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   orderState: Scalars['String'];
 };
@@ -261,7 +261,7 @@ export type Channel = Node & {
  */
 export type ChannelDefaultLanguageError = ErrorResult & {
   __typename?: 'ChannelDefaultLanguageError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   language: Scalars['String'];
   channelCode: Scalars['String'];
@@ -1165,14 +1165,14 @@ export enum DeletionResult {
 /** Retured when attemting to create a Customer with an email address already registered to an existing User. */
 export type EmailAddressConflictError = ErrorResult & {
   __typename?: 'EmailAddressConflictError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
 /** Returned if no OrderLines have been specified for the operation */
 export type EmptyOrderLineSelectionError = ErrorResult & {
   __typename?: 'EmptyOrderLineSelectionError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -1203,7 +1203,7 @@ export enum ErrorCode {
 }
 
 export type ErrorResult = {
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -1335,7 +1335,7 @@ export type Fulfillment = Node & {
 /** Returned when there is an error in transitioning the Fulfillment state */
 export type FulfillmentStateTransitionError = ErrorResult & {
   __typename?: 'FulfillmentStateTransitionError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
   fromState: Scalars['String'];
@@ -1446,14 +1446,14 @@ export type IntCustomFieldConfig = CustomField & {
 /** Returned if the user authentication credentials are not valid */
 export type InvalidCredentialsError = ErrorResult & {
   __typename?: 'InvalidCredentialsError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
 /** Returned if the specified items are already part of a Fulfillment */
 export type ItemsAlreadyFulfilledError = ErrorResult & {
   __typename?: 'ItemsAlreadyFulfilledError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -1854,9 +1854,10 @@ export enum LanguageCode {
   zu = 'zu'
 }
 
+/** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
 export type LanguageNotAvailableError = ErrorResult & {
   __typename?: 'LanguageNotAvailableError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   languageCode: Scalars['String'];
 };
@@ -1887,7 +1888,7 @@ export enum LogicalOperator {
 
 export type MimeTypeError = ErrorResult & {
   __typename?: 'MimeTypeError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   fileName: Scalars['String'];
   mimeType: Scalars['String'];
@@ -1896,7 +1897,7 @@ export type MimeTypeError = ErrorResult & {
 /** Returned if a PromotionCondition has neither a couponCode nor any conditions set */
 export type MissingConditionsError = ErrorResult & {
   __typename?: 'MissingConditionsError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -1909,7 +1910,7 @@ export type MoveCollectionInput = {
 /** Returned if an operation has specified OrderLines from multiple Orders */
 export type MultipleOrderError = ErrorResult & {
   __typename?: 'MultipleOrderError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -2555,7 +2556,7 @@ export type NativeAuthInput = {
 /** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
 export type NativeAuthStrategyError = ErrorResult & {
   __typename?: 'NativeAuthStrategyError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -2566,7 +2567,7 @@ export type Node = {
 /** Returned if an attempting to refund an Order but neither items nor shipping refund was specified */
 export type NothingToRefundError = ErrorResult & {
   __typename?: 'NothingToRefundError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -2726,7 +2727,7 @@ export type OrderSortParameter = {
 /** Returned if there is an error in transitioning the Order state */
 export type OrderStateTransitionError = ErrorResult & {
   __typename?: 'OrderStateTransitionError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
   fromState: Scalars['String'];
@@ -2793,14 +2794,14 @@ export type PaymentMethodSortParameter = {
 /** Returned if an attempting to refund a Payment against OrderLines from a different Order */
 export type PaymentOrderMismatchError = ErrorResult & {
   __typename?: 'PaymentOrderMismatchError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
 /** Returned when there is an error in transitioning the Payment state */
 export type PaymentStateTransitionError = ErrorResult & {
   __typename?: 'PaymentStateTransitionError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
   fromState: Scalars['String'];
@@ -2946,7 +2947,7 @@ export type ProductOptionGroupTranslationInput = {
 
 export type ProductOptionInUseError = ErrorResult & {
   __typename?: 'ProductOptionInUseError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   optionGroupCode: Scalars['String'];
   productVariantCount: Scalars['Int'];
@@ -3139,7 +3140,7 @@ export type PromotionSortParameter = {
 /** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
 export type QuantityTooGreatError = ErrorResult & {
   __typename?: 'QuantityTooGreatError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
@@ -3437,7 +3438,7 @@ export type RefundOrderResult = Refund | QuantityTooGreatError | NothingToRefund
 /** Returned if an attempting to refund an Order which is not in the expected state */
 export type RefundOrderStateError = ErrorResult & {
   __typename?: 'RefundOrderStateError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   orderState: Scalars['String'];
 };
@@ -3445,7 +3446,7 @@ export type RefundOrderStateError = ErrorResult & {
 /** Returned when there is an error in transitioning the Refund state */
 export type RefundStateTransitionError = ErrorResult & {
   __typename?: 'RefundStateTransitionError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
   fromState: Scalars['String'];
@@ -3598,7 +3599,7 @@ export type ServerConfig = {
 /** Returned if the Payment settlement fails */
 export type SettlePaymentError = ErrorResult & {
   __typename?: 'SettlePaymentError';
-  code: ErrorCode;
+  errorCode: ErrorCode;
   message: Scalars['String'];
   paymentErrorMessage: Scalars['String'];
 };
