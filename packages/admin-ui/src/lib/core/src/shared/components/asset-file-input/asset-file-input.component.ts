@@ -51,6 +51,7 @@ export class AssetFileInputComponent implements OnInit {
         this.fitDropZoneToTarget();
     }
 
+    // DragEvent is not supported in Safari, see https://github.com/vendure-ecommerce/vendure/pull/284
     @HostListener('document:dragleave', ['$event'])
     onDragLeave(event: any) {
         if (!event.clientX && !event.clientY) {
@@ -66,11 +67,12 @@ export class AssetFileInputComponent implements OnInit {
         event.preventDefault();
     }
 
+    // DragEvent is not supported in Safari, see https://github.com/vendure-ecommerce/vendure/pull/284
     onDrop(event: any) {
         event.preventDefault();
         this.dragging = false;
         this.overDropZone = false;
-        const files = Array.from(event.dataTransfer ? event.dataTransfer.items : [])
+        const files = Array.from<DataTransferItem>(event.dataTransfer ? event.dataTransfer.items : [])
             .map(i => i.getAsFile())
             .filter(notNullOrUndefined);
         this.selectFiles.emit(files);
