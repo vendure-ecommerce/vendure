@@ -52,7 +52,7 @@ export class AssetFileInputComponent implements OnInit {
     }
 
     @HostListener('document:dragleave', ['$event'])
-    onDragLeave(event: DragEvent) {
+    onDragLeave(event: any) {
         if (!event.clientX && !event.clientY) {
             this.dragging = false;
         }
@@ -62,11 +62,11 @@ export class AssetFileInputComponent implements OnInit {
      * Preventing this event is required to make dropping work.
      * See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API#Define_a_drop_zone
      */
-    onDragOver(event: DragEvent) {
+    onDragOver(event: any) {
         event.preventDefault();
     }
 
-    onDrop(event: DragEvent) {
+    onDrop(event: any) {
         event.preventDefault();
         this.dragging = false;
         this.overDropZone = false;
