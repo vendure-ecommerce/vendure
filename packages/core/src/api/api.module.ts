@@ -3,6 +3,7 @@ import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import path from 'path';
 
 import { DataImportModule } from '../data-import/data-import.module';
+import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
@@ -11,6 +12,7 @@ import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AuthGuard } from './middleware/auth-guard';
 import { ExceptionLoggerFilter } from './middleware/exception-logger.filter';
 import { IdInterceptor } from './middleware/id-interceptor';
+import { TranslateErrorResultInterceptor } from './middleware/translate-error-result-interceptor';
 import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fields-interceptor';
 
 /**
@@ -22,6 +24,7 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
     imports: [
         ServiceModule.forRoot(),
         DataImportModule,
+        I18nModule,
         ApiSharedModule,
         AdminApiModule,
         ShopApiModule,
@@ -59,6 +62,10 @@ import { ValidateCustomFieldsInterceptor } from './middleware/validate-custom-fi
         {
             provide: APP_INTERCEPTOR,
             useClass: ValidateCustomFieldsInterceptor,
+        },
+        {
+            provide: APP_INTERCEPTOR,
+            useClass: TranslateErrorResultInterceptor,
         },
         {
             provide: APP_FILTER,

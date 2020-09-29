@@ -61,7 +61,7 @@
     "no-valid-channel-specified": "Nenhum canal válido foi especificado (verifique se o cabeçalho 'token' foi especificado na solicitação)",
     "order-contents-may-only-be-modified-in-addingitems-state": "O conteúdo do pedido pode ser modificado apenas no estado \"AddingItems\"",
     "order-does-not-contain-line-with-id": "Este pedido não contém um OrderLine com o ID { id }",
-    "order-item-quantity-must-be-positive": "{ quantity } não é uma quantidade válida para um OrderItem",
+    "order-item-quantity-must-be-positive": "não é uma quantidade válida para um OrderItem",
     "order-items-limit-exceeded": "Não é possível adicionar itens. Um pedido pode consistir em no máximo { maxItems } itens",
     "order-lines-must-belong-to-same-order": "Todos os OrderLines devem pertencer a um único pedido",
     "payment-may-only-be-added-in-arrangingpayment-state": "Um pagamento pode ser adicionado apenas quando o pedido estiver no estado \"ArrangingPayment\"",

@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { VerifyCustomerAccountResult } from '@vendure/common/lib/generated-shop-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion } from '../../common/error/error-result';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
 import {
-    IdentifierChangeTokenError,
     IdentifierChangeTokenExpiredError,
-    InternalServerError,
+    IdentifierChangeTokenInvalidError,
+    InvalidCredentialsError,
+    MissingPasswordError,
+    PasswordAlreadySetError,
     PasswordResetTokenExpiredError,
-    UnauthorizedError,
-    UserInputError,
+    PasswordResetTokenInvalidError,
     VerificationTokenExpiredError,
-} from '../../common/error/errors';
+    VerificationTokenInvalidError,
+} from '../../common/error/generated-graphql-shop-errors';
 import { ConfigService } from '../../config/config.service';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
@@ -114,7 +119,7 @@ export class UserService {
         ctx: RequestContext,
         verificationToken: string,
         password?: string,
-    ): Promise<User | undefined> {
+    ): Promise<ErrorResultUnion<VerifyCustomerAccountResult, User>> {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
@@ -127,11 +132,11 @@ export class UserService {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
                 if (!password) {
                     if (!nativeAuthMethod.passwordHash) {
-                        throw new UserInputError(`error.password-required-for-verification`);
+                        return new MissingPasswordError();
                     }
                 } else {
                     if (!!nativeAuthMethod.passwordHash) {
-                        throw new UserInputError(`error.password-already-set-during-registration`);
+                        return new PasswordAlreadySetError();
                     }
                     nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
                 }
@@ -140,8 +145,10 @@ export class UserService {
                 await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
                 return this.connection.getRepository(ctx, User).save(user);
             } else {
-                throw new VerificationTokenExpiredError();
+                return new VerificationTokenExpiredError();
             }
+        } else {
+            return new VerificationTokenInvalidError();
         }
     }
 
@@ -160,30 +167,35 @@ export class UserService {
         ctx: RequestContext,
         passwordResetToken: string,
         password: string,
-    ): Promise<User | undefined> {
+    ): Promise<User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError> {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
             .leftJoinAndSelect('user.authenticationMethods', 'authenticationMethod')
             .where('authenticationMethod.passwordResetToken = :passwordResetToken', { passwordResetToken })
             .getOne();
-        if (user) {
-            if (this.verificationTokenGenerator.verifyVerificationToken(passwordResetToken)) {
-                const nativeAuthMethod = user.getNativeAuthenticationMethod();
-                nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
-                nativeAuthMethod.passwordResetToken = null;
-                await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
-                return this.connection.getRepository(ctx, User).save(user);
-            } else {
-                throw new PasswordResetTokenExpiredError();
-            }
+        if (!user) {
+            return new PasswordResetTokenInvalidError();
+        }
+        if (this.verificationTokenGenerator.verifyVerificationToken(passwordResetToken)) {
+            const nativeAuthMethod = user.getNativeAuthenticationMethod();
+            nativeAuthMethod.passwordHash = await this.passwordCipher.hash(password);
+            nativeAuthMethod.passwordResetToken = null;
+            await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
+            return this.connection.getRepository(ctx, User).save(user);
+        } else {
+            return new PasswordResetTokenExpiredError();
         }
     }
 
     async changeIdentifierByToken(
         ctx: RequestContext,
         token: string,
-    ): Promise<{ user: User; oldIdentifier: string }> {
+    ): Promise<
+        | { user: User; oldIdentifier: string }
+        | IdentifierChangeTokenInvalidError
+        | IdentifierChangeTokenExpiredError
+    > {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
@@ -193,10 +205,10 @@ export class UserService {
             })
             .getOne();
         if (!user) {
-            throw new IdentifierChangeTokenError();
+            return new IdentifierChangeTokenInvalidError();
         }
         if (!this.verificationTokenGenerator.verifyVerificationToken(token)) {
-            throw new IdentifierChangeTokenExpiredError();
+            return new IdentifierChangeTokenExpiredError();
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         const pendingIdentifier = nativeAuthMethod.pendingIdentifier;
@@ -220,7 +232,7 @@ export class UserService {
         userId: ID,
         currentPassword: string,
         newPassword: string,
-    ): Promise<boolean> {
+    ): Promise<boolean | InvalidCredentialsError> {
         const user = await this.connection
             .getRepository(ctx, User)
             .createQueryBuilder('user')
@@ -229,12 +241,12 @@ export class UserService {
             .where('user.id = :id', { id: userId })
             .getOne();
         if (!user) {
-            throw new InternalServerError(`error.no-active-user-id`);
+            throw new EntityNotFoundError('User', userId);
         }
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         const matches = await this.passwordCipher.check(currentPassword, nativeAuthMethod.passwordHash);
         if (!matches) {
-            throw new UnauthorizedError();
+            return new InvalidCredentialsError();
         }
         nativeAuthMethod.passwordHash = await this.passwordCipher.hash(newPassword);
         await this.connection

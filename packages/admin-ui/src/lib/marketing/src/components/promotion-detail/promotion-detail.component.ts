@@ -138,11 +138,20 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             actions: this.mapOperationsToInputs(this.actions, formValue.actions),
         };
         this.dataService.promotion.createPromotion(input).subscribe(
-            data => {
-                this.notificationService.success(_('common.notify-create-success'), { entity: 'Promotion' });
-                this.detailForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createPromotion.id], { relativeTo: this.route });
+            ({ createPromotion }) => {
+                switch (createPromotion.__typename) {
+                    case 'Promotion':
+                        this.notificationService.success(_('common.notify-create-success'), {
+                            entity: 'Promotion',
+                        });
+                        this.detailForm.markAsPristine();
+                        this.changeDetector.markForCheck();
+                        this.router.navigate(['../', createPromotion.id], { relativeTo: this.route });
+                        break;
+                    case 'MissingConditionsError':
+                        this.notificationService.error(createPromotion.message);
+                        break;
+                }
             },
             err => {
                 this.notificationService.error(_('common.notify-create-error'), {

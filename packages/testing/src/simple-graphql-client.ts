@@ -14,12 +14,16 @@ import { createUploadPostData } from './utils/create-upload-post-data';
 const LOGIN = gql`
     mutation($username: String!, $password: String!) {
         login(username: $username, password: $password) {
-            user {
+            ... on CurrentUser {
                 id
                 identifier
                 channels {
                     token
                 }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }
@@ -129,14 +133,16 @@ export class SimpleGraphQLClient {
             await this.query(
                 gql`
                     mutation {
-                        logout
+                        logout {
+                            success
+                        }
                     }
                 `,
             );
         }
         const result = await this.query(LOGIN, { username, password });
-        if (result.login.user.channels.length === 1) {
-            this.setChannelToken(result.login.user.channels[0].token);
+        if (result.login.channels?.length === 1) {
+            this.setChannelToken(result.login.channels[0].token);
         }
         return result.login;
     }
@@ -161,7 +167,9 @@ export class SimpleGraphQLClient {
         await this.query(
             gql`
                 mutation {
-                    logout
+                    logout {
+                        success
+                    }
                 }
             `,
         );

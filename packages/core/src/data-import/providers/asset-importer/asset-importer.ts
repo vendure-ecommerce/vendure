@@ -33,7 +33,7 @@ export class AssetImporter {
                     if (fileStat.isFile()) {
                         try {
                             const stream = fs.createReadStream(filename);
-                            const asset = await this.assetService.createFromFileStream(stream);
+                            const asset = (await this.assetService.createFromFileStream(stream)) as Asset;
                             this.assetMap.set(assetPath, asset);
                             assets.push(asset);
                         } catch (err) {

@@ -49,6 +49,9 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
 
     async authenticate(ctx: RequestContext, data: NativeAuthenticationData): Promise<User | false> {
         const user = await this.getUserFromIdentifier(ctx, data.username);
+        if (!user) {
+            return false;
+        }
         const passwordMatch = await this.verifyUserPassword(ctx, user.id, data.password);
         if (!passwordMatch) {
             return false;
@@ -56,15 +59,11 @@ export class NativeAuthenticationStrategy implements AuthenticationStrategy<Nati
         return user;
     }
 
-    private async getUserFromIdentifier(ctx: RequestContext, identifier: string): Promise<User> {
-        const user = await this.connection.getRepository(ctx, User).findOne({
+    private getUserFromIdentifier(ctx: RequestContext, identifier: string): Promise<User | undefined> {
+        return this.connection.getRepository(ctx, User).findOne({
             where: { identifier },
             relations: ['roles', 'roles.channels'],
         });
-        if (!user) {
-            throw new UnauthorizedError();
-        }
-        return user;
     }
 
     /**

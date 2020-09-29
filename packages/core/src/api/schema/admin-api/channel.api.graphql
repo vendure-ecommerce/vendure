@@ -6,10 +6,10 @@ type Query {
 
 type Mutation {
     "Create a new Channel"
-    createChannel(input: CreateChannelInput!): Channel!
+    createChannel(input: CreateChannelInput!): CreateChannelResult!
 
     "Update an existing Channel"
-    updateChannel(input: UpdateChannelInput!): Channel!
+    updateChannel(input: UpdateChannelInput!): UpdateChannelResult!
 
     "Delete a Channel"
     deleteChannel(id: ID!): DeletionResponse!
@@ -35,3 +35,13 @@ input UpdateChannelInput {
     defaultTaxZoneId: ID
     defaultShippingZoneId: ID
 }
+
+"Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings"
+type LanguageNotAvailableError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    languageCode: String!
+}
+
+union CreateChannelResult = Channel | LanguageNotAvailableError
+union UpdateChannelResult = Channel | LanguageNotAvailableError

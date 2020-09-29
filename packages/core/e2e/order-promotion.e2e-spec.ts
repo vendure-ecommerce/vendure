@@ -10,7 +10,7 @@ import {
     orderPercentageDiscount,
     productsPercentageDiscount,
 } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -25,6 +25,7 @@ import {
     GetFacetList,
     GetPromoProducts,
     HistoryEntryType,
+    PromotionFragment,
     RemoveCustomersFromGroup,
 } from './graphql/generated-e2e-admin-types';
 import {
@@ -32,11 +33,15 @@ import {
     AdjustItemQuantity,
     AdjustmentType,
     ApplyCouponCode,
+    ErrorCode,
     GetActiveOrder,
     GetOrderPromotionsByCode,
     RemoveCouponCode,
     SetCustomerForOrder,
     TestOrderFragment,
+    TestOrderFragmentFragment,
+    TestOrderWithPaymentsFragment,
+    UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
     CREATE_CUSTOMER_GROUP,
@@ -76,6 +81,11 @@ describe('Promotions applied to Orders', () => {
         ],
     });
 
+    type OrderSuccessResult = UpdatedOrderFragment | TestOrderFragmentFragment;
+    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard<OrderSuccessResult>(
+        input => !!input.lines,
+    );
+
     let products: GetPromoProducts.Items[];
 
     beforeAll(async () => {
@@ -97,8 +107,8 @@ describe('Promotions applied to Orders', () => {
     describe('coupon codes', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
         const EXPIRED_COUPON_CODE = 'EXPIRED';
-        let promoFreeWithCoupon: CreatePromotion.CreatePromotion;
-        let promoFreeWithExpiredCoupon: CreatePromotion.CreatePromotion;
+        let promoFreeWithCoupon: PromotionFragment;
+        let promoFreeWithExpiredCoupon: PromotionFragment;
 
         beforeAll(async () => {
             promoFreeWithCoupon = await createPromotion({
@@ -119,10 +129,7 @@ describe('Promotions applied to Orders', () => {
 
             await shopClient.asAnonymousUser();
             const item60 = getVariantBySlug('item-60');
-            const { addItemToOrder } = await shopClient.query<
-                AddItemToOrder.Mutation,
-                AddItemToOrder.Variables
-            >(ADD_ITEM_TO_ORDER, {
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
                 productVariantId: item60.id,
                 quantity: 1,
             });
@@ -133,29 +140,29 @@ describe('Promotions applied to Orders', () => {
             await deletePromotion(promoFreeWithExpiredCoupon.id);
         });
 
-        it(
-            'applyCouponCode throws with nonexistant code',
-            assertThrowsWithMessage(async () => {
-                await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
-                    APPLY_COUPON_CODE,
-                    {
-                        couponCode: 'bad code',
-                    },
-                );
-            }, 'Coupon code "bad code" is not valid'),
-        );
+        it('applyCouponCode returns error result when code is nonexistant', async () => {
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: 'bad code',
+            });
+            orderResultGuard.assertErrorResult(applyCouponCode);
+            expect(applyCouponCode.message).toBe('Coupon code "bad code" is not valid');
+            expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_INVALID_ERROR);
+        });
 
-        it(
-            'applyCouponCode throws with expired code',
-            assertThrowsWithMessage(async () => {
-                await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
-                    APPLY_COUPON_CODE,
-                    {
-                        couponCode: EXPIRED_COUPON_CODE,
-                    },
-                );
-            }, `Coupon code "${EXPIRED_COUPON_CODE}" has expired`),
-        );
+        it('applyCouponCode returns error when code is expired', async () => {
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode: EXPIRED_COUPON_CODE,
+            });
+            orderResultGuard.assertErrorResult(applyCouponCode);
+            expect(applyCouponCode.message).toBe(`Coupon code "${EXPIRED_COUPON_CODE}" has expired`);
+            expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_EXPIRED_ERROR);
+        });
 
         it('applies a valid coupon code', async () => {
             const { applyCouponCode } = await shopClient.query<
@@ -164,7 +171,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode: TEST_COUPON_CODE,
             });
-
+            orderResultGuard.assertSuccess(applyCouponCode);
             expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
             expect(applyCouponCode!.adjustments.length).toBe(1);
             expect(applyCouponCode!.adjustments[0].description).toBe('Free with test coupon');
@@ -192,7 +199,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode: TEST_COUPON_CODE,
             });
-
+            orderResultGuard.assertSuccess(applyCouponCode);
             expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
         });
 
@@ -274,6 +281,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: item60.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.total).toBe(6000);
             expect(addItemToOrder!.adjustments.length).toBe(0);
 
@@ -284,6 +292,7 @@ describe('Promotions applied to Orders', () => {
                 orderLineId: addItemToOrder!.lines[0].id,
                 quantity: 2,
             });
+            orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.total).toBe(0);
             expect(adjustOrderLine!.adjustments[0].description).toBe('Free if order total greater than 100');
             expect(adjustOrderLine!.adjustments[0].amount).toBe(-12000);
@@ -318,6 +327,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: itemSale1.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(res1);
             expect(res1!.total).toBe(120);
             expect(res1!.adjustments.length).toBe(0);
 
@@ -328,6 +338,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: itemSale12.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(res2);
             expect(res2!.total).toBe(0);
             expect(res2!.adjustments.length).toBe(1);
             expect(res2!.total).toBe(0);
@@ -367,6 +378,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: item12.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.total).toBe(7200);
             expect(addItemToOrder!.adjustments.length).toBe(0);
 
@@ -377,6 +389,7 @@ describe('Promotions applied to Orders', () => {
                 orderLineId: addItemToOrder!.lines[0].id,
                 quantity: 2,
             });
+            orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.total).toBe(0);
             expect(adjustOrderLine!.adjustments[0].description).toBe(
                 'Free if buying 3 or more offer products',
@@ -415,6 +428,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: getVariantBySlug('item-60').id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.total).toBe(0);
             expect(addItemToOrder!.adjustments.length).toBe(1);
             expect(addItemToOrder!.adjustments[0].description).toBe('Free for group members');
@@ -435,6 +449,7 @@ describe('Promotions applied to Orders', () => {
                 orderLineId: addItemToOrder!.lines[0].id,
                 quantity: 2,
             });
+            orderResultGuard.assertSuccess(adjustOrderLine);
             expect(adjustOrderLine!.total).toBe(12000);
             expect(adjustOrderLine!.adjustments.length).toBe(0);
 
@@ -469,6 +484,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: item60.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.total).toBe(6000);
             expect(addItemToOrder!.adjustments.length).toBe(0);
 
@@ -478,7 +494,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode,
             });
-
+            orderResultGuard.assertSuccess(applyCouponCode);
             expect(applyCouponCode!.adjustments.length).toBe(1);
             expect(applyCouponCode!.adjustments[0].description).toBe('50% discount on order');
             expect(applyCouponCode!.total).toBe(3000);
@@ -524,6 +540,7 @@ describe('Promotions applied to Orders', () => {
             function getItemSale1Line(lines: TestOrderFragment.Lines[]): TestOrderFragment.Lines {
                 return lines.find(l => l.productVariant.id === getVariantBySlug('item-sale-1').id)!;
             }
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.adjustments.length).toBe(0);
             expect(getItemSale1Line(addItemToOrder!.lines).adjustments.length).toBe(2); // 2x tax
             expect(addItemToOrder!.total).toBe(2640);
@@ -534,6 +551,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode,
             });
+            orderResultGuard.assertSuccess(applyCouponCode);
 
             expect(applyCouponCode!.total).toBe(1920);
             expect(getItemSale1Line(applyCouponCode!.lines).adjustments.length).toBe(4); // 2x tax, 2x promotion
@@ -580,6 +598,7 @@ describe('Promotions applied to Orders', () => {
                 productVariantId: item60.id,
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.adjustments.length).toBe(0);
             expect(addItemToOrder!.lines[0].adjustments.length).toBe(1); // 1x tax
             expect(addItemToOrder!.total).toBe(6000);
@@ -590,6 +609,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode,
             });
+            orderResultGuard.assertSuccess(applyCouponCode);
 
             expect(applyCouponCode!.total).toBe(3000);
             expect(applyCouponCode!.lines[0].adjustments.length).toBe(2); // 1x tax, 1x promotion
@@ -650,6 +670,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode: 'CODE1',
             });
+            orderResultGuard.assertSuccess(apply1);
 
             expect(apply1?.lines[0].adjustments.length).toBe(2);
             expect(
@@ -664,6 +685,7 @@ describe('Promotions applied to Orders', () => {
             >(APPLY_COUPON_CODE, {
                 couponCode: 'CODE2',
             });
+            orderResultGuard.assertSuccess(apply2);
 
             expect(apply2?.lines[0].adjustments.length).toBe(2);
             expect(
@@ -676,7 +698,10 @@ describe('Promotions applied to Orders', () => {
 
     describe('per-customer usage limit', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
-        let promoWithUsageLimit: CreatePromotion.CreatePromotion;
+        const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard<
+            TestOrderWithPaymentsFragment
+        >(input => !!input.lines);
+        let promoWithUsageLimit: PromotionFragment;
 
         beforeAll(async () => {
             promoWithUsageLimit = await createPromotion({
@@ -731,12 +756,15 @@ describe('Promotions applied to Orders', () => {
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode!.total).toBe(0);
                 expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
 
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
                 orderCode = order.code;
@@ -754,22 +782,20 @@ describe('Promotions applied to Orders', () => {
                 ]);
             });
 
-            it('throws when usage exceeds limit', async () => {
+            it('returns error result when usage exceeds limit', async () => {
                 await shopClient.asAnonymousUser();
                 await createNewActiveOrder();
                 await addGuestCustomerToOrder();
 
-                try {
-                    await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
-                        APPLY_COUPON_CODE,
-                        { couponCode: TEST_COUPON_CODE },
-                    );
-                    fail('should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining('Coupon code cannot be used more than once per customer'),
-                    );
-                }
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
             });
 
             it('removes couponCode from order when adding customer after code applied', async () => {
@@ -780,6 +806,7 @@ describe('Promotions applied to Orders', () => {
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode!.total).toBe(0);
                 expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
@@ -804,30 +831,31 @@ describe('Promotions applied to Orders', () => {
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode!.total).toBe(0);
                 expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
 
                 await proceedToArrangingPayment(shopClient);
                 const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+                orderGuard.assertSuccess(order);
+
                 expect(order.state).toBe('PaymentSettled');
                 expect(order.active).toBe(false);
             });
 
-            it('throws when usage exceeds limit', async () => {
+            it('returns error result when usage exceeds limit', async () => {
                 await logInAsRegisteredCustomer();
                 await createNewActiveOrder();
-                try {
-                    await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(
-                        APPLY_COUPON_CODE,
-                        { couponCode: TEST_COUPON_CODE },
-                    );
-                    fail('should have thrown');
-                } catch (err) {
-                    expect(err.message).toEqual(
-                        expect.stringContaining('Coupon code cannot be used more than once per customer'),
-                    );
-                }
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertErrorResult(applyCouponCode);
+                expect(applyCouponCode.message).toEqual(
+                    'Coupon code cannot be used more than once per customer',
+                );
+                expect(applyCouponCode.errorCode).toBe(ErrorCode.COUPON_CODE_LIMIT_ERROR);
             });
 
             it('removes couponCode from order when logging in after code applied', async () => {
@@ -837,6 +865,7 @@ describe('Promotions applied to Orders', () => {
                     ApplyCouponCode.Mutation,
                     ApplyCouponCode.Variables
                 >(APPLY_COUPON_CODE, { couponCode: TEST_COUPON_CODE });
+                orderResultGuard.assertSuccess(applyCouponCode);
 
                 expect(applyCouponCode!.couponCodes).toEqual([TEST_COUPON_CODE]);
                 expect(applyCouponCode!.total).toBe(0);
@@ -879,14 +908,14 @@ describe('Promotions applied to Orders', () => {
         await deletePromotion(deletedPromotion.id);
     }
 
-    async function createPromotion(input: CreatePromotionInput): Promise<CreatePromotion.CreatePromotion> {
+    async function createPromotion(input: CreatePromotionInput): Promise<PromotionFragment> {
         const result = await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(
             CREATE_PROMOTION,
             {
                 input,
             },
         );
-        return result.createPromotion;
+        return result.createPromotion as PromotionFragment;
     }
 
     function getVariantBySlug(

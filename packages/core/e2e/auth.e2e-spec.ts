@@ -11,6 +11,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 import {
     CreateAdministrator,
     CreateRole,
+    ErrorCode,
     GetCustomerList,
     Me,
     MutationCreateProductArgs,
@@ -76,12 +77,11 @@ describe('Authorization & permissions', () => {
                 customerEmailAddress = customers.items[0].emailAddress;
             });
 
-            it(
-                'cannot login',
-                assertThrowsWithMessage(async () => {
-                    await adminClient.asUserWithCredentials(customerEmailAddress, 'test');
-                }, 'The credentials did not match. Please check and try again'),
-            );
+            it('cannot login', async () => {
+                const result = await adminClient.asUserWithCredentials(customerEmailAddress, 'test');
+
+                expect(result.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            });
         });
 
         describe('ReadCatalog permission', () => {
@@ -153,7 +153,9 @@ describe('Authorization & permissions', () => {
                     gql`
                         mutation CanCreateCustomer($input: CreateCustomerInput!) {
                             createCustomer(input: $input) {
-                                id
+                                ... on Customer {
+                                    id
+                                }
                             }
                         }
                     `,
@@ -214,9 +216,7 @@ describe('Authorization & permissions', () => {
 
         const role = roleResult.createRole;
 
-        const identifier = `${code}@${Math.random()
-            .toString(16)
-            .substr(2, 8)}`;
+        const identifier = `${code}@${Math.random().toString(16).substr(2, 8)}`;
         const password = `test`;
 
         const adminResult = await adminClient.query<

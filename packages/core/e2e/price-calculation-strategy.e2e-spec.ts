@@ -86,20 +86,22 @@ const ADD_ITEM_TO_ORDER_CUSTOM_FIELDS = gql`
             quantity: $quantity
             customFields: $customFields
         ) {
-            id
-            subTotalBeforeTax
-            subTotal
-            shipping
-            total
-            lines {
+            ... on Order {
                 id
-                quantity
-                unitPrice
-                unitPriceWithTax
-                items {
+                subTotalBeforeTax
+                subTotal
+                shipping
+                total
+                lines {
+                    id
+                    quantity
                     unitPrice
                     unitPriceWithTax
-                    unitPriceIncludesTax
+                    items {
+                        unitPrice
+                        unitPriceWithTax
+                        unitPriceIncludesTax
+                    }
                 }
             }
         }

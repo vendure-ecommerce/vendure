@@ -51,7 +51,7 @@ export interface ListQueryOptions<T extends VendureEntity> {
  * nullable fields have the type `field?: <type> | null`.
  */
 export type NullOptionals<T> = {
-    [K in keyof T]: undefined extends T[K] ? NullOptionals<T[K]> | null : NullOptionals<T[K]>
+    [K in keyof T]: undefined extends T[K] ? NullOptionals<T[K]> | null : NullOptionals<T[K]>;
 };
 
 export type SortOrder = 'ASC' | 'DESC';

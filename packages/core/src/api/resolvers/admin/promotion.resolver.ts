@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    CreatePromotionResult,
     DeletionResponse,
     MutationCreatePromotionArgs,
     MutationDeletePromotionArgs,
@@ -7,9 +8,11 @@ import {
     Permission,
     QueryPromotionArgs,
     QueryPromotionsArgs,
+    UpdatePromotionResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { PromotionItemAction, PromotionOrderAction } from '../../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
@@ -63,7 +66,7 @@ export class PromotionResolver {
     createPromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreatePromotionArgs,
-    ): Promise<Promotion> {
+    ): Promise<ErrorResultUnion<CreatePromotionResult, Promotion>> {
         this.configurableOperationCodec.decodeConfigurableOperationIds(
             PromotionOrderAction,
             args.input.actions,
@@ -81,7 +84,7 @@ export class PromotionResolver {
     updatePromotion(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdatePromotionArgs,
-    ): Promise<Promotion> {
+    ): Promise<ErrorResultUnion<UpdatePromotionResult, Promotion>> {
         this.configurableOperationCodec.decodeConfigurableOperationIds(
             PromotionOrderAction,
             args.input.actions || [],
@@ -110,17 +113,21 @@ export class PromotionResolver {
     /**
      * Encodes any entity IDs used in the filter arguments.
      */
-    private encodeConditionsAndActions = <T extends Promotion | undefined>(collection: T): T => {
-        if (collection) {
+    private encodeConditionsAndActions = <
+        T extends ErrorResultUnion<CreatePromotionResult, Promotion> | undefined
+    >(
+        maybePromotion: T,
+    ): T => {
+        if (maybePromotion instanceof Promotion) {
             this.configurableOperationCodec.encodeConfigurableOperationIds(
                 PromotionOrderAction,
-                collection.actions,
+                maybePromotion.actions,
             );
             this.configurableOperationCodec.encodeConfigurableOperationIds(
                 PromotionCondition,
-                collection.conditions,
+                maybePromotion.conditions,
             );
         }
-        return collection;
+        return maybePromotion;
     };
 }

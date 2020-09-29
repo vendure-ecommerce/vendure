@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { UpdateCustomerInput as UpdateCustomerShopInput } from '@vendure/common/lib/generated-shop-types';
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
@@ -29,7 +30,7 @@ export type CustomerHistoryEntryData = {
         strategy: string;
     };
     [HistoryEntryType.CUSTOMER_DETAIL_UPDATED]: {
-        input: UpdateCustomerInput;
+        input: UpdateCustomerInput | UpdateCustomerShopInput;
     };
     [HistoryEntryType.CUSTOMER_ADDRESS_CREATED]: {
         address: string;

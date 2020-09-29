@@ -14,7 +14,7 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: (order) => ({
+    settlePayment: order => ({
         success: true,
     }),
 });
@@ -105,10 +105,11 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
         return {
             amount: order.total,
             state: 'Declined',
+            errorMessage: 'Insufficient funds',
             metadata,
         };
     },
-    settlePayment: (order) => ({
+    settlePayment: order => ({
         success: true,
     }),
 });
@@ -124,7 +125,7 @@ export const testErrorPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: (order) => ({
+    settlePayment: order => ({
         success: true,
     }),
 });

@@ -278,6 +278,339 @@ const result: IntrospectionResultData = {
                     },
                 ],
             },
+            {
+                kind: 'UNION',
+                name: 'AddFulfillmentToOrderResult',
+                possibleTypes: [
+                    {
+                        name: 'Fulfillment',
+                    },
+                    {
+                        name: 'EmptyOrderLineSelectionError',
+                    },
+                    {
+                        name: 'ItemsAlreadyFulfilledError',
+                    },
+                ],
+            },
+            {
+                kind: 'INTERFACE',
+                name: 'ErrorResult',
+                possibleTypes: [
+                    {
+                        name: 'EmptyOrderLineSelectionError',
+                    },
+                    {
+                        name: 'ItemsAlreadyFulfilledError',
+                    },
+                    {
+                        name: 'InvalidCredentialsError',
+                    },
+                    {
+                        name: 'QuantityTooGreatError',
+                    },
+                    {
+                        name: 'MultipleOrderError',
+                    },
+                    {
+                        name: 'CancelActiveOrderError',
+                    },
+                    {
+                        name: 'OrderStateTransitionError',
+                    },
+                    {
+                        name: 'MimeTypeError',
+                    },
+                    {
+                        name: 'LanguageNotAvailableError',
+                    },
+                    {
+                        name: 'EmailAddressConflictError',
+                    },
+                    {
+                        name: 'MissingConditionsError',
+                    },
+                    {
+                        name: 'NativeAuthStrategyError',
+                    },
+                    {
+                        name: 'NothingToRefundError',
+                    },
+                    {
+                        name: 'PaymentOrderMismatchError',
+                    },
+                    {
+                        name: 'RefundOrderStateError',
+                    },
+                    {
+                        name: 'AlreadyRefundedError',
+                    },
+                    {
+                        name: 'RefundStateTransitionError',
+                    },
+                    {
+                        name: 'ProductOptionInUseError',
+                    },
+                    {
+                        name: 'SettlePaymentError',
+                    },
+                    {
+                        name: 'PaymentStateTransitionError',
+                    },
+                    {
+                        name: 'FulfillmentStateTransitionError',
+                    },
+                    {
+                        name: 'ChannelDefaultLanguageError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'AuthenticationResult',
+                possibleTypes: [
+                    {
+                        name: 'CurrentUser',
+                    },
+                    {
+                        name: 'InvalidCredentialsError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'CancelOrderResult',
+                possibleTypes: [
+                    {
+                        name: 'Order',
+                    },
+                    {
+                        name: 'EmptyOrderLineSelectionError',
+                    },
+                    {
+                        name: 'QuantityTooGreatError',
+                    },
+                    {
+                        name: 'MultipleOrderError',
+                    },
+                    {
+                        name: 'CancelActiveOrderError',
+                    },
+                    {
+                        name: 'OrderStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'CreateAssetResult',
+                possibleTypes: [
+                    {
+                        name: 'Asset',
+                    },
+                    {
+                        name: 'MimeTypeError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'CreateChannelResult',
+                possibleTypes: [
+                    {
+                        name: 'Channel',
+                    },
+                    {
+                        name: 'LanguageNotAvailableError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'CreateCustomerResult',
+                possibleTypes: [
+                    {
+                        name: 'Customer',
+                    },
+                    {
+                        name: 'EmailAddressConflictError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'CreatePromotionResult',
+                possibleTypes: [
+                    {
+                        name: 'Promotion',
+                    },
+                    {
+                        name: 'MissingConditionsError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'NativeAuthenticationResult',
+                possibleTypes: [
+                    {
+                        name: 'CurrentUser',
+                    },
+                    {
+                        name: 'InvalidCredentialsError',
+                    },
+                    {
+                        name: 'NativeAuthStrategyError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'RefundOrderResult',
+                possibleTypes: [
+                    {
+                        name: 'Refund',
+                    },
+                    {
+                        name: 'QuantityTooGreatError',
+                    },
+                    {
+                        name: 'NothingToRefundError',
+                    },
+                    {
+                        name: 'OrderStateTransitionError',
+                    },
+                    {
+                        name: 'MultipleOrderError',
+                    },
+                    {
+                        name: 'PaymentOrderMismatchError',
+                    },
+                    {
+                        name: 'RefundOrderStateError',
+                    },
+                    {
+                        name: 'AlreadyRefundedError',
+                    },
+                    {
+                        name: 'RefundStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'RemoveOptionGroupFromProductResult',
+                possibleTypes: [
+                    {
+                        name: 'Product',
+                    },
+                    {
+                        name: 'ProductOptionInUseError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'SettlePaymentResult',
+                possibleTypes: [
+                    {
+                        name: 'Payment',
+                    },
+                    {
+                        name: 'SettlePaymentError',
+                    },
+                    {
+                        name: 'PaymentStateTransitionError',
+                    },
+                    {
+                        name: 'OrderStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'SettleRefundResult',
+                possibleTypes: [
+                    {
+                        name: 'Refund',
+                    },
+                    {
+                        name: 'RefundStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'TransitionFulfillmentToStateResult',
+                possibleTypes: [
+                    {
+                        name: 'Fulfillment',
+                    },
+                    {
+                        name: 'FulfillmentStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'TransitionOrderToStateResult',
+                possibleTypes: [
+                    {
+                        name: 'Order',
+                    },
+                    {
+                        name: 'OrderStateTransitionError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'UpdateChannelResult',
+                possibleTypes: [
+                    {
+                        name: 'Channel',
+                    },
+                    {
+                        name: 'LanguageNotAvailableError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'UpdateCustomerResult',
+                possibleTypes: [
+                    {
+                        name: 'Customer',
+                    },
+                    {
+                        name: 'EmailAddressConflictError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'UpdateGlobalSettingsResult',
+                possibleTypes: [
+                    {
+                        name: 'GlobalSettings',
+                    },
+                    {
+                        name: 'ChannelDefaultLanguageError',
+                    },
+                ],
+            },
+            {
+                kind: 'UNION',
+                name: 'UpdatePromotionResult',
+                possibleTypes: [
+                    {
+                        name: 'Promotion',
+                    },
+                    {
+                        name: 'MissingConditionsError',
+                    },
+                ],
+            },
         ],
     },
 };

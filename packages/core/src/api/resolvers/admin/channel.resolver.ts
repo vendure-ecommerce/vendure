@@ -1,13 +1,16 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    CreateChannelResult,
     DeletionResponse,
     MutationCreateChannelArgs,
     MutationDeleteChannelArgs,
     MutationUpdateChannelArgs,
     Permission,
     QueryChannelArgs,
+    UpdateChannelResult,
 } from '@vendure/common/lib/generated-types';
 
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { RoleService } from '../../../service/services/role.service';
@@ -44,13 +47,16 @@ export class ChannelResolver {
     async createChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateChannelArgs,
-    ): Promise<Channel> {
-        const channel = await this.channelService.create(ctx, args.input);
+    ): Promise<ErrorResultUnion<CreateChannelResult, Channel>> {
+        const result = await this.channelService.create(ctx, args.input);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
         const superAdminRole = await this.roleService.getSuperAdminRole();
         const customerRole = await this.roleService.getCustomerRole();
-        await this.roleService.assignRoleToChannel(ctx, superAdminRole.id, channel.id);
-        await this.roleService.assignRoleToChannel(ctx, customerRole.id, channel.id);
-        return channel;
+        await this.roleService.assignRoleToChannel(ctx, superAdminRole.id, result.id);
+        await this.roleService.assignRoleToChannel(ctx, customerRole.id, result.id);
+        return result;
     }
 
     @Transaction()
@@ -59,8 +65,12 @@ export class ChannelResolver {
     async updateChannel(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateChannelArgs,
-    ): Promise<Channel> {
-        return this.channelService.update(ctx, args.input);
+    ): Promise<ErrorResultUnion<UpdateChannelResult, Channel>> {
+        const result = await this.channelService.update(ctx, args.input);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        return result;
     }
 
     @Transaction()

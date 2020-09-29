@@ -125,7 +125,14 @@ export class TransactionalConnection {
     ): Promise<T> {
         let entity: T | undefined;
         if (options.channelId != null) {
-            entity = await this.findOneInChannel(ctx, entityType, id, options.channelId, options);
+            const { channelId, ...optionsWithoutChannelId } = options;
+            entity = await this.findOneInChannel(
+                ctx,
+                entityType,
+                id,
+                options.channelId,
+                optionsWithoutChannelId,
+            );
         } else {
             entity = await this.getRepository(ctx, entityType).findOne(id, options as FindOneOptions);
         }

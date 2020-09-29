@@ -23,3 +23,10 @@ export const CONFIGURABLE_OPERATION_DEF_FRAGMENT = gql`
         description
     }
 `;
+
+export const ERROR_RESULT_FRAGMENT = gql`
+    fragment ErrorResult on ErrorResult {
+        errorCode
+        message
+    }
+`;

@@ -1,9 +1,11 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    AddFulfillmentToOrderResult,
+    CancelOrderResult,
+    MutationAddFulfillmentToOrderArgs,
     MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
     MutationDeleteOrderNoteArgs,
-    MutationFulfillOrderArgs,
     MutationRefundOrderArgs,
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
@@ -14,10 +16,16 @@ import {
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
+    RefundOrderResult,
+    SettlePaymentResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
+import { Fulfillment } from '../../../entity/fulfillment/fulfillment.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { Payment } from '../../../entity/payment/payment.entity';
+import { Refund } from '../../../entity/refund/refund.entity';
 import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
 import { OrderService } from '../../../service/services/order.service';
@@ -46,28 +54,40 @@ export class OrderResolver {
     @Transaction()
     @Mutation()
     @Allow(Permission.UpdateOrder)
-    async settlePayment(@Ctx() ctx: RequestContext, @Args() args: MutationSettlePaymentArgs) {
+    async settlePayment(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationSettlePaymentArgs,
+    ): Promise<ErrorResultUnion<SettlePaymentResult, Payment>> {
         return this.orderService.settlePayment(ctx, args.id);
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.UpdateOrder)
-    async fulfillOrder(@Ctx() ctx: RequestContext, @Args() args: MutationFulfillOrderArgs) {
+    async addFulfillmentToOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAddFulfillmentToOrderArgs,
+    ): Promise<ErrorResultUnion<AddFulfillmentToOrderResult, Fulfillment>> {
         return this.orderService.createFulfillment(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.UpdateOrder)
-    async cancelOrder(@Ctx() ctx: RequestContext, @Args() args: MutationCancelOrderArgs) {
+    async cancelOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCancelOrderArgs,
+    ): Promise<ErrorResultUnion<CancelOrderResult, Order>> {
         return this.orderService.cancelOrder(ctx, args.input);
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.UpdateOrder)
-    async refundOrder(@Ctx() ctx: RequestContext, @Args() args: MutationRefundOrderArgs) {
+    async refundOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRefundOrderArgs,
+    ): Promise<ErrorResultUnion<RefundOrderResult, Refund>> {
         return this.orderService.refundOrder(ctx, args.input);
     }
 

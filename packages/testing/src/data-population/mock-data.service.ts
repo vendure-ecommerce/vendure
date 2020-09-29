@@ -23,8 +23,10 @@ export class MockDataService {
             const query1 = gql`
                 mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
                     createCustomer(input: $input, password: $password) {
-                        id
-                        emailAddress
+                        ... on Customer {
+                            id
+                            emailAddress
+                        }
                     }
                 }
             `;
@@ -41,7 +43,10 @@ export class MockDataService {
 
             const customer: { id: string; emailAddress: string } | void = await this.client
                 .query(query1, variables1)
-                .then((data: any) => data.createCustomer, err => this.log(err));
+                .then(
+                    (data: any) => data.createCustomer,
+                    err => this.log(err),
+                );
 
             if (customer) {
                 const query2 = gql`

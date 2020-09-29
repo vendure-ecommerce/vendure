@@ -4,11 +4,14 @@ type Query {
 
 type Mutation {
     "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
     "Authenticates the user using a named authentication strategy"
-    authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
-    logout: Boolean!
+    authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
+    logout: Success!
 }
 
 # Populated at run-time
 input AuthenticationInput
+
+union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError
+union AuthenticationResult = CurrentUser | InvalidCredentialsError

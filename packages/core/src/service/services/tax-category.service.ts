@@ -50,7 +50,7 @@ export class TaxCategoryService {
             .count({ where: { category: id } });
 
         if (0 < dependentRates) {
-            const message = ctx.translate('error.cannot-remove-tax-category-due-to-tax-rates', {
+            const message = ctx.translate('message.cannot-remove-tax-category-due-to-tax-rates', {
                 name: taxCategory.name,
                 count: dependentRates,
             });

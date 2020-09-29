@@ -15,9 +15,11 @@ import {
     QueryProductArgs,
     QueryProductsArgs,
     QueryProductVariantArgs,
+    RemoveOptionGroupFromProductResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -124,7 +126,7 @@ export class ProductResolver {
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOptionGroupFromProductArgs,
-    ): Promise<Translated<Product>> {
+    ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
     }

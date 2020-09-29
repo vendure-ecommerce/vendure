@@ -1,25 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterCustomerInput } from '@vendure/common/lib/generated-shop-types';
+import {
+    RegisterCustomerAccountResult,
+    RegisterCustomerInput,
+    UpdateCustomerInput as UpdateCustomerShopInput,
+    VerifyCustomerAccountResult,
+} from '@vendure/common/lib/generated-shop-types';
 import {
     AddNoteToCustomerInput,
     CreateAddressInput,
     CreateCustomerInput,
+    CreateCustomerResult,
     DeletionResponse,
     DeletionResult,
     HistoryEntryType,
     UpdateAddressInput,
     UpdateCustomerInput,
     UpdateCustomerNoteInput,
+    UpdateCustomerResult,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
+import { EntityNotFoundError, InternalServerError } from '../../common/error/errors';
+import { EmailAddressConflictError as EmailAddressConflictAdminError } from '../../common/error/generated-graphql-admin-errors';
 import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+    EmailAddressConflictError,
+    IdentifierChangeTokenExpiredError,
+    IdentifierChangeTokenInvalidError,
+    MissingPasswordError,
+    PasswordResetTokenExpiredError,
+    PasswordResetTokenInvalidError,
+} from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual, normalizeEmailAddress } from '../../common/utils';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../config/auth/native-authentication-strategy';
@@ -131,7 +143,11 @@ export class CustomerService {
         }
     }
 
-    async create(ctx: RequestContext, input: CreateCustomerInput, password?: string): Promise<Customer> {
+    async create(
+        ctx: RequestContext,
+        input: CreateCustomerInput,
+        password?: string,
+    ): Promise<ErrorResultUnion<CreateCustomerResult, Customer>> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         const customer = new Customer(input);
 
@@ -145,7 +161,7 @@ export class CustomerService {
             .getOne();
 
         if (existingCustomerInChannel) {
-            throw new UserInputError(`error.email-address-must-be-unique`);
+            return new EmailAddressConflictAdminError();
         }
 
         const existingCustomer = await this.connection.getRepository(ctx, Customer).findOne({
@@ -169,14 +185,21 @@ export class CustomerService {
             return this.connection.getRepository(Customer).save(updatedCustomer);
         } else if (existingCustomer || existingUser) {
             // Not sure when this situation would occur
-            throw new UserInputError(`error.email-address-must-be-unique`);
+            return new EmailAddressConflictAdminError();
         }
         customer.user = await this.userService.createCustomerUser(ctx, input.emailAddress, password);
 
         if (password && password !== '') {
             const verificationToken = customer.user.getNativeAuthenticationMethod().verificationToken;
             if (verificationToken) {
-                customer.user = await this.userService.verifyUserByToken(ctx, verificationToken);
+                const result = await this.userService.verifyUserByToken(ctx, verificationToken);
+                if (isGraphQlErrorResult(result)) {
+                    // In theory this should never be reached, so we will just
+                    // throw the result
+                    throw result;
+                } else {
+                    customer.user = result;
+                }
             }
         } else {
             this.eventBus.publish(new AccountRegistrationEvent(ctx, customer.user));
@@ -206,10 +229,57 @@ export class CustomerService {
         return createdCustomer;
     }
 
-    async registerCustomerAccount(ctx: RequestContext, input: RegisterCustomerInput): Promise<boolean> {
+    async update(ctx: RequestContext, input: UpdateCustomerShopInput & { id: ID }): Promise<Customer>;
+    async update(
+        ctx: RequestContext,
+        input: UpdateCustomerInput,
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>>;
+    async update(
+        ctx: RequestContext,
+        input: UpdateCustomerInput | (UpdateCustomerShopInput & { id: ID }),
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>> {
+        const hasEmailAddress = (i: any): i is UpdateCustomerInput & { emailAddress: string } =>
+            i.hasOwnProperty('emailAddress');
+
+        if (hasEmailAddress(input)) {
+            const existingCustomerInChannel = await this.connection
+                .getRepository(ctx, Customer)
+                .createQueryBuilder('customer')
+                .leftJoin('customer.channels', 'channel')
+                .where('channel.id = :channelId', { channelId: ctx.channelId })
+                .andWhere('customer.emailAddress = :emailAddress', { emailAddress: input.emailAddress })
+                .andWhere('customer.id != :customerId', { customerId: input.id })
+                .andWhere('customer.deletedAt is null')
+                .getOne();
+
+            if (existingCustomerInChannel) {
+                return new EmailAddressConflictAdminError();
+            }
+        }
+
+        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
+            channelId: ctx.channelId,
+        });
+        const updatedCustomer = patchEntity(customer, input);
+        await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
+            data: {
+                input,
+            },
+        });
+        return assertFound(this.findOne(ctx, customer.id));
+    }
+
+    async registerCustomerAccount(
+        ctx: RequestContext,
+        input: RegisterCustomerInput,
+    ): Promise<RegisterCustomerAccountResult | EmailAddressConflictError> {
         if (!this.configService.authOptions.requireVerification) {
             if (!input.password) {
-                throw new UserInputError(`error.missing-password-on-registration`);
+                return new MissingPasswordError();
             }
         }
         let user = await this.userService.getUserByEmailAddress(ctx, input.emailAddress);
@@ -220,7 +290,7 @@ export class CustomerService {
             if (hasNativeAuthMethod) {
                 // If the user has already been verified and has already
                 // registered with the native authentication strategy, do nothing.
-                return false;
+                return { success: true };
             }
         }
         const customFields = (input as any).customFields;
@@ -232,6 +302,9 @@ export class CustomerService {
             phoneNumber: input.phoneNumber || '',
             ...(customFields ? { customFields } : {}),
         });
+        if (isGraphQlErrorResult(customer)) {
+            return customer;
+        }
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
@@ -272,7 +345,7 @@ export class CustomerService {
                 },
             });
         }
-        return true;
+        return { success: true };
     }
 
     async refreshVerificationToken(ctx: RequestContext, emailAddress: string): Promise<void> {
@@ -289,23 +362,24 @@ export class CustomerService {
         ctx: RequestContext,
         verificationToken: string,
         password?: string,
-    ): Promise<Customer | undefined> {
-        const user = await this.userService.verifyUserByToken(ctx, verificationToken, password);
-        if (user) {
-            const customer = await this.findOneByUserId(ctx, user.id);
-            if (!customer) {
-                throw new InternalServerError('error.cannot-locate-customer-for-user');
-            }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_VERIFIED,
-                data: {
-                    strategy: NATIVE_AUTH_STRATEGY_NAME,
-                },
-            });
-            return this.findOneByUserId(ctx, user.id);
+    ): Promise<ErrorResultUnion<VerifyCustomerAccountResult, Customer>> {
+        const result = await this.userService.verifyUserByToken(ctx, verificationToken, password);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
+        const customer = await this.findOneByUserId(ctx, result.id);
+        if (!customer) {
+            throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_VERIFIED,
+            data: {
+                strategy: NATIVE_AUTH_STRATEGY_NAME,
+            },
+        });
+        return assertFound(this.findOneByUserId(ctx, result.id));
     }
 
     async requestPasswordReset(ctx: RequestContext, emailAddress: string): Promise<void> {
@@ -329,34 +403,35 @@ export class CustomerService {
         ctx: RequestContext,
         passwordResetToken: string,
         password: string,
-    ): Promise<Customer | undefined> {
-        const user = await this.userService.resetPasswordByToken(ctx, passwordResetToken, password);
-        if (user) {
-            const customer = await this.findOneByUserId(ctx, user.id);
-            if (!customer) {
-                throw new InternalServerError('error.cannot-locate-customer-for-user');
-            }
-            await this.historyService.createHistoryEntryForCustomer({
-                customerId: customer.id,
-                ctx,
-                type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
-                data: {},
-            });
-            return customer;
+    ): Promise<User | PasswordResetTokenExpiredError | PasswordResetTokenInvalidError> {
+        const result = await this.userService.resetPasswordByToken(ctx, passwordResetToken, password);
+        if (isGraphQlErrorResult(result)) {
+            return result;
         }
+        const customer = await this.findOneByUserId(ctx, result.id);
+        if (!customer) {
+            throw new InternalServerError('error.cannot-locate-customer-for-user');
+        }
+        await this.historyService.createHistoryEntryForCustomer({
+            customerId: customer.id,
+            ctx,
+            type: HistoryEntryType.CUSTOMER_PASSWORD_RESET_VERIFIED,
+            data: {},
+        });
+        return result;
     }
 
     async requestUpdateEmailAddress(
         ctx: RequestContext,
         userId: ID,
         newEmailAddress: string,
-    ): Promise<boolean> {
+    ): Promise<boolean | EmailAddressConflictError> {
         const userWithConflictingIdentifier = await this.userService.getUserByEmailAddress(
             ctx,
             newEmailAddress,
         );
         if (userWithConflictingIdentifier) {
-            throw new UserInputError('error.email-address-not-available');
+            return new EmailAddressConflictError();
         }
         const user = await this.userService.getUserById(ctx, userId);
         if (!user) {
@@ -401,8 +476,15 @@ export class CustomerService {
         }
     }
 
-    async updateEmailAddress(ctx: RequestContext, token: string): Promise<boolean> {
-        const { user, oldIdentifier } = await this.userService.changeIdentifierByToken(ctx, token);
+    async updateEmailAddress(
+        ctx: RequestContext,
+        token: string,
+    ): Promise<boolean | IdentifierChangeTokenInvalidError | IdentifierChangeTokenExpiredError> {
+        const result = await this.userService.changeIdentifierByToken(ctx, token);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        const { user, oldIdentifier } = result;
         if (!user) {
             return false;
         }
@@ -425,31 +507,14 @@ export class CustomerService {
         return true;
     }
 
-    async update(ctx: RequestContext, input: UpdateCustomerInput): Promise<Customer> {
-        const customer = await this.connection.getEntityOrThrow(ctx, Customer, input.id, {
-            channelId: ctx.channelId,
-        });
-        const updatedCustomer = patchEntity(customer, input);
-        await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
-        await this.historyService.createHistoryEntryForCustomer({
-            customerId: customer.id,
-            ctx,
-            type: HistoryEntryType.CUSTOMER_DETAIL_UPDATED,
-            data: {
-                input,
-            },
-        });
-        return assertFound(this.findOne(ctx, customer.id));
-    }
-
     /**
      * For guest checkouts, we assume that a matching email address is the same customer.
      */
     async createOrUpdate(
         ctx: RequestContext,
         input: Partial<CreateCustomerInput> & { emailAddress: string },
-        throwOnExistingUser: boolean = false,
-    ): Promise<Customer> {
+        errorOnExistingUser: boolean = false,
+    ): Promise<Customer | EmailAddressConflictError> {
         input.emailAddress = normalizeEmailAddress(input.emailAddress);
         let customer: Customer;
         const existing = await this.connection.getRepository(ctx, Customer).findOne({
@@ -460,9 +525,9 @@ export class CustomerService {
             },
         });
         if (existing) {
-            if (existing.user && throwOnExistingUser) {
+            if (existing.user && errorOnExistingUser) {
                 // It is not permitted to modify an existing *registered* Customer
-                throw new IllegalOperationError('error.cannot-use-registered-email-address-for-guest-order');
+                return new EmailAddressConflictError();
             }
             customer = patchEntity(existing, input);
             customer.channels.push(await this.connection.getEntityOrThrow(ctx, Channel, ctx.channelId));

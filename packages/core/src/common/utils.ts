@@ -14,7 +14,7 @@ export function not(predicate: (...args: any[]) => boolean) {
  * as determined by a === equality check on the given compareBy property.
  */
 export function foundIn<T>(set: T[], compareBy: keyof T) {
-    return (item: T) => set.some((t) => t[compareBy] === item[compareBy]);
+    return (item: T) => set.some(t => t[compareBy] === item[compareBy]);
 }
 
 /**

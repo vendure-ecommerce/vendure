@@ -5,6 +5,8 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     BaseDetailComponent,
     CreateAddressInput,
+    CreateCustomerAddress,
+    CreateCustomerAddressMutation,
     CreateCustomerInput,
     Customer,
     CustomFieldConfig,
@@ -19,7 +21,11 @@ import {
     NotificationService,
     ServerConfigService,
     SortOrder,
+    UpdateCustomer,
+    UpdateCustomerAddress,
+    UpdateCustomerAddressMutation,
     UpdateCustomerInput,
+    UpdateCustomerMutation,
 } from '@vendure/admin-ui/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { EMPTY, forkJoin, from, Observable, Subject } from 'rxjs';
@@ -183,30 +189,31 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             phoneNumber: formValue.phoneNumber,
             customFields,
         };
-        this.dataService.customer.createCustomer(customer, formValue.password).subscribe(
-            data => {
-                this.notificationService.success(_('common.notify-create-success'), {
-                    entity: 'Customer',
-                });
-                if (data.createCustomer.emailAddress && !formValue.password) {
-                    this.notificationService.notify({
-                        message: _('customer.email-verification-sent'),
-                        translationVars: { emailAddress: formValue.emailAddress },
-                        type: 'info',
-                        duration: 10000,
-                    });
+        this.dataService.customer
+            .createCustomer(customer, formValue.password)
+            .subscribe(({ createCustomer }) => {
+                switch (createCustomer.__typename) {
+                    case 'Customer':
+                        this.notificationService.success(_('common.notify-create-success'), {
+                            entity: 'Customer',
+                        });
+                        if (createCustomer.emailAddress && !formValue.password) {
+                            this.notificationService.notify({
+                                message: _('customer.email-verification-sent'),
+                                translationVars: { emailAddress: formValue.emailAddress },
+                                type: 'info',
+                                duration: 10000,
+                            });
+                        }
+                        this.detailForm.markAsPristine();
+                        this.addressDefaultsUpdated = false;
+                        this.changeDetector.markForCheck();
+                        this.router.navigate(['../', createCustomer.id], { relativeTo: this.route });
+                        break;
+                    case 'EmailAddressConflictError':
+                        this.notificationService.error(createCustomer.message);
                 }
-                this.detailForm.markAsPristine();
-                this.addressDefaultsUpdated = false;
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createCustomer.id], { relativeTo: this.route });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-create-error'), {
-                    entity: 'Customer',
-                });
-            },
-        );
+            });
     }
 
     save() {
@@ -214,7 +221,11 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             .pipe(
                 take(1),
                 mergeMap(({ id }) => {
-                    const saveOperations: Array<Observable<any>> = [];
+                    const saveOperations: Array<Observable<
+                        | UpdateCustomer.UpdateCustomer
+                        | CreateCustomerAddress.CreateCustomerAddress
+                        | UpdateCustomerAddress.UpdateCustomerAddress
+                    >> = [];
                     const customerForm = this.detailForm.get('customer');
                     if (customerForm && customerForm.dirty) {
                         const formValue = customerForm.value;
@@ -228,7 +239,11 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                             phoneNumber: formValue.phoneNumber,
                             customFields,
                         };
-                        saveOperations.push(this.dataService.customer.updateCustomer(customer));
+                        saveOperations.push(
+                            this.dataService.customer
+                                .updateCustomer(customer)
+                                .pipe(map(res => res.updateCustomer)),
+                        );
                     }
                     const addressFormArray = this.detailForm.get('addresses') as FormArray;
                     if ((addressFormArray && addressFormArray.dirty) || this.addressDefaultsUpdated) {
@@ -251,14 +266,18 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
                                 };
                                 if (!address.id) {
                                     saveOperations.push(
-                                        this.dataService.customer.createCustomerAddress(id, input),
+                                        this.dataService.customer
+                                            .createCustomerAddress(id, input)
+                                            .pipe(map(res => res.createCustomerAddress)),
                                     );
                                 } else {
                                     saveOperations.push(
-                                        this.dataService.customer.updateCustomerAddress({
-                                            ...input,
-                                            id: address.id,
-                                        }),
+                                        this.dataService.customer
+                                            .updateCustomerAddress({
+                                                ...input,
+                                                id: address.id,
+                                            })
+                                            .pipe(map(res => res.updateCustomerAddress)),
                                     );
                                 }
                             }
@@ -269,13 +288,23 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             )
             .subscribe(
                 data => {
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'Customer',
-                    });
-                    this.detailForm.markAsPristine();
-                    this.addressDefaultsUpdated = false;
-                    this.changeDetector.markForCheck();
-                    this.fetchHistory.next();
+                    for (const result of data) {
+                        switch (result.__typename) {
+                            case 'Customer':
+                            case 'Address':
+                                this.notificationService.success(_('common.notify-update-success'), {
+                                    entity: 'Customer',
+                                });
+                                this.detailForm.markAsPristine();
+                                this.addressDefaultsUpdated = false;
+                                this.changeDetector.markForCheck();
+                                this.fetchHistory.next();
+                                break;
+                            case 'EmailAddressConflictError':
+                                this.notificationService.error(result.message);
+                                break;
+                        }
+                    }
                 },
                 err => {
                     this.notificationService.error(_('common.notify-update-error'), {

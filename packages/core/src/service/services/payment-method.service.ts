@@ -11,6 +11,7 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
+import { RefundStateTransitionError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
@@ -108,7 +109,7 @@ export class PaymentMethodService {
         order: Order,
         items: OrderItem[],
         payment: Payment,
-    ): Promise<Refund> {
+    ): Promise<Refund | RefundStateTransitionError> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
         const refundAmount = itemAmount + input.shipping + input.adjustment;
@@ -138,7 +139,11 @@ export class PaymentMethodService {
         refund = await this.connection.getRepository(ctx, Refund).save(refund);
         if (createRefundResult) {
             const fromState = refund.state;
-            await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+            try {
+                await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+            } catch (e) {
+                return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+            }
             await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
             this.eventBus.publish(
                 new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
     AssetType,
     CreateAssetInput,
+    CreateAssetResult,
     DeletionResponse,
     DeletionResult,
     UpdateAssetInput,
@@ -14,7 +15,9 @@ import path from 'path';
 import { Stream } from 'stream';
 
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, UserInputError } from '../../common/error/errors';
+import { isGraphQlErrorResult } from '../../common/error/error-result';
+import { InternalServerError } from '../../common/error/errors';
+import { MimeTypeError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { getAssetType, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -149,24 +152,18 @@ export class AssetService {
         return entity;
     }
 
-    async validateInputMimeTypes(inputs: CreateAssetInput[]): Promise<void> {
-        for (const input of inputs) {
-            const { mimetype } = await input.file;
-            if (!this.validateMimeType(mimetype)) {
-                throw new UserInputError('error.mime-type-not-permitted', { mimetype });
-            }
-        }
-    }
-
     /**
      * Create an Asset based on a file uploaded via the GraphQL API.
      */
-    async create(ctx: RequestContext, input: CreateAssetInput): Promise<Asset> {
+    async create(ctx: RequestContext, input: CreateAssetInput): Promise<CreateAssetResult> {
         const { createReadStream, filename, mimetype } = await input.file;
         const stream = createReadStream();
-        const asset = await this.createAssetInternal(ctx, stream, filename, mimetype);
-        this.eventBus.publish(new AssetEvent(ctx, asset, 'created'));
-        return asset;
+        const result = await this.createAssetInternal(ctx, stream, filename, mimetype);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
+        return result;
     }
 
     async update(ctx: RequestContext, input: UpdateAssetInput): Promise<Asset> {
@@ -228,7 +225,7 @@ export class AssetService {
     /**
      * Create an Asset from a file stream created during data import.
      */
-    async createFromFileStream(stream: ReadStream): Promise<Asset> {
+    async createFromFileStream(stream: ReadStream): Promise<CreateAssetResult> {
         const filePath = stream.path;
         if (typeof filePath === 'string') {
             const filename = path.basename(filePath);
@@ -244,10 +241,10 @@ export class AssetService {
         stream: Stream,
         filename: string,
         mimetype: string,
-    ): Promise<Asset> {
+    ): Promise<CreateAssetResult> {
         const { assetOptions } = this.configService;
         if (!this.validateMimeType(mimetype)) {
-            throw new UserInputError('error.mime-type-not-permitted', { mimetype });
+            return new MimeTypeError(filename, mimetype);
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
         const sourceFileName = await this.getSourceFileName(filename);
