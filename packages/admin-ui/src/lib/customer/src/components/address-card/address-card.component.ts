@@ -4,11 +4,15 @@ import {
     Component,
     EventEmitter,
     Input,
+    OnChanges,
     OnInit,
     Output,
+    SimpleChanges,
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CustomFieldConfig, GetAvailableCountries, ModalService } from '@vendure/admin-ui/core';
+import { BehaviorSubject } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 import { AddressDetailDialogComponent } from '../address-detail-dialog/address-detail-dialog.component';
 
@@ -18,7 +22,7 @@ import { AddressDetailDialogComponent } from '../address-detail-dialog/address-d
     styleUrls: ['./address-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressCardComponent implements OnInit {
+export class AddressCardComponent implements OnInit, OnChanges {
     @Input() addressForm: FormGroup;
     @Input() customFields: CustomFieldConfig;
     @Input() availableCountries: GetAvailableCountries.Items[] = [];
@@ -26,13 +30,29 @@ export class AddressCardComponent implements OnInit {
     @Input() isDefaultShipping: string;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
     @Output() setAsDefaultBilling = new EventEmitter<string>();
+    private dataDependenciesPopulated = new BehaviorSubject<boolean>(false);
 
     constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         const streetLine1 = this.addressForm.get('streetLine1') as FormControl;
+        // Make the address dialog display automatically if there is no address line
+        // as is the case when adding a new address.
         if (!streetLine1.value) {
-            this.editAddress();
+            this.dataDependenciesPopulated
+                .pipe(
+                    filter(value => value),
+                    take(1),
+                )
+                .subscribe(() => {
+                    this.editAddress();
+                });
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (this.customFields != null && this.availableCountries != null) {
+            this.dataDependenciesPopulated.next(true);
         }
     }
 
