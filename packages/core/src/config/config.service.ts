@@ -59,7 +59,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.defaultLanguageCode;
     }
 
-    get entityIdStrategy(): EntityIdStrategy {
+    get entityIdStrategy(): EntityIdStrategy<any> {
         return this.activeConfig.entityIdStrategy;
     }
 

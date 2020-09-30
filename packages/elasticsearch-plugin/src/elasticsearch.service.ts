@@ -1,4 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
+import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
@@ -50,8 +50,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     onModuleInit(): any {
         const { host, port } = this.options;
+        const node = this.options.clientOptions?.node ?? `${host}:${port}`;
         this.client = new Client({
-            node: `${host}:${port}`,
+            node,
+            // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
+            // which looks like possibly a TS/definitions bug.
+            ...(this.options.clientOptions as any),
         });
     }
 

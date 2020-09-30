@@ -730,7 +730,7 @@ export interface VendureConfig {
      * entities via the API. The default uses a simple auto-increment integer
      * strategy.
      *
-     * @default new AutoIncrementIdStrategy()
+     * @default AutoIncrementIdStrategy
      */
     entityIdStrategy?: EntityIdStrategy<any>;
     /**
