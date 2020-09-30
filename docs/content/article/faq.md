@@ -41,6 +41,6 @@ We're not yet offering general support packages, but if you are planning a Vendu
 
 **No**, out-of-the box Vendure does not support multi-vendor. We have a [Channels feature]({{< relref "channels" >}}) which allows a single vendor to define multiple sales channels. 
 
-It _would_ be possible to add multi-vendor support by way of a plugin, but bear in mind that this would entail a fair amount of custom development.
+Currently there is ongoing work by community contributors to put in place the internal infrastructure to support multi-vendor, but as of this writing (September 2020) it is not yet considered complete. It _would_ be possible to add multi-vendor support by way of a plugin, but bear in mind that this would entail a fair amount of custom development.
 
-An official multi-vendor plugin is under consideration for after the v1.0 release.
+
