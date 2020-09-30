@@ -23,6 +23,15 @@ For a production Vendure server, there are a few security-related points to cons
 * Set the [Superadmin credentials]({{< relref "auth-options" >}}#superadmincredentials) to something other than the default.
 * Consider taking steps to harden your GraphQL APIs against DOS attacks. Use the [ApiOptions]({{< relref "api-options" >}}) to set up appropriate Express middleware for things like [request timeouts](https://github.com/expressjs/express/issues/3330) and [rate limits](https://www.npmjs.com/package/express-rate-limit). A tool such as [graphql-query-complexity](https://github.com/slicknode/graphql-query-complexity) can be used to mitigate resource-intensive GraphQL queries. 
 * You may wish to restrict the Admin API to only be accessed from trusted IPs. This could be achieved for instance by configuring an nginx reverse proxy that sits in front of the Vendure server.
+* By default, Vendure uses auto-increment integer IDs as entity primary keys. While easier to work with in development, sequential primary keys can leak information such as the number of orders or customers in the system. For this reason you should consider using the [UuidIdStrategy]({{< relref "entity-id-strategy" >}}#uuididstrategy) for production.
+  ```TypeScript
+  import { UuidIdStrategy, VendureConfig } from '@vendure/core';
+  
+  export const config: VendureConfig = {
+    entityIdStrategy: new UuidIdStrategy(),
+    // ...
+  }
+  ```
 
 ## Health/Readiness Checks
 

@@ -6,10 +6,14 @@ export type PrimaryKeyType<T> = T extends 'uuid' ? string : T extends 'increment
  * @description
  * The EntityIdStrategy determines how entity IDs are generated and stored in the
  * database, as well as how they are transformed when being passed from the API to the
- * service layer.
+ * service layer and vice versa.
  *
- * @docsCategory entities
- * @docsPage Entity Configuration
+ * Vendure ships with two strategies: {@link AutoIncrementIdStrategy} and {@link UuidIdStrategy},
+ * but custom strategies can be used, e.g. to apply some custom encoding to the ID before exposing
+ * it in the GraphQL API.
+ *
+ * @docsCategory configuration
+ * @docsPage EntityIdStrategy
  * */
 export interface EntityIdStrategy<T extends 'increment' | 'uuid'> extends InjectableStrategy {
     /**
