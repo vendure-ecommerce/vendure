@@ -1,4 +1,4 @@
-import { Client } from '@elastic/elasticsearch';
+import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
@@ -50,8 +50,12 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     onModuleInit(): any {
         const { host, port } = this.options;
+        const node = this.options.clientOptions?.node ?? `${host}:${port}`;
         this.client = new Client({
-            node: `${host}:${port}`,
+            node,
+            // `any` cast is there due to a strange error "Property '[Symbol.iterator]' is missing in type... URLSearchParams"
+            // which looks like possibly a TS/definitions bug.
+            ...(this.options.clientOptions as any),
         });
     }
 
@@ -105,7 +109,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map((hit) => this.mapProductToSearchResult(hit)),
+                items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         } else {
@@ -115,7 +119,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 body: elasticSearchBody,
             });
             return {
-                items: body.hits.hits.map((hit) => this.mapVariantToSearchResult(hit)),
+                items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
                 totalItems: body.hits.total.value,
             };
         }
@@ -155,11 +159,11 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
         const facetValues = await this.facetValueService.findByIds(
-            buckets.map((b) => b.key),
+            buckets.map(b => b.key),
             ctx.languageCode,
         );
         return facetValues.map((facetValue, index) => {
-            const bucket = buckets.find((b) => b.key.toString() === facetValue.id.toString());
+            const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
             return {
                 facetValue,
                 count: bucket ? bucket.doc_count : 0,
@@ -233,8 +237,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 min: aggregations.minPriceWithTax.value || 0,
                 max: aggregations.maxPriceWithTax.value || 0,
             },
-            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
-            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter((x) => 0 < x.count),
+            buckets: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
+            bucketsWithTax: aggregations.prices.buckets.map(mapPriceBuckets).filter(x => 0 < x.count),
         };
     }
 
