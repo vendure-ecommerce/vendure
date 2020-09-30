@@ -11,7 +11,7 @@ const ID_KEYS = ['id'];
  * (ProductService etc) all entity IDs are in the form used as the primary key in the database.
  */
 export class IdCodec {
-    constructor(private entityIdStrategy: EntityIdStrategy) {}
+    constructor(private entityIdStrategy: EntityIdStrategy<any>) {}
 
     /**
      * Decode an id from the client into the format used as the database primary key.
