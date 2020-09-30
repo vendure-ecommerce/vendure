@@ -5,6 +5,7 @@ import {
     NativeAuthenticationMethod,
     OrderStateTransitionEvent,
     PasswordResetEvent,
+    ShippingMethod,
 } from '@vendure/core';
 
 import { EmailEventHandler } from './event-handler';
@@ -19,10 +20,19 @@ import {
 export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
     .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
+    .loadData(async context => {
+        let shippingMethod: ShippingMethod | undefined;
+        if (!context.event.order.shippingMethod && context.event.order.shippingMethodId) {
+            shippingMethod = await context.connection
+                .getRepository(ShippingMethod)
+                .findOne(context.event.order.shippingMethodId);
+        }
+        return { shippingMethod };
+    })
     .setRecipient(event => event.order.customer!.emailAddress)
     .setFrom(`{{ fromAddress }}`)
     .setSubject(`Order confirmation for #{{ order.code }}`)
-    .setTemplateVars(event => ({ order: event.order }))
+    .setTemplateVars(event => ({ order: event.order, shippingMethod: event.data.shippingMethod }))
     .setMockEvent(mockOrderStateTransitionEvent);
 
 export const emailVerificationHandler = new EmailEventListener('email-verification')
