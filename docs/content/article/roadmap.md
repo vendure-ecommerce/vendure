@@ -11,13 +11,13 @@ Here is a list of some of the main outstanding tasks that are planned for the v1
 * Complete the Channels implementation
 * Back order handling
 * Administrator creation & editing of orders
-* Custom authentication support
+* ~~Custom authentication support~~ ✅
 * Improved promotions support
 * Improved tax calculation support
 * Improved support for running Vendure in cloud environments
 * Performance improvements
 
-We currently hope to **reach v1.0 in the latter half of 2020**. For an up-to-date overview of where we stand, refer to the [GitHub milestones page](https://github.com/vendure-ecommerce/vendure/milestones).
+We currently hope to **reach v1.0 by the end of 2020**. For an up-to-date overview of where we stand, refer to the [GitHub milestones page](https://github.com/vendure-ecommerce/vendure/milestones).
 
 ## Post v1.0
 

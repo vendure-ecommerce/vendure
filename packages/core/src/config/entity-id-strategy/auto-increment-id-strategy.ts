@@ -1,10 +1,14 @@
-import { IntegerIdStrategy } from './entity-id-strategy';
+import { EntityIdStrategy } from './entity-id-strategy';
 
 /**
+ * @description
  * An id strategy which uses auto-increment integers as primary keys
- * for all entities.
+ * for all entities. This is the default strategy used by Vendure.
+ *
+ * @docsCategory configuration
+ * @docsPage EntityIdStrategy
  */
-export class AutoIncrementIdStrategy implements IntegerIdStrategy {
+export class AutoIncrementIdStrategy implements EntityIdStrategy<'increment'> {
     readonly primaryKeyType = 'increment';
     decodeId(id: string): number {
         const asNumber = +id;

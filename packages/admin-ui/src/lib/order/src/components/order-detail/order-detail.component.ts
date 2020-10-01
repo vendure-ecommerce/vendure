@@ -234,7 +234,8 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
     }
 
     cancelOrRefund(order: OrderDetail.Fragment) {
-        if (order.state === 'PaymentAuthorized' || order.active === true) {
+        const isRefundable = this.orderHasSettledPayments(order);
+        if (order.state === 'PaymentAuthorized' || order.active === true || !isRefundable) {
             this.cancelOrder(order);
         } else {
             this.refundOrder(order);
@@ -336,6 +337,10 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                     entity: 'Note',
                 });
             });
+    }
+
+    orderHasSettledPayments(order: OrderDetail.Fragment): boolean {
+        return !!order.payments?.find(p => p.state === 'Settled');
     }
 
     private cancelOrder(order: OrderDetail.Fragment) {

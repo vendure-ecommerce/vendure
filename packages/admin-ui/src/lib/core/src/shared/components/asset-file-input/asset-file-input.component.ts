@@ -51,8 +51,9 @@ export class AssetFileInputComponent implements OnInit {
         this.fitDropZoneToTarget();
     }
 
+    // DragEvent is not supported in Safari, see https://github.com/vendure-ecommerce/vendure/pull/284
     @HostListener('document:dragleave', ['$event'])
-    onDragLeave(event: DragEvent) {
+    onDragLeave(event: any) {
         if (!event.clientX && !event.clientY) {
             this.dragging = false;
         }
@@ -62,15 +63,16 @@ export class AssetFileInputComponent implements OnInit {
      * Preventing this event is required to make dropping work.
      * See https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API#Define_a_drop_zone
      */
-    onDragOver(event: DragEvent) {
+    onDragOver(event: any) {
         event.preventDefault();
     }
 
-    onDrop(event: DragEvent) {
+    // DragEvent is not supported in Safari, see https://github.com/vendure-ecommerce/vendure/pull/284
+    onDrop(event: any) {
         event.preventDefault();
         this.dragging = false;
         this.overDropZone = false;
-        const files = Array.from(event.dataTransfer ? event.dataTransfer.items : [])
+        const files = Array.from<DataTransferItem>(event.dataTransfer ? event.dataTransfer.items : [])
             .map(i => i.getAsFile())
             .filter(notNullOrUndefined);
         this.selectFiles.emit(files);

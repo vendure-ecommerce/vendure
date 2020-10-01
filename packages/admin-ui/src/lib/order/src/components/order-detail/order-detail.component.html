@@ -37,7 +37,7 @@
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
                     <ng-container
-                        *ngIf="order.state !== 'PaymentAuthorized' && !order.active; else cancelOnly"
+                        *ngIf="orderHasSettledPayments(order); else cancelOnly"
                     >
                         {{ 'order.refund-and-cancel-order' | translate }}
                     </ng-container>

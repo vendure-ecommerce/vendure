@@ -126,7 +126,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     private toRecord(job: Job<any>): JobRecord {
         return new JobRecord({
-            id: job.id,
+            id: job.id || undefined,
             queueName: job.queueName,
             data: job.data,
             state: job.state,

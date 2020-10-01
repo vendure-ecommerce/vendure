@@ -161,6 +161,13 @@ export class CustomerDetailComponent extends BaseDetailComponent<CustomerWithOrd
             defaultShippingAddress: false,
             defaultBillingAddress: false,
         });
+        if (this.addressCustomFields.length) {
+            const customFieldsGroup = this.formBuilder.group({});
+            for (const fieldDef of this.addressCustomFields) {
+                customFieldsGroup.addControl(fieldDef.name, new FormControl(''));
+            }
+            newAddress.addControl('customFields', customFieldsGroup);
+        }
         addressFormArray.push(newAddress);
     }
 

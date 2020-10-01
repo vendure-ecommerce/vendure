@@ -115,6 +115,11 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         return this.pendingAdjustments || [];
     }
 
+    @Calculated()
+    get totalQuantity(): number {
+        return (this.lines || []).reduce((total, line) => total + line.quantity, 0);
+    }
+
     get promotionAdjustmentsTotal(): number {
         return this.adjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
