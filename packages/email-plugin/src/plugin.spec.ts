@@ -367,8 +367,8 @@ describe('EmailPlugin', () => {
         it('loads async data', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .loadData(async ({ inject }) => {
-                    const service = inject(MockService);
+                .loadData(async ({ injector }) => {
+                    const service = injector.get(MockService);
                     return service.someAsyncMethod();
                 })
                 .setFrom('"test from" <noreply@test.com>')
@@ -398,8 +398,8 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ testData }}!')
                 .setRecipient(() => 'test@test.com')
-                .loadData(async ({ inject }) => {
-                    const service = inject(MockService);
+                .loadData(async ({ injector }) => {
+                    const service = injector.get(MockService);
                     return service.someAsyncMethod();
                 })
                 .setTemplateVars(event => ({ testData: event.data }));
