@@ -23,6 +23,7 @@ import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-proce
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
+import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
@@ -413,8 +414,10 @@ export interface OrderOptions {
      * Note: when using a custom function for Order codes, bear in mind the database limit
      * for string types (e.g. 255 chars for a varchar field in MySQL), and also the need
      * for codes to be unique.
+     *
+     * @default DefaultOrderCodeStrategy
      */
-    generateOrderCode?: (ctx: RequestContext) => string | Promise<string>;
+    orderCodeStrategy?: OrderCodeStrategy;
 }
 
 /**

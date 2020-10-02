@@ -19,6 +19,7 @@ import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
 import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
+import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
 import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
@@ -105,7 +106,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: [],
-        generateOrderCode: () => generatePublicId(),
+        orderCodeStrategy: new DefaultOrderCodeStrategy(),
     },
     paymentOptions: {
         paymentMethodHandlers: [],

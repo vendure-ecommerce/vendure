@@ -276,7 +276,7 @@ export class OrderService {
 
     async create(ctx: RequestContext, userId?: ID): Promise<Order> {
         const newOrder = new Order({
-            code: await this.configService.orderOptions.generateOrderCode(ctx),
+            code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
             couponCodes: [],
