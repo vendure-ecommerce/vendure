@@ -173,17 +173,15 @@ Also see the docs for [WorkerService]({{< relref "worker-service" >}}).
 
 ```TypeScript
 // order-processing.controller.ts
-import { asyncObservable, ID, Order } from '@vendure/core';
+import { asyncObservable, ID, Order, TransactionalConnection } from '@vendure/core';
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
 import { ProcessOrderMessage } from './process-order-message';
 
 @Controller()
 class OrderProcessingController {
 
-  constructor(@InjectConnection() private connection: Connection) {}
+  constructor(private connection: TransactionalConnection) {}
 
   @MessagePattern(ProcessOrderMessage.pattern)
   async processOrder({ orderId }: ProcessOrderMessage['data']) {
@@ -272,9 +270,7 @@ The resolver just defines how to handle the new `addVideoToProduct` mutation, de
 ```TypeScript
 // product-video.service.ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
-import { Connection } from 'typeorm';
-import { JobQueue, JobQueueService, ID, Product } from '@vendure/core';
+import { JobQueue, JobQueueService, ID, Product, TransactionalConnection } from '@vendure/core';
 import { transcode } from 'third-party-video-sdk'; 
 
 let jobQueue: JobQueue<{ productId: ID; videoUrl: string; }>;
@@ -283,7 +279,7 @@ let jobQueue: JobQueue<{ productId: ID; videoUrl: string; }>;
 class ProductVideoService implements OnModuleInit { 
   
   constructor(private jobQueueService: JobQueueService, 
-              @InjectConnection() private connection: Connection) {}
+              private connection: TransactionalConnection) {}
 
   onModuleInit() {
     // This check ensures that only a single JobQueue is created, even if this
