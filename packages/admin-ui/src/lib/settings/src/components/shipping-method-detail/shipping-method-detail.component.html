@@ -51,7 +51,7 @@
                 (remove)="selectedChecker = null"
                 formControlName="checker"
             ></vdr-configurable-input>
-            <div *ngIf="!selectedChecker">
+            <div *ngIf="!selectedChecker || !selectedCheckerDefinition">
                 <vdr-dropdown>
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
@@ -80,7 +80,7 @@
                 (remove)="selectedCalculator = null"
                 formControlName="calculator"
             ></vdr-configurable-input>
-            <div *ngIf="!selectedCalculator">
+            <div *ngIf="!selectedCalculator || !selectedCalculatorDefinition">
                 <vdr-dropdown>
                     <button class="btn btn-outline" vdrDropdownTrigger>
                         <clr-icon shape="plus"></clr-icon>
