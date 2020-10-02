@@ -30,7 +30,8 @@ export class TypescriptDocsRenderer {
             let markdown = '';
             markdown += generateFrontMatter(page.title, 10);
             markdown += `\n# ${page.title}\n`;
-            for (const info of page.declarations) {
+            const declarationsByWeight = page.declarations.sort((a, b) => a.weight - b.weight);
+            for (const info of declarationsByWeight) {
                 switch (info.kind) {
                     case 'interface':
                         markdown += this.renderInterfaceOrClass(info, typeMap, docsUrl);
@@ -170,7 +171,7 @@ export class TypescriptDocsRenderer {
             output += interfaceInfo.extendsClause.getText() + ' ';
         }
         output += `{\n`;
-        output += members.map((member) => `  ${member.fullText}`).join(`\n`);
+        output += members.map(member => `  ${member.fullText}`).join(`\n`);
         output += `\n}\n`;
         output += `\`\`\`\n`;
 
@@ -191,9 +192,9 @@ export class TypescriptDocsRenderer {
         output += `{\n`;
         const renderModifiers = (modifiers: string[]) => (modifiers.length ? modifiers.join(' ') + ' ' : '');
         output += members
-            .map((member) => {
+            .map(member => {
                 if (member.kind === 'method') {
-                    const args = member.parameters.map((p) => this.renderParameter(p, p.type)).join(', ');
+                    const args = member.parameters.map(p => this.renderParameter(p, p.type)).join(', ');
                     if (member.fullText === 'constructor') {
                         return `  constructor(${args})`;
                     } else {
@@ -219,7 +220,7 @@ export class TypescriptDocsRenderer {
         output += `type ${fullText} = `;
         if (members) {
             output += `{\n`;
-            output += members.map((member) => `  ${member.fullText}`).join(`\n`);
+            output += members.map(member => `  ${member.fullText}`).join(`\n`);
             output += `\n}\n`;
         } else {
             output += type.getText() + `\n`;
@@ -236,7 +237,7 @@ export class TypescriptDocsRenderer {
         if (members) {
             output += `{\n`;
             output += members
-                .map((member) => {
+                .map(member => {
                     let line = member.description ? `  // ${member.description}\n` : '';
                     line += `  ${member.fullText}`;
                     return line;
@@ -250,7 +251,7 @@ export class TypescriptDocsRenderer {
 
     private renderFunctionSignature(functionInfo: FunctionInfo, knownTypeMap: TypeMap): string {
         const { fullText, parameters, type } = functionInfo;
-        const args = parameters.map((p) => this.renderParameter(p, p.type)).join(', ');
+        const args = parameters.map(p => this.renderParameter(p, p.type)).join(', ');
         let output = '';
         output += `\`\`\`TypeScript\n`;
         output += `function ${fullText}(${args}): ${type ? type.getText() : 'void'}\n`;
@@ -289,7 +290,7 @@ export class TypescriptDocsRenderer {
                     : '';
             } else {
                 const args = member.parameters
-                    .map((p) => this.renderParameter(p, this.renderType(p.type, knownTypeMap, docsUrl)))
+                    .map(p => this.renderParameter(p, this.renderType(p.type, knownTypeMap, docsUrl)))
                     .join(', ');
                 if (member.fullText === 'constructor') {
                     type = `(${args}) => ${title}`;
@@ -312,7 +313,7 @@ export class TypescriptDocsRenderer {
 
     private renderHeritageClause(clause: HeritageClause, knownTypeMap: TypeMap, docsUrl: string) {
         return (
-            clause.types.map((t) => ` * ${this.renderType(t.getText(), knownTypeMap, docsUrl)}`).join('\n') +
+            clause.types.map(t => ` * ${this.renderType(t.getText(), knownTypeMap, docsUrl)}`).join('\n') +
             '\n\n'
         );
     }
@@ -336,7 +337,7 @@ export class TypescriptDocsRenderer {
         let typeText = type
             .trim()
             // encode HTML entities
-            .replace(/[\u00A0-\u9999<>\&]/gim, (i) => '&#' + i.charCodeAt(0) + ';')
+            .replace(/[\u00A0-\u9999<>\&]/gim, i => '&#' + i.charCodeAt(0) + ';')
             // remove newlines
             .replace(/\n/g, ' ');
 

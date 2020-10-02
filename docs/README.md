@@ -49,6 +49,11 @@ This is required as its presence determines whether the declaration is extracted
 This optional tag can be used to group declarations together onto a single page. This is useful e.g. in the case of utility functions or
 type aliases, which may be considered too trivial to get an entire page to themselves.
 
+##### `@docsWeight`
+
+This optional tag can be used to define the order of definitions on a single page. By default, multiple definitions on a page are sorted alphabetically,
+but this sometimes leaves the "main" definition near the bottom. In this case, the `@docsWeight` tag can promote it to the top (0 is first).
+
 ##### `@description`
 
 This tag specifies the text description of the declaration. It supports markdown, but should not be used for code blocks, which should be tagged with `@example` (see below). Links to other declarations can be made with the `{@link SomeOtherDeclaration}` syntax. Also applies to class/interface members.
