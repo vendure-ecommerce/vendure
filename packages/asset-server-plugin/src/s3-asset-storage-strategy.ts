@@ -114,6 +114,7 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  *
  * @docsCategory asset-server-plugin
  * @docsPage S3AssetStorageStrategy
+ * @docsWeight 0
  */
 export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private AWS: typeof import('aws-sdk');

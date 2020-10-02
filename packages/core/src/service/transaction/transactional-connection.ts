@@ -101,7 +101,7 @@ export class TransactionalConnection {
     /**
      * @description
      * Manually commits any open transaction. Should be very rarely needed, since the {@link Transaction} decorator
-     * and the {@link TransactionInterceptor} take care of this automatically. Use-cases include situations
+     * and the internal TransactionInterceptor take care of this automatically. Use-cases include situations
      * in which the worker thread needs to access changes made in the current transaction, or when using the
      * Transaction decorator in manual mode.
      */

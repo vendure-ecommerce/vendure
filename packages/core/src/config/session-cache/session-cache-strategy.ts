@@ -52,6 +52,7 @@ export type CachedSession = {
  *
  * @docsCategory auth
  * @docsPage SessionCacheStrategy
+ * @docsWeight 0
  */
 export interface SessionCacheStrategy extends InjectableStrategy {
     /**

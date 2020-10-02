@@ -53,7 +53,8 @@ export type OnTransitionStartFn<T extends string, Data> = (
 
 /**
  * @description
- * Called after a transition has taken place.
+ * Called when a transition is prevented and the `onTransitionStart` handler has returned an
+ * error message.
  *
  * @docsCategory StateMachine
  * @docsPage StateMachineConfig
@@ -66,8 +67,7 @@ export type OnTransitionErrorFn<T extends string> = (
 
 /**
  * @description
- * Called when a transition is prevented and the `onTransitionStart` handler has returned an
- * error message.
+ * Called after a transition has taken place.
  *
  * @docsCategory StateMachine
  * @docsPage StateMachineConfig
@@ -84,6 +84,7 @@ export type OnTransitionEndFn<T extends string, Data> = (
  *
  * @docsCategory StateMachine
  * @docsPage StateMachineConfig
+ * @docsWeight 0
  */
 export interface StateMachineConfig<T extends string, Data = undefined> {
     /**

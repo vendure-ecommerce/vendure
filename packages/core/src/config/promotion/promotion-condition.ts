@@ -30,6 +30,7 @@ export type CheckPromotionConditionFn<T extends ConfigArgs> = (
  *
  * @docsCategory promotions
  * @docsPage promotion-condition
+ * @docsWeight 1
  */
 export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     check: CheckPromotionConditionFn<T>;
@@ -44,6 +45,7 @@ export interface PromotionConditionConfig<T extends ConfigArgs> extends Configur
  *
  * @docsCategory promotions
  * @docsPage promotion-condition
+ * @docsWeight 0
  */
 export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     /**

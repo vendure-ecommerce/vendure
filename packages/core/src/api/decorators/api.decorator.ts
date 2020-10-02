@@ -15,13 +15,13 @@ import { getApiType } from '../common/get-api-type';
  * ```TypeScript
  *  \@Query()
  *  getAdministrators(\@Api() apiType: ApiType) {
- *      if (apiType === 'admin') {
- *          // ...
- *      }
+ *    if (apiType === 'admin') {
+ *      // ...
+ *    }
  *  }
  * ```
  * @docsCategory request
- * @docsPage Decorators
+ * @docsPage Api Decorator
  */
 export const Api = createParamDecorator((data, ctx: ExecutionContext) => {
     const info = ctx.getArgByIndex(3);
