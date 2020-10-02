@@ -1,8 +1,8 @@
 ---
-title: "Shipping"
+title: "Shipping & Fulfillment"
 showtoc: true
 ---
-# Shipping
+# Shipping & Fulfillment
 
 Shipping in Vendure is handled by [ShippingMethods]({{< relref "shipping-method" >}}). Multiple ShippingMethods can be set up and then your storefront can query [`eligibleShippingMethods`]({{< relref "/docs/graphql-api/shop/queries" >}}#eligibleshippingmethods) to find out which ones can be applied to the active order.
 
@@ -124,3 +124,25 @@ export const config: VendureConfig = {
   }
 }
 ```
+
+## Fulfillments
+
+Fulfillments represent the actual shipping status of items in an order. Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):
+
+* `Pending` The Fulfillment has been created
+* `Shipped` The Fulfillment has been shipped
+* `Delivered` The Fulfillment has arrived with the customer
+* `Cancelled` The Fulfillment has been cancelled 
+
+These states cover the typical workflow for fulfilling orders. However, it is possible to customize the fulfillment workflow by defining a [CustomFulfillmentProcess]({{< relref "custom-fulfillment-process" >}}) and passing it to your VendureConfig:
+
+```TypeScript
+export const config: VendureConfig = {
+  // ...
+  shippingOptions: {
+    customFulfillmentProcess: [myCustomFulfillmentProcess],
+  },
+};
+```
+
+For a more detailed look at how custom processes are used, see the [Customizing The Order Process guide]({{< relref "customizing-the-order-process" >}}).
