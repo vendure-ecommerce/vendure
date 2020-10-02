@@ -16,7 +16,7 @@ state ShopAPI {
     }
 }
 
-state AdminAPI {
+state AdminAPI #f9c876 {
     state PaymentAuthorized {
         PaymentAuthorized: The payment has been authorized by the
         PaymentAuthorized: payment provider.
@@ -27,12 +27,20 @@ state AdminAPI {
         PaymentSettled: provider, i.e. the transaction is complete.
     }
 
+    state PartiallyShipped {
+        PartiallyShipped: Some, but not all, OrderItems have been shipped to the Customer
+    }
+
+    state Shipped {
+        Shipped: All OrderItems have been shipped to the Customer
+    }
+
     state PartiallyDelivered {
-        PartiallyDelivered: One or more OrderItems have been dispatched to the Customer
+        PartiallyDelivered: Some, but not all, OrderItems have arrived with the Customer
     }
 
     state Delivered #9d9 {
-        Delivered: All OrderItems have been dispatched to the Customer
+        Delivered: All OrderItems have arrived with the Customer
     }
 
 
@@ -45,20 +53,24 @@ state AdminAPI {
 }
 
 
-AddingItems --> ArrangingPayment: transitionOrderToState
-ArrangingPayment --> AddingItems: transitionOrderToState
-ArrangingPayment --> PaymentAuthorized: addPaymentToOrder
-ArrangingPayment -----> PaymentSettled: addPaymentToOrder
-PaymentAuthorized --> PaymentSettled: settlePayment
-PaymentSettled --> Delivered: fulfillOrder
-PaymentSettled --> PartiallyDelivered: fulfillOrder
-PartiallyDelivered --> PartiallyDelivered: fulfillOrder
-PartiallyDelivered --> Delivered: fulfillOrder
+AddingItems -> ArrangingPayment: transitionOrderToState
+ArrangingPayment -> AddingItems: transitionOrderToState
+ArrangingPayment -> PaymentAuthorized: addPaymentToOrder
+ArrangingPayment --> PaymentSettled: addPaymentToOrder
+PaymentAuthorized -> PaymentSettled: settlePayment
+PaymentSettled -> Shipped: addFulfillmentToOrder, transitionFulfillmentToState
+PaymentSettled --> PartiallyShipped: addFulfillmentToOrder, transitionFulfillmentToState
+Shipped --> PartiallyDelivered: transitionFulfillmentToState
+Shipped -> Delivered: transitionFulfillmentToState
+PartiallyShipped --> Shipped: transitionFulfillmentToState
+PartiallyDelivered --> Delivered: transitionFulfillmentToState
 
 PaymentAuthorized --> Cancelled: cancelOrder
-PaymentSettled --> Cancelled: cancelOrder
-PartiallyDelivered --> Cancelled: cancelOrder
-Delivered --> Cancelled: cancelOrder
+PaymentSettled --> Cancelled
+Shipped --> Cancelled
+PartiallyShipped --> Cancelled
+PartiallyDelivered --> Cancelled
+Delivered --> Cancelled
 
 
 
