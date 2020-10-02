@@ -69,6 +69,7 @@
     "PAYMENT_DECLINED_ERROR": "The payment was declined",
     "PAYMENT_FAILED_ERROR": "The payment failed",
     "PAYMENT_ORDER_MISMATCH_ERROR": "The Payment and OrderLines do not belong to the same Order",
+    "PAYMENT_STATE_TRANSITION_ERROR": "Cannot transition Payment from \"{ fromState }\" to \"{ toState }\"",
     "PRODUCT_OPTION_IN_USE_ERROR": "Cannot remove ProductOptionGroup \"{ optionGroupCode }\" as it is used by {productVariantCount, plural, one {1 ProductVariant} other {# ProductVariants}}",
     "QUANTITY_TOO_GREAT_ERROR": "The specified quantity is greater than the available OrderItems",
     "REFUND_ORDER_STATE_ERROR": "Cannot refund an Order in the \"{ orderState }\" state",

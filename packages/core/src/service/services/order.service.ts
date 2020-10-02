@@ -650,7 +650,11 @@ export class OrderService {
             this.eventBus.publish(
                 new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
             );
-            if (payment.amount === payment.order.total) {
+            const orderTotalSettled = payment.amount === payment.order.total;
+            if (
+                orderTotalSettled &&
+                this.orderStateMachine.canTransition(payment.order.state, 'PaymentSettled')
+            ) {
                 const orderTransitionResult = await this.transitionToState(
                     ctx,
                     payment.order.id,
