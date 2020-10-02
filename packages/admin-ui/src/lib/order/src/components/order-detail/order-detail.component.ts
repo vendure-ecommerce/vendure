@@ -15,6 +15,7 @@ import {
     NotificationService,
     Order,
     OrderDetail,
+    OrderLineFragment,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
@@ -194,6 +195,16 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                     this.notificationService.error(settlePayment.message);
             }
         });
+    }
+
+    canAddFulfillment(order: OrderDetail.Fragment): boolean {
+        const allItemsFulfilled = order.lines
+            .reduce((items, line) => [...items, ...line.items], [] as OrderLineFragment['items'])
+            .every(item => !!item.fulfillment);
+        return (
+            !allItemsFulfilled &&
+            (order.nextStates.includes('Shipped') || order.nextStates.includes('PartiallyShipped'))
+        );
     }
 
     fulfillOrder() {
