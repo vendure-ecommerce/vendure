@@ -49,7 +49,7 @@ export class RequestContextService {
         });
     }
 
-    private getChannelToken(req: Request): string {
+    private getChannelToken(req: Request<any, any, any, { [key: string]: any }>): string {
         const tokenKey = this.configService.apiOptions.channelTokenKey;
         let channelToken = '';
 
@@ -63,7 +63,7 @@ export class RequestContextService {
 
     private getLanguageCode(req: Request, channel: Channel): LanguageCode | undefined {
         return (
-            (req.query && req.query.languageCode) ??
+            (req.query && (req.query.languageCode as LanguageCode)) ??
             channel.defaultLanguageCode ??
             this.configService.defaultLanguageCode
         );

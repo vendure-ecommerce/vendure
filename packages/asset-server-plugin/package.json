@@ -18,21 +18,21 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/express": "^4.0.39",
-    "@types/fs-extra": "^8.0.1",
-    "@types/node-fetch": "^2.5.4",
-    "@types/sharp": "^0.24.0",
+    "@types/express": "^4.17.8",
+    "@types/fs-extra": "^9.0.1",
+    "@types/node-fetch": "^2.5.7",
+    "@types/sharp": "^0.26.0",
     "@vendure/common": "^0.15.0",
     "@vendure/core": "^0.15.2",
-    "aws-sdk": "^2.670.0",
-    "express": "^4.16.4",
-    "node-fetch": "^2.6.0",
-    "rimraf": "^3.0.0",
+    "aws-sdk": "^2.766.0",
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
+    "rimraf": "^3.0.2",
     "typescript": "3.8.3"
   },
   "dependencies": {
-    "file-type": "^14.3.0",
-    "fs-extra": "^9.0.0",
+    "file-type": "^15.0.1",
+    "fs-extra": "^9.0.1",
     "sharp": "0.25.2"
   }
 }

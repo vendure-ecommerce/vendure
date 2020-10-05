@@ -42,7 +42,7 @@
     "concurrently": "^5.0.0",
     "conventional-changelog-core": "^4.0.3",
     "find": "^0.3.0",
-    "graphql": "^14.5.8",
+    "graphql": "14.6.0",
     "graphql-tools": "^4.0.0",
     "husky": "^3.0.0",
     "jest": "^25.2.1",

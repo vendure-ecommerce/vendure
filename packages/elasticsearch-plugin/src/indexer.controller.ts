@@ -538,7 +538,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         try {
             const fullIndexName = this.options.indexPrefix + indexName;
             const { body }: { body: BulkResponseBody } = await this.client.bulk({
-                refresh: 'true',
+                refresh: true,
                 index: fullIndexName,
                 type: indexType,
                 body: operations,

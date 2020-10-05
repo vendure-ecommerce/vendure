@@ -334,7 +334,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
         const node = clientOptions?.node;
         const nodes = clientOptions?.nodes;
         if (nodes) {
-            return [...nodes].join(', ');
+            return [...(Array.isArray(nodes) ? nodes : [nodes])].join(', ');
         }
         if (node) {
             if (Array.isArray(node)) {
