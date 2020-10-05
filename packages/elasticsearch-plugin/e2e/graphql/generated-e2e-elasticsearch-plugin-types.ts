@@ -2463,6 +2463,7 @@ export type Order = Node & {
     promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
+    totalQuantity: Scalars['Int'];
     subTotalBeforeTax: Scalars['Int'];
     /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
     subTotal: Scalars['Int'];
@@ -2499,6 +2500,7 @@ export type OrderFilterParameter = {
     code?: Maybe<StringOperators>;
     state?: Maybe<StringOperators>;
     active?: Maybe<BooleanOperators>;
+    totalQuantity?: Maybe<NumberOperators>;
     subTotalBeforeTax?: Maybe<NumberOperators>;
     subTotal?: Maybe<NumberOperators>;
     currencyCode?: Maybe<StringOperators>;
@@ -2566,6 +2568,7 @@ export type OrderSortParameter = {
     updatedAt?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
     state?: Maybe<SortOrder>;
+    totalQuantity?: Maybe<SortOrder>;
     subTotalBeforeTax?: Maybe<SortOrder>;
     subTotal?: Maybe<SortOrder>;
     shipping?: Maybe<SortOrder>;

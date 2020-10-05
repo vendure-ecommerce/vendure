@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
 import { map, shareReplay, takeUntil } from 'rxjs/operators';
@@ -10,9 +10,10 @@ export type MappingFn<T, R> = (result: R) => { items: T[]; totalItems: number };
 export type OnPageChangeFn<V> = (skip: number, take: number) => V;
 
 /**
- * This is a base class which implements the logic required to fetch and manipluate
+ * This is a base class which implements the logic required to fetch and manipulate
  * a list of data from a query which returns a PaginatedList type.
  */
+@Directive()
 export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
     result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
@@ -24,7 +25,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     private listQueryFn: ListQueryFn<ResultType>;
     private mappingFn: MappingFn<ItemType, ResultType>;
     private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
-        ({ options: { skip, take } } as any)
+        ({ options: { skip, take } } as any);
     private refresh$ = new BehaviorSubject<undefined>(undefined);
 
     constructor(protected router: Router, protected route: ActivatedRoute) {}

@@ -86,6 +86,7 @@ export const TEST_SHIPPING_METHOD = gql`
             quote {
                 price
                 priceWithTax
+                description
                 metadata
             }
         }
