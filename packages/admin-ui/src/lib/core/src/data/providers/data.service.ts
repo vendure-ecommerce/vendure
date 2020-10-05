@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WatchQueryFetchPolicy } from 'apollo-client';
+import { MutationUpdaterFn, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { DocumentNode } from 'graphql';
 import { Observable } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { QueryResult } from '../query-result';
 
 import { AdministratorDataService } from './administrator-data.service';
 import { AuthDataService } from './auth-data.service';
-import { BaseDataService, TypedMutationUpdateFn } from './base-data.service';
+import { BaseDataService } from './base-data.service';
 import { ClientDataService } from './client-data.service';
 import { CollectionDataService } from './collection-data.service';
 import { CustomerDataService } from './customer-data.service';
@@ -63,7 +63,7 @@ export class DataService {
     mutate<T, V = Record<string, any>>(
         mutation: DocumentNode,
         variables?: V,
-        update?: TypedMutationUpdateFn<T>,
+        update?: MutationUpdaterFn<T>,
     ): Observable<T> {
         return this.baseDataService.mutate(mutation, variables, update);
     }

@@ -125,7 +125,7 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
                     plugins: [disableTsLintPlugin, 'fragment-matcher'],
-                    config,
+                    config: { ...config, apolloClientVersion: 3 },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],

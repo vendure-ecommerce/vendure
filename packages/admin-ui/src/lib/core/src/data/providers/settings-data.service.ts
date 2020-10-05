@@ -1,5 +1,5 @@
+import { FetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
-import { FetchPolicy } from 'apollo-client';
 
 import {
     AddMembersToZone,

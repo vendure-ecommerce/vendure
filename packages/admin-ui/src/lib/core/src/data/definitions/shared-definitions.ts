@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 export const CONFIGURABLE_OPERATION_FRAGMENT = gql`
     fragment ConfigurableOperation on ConfigurableOperation {

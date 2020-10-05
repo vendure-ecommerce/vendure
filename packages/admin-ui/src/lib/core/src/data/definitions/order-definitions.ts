@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
 

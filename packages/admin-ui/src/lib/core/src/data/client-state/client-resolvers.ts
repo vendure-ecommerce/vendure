@@ -1,4 +1,4 @@
-import { InMemoryCache } from 'apollo-cache-inmemory';
+import { InMemoryCache } from '@apollo/client/core';
 
 import {
     GetNetworkStatus,
@@ -11,7 +11,7 @@ import {
     UpdateUserChannels,
     UserStatus,
 } from '../../common/generated-types';
-import { GET_NEWTORK_STATUS, GET_USER_STATUS } from '../definitions/client-definitions';
+import { GET_NEWTORK_STATUS, GET_UI_STATE, GET_USER_STATUS } from '../definitions/client-definitions';
 
 export type ResolverContext = {
     cache: InMemoryCache;
@@ -50,7 +50,7 @@ export const clientResolvers: ResolverDefinition = {
                     activeChannelId,
                 },
             };
-            cache.writeData({ data });
+            cache.writeQuery({ query: GET_USER_STATUS, data });
             return data.userStatus;
         },
         setAsLoggedOut: (_, args, { cache }): GetUserStatus.UserStatus => {
@@ -65,7 +65,7 @@ export const clientResolvers: ResolverDefinition = {
                     activeChannelId: null,
                 },
             };
-            cache.writeData({ data });
+            cache.writeQuery({ query: GET_USER_STATUS, data });
             return data.userStatus;
         },
         setUiLanguage: (_, args: SetUiLanguage.Variables, { cache }): LanguageCode => {
@@ -75,7 +75,7 @@ export const clientResolvers: ResolverDefinition = {
                     language: args.languageCode,
                 },
             };
-            cache.writeData({ data });
+            cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
         },
         setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
@@ -93,7 +93,7 @@ export const clientResolvers: ResolverDefinition = {
                     activeChannelId: activeChannel.id,
                 },
             };
-            cache.writeData({ data });
+            cache.writeQuery({ query: GET_USER_STATUS, data });
             return { ...previous.userStatus, ...data.userStatus };
         },
         updateUserChannels: (_, args: UpdateUserChannels.Variables, { cache }): UserStatus => {
@@ -105,7 +105,7 @@ export const clientResolvers: ResolverDefinition = {
                     channels: args.channels,
                 },
             };
-            cache.writeData({ data });
+            cache.writeQuery({ query: GET_USER_STATUS, data });
             return { ...previous.userStatus, ...data.userStatus };
         },
     },
@@ -120,6 +120,6 @@ function updateRequestsInFlight(cache: InMemoryCache, increment: 1 | -1): number
             inFlightRequests,
         },
     };
-    cache.writeData({ data });
+    cache.writeQuery({ query: GET_NEWTORK_STATUS, data });
     return inFlightRequests;
 }

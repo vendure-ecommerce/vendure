@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 export const REQUEST_STARTED = gql`
     mutation RequestStarted {
@@ -75,6 +75,21 @@ export const GET_UI_STATE = gql`
             language
         }
     }
+`;
+
+export const GET_CLIENT_STATE = gql`
+    query GetClientState {
+        networkStatus @client {
+            inFlightRequests
+        }
+        userStatus @client {
+            ...UserStatus
+        }
+        uiState @client {
+            language
+        }
+    }
+    ${USER_STATUS_FRAGMENT}
 `;
 
 export const SET_ACTIVE_CHANNEL = gql`

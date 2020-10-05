@@ -1,5 +1,5 @@
 import { Injectable, Injector } from '@angular/core';
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 import {
     CustomFieldConfig,

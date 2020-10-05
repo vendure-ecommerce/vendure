@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 import {
     CONFIGURABLE_OPERATION_DEF_FRAGMENT,
