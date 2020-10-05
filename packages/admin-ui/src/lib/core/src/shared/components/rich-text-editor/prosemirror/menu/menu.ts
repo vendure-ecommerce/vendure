@@ -182,7 +182,6 @@ export function buildMenuItems(schema: Schema, modalService: ModalService) {
             label: 'Horizontal rule',
             class: '',
             css: '',
-            execEvent: 'mousedown',
             enable(state) {
                 return canInsert(state, hr);
             },
