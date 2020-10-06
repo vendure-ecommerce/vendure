@@ -11,7 +11,7 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
             amount: order.total,
             state: 'Settled',
             transactionId: '12345',
-            metadata,
+            metadata: { public: metadata },
         };
     },
     settlePayment: order => ({
@@ -32,7 +32,7 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
             amount: order.total,
             state: 'Authorized',
             transactionId: '12345',
-            metadata,
+            metadata: { public: metadata },
         };
     },
     settlePayment: () => {
@@ -87,13 +87,24 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
             amount: order.total,
             state: 'Authorized',
             transactionId: '12345',
-            metadata,
+            metadata: {
+                privateCreatePaymentData: 'secret',
+                public: {
+                    publicCreatePaymentData: 'public',
+                },
+            },
         };
     },
     settlePayment: () => {
         return {
             success: false,
             errorMessage: 'Something went horribly wrong',
+            metadata: {
+                privateSettlePaymentData: 'secret',
+                public: {
+                    publicSettlePaymentData: 'public',
+                },
+            },
         };
     },
 });
@@ -106,7 +117,7 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
             amount: order.total,
             state: 'Declined',
             errorMessage: 'Insufficient funds',
-            metadata,
+            metadata: { public: metadata },
         };
     },
     settlePayment: order => ({

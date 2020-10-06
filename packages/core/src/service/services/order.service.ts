@@ -60,7 +60,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
-import { ListQueryOptions } from '../../common/types/common-types';
+import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Customer } from '../../entity/customer/customer.entity';
@@ -609,10 +609,10 @@ export class OrderService {
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
 
         if (payment.state === 'Error') {
-            return new PaymentFailedError(payment.errorMessage);
+            return new PaymentFailedError(payment.errorMessage || '');
         }
         if (payment.state === 'Declined') {
-            return new PaymentDeclinedError(payment.errorMessage);
+            return new PaymentDeclinedError(payment.errorMessage || '');
         }
 
         if (orderTotalIsCovered(order, 'Settled')) {
@@ -645,7 +645,7 @@ export class OrderService {
                 const transitionError = ctx.translate(e.message, { fromState, toState });
                 return new PaymentStateTransitionError(transitionError, fromState, toState);
             }
-            payment.metadata = { ...payment.metadata, ...settlePaymentResult.metadata };
+            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
             await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
             this.eventBus.publish(
                 new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
@@ -665,6 +665,9 @@ export class OrderService {
                 }
             }
         } else {
+            payment.errorMessage = settlePaymentResult.errorMessage;
+            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
+            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
             return new SettlePaymentError(settlePaymentResult.errorMessage || '');
         }
         return payment;
@@ -1106,5 +1109,16 @@ export class OrderService {
             orders: Array.from(orders.values()),
             items: Array.from(items.values()),
         };
+    }
+
+    private mergePaymentMetadata(m1: PaymentMetadata, m2?: PaymentMetadata): PaymentMetadata {
+        if (!m2) {
+            return m1;
+        }
+        const merged = { ...m1, ...m2 };
+        if (m1.public && m1.public) {
+            merged.public = { ...m1.public, ...m2.public };
+        }
+        return merged;
     }
 }

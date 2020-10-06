@@ -34,6 +34,7 @@ import {
     GetOrderHistory,
     GetOrderList,
     GetOrderListFulfillments,
+    GetOrderWithPayments,
     GetProductWithVariants,
     GetStockMovement,
     HistoryEntryType,
@@ -52,6 +53,9 @@ import {
     AddItemToOrder,
     DeletionResult,
     GetActiveOrder,
+    GetActiveOrderWithPayments,
+    GetOrderByCode,
+    GetOrderByCodeWithPayments,
     TestOrderFragmentFragment,
     UpdatedOrder,
 } from './graphql/generated-e2e-shop-types';
@@ -66,7 +70,14 @@ import {
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
+import {
+    ADD_ITEM_TO_ORDER,
+    GET_ACTIVE_ORDER,
+    GET_ACTIVE_ORDER_WITH_PAYMENTS,
+    GET_ORDER_BY_CODE,
+    GET_ORDER_BY_CODE_WITH_PAYMENTS,
+    TEST_ORDER_WITH_PAYMENTS_FRAGMENT,
+} from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -159,6 +170,9 @@ describe('Orders resolver', () => {
     });
 
     describe('payments', () => {
+        let firstOrderCode: string;
+        let firstOrderId: string;
+
         it('settlePayment fails', async () => {
             await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
             await proceedToArrangingPayment(shopClient);
@@ -185,6 +199,38 @@ describe('Orders resolver', () => {
             });
 
             expect(result.order!.state).toBe('PaymentAuthorized');
+            firstOrderCode = order.code;
+            firstOrderId = order.id;
+        });
+
+        it('public payment metadata available in Shop API', async () => {
+            const { orderByCode } = await shopClient.query<
+                GetOrderByCodeWithPayments.Query,
+                GetOrderByCodeWithPayments.Variables
+            >(GET_ORDER_BY_CODE_WITH_PAYMENTS, { code: firstOrderCode });
+
+            expect(orderByCode?.payments?.[0].metadata).toEqual({
+                public: {
+                    publicCreatePaymentData: 'public',
+                    publicSettlePaymentData: 'public',
+                },
+            });
+        });
+
+        it('public and private payment metadata available in Admin API', async () => {
+            const { order } = await adminClient.query<
+                GetOrderWithPayments.Query,
+                GetOrderWithPayments.Variables
+            >(GET_ORDER_WITH_PAYMENTS, { id: firstOrderId });
+
+            expect(order?.payments?.[0].metadata).toEqual({
+                privateCreatePaymentData: 'secret',
+                privateSettlePaymentData: 'secret',
+                public: {
+                    publicCreatePaymentData: 'public',
+                    publicSettlePaymentData: 'public',
+                },
+            });
         });
 
         it('settlePayment succeeds, onStateTransitionStart called', async () => {
@@ -212,8 +258,10 @@ describe('Orders resolver', () => {
             expect(settlePayment!.state).toBe('Settled');
             // further metadata is combined into existing object
             expect(settlePayment!.metadata).toEqual({
-                baz: 'quux',
                 moreData: 42,
+                public: {
+                    baz: 'quux',
+                },
             });
             expect(onTransitionSpy).toHaveBeenCalledTimes(2);
             expect(onTransitionSpy.mock.calls[1][0]).toBe('Authorized');
@@ -1610,6 +1658,19 @@ export const DELETE_ORDER_NOTE = gql`
         deleteOrderNote(id: $id) {
             result
             message
+        }
+    }
+`;
+
+const GET_ORDER_WITH_PAYMENTS = gql`
+    query GetOrderWithPayments($id: ID!) {
+        order(id: $id) {
+            id
+            payments {
+                id
+                errorMessage
+                metadata
+            }
         }
     }
 `;

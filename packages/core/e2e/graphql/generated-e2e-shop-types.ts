@@ -2925,6 +2925,12 @@ export type GetActiveOrderPaymentsQuery = {
     >;
 };
 
+export type GetOrderByCodeWithPaymentsQueryVariables = Exact<{
+    code: Scalars['String'];
+}>;
+
+export type GetOrderByCodeWithPaymentsQuery = { orderByCode?: Maybe<TestOrderWithPaymentsFragment> };
+
 export type GetNextOrderStatesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetNextOrderStatesQuery = Pick<Query, 'nextOrderStates'>;
@@ -3334,6 +3340,12 @@ export namespace GetActiveOrderPayments {
     export type Payments = NonNullable<
         NonNullable<NonNullable<GetActiveOrderPaymentsQuery['activeOrder']>['payments']>[number]
     >;
+}
+
+export namespace GetOrderByCodeWithPayments {
+    export type Variables = GetOrderByCodeWithPaymentsQueryVariables;
+    export type Query = GetOrderByCodeWithPaymentsQuery;
+    export type OrderByCode = NonNullable<GetOrderByCodeWithPaymentsQuery['orderByCode']>;
 }
 
 export namespace GetNextOrderStates {

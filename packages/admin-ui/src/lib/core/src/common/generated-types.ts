@@ -4396,6 +4396,20 @@ export type GetUiStateQuery = { uiState: (
     & Pick<UiState, 'language'>
   ) };
 
+export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetClientStateQuery = { networkStatus: (
+    { __typename?: 'NetworkStatus' }
+    & Pick<NetworkStatus, 'inFlightRequests'>
+  ), userStatus: (
+    { __typename?: 'UserStatus' }
+    & UserStatusFragment
+  ), uiState: (
+    { __typename?: 'UiState' }
+    & Pick<UiState, 'language'>
+  ) };
+
 export type SetActiveChannelMutationVariables = Exact<{
   channelId: Scalars['ID'];
 }>;
@@ -7075,6 +7089,14 @@ export namespace GetUiState {
   export type Variables = GetUiStateQueryVariables;
   export type Query = GetUiStateQuery;
   export type UiState = (NonNullable<GetUiStateQuery['uiState']>);
+}
+
+export namespace GetClientState {
+  export type Variables = GetClientStateQueryVariables;
+  export type Query = GetClientStateQuery;
+  export type NetworkStatus = (NonNullable<GetClientStateQuery['networkStatus']>);
+  export type UserStatus = (NonNullable<GetClientStateQuery['userStatus']>);
+  export type UiState = (NonNullable<GetClientStateQuery['uiState']>);
 }
 
 export namespace SetActiveChannel {

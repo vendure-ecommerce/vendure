@@ -1,12 +1,11 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
+import { PaymentMetadata } from '../../common/types/common-types';
 import { PaymentState } from '../../service/helpers/payment-state-machine/payment-state';
 import { VendureEntity } from '../base/base.entity';
 import { Order } from '../order/order.entity';
 import { Refund } from '../refund/refund.entity';
-
-export type PaymentMetadata = any;
 
 /**
  * @description
@@ -27,8 +26,8 @@ export class Payment extends VendureEntity {
 
     @Column('varchar') state: PaymentState;
 
-    @Column({ nullable: true })
-    errorMessage: string;
+    @Column({ type: 'varchar', nullable: true })
+    errorMessage: string | undefined;
 
     @Column({ nullable: true })
     transactionId: string;

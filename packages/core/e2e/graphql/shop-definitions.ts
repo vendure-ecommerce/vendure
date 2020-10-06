@@ -510,6 +510,15 @@ export const GET_ACTIVE_ORDER_PAYMENTS = gql`
     }
 `;
 
+export const GET_ORDER_BY_CODE_WITH_PAYMENTS = gql`
+    query GetOrderByCodeWithPayments($code: String!) {
+        orderByCode(code: $code) {
+            ...TestOrderWithPayments
+        }
+    }
+    ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}
+`;
+
 export const GET_NEXT_STATES = gql`
     query GetNextOrderStates {
         nextOrderStates

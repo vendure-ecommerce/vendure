@@ -113,3 +113,9 @@ export interface DateOperators {
     after?: Date;
     between?: DateRange;
 }
+
+export type PaymentMetadata = {
+    [prop: string]: any;
+} & {
+    public?: any;
+};

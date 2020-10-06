@@ -18,7 +18,7 @@ import { PaymentMethodHandler } from '../../config/payment-method/payment-method
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
-import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
@@ -78,12 +78,7 @@ export class PaymentMethodService {
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(
-        ctx: RequestContext,
-        order: Order,
-        method: string,
-        metadata: PaymentMetadata,
-    ): Promise<Payment> {
+    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: any): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
         const initialState = 'Created';

@@ -943,7 +943,7 @@ describe('Shop orders', () => {
                 expect(payment.state).toBe('Declined');
                 expect(payment.transactionId).toBe(null);
                 expect(payment.metadata).toEqual({
-                    foo: 'bar',
+                    public: { foo: 'bar' },
                 });
             });
 
@@ -997,7 +997,7 @@ describe('Shop orders', () => {
                 expect(payment.state).toBe('Settled');
                 expect(payment.transactionId).toBe('12345');
                 expect(payment.metadata).toEqual({
-                    baz: 'quux',
+                    public: { baz: 'quux' },
                 });
             });
 

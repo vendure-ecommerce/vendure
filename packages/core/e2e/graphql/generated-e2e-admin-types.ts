@@ -5035,125 +5035,6 @@ export type GetPromoProductsQuery = {
     };
 };
 
-export type SettlePaymentMutationVariables = Exact<{
-    id: Scalars['ID'];
-}>;
-
-export type SettlePaymentMutation = {
-    settlePayment:
-        | PaymentFragment
-        | Pick<SettlePaymentError, 'errorCode' | 'message' | 'paymentErrorMessage'>
-        | Pick<PaymentStateTransitionError, 'errorCode' | 'message'>
-        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
-
-export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetOrderListFulfillmentsQuery = {
-    orders: {
-        items: Array<
-            Pick<Order, 'id' | 'state'> & {
-                fulfillments?: Maybe<Array<Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'>>>;
-            }
-        >;
-    };
-};
-
-export type GetOrderFulfillmentItemsQueryVariables = Exact<{
-    id: Scalars['ID'];
-}>;
-
-export type GetOrderFulfillmentItemsQuery = {
-    order?: Maybe<Pick<Order, 'id' | 'state'> & { fulfillments?: Maybe<Array<FulfillmentFragment>> }>;
-};
-
-export type CancelOrderMutationVariables = Exact<{
-    input: CancelOrderInput;
-}>;
-
-export type CancelOrderMutation = {
-    cancelOrder:
-        | CanceledOrderFragment
-        | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
-        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
-        | Pick<MultipleOrderError, 'errorCode' | 'message'>
-        | Pick<CancelActiveOrderError, 'errorCode' | 'message'>
-        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type CanceledOrderFragment = Pick<Order, 'id'> & {
-    lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
-};
-
-export type RefundFragment = Pick<
-    Refund,
-    'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
->;
-
-export type RefundOrderMutationVariables = Exact<{
-    input: RefundOrderInput;
-}>;
-
-export type RefundOrderMutation = {
-    refundOrder:
-        | RefundFragment
-        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
-        | Pick<NothingToRefundError, 'errorCode' | 'message'>
-        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>
-        | Pick<MultipleOrderError, 'errorCode' | 'message'>
-        | Pick<PaymentOrderMismatchError, 'errorCode' | 'message'>
-        | Pick<RefundOrderStateError, 'errorCode' | 'message'>
-        | Pick<AlreadyRefundedError, 'errorCode' | 'message'>
-        | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type SettleRefundMutationVariables = Exact<{
-    input: SettleRefundInput;
-}>;
-
-export type SettleRefundMutation = {
-    settleRefund: RefundFragment | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type GetOrderHistoryQueryVariables = Exact<{
-    id: Scalars['ID'];
-    options?: Maybe<HistoryEntryListOptions>;
-}>;
-
-export type GetOrderHistoryQuery = {
-    order?: Maybe<
-        Pick<Order, 'id'> & {
-            history: Pick<HistoryEntryList, 'totalItems'> & {
-                items: Array<
-                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                        administrator?: Maybe<Pick<Administrator, 'id'>>;
-                    }
-                >;
-            };
-        }
-    >;
-};
-
-export type AddNoteToOrderMutationVariables = Exact<{
-    input: AddNoteToOrderInput;
-}>;
-
-export type AddNoteToOrderMutation = { addNoteToOrder: Pick<Order, 'id'> };
-
-export type UpdateOrderNoteMutationVariables = Exact<{
-    input: UpdateOrderNoteInput;
-}>;
-
-export type UpdateOrderNoteMutation = { updateOrderNote: Pick<HistoryEntry, 'id' | 'data' | 'isPublic'> };
-
-export type DeleteOrderNoteMutationVariables = Exact<{
-    id: Scalars['ID'];
-}>;
-
-export type DeleteOrderNoteMutation = { deleteOrderNote: Pick<DeletionResponse, 'result' | 'message'> };
-
 export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
     options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
     translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
@@ -5500,6 +5381,135 @@ export type DeleteTaxRateMutationVariables = Exact<{
 }>;
 
 export type DeleteTaxRateMutation = { deleteTaxRate: Pick<DeletionResponse, 'result' | 'message'> };
+
+export type SettlePaymentMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type SettlePaymentMutation = {
+    settlePayment:
+        | PaymentFragment
+        | Pick<SettlePaymentError, 'errorCode' | 'message' | 'paymentErrorMessage'>
+        | Pick<PaymentStateTransitionError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
+};
+
+export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
+
+export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetOrderListFulfillmentsQuery = {
+    orders: {
+        items: Array<
+            Pick<Order, 'id' | 'state'> & {
+                fulfillments?: Maybe<Array<Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'method'>>>;
+            }
+        >;
+    };
+};
+
+export type GetOrderFulfillmentItemsQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderFulfillmentItemsQuery = {
+    order?: Maybe<Pick<Order, 'id' | 'state'> & { fulfillments?: Maybe<Array<FulfillmentFragment>> }>;
+};
+
+export type CancelOrderMutationVariables = Exact<{
+    input: CancelOrderInput;
+}>;
+
+export type CancelOrderMutation = {
+    cancelOrder:
+        | CanceledOrderFragment
+        | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
+        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
+        | Pick<MultipleOrderError, 'errorCode' | 'message'>
+        | Pick<CancelActiveOrderError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
+};
+
+export type CanceledOrderFragment = Pick<Order, 'id'> & {
+    lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
+};
+
+export type RefundFragment = Pick<
+    Refund,
+    'id' | 'state' | 'items' | 'transactionId' | 'shipping' | 'total' | 'metadata'
+>;
+
+export type RefundOrderMutationVariables = Exact<{
+    input: RefundOrderInput;
+}>;
+
+export type RefundOrderMutation = {
+    refundOrder:
+        | RefundFragment
+        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
+        | Pick<NothingToRefundError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>
+        | Pick<MultipleOrderError, 'errorCode' | 'message'>
+        | Pick<PaymentOrderMismatchError, 'errorCode' | 'message'>
+        | Pick<RefundOrderStateError, 'errorCode' | 'message'>
+        | Pick<AlreadyRefundedError, 'errorCode' | 'message'>
+        | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
+};
+
+export type SettleRefundMutationVariables = Exact<{
+    input: SettleRefundInput;
+}>;
+
+export type SettleRefundMutation = {
+    settleRefund: RefundFragment | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
+};
+
+export type GetOrderHistoryQueryVariables = Exact<{
+    id: Scalars['ID'];
+    options?: Maybe<HistoryEntryListOptions>;
+}>;
+
+export type GetOrderHistoryQuery = {
+    order?: Maybe<
+        Pick<Order, 'id'> & {
+            history: Pick<HistoryEntryList, 'totalItems'> & {
+                items: Array<
+                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
+                        administrator?: Maybe<Pick<Administrator, 'id'>>;
+                    }
+                >;
+            };
+        }
+    >;
+};
+
+export type AddNoteToOrderMutationVariables = Exact<{
+    input: AddNoteToOrderInput;
+}>;
+
+export type AddNoteToOrderMutation = { addNoteToOrder: Pick<Order, 'id'> };
+
+export type UpdateOrderNoteMutationVariables = Exact<{
+    input: UpdateOrderNoteInput;
+}>;
+
+export type UpdateOrderNoteMutation = { updateOrderNote: Pick<HistoryEntry, 'id' | 'data' | 'isPublic'> };
+
+export type DeleteOrderNoteMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type DeleteOrderNoteMutation = { deleteOrderNote: Pick<DeletionResponse, 'result' | 'message'> };
+
+export type GetOrderWithPaymentsQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderWithPaymentsQuery = {
+    order?: Maybe<
+        Pick<Order, 'id'> & { payments?: Maybe<Array<Pick<Payment, 'id' | 'errorMessage' | 'metadata'>>> }
+    >;
+};
 
 export type DeleteZoneMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6840,124 +6850,6 @@ export namespace GetPromoProducts {
     >;
 }
 
-export namespace SettlePayment {
-    export type Variables = SettlePaymentMutationVariables;
-    export type Mutation = SettlePaymentMutation;
-    export type SettlePayment = NonNullable<SettlePaymentMutation['settlePayment']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<SettlePaymentMutation['settlePayment']>,
-        { __typename?: 'ErrorResult' }
-    >;
-    export type SettlePaymentErrorInlineFragment = DiscriminateUnion<
-        NonNullable<SettlePaymentMutation['settlePayment']>,
-        { __typename?: 'SettlePaymentError' }
-    >;
-}
-
-export namespace Payment {
-    export type Fragment = PaymentFragment;
-}
-
-export namespace GetOrderListFulfillments {
-    export type Variables = GetOrderListFulfillmentsQueryVariables;
-    export type Query = GetOrderListFulfillmentsQuery;
-    export type Orders = NonNullable<GetOrderListFulfillmentsQuery['orders']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<GetOrderListFulfillmentsQuery['orders']>['items']>[number]
-    >;
-    export type Fulfillments = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<NonNullable<GetOrderListFulfillmentsQuery['orders']>['items']>[number]
-            >['fulfillments']
-        >[number]
-    >;
-}
-
-export namespace GetOrderFulfillmentItems {
-    export type Variables = GetOrderFulfillmentItemsQueryVariables;
-    export type Query = GetOrderFulfillmentItemsQuery;
-    export type Order = NonNullable<GetOrderFulfillmentItemsQuery['order']>;
-    export type Fulfillments = NonNullable<
-        NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[number]
-    >;
-}
-
-export namespace CancelOrder {
-    export type Variables = CancelOrderMutationVariables;
-    export type Mutation = CancelOrderMutation;
-    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<CancelOrderMutation['cancelOrder']>,
-        { __typename?: 'ErrorResult' }
-    >;
-}
-
-export namespace CanceledOrder {
-    export type Fragment = CanceledOrderFragment;
-    export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
-    >;
-}
-
-export namespace Refund {
-    export type Fragment = RefundFragment;
-}
-
-export namespace RefundOrder {
-    export type Variables = RefundOrderMutationVariables;
-    export type Mutation = RefundOrderMutation;
-    export type RefundOrder = NonNullable<RefundOrderMutation['refundOrder']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<RefundOrderMutation['refundOrder']>,
-        { __typename?: 'ErrorResult' }
-    >;
-}
-
-export namespace SettleRefund {
-    export type Variables = SettleRefundMutationVariables;
-    export type Mutation = SettleRefundMutation;
-    export type SettleRefund = NonNullable<SettleRefundMutation['settleRefund']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<SettleRefundMutation['settleRefund']>,
-        { __typename?: 'ErrorResult' }
-    >;
-}
-
-export namespace GetOrderHistory {
-    export type Variables = GetOrderHistoryQueryVariables;
-    export type Query = GetOrderHistoryQuery;
-    export type Order = NonNullable<GetOrderHistoryQuery['order']>;
-    export type History = NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
-    >;
-    export type Administrator = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
-        >['administrator']
-    >;
-}
-
-export namespace AddNoteToOrder {
-    export type Variables = AddNoteToOrderMutationVariables;
-    export type Mutation = AddNoteToOrderMutation;
-    export type AddNoteToOrder = NonNullable<AddNoteToOrderMutation['addNoteToOrder']>;
-}
-
-export namespace UpdateOrderNote {
-    export type Variables = UpdateOrderNoteMutationVariables;
-    export type Mutation = UpdateOrderNoteMutation;
-    export type UpdateOrderNote = NonNullable<UpdateOrderNoteMutation['updateOrderNote']>;
-}
-
-export namespace DeleteOrderNote {
-    export type Variables = DeleteOrderNoteMutationVariables;
-    export type Mutation = DeleteOrderNoteMutation;
-    export type DeleteOrderNote = NonNullable<DeleteOrderNoteMutation['deleteOrderNote']>;
-}
-
 export namespace ProductOptionGroup {
     export type Fragment = ProductOptionGroupFragment;
     export type Options = NonNullable<NonNullable<ProductOptionGroupFragment['options']>[number]>;
@@ -7363,6 +7255,133 @@ export namespace DeleteTaxRate {
     export type Variables = DeleteTaxRateMutationVariables;
     export type Mutation = DeleteTaxRateMutation;
     export type DeleteTaxRate = NonNullable<DeleteTaxRateMutation['deleteTaxRate']>;
+}
+
+export namespace SettlePayment {
+    export type Variables = SettlePaymentMutationVariables;
+    export type Mutation = SettlePaymentMutation;
+    export type SettlePayment = NonNullable<SettlePaymentMutation['settlePayment']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SettlePaymentMutation['settlePayment']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type SettlePaymentErrorInlineFragment = DiscriminateUnion<
+        NonNullable<SettlePaymentMutation['settlePayment']>,
+        { __typename?: 'SettlePaymentError' }
+    >;
+}
+
+export namespace Payment {
+    export type Fragment = PaymentFragment;
+}
+
+export namespace GetOrderListFulfillments {
+    export type Variables = GetOrderListFulfillmentsQueryVariables;
+    export type Query = GetOrderListFulfillmentsQuery;
+    export type Orders = NonNullable<GetOrderListFulfillmentsQuery['orders']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetOrderListFulfillmentsQuery['orders']>['items']>[number]
+    >;
+    export type Fulfillments = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderListFulfillmentsQuery['orders']>['items']>[number]
+            >['fulfillments']
+        >[number]
+    >;
+}
+
+export namespace GetOrderFulfillmentItems {
+    export type Variables = GetOrderFulfillmentItemsQueryVariables;
+    export type Query = GetOrderFulfillmentItemsQuery;
+    export type Order = NonNullable<GetOrderFulfillmentItemsQuery['order']>;
+    export type Fulfillments = NonNullable<
+        NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[number]
+    >;
+}
+
+export namespace CancelOrder {
+    export type Variables = CancelOrderMutationVariables;
+    export type Mutation = CancelOrderMutation;
+    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CancelOrderMutation['cancelOrder']>,
+        { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace CanceledOrder {
+    export type Fragment = CanceledOrderFragment;
+    export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
+    >;
+}
+
+export namespace Refund {
+    export type Fragment = RefundFragment;
+}
+
+export namespace RefundOrder {
+    export type Variables = RefundOrderMutationVariables;
+    export type Mutation = RefundOrderMutation;
+    export type RefundOrder = NonNullable<RefundOrderMutation['refundOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<RefundOrderMutation['refundOrder']>,
+        { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace SettleRefund {
+    export type Variables = SettleRefundMutationVariables;
+    export type Mutation = SettleRefundMutation;
+    export type SettleRefund = NonNullable<SettleRefundMutation['settleRefund']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SettleRefundMutation['settleRefund']>,
+        { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace GetOrderHistory {
+    export type Variables = GetOrderHistoryQueryVariables;
+    export type Query = GetOrderHistoryQuery;
+    export type Order = NonNullable<GetOrderHistoryQuery['order']>;
+    export type History = NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
+    >;
+    export type Administrator = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
+        >['administrator']
+    >;
+}
+
+export namespace AddNoteToOrder {
+    export type Variables = AddNoteToOrderMutationVariables;
+    export type Mutation = AddNoteToOrderMutation;
+    export type AddNoteToOrder = NonNullable<AddNoteToOrderMutation['addNoteToOrder']>;
+}
+
+export namespace UpdateOrderNote {
+    export type Variables = UpdateOrderNoteMutationVariables;
+    export type Mutation = UpdateOrderNoteMutation;
+    export type UpdateOrderNote = NonNullable<UpdateOrderNoteMutation['updateOrderNote']>;
+}
+
+export namespace DeleteOrderNote {
+    export type Variables = DeleteOrderNoteMutationVariables;
+    export type Mutation = DeleteOrderNoteMutation;
+    export type DeleteOrderNote = NonNullable<DeleteOrderNoteMutation['deleteOrderNote']>;
+}
+
+export namespace GetOrderWithPayments {
+    export type Variables = GetOrderWithPaymentsQueryVariables;
+    export type Query = GetOrderWithPaymentsQuery;
+    export type Order = NonNullable<GetOrderWithPaymentsQuery['order']>;
+    export type Payments = NonNullable<
+        NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
+    >;
 }
 
 export namespace DeleteZone {
