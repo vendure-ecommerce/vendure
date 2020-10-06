@@ -10,7 +10,7 @@ import {
 import { Request, Response } from 'express';
 
 import { isGraphQlErrorResult } from '../../../common/error/error-result';
-import { ForbiddenError, UnauthorizedError } from '../../../common/error/errors';
+import { ForbiddenError } from '../../../common/error/errors';
 import { NativeAuthStrategyError as AdminNativeAuthStrategyError } from '../../../common/error/generated-graphql-admin-errors';
 import {
     InvalidCredentialsError,
@@ -47,7 +47,7 @@ export class BaseAuthResolver {
      * Attempts a login given the username and password of a user. If successful, returns
      * the user data and returns the token either in a cookie or in the response body.
      */
-    async login(
+    async baseLogin(
         args: MutationLoginArgs,
         ctx: RequestContext,
         req: Request,

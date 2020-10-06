@@ -18008,11 +18008,6 @@ typeorm@0.2.28:
     yargonaut "^1.1.2"
     yargs "^16.0.3"
 
-typescript@3.8.3:
-  version "3.8.3"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-3.8.3.tgz#409eb8544ea0335711205869ec458ab109ee1061"
-  integrity sha512-MYlEfn5VrLNsgudQTVJeNaQFUAI7DkhnOjdpAp4T+ku1TfQClewlbSuTVHiA+8skNBgaf02TL/kLOvig4y3G8w==
-
 typescript@4.0.2:
   version "4.0.2"
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.0.2.tgz#7ea7c88777c723c681e33bf7988be5d008d05ac2"

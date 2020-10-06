@@ -72,7 +72,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
         if (nativeAuthStrategyError) {
             return nativeAuthStrategyError;
         }
-        return (await super.login(args, ctx, req, res)) as AuthenticationResult;
+        return (await super.baseLogin(args, ctx, req, res)) as AuthenticationResult;
     }
 
     @Transaction()

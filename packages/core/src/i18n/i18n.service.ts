@@ -65,7 +65,7 @@ export class I18nService implements OnModuleInit {
             error.message = translation;
             // We can now safely remove the variables object so that they do not appear in
             // the error returned by the GraphQL API
-            delete originalError.variables;
+            delete (originalError as any).variables;
         }
 
         return error;
