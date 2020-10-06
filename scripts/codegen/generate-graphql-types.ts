@@ -1,10 +1,9 @@
 import { generate } from '@graphql-codegen/cli';
 import fs from 'fs';
-import { buildClientSchema, graphqlSync, introspectionQuery } from 'graphql';
-import { mergeSchemas } from 'graphql-tools';
+import { buildClientSchema } from 'graphql';
 import path from 'path';
 
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../../packages/common/src/shared-constants';
+import { ADMIN_API_PATH, SHOP_API_PATH } from '../../packages/common/src/shared-constants';
 
 import { downloadIntrospectionSchema } from './download-introspection-schema';
 

@@ -9,7 +9,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ROLE_FRAGMENT } from './graphql/fragments';
 import {
@@ -66,7 +66,7 @@ describe('Role resolver', () => {
                     permissions: ['bad permission' as any],
                 },
             });
-        }, 'Variable "$input" got invalid value "bad permission" at "input.permissions[0]"; Expected type Permission.'),
+        }, 'Variable "$input" got invalid value "bad permission" at "input.permissions[0]"'),
     );
 
     it('createRole with no permissions includes Authenticated', async () => {

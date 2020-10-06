@@ -8,1918 +8,279 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: any;
   /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
 
-export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError;
-
-export type AddNoteToCustomerInput = {
-  id: Scalars['ID'];
-  note: Scalars['String'];
-  isPublic: Scalars['Boolean'];
-};
-
-export type AddNoteToOrderInput = {
-  id: Scalars['ID'];
-  note: Scalars['String'];
-  isPublic: Scalars['Boolean'];
-};
-
-export type Address = Node & {
-  __typename?: 'Address';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  fullName?: Maybe<Scalars['String']>;
-  company?: Maybe<Scalars['String']>;
-  streetLine1: Scalars['String'];
-  streetLine2?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  province?: Maybe<Scalars['String']>;
-  postalCode?: Maybe<Scalars['String']>;
-  country: Country;
-  phoneNumber?: Maybe<Scalars['String']>;
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type Adjustment = {
-  __typename?: 'Adjustment';
-  adjustmentSource: Scalars['String'];
-  type: AdjustmentType;
-  description: Scalars['String'];
-  amount: Scalars['Int'];
-};
-
-export enum AdjustmentType {
-  TAX = 'TAX',
-  PROMOTION = 'PROMOTION',
-  SHIPPING = 'SHIPPING',
-  REFUND = 'REFUND',
-  TAX_REFUND = 'TAX_REFUND',
-  PROMOTION_REFUND = 'PROMOTION_REFUND',
-  SHIPPING_REFUND = 'SHIPPING_REFUND'
-}
-
-export type Administrator = Node & {
-  __typename?: 'Administrator';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  emailAddress: Scalars['String'];
-  user: User;
-};
-
-export type AdministratorFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  firstName?: Maybe<StringOperators>;
-  lastName?: Maybe<StringOperators>;
-  emailAddress?: Maybe<StringOperators>;
-};
-
-export type AdministratorList = PaginatedList & {
-  __typename?: 'AdministratorList';
-  items: Array<Administrator>;
-  totalItems: Scalars['Int'];
-};
-
-export type AdministratorListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<AdministratorSortParameter>;
-  filter?: Maybe<AdministratorFilterParameter>;
-};
-
-export type AdministratorSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  firstName?: Maybe<SortOrder>;
-  lastName?: Maybe<SortOrder>;
-  emailAddress?: Maybe<SortOrder>;
-};
-
-/** Returned if an attempting to refund an OrderItem which has already been refunded */
-export type AlreadyRefundedError = ErrorResult & {
-  __typename?: 'AlreadyRefundedError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  refundId: Scalars['ID'];
-};
-
-export type Asset = Node & {
-  __typename?: 'Asset';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  type: AssetType;
-  fileSize: Scalars['Int'];
-  mimeType: Scalars['String'];
-  width: Scalars['Int'];
-  height: Scalars['Int'];
-  source: Scalars['String'];
-  preview: Scalars['String'];
-  focalPoint?: Maybe<Coordinate>;
-};
-
-export type AssetFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  name?: Maybe<StringOperators>;
-  type?: Maybe<StringOperators>;
-  fileSize?: Maybe<NumberOperators>;
-  mimeType?: Maybe<StringOperators>;
-  width?: Maybe<NumberOperators>;
-  height?: Maybe<NumberOperators>;
-  source?: Maybe<StringOperators>;
-  preview?: Maybe<StringOperators>;
-};
-
-export type AssetList = PaginatedList & {
-  __typename?: 'AssetList';
-  items: Array<Asset>;
-  totalItems: Scalars['Int'];
-};
-
-export type AssetListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<AssetSortParameter>;
-  filter?: Maybe<AssetFilterParameter>;
-};
-
-export type AssetSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  fileSize?: Maybe<SortOrder>;
-  mimeType?: Maybe<SortOrder>;
-  width?: Maybe<SortOrder>;
-  height?: Maybe<SortOrder>;
-  source?: Maybe<SortOrder>;
-  preview?: Maybe<SortOrder>;
-};
-
-export enum AssetType {
-  IMAGE = 'IMAGE',
-  VIDEO = 'VIDEO',
-  BINARY = 'BINARY'
-}
-
-export type AssignProductsToChannelInput = {
-  productIds: Array<Scalars['ID']>;
-  channelId: Scalars['ID'];
-  priceFactor?: Maybe<Scalars['Float']>;
-};
-
-export type AuthenticationInput = {
-  native?: Maybe<NativeAuthInput>;
-};
-
-export type AuthenticationMethod = Node & {
-  __typename?: 'AuthenticationMethod';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  strategy: Scalars['String'];
-};
-
-export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
-
-export type BooleanCustomFieldConfig = CustomField & {
-  __typename?: 'BooleanCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-};
-
-export type BooleanOperators = {
-  eq?: Maybe<Scalars['Boolean']>;
-};
-
-/** Returned if an attempting to cancel lines from an Order which is still active */
-export type CancelActiveOrderError = ErrorResult & {
-  __typename?: 'CancelActiveOrderError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  orderState: Scalars['String'];
-};
-
-export type Cancellation = Node & StockMovement & {
-  __typename?: 'Cancellation';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  productVariant: ProductVariant;
-  type: StockMovementType;
-  quantity: Scalars['Int'];
-  orderLine: OrderLine;
-};
-
-export type CancelOrderInput = {
-  /** The id of the order to be cancelled */
-  orderId: Scalars['ID'];
-  /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
-  lines?: Maybe<Array<OrderLineInput>>;
-  reason?: Maybe<Scalars['String']>;
-};
-
-export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
-
-export type Channel = Node & {
-  __typename?: 'Channel';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  code: Scalars['String'];
-  token: Scalars['String'];
-  defaultTaxZone?: Maybe<Zone>;
-  defaultShippingZone?: Maybe<Zone>;
-  defaultLanguageCode: LanguageCode;
-  currencyCode: CurrencyCode;
-  pricesIncludeTax: Scalars['Boolean'];
-};
-
-/**
- * Returned when the default LanguageCode of a Channel is no longer found in the `availableLanguages`
- * of the GlobalSettings
- */
-export type ChannelDefaultLanguageError = ErrorResult & {
-  __typename?: 'ChannelDefaultLanguageError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  language: Scalars['String'];
-  channelCode: Scalars['String'];
-};
-
-export type Collection = Node & {
-  __typename?: 'Collection';
-  isPrivate: Scalars['Boolean'];
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode?: Maybe<LanguageCode>;
-  name: Scalars['String'];
-  slug: Scalars['String'];
-  breadcrumbs: Array<CollectionBreadcrumb>;
-  position: Scalars['Int'];
-  description: Scalars['String'];
-  featuredAsset?: Maybe<Asset>;
-  assets: Array<Asset>;
-  parent?: Maybe<Collection>;
-  children?: Maybe<Array<Collection>>;
-  filters: Array<ConfigurableOperation>;
-  translations: Array<CollectionTranslation>;
-  productVariants: ProductVariantList;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-
-export type CollectionProductVariantsArgs = {
-  options?: Maybe<ProductVariantListOptions>;
-};
-
-export type CollectionBreadcrumb = {
-  __typename?: 'CollectionBreadcrumb';
-  id: Scalars['ID'];
-  name: Scalars['String'];
-  slug: Scalars['String'];
-};
-
-export type CollectionFilterParameter = {
-  isPrivate?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  slug?: Maybe<StringOperators>;
-  position?: Maybe<NumberOperators>;
-  description?: Maybe<StringOperators>;
-};
-
-export type CollectionList = PaginatedList & {
-  __typename?: 'CollectionList';
-  items: Array<Collection>;
-  totalItems: Scalars['Int'];
-};
-
-export type CollectionListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CollectionSortParameter>;
-  filter?: Maybe<CollectionFilterParameter>;
-};
-
-export type CollectionSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  slug?: Maybe<SortOrder>;
-  position?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
-};
-
-export type CollectionTranslation = {
-  __typename?: 'CollectionTranslation';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  name: Scalars['String'];
-  slug: Scalars['String'];
-  description: Scalars['String'];
-};
-
-export type ConfigArg = {
-  __typename?: 'ConfigArg';
-  name: Scalars['String'];
-  value: Scalars['String'];
-};
-
-export type ConfigArgDefinition = {
-  __typename?: 'ConfigArgDefinition';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  ui?: Maybe<Scalars['JSON']>;
-};
-
-export type ConfigArgInput = {
-  name: Scalars['String'];
-  value: Scalars['String'];
-};
-
-export type ConfigurableOperation = {
-  __typename?: 'ConfigurableOperation';
-  code: Scalars['String'];
-  args: Array<ConfigArg>;
-};
-
-export type ConfigurableOperationDefinition = {
-  __typename?: 'ConfigurableOperationDefinition';
-  code: Scalars['String'];
-  args: Array<ConfigArgDefinition>;
-  description: Scalars['String'];
-};
-
-export type ConfigurableOperationInput = {
-  code: Scalars['String'];
-  arguments: Array<ConfigArgInput>;
-};
-
-export type Coordinate = {
-  __typename?: 'Coordinate';
-  x: Scalars['Float'];
-  y: Scalars['Float'];
-};
-
-export type CoordinateInput = {
-  x: Scalars['Float'];
-  y: Scalars['Float'];
-};
-
-export type Country = Node & {
-  __typename?: 'Country';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  code: Scalars['String'];
-  name: Scalars['String'];
-  enabled: Scalars['Boolean'];
-  translations: Array<CountryTranslation>;
-};
-
-export type CountryFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  code?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  enabled?: Maybe<BooleanOperators>;
-};
-
-export type CountryList = PaginatedList & {
-  __typename?: 'CountryList';
-  items: Array<Country>;
-  totalItems: Scalars['Int'];
-};
-
-export type CountryListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CountrySortParameter>;
-  filter?: Maybe<CountryFilterParameter>;
-};
-
-export type CountrySortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-};
-
-export type CountryTranslation = {
-  __typename?: 'CountryTranslation';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  name: Scalars['String'];
-};
-
-export type CountryTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-};
-
-export type CreateAddressInput = {
-  fullName?: Maybe<Scalars['String']>;
-  company?: Maybe<Scalars['String']>;
-  streetLine1: Scalars['String'];
-  streetLine2?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  province?: Maybe<Scalars['String']>;
-  postalCode?: Maybe<Scalars['String']>;
-  countryCode: Scalars['String'];
-  phoneNumber?: Maybe<Scalars['String']>;
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateAdministratorInput = {
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  emailAddress: Scalars['String'];
-  password: Scalars['String'];
-  roleIds: Array<Scalars['ID']>;
-};
-
-export type CreateAssetInput = {
-  file: Scalars['Upload'];
-};
-
-export type CreateAssetResult = Asset | MimeTypeError;
-
-export type CreateChannelInput = {
-  code: Scalars['String'];
-  token: Scalars['String'];
-  defaultLanguageCode: LanguageCode;
-  pricesIncludeTax: Scalars['Boolean'];
-  currencyCode: CurrencyCode;
-  defaultTaxZoneId: Scalars['ID'];
-  defaultShippingZoneId: Scalars['ID'];
-};
-
-export type CreateChannelResult = Channel | LanguageNotAvailableError;
-
-export type CreateCollectionInput = {
-  isPrivate?: Maybe<Scalars['Boolean']>;
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  parentId?: Maybe<Scalars['ID']>;
-  filters: Array<ConfigurableOperationInput>;
-  translations: Array<CreateCollectionTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateCollectionTranslationInput = {
-  languageCode: LanguageCode;
-  name: Scalars['String'];
-  slug: Scalars['String'];
-  description: Scalars['String'];
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateCountryInput = {
-  code: Scalars['String'];
-  translations: Array<CountryTranslationInput>;
-  enabled: Scalars['Boolean'];
-};
-
-export type CreateCustomerGroupInput = {
-  name: Scalars['String'];
-  customerIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-export type CreateCustomerInput = {
-  title?: Maybe<Scalars['String']>;
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  phoneNumber?: Maybe<Scalars['String']>;
-  emailAddress: Scalars['String'];
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateCustomerResult = Customer | EmailAddressConflictError;
-
-export type CreateFacetInput = {
-  code: Scalars['String'];
-  isPrivate: Scalars['Boolean'];
-  translations: Array<FacetTranslationInput>;
-  values?: Maybe<Array<CreateFacetValueWithFacetInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateFacetValueInput = {
-  facetId: Scalars['ID'];
-  code: Scalars['String'];
-  translations: Array<FacetValueTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateFacetValueWithFacetInput = {
-  code: Scalars['String'];
-  translations: Array<FacetValueTranslationInput>;
-};
-
-export type CreateGroupOptionInput = {
-  code: Scalars['String'];
-  translations: Array<ProductOptionGroupTranslationInput>;
-};
-
-export type CreateProductInput = {
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
-  translations: Array<ProductTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateProductOptionGroupInput = {
-  code: Scalars['String'];
-  translations: Array<ProductOptionGroupTranslationInput>;
-  options: Array<CreateGroupOptionInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateProductOptionInput = {
-  productOptionGroupId: Scalars['ID'];
-  code: Scalars['String'];
-  translations: Array<ProductOptionGroupTranslationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateProductVariantInput = {
-  productId: Scalars['ID'];
-  translations: Array<ProductVariantTranslationInput>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
-  sku: Scalars['String'];
-  price?: Maybe<Scalars['Int']>;
-  taxCategoryId?: Maybe<Scalars['ID']>;
-  optionIds?: Maybe<Array<Scalars['ID']>>;
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  stockOnHand?: Maybe<Scalars['Int']>;
-  trackInventory?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateProductVariantOptionInput = {
-  optionGroupId: Scalars['ID'];
-  code: Scalars['String'];
-  translations: Array<ProductOptionTranslationInput>;
-};
-
-export type CreatePromotionInput = {
-  name: Scalars['String'];
-  enabled: Scalars['Boolean'];
-  startsAt?: Maybe<Scalars['DateTime']>;
-  endsAt?: Maybe<Scalars['DateTime']>;
-  couponCode?: Maybe<Scalars['String']>;
-  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
-  conditions: Array<ConfigurableOperationInput>;
-  actions: Array<ConfigurableOperationInput>;
-};
-
-export type CreatePromotionResult = Promotion | MissingConditionsError;
-
-export type CreateRoleInput = {
-  code: Scalars['String'];
-  description: Scalars['String'];
-  permissions: Array<Permission>;
-  channelIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-export type CreateShippingMethodInput = {
-  code: Scalars['String'];
-  description: Scalars['String'];
-  checker: ConfigurableOperationInput;
-  calculator: ConfigurableOperationInput;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateTaxCategoryInput = {
-  name: Scalars['String'];
-};
-
-export type CreateTaxRateInput = {
-  name: Scalars['String'];
-  enabled: Scalars['Boolean'];
-  value: Scalars['Float'];
-  categoryId: Scalars['ID'];
-  zoneId: Scalars['ID'];
-  customerGroupId?: Maybe<Scalars['ID']>;
-};
-
-export type CreateZoneInput = {
-  name: Scalars['String'];
-  memberIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-/**
- * @description
- * ISO 4217 currency code
- * 
- * @docsCategory common
- */
-export enum CurrencyCode {
-  /** United Arab Emirates dirham */
-  AED = 'AED',
-  /** Afghan afghani */
-  AFN = 'AFN',
-  /** Albanian lek */
-  ALL = 'ALL',
-  /** Armenian dram */
-  AMD = 'AMD',
-  /** Netherlands Antillean guilder */
-  ANG = 'ANG',
-  /** Angolan kwanza */
-  AOA = 'AOA',
-  /** Argentine peso */
-  ARS = 'ARS',
-  /** Australian dollar */
-  AUD = 'AUD',
-  /** Aruban florin */
-  AWG = 'AWG',
-  /** Azerbaijani manat */
-  AZN = 'AZN',
-  /** Bosnia and Herzegovina convertible mark */
-  BAM = 'BAM',
-  /** Barbados dollar */
-  BBD = 'BBD',
-  /** Bangladeshi taka */
-  BDT = 'BDT',
-  /** Bulgarian lev */
-  BGN = 'BGN',
-  /** Bahraini dinar */
-  BHD = 'BHD',
-  /** Burundian franc */
-  BIF = 'BIF',
-  /** Bermudian dollar */
-  BMD = 'BMD',
-  /** Brunei dollar */
-  BND = 'BND',
-  /** Boliviano */
-  BOB = 'BOB',
-  /** Brazilian real */
-  BRL = 'BRL',
-  /** Bahamian dollar */
-  BSD = 'BSD',
-  /** Bhutanese ngultrum */
-  BTN = 'BTN',
-  /** Botswana pula */
-  BWP = 'BWP',
-  /** Belarusian ruble */
-  BYN = 'BYN',
-  /** Belize dollar */
-  BZD = 'BZD',
-  /** Canadian dollar */
-  CAD = 'CAD',
-  /** Congolese franc */
-  CDF = 'CDF',
-  /** Swiss franc */
-  CHF = 'CHF',
-  /** Chilean peso */
-  CLP = 'CLP',
-  /** Renminbi (Chinese) yuan */
-  CNY = 'CNY',
-  /** Colombian peso */
-  COP = 'COP',
-  /** Costa Rican colon */
-  CRC = 'CRC',
-  /** Cuban convertible peso */
-  CUC = 'CUC',
-  /** Cuban peso */
-  CUP = 'CUP',
-  /** Cape Verde escudo */
-  CVE = 'CVE',
-  /** Czech koruna */
-  CZK = 'CZK',
-  /** Djiboutian franc */
-  DJF = 'DJF',
-  /** Danish krone */
-  DKK = 'DKK',
-  /** Dominican peso */
-  DOP = 'DOP',
-  /** Algerian dinar */
-  DZD = 'DZD',
-  /** Egyptian pound */
-  EGP = 'EGP',
-  /** Eritrean nakfa */
-  ERN = 'ERN',
-  /** Ethiopian birr */
-  ETB = 'ETB',
-  /** Euro */
-  EUR = 'EUR',
-  /** Fiji dollar */
-  FJD = 'FJD',
-  /** Falkland Islands pound */
-  FKP = 'FKP',
-  /** Pound sterling */
-  GBP = 'GBP',
-  /** Georgian lari */
-  GEL = 'GEL',
-  /** Ghanaian cedi */
-  GHS = 'GHS',
-  /** Gibraltar pound */
-  GIP = 'GIP',
-  /** Gambian dalasi */
-  GMD = 'GMD',
-  /** Guinean franc */
-  GNF = 'GNF',
-  /** Guatemalan quetzal */
-  GTQ = 'GTQ',
-  /** Guyanese dollar */
-  GYD = 'GYD',
-  /** Hong Kong dollar */
-  HKD = 'HKD',
-  /** Honduran lempira */
-  HNL = 'HNL',
-  /** Croatian kuna */
-  HRK = 'HRK',
-  /** Haitian gourde */
-  HTG = 'HTG',
-  /** Hungarian forint */
-  HUF = 'HUF',
-  /** Indonesian rupiah */
-  IDR = 'IDR',
-  /** Israeli new shekel */
-  ILS = 'ILS',
-  /** Indian rupee */
-  INR = 'INR',
-  /** Iraqi dinar */
-  IQD = 'IQD',
-  /** Iranian rial */
-  IRR = 'IRR',
-  /** Icelandic króna */
-  ISK = 'ISK',
-  /** Jamaican dollar */
-  JMD = 'JMD',
-  /** Jordanian dinar */
-  JOD = 'JOD',
-  /** Japanese yen */
-  JPY = 'JPY',
-  /** Kenyan shilling */
-  KES = 'KES',
-  /** Kyrgyzstani som */
-  KGS = 'KGS',
-  /** Cambodian riel */
-  KHR = 'KHR',
-  /** Comoro franc */
-  KMF = 'KMF',
-  /** North Korean won */
-  KPW = 'KPW',
-  /** South Korean won */
-  KRW = 'KRW',
-  /** Kuwaiti dinar */
-  KWD = 'KWD',
-  /** Cayman Islands dollar */
-  KYD = 'KYD',
-  /** Kazakhstani tenge */
-  KZT = 'KZT',
-  /** Lao kip */
-  LAK = 'LAK',
-  /** Lebanese pound */
-  LBP = 'LBP',
-  /** Sri Lankan rupee */
-  LKR = 'LKR',
-  /** Liberian dollar */
-  LRD = 'LRD',
-  /** Lesotho loti */
-  LSL = 'LSL',
-  /** Libyan dinar */
-  LYD = 'LYD',
-  /** Moroccan dirham */
-  MAD = 'MAD',
-  /** Moldovan leu */
-  MDL = 'MDL',
-  /** Malagasy ariary */
-  MGA = 'MGA',
-  /** Macedonian denar */
-  MKD = 'MKD',
-  /** Myanmar kyat */
-  MMK = 'MMK',
-  /** Mongolian tögrög */
-  MNT = 'MNT',
-  /** Macanese pataca */
-  MOP = 'MOP',
-  /** Mauritanian ouguiya */
-  MRU = 'MRU',
-  /** Mauritian rupee */
-  MUR = 'MUR',
-  /** Maldivian rufiyaa */
-  MVR = 'MVR',
-  /** Malawian kwacha */
-  MWK = 'MWK',
-  /** Mexican peso */
-  MXN = 'MXN',
-  /** Malaysian ringgit */
-  MYR = 'MYR',
-  /** Mozambican metical */
-  MZN = 'MZN',
-  /** Namibian dollar */
-  NAD = 'NAD',
-  /** Nigerian naira */
-  NGN = 'NGN',
-  /** Nicaraguan córdoba */
-  NIO = 'NIO',
-  /** Norwegian krone */
-  NOK = 'NOK',
-  /** Nepalese rupee */
-  NPR = 'NPR',
-  /** New Zealand dollar */
-  NZD = 'NZD',
-  /** Omani rial */
-  OMR = 'OMR',
-  /** Panamanian balboa */
-  PAB = 'PAB',
-  /** Peruvian sol */
-  PEN = 'PEN',
-  /** Papua New Guinean kina */
-  PGK = 'PGK',
-  /** Philippine peso */
-  PHP = 'PHP',
-  /** Pakistani rupee */
-  PKR = 'PKR',
-  /** Polish złoty */
-  PLN = 'PLN',
-  /** Paraguayan guaraní */
-  PYG = 'PYG',
-  /** Qatari riyal */
-  QAR = 'QAR',
-  /** Romanian leu */
-  RON = 'RON',
-  /** Serbian dinar */
-  RSD = 'RSD',
-  /** Russian ruble */
-  RUB = 'RUB',
-  /** Rwandan franc */
-  RWF = 'RWF',
-  /** Saudi riyal */
-  SAR = 'SAR',
-  /** Solomon Islands dollar */
-  SBD = 'SBD',
-  /** Seychelles rupee */
-  SCR = 'SCR',
-  /** Sudanese pound */
-  SDG = 'SDG',
-  /** Swedish krona/kronor */
-  SEK = 'SEK',
-  /** Singapore dollar */
-  SGD = 'SGD',
-  /** Saint Helena pound */
-  SHP = 'SHP',
-  /** Sierra Leonean leone */
-  SLL = 'SLL',
-  /** Somali shilling */
-  SOS = 'SOS',
-  /** Surinamese dollar */
-  SRD = 'SRD',
-  /** South Sudanese pound */
-  SSP = 'SSP',
-  /** São Tomé and Príncipe dobra */
-  STN = 'STN',
-  /** Salvadoran colón */
-  SVC = 'SVC',
-  /** Syrian pound */
-  SYP = 'SYP',
-  /** Swazi lilangeni */
-  SZL = 'SZL',
-  /** Thai baht */
-  THB = 'THB',
-  /** Tajikistani somoni */
-  TJS = 'TJS',
-  /** Turkmenistan manat */
-  TMT = 'TMT',
-  /** Tunisian dinar */
-  TND = 'TND',
-  /** Tongan paʻanga */
-  TOP = 'TOP',
-  /** Turkish lira */
-  TRY = 'TRY',
-  /** Trinidad and Tobago dollar */
-  TTD = 'TTD',
-  /** New Taiwan dollar */
-  TWD = 'TWD',
-  /** Tanzanian shilling */
-  TZS = 'TZS',
-  /** Ukrainian hryvnia */
-  UAH = 'UAH',
-  /** Ugandan shilling */
-  UGX = 'UGX',
-  /** United States dollar */
-  USD = 'USD',
-  /** Uruguayan peso */
-  UYU = 'UYU',
-  /** Uzbekistan som */
-  UZS = 'UZS',
-  /** Venezuelan bolívar soberano */
-  VES = 'VES',
-  /** Vietnamese đồng */
-  VND = 'VND',
-  /** Vanuatu vatu */
-  VUV = 'VUV',
-  /** Samoan tala */
-  WST = 'WST',
-  /** CFA franc BEAC */
-  XAF = 'XAF',
-  /** East Caribbean dollar */
-  XCD = 'XCD',
-  /** CFA franc BCEAO */
-  XOF = 'XOF',
-  /** CFP franc (franc Pacifique) */
-  XPF = 'XPF',
-  /** Yemeni rial */
-  YER = 'YER',
-  /** South African rand */
-  ZAR = 'ZAR',
-  /** Zambian kwacha */
-  ZMW = 'ZMW',
-  /** Zimbabwean dollar */
-  ZWL = 'ZWL'
-}
-
-export type CurrentUser = {
-  __typename?: 'CurrentUser';
-  channels: Array<CurrentUserChannel>;
-  id: Scalars['ID'];
-  identifier: Scalars['String'];
-};
-
-export type CurrentUserChannel = {
-  __typename?: 'CurrentUserChannel';
-  code: Scalars['String'];
-  id: Scalars['ID'];
-  permissions: Array<Permission>;
-  token: Scalars['String'];
-};
-
-export type CurrentUserChannelInput = {
-  id: Scalars['ID'];
-  token: Scalars['String'];
-  code: Scalars['String'];
-  permissions: Array<Permission>;
-};
-
-export type Customer = Node & {
-  __typename?: 'Customer';
-  groups: Array<CustomerGroup>;
-  history: HistoryEntryList;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  title?: Maybe<Scalars['String']>;
-  firstName: Scalars['String'];
-  lastName: Scalars['String'];
-  phoneNumber?: Maybe<Scalars['String']>;
-  emailAddress: Scalars['String'];
-  addresses?: Maybe<Array<Address>>;
-  orders: OrderList;
-  user?: Maybe<User>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-
-export type CustomerHistoryArgs = {
-  options?: Maybe<HistoryEntryListOptions>;
-};
-
-
-export type CustomerOrdersArgs = {
-  options?: Maybe<OrderListOptions>;
-};
-
-export type CustomerFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  title?: Maybe<StringOperators>;
-  firstName?: Maybe<StringOperators>;
-  lastName?: Maybe<StringOperators>;
-  phoneNumber?: Maybe<StringOperators>;
-  emailAddress?: Maybe<StringOperators>;
-};
-
-export type CustomerGroup = Node & {
-  __typename?: 'CustomerGroup';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
+export type Query = {
+  __typename?: 'Query';
+  activeChannel: Channel;
+  administrator?: Maybe<Administrator>;
+  administrators: AdministratorList;
+  /** Get a single Asset by id */
+  asset?: Maybe<Asset>;
+  /** Get a list of Assets */
+  assets: AssetList;
+  channel?: Maybe<Channel>;
+  channels: Array<Channel>;
+  /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
+  collection?: Maybe<Collection>;
+  collectionFilters: Array<ConfigurableOperationDefinition>;
+  collections: CollectionList;
+  countries: CountryList;
+  country?: Maybe<Country>;
+  customer?: Maybe<Customer>;
+  customerGroup?: Maybe<CustomerGroup>;
+  customerGroups: CustomerGroupList;
   customers: CustomerList;
+  facet?: Maybe<Facet>;
+  facets: FacetList;
+  globalSettings: GlobalSettings;
+  job?: Maybe<Job>;
+  jobQueues: Array<JobQueue>;
+  jobs: JobList;
+  jobsById: Array<Job>;
+  me?: Maybe<CurrentUser>;
+  networkStatus: NetworkStatus;
+  order?: Maybe<Order>;
+  orders: OrderList;
+  paymentMethod?: Maybe<PaymentMethod>;
+  paymentMethods: PaymentMethodList;
+  /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
+  product?: Maybe<Product>;
+  productOptionGroup?: Maybe<ProductOptionGroup>;
+  productOptionGroups: Array<ProductOptionGroup>;
+  /** Get a ProductVariant by id */
+  productVariant?: Maybe<ProductVariant>;
+  products: ProductList;
+  promotion?: Maybe<Promotion>;
+  promotionActions: Array<ConfigurableOperationDefinition>;
+  promotionConditions: Array<ConfigurableOperationDefinition>;
+  promotions: PromotionList;
+  role?: Maybe<Role>;
+  roles: RoleList;
+  search: SearchResponse;
+  shippingCalculators: Array<ConfigurableOperationDefinition>;
+  shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+  shippingMethod?: Maybe<ShippingMethod>;
+  shippingMethods: ShippingMethodList;
+  taxCategories: Array<TaxCategory>;
+  taxCategory?: Maybe<TaxCategory>;
+  taxRate?: Maybe<TaxRate>;
+  taxRates: TaxRateList;
+  testEligibleShippingMethods: Array<ShippingMethodQuote>;
+  testShippingMethod: TestShippingMethodResult;
+  uiState: UiState;
+  userStatus: UserStatus;
+  zone?: Maybe<Zone>;
+  zones: Array<Zone>;
 };
 
 
-export type CustomerGroupCustomersArgs = {
+export type QueryAdministratorArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryAdministratorsArgs = {
+  options?: Maybe<AdministratorListOptions>;
+};
+
+
+export type QueryAssetArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryAssetsArgs = {
+  options?: Maybe<AssetListOptions>;
+};
+
+
+export type QueryChannelArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCollectionArgs = {
+  id?: Maybe<Scalars['ID']>;
+  slug?: Maybe<Scalars['String']>;
+};
+
+
+export type QueryCollectionsArgs = {
+  options?: Maybe<CollectionListOptions>;
+};
+
+
+export type QueryCountriesArgs = {
+  options?: Maybe<CountryListOptions>;
+};
+
+
+export type QueryCountryArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCustomerArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCustomerGroupArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryCustomerGroupsArgs = {
+  options?: Maybe<CustomerGroupListOptions>;
+};
+
+
+export type QueryCustomersArgs = {
   options?: Maybe<CustomerListOptions>;
 };
 
-export type CustomerGroupFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  name?: Maybe<StringOperators>;
-};
 
-export type CustomerGroupList = PaginatedList & {
-  __typename?: 'CustomerGroupList';
-  items: Array<CustomerGroup>;
-  totalItems: Scalars['Int'];
-};
-
-export type CustomerGroupListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CustomerGroupSortParameter>;
-  filter?: Maybe<CustomerGroupFilterParameter>;
-};
-
-export type CustomerGroupSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-};
-
-export type CustomerList = PaginatedList & {
-  __typename?: 'CustomerList';
-  items: Array<Customer>;
-  totalItems: Scalars['Int'];
-};
-
-export type CustomerListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<CustomerSortParameter>;
-  filter?: Maybe<CustomerFilterParameter>;
-};
-
-export type CustomerSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  title?: Maybe<SortOrder>;
-  firstName?: Maybe<SortOrder>;
-  lastName?: Maybe<SortOrder>;
-  phoneNumber?: Maybe<SortOrder>;
-  emailAddress?: Maybe<SortOrder>;
-};
-
-export type CustomField = {
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-};
-
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
-
-export type CustomFields = {
-  __typename?: 'CustomFields';
-  Address: Array<CustomFieldConfig>;
-  Collection: Array<CustomFieldConfig>;
-  Customer: Array<CustomFieldConfig>;
-  Facet: Array<CustomFieldConfig>;
-  FacetValue: Array<CustomFieldConfig>;
-  GlobalSettings: Array<CustomFieldConfig>;
-  Order: Array<CustomFieldConfig>;
-  OrderLine: Array<CustomFieldConfig>;
-  Product: Array<CustomFieldConfig>;
-  ProductOption: Array<CustomFieldConfig>;
-  ProductOptionGroup: Array<CustomFieldConfig>;
-  ProductVariant: Array<CustomFieldConfig>;
-  User: Array<CustomFieldConfig>;
-  ShippingMethod: Array<CustomFieldConfig>;
-};
-
-export type DateOperators = {
-  eq?: Maybe<Scalars['DateTime']>;
-  before?: Maybe<Scalars['DateTime']>;
-  after?: Maybe<Scalars['DateTime']>;
-  between?: Maybe<DateRange>;
-};
-
-export type DateRange = {
-  start: Scalars['DateTime'];
-  end: Scalars['DateTime'];
-};
-
-
-/**
- * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
- * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
- */
-export type DateTimeCustomFieldConfig = CustomField & {
-  __typename?: 'DateTimeCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-  min?: Maybe<Scalars['String']>;
-  max?: Maybe<Scalars['String']>;
-  step?: Maybe<Scalars['Int']>;
-};
-
-export type DeletionResponse = {
-  __typename?: 'DeletionResponse';
-  result: DeletionResult;
-  message?: Maybe<Scalars['String']>;
-};
-
-export enum DeletionResult {
-  /** The entity was successfully deleted */
-  DELETED = 'DELETED',
-  /** Deletion did not take place, reason given in message */
-  NOT_DELETED = 'NOT_DELETED'
-}
-
-/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
-export type EmailAddressConflictError = ErrorResult & {
-  __typename?: 'EmailAddressConflictError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-/** Returned if no OrderLines have been specified for the operation */
-export type EmptyOrderLineSelectionError = ErrorResult & {
-  __typename?: 'EmptyOrderLineSelectionError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export enum ErrorCode {
-  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
-  MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
-  INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
-  NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
-  LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
-  EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
-  CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
-  SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
-  PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
-  ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
-  EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
-  ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
-  QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
-  MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
-  CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
-  NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
-  PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
-  REFUND_ORDER_STATE_ERROR = 'REFUND_ORDER_STATE_ERROR',
-  ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
-  REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
-  FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
-  PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
-  MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR'
-}
-
-export type ErrorResult = {
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export type Facet = Node & {
-  __typename?: 'Facet';
-  isPrivate: Scalars['Boolean'];
+export type QueryFacetArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  name: Scalars['String'];
-  code: Scalars['String'];
-  values: Array<FacetValue>;
-  translations: Array<FacetTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type FacetFilterParameter = {
-  isPrivate?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  code?: Maybe<StringOperators>;
+
+export type QueryFacetsArgs = {
+  options?: Maybe<FacetListOptions>;
 };
 
-export type FacetList = PaginatedList & {
-  __typename?: 'FacetList';
-  items: Array<Facet>;
-  totalItems: Scalars['Int'];
+
+export type QueryJobArgs = {
+  jobId: Scalars['ID'];
 };
 
-export type FacetListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<FacetSortParameter>;
-  filter?: Maybe<FacetFilterParameter>;
+
+export type QueryJobsArgs = {
+  options?: Maybe<JobListOptions>;
 };
 
-export type FacetSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
+
+export type QueryJobsByIdArgs = {
+  jobIds: Array<Scalars['ID']>;
 };
 
-export type FacetTranslation = {
-  __typename?: 'FacetTranslation';
+
+export type QueryOrderArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  name: Scalars['String'];
 };
 
-export type FacetTranslationInput = {
+
+export type QueryOrdersArgs = {
+  options?: Maybe<OrderListOptions>;
+};
+
+
+export type QueryPaymentMethodArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryPaymentMethodsArgs = {
+  options?: Maybe<PaymentMethodListOptions>;
+};
+
+
+export type QueryProductArgs = {
   id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+  slug?: Maybe<Scalars['String']>;
 };
 
-export type FacetValue = Node & {
-  __typename?: 'FacetValue';
+
+export type QueryProductOptionGroupArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  facet: Facet;
-  name: Scalars['String'];
-  code: Scalars['String'];
-  translations: Array<FacetValueTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
-/**
- * Which FacetValues are present in the products returned
- * by the search, and in what quantity.
- */
-export type FacetValueResult = {
-  __typename?: 'FacetValueResult';
-  facetValue: FacetValue;
-  count: Scalars['Int'];
+
+export type QueryProductOptionGroupsArgs = {
+  filterTerm?: Maybe<Scalars['String']>;
 };
 
-export type FacetValueTranslation = {
-  __typename?: 'FacetValueTranslation';
+
+export type QueryProductVariantArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  name: Scalars['String'];
 };
 
-export type FacetValueTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+
+export type QueryProductsArgs = {
+  options?: Maybe<ProductListOptions>;
 };
 
-export type FloatCustomFieldConfig = CustomField & {
-  __typename?: 'FloatCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-  min?: Maybe<Scalars['Float']>;
-  max?: Maybe<Scalars['Float']>;
-  step?: Maybe<Scalars['Float']>;
-};
 
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
+export type QueryPromotionArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
 };
 
-/** Returned when there is an error in transitioning the Fulfillment state */
-export type FulfillmentStateTransitionError = ErrorResult & {
-  __typename?: 'FulfillmentStateTransitionError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  transitionError: Scalars['String'];
-  fromState: Scalars['String'];
-  toState: Scalars['String'];
+
+export type QueryPromotionsArgs = {
+  options?: Maybe<PromotionListOptions>;
 };
 
-export type FulfillOrderInput = {
-  lines: Array<OrderLineInput>;
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-};
 
-export type GlobalSettings = {
-  __typename?: 'GlobalSettings';
+export type QueryRoleArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  availableLanguages: Array<LanguageCode>;
-  trackInventory: Scalars['Boolean'];
-  serverConfig: ServerConfig;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type HistoryEntry = Node & {
-  __typename?: 'HistoryEntry';
+
+export type QueryRolesArgs = {
+  options?: Maybe<RoleListOptions>;
+};
+
+
+export type QuerySearchArgs = {
+  input: SearchInput;
+};
+
+
+export type QueryShippingMethodArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  isPublic: Scalars['Boolean'];
-  type: HistoryEntryType;
-  administrator?: Maybe<Administrator>;
-  data: Scalars['JSON'];
 };
 
-export type HistoryEntryFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  isPublic?: Maybe<BooleanOperators>;
-  type?: Maybe<StringOperators>;
+
+export type QueryShippingMethodsArgs = {
+  options?: Maybe<ShippingMethodListOptions>;
 };
 
-export type HistoryEntryList = PaginatedList & {
-  __typename?: 'HistoryEntryList';
-  items: Array<HistoryEntry>;
-  totalItems: Scalars['Int'];
-};
 
-export type HistoryEntryListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<HistoryEntrySortParameter>;
-  filter?: Maybe<HistoryEntryFilterParameter>;
-};
-
-export type HistoryEntrySortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-};
-
-export enum HistoryEntryType {
-  CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
-  CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
-  CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
-  CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
-  CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
-  CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
-  CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
-  CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
-  CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
-  CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
-  CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
-  CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
-  CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
-  CUSTOMER_NOTE = 'CUSTOMER_NOTE',
-  ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
-  ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
-  ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
-  ORDER_CANCELLATION = 'ORDER_CANCELLATION',
-  ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
-  ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
-  ORDER_NOTE = 'ORDER_NOTE',
-  ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
-  ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED'
-}
-
-export type ImportInfo = {
-  __typename?: 'ImportInfo';
-  errors?: Maybe<Array<Scalars['String']>>;
-  processed: Scalars['Int'];
-  imported: Scalars['Int'];
-};
-
-export type IntCustomFieldConfig = CustomField & {
-  __typename?: 'IntCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-  min?: Maybe<Scalars['Int']>;
-  max?: Maybe<Scalars['Int']>;
-  step?: Maybe<Scalars['Int']>;
-};
-
-/** Returned if the user authentication credentials are not valid */
-export type InvalidCredentialsError = ErrorResult & {
-  __typename?: 'InvalidCredentialsError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-/** Returned if the specified items are already part of a Fulfillment */
-export type ItemsAlreadyFulfilledError = ErrorResult & {
-  __typename?: 'ItemsAlreadyFulfilledError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export type Job = Node & {
-  __typename?: 'Job';
+export type QueryTaxCategoryArgs = {
   id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  startedAt?: Maybe<Scalars['DateTime']>;
-  settledAt?: Maybe<Scalars['DateTime']>;
-  queueName: Scalars['String'];
-  state: JobState;
-  progress: Scalars['Float'];
-  data?: Maybe<Scalars['JSON']>;
-  result?: Maybe<Scalars['JSON']>;
-  error?: Maybe<Scalars['JSON']>;
-  isSettled: Scalars['Boolean'];
-  duration: Scalars['Int'];
 };
 
-export type JobFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  startedAt?: Maybe<DateOperators>;
-  settledAt?: Maybe<DateOperators>;
-  queueName?: Maybe<StringOperators>;
-  state?: Maybe<StringOperators>;
-  progress?: Maybe<NumberOperators>;
-  isSettled?: Maybe<BooleanOperators>;
-  duration?: Maybe<NumberOperators>;
+
+export type QueryTaxRateArgs = {
+  id: Scalars['ID'];
 };
 
-export type JobList = PaginatedList & {
-  __typename?: 'JobList';
-  items: Array<Job>;
-  totalItems: Scalars['Int'];
+
+export type QueryTaxRatesArgs = {
+  options?: Maybe<TaxRateListOptions>;
 };
 
-export type JobListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<JobSortParameter>;
-  filter?: Maybe<JobFilterParameter>;
+
+export type QueryTestEligibleShippingMethodsArgs = {
+  input: TestEligibleShippingMethodsInput;
 };
 
-export type JobQueue = {
-  __typename?: 'JobQueue';
-  name: Scalars['String'];
-  running: Scalars['Boolean'];
+
+export type QueryTestShippingMethodArgs = {
+  input: TestShippingMethodInput;
 };
 
-export type JobSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  startedAt?: Maybe<SortOrder>;
-  settledAt?: Maybe<SortOrder>;
-  queueName?: Maybe<SortOrder>;
-  progress?: Maybe<SortOrder>;
-  duration?: Maybe<SortOrder>;
-};
 
-/**
- * @description
- * The state of a Job in the JobQueue
- * 
- * @docsCategory common
- */
-export enum JobState {
-  PENDING = 'PENDING',
-  RUNNING = 'RUNNING',
-  COMPLETED = 'COMPLETED',
-  RETRYING = 'RETRYING',
-  FAILED = 'FAILED'
-}
-
-
-/**
- * @description
- * Languages in the form of a ISO 639-1 language code with optional
- * region or script modifier (e.g. de_AT). The selection available is based
- * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
- * and includes the major spoken languages of the world and any widely-used variants.
- * 
- * @docsCategory common
- */
-export enum LanguageCode {
-  /** Afrikaans */
-  af = 'af',
-  /** Akan */
-  ak = 'ak',
-  /** Amharic */
-  am = 'am',
-  /** Arabic */
-  ar = 'ar',
-  /** Assamese */
-  as = 'as',
-  /** Azerbaijani */
-  az = 'az',
-  /** Belarusian */
-  be = 'be',
-  /** Bulgarian */
-  bg = 'bg',
-  /** Bambara */
-  bm = 'bm',
-  /** Bangla */
-  bn = 'bn',
-  /** Tibetan */
-  bo = 'bo',
-  /** Breton */
-  br = 'br',
-  /** Bosnian */
-  bs = 'bs',
-  /** Catalan */
-  ca = 'ca',
-  /** Chechen */
-  ce = 'ce',
-  /** Corsican */
-  co = 'co',
-  /** Czech */
-  cs = 'cs',
-  /** Church Slavic */
-  cu = 'cu',
-  /** Welsh */
-  cy = 'cy',
-  /** Danish */
-  da = 'da',
-  /** German */
-  de = 'de',
-  /** Austrian German */
-  de_AT = 'de_AT',
-  /** Swiss High German */
-  de_CH = 'de_CH',
-  /** Dzongkha */
-  dz = 'dz',
-  /** Ewe */
-  ee = 'ee',
-  /** Greek */
-  el = 'el',
-  /** English */
-  en = 'en',
-  /** Australian English */
-  en_AU = 'en_AU',
-  /** Canadian English */
-  en_CA = 'en_CA',
-  /** British English */
-  en_GB = 'en_GB',
-  /** American English */
-  en_US = 'en_US',
-  /** Esperanto */
-  eo = 'eo',
-  /** Spanish */
-  es = 'es',
-  /** European Spanish */
-  es_ES = 'es_ES',
-  /** Mexican Spanish */
-  es_MX = 'es_MX',
-  /** Estonian */
-  et = 'et',
-  /** Basque */
-  eu = 'eu',
-  /** Persian */
-  fa = 'fa',
-  /** Dari */
-  fa_AF = 'fa_AF',
-  /** Fulah */
-  ff = 'ff',
-  /** Finnish */
-  fi = 'fi',
-  /** Faroese */
-  fo = 'fo',
-  /** French */
-  fr = 'fr',
-  /** Canadian French */
-  fr_CA = 'fr_CA',
-  /** Swiss French */
-  fr_CH = 'fr_CH',
-  /** Western Frisian */
-  fy = 'fy',
-  /** Irish */
-  ga = 'ga',
-  /** Scottish Gaelic */
-  gd = 'gd',
-  /** Galician */
-  gl = 'gl',
-  /** Gujarati */
-  gu = 'gu',
-  /** Manx */
-  gv = 'gv',
-  /** Hausa */
-  ha = 'ha',
-  /** Hebrew */
-  he = 'he',
-  /** Hindi */
-  hi = 'hi',
-  /** Croatian */
-  hr = 'hr',
-  /** Haitian Creole */
-  ht = 'ht',
-  /** Hungarian */
-  hu = 'hu',
-  /** Armenian */
-  hy = 'hy',
-  /** Interlingua */
-  ia = 'ia',
-  /** Indonesian */
-  id = 'id',
-  /** Igbo */
-  ig = 'ig',
-  /** Sichuan Yi */
-  ii = 'ii',
-  /** Icelandic */
-  is = 'is',
-  /** Italian */
-  it = 'it',
-  /** Japanese */
-  ja = 'ja',
-  /** Javanese */
-  jv = 'jv',
-  /** Georgian */
-  ka = 'ka',
-  /** Kikuyu */
-  ki = 'ki',
-  /** Kazakh */
-  kk = 'kk',
-  /** Kalaallisut */
-  kl = 'kl',
-  /** Khmer */
-  km = 'km',
-  /** Kannada */
-  kn = 'kn',
-  /** Korean */
-  ko = 'ko',
-  /** Kashmiri */
-  ks = 'ks',
-  /** Kurdish */
-  ku = 'ku',
-  /** Cornish */
-  kw = 'kw',
-  /** Kyrgyz */
-  ky = 'ky',
-  /** Latin */
-  la = 'la',
-  /** Luxembourgish */
-  lb = 'lb',
-  /** Ganda */
-  lg = 'lg',
-  /** Lingala */
-  ln = 'ln',
-  /** Lao */
-  lo = 'lo',
-  /** Lithuanian */
-  lt = 'lt',
-  /** Luba-Katanga */
-  lu = 'lu',
-  /** Latvian */
-  lv = 'lv',
-  /** Malagasy */
-  mg = 'mg',
-  /** Maori */
-  mi = 'mi',
-  /** Macedonian */
-  mk = 'mk',
-  /** Malayalam */
-  ml = 'ml',
-  /** Mongolian */
-  mn = 'mn',
-  /** Marathi */
-  mr = 'mr',
-  /** Malay */
-  ms = 'ms',
-  /** Maltese */
-  mt = 'mt',
-  /** Burmese */
-  my = 'my',
-  /** Norwegian Bokmål */
-  nb = 'nb',
-  /** North Ndebele */
-  nd = 'nd',
-  /** Nepali */
-  ne = 'ne',
-  /** Dutch */
-  nl = 'nl',
-  /** Flemish */
-  nl_BE = 'nl_BE',
-  /** Norwegian Nynorsk */
-  nn = 'nn',
-  /** Nyanja */
-  ny = 'ny',
-  /** Oromo */
-  om = 'om',
-  /** Odia */
-  or = 'or',
-  /** Ossetic */
-  os = 'os',
-  /** Punjabi */
-  pa = 'pa',
-  /** Polish */
-  pl = 'pl',
-  /** Pashto */
-  ps = 'ps',
-  /** Portuguese */
-  pt = 'pt',
-  /** Brazilian Portuguese */
-  pt_BR = 'pt_BR',
-  /** European Portuguese */
-  pt_PT = 'pt_PT',
-  /** Quechua */
-  qu = 'qu',
-  /** Romansh */
-  rm = 'rm',
-  /** Rundi */
-  rn = 'rn',
-  /** Romanian */
-  ro = 'ro',
-  /** Moldavian */
-  ro_MD = 'ro_MD',
-  /** Russian */
-  ru = 'ru',
-  /** Kinyarwanda */
-  rw = 'rw',
-  /** Sanskrit */
-  sa = 'sa',
-  /** Sindhi */
-  sd = 'sd',
-  /** Northern Sami */
-  se = 'se',
-  /** Sango */
-  sg = 'sg',
-  /** Sinhala */
-  si = 'si',
-  /** Slovak */
-  sk = 'sk',
-  /** Slovenian */
-  sl = 'sl',
-  /** Samoan */
-  sm = 'sm',
-  /** Shona */
-  sn = 'sn',
-  /** Somali */
-  so = 'so',
-  /** Albanian */
-  sq = 'sq',
-  /** Serbian */
-  sr = 'sr',
-  /** Southern Sotho */
-  st = 'st',
-  /** Sundanese */
-  su = 'su',
-  /** Swedish */
-  sv = 'sv',
-  /** Swahili */
-  sw = 'sw',
-  /** Congo Swahili */
-  sw_CD = 'sw_CD',
-  /** Tamil */
-  ta = 'ta',
-  /** Telugu */
-  te = 'te',
-  /** Tajik */
-  tg = 'tg',
-  /** Thai */
-  th = 'th',
-  /** Tigrinya */
-  ti = 'ti',
-  /** Turkmen */
-  tk = 'tk',
-  /** Tongan */
-  to = 'to',
-  /** Turkish */
-  tr = 'tr',
-  /** Tatar */
-  tt = 'tt',
-  /** Uyghur */
-  ug = 'ug',
-  /** Ukrainian */
-  uk = 'uk',
-  /** Urdu */
-  ur = 'ur',
-  /** Uzbek */
-  uz = 'uz',
-  /** Vietnamese */
-  vi = 'vi',
-  /** Volapük */
-  vo = 'vo',
-  /** Wolof */
-  wo = 'wo',
-  /** Xhosa */
-  xh = 'xh',
-  /** Yiddish */
-  yi = 'yi',
-  /** Yoruba */
-  yo = 'yo',
-  /** Chinese */
-  zh = 'zh',
-  /** Simplified Chinese */
-  zh_Hans = 'zh_Hans',
-  /** Traditional Chinese */
-  zh_Hant = 'zh_Hant',
-  /** Zulu */
-  zu = 'zu'
-}
-
-/** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
-export type LanguageNotAvailableError = ErrorResult & {
-  __typename?: 'LanguageNotAvailableError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  languageCode: Scalars['String'];
-};
-
-export type LocaleStringCustomFieldConfig = CustomField & {
-  __typename?: 'LocaleStringCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  length?: Maybe<Scalars['Int']>;
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-  pattern?: Maybe<Scalars['String']>;
-};
-
-export type LocalizedString = {
-  __typename?: 'LocalizedString';
-  languageCode: LanguageCode;
-  value: Scalars['String'];
-};
-
-export enum LogicalOperator {
-  AND = 'AND',
-  OR = 'OR'
-}
-
-export type MimeTypeError = ErrorResult & {
-  __typename?: 'MimeTypeError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  fileName: Scalars['String'];
-  mimeType: Scalars['String'];
-};
-
-/** Returned if a PromotionCondition has neither a couponCode nor any conditions set */
-export type MissingConditionsError = ErrorResult & {
-  __typename?: 'MissingConditionsError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export type MoveCollectionInput = {
-  collectionId: Scalars['ID'];
-  parentId: Scalars['ID'];
-  index: Scalars['Int'];
-};
-
-/** Returned if an operation has specified OrderLines from multiple Orders */
-export type MultipleOrderError = ErrorResult & {
-  __typename?: 'MultipleOrderError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
+export type QueryZoneArgs = {
+  id: Scalars['ID'];
 };
 
 export type Mutation = {
@@ -2019,10 +380,7 @@ export type Mutation = {
   /** Delete a Zone */
   deleteZone: DeletionResponse;
   importProducts?: Maybe<ImportInfo>;
-  /**
-   * Authenticates the user using the native authentication strategy. This mutation
-   * is an alias for `authenticate({ native: { ... }})`
-   */
+  /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
   login: NativeAuthenticationResult;
   logout: Success;
   /** Move a Collection to a different parent or index */
@@ -2581,48 +939,439 @@ export type MutationUpdateZoneArgs = {
   input: UpdateZoneInput;
 };
 
+export type AdministratorListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AdministratorSortParameter>;
+  filter?: Maybe<AdministratorFilterParameter>;
+};
+
+export type CreateAdministratorInput = {
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  emailAddress: Scalars['String'];
+  password: Scalars['String'];
+  roleIds: Array<Scalars['ID']>;
+};
+
+export type UpdateAdministratorInput = {
+  id: Scalars['ID'];
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
+  roleIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type MimeTypeError = ErrorResult & {
+  __typename?: 'MimeTypeError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  fileName: Scalars['String'];
+  mimeType: Scalars['String'];
+};
+
+export type CreateAssetResult = Asset | MimeTypeError;
+
+export type AssetListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AssetSortParameter>;
+  filter?: Maybe<AssetFilterParameter>;
+};
+
+export type CreateAssetInput = {
+  file: Scalars['Upload'];
+};
+
+export type CoordinateInput = {
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
+export type UpdateAssetInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  focalPoint?: Maybe<CoordinateInput>;
+};
+
+export type AuthenticationInput = {
+  native?: Maybe<NativeAuthInput>;
+};
+
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
 
-export type NativeAuthInput = {
-  username: Scalars['String'];
-  password: Scalars['String'];
+export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
+
+export type CreateChannelInput = {
+  code: Scalars['String'];
+  token: Scalars['String'];
+  defaultLanguageCode: LanguageCode;
+  pricesIncludeTax: Scalars['Boolean'];
+  currencyCode: CurrencyCode;
+  defaultTaxZoneId: Scalars['ID'];
+  defaultShippingZoneId: Scalars['ID'];
 };
 
-/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
-export type NativeAuthStrategyError = ErrorResult & {
-  __typename?: 'NativeAuthStrategyError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export type NetworkStatus = {
-  __typename?: 'NetworkStatus';
-  inFlightRequests: Scalars['Int'];
-};
-
-export type Node = {
+export type UpdateChannelInput = {
   id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  token?: Maybe<Scalars['String']>;
+  defaultLanguageCode?: Maybe<LanguageCode>;
+  pricesIncludeTax?: Maybe<Scalars['Boolean']>;
+  currencyCode?: Maybe<CurrencyCode>;
+  defaultTaxZoneId?: Maybe<Scalars['ID']>;
+  defaultShippingZoneId?: Maybe<Scalars['ID']>;
 };
 
-/** Returned if an attempting to refund an Order but neither items nor shipping refund was specified */
-export type NothingToRefundError = ErrorResult & {
-  __typename?: 'NothingToRefundError';
+/** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
+export type LanguageNotAvailableError = ErrorResult & {
+  __typename?: 'LanguageNotAvailableError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+  languageCode: Scalars['String'];
 };
 
-export type NumberOperators = {
-  eq?: Maybe<Scalars['Float']>;
-  lt?: Maybe<Scalars['Float']>;
-  lte?: Maybe<Scalars['Float']>;
-  gt?: Maybe<Scalars['Float']>;
-  gte?: Maybe<Scalars['Float']>;
-  between?: Maybe<NumberRange>;
+export type CreateChannelResult = Channel | LanguageNotAvailableError;
+
+export type UpdateChannelResult = Channel | LanguageNotAvailableError;
+
+export type Collection = Node & {
+  __typename?: 'Collection';
+  isPrivate: Scalars['Boolean'];
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode?: Maybe<LanguageCode>;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  breadcrumbs: Array<CollectionBreadcrumb>;
+  position: Scalars['Int'];
+  description: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  parent?: Maybe<Collection>;
+  children?: Maybe<Array<Collection>>;
+  filters: Array<ConfigurableOperation>;
+  translations: Array<CollectionTranslation>;
+  productVariants: ProductVariantList;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type NumberRange = {
-  start: Scalars['Float'];
-  end: Scalars['Float'];
+
+export type CollectionProductVariantsArgs = {
+  options?: Maybe<ProductVariantListOptions>;
+};
+
+export type CollectionListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CollectionSortParameter>;
+  filter?: Maybe<CollectionFilterParameter>;
+};
+
+export type MoveCollectionInput = {
+  collectionId: Scalars['ID'];
+  parentId: Scalars['ID'];
+  index: Scalars['Int'];
+};
+
+export type CreateCollectionTranslationInput = {
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  description: Scalars['String'];
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateCollectionTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateCollectionInput = {
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  parentId?: Maybe<Scalars['ID']>;
+  filters: Array<ConfigurableOperationInput>;
+  translations: Array<CreateCollectionTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateCollectionInput = {
+  id: Scalars['ID'];
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  parentId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  filters?: Maybe<Array<ConfigurableOperationInput>>;
+  translations?: Maybe<Array<UpdateCollectionTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CountryTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+};
+
+export type CreateCountryInput = {
+  code: Scalars['String'];
+  translations: Array<CountryTranslationInput>;
+  enabled: Scalars['Boolean'];
+};
+
+export type UpdateCountryInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<CountryTranslationInput>>;
+  enabled?: Maybe<Scalars['Boolean']>;
+};
+
+export type CountryListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CountrySortParameter>;
+  filter?: Maybe<CountryFilterParameter>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+  __typename?: 'CustomerGroupList';
+  items: Array<CustomerGroup>;
+  totalItems: Scalars['Int'];
+};
+
+export type CustomerGroupListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerGroupSortParameter>;
+  filter?: Maybe<CustomerGroupFilterParameter>;
+};
+
+export type CreateCustomerGroupInput = {
+  name: Scalars['String'];
+  customerIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateCustomerGroupInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+};
+
+export type Customer = Node & {
+  __typename?: 'Customer';
+  groups: Array<CustomerGroup>;
+  history: HistoryEntryList;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  title?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress: Scalars['String'];
+  addresses?: Maybe<Array<Address>>;
+  orders: OrderList;
+  user?: Maybe<User>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+
+export type CustomerHistoryArgs = {
+  options?: Maybe<HistoryEntryListOptions>;
+};
+
+
+export type CustomerOrdersArgs = {
+  options?: Maybe<OrderListOptions>;
+};
+
+export type UpdateCustomerInput = {
+  id: Scalars['ID'];
+  title?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CustomerListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<CustomerSortParameter>;
+  filter?: Maybe<CustomerFilterParameter>;
+};
+
+export type AddNoteToCustomerInput = {
+  id: Scalars['ID'];
+  note: Scalars['String'];
+  isPublic: Scalars['Boolean'];
+};
+
+export type UpdateCustomerNoteInput = {
+  noteId: Scalars['ID'];
+  note: Scalars['String'];
+};
+
+export type CreateCustomerResult = Customer | EmailAddressConflictError;
+
+export type UpdateCustomerResult = Customer | EmailAddressConflictError;
+
+export type Facet = Node & {
+  __typename?: 'Facet';
+  isPrivate: Scalars['Boolean'];
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  values: Array<FacetValue>;
+  translations: Array<FacetTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FacetListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<FacetSortParameter>;
+  filter?: Maybe<FacetFilterParameter>;
+};
+
+export type FacetTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateFacetInput = {
+  code: Scalars['String'];
+  isPrivate: Scalars['Boolean'];
+  translations: Array<FacetTranslationInput>;
+  values?: Maybe<Array<CreateFacetValueWithFacetInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateFacetInput = {
+  id: Scalars['ID'];
+  isPrivate?: Maybe<Scalars['Boolean']>;
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<FacetTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FacetValueTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateFacetValueWithFacetInput = {
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslationInput>;
+};
+
+export type CreateFacetValueInput = {
+  facetId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateFacetValueInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<FacetValueTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+};
+
+export type UpdateGlobalSettingsInput = {
+  availableLanguages?: Maybe<Array<LanguageCode>>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+/**
+ * Returned when the default LanguageCode of a Channel is no longer found in the `availableLanguages`
+ * of the GlobalSettings
+ */
+export type ChannelDefaultLanguageError = ErrorResult & {
+  __typename?: 'ChannelDefaultLanguageError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  language: Scalars['String'];
+  channelCode: Scalars['String'];
+};
+
+export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguageError;
+
+/**
+ * @description
+ * The state of a Job in the JobQueue
+ * 
+ * @docsCategory common
+ */
+export enum JobState {
+  PENDING = 'PENDING',
+  RUNNING = 'RUNNING',
+  COMPLETED = 'COMPLETED',
+  RETRYING = 'RETRYING',
+  FAILED = 'FAILED'
+}
+
+export type JobListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<JobSortParameter>;
+  filter?: Maybe<JobFilterParameter>;
+};
+
+export type JobList = PaginatedList & {
+  __typename?: 'JobList';
+  items: Array<Job>;
+  totalItems: Scalars['Int'];
+};
+
+export type Job = Node & {
+  __typename?: 'Job';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  startedAt?: Maybe<Scalars['DateTime']>;
+  settledAt?: Maybe<Scalars['DateTime']>;
+  queueName: Scalars['String'];
+  state: JobState;
+  progress: Scalars['Float'];
+  data?: Maybe<Scalars['JSON']>;
+  result?: Maybe<Scalars['JSON']>;
+  error?: Maybe<Scalars['JSON']>;
+  isSettled: Scalars['Boolean'];
+  duration: Scalars['Int'];
+};
+
+export type JobQueue = {
+  __typename?: 'JobQueue';
+  name: Scalars['String'];
+  running: Scalars['Boolean'];
 };
 
 export type Order = Node & {
@@ -2666,79 +1415,6 @@ export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
 };
 
-export type OrderAddress = {
-  __typename?: 'OrderAddress';
-  fullName?: Maybe<Scalars['String']>;
-  company?: Maybe<Scalars['String']>;
-  streetLine1?: Maybe<Scalars['String']>;
-  streetLine2?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  province?: Maybe<Scalars['String']>;
-  postalCode?: Maybe<Scalars['String']>;
-  country?: Maybe<Scalars['String']>;
-  countryCode?: Maybe<Scalars['String']>;
-  phoneNumber?: Maybe<Scalars['String']>;
-};
-
-export type OrderFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  code?: Maybe<StringOperators>;
-  state?: Maybe<StringOperators>;
-  active?: Maybe<BooleanOperators>;
-  totalQuantity?: Maybe<NumberOperators>;
-  subTotalBeforeTax?: Maybe<NumberOperators>;
-  subTotal?: Maybe<NumberOperators>;
-  currencyCode?: Maybe<StringOperators>;
-  shipping?: Maybe<NumberOperators>;
-  shippingWithTax?: Maybe<NumberOperators>;
-  totalBeforeTax?: Maybe<NumberOperators>;
-  total?: Maybe<NumberOperators>;
-};
-
-export type OrderItem = Node & {
-  __typename?: 'OrderItem';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  cancelled: Scalars['Boolean'];
-  unitPrice: Scalars['Int'];
-  unitPriceWithTax: Scalars['Int'];
-  unitPriceIncludesTax: Scalars['Boolean'];
-  taxRate: Scalars['Float'];
-  adjustments: Array<Adjustment>;
-  fulfillment?: Maybe<Fulfillment>;
-  refundId?: Maybe<Scalars['ID']>;
-};
-
-export type OrderLine = Node & {
-  __typename?: 'OrderLine';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  productVariant: ProductVariant;
-  featuredAsset?: Maybe<Asset>;
-  unitPrice: Scalars['Int'];
-  unitPriceWithTax: Scalars['Int'];
-  quantity: Scalars['Int'];
-  items: Array<OrderItem>;
-  totalPrice: Scalars['Int'];
-  adjustments: Array<Adjustment>;
-  order: Order;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type OrderLineInput = {
-  orderLineId: Scalars['ID'];
-  quantity: Scalars['Int'];
-};
-
-export type OrderList = PaginatedList & {
-  __typename?: 'OrderList';
-  items: Array<Order>;
-  totalItems: Scalars['Int'];
-};
-
 export type OrderListOptions = {
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
@@ -2746,30 +1422,132 @@ export type OrderListOptions = {
   filter?: Maybe<OrderFilterParameter>;
 };
 
-export type OrderProcessState = {
-  __typename?: 'OrderProcessState';
-  name: Scalars['String'];
-  to: Array<Scalars['String']>;
+export type UpdateOrderInput = {
+  id: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type OrderSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
-  state?: Maybe<SortOrder>;
-  totalQuantity?: Maybe<SortOrder>;
-  subTotalBeforeTax?: Maybe<SortOrder>;
-  subTotal?: Maybe<SortOrder>;
-  shipping?: Maybe<SortOrder>;
-  shippingWithTax?: Maybe<SortOrder>;
-  totalBeforeTax?: Maybe<SortOrder>;
-  total?: Maybe<SortOrder>;
+export type FulfillOrderInput = {
+  lines: Array<OrderLineInput>;
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
 };
 
-/** Returned if there is an error in transitioning the Order state */
-export type OrderStateTransitionError = ErrorResult & {
-  __typename?: 'OrderStateTransitionError';
+export type CancelOrderInput = {
+  /** The id of the order to be cancelled */
+  orderId: Scalars['ID'];
+  /** Optionally specify which OrderLines to cancel. If not provided, all OrderLines will be cancelled */
+  lines?: Maybe<Array<OrderLineInput>>;
+  reason?: Maybe<Scalars['String']>;
+};
+
+export type RefundOrderInput = {
+  lines: Array<OrderLineInput>;
+  shipping: Scalars['Int'];
+  adjustment: Scalars['Int'];
+  paymentId: Scalars['ID'];
+  reason?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineInput = {
+  orderLineId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
+export type SettleRefundInput = {
+  id: Scalars['ID'];
+  transactionId: Scalars['String'];
+};
+
+export type AddNoteToOrderInput = {
+  id: Scalars['ID'];
+  note: Scalars['String'];
+  isPublic: Scalars['Boolean'];
+};
+
+export type UpdateOrderNoteInput = {
+  noteId: Scalars['ID'];
+  note?: Maybe<Scalars['String']>;
+  isPublic?: Maybe<Scalars['Boolean']>;
+};
+
+/** Returned if the Payment settlement fails */
+export type SettlePaymentError = ErrorResult & {
+  __typename?: 'SettlePaymentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  paymentErrorMessage: Scalars['String'];
+};
+
+/** Returned if no OrderLines have been specified for the operation */
+export type EmptyOrderLineSelectionError = ErrorResult & {
+  __typename?: 'EmptyOrderLineSelectionError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if the specified items are already part of a Fulfillment */
+export type ItemsAlreadyFulfilledError = ErrorResult & {
+  __typename?: 'ItemsAlreadyFulfilledError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an operation has specified OrderLines from multiple Orders */
+export type MultipleOrderError = ErrorResult & {
+  __typename?: 'MultipleOrderError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an attempting to cancel lines from an Order which is still active */
+export type CancelActiveOrderError = ErrorResult & {
+  __typename?: 'CancelActiveOrderError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  orderState: Scalars['String'];
+};
+
+/** Returned if an attempting to refund a Payment against OrderLines from a different Order */
+export type PaymentOrderMismatchError = ErrorResult & {
+  __typename?: 'PaymentOrderMismatchError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an attempting to refund an Order which is not in the expected state */
+export type RefundOrderStateError = ErrorResult & {
+  __typename?: 'RefundOrderStateError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  orderState: Scalars['String'];
+};
+
+/** Returned if an attempting to refund an Order but neither items nor shipping refund was specified */
+export type NothingToRefundError = ErrorResult & {
+  __typename?: 'NothingToRefundError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an attempting to refund an OrderItem which has already been refunded */
+export type AlreadyRefundedError = ErrorResult & {
+  __typename?: 'AlreadyRefundedError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  refundId: Scalars['ID'];
+};
+
+/** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
+export type QuantityTooGreatError = ErrorResult & {
+  __typename?: 'QuantityTooGreatError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned when there is an error in transitioning the Refund state */
+export type RefundStateTransitionError = ErrorResult & {
+  __typename?: 'RefundStateTransitionError';
   errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
@@ -2777,42 +1555,39 @@ export type OrderStateTransitionError = ErrorResult & {
   toState: Scalars['String'];
 };
 
-export type PaginatedList = {
-  items: Array<Node>;
-  totalItems: Scalars['Int'];
+/** Returned when there is an error in transitioning the Payment state */
+export type PaymentStateTransitionError = ErrorResult & {
+  __typename?: 'PaymentStateTransitionError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  transitionError: Scalars['String'];
+  fromState: Scalars['String'];
+  toState: Scalars['String'];
 };
 
-export type Payment = Node & {
-  __typename?: 'Payment';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  method: Scalars['String'];
-  amount: Scalars['Int'];
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  refunds: Array<Refund>;
-  metadata?: Maybe<Scalars['JSON']>;
+/** Returned when there is an error in transitioning the Fulfillment state */
+export type FulfillmentStateTransitionError = ErrorResult & {
+  __typename?: 'FulfillmentStateTransitionError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  transitionError: Scalars['String'];
+  fromState: Scalars['String'];
+  toState: Scalars['String'];
 };
 
-export type PaymentMethod = Node & {
-  __typename?: 'PaymentMethod';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  code: Scalars['String'];
-  enabled: Scalars['Boolean'];
-  configArgs: Array<ConfigArg>;
-  definition: ConfigurableOperationDefinition;
-};
+export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
-export type PaymentMethodFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  code?: Maybe<StringOperators>;
-  enabled?: Maybe<BooleanOperators>;
-};
+export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
+
+export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError;
+
+export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
+
+export type RefundOrderResult = Refund | QuantityTooGreatError | NothingToRefundError | OrderStateTransitionError | MultipleOrderError | PaymentOrderMismatchError | RefundOrderStateError | AlreadyRefundedError | RefundStateTransitionError;
+
+export type SettleRefundResult = Refund | RefundStateTransitionError;
+
+export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
 
 export type PaymentMethodList = PaginatedList & {
   __typename?: 'PaymentMethodList';
@@ -2827,29 +1602,1418 @@ export type PaymentMethodListOptions = {
   filter?: Maybe<PaymentMethodFilterParameter>;
 };
 
-export type PaymentMethodSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
+export type UpdatePaymentMethodInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  configArgs?: Maybe<Array<ConfigArgInput>>;
 };
 
-/** Returned if an attempting to refund a Payment against OrderLines from a different Order */
-export type PaymentOrderMismatchError = ErrorResult & {
-  __typename?: 'PaymentOrderMismatchError';
+export type ProductOptionGroupTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateProductOptionGroupInput = {
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
+  options: Array<CreateGroupOptionInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductOptionGroupInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductOptionTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateGroupOptionInput = {
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
+};
+
+export type CreateProductOptionInput = {
+  productOptionGroupId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<ProductOptionGroupTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductOptionInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type SearchResult = {
+  __typename?: 'SearchResult';
+  enabled: Scalars['Boolean'];
+  /** An array of ids of the Collections in which this result appears */
+  channelIds: Array<Scalars['ID']>;
+  sku: Scalars['String'];
+  slug: Scalars['String'];
+  productId: Scalars['ID'];
+  productName: Scalars['String'];
+  /** @deprecated Use `productAsset.preview` instead */
+  productPreview: Scalars['String'];
+  productAsset?: Maybe<SearchResultAsset>;
+  productVariantId: Scalars['ID'];
+  productVariantName: Scalars['String'];
+  /** @deprecated Use `productVariantAsset.preview` instead */
+  productVariantPreview: Scalars['String'];
+  productVariantAsset?: Maybe<SearchResultAsset>;
+  price: SearchResultPrice;
+  priceWithTax: SearchResultPrice;
+  currencyCode: CurrencyCode;
+  description: Scalars['String'];
+  facetIds: Array<Scalars['ID']>;
+  facetValueIds: Array<Scalars['ID']>;
+  /** An array of ids of the Collections in which this result appears */
+  collectionIds: Array<Scalars['ID']>;
+  /** A relevence score for the result. Differs between database implementations */
+  score: Scalars['Float'];
+};
+
+export type Product = Node & {
+  __typename?: 'Product';
+  enabled: Scalars['Boolean'];
+  channels: Array<Channel>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  slug: Scalars['String'];
+  description: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  variants: Array<ProductVariant>;
+  optionGroups: Array<ProductOptionGroup>;
+  facetValues: Array<FacetValue>;
+  translations: Array<ProductTranslation>;
+  collections: Array<Collection>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductVariant = Node & {
+  __typename?: 'ProductVariant';
+  enabled: Scalars['Boolean'];
+  stockOnHand: Scalars['Int'];
+  trackInventory: Scalars['Boolean'];
+  stockMovements: StockMovementList;
+  id: Scalars['ID'];
+  product: Product;
+  productId: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  sku: Scalars['String'];
+  name: Scalars['String'];
+  featuredAsset?: Maybe<Asset>;
+  assets: Array<Asset>;
+  price: Scalars['Int'];
+  currencyCode: CurrencyCode;
+  priceIncludesTax: Scalars['Boolean'];
+  priceWithTax: Scalars['Int'];
+  taxRateApplied: TaxRate;
+  taxCategory: TaxCategory;
+  options: Array<ProductOption>;
+  facetValues: Array<FacetValue>;
+  translations: Array<ProductVariantTranslation>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+
+export type ProductVariantStockMovementsArgs = {
+  options?: Maybe<StockMovementListOptions>;
+};
+
+export type StockMovementListOptions = {
+  type?: Maybe<StockMovementType>;
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+};
+
+export type ProductListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductSortParameter>;
+  filter?: Maybe<ProductFilterParameter>;
+};
+
+export type ProductTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateProductInput = {
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  translations: Array<ProductTranslationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductInput = {
+  id: Scalars['ID'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  translations?: Maybe<Array<ProductTranslationInput>>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductVariantTranslationInput = {
+  id?: Maybe<Scalars['ID']>;
+  languageCode: LanguageCode;
+  name?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateProductVariantOptionInput = {
+  optionGroupId: Scalars['ID'];
+  code: Scalars['String'];
+  translations: Array<ProductOptionTranslationInput>;
+};
+
+export type CreateProductVariantInput = {
+  productId: Scalars['ID'];
+  translations: Array<ProductVariantTranslationInput>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  sku: Scalars['String'];
+  price?: Maybe<Scalars['Int']>;
+  taxCategoryId?: Maybe<Scalars['ID']>;
+  optionIds?: Maybe<Array<Scalars['ID']>>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  stockOnHand?: Maybe<Scalars['Int']>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductVariantInput = {
+  id: Scalars['ID'];
+  enabled?: Maybe<Scalars['Boolean']>;
+  translations?: Maybe<Array<ProductVariantTranslationInput>>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  sku?: Maybe<Scalars['String']>;
+  taxCategoryId?: Maybe<Scalars['ID']>;
+  price?: Maybe<Scalars['Int']>;
+  featuredAssetId?: Maybe<Scalars['ID']>;
+  assetIds?: Maybe<Array<Scalars['ID']>>;
+  stockOnHand?: Maybe<Scalars['Int']>;
+  trackInventory?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type AssignProductsToChannelInput = {
+  productIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+  priceFactor?: Maybe<Scalars['Float']>;
+};
+
+export type RemoveProductsFromChannelInput = {
+  productIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
+};
+
+export type ProductOptionInUseError = ErrorResult & {
+  __typename?: 'ProductOptionInUseError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  optionGroupCode: Scalars['String'];
+  productVariantCount: Scalars['Int'];
+};
+
+export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
+
+export type PromotionListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<PromotionSortParameter>;
+  filter?: Maybe<PromotionFilterParameter>;
+};
+
+export type CreatePromotionInput = {
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  startsAt?: Maybe<Scalars['DateTime']>;
+  endsAt?: Maybe<Scalars['DateTime']>;
+  couponCode?: Maybe<Scalars['String']>;
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
+  conditions: Array<ConfigurableOperationInput>;
+  actions: Array<ConfigurableOperationInput>;
+};
+
+export type UpdatePromotionInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  startsAt?: Maybe<Scalars['DateTime']>;
+  endsAt?: Maybe<Scalars['DateTime']>;
+  couponCode?: Maybe<Scalars['String']>;
+  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
+  conditions?: Maybe<Array<ConfigurableOperationInput>>;
+  actions?: Maybe<Array<ConfigurableOperationInput>>;
+};
+
+/** Returned if a PromotionCondition has neither a couponCode nor any conditions set */
+export type MissingConditionsError = ErrorResult & {
+  __typename?: 'MissingConditionsError';
   errorCode: ErrorCode;
   message: Scalars['String'];
 };
 
-/** Returned when there is an error in transitioning the Payment state */
-export type PaymentStateTransitionError = ErrorResult & {
-  __typename?: 'PaymentStateTransitionError';
+export type CreatePromotionResult = Promotion | MissingConditionsError;
+
+export type UpdatePromotionResult = Promotion | MissingConditionsError;
+
+export type RoleListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<RoleSortParameter>;
+  filter?: Maybe<RoleFilterParameter>;
+};
+
+export type CreateRoleInput = {
+  code: Scalars['String'];
+  description: Scalars['String'];
+  permissions: Array<Permission>;
+  channelIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateRoleInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  permissions?: Maybe<Array<Permission>>;
+  channelIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type ShippingMethodListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ShippingMethodSortParameter>;
+  filter?: Maybe<ShippingMethodFilterParameter>;
+};
+
+export type CreateShippingMethodInput = {
+  code: Scalars['String'];
+  description: Scalars['String'];
+  checker: ConfigurableOperationInput;
+  calculator: ConfigurableOperationInput;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateShippingMethodInput = {
+  id: Scalars['ID'];
+  code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  checker?: Maybe<ConfigurableOperationInput>;
+  calculator?: Maybe<ConfigurableOperationInput>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type TestShippingMethodInput = {
+  checker: ConfigurableOperationInput;
+  calculator: ConfigurableOperationInput;
+  shippingAddress: CreateAddressInput;
+  lines: Array<TestShippingMethodOrderLineInput>;
+};
+
+export type TestEligibleShippingMethodsInput = {
+  shippingAddress: CreateAddressInput;
+  lines: Array<TestShippingMethodOrderLineInput>;
+};
+
+export type TestShippingMethodOrderLineInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
+export type TestShippingMethodResult = {
+  __typename?: 'TestShippingMethodResult';
+  eligible: Scalars['Boolean'];
+  quote?: Maybe<TestShippingMethodQuote>;
+};
+
+export type TestShippingMethodQuote = {
+  __typename?: 'TestShippingMethodQuote';
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  description: Scalars['String'];
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateTaxCategoryInput = {
+  name: Scalars['String'];
+};
+
+export type UpdateTaxCategoryInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+};
+
+export type TaxRateListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TaxRateSortParameter>;
+  filter?: Maybe<TaxRateFilterParameter>;
+};
+
+export type CreateTaxRateInput = {
+  name: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  value: Scalars['Float'];
+  categoryId: Scalars['ID'];
+  zoneId: Scalars['ID'];
+  customerGroupId?: Maybe<Scalars['ID']>;
+};
+
+export type UpdateTaxRateInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+  value?: Maybe<Scalars['Float']>;
+  enabled?: Maybe<Scalars['Boolean']>;
+  categoryId?: Maybe<Scalars['ID']>;
+  zoneId?: Maybe<Scalars['ID']>;
+  customerGroupId?: Maybe<Scalars['ID']>;
+};
+
+export type CreateZoneInput = {
+  name: Scalars['String'];
+  memberIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateZoneInput = {
+  id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
+};
+
+
+
+
+export enum AdjustmentType {
+  TAX = 'TAX',
+  PROMOTION = 'PROMOTION',
+  SHIPPING = 'SHIPPING',
+  REFUND = 'REFUND',
+  TAX_REFUND = 'TAX_REFUND',
+  PROMOTION_REFUND = 'PROMOTION_REFUND',
+  SHIPPING_REFUND = 'SHIPPING_REFUND'
+}
+
+export type Adjustment = {
+  __typename?: 'Adjustment';
+  adjustmentSource: Scalars['String'];
+  type: AdjustmentType;
+  description: Scalars['String'];
+  amount: Scalars['Int'];
+};
+
+export type ConfigArg = {
+  __typename?: 'ConfigArg';
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type ConfigArgDefinition = {
+  __typename?: 'ConfigArgDefinition';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  ui?: Maybe<Scalars['JSON']>;
+};
+
+export type ConfigurableOperation = {
+  __typename?: 'ConfigurableOperation';
+  code: Scalars['String'];
+  args: Array<ConfigArg>;
+};
+
+export type ConfigurableOperationDefinition = {
+  __typename?: 'ConfigurableOperationDefinition';
+  code: Scalars['String'];
+  args: Array<ConfigArgDefinition>;
+  description: Scalars['String'];
+};
+
+export enum DeletionResult {
+  /** The entity was successfully deleted */
+  DELETED = 'DELETED',
+  /** Deletion did not take place, reason given in message */
+  NOT_DELETED = 'NOT_DELETED'
+}
+
+export type DeletionResponse = {
+  __typename?: 'DeletionResponse';
+  result: DeletionResult;
+  message?: Maybe<Scalars['String']>;
+};
+
+export type ConfigArgInput = {
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type ConfigurableOperationInput = {
+  code: Scalars['String'];
+  arguments: Array<ConfigArgInput>;
+};
+
+export type PaginatedList = {
+  items: Array<Node>;
+  totalItems: Scalars['Int'];
+};
+
+export type Node = {
+  id: Scalars['ID'];
+};
+
+export enum SortOrder {
+  ASC = 'ASC',
+  DESC = 'DESC'
+}
+
+export enum ErrorCode {
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+  MIME_TYPE_ERROR = 'MIME_TYPE_ERROR',
+  LANGUAGE_NOT_AVAILABLE_ERROR = 'LANGUAGE_NOT_AVAILABLE_ERROR',
+  CHANNEL_DEFAULT_LANGUAGE_ERROR = 'CHANNEL_DEFAULT_LANGUAGE_ERROR',
+  SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
+  EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
+  ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+  MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
+  CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
+  PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
+  REFUND_ORDER_STATE_ERROR = 'REFUND_ORDER_STATE_ERROR',
+  NOTHING_TO_REFUND_ERROR = 'NOTHING_TO_REFUND_ERROR',
+  ALREADY_REFUNDED_ERROR = 'ALREADY_REFUNDED_ERROR',
+  QUANTITY_TOO_GREAT_ERROR = 'QUANTITY_TOO_GREAT_ERROR',
+  REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
+  PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
+  FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+  PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
+  MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
+  NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
+  INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
+  ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
+  EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR'
+}
+
+export type ErrorResult = {
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+export type StringOperators = {
+  eq?: Maybe<Scalars['String']>;
+  contains?: Maybe<Scalars['String']>;
+};
+
+export type BooleanOperators = {
+  eq?: Maybe<Scalars['Boolean']>;
+};
+
+export type NumberRange = {
+  start: Scalars['Float'];
+  end: Scalars['Float'];
+};
+
+export type NumberOperators = {
+  eq?: Maybe<Scalars['Float']>;
+  lt?: Maybe<Scalars['Float']>;
+  lte?: Maybe<Scalars['Float']>;
+  gt?: Maybe<Scalars['Float']>;
+  gte?: Maybe<Scalars['Float']>;
+  between?: Maybe<NumberRange>;
+};
+
+export type DateRange = {
+  start: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+};
+
+export type DateOperators = {
+  eq?: Maybe<Scalars['DateTime']>;
+  before?: Maybe<Scalars['DateTime']>;
+  after?: Maybe<Scalars['DateTime']>;
+  between?: Maybe<DateRange>;
+};
+
+export enum LogicalOperator {
+  AND = 'AND',
+  OR = 'OR'
+}
+
+export type SearchInput = {
+  term?: Maybe<Scalars['String']>;
+  facetValueIds?: Maybe<Array<Scalars['ID']>>;
+  facetValueOperator?: Maybe<LogicalOperator>;
+  collectionId?: Maybe<Scalars['ID']>;
+  collectionSlug?: Maybe<Scalars['String']>;
+  groupByProduct?: Maybe<Scalars['Boolean']>;
+  take?: Maybe<Scalars['Int']>;
+  skip?: Maybe<Scalars['Int']>;
+  sort?: Maybe<SearchResultSortParameter>;
+};
+
+export type SearchResultSortParameter = {
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+};
+
+export type CreateCustomerInput = {
+  title?: Maybe<Scalars['String']>;
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  emailAddress: Scalars['String'];
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateAddressInput = {
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1: Scalars['String'];
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  countryCode: Scalars['String'];
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateAddressInput = {
+  id: Scalars['ID'];
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1?: Maybe<Scalars['String']>;
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+/** Indicates that an operation succeeded, where we do not want to return any more specific information. */
+export type Success = {
+  __typename?: 'Success';
+  success: Scalars['Boolean'];
+};
+
+/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+export type NativeAuthStrategyError = ErrorResult & {
+  __typename?: 'NativeAuthStrategyError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if the user authentication credentials are not valid */
+export type InvalidCredentialsError = ErrorResult & {
+  __typename?: 'InvalidCredentialsError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if there is an error in transitioning the Order state */
+export type OrderStateTransitionError = ErrorResult & {
+  __typename?: 'OrderStateTransitionError';
   errorCode: ErrorCode;
   message: Scalars['String'];
   transitionError: Scalars['String'];
   fromState: Scalars['String'];
   toState: Scalars['String'];
 };
+
+/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+export type EmailAddressConflictError = ErrorResult & {
+  __typename?: 'EmailAddressConflictError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/**
+ * @description
+ * ISO 4217 currency code
+ * 
+ * @docsCategory common
+ */
+export enum CurrencyCode {
+  /** United Arab Emirates dirham */
+  AED = 'AED',
+  /** Afghan afghani */
+  AFN = 'AFN',
+  /** Albanian lek */
+  ALL = 'ALL',
+  /** Armenian dram */
+  AMD = 'AMD',
+  /** Netherlands Antillean guilder */
+  ANG = 'ANG',
+  /** Angolan kwanza */
+  AOA = 'AOA',
+  /** Argentine peso */
+  ARS = 'ARS',
+  /** Australian dollar */
+  AUD = 'AUD',
+  /** Aruban florin */
+  AWG = 'AWG',
+  /** Azerbaijani manat */
+  AZN = 'AZN',
+  /** Bosnia and Herzegovina convertible mark */
+  BAM = 'BAM',
+  /** Barbados dollar */
+  BBD = 'BBD',
+  /** Bangladeshi taka */
+  BDT = 'BDT',
+  /** Bulgarian lev */
+  BGN = 'BGN',
+  /** Bahraini dinar */
+  BHD = 'BHD',
+  /** Burundian franc */
+  BIF = 'BIF',
+  /** Bermudian dollar */
+  BMD = 'BMD',
+  /** Brunei dollar */
+  BND = 'BND',
+  /** Boliviano */
+  BOB = 'BOB',
+  /** Brazilian real */
+  BRL = 'BRL',
+  /** Bahamian dollar */
+  BSD = 'BSD',
+  /** Bhutanese ngultrum */
+  BTN = 'BTN',
+  /** Botswana pula */
+  BWP = 'BWP',
+  /** Belarusian ruble */
+  BYN = 'BYN',
+  /** Belize dollar */
+  BZD = 'BZD',
+  /** Canadian dollar */
+  CAD = 'CAD',
+  /** Congolese franc */
+  CDF = 'CDF',
+  /** Swiss franc */
+  CHF = 'CHF',
+  /** Chilean peso */
+  CLP = 'CLP',
+  /** Renminbi (Chinese) yuan */
+  CNY = 'CNY',
+  /** Colombian peso */
+  COP = 'COP',
+  /** Costa Rican colon */
+  CRC = 'CRC',
+  /** Cuban convertible peso */
+  CUC = 'CUC',
+  /** Cuban peso */
+  CUP = 'CUP',
+  /** Cape Verde escudo */
+  CVE = 'CVE',
+  /** Czech koruna */
+  CZK = 'CZK',
+  /** Djiboutian franc */
+  DJF = 'DJF',
+  /** Danish krone */
+  DKK = 'DKK',
+  /** Dominican peso */
+  DOP = 'DOP',
+  /** Algerian dinar */
+  DZD = 'DZD',
+  /** Egyptian pound */
+  EGP = 'EGP',
+  /** Eritrean nakfa */
+  ERN = 'ERN',
+  /** Ethiopian birr */
+  ETB = 'ETB',
+  /** Euro */
+  EUR = 'EUR',
+  /** Fiji dollar */
+  FJD = 'FJD',
+  /** Falkland Islands pound */
+  FKP = 'FKP',
+  /** Pound sterling */
+  GBP = 'GBP',
+  /** Georgian lari */
+  GEL = 'GEL',
+  /** Ghanaian cedi */
+  GHS = 'GHS',
+  /** Gibraltar pound */
+  GIP = 'GIP',
+  /** Gambian dalasi */
+  GMD = 'GMD',
+  /** Guinean franc */
+  GNF = 'GNF',
+  /** Guatemalan quetzal */
+  GTQ = 'GTQ',
+  /** Guyanese dollar */
+  GYD = 'GYD',
+  /** Hong Kong dollar */
+  HKD = 'HKD',
+  /** Honduran lempira */
+  HNL = 'HNL',
+  /** Croatian kuna */
+  HRK = 'HRK',
+  /** Haitian gourde */
+  HTG = 'HTG',
+  /** Hungarian forint */
+  HUF = 'HUF',
+  /** Indonesian rupiah */
+  IDR = 'IDR',
+  /** Israeli new shekel */
+  ILS = 'ILS',
+  /** Indian rupee */
+  INR = 'INR',
+  /** Iraqi dinar */
+  IQD = 'IQD',
+  /** Iranian rial */
+  IRR = 'IRR',
+  /** Icelandic króna */
+  ISK = 'ISK',
+  /** Jamaican dollar */
+  JMD = 'JMD',
+  /** Jordanian dinar */
+  JOD = 'JOD',
+  /** Japanese yen */
+  JPY = 'JPY',
+  /** Kenyan shilling */
+  KES = 'KES',
+  /** Kyrgyzstani som */
+  KGS = 'KGS',
+  /** Cambodian riel */
+  KHR = 'KHR',
+  /** Comoro franc */
+  KMF = 'KMF',
+  /** North Korean won */
+  KPW = 'KPW',
+  /** South Korean won */
+  KRW = 'KRW',
+  /** Kuwaiti dinar */
+  KWD = 'KWD',
+  /** Cayman Islands dollar */
+  KYD = 'KYD',
+  /** Kazakhstani tenge */
+  KZT = 'KZT',
+  /** Lao kip */
+  LAK = 'LAK',
+  /** Lebanese pound */
+  LBP = 'LBP',
+  /** Sri Lankan rupee */
+  LKR = 'LKR',
+  /** Liberian dollar */
+  LRD = 'LRD',
+  /** Lesotho loti */
+  LSL = 'LSL',
+  /** Libyan dinar */
+  LYD = 'LYD',
+  /** Moroccan dirham */
+  MAD = 'MAD',
+  /** Moldovan leu */
+  MDL = 'MDL',
+  /** Malagasy ariary */
+  MGA = 'MGA',
+  /** Macedonian denar */
+  MKD = 'MKD',
+  /** Myanmar kyat */
+  MMK = 'MMK',
+  /** Mongolian tögrög */
+  MNT = 'MNT',
+  /** Macanese pataca */
+  MOP = 'MOP',
+  /** Mauritanian ouguiya */
+  MRU = 'MRU',
+  /** Mauritian rupee */
+  MUR = 'MUR',
+  /** Maldivian rufiyaa */
+  MVR = 'MVR',
+  /** Malawian kwacha */
+  MWK = 'MWK',
+  /** Mexican peso */
+  MXN = 'MXN',
+  /** Malaysian ringgit */
+  MYR = 'MYR',
+  /** Mozambican metical */
+  MZN = 'MZN',
+  /** Namibian dollar */
+  NAD = 'NAD',
+  /** Nigerian naira */
+  NGN = 'NGN',
+  /** Nicaraguan córdoba */
+  NIO = 'NIO',
+  /** Norwegian krone */
+  NOK = 'NOK',
+  /** Nepalese rupee */
+  NPR = 'NPR',
+  /** New Zealand dollar */
+  NZD = 'NZD',
+  /** Omani rial */
+  OMR = 'OMR',
+  /** Panamanian balboa */
+  PAB = 'PAB',
+  /** Peruvian sol */
+  PEN = 'PEN',
+  /** Papua New Guinean kina */
+  PGK = 'PGK',
+  /** Philippine peso */
+  PHP = 'PHP',
+  /** Pakistani rupee */
+  PKR = 'PKR',
+  /** Polish złoty */
+  PLN = 'PLN',
+  /** Paraguayan guaraní */
+  PYG = 'PYG',
+  /** Qatari riyal */
+  QAR = 'QAR',
+  /** Romanian leu */
+  RON = 'RON',
+  /** Serbian dinar */
+  RSD = 'RSD',
+  /** Russian ruble */
+  RUB = 'RUB',
+  /** Rwandan franc */
+  RWF = 'RWF',
+  /** Saudi riyal */
+  SAR = 'SAR',
+  /** Solomon Islands dollar */
+  SBD = 'SBD',
+  /** Seychelles rupee */
+  SCR = 'SCR',
+  /** Sudanese pound */
+  SDG = 'SDG',
+  /** Swedish krona/kronor */
+  SEK = 'SEK',
+  /** Singapore dollar */
+  SGD = 'SGD',
+  /** Saint Helena pound */
+  SHP = 'SHP',
+  /** Sierra Leonean leone */
+  SLL = 'SLL',
+  /** Somali shilling */
+  SOS = 'SOS',
+  /** Surinamese dollar */
+  SRD = 'SRD',
+  /** South Sudanese pound */
+  SSP = 'SSP',
+  /** São Tomé and Príncipe dobra */
+  STN = 'STN',
+  /** Salvadoran colón */
+  SVC = 'SVC',
+  /** Syrian pound */
+  SYP = 'SYP',
+  /** Swazi lilangeni */
+  SZL = 'SZL',
+  /** Thai baht */
+  THB = 'THB',
+  /** Tajikistani somoni */
+  TJS = 'TJS',
+  /** Turkmenistan manat */
+  TMT = 'TMT',
+  /** Tunisian dinar */
+  TND = 'TND',
+  /** Tongan paʻanga */
+  TOP = 'TOP',
+  /** Turkish lira */
+  TRY = 'TRY',
+  /** Trinidad and Tobago dollar */
+  TTD = 'TTD',
+  /** New Taiwan dollar */
+  TWD = 'TWD',
+  /** Tanzanian shilling */
+  TZS = 'TZS',
+  /** Ukrainian hryvnia */
+  UAH = 'UAH',
+  /** Ugandan shilling */
+  UGX = 'UGX',
+  /** United States dollar */
+  USD = 'USD',
+  /** Uruguayan peso */
+  UYU = 'UYU',
+  /** Uzbekistan som */
+  UZS = 'UZS',
+  /** Venezuelan bolívar soberano */
+  VES = 'VES',
+  /** Vietnamese đồng */
+  VND = 'VND',
+  /** Vanuatu vatu */
+  VUV = 'VUV',
+  /** Samoan tala */
+  WST = 'WST',
+  /** CFA franc BEAC */
+  XAF = 'XAF',
+  /** East Caribbean dollar */
+  XCD = 'XCD',
+  /** CFA franc BCEAO */
+  XOF = 'XOF',
+  /** CFP franc (franc Pacifique) */
+  XPF = 'XPF',
+  /** Yemeni rial */
+  YER = 'YER',
+  /** South African rand */
+  ZAR = 'ZAR',
+  /** Zambian kwacha */
+  ZMW = 'ZMW',
+  /** Zimbabwean dollar */
+  ZWL = 'ZWL'
+}
+
+export type CustomField = {
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+};
+
+export type StringCustomFieldConfig = CustomField & {
+  __typename?: 'StringCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  length?: Maybe<Scalars['Int']>;
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  pattern?: Maybe<Scalars['String']>;
+  options?: Maybe<Array<StringFieldOption>>;
+};
+
+export type StringFieldOption = {
+  __typename?: 'StringFieldOption';
+  value: Scalars['String'];
+  label?: Maybe<Array<LocalizedString>>;
+};
+
+export type LocaleStringCustomFieldConfig = CustomField & {
+  __typename?: 'LocaleStringCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  length?: Maybe<Scalars['Int']>;
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  pattern?: Maybe<Scalars['String']>;
+};
+
+export type IntCustomFieldConfig = CustomField & {
+  __typename?: 'IntCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['Int']>;
+  max?: Maybe<Scalars['Int']>;
+  step?: Maybe<Scalars['Int']>;
+};
+
+export type FloatCustomFieldConfig = CustomField & {
+  __typename?: 'FloatCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['Float']>;
+  max?: Maybe<Scalars['Float']>;
+  step?: Maybe<Scalars['Float']>;
+};
+
+export type BooleanCustomFieldConfig = CustomField & {
+  __typename?: 'BooleanCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+};
+
+/**
+ * Expects the same validation formats as the `<input type="datetime-local">` HTML element.
+ * See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
+ */
+export type DateTimeCustomFieldConfig = CustomField & {
+  __typename?: 'DateTimeCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  min?: Maybe<Scalars['String']>;
+  max?: Maybe<Scalars['String']>;
+  step?: Maybe<Scalars['Int']>;
+};
+
+export type LocalizedString = {
+  __typename?: 'LocalizedString';
+  languageCode: LanguageCode;
+  value: Scalars['String'];
+};
+
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
+
+/**
+ * @description
+ * Languages in the form of a ISO 639-1 language code with optional
+ * region or script modifier (e.g. de_AT). The selection available is based
+ * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
+ * and includes the major spoken languages of the world and any widely-used variants.
+ * 
+ * @docsCategory common
+ */
+export enum LanguageCode {
+  /** Afrikaans */
+  af = 'af',
+  /** Akan */
+  ak = 'ak',
+  /** Amharic */
+  am = 'am',
+  /** Arabic */
+  ar = 'ar',
+  /** Assamese */
+  as = 'as',
+  /** Azerbaijani */
+  az = 'az',
+  /** Belarusian */
+  be = 'be',
+  /** Bulgarian */
+  bg = 'bg',
+  /** Bambara */
+  bm = 'bm',
+  /** Bangla */
+  bn = 'bn',
+  /** Tibetan */
+  bo = 'bo',
+  /** Breton */
+  br = 'br',
+  /** Bosnian */
+  bs = 'bs',
+  /** Catalan */
+  ca = 'ca',
+  /** Chechen */
+  ce = 'ce',
+  /** Corsican */
+  co = 'co',
+  /** Czech */
+  cs = 'cs',
+  /** Church Slavic */
+  cu = 'cu',
+  /** Welsh */
+  cy = 'cy',
+  /** Danish */
+  da = 'da',
+  /** German */
+  de = 'de',
+  /** Austrian German */
+  de_AT = 'de_AT',
+  /** Swiss High German */
+  de_CH = 'de_CH',
+  /** Dzongkha */
+  dz = 'dz',
+  /** Ewe */
+  ee = 'ee',
+  /** Greek */
+  el = 'el',
+  /** English */
+  en = 'en',
+  /** Australian English */
+  en_AU = 'en_AU',
+  /** Canadian English */
+  en_CA = 'en_CA',
+  /** British English */
+  en_GB = 'en_GB',
+  /** American English */
+  en_US = 'en_US',
+  /** Esperanto */
+  eo = 'eo',
+  /** Spanish */
+  es = 'es',
+  /** European Spanish */
+  es_ES = 'es_ES',
+  /** Mexican Spanish */
+  es_MX = 'es_MX',
+  /** Estonian */
+  et = 'et',
+  /** Basque */
+  eu = 'eu',
+  /** Persian */
+  fa = 'fa',
+  /** Dari */
+  fa_AF = 'fa_AF',
+  /** Fulah */
+  ff = 'ff',
+  /** Finnish */
+  fi = 'fi',
+  /** Faroese */
+  fo = 'fo',
+  /** French */
+  fr = 'fr',
+  /** Canadian French */
+  fr_CA = 'fr_CA',
+  /** Swiss French */
+  fr_CH = 'fr_CH',
+  /** Western Frisian */
+  fy = 'fy',
+  /** Irish */
+  ga = 'ga',
+  /** Scottish Gaelic */
+  gd = 'gd',
+  /** Galician */
+  gl = 'gl',
+  /** Gujarati */
+  gu = 'gu',
+  /** Manx */
+  gv = 'gv',
+  /** Hausa */
+  ha = 'ha',
+  /** Hebrew */
+  he = 'he',
+  /** Hindi */
+  hi = 'hi',
+  /** Croatian */
+  hr = 'hr',
+  /** Haitian Creole */
+  ht = 'ht',
+  /** Hungarian */
+  hu = 'hu',
+  /** Armenian */
+  hy = 'hy',
+  /** Interlingua */
+  ia = 'ia',
+  /** Indonesian */
+  id = 'id',
+  /** Igbo */
+  ig = 'ig',
+  /** Sichuan Yi */
+  ii = 'ii',
+  /** Icelandic */
+  is = 'is',
+  /** Italian */
+  it = 'it',
+  /** Japanese */
+  ja = 'ja',
+  /** Javanese */
+  jv = 'jv',
+  /** Georgian */
+  ka = 'ka',
+  /** Kikuyu */
+  ki = 'ki',
+  /** Kazakh */
+  kk = 'kk',
+  /** Kalaallisut */
+  kl = 'kl',
+  /** Khmer */
+  km = 'km',
+  /** Kannada */
+  kn = 'kn',
+  /** Korean */
+  ko = 'ko',
+  /** Kashmiri */
+  ks = 'ks',
+  /** Kurdish */
+  ku = 'ku',
+  /** Cornish */
+  kw = 'kw',
+  /** Kyrgyz */
+  ky = 'ky',
+  /** Latin */
+  la = 'la',
+  /** Luxembourgish */
+  lb = 'lb',
+  /** Ganda */
+  lg = 'lg',
+  /** Lingala */
+  ln = 'ln',
+  /** Lao */
+  lo = 'lo',
+  /** Lithuanian */
+  lt = 'lt',
+  /** Luba-Katanga */
+  lu = 'lu',
+  /** Latvian */
+  lv = 'lv',
+  /** Malagasy */
+  mg = 'mg',
+  /** Maori */
+  mi = 'mi',
+  /** Macedonian */
+  mk = 'mk',
+  /** Malayalam */
+  ml = 'ml',
+  /** Mongolian */
+  mn = 'mn',
+  /** Marathi */
+  mr = 'mr',
+  /** Malay */
+  ms = 'ms',
+  /** Maltese */
+  mt = 'mt',
+  /** Burmese */
+  my = 'my',
+  /** Norwegian Bokmål */
+  nb = 'nb',
+  /** North Ndebele */
+  nd = 'nd',
+  /** Nepali */
+  ne = 'ne',
+  /** Dutch */
+  nl = 'nl',
+  /** Flemish */
+  nl_BE = 'nl_BE',
+  /** Norwegian Nynorsk */
+  nn = 'nn',
+  /** Nyanja */
+  ny = 'ny',
+  /** Oromo */
+  om = 'om',
+  /** Odia */
+  or = 'or',
+  /** Ossetic */
+  os = 'os',
+  /** Punjabi */
+  pa = 'pa',
+  /** Polish */
+  pl = 'pl',
+  /** Pashto */
+  ps = 'ps',
+  /** Portuguese */
+  pt = 'pt',
+  /** Brazilian Portuguese */
+  pt_BR = 'pt_BR',
+  /** European Portuguese */
+  pt_PT = 'pt_PT',
+  /** Quechua */
+  qu = 'qu',
+  /** Romansh */
+  rm = 'rm',
+  /** Rundi */
+  rn = 'rn',
+  /** Romanian */
+  ro = 'ro',
+  /** Moldavian */
+  ro_MD = 'ro_MD',
+  /** Russian */
+  ru = 'ru',
+  /** Kinyarwanda */
+  rw = 'rw',
+  /** Sanskrit */
+  sa = 'sa',
+  /** Sindhi */
+  sd = 'sd',
+  /** Northern Sami */
+  se = 'se',
+  /** Sango */
+  sg = 'sg',
+  /** Sinhala */
+  si = 'si',
+  /** Slovak */
+  sk = 'sk',
+  /** Slovenian */
+  sl = 'sl',
+  /** Samoan */
+  sm = 'sm',
+  /** Shona */
+  sn = 'sn',
+  /** Somali */
+  so = 'so',
+  /** Albanian */
+  sq = 'sq',
+  /** Serbian */
+  sr = 'sr',
+  /** Southern Sotho */
+  st = 'st',
+  /** Sundanese */
+  su = 'su',
+  /** Swedish */
+  sv = 'sv',
+  /** Swahili */
+  sw = 'sw',
+  /** Congo Swahili */
+  sw_CD = 'sw_CD',
+  /** Tamil */
+  ta = 'ta',
+  /** Telugu */
+  te = 'te',
+  /** Tajik */
+  tg = 'tg',
+  /** Thai */
+  th = 'th',
+  /** Tigrinya */
+  ti = 'ti',
+  /** Turkmen */
+  tk = 'tk',
+  /** Tongan */
+  to = 'to',
+  /** Turkish */
+  tr = 'tr',
+  /** Tatar */
+  tt = 'tt',
+  /** Uyghur */
+  ug = 'ug',
+  /** Ukrainian */
+  uk = 'uk',
+  /** Urdu */
+  ur = 'ur',
+  /** Uzbek */
+  uz = 'uz',
+  /** Vietnamese */
+  vi = 'vi',
+  /** Volapük */
+  vo = 'vo',
+  /** Wolof */
+  wo = 'wo',
+  /** Xhosa */
+  xh = 'xh',
+  /** Yiddish */
+  yi = 'yi',
+  /** Yoruba */
+  yo = 'yo',
+  /** Chinese */
+  zh = 'zh',
+  /** Simplified Chinese */
+  zh_Hans = 'zh_Hans',
+  /** Traditional Chinese */
+  zh_Hant = 'zh_Hant',
+  /** Zulu */
+  zu = 'zu'
+}
 
 /**
  * "
@@ -2894,17 +3058,114 @@ export enum Permission {
   UpdateSettings = 'UpdateSettings'
 }
 
-/** The price range where the result has more than one price */
-export type PriceRange = {
-  __typename?: 'PriceRange';
-  min: Scalars['Int'];
-  max: Scalars['Int'];
+export type Address = Node & {
+  __typename?: 'Address';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1: Scalars['String'];
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  country: Country;
+  phoneNumber?: Maybe<Scalars['String']>;
+  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Product = Node & {
-  __typename?: 'Product';
-  enabled: Scalars['Boolean'];
-  channels: Array<Channel>;
+export type Administrator = Node & {
+  __typename?: 'Administrator';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  emailAddress: Scalars['String'];
+  user: User;
+};
+
+export type AdministratorList = PaginatedList & {
+  __typename?: 'AdministratorList';
+  items: Array<Administrator>;
+  totalItems: Scalars['Int'];
+};
+
+export type Asset = Node & {
+  __typename?: 'Asset';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  type: AssetType;
+  fileSize: Scalars['Int'];
+  mimeType: Scalars['String'];
+  width: Scalars['Int'];
+  height: Scalars['Int'];
+  source: Scalars['String'];
+  preview: Scalars['String'];
+  focalPoint?: Maybe<Coordinate>;
+};
+
+export type Coordinate = {
+  __typename?: 'Coordinate';
+  x: Scalars['Float'];
+  y: Scalars['Float'];
+};
+
+export type AssetList = PaginatedList & {
+  __typename?: 'AssetList';
+  items: Array<Asset>;
+  totalItems: Scalars['Int'];
+};
+
+export enum AssetType {
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
+  BINARY = 'BINARY'
+}
+
+export type CurrentUser = {
+  __typename?: 'CurrentUser';
+  channels: Array<CurrentUserChannel>;
+  id: Scalars['ID'];
+  identifier: Scalars['String'];
+};
+
+export type CurrentUserChannel = {
+  __typename?: 'CurrentUserChannel';
+  code: Scalars['String'];
+  id: Scalars['ID'];
+  permissions: Array<Permission>;
+  token: Scalars['String'];
+};
+
+export type Channel = Node & {
+  __typename?: 'Channel';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  token: Scalars['String'];
+  defaultTaxZone?: Maybe<Zone>;
+  defaultShippingZone?: Maybe<Zone>;
+  defaultLanguageCode: LanguageCode;
+  currencyCode: CurrencyCode;
+  pricesIncludeTax: Scalars['Boolean'];
+};
+
+export type CollectionBreadcrumb = {
+  __typename?: 'CollectionBreadcrumb';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+};
+
+export type CollectionTranslation = {
+  __typename?: 'CollectionTranslation';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -2912,51 +3173,294 @@ export type Product = Node & {
   name: Scalars['String'];
   slug: Scalars['String'];
   description: Scalars['String'];
-  featuredAsset?: Maybe<Asset>;
-  assets: Array<Asset>;
-  variants: Array<ProductVariant>;
-  optionGroups: Array<ProductOptionGroup>;
-  facetValues: Array<FacetValue>;
-  translations: Array<ProductTranslation>;
-  collections: Array<Collection>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type ProductFilterParameter = {
-  enabled?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  slug?: Maybe<StringOperators>;
-  description?: Maybe<StringOperators>;
-};
-
-export type ProductList = PaginatedList & {
-  __typename?: 'ProductList';
-  items: Array<Product>;
+export type CollectionList = PaginatedList & {
+  __typename?: 'CollectionList';
+  items: Array<Collection>;
   totalItems: Scalars['Int'];
 };
 
-export type ProductListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductSortParameter>;
-  filter?: Maybe<ProductFilterParameter>;
+export type ProductVariantList = PaginatedList & {
+  __typename?: 'ProductVariantList';
+  items: Array<ProductVariant>;
+  totalItems: Scalars['Int'];
 };
 
-export type ProductOption = Node & {
-  __typename?: 'ProductOption';
+export type ProductVariantListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
+};
+
+export type Country = Node & {
+  __typename?: 'Country';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   languageCode: LanguageCode;
   code: Scalars['String'];
   name: Scalars['String'];
-  groupId: Scalars['ID'];
-  group: ProductOptionGroup;
-  translations: Array<ProductOptionTranslation>;
+  enabled: Scalars['Boolean'];
+  translations: Array<CountryTranslation>;
+};
+
+export type CountryTranslation = {
+  __typename?: 'CountryTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+};
+
+export type CountryList = PaginatedList & {
+  __typename?: 'CountryList';
+  items: Array<Country>;
+  totalItems: Scalars['Int'];
+};
+
+export type CustomerGroup = Node & {
+  __typename?: 'CustomerGroup';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  customers: CustomerList;
+};
+
+
+export type CustomerGroupCustomersArgs = {
+  options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerList = PaginatedList & {
+  __typename?: 'CustomerList';
+  items: Array<Customer>;
+  totalItems: Scalars['Int'];
+};
+
+export type FacetValue = Node & {
+  __typename?: 'FacetValue';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  facet: Facet;
+  name: Scalars['String'];
+  code: Scalars['String'];
+  translations: Array<FacetValueTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FacetValueTranslation = {
+  __typename?: 'FacetValueTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+};
+
+export type FacetTranslation = {
+  __typename?: 'FacetTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+};
+
+export type FacetList = PaginatedList & {
+  __typename?: 'FacetList';
+  items: Array<Facet>;
+  totalItems: Scalars['Int'];
+};
+
+export type GlobalSettings = {
+  __typename?: 'GlobalSettings';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  availableLanguages: Array<LanguageCode>;
+  trackInventory: Scalars['Boolean'];
+  serverConfig: ServerConfig;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderProcessState = {
+  __typename?: 'OrderProcessState';
+  name: Scalars['String'];
+  to: Array<Scalars['String']>;
+};
+
+export type ServerConfig = {
+  __typename?: 'ServerConfig';
+  orderProcess: Array<OrderProcessState>;
+  permittedAssetTypes: Array<Scalars['String']>;
+  customFieldConfig: CustomFields;
+};
+
+export type HistoryEntry = Node & {
+  __typename?: 'HistoryEntry';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  isPublic: Scalars['Boolean'];
+  type: HistoryEntryType;
+  administrator?: Maybe<Administrator>;
+  data: Scalars['JSON'];
+};
+
+export enum HistoryEntryType {
+  CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
+  CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
+  CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
+  CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
+  CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
+  CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
+  CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
+  CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
+  CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
+  CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
+  CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
+  CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
+  CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
+  CUSTOMER_NOTE = 'CUSTOMER_NOTE',
+  ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
+  ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
+  ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
+  ORDER_CANCELLATION = 'ORDER_CANCELLATION',
+  ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+  ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
+  ORDER_NOTE = 'ORDER_NOTE',
+  ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
+  ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED'
+}
+
+export type HistoryEntryList = PaginatedList & {
+  __typename?: 'HistoryEntryList';
+  items: Array<HistoryEntry>;
+  totalItems: Scalars['Int'];
+};
+
+export type HistoryEntryListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<HistoryEntrySortParameter>;
+  filter?: Maybe<HistoryEntryFilterParameter>;
+};
+
+export type ImportInfo = {
+  __typename?: 'ImportInfo';
+  errors?: Maybe<Array<Scalars['String']>>;
+  processed: Scalars['Int'];
+  imported: Scalars['Int'];
+};
+
+export type OrderAddress = {
+  __typename?: 'OrderAddress';
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1?: Maybe<Scalars['String']>;
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  country?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+};
+
+export type OrderList = PaginatedList & {
+  __typename?: 'OrderList';
+  items: Array<Order>;
+  totalItems: Scalars['Int'];
+};
+
+export type ShippingMethodQuote = {
+  __typename?: 'ShippingMethodQuote';
+  id: Scalars['ID'];
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  description: Scalars['String'];
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderItem = Node & {
+  __typename?: 'OrderItem';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  cancelled: Scalars['Boolean'];
+  unitPrice: Scalars['Int'];
+  unitPriceWithTax: Scalars['Int'];
+  unitPriceIncludesTax: Scalars['Boolean'];
+  taxRate: Scalars['Float'];
+  adjustments: Array<Adjustment>;
+  fulfillment?: Maybe<Fulfillment>;
+  refundId?: Maybe<Scalars['ID']>;
+};
+
+export type OrderLine = Node & {
+  __typename?: 'OrderLine';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  featuredAsset?: Maybe<Asset>;
+  unitPrice: Scalars['Int'];
+  unitPriceWithTax: Scalars['Int'];
+  quantity: Scalars['Int'];
+  items: Array<OrderItem>;
+  totalPrice: Scalars['Int'];
+  adjustments: Array<Adjustment>;
+  order: Order;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type Payment = Node & {
+  __typename?: 'Payment';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type Refund = Node & {
+  __typename?: 'Refund';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  items: Scalars['Int'];
+  shipping: Scalars['Int'];
+  adjustment: Scalars['Int'];
+  total: Scalars['Int'];
+  method?: Maybe<Scalars['String']>;
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  reason?: Maybe<Scalars['String']>;
+  orderItems: Array<OrderItem>;
+  paymentId: Scalars['ID'];
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethod = Node & {
+  __typename?: 'PaymentMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  code: Scalars['String'];
+  enabled: Scalars['Boolean'];
+  configArgs: Array<ConfigArg>;
+  definition: ConfigurableOperationDefinition;
 };
 
 export type ProductOptionGroup = Node & {
@@ -2981,19 +3485,18 @@ export type ProductOptionGroupTranslation = {
   name: Scalars['String'];
 };
 
-export type ProductOptionGroupTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
+export type ProductOption = Node & {
+  __typename?: 'ProductOption';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
   languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
+  code: Scalars['String'];
+  name: Scalars['String'];
+  groupId: Scalars['ID'];
+  group: ProductOptionGroup;
+  translations: Array<ProductOptionTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type ProductOptionInUseError = ErrorResult & {
-  __typename?: 'ProductOptionInUseError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  optionGroupCode: Scalars['String'];
-  productVariantCount: Scalars['Int'];
 };
 
 export type ProductOptionTranslation = {
@@ -3005,20 +3508,49 @@ export type ProductOptionTranslation = {
   name: Scalars['String'];
 };
 
-export type ProductOptionTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
+export type SearchReindexResponse = {
+  __typename?: 'SearchReindexResponse';
+  success: Scalars['Boolean'];
 };
 
-export type ProductSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  slug?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
+export type SearchResponse = {
+  __typename?: 'SearchResponse';
+  items: Array<SearchResult>;
+  totalItems: Scalars['Int'];
+  facetValues: Array<FacetValueResult>;
+};
+
+/**
+ * Which FacetValues are present in the products returned
+ * by the search, and in what quantity.
+ */
+export type FacetValueResult = {
+  __typename?: 'FacetValueResult';
+  facetValue: FacetValue;
+  count: Scalars['Int'];
+};
+
+export type SearchResultAsset = {
+  __typename?: 'SearchResultAsset';
+  id: Scalars['ID'];
+  preview: Scalars['String'];
+  focalPoint?: Maybe<Coordinate>;
+};
+
+/** The price of a search result product, either as a range or as a single price */
+export type SearchResultPrice = PriceRange | SinglePrice;
+
+/** The price value where the result has a single price */
+export type SinglePrice = {
+  __typename?: 'SinglePrice';
+  value: Scalars['Int'];
+};
+
+/** The price range where the result has more than one price */
+export type PriceRange = {
+  __typename?: 'PriceRange';
+  min: Scalars['Int'];
+  max: Scalars['Int'];
 };
 
 export type ProductTranslation = {
@@ -3032,86 +3564,10 @@ export type ProductTranslation = {
   description: Scalars['String'];
 };
 
-export type ProductTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type ProductVariant = Node & {
-  __typename?: 'ProductVariant';
-  enabled: Scalars['Boolean'];
-  stockOnHand: Scalars['Int'];
-  trackInventory: Scalars['Boolean'];
-  stockMovements: StockMovementList;
-  id: Scalars['ID'];
-  product: Product;
-  productId: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  languageCode: LanguageCode;
-  sku: Scalars['String'];
-  name: Scalars['String'];
-  featuredAsset?: Maybe<Asset>;
-  assets: Array<Asset>;
-  price: Scalars['Int'];
-  currencyCode: CurrencyCode;
-  priceIncludesTax: Scalars['Boolean'];
-  priceWithTax: Scalars['Int'];
-  taxRateApplied: TaxRate;
-  taxCategory: TaxCategory;
-  options: Array<ProductOption>;
-  facetValues: Array<FacetValue>;
-  translations: Array<ProductVariantTranslation>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-
-export type ProductVariantStockMovementsArgs = {
-  options?: Maybe<StockMovementListOptions>;
-};
-
-export type ProductVariantFilterParameter = {
-  enabled?: Maybe<BooleanOperators>;
-  stockOnHand?: Maybe<NumberOperators>;
-  trackInventory?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  sku?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  price?: Maybe<NumberOperators>;
-  currencyCode?: Maybe<StringOperators>;
-  priceIncludesTax?: Maybe<BooleanOperators>;
-  priceWithTax?: Maybe<NumberOperators>;
-};
-
-export type ProductVariantList = PaginatedList & {
-  __typename?: 'ProductVariantList';
-  items: Array<ProductVariant>;
+export type ProductList = PaginatedList & {
+  __typename?: 'ProductList';
+  items: Array<Product>;
   totalItems: Scalars['Int'];
-};
-
-export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductVariantSortParameter>;
-  filter?: Maybe<ProductVariantFilterParameter>;
-};
-
-export type ProductVariantSortParameter = {
-  stockOnHand?: Maybe<SortOrder>;
-  id?: Maybe<SortOrder>;
-  productId?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  sku?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  price?: Maybe<SortOrder>;
-  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type ProductVariantTranslation = {
@@ -3121,13 +3577,6 @@ export type ProductVariantTranslation = {
   updatedAt: Scalars['DateTime'];
   languageCode: LanguageCode;
   name: Scalars['String'];
-};
-
-export type ProductVariantTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Promotion = Node & {
@@ -3145,376 +3594,10 @@ export type Promotion = Node & {
   actions: Array<ConfigurableOperation>;
 };
 
-export type PromotionFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  startsAt?: Maybe<DateOperators>;
-  endsAt?: Maybe<DateOperators>;
-  couponCode?: Maybe<StringOperators>;
-  perCustomerUsageLimit?: Maybe<NumberOperators>;
-  name?: Maybe<StringOperators>;
-  enabled?: Maybe<BooleanOperators>;
-};
-
 export type PromotionList = PaginatedList & {
   __typename?: 'PromotionList';
   items: Array<Promotion>;
   totalItems: Scalars['Int'];
-};
-
-export type PromotionListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<PromotionSortParameter>;
-  filter?: Maybe<PromotionFilterParameter>;
-};
-
-export type PromotionSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  startsAt?: Maybe<SortOrder>;
-  endsAt?: Maybe<SortOrder>;
-  couponCode?: Maybe<SortOrder>;
-  perCustomerUsageLimit?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-};
-
-/** Returned if the specified quantity of an OrderLine is greater than the number of items in that line */
-export type QuantityTooGreatError = ErrorResult & {
-  __typename?: 'QuantityTooGreatError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  activeChannel: Channel;
-  administrator?: Maybe<Administrator>;
-  administrators: AdministratorList;
-  /** Get a single Asset by id */
-  asset?: Maybe<Asset>;
-  /** Get a list of Assets */
-  assets: AssetList;
-  channel?: Maybe<Channel>;
-  channels: Array<Channel>;
-  /** Get a Collection either by id or slug. If neither id nor slug is speicified, an error will result. */
-  collection?: Maybe<Collection>;
-  collectionFilters: Array<ConfigurableOperationDefinition>;
-  collections: CollectionList;
-  countries: CountryList;
-  country?: Maybe<Country>;
-  customer?: Maybe<Customer>;
-  customerGroup?: Maybe<CustomerGroup>;
-  customerGroups: CustomerGroupList;
-  customers: CustomerList;
-  facet?: Maybe<Facet>;
-  facets: FacetList;
-  globalSettings: GlobalSettings;
-  job?: Maybe<Job>;
-  jobQueues: Array<JobQueue>;
-  jobs: JobList;
-  jobsById: Array<Job>;
-  me?: Maybe<CurrentUser>;
-  networkStatus: NetworkStatus;
-  order?: Maybe<Order>;
-  orders: OrderList;
-  paymentMethod?: Maybe<PaymentMethod>;
-  paymentMethods: PaymentMethodList;
-  /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
-  product?: Maybe<Product>;
-  productOptionGroup?: Maybe<ProductOptionGroup>;
-  productOptionGroups: Array<ProductOptionGroup>;
-  /** Get a ProductVariant by id */
-  productVariant?: Maybe<ProductVariant>;
-  products: ProductList;
-  promotion?: Maybe<Promotion>;
-  promotionActions: Array<ConfigurableOperationDefinition>;
-  promotionConditions: Array<ConfigurableOperationDefinition>;
-  promotions: PromotionList;
-  role?: Maybe<Role>;
-  roles: RoleList;
-  search: SearchResponse;
-  shippingCalculators: Array<ConfigurableOperationDefinition>;
-  shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
-  shippingMethod?: Maybe<ShippingMethod>;
-  shippingMethods: ShippingMethodList;
-  taxCategories: Array<TaxCategory>;
-  taxCategory?: Maybe<TaxCategory>;
-  taxRate?: Maybe<TaxRate>;
-  taxRates: TaxRateList;
-  testEligibleShippingMethods: Array<ShippingMethodQuote>;
-  testShippingMethod: TestShippingMethodResult;
-  uiState: UiState;
-  userStatus: UserStatus;
-  zone?: Maybe<Zone>;
-  zones: Array<Zone>;
-};
-
-
-export type QueryAdministratorArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryAdministratorsArgs = {
-  options?: Maybe<AdministratorListOptions>;
-};
-
-
-export type QueryAssetArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryAssetsArgs = {
-  options?: Maybe<AssetListOptions>;
-};
-
-
-export type QueryChannelArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryCollectionArgs = {
-  id?: Maybe<Scalars['ID']>;
-  slug?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryCollectionsArgs = {
-  options?: Maybe<CollectionListOptions>;
-};
-
-
-export type QueryCountriesArgs = {
-  options?: Maybe<CountryListOptions>;
-};
-
-
-export type QueryCountryArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryCustomerArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryCustomerGroupArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryCustomerGroupsArgs = {
-  options?: Maybe<CustomerGroupListOptions>;
-};
-
-
-export type QueryCustomersArgs = {
-  options?: Maybe<CustomerListOptions>;
-};
-
-
-export type QueryFacetArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryFacetsArgs = {
-  options?: Maybe<FacetListOptions>;
-};
-
-
-export type QueryJobArgs = {
-  jobId: Scalars['ID'];
-};
-
-
-export type QueryJobsArgs = {
-  options?: Maybe<JobListOptions>;
-};
-
-
-export type QueryJobsByIdArgs = {
-  jobIds: Array<Scalars['ID']>;
-};
-
-
-export type QueryOrderArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryOrdersArgs = {
-  options?: Maybe<OrderListOptions>;
-};
-
-
-export type QueryPaymentMethodArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryPaymentMethodsArgs = {
-  options?: Maybe<PaymentMethodListOptions>;
-};
-
-
-export type QueryProductArgs = {
-  id?: Maybe<Scalars['ID']>;
-  slug?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryProductOptionGroupArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryProductOptionGroupsArgs = {
-  filterTerm?: Maybe<Scalars['String']>;
-};
-
-
-export type QueryProductVariantArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryProductsArgs = {
-  options?: Maybe<ProductListOptions>;
-};
-
-
-export type QueryPromotionArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryPromotionsArgs = {
-  options?: Maybe<PromotionListOptions>;
-};
-
-
-export type QueryRoleArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryRolesArgs = {
-  options?: Maybe<RoleListOptions>;
-};
-
-
-export type QuerySearchArgs = {
-  input: SearchInput;
-};
-
-
-export type QueryShippingMethodArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryShippingMethodsArgs = {
-  options?: Maybe<ShippingMethodListOptions>;
-};
-
-
-export type QueryTaxCategoryArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryTaxRateArgs = {
-  id: Scalars['ID'];
-};
-
-
-export type QueryTaxRatesArgs = {
-  options?: Maybe<TaxRateListOptions>;
-};
-
-
-export type QueryTestEligibleShippingMethodsArgs = {
-  input: TestEligibleShippingMethodsInput;
-};
-
-
-export type QueryTestShippingMethodArgs = {
-  input: TestShippingMethodInput;
-};
-
-
-export type QueryZoneArgs = {
-  id: Scalars['ID'];
-};
-
-export type Refund = Node & {
-  __typename?: 'Refund';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  items: Scalars['Int'];
-  shipping: Scalars['Int'];
-  adjustment: Scalars['Int'];
-  total: Scalars['Int'];
-  method?: Maybe<Scalars['String']>;
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  reason?: Maybe<Scalars['String']>;
-  orderItems: Array<OrderItem>;
-  paymentId: Scalars['ID'];
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
-export type RefundOrderInput = {
-  lines: Array<OrderLineInput>;
-  shipping: Scalars['Int'];
-  adjustment: Scalars['Int'];
-  paymentId: Scalars['ID'];
-  reason?: Maybe<Scalars['String']>;
-};
-
-export type RefundOrderResult = Refund | QuantityTooGreatError | NothingToRefundError | OrderStateTransitionError | MultipleOrderError | PaymentOrderMismatchError | RefundOrderStateError | AlreadyRefundedError | RefundStateTransitionError;
-
-/** Returned if an attempting to refund an Order which is not in the expected state */
-export type RefundOrderStateError = ErrorResult & {
-  __typename?: 'RefundOrderStateError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  orderState: Scalars['String'];
-};
-
-/** Returned when there is an error in transitioning the Refund state */
-export type RefundStateTransitionError = ErrorResult & {
-  __typename?: 'RefundStateTransitionError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  transitionError: Scalars['String'];
-  fromState: Scalars['String'];
-  toState: Scalars['String'];
-};
-
-export type RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError;
-
-export type RemoveProductsFromChannelInput = {
-  productIds: Array<Scalars['ID']>;
-  channelId: Scalars['ID'];
-};
-
-export type Return = Node & StockMovement & {
-  __typename?: 'Return';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  productVariant: ProductVariant;
-  type: StockMovementType;
-  quantity: Scalars['Int'];
-  orderItem: OrderItem;
 };
 
 export type Role = Node & {
@@ -3528,136 +3611,11 @@ export type Role = Node & {
   channels: Array<Channel>;
 };
 
-export type RoleFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  code?: Maybe<StringOperators>;
-  description?: Maybe<StringOperators>;
-};
-
 export type RoleList = PaginatedList & {
   __typename?: 'RoleList';
   items: Array<Role>;
   totalItems: Scalars['Int'];
 };
-
-export type RoleListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<RoleSortParameter>;
-  filter?: Maybe<RoleFilterParameter>;
-};
-
-export type RoleSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
-};
-
-export type Sale = Node & StockMovement & {
-  __typename?: 'Sale';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  productVariant: ProductVariant;
-  type: StockMovementType;
-  quantity: Scalars['Int'];
-  orderLine: OrderLine;
-};
-
-export type SearchInput = {
-  term?: Maybe<Scalars['String']>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
-  facetValueOperator?: Maybe<LogicalOperator>;
-  collectionId?: Maybe<Scalars['ID']>;
-  collectionSlug?: Maybe<Scalars['String']>;
-  groupByProduct?: Maybe<Scalars['Boolean']>;
-  take?: Maybe<Scalars['Int']>;
-  skip?: Maybe<Scalars['Int']>;
-  sort?: Maybe<SearchResultSortParameter>;
-};
-
-export type SearchReindexResponse = {
-  __typename?: 'SearchReindexResponse';
-  success: Scalars['Boolean'];
-};
-
-export type SearchResponse = {
-  __typename?: 'SearchResponse';
-  items: Array<SearchResult>;
-  totalItems: Scalars['Int'];
-  facetValues: Array<FacetValueResult>;
-};
-
-export type SearchResult = {
-  __typename?: 'SearchResult';
-  enabled: Scalars['Boolean'];
-  /** An array of ids of the Collections in which this result appears */
-  channelIds: Array<Scalars['ID']>;
-  sku: Scalars['String'];
-  slug: Scalars['String'];
-  productId: Scalars['ID'];
-  productName: Scalars['String'];
-  /** @deprecated Use `productAsset.preview` instead */
-  productPreview: Scalars['String'];
-  productAsset?: Maybe<SearchResultAsset>;
-  productVariantId: Scalars['ID'];
-  productVariantName: Scalars['String'];
-  /** @deprecated Use `productVariantAsset.preview` instead */
-  productVariantPreview: Scalars['String'];
-  productVariantAsset?: Maybe<SearchResultAsset>;
-  price: SearchResultPrice;
-  priceWithTax: SearchResultPrice;
-  currencyCode: CurrencyCode;
-  description: Scalars['String'];
-  facetIds: Array<Scalars['ID']>;
-  facetValueIds: Array<Scalars['ID']>;
-  /** An array of ids of the Collections in which this result appears */
-  collectionIds: Array<Scalars['ID']>;
-  /** A relevence score for the result. Differs between database implementations */
-  score: Scalars['Float'];
-};
-
-export type SearchResultAsset = {
-  __typename?: 'SearchResultAsset';
-  id: Scalars['ID'];
-  preview: Scalars['String'];
-  focalPoint?: Maybe<Coordinate>;
-};
-
-/** The price of a search result product, either as a range or as a single price */
-export type SearchResultPrice = PriceRange | SinglePrice;
-
-export type SearchResultSortParameter = {
-  name?: Maybe<SortOrder>;
-  price?: Maybe<SortOrder>;
-};
-
-export type ServerConfig = {
-  __typename?: 'ServerConfig';
-  orderProcess: Array<OrderProcessState>;
-  permittedAssetTypes: Array<Scalars['String']>;
-  customFieldConfig: CustomFields;
-};
-
-/** Returned if the Payment settlement fails */
-export type SettlePaymentError = ErrorResult & {
-  __typename?: 'SettlePaymentError';
-  errorCode: ErrorCode;
-  message: Scalars['String'];
-  paymentErrorMessage: Scalars['String'];
-};
-
-export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
-
-export type SettleRefundInput = {
-  id: Scalars['ID'];
-  transactionId: Scalars['String'];
-};
-
-export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type ShippingMethod = Node & {
   __typename?: 'ShippingMethod';
@@ -3671,53 +3629,27 @@ export type ShippingMethod = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type ShippingMethodFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  code?: Maybe<StringOperators>;
-  description?: Maybe<StringOperators>;
-};
-
 export type ShippingMethodList = PaginatedList & {
   __typename?: 'ShippingMethodList';
   items: Array<ShippingMethod>;
   totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ShippingMethodSortParameter>;
-  filter?: Maybe<ShippingMethodFilterParameter>;
-};
-
-export type ShippingMethodQuote = {
-  __typename?: 'ShippingMethodQuote';
-  id: Scalars['ID'];
-  price: Scalars['Int'];
-  priceWithTax: Scalars['Int'];
-  description: Scalars['String'];
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
-export type ShippingMethodSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  code?: Maybe<SortOrder>;
-  description?: Maybe<SortOrder>;
-};
-
-/** The price value where the result has a single price */
-export type SinglePrice = {
-  __typename?: 'SinglePrice';
-  value: Scalars['Int'];
-};
-
-export enum SortOrder {
-  ASC = 'ASC',
-  DESC = 'DESC'
+export enum StockMovementType {
+  ADJUSTMENT = 'ADJUSTMENT',
+  SALE = 'SALE',
+  CANCELLATION = 'CANCELLATION',
+  RETURN = 'RETURN'
 }
+
+export type StockMovement = {
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+};
 
 export type StockAdjustment = Node & StockMovement & {
   __typename?: 'StockAdjustment';
@@ -3729,13 +3661,37 @@ export type StockAdjustment = Node & StockMovement & {
   quantity: Scalars['Int'];
 };
 
-export type StockMovement = {
+export type Sale = Node & StockMovement & {
+  __typename?: 'Sale';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   productVariant: ProductVariant;
   type: StockMovementType;
   quantity: Scalars['Int'];
+  orderLine: OrderLine;
+};
+
+export type Cancellation = Node & StockMovement & {
+  __typename?: 'Cancellation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+  orderLine: OrderLine;
+};
+
+export type Return = Node & StockMovement & {
+  __typename?: 'Return';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  productVariant: ProductVariant;
+  type: StockMovementType;
+  quantity: Scalars['Int'];
+  orderItem: OrderItem;
 };
 
 export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
@@ -3744,50 +3700,6 @@ export type StockMovementList = {
   __typename?: 'StockMovementList';
   items: Array<StockMovementItem>;
   totalItems: Scalars['Int'];
-};
-
-export type StockMovementListOptions = {
-  type?: Maybe<StockMovementType>;
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-};
-
-export enum StockMovementType {
-  ADJUSTMENT = 'ADJUSTMENT',
-  SALE = 'SALE',
-  CANCELLATION = 'CANCELLATION',
-  RETURN = 'RETURN'
-}
-
-export type StringCustomFieldConfig = CustomField & {
-  __typename?: 'StringCustomFieldConfig';
-  name: Scalars['String'];
-  type: Scalars['String'];
-  list: Scalars['Boolean'];
-  length?: Maybe<Scalars['Int']>;
-  label?: Maybe<Array<LocalizedString>>;
-  description?: Maybe<Array<LocalizedString>>;
-  readonly?: Maybe<Scalars['Boolean']>;
-  internal?: Maybe<Scalars['Boolean']>;
-  pattern?: Maybe<Scalars['String']>;
-  options?: Maybe<Array<StringFieldOption>>;
-};
-
-export type StringFieldOption = {
-  __typename?: 'StringFieldOption';
-  value: Scalars['String'];
-  label?: Maybe<Array<LocalizedString>>;
-};
-
-export type StringOperators = {
-  eq?: Maybe<Scalars['String']>;
-  contains?: Maybe<Scalars['String']>;
-};
-
-/** Indicates that an operation succeeded, where we do not want to return any more specific information. */
-export type Success = {
-  __typename?: 'Success';
-  success: Scalars['Boolean'];
 };
 
 export type TaxCategory = Node & {
@@ -3811,299 +3723,11 @@ export type TaxRate = Node & {
   customerGroup?: Maybe<CustomerGroup>;
 };
 
-export type TaxRateFilterParameter = {
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  name?: Maybe<StringOperators>;
-  enabled?: Maybe<BooleanOperators>;
-  value?: Maybe<NumberOperators>;
-};
-
 export type TaxRateList = PaginatedList & {
   __typename?: 'TaxRateList';
   items: Array<TaxRate>;
   totalItems: Scalars['Int'];
 };
-
-export type TaxRateListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<TaxRateSortParameter>;
-  filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type TaxRateSortParameter = {
-  id?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  value?: Maybe<SortOrder>;
-};
-
-export type TestEligibleShippingMethodsInput = {
-  shippingAddress: CreateAddressInput;
-  lines: Array<TestShippingMethodOrderLineInput>;
-};
-
-export type TestShippingMethodInput = {
-  checker: ConfigurableOperationInput;
-  calculator: ConfigurableOperationInput;
-  shippingAddress: CreateAddressInput;
-  lines: Array<TestShippingMethodOrderLineInput>;
-};
-
-export type TestShippingMethodOrderLineInput = {
-  productVariantId: Scalars['ID'];
-  quantity: Scalars['Int'];
-};
-
-export type TestShippingMethodQuote = {
-  __typename?: 'TestShippingMethodQuote';
-  price: Scalars['Int'];
-  priceWithTax: Scalars['Int'];
-  description: Scalars['String'];
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
-export type TestShippingMethodResult = {
-  __typename?: 'TestShippingMethodResult';
-  eligible: Scalars['Boolean'];
-  quote?: Maybe<TestShippingMethodQuote>;
-};
-
-export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
-
-export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
-
-export type UiState = {
-  __typename?: 'UiState';
-  language: LanguageCode;
-};
-
-export type UpdateAddressInput = {
-  id: Scalars['ID'];
-  fullName?: Maybe<Scalars['String']>;
-  company?: Maybe<Scalars['String']>;
-  streetLine1?: Maybe<Scalars['String']>;
-  streetLine2?: Maybe<Scalars['String']>;
-  city?: Maybe<Scalars['String']>;
-  province?: Maybe<Scalars['String']>;
-  postalCode?: Maybe<Scalars['String']>;
-  countryCode?: Maybe<Scalars['String']>;
-  phoneNumber?: Maybe<Scalars['String']>;
-  defaultShippingAddress?: Maybe<Scalars['Boolean']>;
-  defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateAdministratorInput = {
-  id: Scalars['ID'];
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
-  emailAddress?: Maybe<Scalars['String']>;
-  password?: Maybe<Scalars['String']>;
-  roleIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-export type UpdateAssetInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  focalPoint?: Maybe<CoordinateInput>;
-};
-
-export type UpdateChannelInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  token?: Maybe<Scalars['String']>;
-  defaultLanguageCode?: Maybe<LanguageCode>;
-  pricesIncludeTax?: Maybe<Scalars['Boolean']>;
-  currencyCode?: Maybe<CurrencyCode>;
-  defaultTaxZoneId?: Maybe<Scalars['ID']>;
-  defaultShippingZoneId?: Maybe<Scalars['ID']>;
-};
-
-export type UpdateChannelResult = Channel | LanguageNotAvailableError;
-
-export type UpdateCollectionInput = {
-  id: Scalars['ID'];
-  isPrivate?: Maybe<Scalars['Boolean']>;
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  parentId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  filters?: Maybe<Array<ConfigurableOperationInput>>;
-  translations?: Maybe<Array<UpdateCollectionTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateCollectionTranslationInput = {
-  id?: Maybe<Scalars['ID']>;
-  languageCode: LanguageCode;
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateCountryInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  translations?: Maybe<Array<CountryTranslationInput>>;
-  enabled?: Maybe<Scalars['Boolean']>;
-};
-
-export type UpdateCustomerGroupInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-};
-
-export type UpdateCustomerInput = {
-  id: Scalars['ID'];
-  title?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
-  phoneNumber?: Maybe<Scalars['String']>;
-  emailAddress?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateCustomerNoteInput = {
-  noteId: Scalars['ID'];
-  note: Scalars['String'];
-};
-
-export type UpdateCustomerResult = Customer | EmailAddressConflictError;
-
-export type UpdateFacetInput = {
-  id: Scalars['ID'];
-  isPrivate?: Maybe<Scalars['Boolean']>;
-  code?: Maybe<Scalars['String']>;
-  translations?: Maybe<Array<FacetTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateFacetValueInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  translations?: Maybe<Array<FacetValueTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateGlobalSettingsInput = {
-  availableLanguages?: Maybe<Array<LanguageCode>>;
-  trackInventory?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguageError;
-
-export type UpdateOrderInput = {
-  id: Scalars['ID'];
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateOrderNoteInput = {
-  noteId: Scalars['ID'];
-  note?: Maybe<Scalars['String']>;
-  isPublic?: Maybe<Scalars['Boolean']>;
-};
-
-export type UpdatePaymentMethodInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  enabled?: Maybe<Scalars['Boolean']>;
-  configArgs?: Maybe<Array<ConfigArgInput>>;
-};
-
-export type UpdateProductInput = {
-  id: Scalars['ID'];
-  enabled?: Maybe<Scalars['Boolean']>;
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
-  translations?: Maybe<Array<ProductTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateProductOptionGroupInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateProductOptionInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateProductVariantInput = {
-  id: Scalars['ID'];
-  enabled?: Maybe<Scalars['Boolean']>;
-  translations?: Maybe<Array<ProductVariantTranslationInput>>;
-  facetValueIds?: Maybe<Array<Scalars['ID']>>;
-  sku?: Maybe<Scalars['String']>;
-  taxCategoryId?: Maybe<Scalars['ID']>;
-  price?: Maybe<Scalars['Int']>;
-  featuredAssetId?: Maybe<Scalars['ID']>;
-  assetIds?: Maybe<Array<Scalars['ID']>>;
-  stockOnHand?: Maybe<Scalars['Int']>;
-  trackInventory?: Maybe<Scalars['Boolean']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdatePromotionInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  enabled?: Maybe<Scalars['Boolean']>;
-  startsAt?: Maybe<Scalars['DateTime']>;
-  endsAt?: Maybe<Scalars['DateTime']>;
-  couponCode?: Maybe<Scalars['String']>;
-  perCustomerUsageLimit?: Maybe<Scalars['Int']>;
-  conditions?: Maybe<Array<ConfigurableOperationInput>>;
-  actions?: Maybe<Array<ConfigurableOperationInput>>;
-};
-
-export type UpdatePromotionResult = Promotion | MissingConditionsError;
-
-export type UpdateRoleInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  permissions?: Maybe<Array<Permission>>;
-  channelIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-export type UpdateShippingMethodInput = {
-  id: Scalars['ID'];
-  code?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  checker?: Maybe<ConfigurableOperationInput>;
-  calculator?: Maybe<ConfigurableOperationInput>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateTaxCategoryInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-};
-
-export type UpdateTaxRateInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-  value?: Maybe<Scalars['Float']>;
-  enabled?: Maybe<Scalars['Boolean']>;
-  categoryId?: Maybe<Scalars['ID']>;
-  zoneId?: Maybe<Scalars['ID']>;
-  customerGroupId?: Maybe<Scalars['ID']>;
-};
-
-export type UpdateZoneInput = {
-  id: Scalars['ID'];
-  name?: Maybe<Scalars['String']>;
-};
-
 
 export type User = Node & {
   __typename?: 'User';
@@ -4118,6 +3742,376 @@ export type User = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type AuthenticationMethod = Node & {
+  __typename?: 'AuthenticationMethod';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  strategy: Scalars['String'];
+};
+
+export type Zone = Node & {
+  __typename?: 'Zone';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  members: Array<Country>;
+};
+
+export type AdministratorFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  firstName?: Maybe<StringOperators>;
+  lastName?: Maybe<StringOperators>;
+  emailAddress?: Maybe<StringOperators>;
+};
+
+export type AdministratorSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  firstName?: Maybe<SortOrder>;
+  lastName?: Maybe<SortOrder>;
+  emailAddress?: Maybe<SortOrder>;
+};
+
+export type AssetFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+  type?: Maybe<StringOperators>;
+  fileSize?: Maybe<NumberOperators>;
+  mimeType?: Maybe<StringOperators>;
+  width?: Maybe<NumberOperators>;
+  height?: Maybe<NumberOperators>;
+  source?: Maybe<StringOperators>;
+  preview?: Maybe<StringOperators>;
+};
+
+export type AssetSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  fileSize?: Maybe<SortOrder>;
+  mimeType?: Maybe<SortOrder>;
+  width?: Maybe<SortOrder>;
+  height?: Maybe<SortOrder>;
+  source?: Maybe<SortOrder>;
+  preview?: Maybe<SortOrder>;
+};
+
+export type CollectionFilterParameter = {
+  isPrivate?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
+  position?: Maybe<NumberOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type CollectionSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  position?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+};
+
+export type CountryFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
+};
+
+export type CountrySortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+};
+
+export type CustomerGroupFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+};
+
+export type CustomerGroupSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+};
+
+export type CustomerFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  title?: Maybe<StringOperators>;
+  firstName?: Maybe<StringOperators>;
+  lastName?: Maybe<StringOperators>;
+  phoneNumber?: Maybe<StringOperators>;
+  emailAddress?: Maybe<StringOperators>;
+};
+
+export type CustomerSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  title?: Maybe<SortOrder>;
+  firstName?: Maybe<SortOrder>;
+  lastName?: Maybe<SortOrder>;
+  phoneNumber?: Maybe<SortOrder>;
+  emailAddress?: Maybe<SortOrder>;
+};
+
+export type FacetFilterParameter = {
+  isPrivate?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  code?: Maybe<StringOperators>;
+};
+
+export type FacetSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+};
+
+export type JobFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  startedAt?: Maybe<DateOperators>;
+  settledAt?: Maybe<DateOperators>;
+  queueName?: Maybe<StringOperators>;
+  state?: Maybe<StringOperators>;
+  progress?: Maybe<NumberOperators>;
+  isSettled?: Maybe<BooleanOperators>;
+  duration?: Maybe<NumberOperators>;
+};
+
+export type JobSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  startedAt?: Maybe<SortOrder>;
+  settledAt?: Maybe<SortOrder>;
+  queueName?: Maybe<SortOrder>;
+  progress?: Maybe<SortOrder>;
+  duration?: Maybe<SortOrder>;
+};
+
+export type OrderFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  state?: Maybe<StringOperators>;
+  active?: Maybe<BooleanOperators>;
+  totalQuantity?: Maybe<NumberOperators>;
+  subTotalBeforeTax?: Maybe<NumberOperators>;
+  subTotal?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  shipping?: Maybe<NumberOperators>;
+  shippingWithTax?: Maybe<NumberOperators>;
+  totalBeforeTax?: Maybe<NumberOperators>;
+  total?: Maybe<NumberOperators>;
+};
+
+export type OrderSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  state?: Maybe<SortOrder>;
+  totalQuantity?: Maybe<SortOrder>;
+  subTotalBeforeTax?: Maybe<SortOrder>;
+  subTotal?: Maybe<SortOrder>;
+  shipping?: Maybe<SortOrder>;
+  shippingWithTax?: Maybe<SortOrder>;
+  totalBeforeTax?: Maybe<SortOrder>;
+  total?: Maybe<SortOrder>;
+};
+
+export type PaymentMethodFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
+};
+
+export type PaymentMethodSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+};
+
+export type ProductFilterParameter = {
+  enabled?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  slug?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type ProductSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  slug?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+};
+
+export type PromotionFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  startsAt?: Maybe<DateOperators>;
+  endsAt?: Maybe<DateOperators>;
+  couponCode?: Maybe<StringOperators>;
+  perCustomerUsageLimit?: Maybe<NumberOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
+};
+
+export type PromotionSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  startsAt?: Maybe<SortOrder>;
+  endsAt?: Maybe<SortOrder>;
+  couponCode?: Maybe<SortOrder>;
+  perCustomerUsageLimit?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+};
+
+export type RoleFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type RoleSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+};
+
+export type ShippingMethodFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
+};
+
+export type ShippingMethodSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
+};
+
+export type TaxRateFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
+  enabled?: Maybe<BooleanOperators>;
+  value?: Maybe<NumberOperators>;
+};
+
+export type TaxRateSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
+};
+
+export type ProductVariantFilterParameter = {
+  enabled?: Maybe<BooleanOperators>;
+  stockOnHand?: Maybe<NumberOperators>;
+  trackInventory?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  sku?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  price?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  priceWithTax?: Maybe<NumberOperators>;
+};
+
+export type ProductVariantSortParameter = {
+  stockOnHand?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  sku?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+  priceWithTax?: Maybe<SortOrder>;
+};
+
+export type HistoryEntryFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  isPublic?: Maybe<BooleanOperators>;
+  type?: Maybe<StringOperators>;
+};
+
+export type HistoryEntrySortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+};
+
+export type CustomFields = {
+  __typename?: 'CustomFields';
+  Address: Array<CustomFieldConfig>;
+  Collection: Array<CustomFieldConfig>;
+  Customer: Array<CustomFieldConfig>;
+  Facet: Array<CustomFieldConfig>;
+  FacetValue: Array<CustomFieldConfig>;
+  GlobalSettings: Array<CustomFieldConfig>;
+  Order: Array<CustomFieldConfig>;
+  OrderLine: Array<CustomFieldConfig>;
+  Product: Array<CustomFieldConfig>;
+  ProductOption: Array<CustomFieldConfig>;
+  ProductOptionGroup: Array<CustomFieldConfig>;
+  ProductVariant: Array<CustomFieldConfig>;
+  User: Array<CustomFieldConfig>;
+  ShippingMethod: Array<CustomFieldConfig>;
+};
+
+export type NativeAuthInput = {
+  username: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type NetworkStatus = {
+  __typename?: 'NetworkStatus';
+  inFlightRequests: Scalars['Int'];
+};
+
 export type UserStatus = {
   __typename?: 'UserStatus';
   username: Scalars['String'];
@@ -4128,20 +4122,23 @@ export type UserStatus = {
   channels: Array<CurrentUserChannel>;
 };
 
+export type UiState = {
+  __typename?: 'UiState';
+  language: LanguageCode;
+};
+
+export type CurrentUserChannelInput = {
+  id: Scalars['ID'];
+  token: Scalars['String'];
+  code: Scalars['String'];
+  permissions: Array<Permission>;
+};
+
 export type UserStatusInput = {
   username: Scalars['String'];
   loginTime: Scalars['String'];
   activeChannelId: Scalars['ID'];
   channels: Array<CurrentUserChannelInput>;
-};
-
-export type Zone = Node & {
-  __typename?: 'Zone';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  members: Array<Country>;
 };
 
 export type RoleFragment = (
@@ -6724,6 +6721,26 @@ export type ConfigurableOperationDefFragment = (
   )> }
 );
 
+type ErrorResult_MimeTypeError_Fragment = (
+  { __typename?: 'MimeTypeError' }
+  & Pick<MimeTypeError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_LanguageNotAvailableError_Fragment = (
+  { __typename?: 'LanguageNotAvailableError' }
+  & Pick<LanguageNotAvailableError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_ChannelDefaultLanguageError_Fragment = (
+  { __typename?: 'ChannelDefaultLanguageError' }
+  & Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_SettlePaymentError_Fragment = (
+  { __typename?: 'SettlePaymentError' }
+  & Pick<SettlePaymentError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_EmptyOrderLineSelectionError_Fragment = (
   { __typename?: 'EmptyOrderLineSelectionError' }
   & Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
@@ -6732,16 +6749,6 @@ type ErrorResult_EmptyOrderLineSelectionError_Fragment = (
 type ErrorResult_ItemsAlreadyFulfilledError_Fragment = (
   { __typename?: 'ItemsAlreadyFulfilledError' }
   & Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_InvalidCredentialsError_Fragment = (
-  { __typename?: 'InvalidCredentialsError' }
-  & Pick<InvalidCredentialsError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_QuantityTooGreatError_Fragment = (
-  { __typename?: 'QuantityTooGreatError' }
-  & Pick<QuantityTooGreatError, 'errorCode' | 'message'>
 );
 
 type ErrorResult_MultipleOrderError_Fragment = (
@@ -6754,41 +6761,6 @@ type ErrorResult_CancelActiveOrderError_Fragment = (
   & Pick<CancelActiveOrderError, 'errorCode' | 'message'>
 );
 
-type ErrorResult_OrderStateTransitionError_Fragment = (
-  { __typename?: 'OrderStateTransitionError' }
-  & Pick<OrderStateTransitionError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_MimeTypeError_Fragment = (
-  { __typename?: 'MimeTypeError' }
-  & Pick<MimeTypeError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_LanguageNotAvailableError_Fragment = (
-  { __typename?: 'LanguageNotAvailableError' }
-  & Pick<LanguageNotAvailableError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_EmailAddressConflictError_Fragment = (
-  { __typename?: 'EmailAddressConflictError' }
-  & Pick<EmailAddressConflictError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_MissingConditionsError_Fragment = (
-  { __typename?: 'MissingConditionsError' }
-  & Pick<MissingConditionsError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_NativeAuthStrategyError_Fragment = (
-  { __typename?: 'NativeAuthStrategyError' }
-  & Pick<NativeAuthStrategyError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_NothingToRefundError_Fragment = (
-  { __typename?: 'NothingToRefundError' }
-  & Pick<NothingToRefundError, 'errorCode' | 'message'>
-);
-
 type ErrorResult_PaymentOrderMismatchError_Fragment = (
   { __typename?: 'PaymentOrderMismatchError' }
   & Pick<PaymentOrderMismatchError, 'errorCode' | 'message'>
@@ -6799,24 +6771,24 @@ type ErrorResult_RefundOrderStateError_Fragment = (
   & Pick<RefundOrderStateError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_NothingToRefundError_Fragment = (
+  { __typename?: 'NothingToRefundError' }
+  & Pick<NothingToRefundError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_AlreadyRefundedError_Fragment = (
   { __typename?: 'AlreadyRefundedError' }
   & Pick<AlreadyRefundedError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_QuantityTooGreatError_Fragment = (
+  { __typename?: 'QuantityTooGreatError' }
+  & Pick<QuantityTooGreatError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_RefundStateTransitionError_Fragment = (
   { __typename?: 'RefundStateTransitionError' }
   & Pick<RefundStateTransitionError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_ProductOptionInUseError_Fragment = (
-  { __typename?: 'ProductOptionInUseError' }
-  & Pick<ProductOptionInUseError, 'errorCode' | 'message'>
-);
-
-type ErrorResult_SettlePaymentError_Fragment = (
-  { __typename?: 'SettlePaymentError' }
-  & Pick<SettlePaymentError, 'errorCode' | 'message'>
 );
 
 type ErrorResult_PaymentStateTransitionError_Fragment = (
@@ -6829,12 +6801,37 @@ type ErrorResult_FulfillmentStateTransitionError_Fragment = (
   & Pick<FulfillmentStateTransitionError, 'errorCode' | 'message'>
 );
 
-type ErrorResult_ChannelDefaultLanguageError_Fragment = (
-  { __typename?: 'ChannelDefaultLanguageError' }
-  & Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>
+type ErrorResult_ProductOptionInUseError_Fragment = (
+  { __typename?: 'ProductOptionInUseError' }
+  & Pick<ProductOptionInUseError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_EmailAddressConflictError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment;
+type ErrorResult_MissingConditionsError_Fragment = (
+  { __typename?: 'MissingConditionsError' }
+  & Pick<MissingConditionsError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_NativeAuthStrategyError_Fragment = (
+  { __typename?: 'NativeAuthStrategyError' }
+  & Pick<NativeAuthStrategyError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_InvalidCredentialsError_Fragment = (
+  { __typename?: 'InvalidCredentialsError' }
+  & Pick<InvalidCredentialsError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_OrderStateTransitionError_Fragment = (
+  { __typename?: 'OrderStateTransitionError' }
+  & Pick<OrderStateTransitionError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_EmailAddressConflictError_Fragment = (
+  { __typename?: 'EmailAddressConflictError' }
+  & Pick<EmailAddressConflictError, 'errorCode' | 'message'>
+);
+
+export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_EmailAddressConflictError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }

@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
@@ -318,7 +318,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, `Field "readonlyString" is not defined by type UpdateProductCustomFieldsInput`),
+        }, `Field "readonlyString" is not defined by type "UpdateProductCustomFieldsInput"`),
     );
 
     it(
@@ -351,7 +351,7 @@ describe('Custom fields', () => {
                     }
                 }
             `);
-        }, `Field "readonlyString" is not defined by type CreateProductCustomFieldsInput`),
+        }, `Field "readonlyString" is not defined by type "CreateProductCustomFieldsInput"`),
     );
 
     it('string length allows long strings', async () => {
@@ -664,7 +664,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Field "internalString" is not defined by type ProductFilterParameter`),
+            }, `Field "internalString" is not defined by type "ProductFilterParameter"`),
         );
 
         it(
@@ -677,7 +677,7 @@ describe('Custom fields', () => {
                         }
                     }
                 `);
-            }, `Field "internalString" is not defined by type ProductFilterParameter`),
+            }, `Field "internalString" is not defined by type "ProductFilterParameter"`),
         );
     });
 });

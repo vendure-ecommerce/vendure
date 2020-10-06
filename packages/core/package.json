@@ -38,6 +38,7 @@
     "cli/**/*"
   ],
   "dependencies": {
+    "@graphql-tools/stitch": "^6.2.4",
     "@nestjs/common": "7.4.4",
     "@nestjs/core": "7.4.4",
     "@nestjs/graphql": "7.6.0",
@@ -57,10 +58,9 @@
     "csv-parse": "^4.12.0",
     "express": "^4.17.1",
     "fs-extra": "^9.0.1",
-    "graphql": "14.6.0",
+    "graphql": "15.3.0",
     "graphql-iso-date": "^3.6.1",
     "graphql-tag": "^2.11.0",
-    "graphql-tools": "^4.0.6",
     "graphql-type-json": "^0.3.2",
     "http-proxy-middleware": "^1.0.5",
     "i18next": "^19.8.1",
