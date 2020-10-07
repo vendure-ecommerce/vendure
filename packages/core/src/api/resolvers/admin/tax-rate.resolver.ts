@@ -15,6 +15,7 @@ import { TaxRateService } from '../../../service/services/tax-rate.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('TaxRate')
 export class TaxRateResolver {
@@ -23,15 +24,16 @@ export class TaxRateResolver {
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     taxRates(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRatesArgs): Promise<PaginatedList<TaxRate>> {
-        return this.taxRateService.findAll(args.options || undefined);
+        return this.taxRateService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings, Permission.ReadCatalog)
     async taxRate(@Ctx() ctx: RequestContext, @Args() args: QueryTaxRateArgs): Promise<TaxRate | undefined> {
-        return this.taxRateService.findOne(args.id);
+        return this.taxRateService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createTaxRate(
@@ -41,6 +43,7 @@ export class TaxRateResolver {
         return this.taxRateService.create(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateTaxRate(
@@ -50,12 +53,13 @@ export class TaxRateResolver {
         return this.taxRateService.update(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteTaxRate(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteTaxRateArgs,
     ): Promise<DeletionResponse> {
-        return this.taxRateService.delete(args.id);
+        return this.taxRateService.delete(ctx, args.id);
     }
 }

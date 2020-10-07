@@ -1,6 +1,5 @@
 import { Omit } from '@vendure/common/lib/omit';
-import { RequestContext, Type, VendureEvent, WorkerMessage } from '@vendure/core';
-import { Connection } from 'typeorm';
+import { Injector, RequestContext, VendureEvent, WorkerMessage } from '@vendure/core';
 
 import { EmailEventHandler } from './event-handler';
 
@@ -291,8 +290,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
  */
 export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     event: Event;
-    connection: Connection;
-    inject: <T>(type: Type<T>) => T;
+    injector: Injector;
 }) => Promise<R>;
 
 export type IntermediateEmailDetails = {

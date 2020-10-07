@@ -23,6 +23,7 @@ import { FacetService } from '../../../service/services/facet.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Facet')
 export class FacetResolver {
@@ -38,7 +39,7 @@ export class FacetResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetsArgs,
     ): Promise<PaginatedList<Translated<Facet>>> {
-        return this.facetService.findAll(ctx.languageCode, args.options || undefined);
+        return this.facetService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
@@ -47,31 +48,40 @@ export class FacetResolver {
         @Ctx() ctx: RequestContext,
         @Args() args: QueryFacetArgs,
     ): Promise<Translated<Facet> | undefined> {
-        return this.facetService.findOne(args.id, ctx.languageCode);
+        return this.facetService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
-    async createFacet(@Args() args: MutationCreateFacetArgs): Promise<Translated<Facet>> {
+    async createFacet(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreateFacetArgs,
+    ): Promise<Translated<Facet>> {
         const { input } = args;
-        const facet = await this.facetService.create(args.input);
+        const facet = await this.facetService.create(ctx, args.input);
 
         if (input.values && input.values.length) {
             for (const value of input.values) {
-                const newValue = await this.facetValueService.create(facet, value);
+                const newValue = await this.facetValueService.create(ctx, facet, value);
                 facet.values.push(newValue);
             }
         }
         return facet;
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
-    async updateFacet(@Args() args: MutationUpdateFacetArgs): Promise<Translated<Facet>> {
+    async updateFacet(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateFacetArgs,
+    ): Promise<Translated<Facet>> {
         const { input } = args;
-        return this.facetService.update(args.input);
+        return this.facetService.update(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteFacet(
@@ -81,35 +91,50 @@ export class FacetResolver {
         return this.facetService.delete(ctx, args.id, args.force || false);
     }
 
+    // @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createFacetValues(
+        @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateFacetValuesArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
         const facetId = input[0].facetId;
-        const facet = await this.facetService.findOne(facetId, this.configService.defaultLanguageCode);
+        const facet = await this.facetService.findOne(ctx, facetId);
         if (!facet) {
             throw new EntityNotFoundError('Facet', facetId);
         }
-        return Promise.all(input.map((facetValue) => this.facetValueService.create(facet, facetValue)));
+        return Promise.all(
+            input.map(async facetValue => {
+                const res = await this.facetValueService.create(ctx, facet, facetValue);
+                return res;
+            }),
+        );
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateFacetValues(
+        @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateFacetValuesArgs,
     ): Promise<Array<Translated<FacetValue>>> {
         const { input } = args;
-        return Promise.all(input.map((facetValue) => this.facetValueService.update(facetValue)));
+        return Promise.all(input.map(facetValue => this.facetValueService.update(ctx, facetValue)));
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteFacetValues(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteFacetValuesArgs,
     ): Promise<DeletionResponse[]> {
-        return Promise.all(args.ids.map((id) => this.facetValueService.delete(ctx, id, args.force || false)));
+        // return Promise.all(args.ids.map(id => this.facetValueService.delete(ctx, id, args.force || false)));
+        const results: DeletionResponse[] = [];
+        for (const id of args.ids) {
+            results.push(await this.facetValueService.delete(ctx, id, args.force || false));
+        }
+        return results;
     }
 }

@@ -9,7 +9,8 @@ import { createTestEnvironment } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { TransactionalConnection } from '../src/service/transaction/transactional-connection';
 
 const strategyInitSpy = jest.fn();
 const strategyDestroySpy = jest.fn();
@@ -19,9 +20,9 @@ const codDestroySpy = jest.fn();
 class TestIdStrategy extends AutoIncrementIdStrategy {
     async init(injector: Injector) {
         const productService = injector.get(ProductService);
-        const connection = injector.getConnection();
+        const connection = injector.get(TransactionalConnection);
         await new Promise(resolve => setTimeout(resolve, 100));
-        strategyInitSpy(productService.constructor.name, connection.name);
+        strategyInitSpy(productService.constructor.name, connection.rawConnection.name);
     }
 
     async destroy() {
@@ -36,9 +37,9 @@ const testShippingEligChecker = new ShippingEligibilityChecker({
     description: [],
     init: async injector => {
         const productService = injector.get(ProductService);
-        const connection = injector.getConnection();
+        const connection = injector.get(TransactionalConnection);
         await new Promise(resolve => setTimeout(resolve, 100));
-        codInitSpy(productService.constructor.name, connection.name);
+        codInitSpy(productService.constructor.name, connection.rawConnection.name);
     },
     destroy: async () => {
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -83,6 +84,10 @@ describe('lifecycle hooks for configurable objects', () => {
     describe('configurable operation', () => {
         beforeAll(async () => {
             await server.bootstrap();
+        }, TEST_SETUP_TIMEOUT_MS);
+
+        afterAll(async () => {
+            await server.destroy();
         });
 
         it('runs init with Injector', () => {

@@ -3,8 +3,12 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <vdr-order-state-label [state]="order.state">
-                <button class="icon-button" (click)="openStateDiagram()" [title]="'order.order-state-diagram' | translate">
-                <clr-icon shape="list"></clr-icon>
+                <button
+                    class="icon-button"
+                    (click)="openStateDiagram()"
+                    [title]="'order.order-state-diagram' | translate"
+                >
+                    <clr-icon shape="list"></clr-icon>
                 </button>
             </vdr-order-state-label>
         </div>
@@ -15,7 +19,7 @@
         <button
             class="btn btn-primary"
             (click)="fulfillOrder()"
-            [disabled]="order.state !== 'PaymentSettled' && order.state !== 'PartiallyFulfilled'"
+            [disabled]="!canAddFulfillment(order)"
         >
             {{ 'order.fulfill-order' | translate }}
         </button>
@@ -258,28 +262,20 @@
                 </div>
             </div>
             <ng-container *ngIf="order.payments && order.payments.length">
-                <vdr-order-payment-detail
+                <vdr-order-payment-card
                     *ngFor="let payment of order.payments"
                     [currencyCode]="order.currencyCode"
                     [payment]="payment"
                     (settlePayment)="settlePayment($event)"
                     (settleRefund)="settleRefund($event)"
-                ></vdr-order-payment-detail>
+                ></vdr-order-payment-card>
             </ng-container>
-            <ng-container *ngIf="order.fulfillments && order.fulfillments.length">
-                <div class="card">
-                    <div class="card-header">
-                        {{ 'order.fulfillment' | translate }}
-                    </div>
-                    <div class="card-block">
-                        <div class="fulfillment-detail" *ngFor="let fulfillment of order.fulfillments">
-                            <vdr-fulfillment-detail
-                                [fulfillmentId]="fulfillment.id"
-                                [order]="order"
-                            ></vdr-fulfillment-detail>
-                        </div>
-                    </div>
-                </div>
+            <ng-container *ngFor="let fulfillment of order.fulfillments">
+                <vdr-fulfillment-card
+                    [fulfillment]="fulfillment"
+                    [order]="order"
+                    (transitionState)="transitionFulfillment(fulfillment.id, $event)"
+                ></vdr-fulfillment-card>
             </ng-container>
         </div>
     </div>

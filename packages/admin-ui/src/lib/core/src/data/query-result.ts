@@ -1,6 +1,6 @@
+import { ApolloQueryResult, NetworkStatus } from '@apollo/client/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { Apollo, QueryRef } from 'apollo-angular';
-import { ApolloQueryResult, NetworkStatus } from 'apollo-client';
 import { merge, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, filter, finalize, map, skip, take, takeUntil, tap } from 'rxjs/operators';
 

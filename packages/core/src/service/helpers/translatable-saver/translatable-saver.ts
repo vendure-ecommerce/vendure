@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { Translatable, TranslatedInput, Translation } from '../../../common/types/locale-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { patchEntity } from '../utils/patch-entity';
 
 import { TranslationDiffer } from './translation-differ';
 
 export interface CreateTranslatableOptions<T extends Translatable> {
+    ctx: RequestContext;
     entityType: Type<T>;
     translationType: Type<Translation<T>>;
     input: TranslatedInput<T>;
@@ -27,14 +29,14 @@ export interface UpdateTranslatableOptions<T extends Translatable> extends Creat
  */
 @Injectable()
 export class TranslatableSaver {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     /**
      * Create a translatable entity, including creating any translation entities according
      * to the `translations` array.
      */
     async create<T extends Translatable & VendureEntity>(options: CreateTranslatableOptions<T>): Promise<T> {
-        const { entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
+        const { ctx, entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
 
         const entity = new entityType(input);
         const translations: Array<Translation<T>> = [];
@@ -43,7 +45,7 @@ export class TranslatableSaver {
             for (const translationInput of input.translations) {
                 const translation = new translationType(translationInput);
                 translations.push(translation);
-                await this.connection.manager.save(translation);
+                await this.connection.getRepository(ctx, translationType).save(translation as any);
             }
         }
 
@@ -51,7 +53,9 @@ export class TranslatableSaver {
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return await this.connection.manager.save(entity, { data: typeOrmSubscriberData });
+        return await this.connection
+            .getRepository(ctx, entityType)
+            .save(entity as any, { data: typeOrmSubscriberData });
     }
 
     /**
@@ -59,15 +63,16 @@ export class TranslatableSaver {
      * perform the correct operation on the translations.
      */
     async update<T extends Translatable & VendureEntity>(options: UpdateTranslatableOptions<T>): Promise<T> {
-        const { entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
-        const existingTranslations = await this.connection.getRepository(translationType).find({
+        const { ctx, entityType, translationType, input, beforeSave, typeOrmSubscriberData } = options;
+        const existingTranslations = await this.connection.getRepository(ctx, translationType).find({
             where: { base: input.id },
             relations: ['base'],
         });
 
-        const differ = new TranslationDiffer(translationType, this.connection.manager);
+        const differ = new TranslationDiffer(translationType, this.connection);
         const diff = differ.diff(existingTranslations, input.translations);
         const entity = await differ.applyDiff(
+            ctx,
             new entityType({ ...input, translations: existingTranslations }),
             diff,
         );
@@ -75,6 +80,8 @@ export class TranslatableSaver {
         if (typeof beforeSave === 'function') {
             await beforeSave(entity);
         }
-        return this.connection.manager.save(updatedEntity, { data: typeOrmSubscriberData });
+        return this.connection
+            .getRepository(ctx, entityType)
+            .save(updatedEntity, { data: typeOrmSubscriberData });
     }
 }

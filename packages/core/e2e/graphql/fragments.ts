@@ -452,6 +452,7 @@ export const TAX_RATE_FRAGMENT = gql`
         }
     }
 `;
+
 export const CURRENT_USER_FRAGMENT = gql`
     fragment CurrentUser on CurrentUser {
         id
@@ -463,6 +464,7 @@ export const CURRENT_USER_FRAGMENT = gql`
         }
     }
 `;
+
 export const VARIANT_WITH_STOCK_FRAGMENT = gql`
     fragment VariantWithStock on ProductVariant {
         id
@@ -477,5 +479,35 @@ export const VARIANT_WITH_STOCK_FRAGMENT = gql`
             }
             totalItems
         }
+    }
+`;
+
+export const FULFILLMENT_FRAGMENT = gql`
+    fragment Fulfillment on Fulfillment {
+        id
+        state
+        nextStates
+        method
+        trackingCode
+        orderItems {
+            id
+        }
+    }
+`;
+
+export const CHANNEL_FRAGMENT = gql`
+    fragment Channel on Channel {
+        id
+        code
+        token
+        currencyCode
+        defaultLanguageCode
+        defaultShippingZone {
+            id
+        }
+        defaultTaxZone {
+            id
+        }
+        pricesIncludeTax
     }
 `;

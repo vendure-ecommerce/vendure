@@ -1,10 +1,9 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
-import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory';
-import { ApolloClientOptions } from 'apollo-client';
-import { ApolloLink } from 'apollo-link';
-import { setContext } from 'apollo-link-context';
+import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
+import { setContext } from '@apollo/client/link/context';
+import { ApolloLink } from '@apollo/client/link/core';
+import { APOLLO_OPTIONS } from 'apollo-angular';
 import { createUploadLink } from 'apollo-upload-client';
 
 import { getAppConfig } from '../app.config';
@@ -14,6 +13,7 @@ import { LocalStorageService } from '../providers/local-storage/local-storage.se
 import { CheckJobsLink } from './check-jobs-link';
 import { getClientDefaults } from './client-state/client-defaults';
 import { clientResolvers } from './client-state/client-resolvers';
+import { GET_CLIENT_STATE } from './definitions/client-definitions';
 import { OmitTypenameLink } from './omit-typename-link';
 import { BaseDataService } from './providers/base-data.service';
 import { DataService } from './providers/data.service';
@@ -30,11 +30,10 @@ export function createApollo(
     const { adminApiPath, tokenMethod } = getAppConfig();
     const serverLocation = getServerLocation();
     const apolloCache = new InMemoryCache({
-        fragmentMatcher: new IntrospectionFragmentMatcher({
-            introspectionQueryResultData: introspectionResult,
-        }),
+        possibleTypes: introspectionResult.possibleTypes,
     });
-    apolloCache.writeData({
+    apolloCache.writeQuery({
+        query: GET_CLIENT_STATE,
         data: getClientDefaults(localStorageService),
     });
 
@@ -76,7 +75,7 @@ export function createApollo(
  * state via the apollo-link-state package.
  */
 @NgModule({
-    imports: [ApolloModule, HttpClientModule],
+    imports: [HttpClientModule],
     exports: [],
     declarations: [],
     providers: [

@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { DataProxy, MutationUpdaterFn, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { Apollo } from 'apollo-angular';
-import { DataProxy } from 'apollo-cache';
-import { WatchQueryFetchPolicy } from 'apollo-client';
-import { ExecutionResult } from 'apollo-link';
 import { DocumentNode } from 'graphql/language/ast';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -17,15 +15,6 @@ import {
     isEntityCreateOrUpdateMutation,
     removeReadonlyCustomFields,
 } from '../utils/remove-readonly-custom-fields';
-
-/**
- * Make the MutationUpdaterFn type-safe until this issue is resolved: https://github.com/apollographql/apollo-link/issues/616
- */
-export type TypedFetchResult<T = Record<string, any>> = ExecutionResult & {
-    context?: T;
-    data: T;
-};
-export type TypedMutationUpdateFn<T> = (proxy: DataProxy, mutationResult: TypedFetchResult<T>) => void;
 
 @Injectable()
 export class BaseDataService {
@@ -64,7 +53,7 @@ export class BaseDataService {
     mutate<T, V = Record<string, any>>(
         mutation: DocumentNode,
         variables?: V,
-        update?: TypedMutationUpdateFn<T>,
+        update?: MutationUpdaterFn<T>,
     ): Observable<T> {
         const withCustomFields = addCustomFields(mutation, this.customFields);
         const withoutReadonlyFields = this.removeReadonlyCustomFieldsFromVariables(mutation, variables);
@@ -73,7 +62,7 @@ export class BaseDataService {
             .mutate<T, V>({
                 mutation: withCustomFields,
                 variables: withoutReadonlyFields,
-                update: update as any,
+                update,
             })
             .pipe(map(result => result.data as T));
     }

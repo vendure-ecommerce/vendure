@@ -40,6 +40,7 @@ export type CachedSession = {
     activeOrderId?: ID;
     authenticationStrategy?: string;
     user?: CachedSessionUser;
+    activeChannelId?: ID;
 };
 
 /**
@@ -51,6 +52,7 @@ export type CachedSession = {
  *
  * @docsCategory auth
  * @docsPage SessionCacheStrategy
+ * @docsWeight 0
  */
 export interface SessionCacheStrategy extends InjectableStrategy {
     /**

@@ -9,7 +9,7 @@ import {
     mergeConfig,
     VendurePlugin,
 } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -21,10 +21,12 @@ import {
     AddNoteToCustomer,
     CreateAddress,
     CreateCustomer,
+    CustomerFragment,
     DeleteCustomer,
     DeleteCustomerAddress,
     DeleteCustomerNote,
     DeletionResult,
+    ErrorCode,
     GetCustomer,
     GetCustomerHistory,
     GetCustomerList,
@@ -34,8 +36,19 @@ import {
     UpdateCustomer,
     UpdateCustomerNote,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER, GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import { AddItemToOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+import {
+    CREATE_ADDRESS,
+    CREATE_CUSTOMER,
+    DELETE_CUSTOMER,
+    DELETE_CUSTOMER_NOTE,
+    GET_CUSTOMER,
+    GET_CUSTOMER_HISTORY,
+    GET_CUSTOMER_LIST,
+    UPDATE_ADDRESS,
+    UPDATE_CUSTOMER,
+    UPDATE_CUSTOMER_NOTE,
+} from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -52,7 +65,7 @@ let sendEmailFn: jest.Mock;
 class TestEmailPlugin implements OnModuleInit {
     constructor(private eventBus: EventBus) {}
     onModuleInit() {
-        this.eventBus.ofType(AccountRegistrationEvent).subscribe((event) => {
+        this.eventBus.ofType(AccountRegistrationEvent).subscribe(event => {
             sendEmailFn(event);
         });
     }
@@ -66,6 +79,10 @@ describe('Customer resolver', () => {
     let firstCustomer: GetCustomerList.Items;
     let secondCustomer: GetCustomerList.Items;
     let thirdCustomer: GetCustomerList.Items;
+
+    const customerErrorGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard<CustomerFragment>(
+        input => !!input.emailAddress,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -170,7 +187,7 @@ describe('Customer resolver', () => {
             });
 
             expect(result.customer!.addresses!.length).toBe(2);
-            firstCustomerAddressIds = result.customer!.addresses!.map((a) => a.id).sort();
+            firstCustomerAddressIds = result.customer!.addresses!.map(a => a.id).sort();
         });
 
         it('updateCustomerAddress updates the country', async () => {
@@ -209,7 +226,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress = result2.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[1],
+                a => a.id !== firstCustomerAddressIds[1],
             )[0]!;
             expect(otherAddress.defaultShippingAddress).toBe(false);
             expect(otherAddress.defaultBillingAddress).toBe(false);
@@ -233,7 +250,7 @@ describe('Customer resolver', () => {
                 id: firstCustomer.id,
             });
             const otherAddress2 = result4.customer!.addresses!.filter(
-                (a) => a.id !== firstCustomerAddressIds[0],
+                a => a.id !== firstCustomerAddressIds[0],
             )[0]!;
             expect(otherAddress2.defaultShippingAddress).toBe(false);
             expect(otherAddress2.defaultBillingAddress).toBe(false);
@@ -320,13 +337,15 @@ describe('Customer resolver', () => {
             >(
                 gql`
                     mutation DeleteCustomerAddress($id: ID!) {
-                        deleteCustomerAddress(id: $id)
+                        deleteCustomerAddress(id: $id) {
+                            success
+                        }
                     }
                 `,
                 { id: firstCustomerThirdAddressId },
             );
 
-            expect(deleteCustomerAddress).toBe(true);
+            expect(deleteCustomerAddress.success).toBe(true);
 
             const { customer } = await adminClient.query<GetCustomer.Query, GetCustomer.Variables>(
                 GET_CUSTOMER,
@@ -336,10 +355,10 @@ describe('Customer resolver', () => {
             );
             expect(customer!.addresses!.length).toBe(2);
             const defaultAddress = customer!.addresses!.filter(
-                (a) => a.defaultBillingAddress && a.defaultShippingAddress,
+                a => a.defaultBillingAddress && a.defaultShippingAddress,
             );
             const otherAddress = customer!.addresses!.filter(
-                (a) => !a.defaultBillingAddress && !a.defaultShippingAddress,
+                a => !a.defaultBillingAddress && !a.defaultShippingAddress,
             );
             expect(defaultAddress.length).toBe(1);
             expect(otherAddress.length).toBe(1);
@@ -347,6 +366,10 @@ describe('Customer resolver', () => {
     });
 
     describe('orders', () => {
+        const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
+            UpdatedOrderFragment
+        >(input => !!input.lines);
+
         it(`lists that user\'s orders`, async () => {
             // log in as first customer
             await shopClient.asUserWithCredentials(firstCustomer.emailAddress, 'test');
@@ -358,6 +381,7 @@ describe('Customer resolver', () => {
                 productVariantId: 'T_1',
                 quantity: 1,
             });
+            orderResultGuard.assertSuccess(addItemToOrder);
 
             const { customer } = await adminClient.query<
                 GetCustomerOrders.Query,
@@ -382,6 +406,7 @@ describe('Customer resolver', () => {
                     lastName: 'Customer',
                 },
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(false);
             expect(sendEmailFn).toHaveBeenCalledTimes(1);
@@ -402,27 +427,62 @@ describe('Customer resolver', () => {
                 },
                 password: 'test',
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.user!.verified).toBe(true);
             expect(sendEmailFn).toHaveBeenCalledTimes(0);
         });
 
-        it(
-            'throws when using an existing, non-deleted emailAddress',
-            assertThrowsWithMessage(async () => {
-                const { createCustomer } = await adminClient.query<
-                    CreateCustomer.Mutation,
-                    CreateCustomer.Variables
-                >(CREATE_CUSTOMER, {
-                    input: {
-                        emailAddress: 'test2@test.com',
-                        firstName: 'New',
-                        lastName: 'Customer',
-                    },
-                    password: 'test',
-                });
-            }, 'The email address must be unique'),
-        );
+        it('return error result when using an existing, non-deleted emailAddress', async () => {
+            const { createCustomer } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    emailAddress: 'test2@test.com',
+                    firstName: 'New',
+                    lastName: 'Customer',
+                },
+                password: 'test',
+            });
+            customerErrorGuard.assertErrorResult(createCustomer);
+
+            expect(createCustomer.message).toBe('The email address is not available.');
+            expect(createCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+        });
+    });
+
+    describe('update', () => {
+        it('returns error result when emailAddress not available', async () => {
+            const { updateCustomer } = await adminClient.query<
+                UpdateCustomer.Mutation,
+                UpdateCustomer.Variables
+            >(UPDATE_CUSTOMER, {
+                input: {
+                    id: thirdCustomer.id,
+                    emailAddress: firstCustomer.emailAddress,
+                },
+            });
+            customerErrorGuard.assertErrorResult(updateCustomer);
+
+            expect(updateCustomer.message).toBe('The email address is not available.');
+            expect(updateCustomer.errorCode).toBe(ErrorCode.EMAIL_ADDRESS_CONFLICT_ERROR);
+        });
+
+        it('succeeds when emailAddress is available', async () => {
+            const { updateCustomer } = await adminClient.query<
+                UpdateCustomer.Mutation,
+                UpdateCustomer.Variables
+            >(UPDATE_CUSTOMER, {
+                input: {
+                    id: thirdCustomer.id,
+                    emailAddress: 'unique-email@test.com',
+                },
+            });
+            customerErrorGuard.assertSuccess(updateCustomer);
+
+            expect(updateCustomer.emailAddress).toBe('unique-email@test.com');
+        });
     });
 
     describe('deletion', () => {
@@ -448,7 +508,7 @@ describe('Customer resolver', () => {
                 GET_CUSTOMER_LIST,
             );
 
-            expect(result.customers.items.map((c) => c.id).includes(thirdCustomer.id)).toBe(false);
+            expect(result.customers.items.map(c => c.id).includes(thirdCustomer.id)).toBe(false);
         });
 
         it(
@@ -491,6 +551,7 @@ describe('Customer resolver', () => {
                     lastName: 'Customer',
                 },
             });
+            customerErrorGuard.assertSuccess(createCustomer);
 
             expect(createCustomer.emailAddress).toBe(thirdCustomer.emailAddress);
             expect(createCustomer.firstName).toBe('Reusing Email');
@@ -593,42 +654,6 @@ const GET_CUSTOMER_WITH_USER = gql`
     }
 `;
 
-const CREATE_ADDRESS = gql`
-    mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {
-        createCustomerAddress(customerId: $id, input: $input) {
-            id
-            fullName
-            company
-            streetLine1
-            streetLine2
-            city
-            province
-            postalCode
-            country {
-                code
-                name
-            }
-            phoneNumber
-            defaultShippingAddress
-            defaultBillingAddress
-        }
-    }
-`;
-
-const UPDATE_ADDRESS = gql`
-    mutation UpdateAddress($input: UpdateAddressInput!) {
-        updateCustomerAddress(input: $input) {
-            id
-            defaultShippingAddress
-            defaultBillingAddress
-            country {
-                code
-                name
-            }
-        }
-    }
-`;
-
 const GET_CUSTOMER_ORDERS = gql`
     query GetCustomerOrders($id: ID!) {
         customer(id: $id) {
@@ -642,32 +667,6 @@ const GET_CUSTOMER_ORDERS = gql`
     }
 `;
 
-export const CREATE_CUSTOMER = gql`
-    mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
-        createCustomer(input: $input, password: $password) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER = gql`
-    mutation UpdateCustomer($input: UpdateCustomerInput!) {
-        updateCustomer(input: $input) {
-            ...Customer
-        }
-    }
-    ${CUSTOMER_FRAGMENT}
-`;
-
-const DELETE_CUSTOMER = gql`
-    mutation DeleteCustomer($id: ID!) {
-        deleteCustomer(id: $id) {
-            result
-        }
-    }
-`;
-
 const ADD_NOTE_TO_CUSTOMER = gql`
     mutation AddNoteToCustomer($input: AddNoteToCustomerInput!) {
         addNoteToCustomer(input: $input) {
@@ -675,23 +674,4 @@ const ADD_NOTE_TO_CUSTOMER = gql`
         }
     }
     ${CUSTOMER_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER_NOTE = gql`
-    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
-        updateCustomerNote(input: $input) {
-            id
-            data
-            isPublic
-        }
-    }
-`;
-
-export const DELETE_CUSTOMER_NOTE = gql`
-    mutation DeleteCustomerNote($id: ID!) {
-        deleteCustomerNote(id: $id) {
-            result
-            message
-        }
-    }
 `;

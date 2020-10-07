@@ -1,12 +1,15 @@
 import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    LoginResult,
+    AuthenticationResult,
     MutationAuthenticateArgs,
     MutationLoginArgs,
+    NativeAuthenticationResult,
     Permission,
+    Success,
 } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
+import { NativeAuthStrategyError } from '../../../common/error/generated-graphql-admin-errors';
 import { ConfigService } from '../../../config/config.service';
 import { AdministratorService } from '../../../service/services/administrator.service';
 import { AuthService } from '../../../service/services/auth.service';
@@ -16,6 +19,7 @@ import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 import { BaseAuthResolver } from '../base/base-auth.resolver';
 
 @Resolver()
@@ -29,35 +33,42 @@ export class AuthResolver extends BaseAuthResolver {
         super(authService, userService, administratorService, configService);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    login(
+    async login(
         @Args() args: MutationLoginArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<LoginResult> {
-        return super.login(args, ctx, req, res);
+    ): Promise<NativeAuthenticationResult> {
+        const nativeAuthStrategyError = this.requireNativeAuthStrategy();
+        if (nativeAuthStrategyError) {
+            return nativeAuthStrategyError;
+        }
+        return (await super.baseLogin(args, ctx, req, res)) as AuthenticationResult;
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
-    authenticate(
+    async authenticate(
         @Args() args: MutationAuthenticateArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<LoginResult> {
-        return this.authenticateAndCreateSession(ctx, args, req, res);
+    ): Promise<AuthenticationResult> {
+        return (await this.authenticateAndCreateSession(ctx, args, req, res)) as AuthenticationResult;
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.Public)
     logout(
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
-    ): Promise<boolean> {
+    ): Promise<Success> {
         return super.logout(ctx, req, res);
     }
 
@@ -65,5 +76,9 @@ export class AuthResolver extends BaseAuthResolver {
     @Allow(Permission.Authenticated, Permission.Owner)
     me(@Ctx() ctx: RequestContext) {
         return super.me(ctx, 'admin');
+    }
+
+    protected requireNativeAuthStrategy() {
+        return super.requireNativeAuthStrategy() as NativeAuthStrategyError | undefined;
     }
 }

@@ -21,6 +21,20 @@ export type SerializedRequestContext = {
  * The RequestContext holds information relevant to the current request, which may be
  * required at various points of the stack.
  *
+ * It is a good practice to inject the RequestContext (using the {@link Ctx} decorator) into
+ * _all_ resolvers & REST handlers, and then pass it through to the service layer.
+ *
+ * This allows the service layer to access information about the current user, the active language,
+ * the active Channel, and so on. In addition, the {@link TransactionalConnection} relies on the
+ * presence of the RequestContext object in order to correctly handle per-request database transactions.
+ *
+ * @example
+ * ```TypeScript
+ * \@Query()
+ * myQuery(\@Ctx() ctx: RequestContext) {
+ *   return this.myService.getData(ctx);
+ * }
+ * ```
  * @docsCategory request
  */
 export class RequestContext {
@@ -52,6 +66,21 @@ export class RequestContext {
         this._isAuthorized = options.isAuthorized;
         this._authorizedAsOwnerOnly = options.authorizedAsOwnerOnly;
         this._translationFn = translationFn || (((key: string) => key) as any);
+    }
+
+    /**
+     * @description
+     * Creates an "empty" RequestContext object. This is only intended to be used
+     * when a service method must be called outside the normal request-response
+     * cycle, e.g. when programmatically populating data.
+     */
+    static empty(): RequestContext {
+        return new RequestContext({
+            apiType: 'admin',
+            authorizedAsOwnerOnly: false,
+            channel: new Channel(),
+            isAuthorized: true,
+        });
     }
 
     /**

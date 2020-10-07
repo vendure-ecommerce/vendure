@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { CurrencyCode } from '@vendure/admin-ui/core';
-
 import { OrderDetail } from '@vendure/admin-ui/core';
 
 @Component({
-    selector: 'vdr-order-payment-detail',
+    selector: 'vdr-order-payment-card',
     templateUrl: './order-payment-card.component.html',
     styleUrls: ['./order-payment-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

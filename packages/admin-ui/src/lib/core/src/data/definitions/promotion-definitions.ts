@@ -1,6 +1,10 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
-import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, CONFIGURABLE_OPERATION_FRAGMENT } from './shared-definitions';
+import {
+    CONFIGURABLE_OPERATION_DEF_FRAGMENT,
+    CONFIGURABLE_OPERATION_FRAGMENT,
+    ERROR_RESULT_FRAGMENT,
+} from './shared-definitions';
 
 export const PROMOTION_FRAGMENT = gql`
     fragment Promotion on Promotion {
@@ -60,9 +64,11 @@ export const CREATE_PROMOTION = gql`
     mutation CreatePromotion($input: CreatePromotionInput!) {
         createPromotion(input: $input) {
             ...Promotion
+            ...ErrorResult
         }
     }
     ${PROMOTION_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const UPDATE_PROMOTION = gql`

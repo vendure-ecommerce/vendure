@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { introspectionQuery } from 'graphql';
+import { getIntrospectionQuery } from 'graphql';
 import http from 'http';
 
 import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-constants';
@@ -13,7 +13,7 @@ import { ADMIN_API_PATH, API_PORT } from '../../packages/common/src/shared-const
  * If there is an error connecting to the server, the promise resolves to false.
  */
 export function downloadIntrospectionSchema(apiPath: string, outputFilePath: string): Promise<boolean> {
-    const body = JSON.stringify({ query: introspectionQuery });
+    const body = JSON.stringify({ query: getIntrospectionQuery() });
 
     return new Promise((resolve, reject) => {
         const request = http.request(

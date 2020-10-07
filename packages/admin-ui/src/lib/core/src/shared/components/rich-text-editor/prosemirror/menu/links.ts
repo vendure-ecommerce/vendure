@@ -30,7 +30,6 @@ export function linkItem(linkMark: MarkType, modalService: ModalService) {
         icon: icons.link,
         class: '',
         css: '',
-        execEvent: 'mousedown',
         active(state) {
             return markActive(state, linkMark);
         },

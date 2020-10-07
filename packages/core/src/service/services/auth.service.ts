@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { ID } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, NotVerifiedError, UnauthorizedError } from '../../common/error/errors';
+import { InternalServerError, NotVerifiedError } from '../../common/error/errors';
+import { InvalidCredentialsError } from '../../common/error/generated-graphql-admin-errors';
+import { InvalidCredentialsError as ShopInvalidCredentialsError } from '../../common/error/generated-graphql-shop-errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
     NATIVE_AUTH_STRATEGY_NAME,
@@ -19,6 +19,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { AttemptedLoginEvent } from '../../event-bus/events/attempted-login-event';
 import { LoginEvent } from '../../event-bus/events/login-event';
 import { LogoutEvent } from '../../event-bus/events/logout-event';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { SessionService } from './session.service';
 
@@ -28,7 +29,7 @@ import { SessionService } from './session.service';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private sessionService: SessionService,
         private eventBus: EventBus,
@@ -42,7 +43,7 @@ export class AuthService {
         apiType: ApiType,
         authenticationMethod: string,
         authenticationData: any,
-    ): Promise<AuthenticatedSession> {
+    ): Promise<AuthenticatedSession | InvalidCredentialsError> {
         this.eventBus.publish(
             new AttemptedLoginEvent(
                 ctx,
@@ -55,7 +56,7 @@ export class AuthService {
         const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
         const user = await authenticationStrategy.authenticate(ctx, authenticationData);
         if (!user) {
-            throw new UnauthorizedError();
+            return new InvalidCredentialsError();
         }
         return this.createAuthenticatedSessionForUser(ctx, user, authenticationStrategy.name);
     }
@@ -67,7 +68,7 @@ export class AuthService {
     ): Promise<AuthenticatedSession> {
         if (!user.roles || !user.roles[0]?.channels) {
             const userWithRoles = await this.connection
-                .getRepository(User)
+                .getRepository(ctx, User)
                 .createQueryBuilder('user')
                 .leftJoinAndSelect('user.roles', 'role')
                 .leftJoinAndSelect('role.channels', 'channel')
@@ -80,10 +81,10 @@ export class AuthService {
             throw new NotVerifiedError();
         }
         if (ctx.session && ctx.session.activeOrderId) {
-            await this.sessionService.deleteSessionsByActiveOrderId(ctx.session.activeOrderId);
+            await this.sessionService.deleteSessionsByActiveOrderId(ctx, ctx.session.activeOrderId);
         }
         user.lastLogin = new Date();
-        await this.connection.manager.save(user, { reload: false });
+        await this.connection.getRepository(ctx, User).save(user, { reload: false });
         const session = await this.sessionService.createNewAuthenticatedSession(
             ctx,
             user,
@@ -96,14 +97,18 @@ export class AuthService {
     /**
      * Verify the provided password against the one we have for the given user.
      */
-    async verifyUserPassword(userId: ID, password: string): Promise<boolean> {
+    async verifyUserPassword(
+        ctx: RequestContext,
+        userId: ID,
+        password: string,
+    ): Promise<boolean | InvalidCredentialsError | ShopInvalidCredentialsError> {
         const nativeAuthenticationStrategy = this.getAuthenticationStrategy(
             'shop',
             NATIVE_AUTH_STRATEGY_NAME,
         );
-        const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(userId, password);
+        const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(ctx, userId, password);
         if (!passwordMatches) {
-            throw new UnauthorizedError();
+            return new InvalidCredentialsError();
         }
         return true;
     }
@@ -112,7 +117,7 @@ export class AuthService {
      * Deletes all sessions for the user associated with the given session token.
      */
     async destroyAuthenticatedSession(ctx: RequestContext, sessionToken: string): Promise<void> {
-        const session = await this.connection.getRepository(AuthenticatedSession).findOne({
+        const session = await this.connection.getRepository(ctx, AuthenticatedSession).findOne({
             where: { token: sessionToken },
             relations: ['user', 'user.authenticationMethods'],
         });
@@ -126,7 +131,7 @@ export class AuthService {
                 await authenticationStrategy.onLogOut(session.user);
             }
             this.eventBus.publish(new LogoutEvent(ctx));
-            return this.sessionService.deleteSessionsByUser(session.user);
+            return this.sessionService.deleteSessionsByUser(ctx, session.user);
         }
     }
 
@@ -141,7 +146,7 @@ export class AuthService {
             apiType === 'admin'
                 ? authOptions.adminAuthenticationStrategy
                 : authOptions.shopAuthenticationStrategy;
-        const match = strategies.find((s) => s.name === method);
+        const match = strategies.find(s => s.name === method);
         if (!match) {
             throw new InternalServerError('error.unrecognized-authentication-strategy', { name: method });
         }

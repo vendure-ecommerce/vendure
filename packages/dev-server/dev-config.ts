@@ -9,12 +9,31 @@ import {
     examplePaymentHandler,
     LanguageCode,
     LogLevel,
+    PluginCommonModule,
+    ProductService,
     VendureConfig,
+    VendurePlugin,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
+
+@VendurePlugin({
+    imports: [PluginCommonModule],
+    providers: [
+        {
+            provide: ProductService,
+            useClass: class MyProdService {
+                findOne() {
+                    console.log('YOLO');
+                    return {};
+                }
+            },
+        },
+    ],
+})
+class MyPlugin {}
 
 /**
  * Config settings used during development
@@ -58,6 +77,7 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     plugins: [
+        MyPlugin,
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),

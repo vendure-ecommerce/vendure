@@ -1,12 +1,12 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
-    QueryCountriesArgs,
-    QueryCountryArgs,
+    DeletionResponse,
     MutationCreateCountryArgs,
     MutationDeleteCountryArgs,
-    DeletionResponse,
-    Permission,
     MutationUpdateCountryArgs,
+    Permission,
+    QueryCountriesArgs,
+    QueryCountryArgs,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -16,6 +16,7 @@ import { CountryService } from '../../../service/services/country.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('Country')
 export class CountryResolver {
@@ -39,6 +40,7 @@ export class CountryResolver {
         return this.countryService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     async createCountry(
@@ -48,6 +50,7 @@ export class CountryResolver {
         return this.countryService.create(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     async updateCountry(
@@ -57,6 +60,7 @@ export class CountryResolver {
         return this.countryService.update(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     async deleteCountry(

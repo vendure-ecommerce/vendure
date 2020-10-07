@@ -1,29 +1,20 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
 import {
-    DefinitionNode,
     GraphQLInputType,
     GraphQLList,
     GraphQLNonNull,
-    GraphQLResolveInfo,
     GraphQLSchema,
     OperationDefinitionNode,
     TypeNode,
 } from 'graphql';
 
-import { UserInputError } from '../../common/error/errors';
+import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { ConfigService } from '../../config/config.service';
-import {
-    CustomFieldConfig,
-    CustomFields,
-    LocaleStringCustomFieldConfig,
-    StringCustomFieldConfig,
-} from '../../config/custom-field/custom-field-types';
+import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { parseContext } from '../common/parse-context';
 import { RequestContext } from '../common/request-context';
-import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
 import { validateCustomFieldValue } from '../common/validate-custom-field-value';
 
 /**
@@ -44,12 +35,12 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
     }
 
     intercept(context: ExecutionContext, next: CallHandler<any>) {
-        const { isGraphQL } = parseContext(context);
-        if (isGraphQL) {
+        const parsedContext = parseContext(context);
+        if (parsedContext.isGraphQL) {
             const gqlExecutionContext = GqlExecutionContext.create(context);
-            const { operation, schema } = gqlExecutionContext.getInfo<GraphQLResolveInfo>();
+            const { operation, schema } = parsedContext.info;
             const variables = gqlExecutionContext.getArgs();
-            const ctx: RequestContext = gqlExecutionContext.getContext().req[REQUEST_CONTEXT_KEY];
+            const ctx: RequestContext = (parsedContext.req as any)[REQUEST_CONTEXT_KEY];
 
             if (operation.operation === 'mutation') {
                 const inputTypeNames = this.getArgumentMap(operation, schema);

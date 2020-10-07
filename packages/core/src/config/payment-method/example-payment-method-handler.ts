@@ -9,9 +9,7 @@ const gripeSDK = {
     charges: {
         create: (options: any) => {
             return Promise.resolve({
-                id: Math.random()
-                    .toString(36)
-                    .substr(3),
+                id: Math.random().toString(36).substr(3),
             });
         },
         capture: (transactionId: string) => {

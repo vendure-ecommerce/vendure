@@ -1,5 +1,5 @@
 import { Injector } from '@angular/core';
-import { ApolloLink, Operation } from 'apollo-link';
+import { ApolloLink, Operation } from '@apollo/client/core';
 
 import { JobQueueService } from '../providers/job-queue/job-queue.service';
 

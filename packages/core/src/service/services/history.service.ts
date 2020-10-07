@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
+import { UpdateCustomerInput as UpdateCustomerShopInput } from '@vendure/common/lib/generated-shop-types';
 import {
     HistoryEntryListOptions,
     HistoryEntryType,
@@ -7,18 +7,18 @@ import {
     UpdateCustomerInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { CustomerHistoryEntry } from '../../entity/history-entry/customer-history-entry.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderHistoryEntry } from '../../entity/history-entry/order-history-entry.entity';
+import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { RefundState } from '../helpers/refund-state-machine/refund-state';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AdministratorService } from './administrator.service';
 
@@ -30,7 +30,7 @@ export type CustomerHistoryEntryData = {
         strategy: string;
     };
     [HistoryEntryType.CUSTOMER_DETAIL_UPDATED]: {
-        input: UpdateCustomerInput;
+        input: UpdateCustomerInput | UpdateCustomerShopInput;
     };
     [HistoryEntryType.CUSTOMER_ADDRESS_CREATED]: {
         address: string;
@@ -74,7 +74,12 @@ export type OrderHistoryEntryData = {
         from: PaymentState;
         to: PaymentState;
     };
-    [HistoryEntryType.ORDER_FULLFILLMENT]: {
+    [HistoryEntryType.ORDER_FULFILLMENT_TRANSITION]: {
+        fulfillmentId: ID;
+        from: FulfillmentState;
+        to: FulfillmentState;
+    };
+    [HistoryEntryType.ORDER_FULFILLMENT]: {
         fulfillmentId: ID;
     };
     [HistoryEntryType.ORDER_CANCELLATION]: {
@@ -134,12 +139,13 @@ export interface UpdateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryE
 @Injectable()
 export class HistoryService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private administratorService: AdministratorService,
         private listQueryBuilder: ListQueryBuilder,
     ) {}
 
     async getHistoryForOrder(
+        ctx: RequestContext,
         orderId: ID,
         publicOnly: boolean,
         options?: HistoryEntryListOptions,
@@ -151,6 +157,7 @@ export class HistoryService {
                     ...(publicOnly ? { isPublic: true } : {}),
                 },
                 relations: ['administrator'],
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -172,10 +179,11 @@ export class HistoryService {
             order: { id: orderId },
             administrator,
         });
-        return this.connection.getRepository(OrderHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
     }
 
     async getHistoryForCustomer(
+        ctx: RequestContext,
         customerId: ID,
         publicOnly: boolean,
         options?: HistoryEntryListOptions,
@@ -187,6 +195,7 @@ export class HistoryService {
                     ...(publicOnly ? { isPublic: true } : {}),
                 },
                 relations: ['administrator'],
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -202,20 +211,21 @@ export class HistoryService {
         const { ctx, data, customerId, type } = args;
         const administrator = await this.getAdministratorFromContext(ctx);
         const entry = new CustomerHistoryEntry({
+            createdAt: new Date(),
             type,
             isPublic,
             data: data as any,
             customer: { id: customerId },
             administrator,
         });
-        return this.connection.getRepository(CustomerHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
     }
 
     async updateOrderHistoryEntry<T extends keyof OrderHistoryEntryData>(
         ctx: RequestContext,
         args: UpdateOrderHistoryEntryArgs<T>,
     ) {
-        const entry = await getEntityOrThrow(this.connection, OrderHistoryEntry, args.entryId, {
+        const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, args.entryId, {
             where: { type: args.type },
         });
 
@@ -229,19 +239,19 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(OrderHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, OrderHistoryEntry).save(entry);
     }
 
-    async deleteOrderHistoryEntry(id: ID): Promise<void> {
-        const entry = await getEntityOrThrow(this.connection, OrderHistoryEntry, id);
-        await this.connection.getRepository(OrderHistoryEntry).remove(entry);
+    async deleteOrderHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
+        const entry = await this.connection.getEntityOrThrow(ctx, OrderHistoryEntry, id);
+        await this.connection.getRepository(ctx, OrderHistoryEntry).remove(entry);
     }
 
     async updateCustomerHistoryEntry<T extends keyof CustomerHistoryEntryData>(
         ctx: RequestContext,
         args: UpdateCustomerHistoryEntryArgs<T>,
     ) {
-        const entry = await getEntityOrThrow(this.connection, CustomerHistoryEntry, args.entryId, {
+        const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, args.entryId, {
             where: { type: args.type },
         });
 
@@ -252,17 +262,17 @@ export class HistoryService {
         if (administrator) {
             entry.administrator = administrator;
         }
-        return this.connection.getRepository(CustomerHistoryEntry).save(entry);
+        return this.connection.getRepository(ctx, CustomerHistoryEntry).save(entry);
     }
 
-    async deleteCustomerHistoryEntry(id: ID): Promise<void> {
-        const entry = await getEntityOrThrow(this.connection, CustomerHistoryEntry, id);
-        await this.connection.getRepository(CustomerHistoryEntry).remove(entry);
+    async deleteCustomerHistoryEntry(ctx: RequestContext, id: ID): Promise<void> {
+        const entry = await this.connection.getEntityOrThrow(ctx, CustomerHistoryEntry, id);
+        await this.connection.getRepository(ctx, CustomerHistoryEntry).remove(entry);
     }
 
     private async getAdministratorFromContext(ctx: RequestContext): Promise<Administrator | undefined> {
         const administrator = ctx.activeUserId
-            ? await this.administratorService.findOneByUserId(ctx.activeUserId)
+            ? await this.administratorService.findOneByUserId(ctx, ctx.activeUserId)
             : undefined;
         return administrator;
     }

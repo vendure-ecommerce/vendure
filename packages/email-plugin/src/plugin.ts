@@ -1,8 +1,8 @@
 import { ModuleRef } from '@nestjs/core';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     createProxyHandler,
     EventBus,
+    Injector,
     JobQueue,
     JobQueueService,
     Logger,
@@ -10,11 +10,11 @@ import {
     OnVendureClose,
     PluginCommonModule,
     RuntimeVendureConfig,
+    TransactionalConnection,
     Type,
     VendurePlugin,
     WorkerService,
 } from '@vendure/core';
-import { Connection } from 'typeorm';
 
 import { isDevModeOptions } from './common';
 import { EMAIL_PLUGIN_OPTIONS } from './constants';
@@ -154,7 +154,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     constructor(
         private eventBus: EventBus,
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private moduleRef: ModuleRef,
         private workerService: WorkerService,
         private jobQueueService: JobQueueService,
@@ -234,10 +234,10 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
         const { type } = handler;
         try {
             if (handler instanceof EmailEventHandlerWithAsyncData) {
+                const injector = new Injector(this.moduleRef);
                 (event as EventWithAsyncData<EventWithContext, any>).data = await handler._loadDataFn({
                     event,
-                    connection: this.connection,
-                    inject: t => this.moduleRef.get(t, { strict: false }),
+                    injector,
                 });
             }
             const result = await handler.handle(event as any, EmailPlugin.options.globalTemplateVars);

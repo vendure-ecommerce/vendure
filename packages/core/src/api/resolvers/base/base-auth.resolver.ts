@@ -1,15 +1,24 @@
+import { AuthenticationResult as ShopAuthenticationResult } from '@vendure/common/lib/generated-shop-types';
 import {
+    AuthenticationResult as AdminAuthenticationResult,
     CurrentUser,
     CurrentUserChannel,
-    LoginResult,
     MutationAuthenticateArgs,
     MutationLoginArgs,
+    Success,
 } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
-import { ForbiddenError, InternalServerError, UnauthorizedError } from '../../../common/error/errors';
+import { isGraphQlErrorResult } from '../../../common/error/error-result';
+import { ForbiddenError } from '../../../common/error/errors';
+import { NativeAuthStrategyError as AdminNativeAuthStrategyError } from '../../../common/error/generated-graphql-admin-errors';
+import {
+    InvalidCredentialsError,
+    NativeAuthStrategyError as ShopNativeAuthStrategyError,
+} from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
+import { Logger } from '../../../config/logger/vendure-logger';
 import { User } from '../../../entity/user/user.entity';
 import { getUserChannelsPermissions } from '../../../service/helpers/utils/get-user-channels-permissions';
 import { AdministratorService } from '../../../service/services/administrator.service';
@@ -21,23 +30,29 @@ import { RequestContext } from '../../common/request-context';
 import { setSessionToken } from '../../common/set-session-token';
 
 export class BaseAuthResolver {
+    protected readonly nativeAuthStrategyIsConfigured: boolean;
+
     constructor(
         protected authService: AuthService,
         protected userService: UserService,
         protected administratorService: AdministratorService,
         protected configService: ConfigService,
-    ) {}
+    ) {
+        this.nativeAuthStrategyIsConfigured = !!this.configService.authOptions.shopAuthenticationStrategy.find(
+            strategy => strategy.name === NATIVE_AUTH_STRATEGY_NAME,
+        );
+    }
 
     /**
      * Attempts a login given the username and password of a user. If successful, returns
      * the user data and returns the token either in a cookie or in the response body.
      */
-    async login(
+    async baseLogin(
         args: MutationLoginArgs,
         ctx: RequestContext,
         req: Request,
         res: Response,
-    ): Promise<LoginResult> {
+    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult> {
         return await this.authenticateAndCreateSession(
             ctx,
             {
@@ -48,10 +63,10 @@ export class BaseAuthResolver {
         );
     }
 
-    async logout(ctx: RequestContext, req: Request, res: Response): Promise<boolean> {
+    async logout(ctx: RequestContext, req: Request, res: Response): Promise<Success> {
         const token = extractSessionToken(req, this.configService.authOptions.tokenMethod);
         if (!token) {
-            return false;
+            return { success: false };
         }
         await this.authService.destroyAuthenticatedSession(ctx, token);
         setSessionToken({
@@ -61,7 +76,7 @@ export class BaseAuthResolver {
             rememberMe: false,
             sessionToken: '',
         });
-        return true;
+        return { success: true };
     }
 
     /**
@@ -73,12 +88,12 @@ export class BaseAuthResolver {
             throw new ForbiddenError();
         }
         if (apiType === 'admin') {
-            const administrator = await this.administratorService.findOneByUserId(userId);
+            const administrator = await this.administratorService.findOneByUserId(ctx, userId);
             if (!administrator) {
                 throw new ForbiddenError();
             }
         }
-        const user = userId && (await this.userService.getUserById(userId));
+        const user = userId && (await this.userService.getUserById(ctx, userId));
         return user ? this.publiclyAccessibleUser(user) : null;
     }
 
@@ -90,14 +105,17 @@ export class BaseAuthResolver {
         args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
-    ): Promise<LoginResult> {
+    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult> {
         const [method, data] = Object.entries(args.input)[0];
         const { apiType } = ctx;
         const session = await this.authService.authenticate(ctx, apiType, method, data);
+        if (isGraphQlErrorResult(session)) {
+            return session;
+        }
         if (apiType && apiType === 'admin') {
-            const administrator = await this.administratorService.findOneByUserId(session.user.id);
+            const administrator = await this.administratorService.findOneByUserId(ctx, session.user.id);
             if (!administrator) {
-                throw new UnauthorizedError();
+                return new InvalidCredentialsError();
             }
         }
         setSessionToken({
@@ -107,9 +125,7 @@ export class BaseAuthResolver {
             rememberMe: args.rememberMe || false,
             sessionToken: session.token,
         });
-        return {
-            user: this.publiclyAccessibleUser(session.user),
-        };
+        return this.publiclyAccessibleUser(session.user);
     }
 
     /**
@@ -119,12 +135,12 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         currentPassword: string,
         newPassword: string,
-    ): Promise<boolean> {
+    ): Promise<boolean | InvalidCredentialsError> {
         const { activeUserId } = ctx;
         if (!activeUserId) {
-            throw new InternalServerError(`error.no-active-user-id`);
+            throw new ForbiddenError();
         }
-        return this.userService.updatePassword(activeUserId, currentPassword, newPassword);
+        return this.userService.updatePassword(ctx, activeUserId, currentPassword, newPassword);
     }
 
     /**
@@ -136,5 +152,21 @@ export class BaseAuthResolver {
             identifier: user.identifier,
             channels: getUserChannelsPermissions(user) as CurrentUserChannel[],
         };
+    }
+
+    protected requireNativeAuthStrategy():
+        | AdminNativeAuthStrategyError
+        | ShopNativeAuthStrategyError
+        | undefined {
+        if (!this.nativeAuthStrategyIsConfigured) {
+            const authStrategyNames = this.configService.authOptions.shopAuthenticationStrategy
+                .map(s => s.name)
+                .join(', ');
+            const errorMessage =
+                'This GraphQL operation requires that the NativeAuthenticationStrategy be configured for the Shop API.\n' +
+                `Currently the following AuthenticationStrategies are enabled: ${authStrategyNames}`;
+            Logger.error(errorMessage);
+            return new AdminNativeAuthStrategyError();
+        }
     }
 }

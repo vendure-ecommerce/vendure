@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -17,6 +15,7 @@ import { Sale } from '../../entity/stock-movement/sale.entity';
 import { StockAdjustment } from '../../entity/stock-movement/stock-adjustment.entity';
 import { StockMovement } from '../../entity/stock-movement/stock-movement.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class StockMovementService {
@@ -24,10 +23,7 @@ export class StockMovementService {
     shippingCalculators: ShippingCalculator[];
     private activeShippingMethods: ShippingMethod[];
 
-    constructor(
-        @InjectConnection() private connection: Connection,
-        private listQueryBuilder: ListQueryBuilder,
-    ) {}
+    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
 
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
@@ -35,7 +31,7 @@ export class StockMovementService {
         options: StockMovementListOptions,
     ): Promise<PaginatedList<StockMovement>> {
         return this.listQueryBuilder
-            .build<StockMovement>(StockMovement as any, options)
+            .build<StockMovement>(StockMovement as any, options, { ctx })
             .leftJoin('stockmovement.productVariant', 'productVariant')
             .andWhere('productVariant.id = :productVariantId', { productVariantId })
             .getManyAndCount()
@@ -48,6 +44,7 @@ export class StockMovementService {
     }
 
     async adjustProductVariantStock(
+        ctx: RequestContext,
         productVariantId: ID,
         oldStockLevel: number,
         newStockLevel: number,
@@ -61,10 +58,10 @@ export class StockMovementService {
             quantity: delta,
             productVariant: { id: productVariantId },
         });
-        return this.connection.getRepository(StockAdjustment).save(adjustment);
+        return this.connection.getRepository(ctx, StockAdjustment).save(adjustment);
     }
 
-    async createSalesForOrder(order: Order): Promise<Sale[]> {
+    async createSalesForOrder(ctx: RequestContext, order: Order): Promise<Sale[]> {
         if (order.active !== false) {
             throw new InternalServerError('error.cannot-create-sales-for-active-order');
         }
@@ -80,16 +77,21 @@ export class StockMovementService {
 
             if (productVariant.trackInventory === true) {
                 productVariant.stockOnHand -= line.quantity;
-                await this.connection.getRepository(ProductVariant).save(productVariant, { reload: false });
+                await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(Sale).save(sales);
+        return this.connection.getRepository(ctx, Sale).save(sales);
     }
 
-    async createCancellationsForOrderItems(items: OrderItem[]): Promise<Cancellation[]> {
-        const orderItems = await this.connection.getRepository(OrderItem).findByIds(items.map(i => i.id), {
-            relations: ['line', 'line.productVariant'],
-        });
+    async createCancellationsForOrderItems(ctx: RequestContext, items: OrderItem[]): Promise<Cancellation[]> {
+        const orderItems = await this.connection.getRepository(ctx, OrderItem).findByIds(
+            items.map(i => i.id),
+            {
+                relations: ['line', 'line.productVariant'],
+            },
+        );
         const cancellations: Cancellation[] = [];
         const variantsMap = new Map<ID, ProductVariant>();
         for (const item of orderItems) {
@@ -111,9 +113,11 @@ export class StockMovementService {
 
             if (productVariant.trackInventory === true) {
                 productVariant.stockOnHand += 1;
-                await this.connection.getRepository(ProductVariant).save(productVariant, { reload: false });
+                await this.connection
+                    .getRepository(ctx, ProductVariant)
+                    .save(productVariant, { reload: false });
             }
         }
-        return this.connection.getRepository(Cancellation).save(cancellations);
+        return this.connection.getRepository(ctx, Cancellation).save(cancellations);
     }
 }

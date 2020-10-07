@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     CreateAdministratorInput,
     DeletionResult,
     UpdateAdministratorInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config';
 import { Administrator } from '../../entity/administrator/administrator.entity';
+import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { RoleService } from './role.service';
 import { UserService } from './user.service';
@@ -24,7 +24,7 @@ import { UserService } from './user.service';
 @Injectable()
 export class AdministratorService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private passwordCipher: PasswordCiper,
@@ -36,9 +36,16 @@ export class AdministratorService {
         await this.ensureSuperAdminExists();
     }
 
-    findAll(options?: ListQueryOptions<Administrator>): Promise<PaginatedList<Administrator>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<Administrator>,
+    ): Promise<PaginatedList<Administrator>> {
         return this.listQueryBuilder
-            .build(Administrator, options, { relations: ['user', 'user.roles'], where: { deletedAt: null } })
+            .build(Administrator, options, {
+                relations: ['user', 'user.roles'],
+                where: { deletedAt: null },
+                ctx,
+            })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -46,8 +53,8 @@ export class AdministratorService {
             }));
     }
 
-    findOne(administratorId: ID): Promise<Administrator | undefined> {
-        return this.connection.manager.findOne(Administrator, administratorId, {
+    findOne(ctx: RequestContext, administratorId: ID): Promise<Administrator | undefined> {
+        return this.connection.getRepository(ctx, Administrator).findOne(administratorId, {
             relations: ['user', 'user.roles'],
             where: {
                 deletedAt: null,
@@ -55,8 +62,8 @@ export class AdministratorService {
         });
     }
 
-    findOneByUserId(userId: ID): Promise<Administrator | undefined> {
-        return this.connection.getRepository(Administrator).findOne({
+    findOneByUserId(ctx: RequestContext, userId: ID): Promise<Administrator | undefined> {
+        return this.connection.getRepository(ctx, Administrator).findOne({
             where: {
                 user: { id: userId },
                 deletedAt: null,
@@ -64,37 +71,39 @@ export class AdministratorService {
         });
     }
 
-    async create(input: CreateAdministratorInput): Promise<Administrator> {
+    async create(ctx: RequestContext, input: CreateAdministratorInput): Promise<Administrator> {
         const administrator = new Administrator(input);
-        administrator.user = await this.userService.createAdminUser(input.emailAddress, input.password);
-        let createdAdministrator = await this.connection.manager.save(administrator);
+        administrator.user = await this.userService.createAdminUser(ctx, input.emailAddress, input.password);
+        let createdAdministrator = await this.connection
+            .getRepository(ctx, Administrator)
+            .save(administrator);
         for (const roleId of input.roleIds) {
-            createdAdministrator = await this.assignRole(createdAdministrator.id, roleId);
+            createdAdministrator = await this.assignRole(ctx, createdAdministrator.id, roleId);
         }
         return createdAdministrator;
     }
 
-    async update(input: UpdateAdministratorInput): Promise<Administrator> {
-        const administrator = await this.findOne(input.id);
+    async update(ctx: RequestContext, input: UpdateAdministratorInput): Promise<Administrator> {
+        const administrator = await this.findOne(ctx, input.id);
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', input.id);
         }
         let updatedAdministrator = patchEntity(administrator, input);
-        await this.connection.manager.save(administrator, { reload: false });
+        await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
 
         if (input.password) {
-            const user = await this.userService.getUserById(administrator.user.id);
+            const user = await this.userService.getUserById(ctx, administrator.user.id);
             if (user) {
                 const nativeAuthMethod = user.getNativeAuthenticationMethod();
                 nativeAuthMethod.passwordHash = await this.passwordCipher.hash(input.password);
-                await this.connection.manager.save(nativeAuthMethod);
+                await this.connection.getRepository(ctx, NativeAuthenticationMethod).save(nativeAuthMethod);
             }
         }
         if (input.roleIds) {
             administrator.user.roles = [];
-            await this.connection.manager.save(administrator.user, { reload: false });
+            await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
             for (const roleId of input.roleIds) {
-                updatedAdministrator = await this.assignRole(administrator.id, roleId);
+                updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
             }
         }
         return updatedAdministrator;
@@ -103,27 +112,27 @@ export class AdministratorService {
     /**
      * Assigns a Role to the Administrator's User entity.
      */
-    async assignRole(administratorId: ID, roleId: ID): Promise<Administrator> {
-        const administrator = await this.findOne(administratorId);
+    async assignRole(ctx: RequestContext, administratorId: ID, roleId: ID): Promise<Administrator> {
+        const administrator = await this.findOne(ctx, administratorId);
         if (!administrator) {
             throw new EntityNotFoundError('Administrator', administratorId);
         }
-        const role = await this.roleService.findOne(roleId);
+        const role = await this.roleService.findOne(ctx, roleId);
         if (!role) {
             throw new EntityNotFoundError('Role', roleId);
         }
         administrator.user.roles.push(role);
-        await this.connection.manager.save(administrator.user, { reload: false });
+        await this.connection.getRepository(ctx, User).save(administrator.user, { reload: false });
         return administrator;
     }
 
-    async softDelete(id: ID) {
-        const administrator = await getEntityOrThrow(this.connection, Administrator, id, {
+    async softDelete(ctx: RequestContext, id: ID) {
+        const administrator = await this.connection.getEntityOrThrow(ctx, Administrator, id, {
             relations: ['user'],
         });
-        await this.connection.getRepository(Administrator).update({ id }, { deletedAt: new Date() });
+        await this.connection.getRepository(ctx, Administrator).update({ id }, { deletedAt: new Date() });
         // tslint:disable-next-line:no-non-null-assertion
-        await this.userService.softDelete(administrator.user!.id);
+        await this.userService.softDelete(ctx, administrator.user!.id);
         return {
             result: DeletionResult.DELETED,
         };
@@ -144,7 +153,7 @@ export class AdministratorService {
 
         if (!superAdminUser) {
             const superAdminRole = await this.roleService.getSuperAdminRole();
-            const administrator = await this.create({
+            const administrator = await this.create(RequestContext.empty(), {
                 emailAddress: superadminCredentials.identifier,
                 password: superadminCredentials.password,
                 firstName: 'Super',

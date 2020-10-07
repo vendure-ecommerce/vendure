@@ -1,4 +1,6 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
+
+import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
 
 export const ADJUSTMENT_FRAGMENT = gql`
     fragment Adjustment on Adjustment {
@@ -56,6 +58,8 @@ export const ORDER_FRAGMENT = gql`
 export const FULFILLMENT_FRAGMENT = gql`
     fragment Fulfillment on Fulfillment {
         id
+        state
+        nextStates
         createdAt
         updatedAt
         method
@@ -197,50 +201,71 @@ export const GET_ORDER = gql`
 export const SETTLE_PAYMENT = gql`
     mutation SettlePayment($id: ID!) {
         settlePayment(id: $id) {
-            id
-            transactionId
-            amount
-            method
-            state
-            metadata
+            ... on Payment {
+                id
+                transactionId
+                amount
+                method
+                state
+                metadata
+            }
+            ...ErrorResult
+            ... on SettlePaymentError {
+                paymentErrorMessage
+            }
+            ... on PaymentStateTransitionError {
+                transitionError
+            }
+            ... on OrderStateTransitionError {
+                transitionError
+            }
         }
     }
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const CREATE_FULFILLMENT = gql`
     mutation CreateFulfillment($input: FulfillOrderInput!) {
-        fulfillOrder(input: $input) {
+        addFulfillmentToOrder(input: $input) {
             ...Fulfillment
+            ...ErrorResult
         }
     }
     ${FULFILLMENT_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const CANCEL_ORDER = gql`
     mutation CancelOrder($input: CancelOrderInput!) {
         cancelOrder(input: $input) {
             ...OrderDetail
+            ...ErrorResult
         }
     }
     ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const REFUND_ORDER = gql`
     mutation RefundOrder($input: RefundOrderInput!) {
         refundOrder(input: $input) {
             ...Refund
+            ...ErrorResult
         }
     }
     ${REFUND_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const SETTLE_REFUND = gql`
     mutation SettleRefund($input: SettleRefundInput!) {
         settleRefund(input: $input) {
             ...Refund
+            ...ErrorResult
         }
     }
     ${REFUND_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const GET_ORDER_HISTORY = gql`
@@ -297,9 +322,14 @@ export const TRANSITION_ORDER_TO_STATE = gql`
     mutation TransitionOrderToState($id: ID!, $state: String!) {
         transitionOrderToState(id: $id, state: $state) {
             ...Order
+            ...ErrorResult
+            ... on OrderStateTransitionError {
+                transitionError
+            }
         }
     }
     ${ORDER_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
@@ -309,4 +339,18 @@ export const UPDATE_ORDER_CUSTOM_FIELDS = gql`
         }
     }
     ${ORDER_FRAGMENT}
+`;
+
+export const TRANSITION_FULFILLMENT_TO_STATE = gql`
+    mutation TransitionFulfillmentToState($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            ...Fulfillment
+            ...ErrorResult
+            ... on FulfillmentStateTransitionError {
+                transitionError
+            }
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;

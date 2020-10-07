@@ -1,5 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
-import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
+import {
+    createErrorResultGuard,
+    createTestEnvironment,
+    E2E_DEFAULT_CHANNEL_TOKEN,
+    ErrorResultGuard,
+} from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -15,16 +20,16 @@ import {
     GetProductWithVariants,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, GetActiveOrder } from './graphql/generated-e2e-shop-types';
+import { AddItemToOrder, GetActiveOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     GET_CUSTOMER_LIST,
     GET_ORDER,
+    GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
 } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
-import { GET_ORDERS_LIST } from './order.e2e-spec';
 
 describe('Channelaware orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
@@ -120,6 +125,10 @@ describe('Channelaware orders', () => {
         await server.destroy();
     });
 
+    const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
+        UpdatedOrderFragment
+    >(input => !!input.lines);
+
     it('creates order on current channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
@@ -129,6 +138,7 @@ describe('Channelaware orders', () => {
                 quantity: 1,
             },
         );
+        orderResultGuard.assertSuccess(addItemToOrder);
 
         expect(addItemToOrder!.lines.length).toBe(1);
         expect(addItemToOrder!.lines[0].quantity).toBe(1);
@@ -151,6 +161,7 @@ describe('Channelaware orders', () => {
                 quantity: 1,
             },
         );
+        orderResultGuard.assertSuccess(addItemToOrder);
 
         expect(addItemToOrder!.lines.length).toBe(1);
         expect(addItemToOrder!.lines[0].quantity).toBe(1);
@@ -182,12 +193,12 @@ describe('Channelaware orders', () => {
     it('returns all orders on default channel', async () => {
         adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map((o) => o.id)).toEqual([order1Id, order2Id]);
+        expect(result.orders.items.map(o => o.id)).toEqual([order1Id, order2Id]);
     });
 
     it('returns only channel specific orders when on other than default channel', async () => {
         adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map((o) => o.id)).toEqual([order1Id]);
+        expect(result.orders.items.map(o => o.id)).toEqual([order1Id]);
     });
 });

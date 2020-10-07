@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigArg,
     ConfigArgInput,
@@ -9,17 +8,17 @@ import {
 import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
+import { RefundStateTransitionError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
-import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
@@ -27,13 +26,13 @@ import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class PaymentMethodService {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private paymentStateMachine: PaymentStateMachine,
@@ -45,9 +44,12 @@ export class PaymentMethodService {
         await this.ensurePaymentMethodsExist();
     }
 
-    findAll(options?: ListQueryOptions<PaymentMethod>): Promise<PaginatedList<PaymentMethod>> {
+    findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<PaymentMethod>,
+    ): Promise<PaginatedList<PaymentMethod>> {
         return this.listQueryBuilder
-            .build(PaymentMethod, options)
+            .build(PaymentMethod, options, { ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -55,12 +57,12 @@ export class PaymentMethodService {
             }));
     }
 
-    findOne(paymentMethodId: ID): Promise<PaymentMethod | undefined> {
-        return this.connection.manager.findOne(PaymentMethod, paymentMethodId);
+    findOne(ctx: RequestContext, paymentMethodId: ID): Promise<PaymentMethod | undefined> {
+        return this.connection.getRepository(ctx, PaymentMethod).findOne(paymentMethodId);
     }
 
-    async update(input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
-        const paymentMethod = await getEntityOrThrow(this.connection, PaymentMethod, input.id);
+    async update(ctx: RequestContext, input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
+        const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, input.id);
         const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['configArgs']));
         if (input.configArgs) {
             const handler = this.configService.paymentOptions.paymentMethodHandlers.find(
@@ -73,31 +75,26 @@ export class PaymentMethodService {
                 updatedPaymentMethod.configArgs = input.configArgs.filter(handlerHasArgDefinition);
             }
         }
-        return this.connection.getRepository(PaymentMethod).save(updatedPaymentMethod);
+        return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(
-        ctx: RequestContext,
-        order: Order,
-        method: string,
-        metadata: PaymentMetadata,
-    ): Promise<Payment> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(method);
+    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: any): Promise<Payment> {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
         const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
         const initialState = 'Created';
         const payment = await this.connection
-            .getRepository(Payment)
+            .getRepository(ctx, Payment)
             .save(new Payment({ ...result, state: initialState }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
-        await this.connection.getRepository(Payment).save(payment, { reload: false });
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
         return payment;
     }
 
-    async settlePayment(payment: Payment, order: Order) {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+    async settlePayment(ctx: RequestContext, payment: Payment, order: Order) {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         return handler.settlePayment(order, payment, paymentMethod.configArgs);
     }
 
@@ -107,8 +104,8 @@ export class PaymentMethodService {
         order: Order,
         items: OrderItem[],
         payment: Payment,
-    ): Promise<Refund> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(payment.method);
+    ): Promise<Refund | RefundStateTransitionError> {
+        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
@@ -134,11 +131,15 @@ export class PaymentMethodService {
             refund.transactionId = createRefundResult.transactionId || '';
             refund.metadata = createRefundResult.metadata || {};
         }
-        refund = await this.connection.getRepository(Refund).save(refund);
+        refund = await this.connection.getRepository(ctx, Refund).save(refund);
         if (createRefundResult) {
             const fromState = refund.state;
-            await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
-            await this.connection.getRepository(Refund).save(refund, { reload: false });
+            try {
+                await this.refundStateMachine.transition(ctx, order, refund, createRefundResult.state);
+            } catch (e) {
+                return new RefundStateTransitionError(e.message, fromState, createRefundResult.state);
+            }
+            await this.connection.getRepository(ctx, Refund).save(refund, { reload: false });
             this.eventBus.publish(
                 new RefundStateTransitionEvent(fromState, createRefundResult.state, ctx, refund, order),
             );
@@ -155,9 +156,10 @@ export class PaymentMethodService {
     }
 
     private async getMethodAndHandler(
+        ctx: RequestContext,
         method: string,
     ): Promise<{ paymentMethod: PaymentMethod; handler: PaymentMethodHandler }> {
-        const paymentMethod = await this.connection.getRepository(PaymentMethod).findOne({
+        const paymentMethod = await this.connection.getRepository(ctx, PaymentMethod).findOne({
             where: {
                 code: method,
                 enabled: true,
@@ -171,8 +173,9 @@ export class PaymentMethodService {
     }
 
     private async ensurePaymentMethodsExist() {
+        const paymentMethodRepo = await this.connection.getRepository(PaymentMethod);
         const paymentMethodHandlers = this.configService.paymentOptions.paymentMethodHandlers;
-        const existingPaymentMethods = await this.connection.getRepository(PaymentMethod).find();
+        const existingPaymentMethods = await paymentMethodRepo.find();
         const toCreate = paymentMethodHandlers.filter(
             h => !existingPaymentMethods.find(pm => pm.code === h.code),
         );
@@ -189,7 +192,7 @@ export class PaymentMethodService {
                 continue;
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
+            await paymentMethodRepo.save(paymentMethod, { reload: false });
         }
         for (const handler of toCreate) {
             let paymentMethod = existingPaymentMethods.find(pm => pm.code === handler.code);
@@ -202,9 +205,9 @@ export class PaymentMethodService {
                 });
             }
             paymentMethod.configArgs = this.buildConfigArgsArray(handler, paymentMethod.configArgs);
-            await this.connection.getRepository(PaymentMethod).save(paymentMethod, { reload: false });
+            await paymentMethodRepo.save(paymentMethod, { reload: false });
         }
-        await this.connection.getRepository(PaymentMethod).remove(toRemove);
+        await paymentMethodRepo.remove(toRemove);
     }
 
     private buildConfigArgsArray(

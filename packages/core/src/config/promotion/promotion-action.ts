@@ -75,6 +75,7 @@ export interface PromotionOrderActionConfig<T extends ConfigArgs> extends Promot
  *
  * @docsCategory promotions
  * @docsPage promotion-action
+ * @docsWeight 0
  */
 export abstract class PromotionAction<T extends ConfigArgs = {}> extends ConfigurableOperationDef<T> {
     /**
@@ -112,6 +113,7 @@ export abstract class PromotionAction<T extends ConfigArgs = {}> extends Configu
  *
  * @docsCategory promotions
  * @docsPage promotion-action
+ * @docsWeight 1
  */
 export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionItemActionFn<T>;
@@ -145,6 +147,7 @@ export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends Prom
  *
  * @docsCategory promotions
  * @docsPage promotion-action
+ * @docsWeight 2
  */
 export class PromotionOrderAction<T extends ConfigArgs = ConfigArgs> extends PromotionAction<T> {
     private readonly executeFn: ExecutePromotionOrderActionFn<T>;

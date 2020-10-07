@@ -17,6 +17,7 @@ import { ProductOptionService } from '../../../service/services/product-option.s
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class ProductOptionResolver {
@@ -43,6 +44,7 @@ export class ProductOptionResolver {
         return this.productOptionGroupService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOptionGroup(
@@ -61,6 +63,7 @@ export class ProductOptionResolver {
         return group;
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductOptionGroup(
@@ -71,6 +74,7 @@ export class ProductOptionResolver {
         return this.productOptionGroupService.update(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProductOption(
@@ -81,6 +85,7 @@ export class ProductOptionResolver {
         return this.productOptionService.create(ctx, input.productOptionGroupId, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductOption(

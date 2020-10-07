@@ -1,7 +1,6 @@
 import { Client } from '@elastic/elasticsearch';
 import { Controller, Inject, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { InjectConnection } from '@nestjs/typeorm';
 import { unique } from '@vendure/common/lib/unique';
 import {
     Asset,
@@ -14,10 +13,11 @@ import {
     ProductVariant,
     ProductVariantService,
     RequestContext,
+    TransactionalConnection,
     translateDeep,
 } from '@vendure/core';
 import { Observable } from 'rxjs';
-import { Connection, SelectQueryBuilder } from 'typeorm';
+import { SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import {
@@ -73,7 +73,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     private asyncQueue = new AsyncQueue('elasticsearch-indexer', 5);
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
         private productVariantService: ProductVariantService,
     ) {}
@@ -538,7 +538,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         try {
             const fullIndexName = this.options.indexPrefix + indexName;
             const { body }: { body: BulkResponseBody } = await this.client.bulk({
-                refresh: 'true',
+                refresh: true,
                 index: fullIndexName,
                 type: indexType,
                 body: operations,
@@ -581,7 +581,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 productId: 'ASC',
             },
         });
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, this.connection.getMetadata(ProductVariant));
+        FindOptionsUtils.joinEagerRelations(
+            qb,
+            qb.alias,
+            this.connection.rawConnection.getMetadata(ProductVariant),
+        );
         qb.leftJoin('variants.product', '__product')
             .leftJoin('__product.channels', '__channel')
             .where('__channel.id = :channelId', { channelId })
@@ -637,13 +641,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             slug: v.product.slug,
             productId: v.product.id,
             productName: v.product.name,
-            productAssetId: productAsset ? productAsset.id : null,
+            productAssetId: productAsset ? productAsset.id : undefined,
             productPreview: productAsset ? productAsset.preview : '',
-            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
+            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             productVariantName: v.name,
-            productVariantAssetId: variantAsset ? variantAsset.id : null,
+            productVariantAssetId: variantAsset ? variantAsset.id : undefined,
             productVariantPreview: variantAsset ? variantAsset.preview : '',
-            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
+            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             price: v.price,
             priceWithTax: v.priceWithTax,
             currencyCode: v.currencyCode,
@@ -676,14 +680,14 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             slug: first.product.slug,
             productId: first.product.id,
             productName: first.product.name,
-            productAssetId: productAsset ? productAsset.id : null,
+            productAssetId: productAsset ? productAsset.id : undefined,
             productPreview: productAsset ? productAsset.preview : '',
-            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
+            productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             productVariantId: first.id,
             productVariantName: first.name,
-            productVariantAssetId: variantAsset ? variantAsset.id : null,
+            productVariantAssetId: variantAsset ? variantAsset.id : undefined,
             productVariantPreview: variantAsset ? variantAsset.preview : '',
-            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || null : null,
+            productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             priceMin: Math.min(...prices),
             priceMax: Math.max(...prices),
             priceWithTaxMin: Math.min(...pricesWithTax),

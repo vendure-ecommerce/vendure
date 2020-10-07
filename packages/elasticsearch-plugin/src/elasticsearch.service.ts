@@ -159,8 +159,8 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
         const facetValues = await this.facetValueService.findByIds(
+            ctx,
             buckets.map(b => b.key),
-            ctx.languageCode,
         );
         return facetValues.map((facetValue, index) => {
             const bucket = buckets.find(b => b.key.toString() === facetValue.id.toString());
@@ -316,21 +316,21 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
     private getSearchResultAssets(
         source: ProductIndexItem | VariantIndexItem,
-    ): { productAsset: SearchResultAsset | null; productVariantAsset: SearchResultAsset | null } {
-        const productAsset: SearchResultAsset | null = source.productAssetId
+    ): { productAsset: SearchResultAsset | undefined; productVariantAsset: SearchResultAsset | undefined } {
+        const productAsset: SearchResultAsset | undefined = source.productAssetId
             ? {
                   id: source.productAssetId.toString(),
                   preview: source.productPreview,
                   focalPoint: source.productPreviewFocalPoint,
               }
-            : null;
-        const productVariantAsset: SearchResultAsset | null = source.productVariantAssetId
+            : undefined;
+        const productVariantAsset: SearchResultAsset | undefined = source.productVariantAssetId
             ? {
                   id: source.productVariantAssetId.toString(),
                   preview: source.productVariantPreview,
                   focalPoint: source.productVariantPreviewFocalPoint,
               }
-            : null;
+            : undefined;
         return { productAsset, productVariantAsset };
     }
 

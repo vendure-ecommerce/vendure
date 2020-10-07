@@ -19,6 +19,7 @@ import { ShippingMethodService } from '../../../service/services/shipping-method
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('ShippingMethod')
 export class ShippingMethodResolver {
@@ -57,6 +58,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)
     createShippingMethod(
@@ -67,6 +69,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.create(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
     updateShippingMethod(
@@ -77,6 +80,7 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.update(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteSettings)
     deleteShippingMethod(

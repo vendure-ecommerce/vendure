@@ -57,7 +57,16 @@ const myPaymentIntegration = new PaymentMethodHandler({
         amount: order.total,
         state: 'Authorized' as const,
         transactionId: result.id.toString(),
-        metadata: result.outcome,
+        metadata: {
+          cardInfo: result.cardInfo,
+          // Any metadata in the `public` field
+          // will be available in the Shop API,
+          // All other metadata is private and 
+          // only available in the Admin API.
+          public: {
+            referenceCode: result.publicId,
+          }
+        },
       };
     } catch (err) {
       return {
