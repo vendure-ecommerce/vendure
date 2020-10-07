@@ -96,21 +96,21 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                     this.dataService.client.updateUserChannels(me!.channels).pipe(map(() => createChannel)),
                 ),
             )
-            .subscribe(
-                data => {
-                    this.notificationService.success(_('common.notify-create-success'), {
-                        entity: 'Channel',
-                    });
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                    this.router.navigate(['../', data.id], { relativeTo: this.route });
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-create-error'), {
-                        entity: 'Channel',
-                    });
-                },
-            );
+            .subscribe(data => {
+                switch (data.__typename) {
+                    case 'Channel':
+                        this.notificationService.success(_('common.notify-create-success'), {
+                            entity: 'Channel',
+                        });
+                        this.detailForm.markAsPristine();
+                        this.changeDetector.markForCheck();
+                        this.router.navigate(['../', data.id], { relativeTo: this.route });
+                        break;
+                    case 'LanguageNotAvailableError':
+                        this.notificationService.error(data.message);
+                        break;
+                }
+            });
     }
 
     save() {
@@ -134,20 +134,19 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
                     return this.dataService.settings.updateChannel(input);
                 }),
             )
-            .subscribe(
-                () => {
-                    this.notificationService.success(_('common.notify-update-success'), {
-                        entity: 'Channel',
-                    });
-                    this.detailForm.markAsPristine();
-                    this.changeDetector.markForCheck();
-                },
-                err => {
-                    this.notificationService.error(_('common.notify-update-error'), {
-                        entity: 'Channel',
-                    });
-                },
-            );
+            .subscribe(({ updateChannel }) => {
+                switch (updateChannel.__typename) {
+                    case 'Channel':
+                        this.notificationService.success(_('common.notify-update-success'), {
+                            entity: 'Channel',
+                        });
+                        this.detailForm.markAsPristine();
+                        this.changeDetector.markForCheck();
+                        break;
+                    case 'LanguageNotAvailableError':
+                        this.notificationService.error(updateChannel.message);
+                }
+            });
     }
 
     /**
@@ -172,10 +171,7 @@ export class ChannelDetailComponent extends BaseDetailComponent<Channel.Fragment
     }
 
     private generateToken(): string {
-        const randomString = () =>
-            Math.random()
-                .toString(36)
-                .substr(3, 10);
+        const randomString = () => Math.random().toString(36).substr(3, 10);
         return `${randomString()}${randomString()}`;
     }
 }

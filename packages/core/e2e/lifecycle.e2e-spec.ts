@@ -10,6 +10,7 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { TransactionalConnection } from '../src/service/transaction/transactional-connection';
 
 const strategyInitSpy = jest.fn();
 const strategyDestroySpy = jest.fn();
@@ -19,13 +20,13 @@ const codDestroySpy = jest.fn();
 class TestIdStrategy extends AutoIncrementIdStrategy {
     async init(injector: Injector) {
         const productService = injector.get(ProductService);
-        const connection = injector.getConnection();
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        strategyInitSpy(productService.constructor.name, connection.name);
+        const connection = injector.get(TransactionalConnection);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        strategyInitSpy(productService.constructor.name, connection.rawConnection.name);
     }
 
     async destroy() {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 100));
         strategyDestroySpy();
     }
 }
@@ -34,17 +35,17 @@ const testShippingEligChecker = new ShippingEligibilityChecker({
     code: 'test',
     args: {},
     description: [],
-    init: async (injector) => {
+    init: async injector => {
         const productService = injector.get(ProductService);
-        const connection = injector.getConnection();
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        codInitSpy(productService.constructor.name, connection.name);
+        const connection = injector.get(TransactionalConnection);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        codInitSpy(productService.constructor.name, connection.rawConnection.name);
     },
     destroy: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 100));
         codDestroySpy();
     },
-    check: (order) => {
+    check: order => {
         return true;
     },
 });
@@ -83,6 +84,10 @@ describe('lifecycle hooks for configurable objects', () => {
     describe('configurable operation', () => {
         beforeAll(async () => {
             await server.bootstrap();
+        }, TEST_SETUP_TIMEOUT_MS);
+
+        afterAll(async () => {
+            await server.destroy();
         });
 
         it('runs init with Injector', () => {

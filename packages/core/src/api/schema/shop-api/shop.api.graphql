@@ -43,19 +43,19 @@ type Query {
 
 type Mutation {
     "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
-    addItemToOrder(productVariantId: ID!, quantity: Int!): Order
+    addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
     "Remove an OrderLine from the Order"
-    removeOrderLine(orderLineId: ID!): Order
+    removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
     "Remove all OrderLine from the Order"
-    removeAllOrderLines: Order
+    removeAllOrderLines: RemoveOrderItemsResult!
     "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
-    adjustOrderLine(orderLineId: ID!, quantity: Int): Order
+    adjustOrderLine(orderLineId: ID!, quantity: Int): UpdateOrderItemsResult!
     "Applies the given coupon code to the active Order"
-    applyCouponCode(couponCode: String!): Order
+    applyCouponCode(couponCode: String!): ApplyCouponCodeResult!
     "Removes the given coupon code from the active Order"
     removeCouponCode(couponCode: String!): Order
     "Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`"
-    transitionOrderToState(state: String!): Order
+    transitionOrderToState(state: String!): TransitionOrderToStateResult
     "Sets the shipping address for this order"
     setOrderShippingAddress(input: CreateAddressInput!): Order
     "Sets the billing address for this order"
@@ -63,19 +63,17 @@ type Mutation {
     "Allows any custom fields to be set for the active order"
     setOrderCustomFields(input: UpdateOrderInput!): Order
     "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
-    setOrderShippingMethod(shippingMethodId: ID!): Order
+    setOrderShippingMethod(shippingMethodId: ID!): SetOrderShippingMethodResult!
     "Add a Payment to the Order"
-    addPaymentToOrder(input: PaymentInput!): Order
+    addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult
     "Set the Customer for the Order. Required only if the Customer is not currently logged in"
-    setCustomerForOrder(input: CreateCustomerInput!): Order
+    setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult
     "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
-    login(username: String!, password: String!, rememberMe: Boolean): LoginResult!
+    login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
     "Authenticates the user using a named authentication strategy"
-    authenticate(input: AuthenticationInput!, rememberMe: Boolean): LoginResult!
+    authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
     "End the current authenticated session"
-    logout: Boolean!
-    "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
-    refreshCustomerVerification(emailAddress: String!): Boolean!
+    logout: Success!
     """
     Register a Customer account with the given credentials. There are three possible registration flows:
 
@@ -92,7 +90,9 @@ type Mutation {
 
     3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
     """
-    registerCustomerAccount(input: RegisterCustomerInput!): Boolean!
+    registerCustomerAccount(input: RegisterCustomerInput!): RegisterCustomerAccountResult!
+    "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
+    refreshCustomerVerification(emailAddress: String!): RefreshCustomerVerificationResult!
     "Update an existing Customer"
     updateCustomer(input: UpdateCustomerInput!): Customer!
     "Create a new Customer Address"
@@ -100,32 +100,35 @@ type Mutation {
     "Update an existing Address"
     updateCustomerAddress(input: UpdateAddressInput!): Address!
     "Delete an existing Address"
-    deleteCustomerAddress(id: ID!): Boolean!
+    deleteCustomerAddress(id: ID!): Success!
     """
     Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
 
     If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
     provided here.
     """
-    verifyCustomerAccount(token: String!, password: String): LoginResult!
+    verifyCustomerAccount(token: String!, password: String): VerifyCustomerAccountResult!
     "Update the password of the active Customer"
-    updateCustomerPassword(currentPassword: String!, newPassword: String!): Boolean
+    updateCustomerPassword(currentPassword: String!, newPassword: String!): UpdateCustomerPasswordResult!
     """
     Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
     (as is the default), then the `identifierChangeToken` will be assigned to the current User and
     a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email
     that verification token to the Customer, which is then used to verify the change of email address.
     """
-    requestUpdateCustomerEmailAddress(password: String!, newEmailAddress: String!): Boolean
+    requestUpdateCustomerEmailAddress(
+        password: String!
+        newEmailAddress: String!
+    ): RequestUpdateCustomerEmailAddressResult!
     """
     Confirm the update of the emailAddress with the provided token, which has been generated by the
     `requestUpdateCustomerEmailAddress` mutation.
     """
-    updateCustomerEmailAddress(token: String!): Boolean
+    updateCustomerEmailAddress(token: String!): UpdateCustomerEmailAddressResult!
     "Requests a password reset email to be sent"
-    requestPasswordReset(emailAddress: String!): Boolean
+    requestPasswordReset(emailAddress: String!): RequestPasswordResetResult
     "Resets a Customer's password based on the provided token"
-    resetPassword(token: String!, password: String!): LoginResult!
+    resetPassword(token: String!, password: String!): ResetPasswordResult!
 }
 
 # Populated at run-time
@@ -174,3 +177,180 @@ input OrderListOptions
 
 # generated by generateListOptions function
 input ProductListOptions
+
+"Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state."
+type OrderModificationError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Retured when the maximum order size limit has been reached."
+type OrderLimitError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    maxItems: Int!
+}
+
+"Retured when attemting to set a negative OrderLine quantity."
+type NegativeQuantityError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state."
+type OrderPaymentStateError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned when a Payment fails due to an error."
+type PaymentFailedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    paymentErrorMessage: String!
+}
+
+"Returned when a Payment is declined by the payment provider."
+type PaymentDeclinedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    paymentErrorMessage: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeExpiredError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+}
+
+"Returned if the provided coupon code is invalid"
+type CouponCodeLimitError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    couponCode: String!
+    limit: Int!
+}
+
+"Retured when attemting to set the Customer for an Order when already logged in."
+type AlreadyLoggedInError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Retured when attemting to register or verify a customer account without a password, when one is required."
+type MissingPasswordError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Retured when attemting to verify a customer account with a password, when a password has already been set."
+type PasswordAlreadySetError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Retured if the verification token (used to verify a Customer's email address) is either
+invalid or does not match any expected tokens.
+"""
+type VerificationTokenInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Returned if the verification token (used to verify a Customer's email address) is valid, but has
+expired according to the `verificationTokenDuration` setting in the AuthOptions.
+"""
+type VerificationTokenExpiredError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Retured if the token used to change a Customer's email address is either
+invalid or does not match any expected tokens.
+"""
+type IdentifierChangeTokenInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Retured if the token used to change a Customer's email address is valid, but has
+expired according to the `verificationTokenDuration` setting in the AuthOptions.
+"""
+type IdentifierChangeTokenExpiredError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Retured if the token used to reset a Customer's password is either
+invalid or does not match any expected tokens.
+"""
+type PasswordResetTokenInvalidError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Retured if the token used to reset a Customer's password is valid, but has
+expired according to the `verificationTokenDuration` setting in the AuthOptions.
+"""
+type PasswordResetTokenExpiredError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+union UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError
+union RemoveOrderItemsResult = Order | OrderModificationError
+union SetOrderShippingMethodResult = Order | OrderModificationError
+union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
+union AddPaymentToOrderResult =
+      Order
+    | OrderPaymentStateError
+    | PaymentFailedError
+    | PaymentDeclinedError
+    | OrderStateTransitionError
+union TransitionOrderToStateResult = Order | OrderStateTransitionError
+union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError
+union RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError
+union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
+union VerifyCustomerAccountResult =
+      CurrentUser
+    | VerificationTokenInvalidError
+    | VerificationTokenExpiredError
+    | MissingPasswordError
+    | PasswordAlreadySetError
+    | NativeAuthStrategyError
+union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | NativeAuthStrategyError
+union RequestUpdateCustomerEmailAddressResult =
+      Success
+    | InvalidCredentialsError
+    | EmailAddressConflictError
+    | NativeAuthStrategyError
+union UpdateCustomerEmailAddressResult =
+      Success
+    | IdentifierChangeTokenInvalidError
+    | IdentifierChangeTokenExpiredError
+    | NativeAuthStrategyError
+union RequestPasswordResetResult = Success | NativeAuthStrategyError
+union ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError
+union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError
+union AuthenticationResult = CurrentUser | InvalidCredentialsError

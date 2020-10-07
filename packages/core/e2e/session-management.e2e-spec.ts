@@ -104,7 +104,9 @@ describe('Session caching', () => {
         await adminClient.query(
             gql`
                 mutation Logout {
-                    logout
+                    logout {
+                        success
+                    }
                 }
             `,
         );

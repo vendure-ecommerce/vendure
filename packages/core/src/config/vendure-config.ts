@@ -19,9 +19,11 @@ import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
+import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
+import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
@@ -412,8 +414,10 @@ export interface OrderOptions {
      * Note: when using a custom function for Order codes, bear in mind the database limit
      * for string types (e.g. 255 chars for a varchar field in MySQL), and also the need
      * for codes to be unique.
+     *
+     * @default DefaultOrderCodeStrategy
      */
-    generateOrderCode?: (ctx: RequestContext) => string | Promise<string>;
+    orderCodeStrategy?: OrderCodeStrategy;
 }
 
 /**
@@ -511,6 +515,13 @@ export interface ShippingOptions {
      * An array of available ShippingCalculators for use in configuring ShippingMethods
      */
     shippingCalculators?: Array<ShippingCalculator<any>>;
+
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the fulfillment process state machine.
+     * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
+     */
+    customFulfillmentProcess?: Array<CustomFulfillmentProcess<any>>;
 }
 
 /**

@@ -20,7 +20,7 @@ type Mutation {
     addOptionGroupToProduct(productId: ID!, optionGroupId: ID!): Product!
 
     "Remove an OptionGroup from a Product"
-    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): Product!
+    removeOptionGroupFromProduct(productId: ID!, optionGroupId: ID!): RemoveOptionGroupFromProductResult!
 
     "Create a set of ProductVariants based on the OptionGroups assigned to the given Product"
     createProductVariants(input: [CreateProductVariantInput!]!): [ProductVariant]!
@@ -139,3 +139,12 @@ input RemoveProductsFromChannelInput {
     productIds: [ID!]!
     channelId: ID!
 }
+
+type ProductOptionInUseError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    optionGroupCode: String!
+    productVariantCount: Int!
+}
+
+union RemoveOptionGroupFromProductResult = Product | ProductOptionInUseError

@@ -260,7 +260,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                         res.status(404).send('Resource not found');
                         return;
                     }
-                    const image = await transformImage(file, req.query, this.presets || []);
+                    const image = await transformImage(file, req.query as any, this.presets || []);
                     try {
                         const imageBuffer = await image.toBuffer();
                         if (!req.query.cache || req.query.cache === 'true') {

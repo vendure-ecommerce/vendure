@@ -7,6 +7,7 @@ import ICU from 'i18next-icu';
 import Backend from 'i18next-node-fs-backend';
 import path from 'path';
 
+import { GraphQLErrorResult } from '../common/error/error-result';
 import { ConfigService } from '../config/config.service';
 
 import { I18nError } from './i18n-error';
@@ -64,9 +65,24 @@ export class I18nService implements OnModuleInit {
             error.message = translation;
             // We can now safely remove the variables object so that they do not appear in
             // the error returned by the GraphQL API
-            delete originalError.variables;
+            delete (originalError as any).variables;
         }
 
         return error;
+    }
+
+    /**
+     * Translates the message of an ErrorResult
+     */
+    translateErrorResult(req: I18nRequest, error: GraphQLErrorResult) {
+        const t: TFunction = req.t;
+        let translation: string = error.message;
+        const key = `errorResult.${error.message}`;
+        try {
+            translation = t(key, error as any);
+        } catch (e) {
+            translation += ` (Translation format error: ${e.message})`;
+        }
+        error.message = translation;
     }
 }

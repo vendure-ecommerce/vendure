@@ -15,7 +15,7 @@ export class RefundEntityResolver {
         if (refund.orderItems) {
             return refund.orderItems;
         } else {
-            return this.orderService.getRefundOrderItems(refund.id);
+            return this.orderService.getRefundOrderItems(ctx, refund.id);
         }
     }
 }

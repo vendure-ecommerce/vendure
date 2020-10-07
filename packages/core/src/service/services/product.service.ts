@@ -1,19 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     AssignProductsToChannelInput,
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
     Permission,
+    RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
+import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
+import { ErrorResultUnion } from '../../common/error/error-result';
 import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
@@ -28,9 +30,8 @@ import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { findByIdsInChannel, findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { translateDeep } from '../helpers/utils/translate-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
@@ -45,7 +46,7 @@ export class ProductService {
     private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private channelService: ChannelService,
         private roleService: RoleService,
         private assetService: AssetService,
@@ -68,6 +69,7 @@ export class ProductService {
                 relations: this.relations,
                 channelId: ctx.channelId,
                 where: { deletedAt: null },
+                ctx,
             })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
@@ -82,7 +84,7 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const product = await findOneInChannel(this.connection, Product, productId, ctx.channelId, {
+        const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
             relations: this.relations,
             where: {
                 deletedAt: null,
@@ -95,25 +97,33 @@ export class ProductService {
     }
 
     async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
-        return findByIdsInChannel(this.connection, Product, productIds, ctx.channelId, {
-            relations: this.relations,
-        }).then(products =>
-            products.map(product =>
-                translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
-            ),
-        );
+        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
+            .leftJoin('product.channels', 'channel')
+            .andWhere('product.id IN (:...ids)', { ids: productIds })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
+            .getMany()
+            .then(products =>
+                products.map(product =>
+                    translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]),
+                ),
+            );
     }
 
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
-        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId, {
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
             relations: ['channels'],
+            channelId: ctx.channelId,
         });
         return product.channels;
     }
 
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
-            .getRepository(Product)
+            .getRepository(ctx, Product)
             .findOne(productId, { relations: ['facetValues', 'facetValues.facet'] })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
@@ -121,7 +131,7 @@ export class ProductService {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Product> | undefined> {
-        const translation = await this.connection.getRepository(ProductTranslation).findOne({
+        const translation = await this.connection.getRepository(ctx, ProductTranslation).findOne({
             relations: ['base'],
             where: {
                 languageCode: ctx.languageCode,
@@ -135,37 +145,39 @@ export class ProductService {
     }
 
     async create(ctx: RequestContext, input: CreateProductInput): Promise<Translated<Product>> {
-        await this.slugValidator.validateSlugs(input, ProductTranslation);
+        await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.create({
+            ctx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
                 this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
-                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                    p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input);
+                await this.assetService.updateFeaturedAsset(ctx, p, input);
             },
         });
-        await this.assetService.updateEntityAssets(product, input);
+        await this.assetService.updateEntityAssets(ctx, product, input);
         this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
         return assertFound(this.findOne(ctx, product.id));
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
-        await getEntityOrThrow(this.connection, Product, input.id);
-        await this.slugValidator.validateSlugs(input, ProductTranslation);
+        await this.connection.getEntityOrThrow(ctx, Product, input.id);
+        await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.update({
+            ctx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
                 if (input.facetValueIds) {
-                    p.facetValues = await this.facetValueService.findByIds(input.facetValueIds);
+                    p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
-                await this.assetService.updateFeaturedAsset(p, input);
-                await this.assetService.updateEntityAssets(p, input);
+                await this.assetService.updateFeaturedAsset(ctx, p, input);
+                await this.assetService.updateEntityAssets(ctx, p, input);
             },
         });
         this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
@@ -173,9 +185,11 @@ export class ProductService {
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
-        const product = await getEntityOrThrow(this.connection, Product, productId, ctx.channelId);
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+        });
         product.deletedAt = new Date();
-        await this.connection.getRepository(Product).save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
         return {
             result: DeletionResult.DELETED,
@@ -187,7 +201,7 @@ export class ProductService {
         input: AssignProductsToChannelInput,
     ): Promise<Array<Translated<Product>>> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx.activeUserId,
+            ctx,
             input.channelId,
             Permission.UpdateCatalog,
         );
@@ -195,15 +209,16 @@ export class ProductService {
             throw new ForbiddenError();
         }
         const productsWithVariants = await this.connection
-            .getRepository(Product)
+            .getRepository(ctx, Product)
             .findByIds(input.productIds, {
                 relations: ['variants'],
             });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const product of productsWithVariants) {
-            await this.channelService.assignToChannels(Product, product.id, [input.channelId]);
+            await this.channelService.assignToChannels(ctx, Product, product.id, [input.channelId]);
             for (const variant of product.variants) {
                 await this.productVariantService.createProductVariantPrice(
+                    ctx,
                     variant.id,
                     variant.price * priceFactor,
                     input.channelId,
@@ -222,7 +237,7 @@ export class ProductService {
         input: RemoveProductsFromChannelInput,
     ): Promise<Array<Translated<Product>>> {
         const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx.activeUserId,
+            ctx,
             input.channelId,
             Permission.UpdateCatalog,
         );
@@ -232,9 +247,9 @@ export class ProductService {
         if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
             throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
         }
-        const products = await this.connection.getRepository(Product).findByIds(input.productIds);
+        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
         for (const product of products) {
-            await this.channelService.removeFromChannels(Product, product.id, [input.channelId]);
+            await this.channelService.removeFromChannels(ctx, Product, product.id, [input.channelId]);
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(
@@ -248,8 +263,10 @@ export class ProductService {
         productId: ID,
         optionGroupId: ID,
     ): Promise<Translated<Product>> {
-        const product = await this.getProductWithOptionGroups(productId);
-        const optionGroup = await this.connection.getRepository(ProductOptionGroup).findOne(optionGroupId);
+        const product = await this.getProductWithOptionGroups(ctx, productId);
+        const optionGroup = await this.connection
+            .getRepository(ctx, ProductOptionGroup)
+            .findOne(optionGroupId);
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
@@ -260,7 +277,7 @@ export class ProductService {
             product.optionGroups = [optionGroup];
         }
 
-        await this.connection.manager.save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
@@ -268,26 +285,23 @@ export class ProductService {
         ctx: RequestContext,
         productId: ID,
         optionGroupId: ID,
-    ): Promise<Translated<Product>> {
-        const product = await this.getProductWithOptionGroups(productId);
+    ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
+        const product = await this.getProductWithOptionGroups(ctx, productId);
         const optionGroup = product.optionGroups.find(g => idsAreEqual(g.id, optionGroupId));
         if (!optionGroup) {
             throw new EntityNotFoundError('ProductOptionGroup', optionGroupId);
         }
         if (product.variants.length) {
-            throw new UserInputError('error.cannot-remove-option-group-due-to-variants', {
-                code: optionGroup.code,
-                count: product.variants.length,
-            });
+            return new ProductOptionInUseError(optionGroup.code, product.variants.length);
         }
         product.optionGroups = product.optionGroups.filter(g => g.id !== optionGroupId);
 
-        await this.connection.manager.save(product, { reload: false });
+        await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         return assertFound(this.findOne(ctx, productId));
     }
 
-    private async getProductWithOptionGroups(productId: ID): Promise<Product> {
-        const product = await this.connection.getRepository(Product).findOne(productId, {
+    private async getProductWithOptionGroups(ctx: RequestContext, productId: ID): Promise<Product> {
+        const product = await this.connection.getRepository(ctx, Product).findOne(productId, {
             relations: ['optionGroups', 'variants', 'variants.options'],
             where: { deletedAt: null },
         });

@@ -3,11 +3,14 @@ import gql from 'graphql-tag';
 import {
     ADMINISTRATOR_FRAGMENT,
     ASSET_FRAGMENT,
+    CHANNEL_FRAGMENT,
     COLLECTION_FRAGMENT,
     COUNTRY_FRAGMENT,
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
+    FULFILLMENT_FRAGMENT,
+    ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
@@ -198,9 +201,7 @@ export const GET_CUSTOMER = gql`
 export const ATTEMPT_LOGIN = gql`
     mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
-            user {
-                ...CurrentUser
-            }
+            ...CurrentUser
         }
     }
     ${CURRENT_USER_FRAGMENT}
@@ -287,6 +288,10 @@ export const CREATE_PROMOTION = gql`
     mutation CreatePromotion($input: CreatePromotionInput!) {
         createPromotion(input: $input) {
             ...Promotion
+            ... on ErrorResult {
+                errorCode
+                message
+            }
         }
     }
     ${PROMOTION_FRAGMENT}
@@ -303,20 +308,15 @@ export const ME = gql`
 export const CREATE_CHANNEL = gql`
     mutation CreateChannel($input: CreateChannelInput!) {
         createChannel(input: $input) {
-            id
-            code
-            token
-            currencyCode
-            defaultLanguageCode
-            defaultShippingZone {
-                id
+            ...Channel
+            ... on LanguageNotAvailableError {
+                errorCode
+                message
+                languageCode
             }
-            defaultTaxZone {
-                id
-            }
-            pricesIncludeTax
         }
     }
+    ${CHANNEL_FRAGMENT}
 `;
 
 export const DELETE_PRODUCT_VARIANT = gql`
@@ -345,13 +345,16 @@ export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
     }
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
+
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
             ...Asset
-            focalPoint {
-                x
-                y
+            ... on Asset {
+                focalPoint {
+                    x
+                    y
+                }
             }
         }
     }
@@ -370,12 +373,15 @@ export const DELETE_ASSET = gql`
 export const UPDATE_CHANNEL = gql`
     mutation UpdateChannel($input: UpdateChannelInput!) {
         updateChannel(input: $input) {
-            id
-            code
-            defaultLanguageCode
-            currencyCode
+            ...Channel
+            ... on LanguageNotAvailableError {
+                errorCode
+                message
+                languageCode
+            }
         }
     }
+    ${CHANNEL_FRAGMENT}
 `;
 
 export const GET_CUSTOMER_HISTORY = gql`
@@ -435,4 +441,231 @@ export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
         }
     }
     ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const CREATE_FULFILLMENT = gql`
+    mutation CreateFulfillment($input: FulfillOrderInput!) {
+        addFulfillmentToOrder(input: $input) {
+            ...Fulfillment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
+`;
+
+export const TRANSIT_FULFILLMENT = gql`
+    mutation TransitFulfillment($id: ID!, $state: String!) {
+        transitionFulfillmentToState(id: $id, state: $state) {
+            ...Fulfillment
+            ... on FulfillmentStateTransitionError {
+                errorCode
+                message
+                transitionError
+                fromState
+                toState
+            }
+        }
+    }
+    ${FULFILLMENT_FRAGMENT}
+`;
+
+export const GET_ORDER_FULFILLMENTS = gql`
+    query GetOrderFulfillments($id: ID!) {
+        order(id: $id) {
+            id
+            state
+            fulfillments {
+                id
+                state
+                nextStates
+                method
+            }
+        }
+    }
+`;
+
+export const GET_ORDERS_LIST = gql`
+    query GetOrderList($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                ...Order
+            }
+            totalItems
+        }
+    }
+    ${ORDER_FRAGMENT}
+`;
+
+export const CREATE_ADDRESS = gql`
+    mutation CreateAddress($id: ID!, $input: CreateAddressInput!) {
+        createCustomerAddress(customerId: $id, input: $input) {
+            id
+            fullName
+            company
+            streetLine1
+            streetLine2
+            city
+            province
+            postalCode
+            country {
+                code
+                name
+            }
+            phoneNumber
+            defaultShippingAddress
+            defaultBillingAddress
+        }
+    }
+`;
+
+export const UPDATE_ADDRESS = gql`
+    mutation UpdateAddress($input: UpdateAddressInput!) {
+        updateCustomerAddress(input: $input) {
+            id
+            defaultShippingAddress
+            defaultBillingAddress
+            country {
+                code
+                name
+            }
+        }
+    }
+`;
+
+export const CREATE_CUSTOMER = gql`
+    mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
+        createCustomer(input: $input, password: $password) {
+            ...Customer
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
+`;
+
+export const UPDATE_CUSTOMER = gql`
+    mutation UpdateCustomer($input: UpdateCustomerInput!) {
+        updateCustomer(input: $input) {
+            ...Customer
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${CUSTOMER_FRAGMENT}
+`;
+
+export const DELETE_CUSTOMER = gql`
+    mutation DeleteCustomer($id: ID!) {
+        deleteCustomer(id: $id) {
+            result
+        }
+    }
+`;
+
+export const UPDATE_CUSTOMER_NOTE = gql`
+    mutation UpdateCustomerNote($input: UpdateCustomerNoteInput!) {
+        updateCustomerNote(input: $input) {
+            id
+            data
+            isPublic
+        }
+    }
+`;
+
+export const DELETE_CUSTOMER_NOTE = gql`
+    mutation DeleteCustomerNote($id: ID!) {
+        deleteCustomerNote(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const UPDATE_CUSTOMER_GROUP = gql`
+    mutation UpdateCustomerGroup($input: UpdateCustomerGroupInput!) {
+        updateCustomerGroup(input: $input) {
+            ...CustomerGroup
+        }
+    }
+    ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const DELETE_CUSTOMER_GROUP = gql`
+    mutation DeleteCustomerGroup($id: ID!) {
+        deleteCustomerGroup(id: $id) {
+            result
+            message
+        }
+    }
+`;
+
+export const GET_CUSTOMER_GROUPS = gql`
+    query GetCustomerGroups($options: CustomerGroupListOptions) {
+        customerGroups(options: $options) {
+            items {
+                id
+                name
+            }
+            totalItems
+        }
+    }
+`;
+
+export const GET_CUSTOMER_GROUP = gql`
+    query GetCustomerGroup($id: ID!, $options: CustomerListOptions) {
+        customerGroup(id: $id) {
+            id
+            name
+            customers(options: $options) {
+                items {
+                    id
+                }
+                totalItems
+            }
+        }
+    }
+`;
+
+export const ADD_CUSTOMERS_TO_GROUP = gql`
+    mutation AddCustomersToGroup($groupId: ID!, $customerIds: [ID!]!) {
+        addCustomersToGroup(customerGroupId: $groupId, customerIds: $customerIds) {
+            ...CustomerGroup
+        }
+    }
+    ${CUSTOMER_GROUP_FRAGMENT}
+`;
+
+export const GET_CUSTOMER_WITH_GROUPS = gql`
+    query GetCustomerWithGroups($id: ID!) {
+        customer(id: $id) {
+            id
+            groups {
+                id
+                name
+            }
+        }
+    }
+`;
+
+export const ADMIN_TRANSITION_TO_STATE = gql`
+    mutation AdminTransition($id: ID!, $state: String!) {
+        transitionOrderToState(id: $id, state: $state) {
+            ...Order
+            ... on OrderStateTransitionError {
+                errorCode
+                message
+                transitionError
+                fromState
+                toState
+            }
+        }
+    }
+    ${ORDER_FRAGMENT}
 `;

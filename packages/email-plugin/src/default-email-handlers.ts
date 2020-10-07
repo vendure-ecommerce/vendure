@@ -6,6 +6,7 @@ import {
     OrderStateTransitionEvent,
     PasswordResetEvent,
     ShippingMethod,
+    TransactionalConnection,
 } from '@vendure/core';
 
 import { EmailEventHandler } from './event-handler';
@@ -23,7 +24,8 @@ export const orderConfirmationHandler = new EmailEventListener('order-confirmati
     .loadData(async context => {
         let shippingMethod: ShippingMethod | undefined;
         if (!context.event.order.shippingMethod && context.event.order.shippingMethodId) {
-            shippingMethod = await context.connection
+            shippingMethod = await context.injector
+                .get(TransactionalConnection)
                 .getRepository(ShippingMethod)
                 .findOne(context.event.order.shippingMethodId);
         }

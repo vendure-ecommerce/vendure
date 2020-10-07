@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     ConfigurableOperationDefinition,
     CreateShippingMethodInput,
@@ -9,7 +8,6 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -20,9 +18,8 @@ import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
-import { findOneInChannel } from '../helpers/utils/channel-aware-orm-utils';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
 
@@ -31,7 +28,7 @@ export class ShippingMethodService {
     private activeShippingMethods: ShippingMethod[];
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
@@ -39,7 +36,7 @@ export class ShippingMethodService {
     ) {}
 
     async initShippingMethods() {
-        await this.updateActiveShippingMethods();
+        await this.updateActiveShippingMethods(RequestContext.empty());
     }
 
     findAll(
@@ -51,6 +48,7 @@ export class ShippingMethodService {
                 relations: ['channels'],
                 where: { deletedAt: null },
                 channelId: ctx.channelId,
+                ctx,
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
@@ -60,7 +58,7 @@ export class ShippingMethodService {
     }
 
     findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
-        return findOneInChannel(this.connection, ShippingMethod, shippingMethodId, ctx.channelId, {
+        return this.connection.findOneInChannel(ctx, ShippingMethod, shippingMethodId, ctx.channelId, {
             relations: ['channels'],
             where: { deletedAt: null },
         });
@@ -74,8 +72,10 @@ export class ShippingMethodService {
             calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
         });
         this.channelService.assignToCurrentChannel(shippingMethod, ctx);
-        const newShippingMethod = await this.connection.manager.save(shippingMethod);
-        await this.updateActiveShippingMethods();
+        const newShippingMethod = await this.connection
+            .getRepository(ctx, ShippingMethod)
+            .save(shippingMethod);
+        await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
 
@@ -93,18 +93,21 @@ export class ShippingMethodService {
                 input.calculator,
             );
         }
-        await this.connection.manager.save(updatedShippingMethod, { reload: false });
-        await this.updateActiveShippingMethods();
+        await this.connection
+            .getRepository(ctx, ShippingMethod)
+            .save(updatedShippingMethod, { reload: false });
+        await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }
 
     async softDelete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
-        const shippingMethod = await getEntityOrThrow(this.connection, ShippingMethod, id, ctx.channelId, {
+        const shippingMethod = await this.connection.getEntityOrThrow(ctx, ShippingMethod, id, {
+            channelId: ctx.channelId,
             where: { deletedAt: null },
         });
         shippingMethod.deletedAt = new Date();
-        await this.connection.getRepository(ShippingMethod).save(shippingMethod, { reload: false });
-        await this.updateActiveShippingMethods();
+        await this.connection.getRepository(ctx, ShippingMethod).save(shippingMethod, { reload: false });
+        await this.updateActiveShippingMethods(ctx);
         return {
             result: DeletionResult.DELETED,
         };
@@ -122,8 +125,8 @@ export class ShippingMethodService {
         return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
     }
 
-    private async updateActiveShippingMethods() {
-        this.activeShippingMethods = await this.connection.getRepository(ShippingMethod).find({
+    private async updateActiveShippingMethods(ctx: RequestContext) {
+        this.activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
             relations: ['channels'],
             where: { deletedAt: null },
         });

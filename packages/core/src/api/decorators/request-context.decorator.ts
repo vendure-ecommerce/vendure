@@ -1,6 +1,6 @@
 import { ContextType, createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
+import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 
 /**
  * @description
@@ -16,7 +16,7 @@ import { REQUEST_CONTEXT_KEY } from '../common/request-context.service';
  * ```
  *
  * @docsCategory request
- * @docsPage Decorators
+ * @docsPage Ctx Decorator
  */
 export const Ctx = createParamDecorator((data, ctx: ExecutionContext) => {
     if (ctx.getType<ContextType | 'graphql'>() === 'graphql') {

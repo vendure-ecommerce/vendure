@@ -31,6 +31,7 @@ export type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void;
  *
  * @docsCategory JobQueue
  * @docsPage Job
+ * @docsWeight 0
  */
 export class Job<T extends JobData<T> = any> {
     readonly id: ID | null;

@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 export type InputWithSlug = {
     id?: ID | null;
@@ -24,13 +25,14 @@ export type TranslationEntity = VendureEntity & {
 
 @Injectable()
 export class SlugValidator {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     /**
      * Normalizes the slug to be URL-safe, and ensures it is unique for the given languageCode.
      * Mutates the input.
      */
     async validateSlugs<T extends InputWithSlug, E extends TranslationEntity>(
+        ctx: RequestContext,
         input: T,
         translationEntity: Type<E>,
     ): Promise<T> {
@@ -43,7 +45,7 @@ export class SlugValidator {
                     const alreadySuffixed = /-\d+$/;
                     do {
                         const qb = this.connection
-                            .getRepository(translationEntity)
+                            .getRepository(ctx, translationEntity)
                             .createQueryBuilder('translation')
                             .where(`translation.slug = :slug`, { slug: t.slug })
                             .andWhere(`translation.languageCode = :languageCode`, {

@@ -134,7 +134,7 @@ export class Populator {
             );
         }
         const defaultZoneId = defaultZone.entity.id;
-        await this.channelService.update({
+        await this.channelService.update(RequestContext.empty(), {
             id: channel.id,
             defaultTaxZoneId: defaultZoneId,
             defaultShippingZoneId: defaultZoneId,
@@ -177,7 +177,7 @@ export class Populator {
         const taxCategories: TaxCategory[] = [];
 
         for (const taxRate of taxRates) {
-            const category = await this.taxCategoryService.create({ name: taxRate.name });
+            const category = await this.taxCategoryService.create(ctx, { name: taxRate.name });
 
             for (const { entity } of zoneMap.values()) {
                 await this.taxRateService.create(ctx, {

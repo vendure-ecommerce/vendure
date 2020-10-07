@@ -1,4 +1,6 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
+
+import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
 
 export const ADDRESS_FRAGMENT = gql`
     fragment Address on Address {
@@ -95,18 +97,22 @@ export const CREATE_CUSTOMER = gql`
     mutation CreateCustomer($input: CreateCustomerInput!, $password: String) {
         createCustomer(input: $input, password: $password) {
             ...Customer
+            ...ErrorResult
         }
     }
     ${CUSTOMER_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const UPDATE_CUSTOMER = gql`
     mutation UpdateCustomer($input: UpdateCustomerInput!) {
         updateCustomer(input: $input) {
             ...Customer
+            ...ErrorResult
         }
     }
     ${CUSTOMER_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const DELETE_CUSTOMER = gql`

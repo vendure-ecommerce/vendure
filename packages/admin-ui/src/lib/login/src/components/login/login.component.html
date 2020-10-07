@@ -36,6 +36,13 @@
             >
                 {{ 'common.login' | translate }}
             </button>
+            <clr-alert [clrAlertType]="'danger'" *ngIf="errorMessage">
+                <clr-alert-item>
+                    <span class="alert-text">
+                        {{ errorMessage }}
+                    </span>
+                </clr-alert-item>
+            </clr-alert>
         </div>
         <div class="version">vendure {{ version }}</div>
     </form>

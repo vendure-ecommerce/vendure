@@ -237,13 +237,15 @@ describe('AssetServerPlugin', () => {
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
-            id
-            name
-            source
-            preview
-            focalPoint {
-                x
-                y
+            ... on Asset {
+                id
+                name
+                source
+                preview
+                focalPoint {
+                    x
+                    y
+                }
             }
         }
     }

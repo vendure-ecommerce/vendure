@@ -1,3 +1,4 @@
+import { stitchSchemas } from '@graphql-tools/stitch';
 import {
     buildASTSchema,
     GraphQLInputFieldConfigMap,
@@ -5,7 +6,6 @@ import {
     GraphQLSchema,
     isInputObjectType,
 } from 'graphql';
-import { mergeSchemas } from 'graphql-tools';
 
 import { InternalServerError } from '../../common/error/errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
@@ -46,5 +46,5 @@ export function generateAuthenticationTypes(
         fields,
     });
 
-    return mergeSchemas({ schemas: [schema, ...strategySchemas, [authenticationInput]] });
+    return stitchSchemas({ schemas: [schema, ...strategySchemas, [authenticationInput]] });
 }

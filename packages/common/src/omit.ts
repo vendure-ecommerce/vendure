@@ -21,21 +21,18 @@ export function omit<T extends any, K extends keyof T>(
     }
 
     if (recursive && Array.isArray(obj)) {
-        return obj.map((item: any) => omit(item, keysToOmit, true));
+        return obj.map((item: any) => omit(item, keysToOmit, true)) as T;
     }
 
-    return Object.keys(obj).reduce(
-        (output: any, key) => {
-            if (keysToOmit.includes(key)) {
-                return output;
-            }
-            if (recursive) {
-                return { ...output, [key]: omit((obj as any)[key], keysToOmit, true) };
-            }
-            return { ...output, [key]: (obj as any)[key] };
-        },
-        {} as Omit<T, K>,
-    );
+    return Object.keys(obj as object).reduce((output: any, key) => {
+        if (keysToOmit.includes(key)) {
+            return output;
+        }
+        if (recursive) {
+            return { ...output, [key]: omit((obj as any)[key], keysToOmit, true) };
+        }
+        return { ...output, [key]: (obj as any)[key] };
+    }, {} as Omit<T, K>);
 }
 
 function isObject(input: any): input is object {

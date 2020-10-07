@@ -40,6 +40,7 @@ export interface TranslationExtension {
  *
  * @docsCategory UiDevkit
  * @docsPage AdminUiExtension
+ * @docsWeight 0
  */
 export interface AdminUiExtension extends Partial<TranslationExtension> {
     /**

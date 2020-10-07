@@ -29,10 +29,9 @@ export class IdInterceptor implements NestInterceptor {
     constructor(private idCodecService: IdCodecService) {}
 
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
-        const { isGraphQL, req } = parseContext(context);
-        if (isGraphQL) {
+        const { isGraphQL, req, info } = parseContext(context);
+        if (isGraphQL && info) {
             const args = GqlExecutionContext.create(context).getArgs();
-            const info = GqlExecutionContext.create(context).getInfo();
             const transformer = this.getTransformerForSchema(info.schema);
             this.decodeIdArguments(transformer, info.operation, args);
         }

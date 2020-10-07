@@ -1,14 +1,6 @@
 name: Build & Test
 
-on:
-  push:
-    branches:
-    - master
-    - next
-  pull_request:
-    branches:
-    - master
-    - next
+on: push
 env:
   CI: true
   node: 12.x

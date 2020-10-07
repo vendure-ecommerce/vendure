@@ -1,9 +1,10 @@
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection, FindOneOptions } from 'typeorm';
+import { FindOneOptions } from 'typeorm';
 
 import { EntityNotFoundError } from '../../../common/error/errors';
 import { ChannelAware, SoftDeletable } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 import { findOneInChannel } from './channel-aware-orm-utils';
 
@@ -11,15 +12,17 @@ import { findOneInChannel } from './channel-aware-orm-utils';
  * Attempts to find an entity of the given type and id, and throws an error if not found.
  * If the entity is a ChannelAware type, then the `channelId` must be supplied or else
  * the function will "fail" by resolving to the `never` type.
+ *
+ * @deprecated Use {@link TransactionalConnection}.getEntityOrThrow() instead.
  */
 export async function getEntityOrThrow<T extends VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entityType: Type<T>,
     id: ID,
     findOptions?: FindOneOptions<T>,
 ): Promise<T extends ChannelAware ? never : T>;
 export async function getEntityOrThrow<T extends VendureEntity | ChannelAware>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entityType: Type<T>,
     id: ID,
     channelId: ID,
@@ -27,7 +30,7 @@ export async function getEntityOrThrow<T extends VendureEntity | ChannelAware>(
     eager?: boolean,
 ): Promise<T>;
 export async function getEntityOrThrow<T extends VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entityType: Type<T>,
     id: ID,
     findOptionsOrChannelId?: FindOneOptions<T> | ID,

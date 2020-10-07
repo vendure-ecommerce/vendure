@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable, of } from 'rxjs';
-import { catchError, mapTo, mergeMap, switchMap } from 'rxjs/operators';
+import { catchError, map, mapTo, mergeMap, switchMap } from 'rxjs/operators';
 
-import { CurrentUserChannel, CurrentUserFragment, SetAsLoggedIn } from '../../common/generated-types';
+import {
+    AttemptLogin,
+    CurrentUserChannel,
+    CurrentUserFragment,
+    SetAsLoggedIn,
+} from '../../common/generated-types';
 import { DataService } from '../../data/providers/data.service';
 import { ServerConfigService } from '../../data/server-config';
 import { LocalStorageService } from '../local-storage/local-storage.service';
@@ -25,15 +30,22 @@ export class AuthService {
      * Attempts to log in via the REST login endpoint and updates the app
      * state on success.
      */
-    logIn(username: string, password: string, rememberMe: boolean): Observable<SetAsLoggedIn.Mutation> {
+    logIn(username: string, password: string, rememberMe: boolean): Observable<AttemptLogin.Login> {
         return this.dataService.auth.attemptLogin(username, password, rememberMe).pipe(
             switchMap(response => {
-                this.setChannelToken(response.login.user.channels);
-                return this.serverConfigService.getServerConfig().then(() => response.login.user);
+                if (response.login.__typename === 'CurrentUser') {
+                    this.setChannelToken(response.login.channels);
+                }
+                return this.serverConfigService.getServerConfig().then(() => response.login);
             }),
-            switchMap(user => {
-                const { id } = this.getActiveChannel(user.channels);
-                return this.dataService.client.loginSuccess(username, id, user.channels);
+            switchMap(login => {
+                if (login.__typename === 'CurrentUser') {
+                    const { id } = this.getActiveChannel(login.channels);
+                    return this.dataService.client
+                        .loginSuccess(username, id, login.channels)
+                        .pipe(map(() => login));
+                }
+                return of(login);
             }),
         );
     }

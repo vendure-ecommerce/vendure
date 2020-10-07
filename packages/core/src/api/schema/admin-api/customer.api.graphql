@@ -5,10 +5,10 @@ type Query {
 
 type Mutation {
     "Create a new Customer. If a password is provided, a new User will also be created an linked to the Customer."
-    createCustomer(input: CreateCustomerInput!, password: String): Customer!
+    createCustomer(input: CreateCustomerInput!, password: String): CreateCustomerResult!
 
     "Update an existing Customer"
-    updateCustomer(input: UpdateCustomerInput!): Customer!
+    updateCustomer(input: UpdateCustomerInput!): UpdateCustomerResult!
 
     "Delete a Customer"
     deleteCustomer(id: ID!): DeletionResponse!
@@ -20,7 +20,7 @@ type Mutation {
     updateCustomerAddress(input: UpdateAddressInput!): Address!
 
     "Update an existing Address"
-    deleteCustomerAddress(id: ID!): Boolean!
+    deleteCustomerAddress(id: ID!): Success!
 
     addNoteToCustomer(input: AddNoteToCustomerInput!): Customer!
     updateCustomerNote(input: UpdateCustomerNoteInput!): HistoryEntry!
@@ -55,4 +55,7 @@ input UpdateCustomerNoteInput {
     noteId: ID!
     note: String!
 }
+
+union CreateCustomerResult = Customer | EmailAddressConflictError
+union UpdateCustomerResult = Customer | EmailAddressConflictError
 

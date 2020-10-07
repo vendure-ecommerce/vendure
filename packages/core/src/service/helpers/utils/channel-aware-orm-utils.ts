@@ -1,15 +1,18 @@
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection, FindManyOptions, FindOptionsUtils } from 'typeorm';
+import { FindManyOptions, FindOptionsUtils } from 'typeorm';
 
 import { ChannelAware } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
  * Like the TypeOrm `Repository.findByIds()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated
  */
 export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entity: Type<T>,
     ids: ID[],
     channelId: ID,
@@ -38,9 +41,11 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
 /**
  * Like the TypeOrm `Repository.findOne()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated Use {@link TransactionalConnection}.findOneInChannel() instead.
  */
 export function findOneInChannel<T extends ChannelAware | VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entity: Type<T>,
     id: ID,
     channelId: ID,

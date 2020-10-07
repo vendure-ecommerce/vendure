@@ -7,8 +7,9 @@ import {
     ConfigurableOperationDefOptions,
 } from '../../common/configurable-operation';
 import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
+import { PaymentMetadata } from '../../common/types/common-types';
 import { Order } from '../../entity/order/order.entity';
-import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import {
     PaymentState,
     PaymentTransitionData,
@@ -27,10 +28,45 @@ export type OnPaymentTransitionStartReturnType = ReturnType<
  * @docsPage Payment Method Types
  */
 export interface CreatePaymentResult {
+    /**
+     * @description
+     * The amount (as an integer - i.e. $10 = `1000`) that this payment is for.
+     * Typically this should equal the Order total, unless multiple payment methods
+     * are being used for the order.
+     */
     amount: number;
-    state: Exclude<PaymentState, 'Refunded' | 'Error'>;
+    /**
+     * @description
+     * The {@link PaymentState} of the resulting Payment.
+     *
+     * In a single-step payment flow, this should be set to `'Settled'`.
+     * In a two-step flow, this should be set to `'Authorized'`.
+     */
+    state: Exclude<PaymentState, 'Error'>;
+    /**
+     * @description
+     * The unique payment reference code typically assigned by
+     * the payment provider.
+     */
     transactionId?: string;
+    /**
+     * @description
+     * If the payment is declined or fails for ome other reason, pass the
+     * relevant error message here, and it gets returned with the
+     * ErrorResponse of the `addPaymentToOrder` mutation.
+     */
     errorMessage?: string;
+    /**
+     * @description
+     * This field can be used to store other relevant data which is often
+     * provided by the payment provider, such as security data related to
+     * the payment method or data used in troubleshooting or debugging.
+     *
+     * Any data stored in the optional `public` property will be available
+     * via the Shop API. This is useful for certain checkout flows such as
+     * external gateways, where the payment provider returns a unique
+     * url which must then be passed to the storefront app.
+     */
     metadata?: PaymentMetadata;
 }
 
@@ -78,6 +114,8 @@ export interface SettlePaymentResult {
 /**
  * @description
  * This function contains the logic for creating a payment. See {@link PaymentMethodHandler} for an example.
+ *
+ * Returns a {@link CreatePaymentResult}.
  *
  * @docsCategory payment
  * @docsPage Payment Method Types
@@ -160,6 +198,9 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  * `addPaymentToOrder` mutation is made. If contains any necessary steps of interfacing with a
  * third-party payment gateway before the Payment is created and can also define actions to fire
  * when the state of the payment is changed.
+ *
+ * PaymentMethodHandlers are instantiated using a {@link PaymentMethodConfigOptions} object, which
+ * configures the business logic used to create, settle and refund payments.
  *
  * @example
  * ```ts

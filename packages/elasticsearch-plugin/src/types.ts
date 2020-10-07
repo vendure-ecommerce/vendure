@@ -31,12 +31,12 @@ export type PriceRangeBucket = {
 };
 
 export type IndexItemAssets = {
-    productAssetId: ID | null;
+    productAssetId: ID | undefined;
     productPreview: string;
-    productPreviewFocalPoint: Coordinate | null;
-    productVariantAssetId: ID | null;
+    productPreviewFocalPoint: Coordinate | undefined;
+    productVariantAssetId: ID | undefined;
     productVariantPreview: string;
-    productVariantPreviewFocalPoint: Coordinate | null;
+    productVariantPreviewFocalPoint: Coordinate | undefined;
 };
 
 export type VariantIndexItem = Omit<
@@ -214,7 +214,7 @@ export class DeleteAssetMessage extends WorkerMessage<UpdateAssetMessageData, bo
     static readonly pattern = 'DeleteAsset';
 }
 
-type Maybe<T> = T | null | undefined;
+type Maybe<T> = T | undefined;
 type CustomMappingDefinition<Args extends any[], T extends string, R> = {
     graphQlType: T;
     valueFn: (...args: Args) => R;

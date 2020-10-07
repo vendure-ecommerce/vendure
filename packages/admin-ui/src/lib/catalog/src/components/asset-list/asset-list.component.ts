@@ -21,7 +21,8 @@ import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operator
     templateUrl: './asset-list.component.html',
     styleUrls: ['./asset-list.component.scss'],
 })
-export class AssetListComponent extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
+export class AssetListComponent
+    extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
     implements OnInit {
     searchTerm = new FormControl('');
     uploading = false;
@@ -37,7 +38,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.product.getAssetList(...args),
-            (data) => data.assets,
+            data => data.assets,
             (skip, take) => ({
                 options: {
                     skip,
@@ -71,26 +72,39 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
             this.dataService.product
                 .createAssets(files)
                 .pipe(finalize(() => (this.uploading = false)))
-                .subscribe((res) => {
-                    super.refresh();
-                    this.notificationService.success(_('asset.notify-create-assets-success'), {
-                        count: files.length,
-                    });
+                .subscribe(({ createAssets }) => {
+                    let successCount = 0;
+                    for (const result of createAssets) {
+                        switch (result.__typename) {
+                            case 'Asset':
+                                successCount++;
+                                break;
+                            case 'MimeTypeError':
+                                this.notificationService.error(result.message);
+                                break;
+                        }
+                    }
+                    if (0 < successCount) {
+                        super.refresh();
+                        this.notificationService.success(_('asset.notify-create-assets-success'), {
+                            count: successCount,
+                        });
+                    }
                 });
         }
     }
 
     deleteAssets(assets: Asset[]) {
-        this.showModalAndDelete(assets.map((a) => a.id))
+        this.showModalAndDelete(assets.map(a => a.id))
             .pipe(
-                switchMap((response) => {
+                switchMap(response => {
                     if (response.result === DeletionResult.DELETED) {
                         return [true];
                     } else {
                         return this.showModalAndDelete(
-                            assets.map((a) => a.id),
+                            assets.map(a => a.id),
                             response.message || '',
-                        ).pipe(map((r) => r.result === DeletionResult.DELETED));
+                        ).pipe(map(r => r.result === DeletionResult.DELETED));
                     }
                 }),
             )
@@ -101,7 +115,7 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Assets',
                     });
@@ -123,10 +137,8 @@ export class AssetListComponent extends BaseListComponent<GetAssetList.Query, Ge
                 ],
             })
             .pipe(
-                switchMap((res) =>
-                    res ? this.dataService.product.deleteAssets(assetIds, !!message) : EMPTY,
-                ),
-                map((res) => res.deleteAssets),
+                switchMap(res => (res ? this.dataService.product.deleteAssets(assetIds, !!message) : EMPTY)),
+                map(res => res.deleteAssets),
             );
     }
 }

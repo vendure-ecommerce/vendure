@@ -16,7 +16,7 @@ import {
     Type,
     VendurePlugin,
 } from '@vendure/core';
-import { buffer, debounceTime, filter, map } from 'rxjs/operators';
+import { buffer, debounceTime, delay, filter, map } from 'rxjs/operators';
 
 import { ELASTIC_SEARCH_OPTIONS, loggerCtx } from './constants';
 import { CustomMappingsResolver } from './custom-mappings.resolver';
@@ -256,21 +256,21 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
             this.elasticsearchHealthIndicator.isHealthy(),
         );
 
-        this.eventBus.ofType(ProductEvent).subscribe((event) => {
+        this.eventBus.ofType(ProductEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.elasticsearchIndexService.deleteProduct(event.ctx, event.product);
             } else {
                 return this.elasticsearchIndexService.updateProduct(event.ctx, event.product);
             }
         });
-        this.eventBus.ofType(ProductVariantEvent).subscribe((event) => {
+        this.eventBus.ofType(ProductVariantEvent).subscribe(event => {
             if (event.type === 'deleted') {
                 return this.elasticsearchIndexService.deleteVariant(event.ctx, event.variants);
             } else {
                 return this.elasticsearchIndexService.updateVariants(event.ctx, event.variants);
             }
         });
-        this.eventBus.ofType(AssetEvent).subscribe((event) => {
+        this.eventBus.ofType(AssetEvent).subscribe(event => {
             if (event.type === 'updated') {
                 return this.elasticsearchIndexService.updateAsset(event.ctx, event.asset);
             }
@@ -279,7 +279,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
             }
         });
 
-        this.eventBus.ofType(ProductChannelEvent).subscribe((event) => {
+        this.eventBus.ofType(ProductChannelEvent).subscribe(event => {
             if (event.type === 'assigned') {
                 return this.elasticsearchIndexService.assignProductToChannel(
                     event.ctx,
@@ -300,23 +300,29 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
         collectionModification$
             .pipe(
                 buffer(closingNotifier$),
-                filter((events) => 0 < events.length),
-                map((events) => ({
+                filter(events => 0 < events.length),
+                map(events => ({
                     ctx: events[0].ctx,
                     ids: events.reduce((ids, e) => [...ids, ...e.productVariantIds], [] as ID[]),
                 })),
-                filter((e) => 0 < e.ids.length),
+                filter(e => 0 < e.ids.length),
             )
-            .subscribe((events) => {
+            .subscribe(events => {
                 return this.elasticsearchIndexService.updateVariantsById(events.ctx, events.ids);
             });
 
-        this.eventBus.ofType(TaxRateModificationEvent).subscribe((event) => {
-            const defaultTaxZone = event.ctx.channel.defaultTaxZone;
-            if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
-                return this.elasticsearchService.updateAll(event.ctx);
-            }
-        });
+        this.eventBus
+            .ofType(TaxRateModificationEvent)
+            // The delay prevents a "TransactionNotStartedError" (in SQLite/sqljs) by allowing any existing
+            // transactions to complete before a new job is added to the queue (assuming the SQL-based
+            // JobQueueStrategy).
+            .pipe(delay(1))
+            .subscribe(event => {
+                const defaultTaxZone = event.ctx.channel.defaultTaxZone;
+                if (defaultTaxZone && idsAreEqual(defaultTaxZone.id, event.taxRate.zone.id)) {
+                    return this.elasticsearchService.updateAll(event.ctx);
+                }
+            });
     }
 
     /**
@@ -328,7 +334,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
         const node = clientOptions?.node;
         const nodes = clientOptions?.nodes;
         if (nodes) {
-            return [...nodes].join(', ');
+            return [...(Array.isArray(nodes) ? nodes : [nodes])].join(', ');
         }
         if (node) {
             if (Array.isArray(node)) {

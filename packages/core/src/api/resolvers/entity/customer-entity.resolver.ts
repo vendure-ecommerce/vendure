@@ -54,7 +54,7 @@ export class CustomerEntityResolver {
             return customer.user;
         }
 
-        return this.userService.getUserByEmailAddress(customer.emailAddress);
+        return this.userService.getUserByEmailAddress(ctx, customer.emailAddress);
     }
 }
 
@@ -67,16 +67,21 @@ export class CustomerAdminEntityResolver {
         if (customer.groups) {
             return customer.groups;
         }
-        return this.customerService.getCustomerGroups(customer.id);
+        return this.customerService.getCustomerGroups(ctx, customer.id);
     }
 
     @ResolveField()
-    async history(@Api() apiType: ApiType, @Parent() order: Order, @Args() args: any) {
+    async history(
+        @Ctx() ctx: RequestContext,
+        @Api() apiType: ApiType,
+        @Parent() order: Order,
+        @Args() args: any,
+    ) {
         const publicOnly = apiType === 'shop';
         const options: HistoryEntryListOptions = { ...args.options };
         if (!options.sort) {
             options.sort = { createdAt: SortOrder.ASC };
         }
-        return this.historyService.getHistoryForCustomer(order.id, publicOnly, options);
+        return this.historyService.getHistoryForCustomer(ctx, order.id, publicOnly, options);
     }
 }

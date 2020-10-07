@@ -1,10 +1,9 @@
 import { generate } from '@graphql-codegen/cli';
 import fs from 'fs';
-import { buildClientSchema, graphqlSync, introspectionQuery } from 'graphql';
-import { mergeSchemas } from 'graphql-tools';
+import { buildClientSchema } from 'graphql';
 import path from 'path';
 
-import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '../../packages/common/src/shared-constants';
+import { ADMIN_API_PATH, SHOP_API_PATH } from '../../packages/common/src/shared-constants';
 
 import { downloadIntrospectionSchema } from './download-introspection-schema';
 
@@ -14,7 +13,7 @@ const CLIENT_QUERY_FILES = path.join(
 );
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,
-    '../../packages/core/e2e/**/!(import.e2e-spec|plugin.e2e-spec|shop-definitions|custom-fields.e2e-spec|price-calculation-strategy.e2e-spec|list-query-builder.e2e-spec|shop-order.e2e-spec).ts',
+    '../../packages/core/e2e/**/!(import.e2e-spec|plugin.e2e-spec|shop-definitions|custom-fields.e2e-spec|price-calculation-strategy.e2e-spec|list-query-builder.e2e-spec|shop-order.e2e-spec|database-transactions.e2e-spec).ts',
 );
 const E2E_SHOP_QUERY_FILES = [path.join(__dirname, '../../packages/core/e2e/graphql/shop-definitions.ts')];
 const E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES = path.join(
@@ -50,23 +49,43 @@ Promise.all([
             },
             strict: true,
         };
-        const commonPlugins = [{ add: '// tslint:disable' }, 'typescript'];
+        const e2eConfig = {
+            ...config,
+            skipTypename: true,
+        };
+        const disableTsLintPlugin = { add: { content: '// tslint:disable' } };
+        const graphQlErrorsPlugin = path.join(__dirname, './plugins/graphql-errors-plugin.js');
+        const commonPlugins = [disableTsLintPlugin, 'typescript'];
         const clientPlugins = [...commonPlugins, 'typescript-operations', 'typescript-compatibility'];
 
         return generate({
             overwrite: true,
             generates: {
+                [path.join(
+                    __dirname,
+                    '../../packages/core/src/common/error/generated-graphql-admin-errors.ts',
+                )]: {
+                    schema: [ADMIN_SCHEMA_OUTPUT_FILE],
+                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                },
+                [path.join(
+                    __dirname,
+                    '../../packages/core/src/common/error/generated-graphql-shop-errors.ts',
+                )]: {
+                    schema: [SHOP_SCHEMA_OUTPUT_FILE],
+                    plugins: [disableTsLintPlugin, graphQlErrorsPlugin],
+                },
                 [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-admin-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ADMIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(__dirname, '../../packages/core/e2e/graphql/generated-e2e-shop-types.ts')]: {
                     schema: [SHOP_SCHEMA_OUTPUT_FILE],
                     documents: E2E_SHOP_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(
                     __dirname,
@@ -75,7 +94,7 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ELASTICSEARCH_PLUGIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(
                     __dirname,
@@ -84,7 +103,7 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
                     documents: E2E_ASSET_SERVER_PLUGIN_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: e2eConfig,
                 },
                 [path.join(
                     __dirname,
@@ -93,7 +112,10 @@ Promise.all([
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
                     plugins: clientPlugins,
-                    config,
+                    config: {
+                        ...config,
+                        skipTypeNameForRoot: true,
+                    },
                 },
                 [path.join(
                     __dirname,
@@ -101,8 +123,8 @@ Promise.all([
                 )]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE, path.join(__dirname, 'client-schema.ts')],
                     documents: CLIENT_QUERY_FILES,
-                    plugins: [{ add: '// tslint:disable' }, 'fragment-matcher'],
-                    config,
+                    plugins: [disableTsLintPlugin, 'fragment-matcher'],
+                    config: { ...config, apolloClientVersion: 3 },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-types.ts')]: {
                     schema: [ADMIN_SCHEMA_OUTPUT_FILE],
@@ -112,6 +134,7 @@ Promise.all([
                         scalars: {
                             ID: 'string | number',
                         },
+                        maybeValue: 'T',
                     },
                 },
                 [path.join(__dirname, '../../packages/common/src/generated-shop-types.ts')]: {
@@ -122,16 +145,17 @@ Promise.all([
                         scalars: {
                             ID: 'string | number',
                         },
+                        maybeValue: 'T',
                     },
                 },
             },
         });
     })
     .then(
-        (result) => {
+        result => {
             process.exit(0);
         },
-        (err) => {
+        err => {
             console.error(err);
             process.exit(1);
         },

@@ -16,6 +16,7 @@ import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-conf
 
 import {
     AssignProductsToChannel,
+    ChannelFragment,
     CreateChannel,
     CreateCollection,
     CreateFacet,
@@ -869,7 +870,7 @@ describe('Default search plugin', () => {
 
         describe('channel handling', () => {
             const SECOND_CHANNEL_TOKEN = 'second-channel-token';
-            let secondChannel: CreateChannel.CreateChannel;
+            let secondChannel: ChannelFragment;
 
             beforeAll(async () => {
                 const { createChannel } = await adminClient.query<

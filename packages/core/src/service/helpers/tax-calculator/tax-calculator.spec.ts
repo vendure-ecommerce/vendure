@@ -1,5 +1,4 @@
 import { Test } from '@nestjs/testing';
-import { Connection } from 'typeorm';
 
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
@@ -7,6 +6,7 @@ import { DefaultTaxCalculationStrategy } from '../../../config/tax/default-tax-c
 import { EventBus } from '../../../event-bus/event-bus';
 import { WorkerService } from '../../../worker/worker.service';
 import { TaxRateService } from '../../services/tax-rate.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 
 import { TaxCalculator } from './tax-calculator';
@@ -34,7 +34,7 @@ describe('TaxCalculator', () => {
                 TaxCalculator,
                 TaxRateService,
                 { provide: ConfigService, useClass: MockConfigService },
-                { provide: Connection, useClass: MockConnection },
+                { provide: TransactionalConnection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: EventBus, useValue: { publish: () => ({}) } },
                 { provide: WorkerService, useValue: { send: () => ({}) } },

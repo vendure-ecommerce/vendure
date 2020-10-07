@@ -15,9 +15,11 @@ import {
     QueryProductArgs,
     QueryProductsArgs,
     QueryProductVariantArgs,
+    RemoveOptionGroupFromProductResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -28,6 +30,7 @@ import { ProductService } from '../../../service/services/product.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class ProductResolver {
@@ -74,6 +77,7 @@ export class ProductResolver {
         return this.productVariantService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createProduct(
@@ -84,6 +88,7 @@ export class ProductResolver {
         return this.productService.create(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProduct(
@@ -91,9 +96,10 @@ export class ProductResolver {
         @Args() args: MutationUpdateProductArgs,
     ): Promise<Translated<Product>> {
         const { input } = args;
-        return this.productService.update(ctx, input);
+        return await this.productService.update(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteProduct(
@@ -103,6 +109,7 @@ export class ProductResolver {
         return this.productService.softDelete(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async addOptionGroupToProduct(
@@ -113,16 +120,18 @@ export class ProductResolver {
         return this.productService.addOptionGroupToProduct(ctx, productId, optionGroupId);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async removeOptionGroupFromProduct(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationRemoveOptionGroupFromProductArgs,
-    ): Promise<Translated<Product>> {
+    ): Promise<ErrorResultUnion<RemoveOptionGroupFromProductResult, Translated<Product>>> {
         const { productId, optionGroupId } = args;
         return this.productService.removeOptionGroupFromProduct(ctx, productId, optionGroupId);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async createProductVariants(
@@ -133,6 +142,7 @@ export class ProductResolver {
         return this.productVariantService.create(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async updateProductVariants(
@@ -143,6 +153,7 @@ export class ProductResolver {
         return this.productVariantService.update(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
     async deleteProductVariant(
@@ -152,6 +163,7 @@ export class ProductResolver {
         return this.productVariantService.softDelete(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async assignProductsToChannel(
@@ -161,6 +173,7 @@ export class ProductResolver {
         return this.productService.assignProductsToChannel(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCatalog)
     async removeProductsFromChannel(
