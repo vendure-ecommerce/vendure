@@ -63,7 +63,7 @@ async function runTests() {
         { "query": "mutation { login(username: \\"superadmin\\" password: \\"superadmin\\")  { ...on CurrentUser { id } } }" }
     `,
     );
-    assertEquals(result2.data.login, { user: { id: '1' } });
+    assertEquals(result2.data.login, { id: '1' });
 
     console.log(`All tests passed!`);
     process.exit(0);
