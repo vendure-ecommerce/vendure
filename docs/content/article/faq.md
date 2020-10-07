@@ -28,6 +28,7 @@ There are a number of Vendure projects under development at the moment. Based on
 
 * [CB Made In Italy](https://cbmadeinitaly.com/): Vendure + [Vue Storefront](https://www.vuestorefront.io/)
 * [Racketworld.ch](https://racketworld.ch/): Vendure + [Svelte](https://svelte.dev/) + [Sapper](https://sapper.svelte.dev/)
+* [GoMo](https://gomo.in.th/): Vendure + [React](https://reactjs.org/)
 
 ## Is enterprise support available?
 
