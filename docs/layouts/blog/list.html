@@ -10,6 +10,10 @@
         <h5>
             <strong>{{ .Date.Format "January 2, 2006" }}</strong>
         </h5>
+        {{$featured_image := index (.Params.images) 0}}
+        {{ with $featured_image }}
+            <img src="{{ $featured_image }}" class="featured-image">
+        {{ end }}
         <p>
             {{- .Summary -}}
             {{ if .Truncated }}
