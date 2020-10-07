@@ -1,21 +1,23 @@
+/* tslint:disable:no-non-null-assertion */
 import { ErrorCode } from '@vendure/common/lib/generated-shop-types';
 import { pick } from '@vendure/common/lib/pick';
-import { mergeConfig } from '@vendure/core';
+import { mergeConfig, NativeAuthenticationStrategy } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
-import { NativeAuthenticationStrategy } from '../src/config/auth/native-authentication-strategy';
-import { DefaultLogger } from '../src/config/logger/default-logger';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { TestAuthenticationStrategy, VALID_AUTH_TOKEN } from './fixtures/test-authentication-strategies';
 import { CURRENT_USER_FRAGMENT } from './graphql/fragments';
 import {
     Authenticate,
+    CreateCustomer,
     CurrentUser,
     CurrentUserFragment,
+    CustomerFragment,
+    DeleteCustomer,
     GetCustomerHistory,
     GetCustomers,
     GetCustomerUserAuth,
@@ -23,7 +25,7 @@ import {
     Me,
 } from './graphql/generated-e2e-admin-types';
 import { Register } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
+import { CREATE_CUSTOMER, DELETE_CUSTOMER, GET_CUSTOMER_HISTORY, ME } from './graphql/shared-definitions';
 import { REGISTER_ACCOUNT } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -55,6 +57,10 @@ describe('AuthenticationStrategy', () => {
     const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard<
         CurrentUserFragment
     >(input => input.identifier != null);
+
+    const customerGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard<CustomerFragment>(
+        input => input.emailAddress != null,
+    );
 
     describe('external auth', () => {
         const userData = {
@@ -215,6 +221,58 @@ describe('AuthenticationStrategy', () => {
                     },
                 },
             ]);
+        });
+    });
+
+    describe('native auth', () => {
+        const testEmailAddress = 'test-person@testdomain.com';
+
+        // https://github.com/vendure-ecommerce/vendure/issues/486#issuecomment-704991768
+        it('allows login for an email address which is shared by a previously-deleted Customer', async () => {
+            const { createCustomer: result1 } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    firstName: 'Test',
+                    lastName: 'Person',
+                    emailAddress: testEmailAddress,
+                },
+                password: 'password1',
+            });
+            customerGuard.assertSuccess(result1);
+
+            await adminClient.query<DeleteCustomer.Mutation, DeleteCustomer.Variables>(DELETE_CUSTOMER, {
+                id: result1.id,
+            });
+
+            const { createCustomer: result2 } = await adminClient.query<
+                CreateCustomer.Mutation,
+                CreateCustomer.Variables
+            >(CREATE_CUSTOMER, {
+                input: {
+                    firstName: 'Test',
+                    lastName: 'Person',
+                    emailAddress: testEmailAddress,
+                },
+                password: 'password2',
+            });
+            customerGuard.assertSuccess(result2);
+
+            const { authenticate } = await shopClient.query(AUTHENTICATE, {
+                input: {
+                    native: {
+                        username: testEmailAddress,
+                        password: 'password2',
+                    },
+                },
+            });
+            currentUserGuard.assertSuccess(authenticate);
+
+            expect(pick(authenticate, ['id', 'identifier'])).toEqual({
+                id: result2.user!.id,
+                identifier: result2.emailAddress,
+            });
         });
     });
 });
