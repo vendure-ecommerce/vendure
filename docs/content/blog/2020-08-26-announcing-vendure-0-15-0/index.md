@@ -9,6 +9,8 @@ images:
 
 We are excited to announce the release of Vendure v0.15.0! Read this blog post to learn about the major new features and breaking changes in this release.
 
+<!--more-->
+
 {{< figure src="./vendure-0.15.0-banner-01.jpg" >}}
 
 {{< vimeo id="452181786" >}}

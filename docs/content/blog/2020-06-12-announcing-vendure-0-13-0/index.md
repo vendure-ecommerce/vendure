@@ -8,7 +8,9 @@ images:
 ---
 
 The formula of a successful e-commerce business contains many ingredients, but one is more important than all others: the customer. To that end, we're *very* excited to announce the release of version 0.13.0 of Vendure!
- 
+
+<!--more-->
+
 {{< figure src="./vendure-0.13.0-banner-01.jpg" >}}
  
  This release includes a host of new features and fixes relating to customer management, and in this blog post and video we'll explore some highlights.

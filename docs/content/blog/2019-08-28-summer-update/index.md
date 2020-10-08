@@ -9,6 +9,8 @@ images:
 
 After pausing for a refreshing week high in the Austrian Alps, development of Vendure continues apace. This blog post explains an upcoming change to the version numbering prior to 1.0, as well as a discussion of the remaining work to be done for the first stable release.
 
+<!--more-->
+
 {{< figure src="./falkert-austria-michael-bromley.jpg" caption="View from Mt. Falket, Austria. Photo © Michael Bromley" >}}
 
 ## Changed numbering scheme

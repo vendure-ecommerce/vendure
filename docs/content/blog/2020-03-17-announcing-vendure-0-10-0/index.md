@@ -9,6 +9,8 @@ images:
 
 We're very excited to announce the release of version 0.10.0 of Vendure! This release introduces some major improvements to the Admin UI which we'll explore in this post.
 
+<!--more-->
+
 {{< figure src="./vendure-0.10.0-banner-02.jpg" >}}
 
 ## Angular 9 & Ivy

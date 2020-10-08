@@ -9,6 +9,8 @@ images:
 
 Building is fun. Housekeeping less so. Once a software project grows to a certain size, more and more time gets spent with non-code tasks: "chores", "checks", "housekeeping". 
 
+<!--more-->
+
 This includes things like:
 
 * fixing formatting and code style issues

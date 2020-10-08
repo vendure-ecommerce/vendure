@@ -9,6 +9,8 @@ images:
 
 We are excited to announce the release of Vendure v0.14.0. This is a pretty big release with some [breaking changes](#breaking-changes) that _will_ require some action when you upgrade.
 
+<!--more-->
+
 {{< figure src="./vendure-0.14.0-banner-01.jpg" >}}
 
 This release includes some core changes which represent a big step towards reaching v1.0. Here's a video overview of the main features:

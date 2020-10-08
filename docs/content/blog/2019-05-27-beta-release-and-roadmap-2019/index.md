@@ -11,6 +11,8 @@ aliases:
 
 Vendure, a new headless e-commerce framework built on Nodejs, TypeScript and GraphQL, has just graduated from *alpha* to *beta*! 
 
+<!--more-->
+
 This means that the basic foundations of an e-commerce application are now in place - [check the demo](https://demo.vendure.io/); the GraphQL APIs are pretty stable; the codebase has been reworked into a more maintainable core/plugins monorepo; the developer experience has vastly improved with the introduction of [@vendure/create](https://github.com/vendure-ecommerce/vendure/tree/master/packages/create).
 
 ## Next Steps

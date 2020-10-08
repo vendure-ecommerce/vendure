@@ -9,6 +9,8 @@ images:
 
 We're very excited to announce the release of version 0.11.0 of Vendure! This release includes a complete re-write of the Vendure job queue system, upgrades the underlying Nest framework to v7, and much more.
 
+<!--more-->
+
 {{< figure src="./vendure-0.11.0-banner-01.jpg" >}}
 
 ## New Job Queue

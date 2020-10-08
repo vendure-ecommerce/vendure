@@ -9,6 +9,8 @@ images:
 
 We're very excited to announce the release of version 0.12.0 of Vendure! This release includes a bunch of features geared towards real-world production deployment of Vendure as we move towards v1.0.
 
+<!--more-->
+
 {{< figure src="./vendure-0.12.0-banner-01.jpg" >}}
 
 ## Health checks
