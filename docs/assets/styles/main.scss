@@ -134,6 +134,8 @@ ul.contents-list {
     display: none;
 }
 
+
+
 .book-toc {
     flex: 0 0 $toc-width;
     font-size: $font-size-12;
@@ -201,6 +203,7 @@ ul.contents-list {
     padding: 30px 10px;
     margin-top: 120px;
     color: $gray-600;
+    position: relative;
 
     .gh-link {
         margin-left: 12px;
@@ -255,6 +258,9 @@ aside nav,
 
 @media screen and (max-width: $md-breakpoint) {
     .book-toc {
+        display: none;
+    }
+    .left-gutter {
         display: none;
     }
 }
