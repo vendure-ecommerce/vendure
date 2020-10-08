@@ -1,5 +1,16 @@
 @import "variables";
 
+.blog {
+    display: flex;
+    @media screen and (max-width: $md-breakpoint) {
+        display: block;
+    }
+
+    .book-toc {
+        flex: 1;
+    }
+}
+
 .posts-list {
     min-height: 50vh;
     padding: $padding-16 * 1.6;
@@ -23,8 +34,13 @@
     }
 }
 
+.left-gutter {
+    flex: 1;
+}
+
 .blog-post {
     max-width: $md-breakpoint;
+    flex: 2;
     margin: auto;
     padding: $padding-16 * 1.6;
 

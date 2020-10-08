@@ -9,8 +9,10 @@
 </head>
 
 <body>
-<main class="container">
-        {{ template "main" . }}
+<main class="container blog">
+    <div class="left-gutter"></div>
+    {{ template "main" . }}
+    {{ partial "blog/toc" . }}
 </main>
 
 {{ partial "top-bar" }}
