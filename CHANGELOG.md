@@ -44,7 +44,7 @@
 * The `Payment.metadata` field is not private by default, meaning that it can only be read via the Admin API. Data required in the Shop API can be accessed by putting it in a field named `public`. Example: `Payment.metadata.public.redirectUrl`
 * The TypeORM `Connection` should no longer be directly used. Instead, inject the new `TransactionalConnection` class, which wraps the TypeORM connection and enables database transactions to be used in conjunction with the new `@Transaction` decorator.
 
-The `getEntityOrThrow()` and `findOneInChannel()` helper functions have been deprecated and replaced by methods with the same name (but slightly different signature) on the TransactionalConnection class.
+   The `getEntityOrThrow()` and `findOneInChannel()` helper functions have been deprecated and replaced by methods with the same name (but slightly different signature) on the TransactionalConnection class.
 * The upgrade of the Admin UI to Angular v10 means that if you are using the `@vendure/ui-devkit` package to compile an extended version of the Admin UI, you need to have at least TypeScript v3.9.2 installed.
 ## <small>0.15.2 (2020-09-30)</small>
 
