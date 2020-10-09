@@ -41,17 +41,23 @@
             <div class="graphql-playground-tab" data-name="Add To Order">
                 mutation {
                   addItemToOrder(productVariantId: 5 quantity: 1) {
-                    code
-                    total
-                    state
-                    lines {
-                      productVariant {
-                        id
-                        name
+                    ...on Order {
+                      code
+                      total
+                      state
+                      lines {
+                        productVariant {
+                          id
+                          name
+                        }
+                        unitPrice
+                        quantity
+                        totalPrice
                       }
-                      unitPrice
-                      quantity
-                      totalPrice
+                    }
+                    ...on ErrorResult {
+                      errorCode
+                      message
                     }
                   }
                 }
