@@ -8,6 +8,8 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { AsyncQueue } from '../../../common/async-queue';
+import { Translatable, Translation } from '../../../common/types/locale-types';
+import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
@@ -53,6 +55,7 @@ export class IndexerController {
     constructor(
         private connection: TransactionalConnection,
         private productVariantService: ProductVariantService,
+        private configService: ConfigService,
     ) {}
 
     @MessagePattern(ReindexMessage.pattern)
@@ -79,7 +82,7 @@ export class IndexerController {
                     .skip(i * BATCH_SIZE)
                     .getMany();
                 const hydratedVariants = this.hydrateVariants(ctx, variants);
-                await this.saveVariants(ctx.languageCode, ctx.channelId, hydratedVariants);
+                await this.saveVariants(ctx.channelId, hydratedVariants);
                 observer.next({
                     total: count,
                     completed: Math.min((i + 1) * BATCH_SIZE, count),
@@ -118,7 +121,7 @@ export class IndexerController {
                         where: { deletedAt: null },
                     });
                     const variants = this.hydrateVariants(ctx, batch);
-                    await this.saveVariants(ctx.languageCode, ctx.channelId, variants);
+                    await this.saveVariants(ctx.channelId, variants);
                     observer.next({
                         total: ids.length,
                         completed: Math.min((i + 1) * BATCH_SIZE, ids.length),
@@ -249,7 +252,7 @@ export class IndexerController {
             Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
             updatedVariants = this.hydrateVariants(ctx, updatedVariants);
             if (updatedVariants.length) {
-                await this.saveVariants(ctx.languageCode, channelId, updatedVariants);
+                await this.saveVariants(channelId, updatedVariants);
             }
         }
         return true;
@@ -267,7 +270,7 @@ export class IndexerController {
         if (variants) {
             const updatedVariants = this.hydrateVariants(ctx, variants);
             Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            await this.saveVariants(ctx.languageCode, channelId, updatedVariants);
+            await this.saveVariants(channelId, updatedVariants);
         }
         return true;
     }
@@ -316,38 +319,59 @@ export class IndexerController {
             .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
-    private async saveVariants(languageCode: LanguageCode, channelId: ID, variants: ProductVariant[]) {
-        const items = variants.map(
-            (v: ProductVariant) =>
-                new SearchIndexItem({
-                    productVariantId: v.id,
-                    channelId,
-                    languageCode,
-                    sku: v.sku,
-                    enabled: v.product.enabled === false ? false : v.enabled,
-                    slug: v.product.slug,
-                    price: v.price,
-                    priceWithTax: v.priceWithTax,
-                    productId: v.product.id,
-                    productName: v.product.name,
-                    description: v.product.description,
-                    productVariantName: v.name,
-                    productAssetId: v.product.featuredAsset ? v.product.featuredAsset.id : null,
-                    productPreviewFocalPoint: v.product.featuredAsset
-                        ? v.product.featuredAsset.focalPoint
-                        : null,
-                    productVariantPreviewFocalPoint: v.featuredAsset ? v.featuredAsset.focalPoint : null,
-                    productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
-                    productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
-                    productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                    channelIds: v.product.channels.map(c => c.id as string),
-                    facetIds: this.getFacetIds(v),
-                    facetValueIds: this.getFacetValueIds(v),
-                    collectionIds: v.collections.map(c => c.id.toString()),
-                    collectionSlugs: v.collections.map(c => c.slug),
-                }),
-        );
+    private async saveVariants(channelId: ID, variants: ProductVariant[]) {
+        const items: SearchIndexItem[] = [];
+
+        for (const v of variants) {
+            const languageVariants = unique([
+                ...v.translations.map(t => t.languageCode),
+                ...v.product.translations.map(t => t.languageCode),
+            ]);
+            for (const languageCode of languageVariants) {
+                const productTranslation = this.getTranslation(v.product, languageCode);
+                const variantTranslation = this.getTranslation(v, languageCode);
+                items.push(
+                    new SearchIndexItem({
+                        productVariantId: v.id,
+                        channelId,
+                        languageCode,
+                        sku: v.sku,
+                        enabled: v.product.enabled === false ? false : v.enabled,
+                        slug: productTranslation.slug,
+                        price: v.price,
+                        priceWithTax: v.priceWithTax,
+                        productId: v.product.id,
+                        productName: productTranslation.name,
+                        description: productTranslation.description,
+                        productVariantName: variantTranslation.name,
+                        productAssetId: v.product.featuredAsset ? v.product.featuredAsset.id : null,
+                        productPreviewFocalPoint: v.product.featuredAsset
+                            ? v.product.featuredAsset.focalPoint
+                            : null,
+                        productVariantPreviewFocalPoint: v.featuredAsset ? v.featuredAsset.focalPoint : null,
+                        productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
+                        productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
+                        productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
+                        channelIds: v.product.channels.map(c => c.id as string),
+                        facetIds: this.getFacetIds(v),
+                        facetValueIds: this.getFacetValueIds(v),
+                        collectionIds: v.collections.map(c => c.id.toString()),
+                        collectionSlugs: v.collections.map(c => c.slug),
+                    }),
+                );
+            }
+        }
+
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
+    }
+
+    private getTranslation<T extends Translatable>(
+        translatable: T,
+        languageCode: LanguageCode,
+    ): Translation<T> {
+        return ((translatable.translations.find(t => t.languageCode === languageCode) ||
+            translatable.translations.find(t => t.languageCode === this.configService.defaultLanguageCode) ||
+            translatable.translations[0]) as unknown) as Translation<T>;
     }
 
     private getFacetIds(variant: ProductVariant): string[] {

@@ -8,11 +8,10 @@ import {
 } from '@vendure/core';
 import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN, SimpleGraphQLClient } from '@vendure/testing';
 import gql from 'graphql-tag';
-import so from 'i18next-icu/locale-data/so';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -923,6 +922,87 @@ describe('Default search plugin', () => {
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
             }, 10000);
         });
+
+        describe('multiple language handling', () => {
+            function searchInLanguage(languageCode: LanguageCode) {
+                return adminClient.query<SearchProductsShop.Query, SearchProductsShop.Variables>(
+                    SEARCH_PRODUCTS,
+                    {
+                        input: {
+                            take: 1,
+                        },
+                    },
+                    {
+                        languageCode,
+                    },
+                );
+            }
+
+            beforeAll(async () => {
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_1',
+                        translations: [
+                            {
+                                languageCode: LanguageCode.de,
+                                name: 'laptop name de',
+                                slug: 'laptop-slug-de',
+                                description: 'laptop description de',
+                            },
+                            {
+                                languageCode: LanguageCode.zh,
+                                name: 'laptop name zh',
+                                slug: 'laptop-slug-zh',
+                                description: 'laptop description zh',
+                            },
+                        ],
+                    },
+                });
+
+                await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                    UPDATE_PRODUCT_VARIANTS,
+                    {
+                        input: [
+                            {
+                                id: updateProduct.variants[0].id,
+                                translations: [
+                                    {
+                                        languageCode: LanguageCode.fr,
+                                        name: 'laptop variant fr',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                );
+
+                await awaitRunningJobs(adminClient);
+            });
+
+            it('indexes product-level languages', async () => {
+                const { search: search1 } = await searchInLanguage(LanguageCode.de);
+
+                expect(search1.items[0].productName).toBe('laptop name de');
+                expect(search1.items[0].slug).toBe('laptop-slug-de');
+                expect(search1.items[0].description).toBe('laptop description de');
+
+                const { search: search2 } = await searchInLanguage(LanguageCode.zh);
+
+                expect(search2.items[0].productName).toBe('laptop name zh');
+                expect(search2.items[0].slug).toBe('laptop-slug-zh');
+                expect(search2.items[0].description).toBe('laptop description zh');
+            });
+
+            it('indexes product variant-level languages', async () => {
+                const { search: search1 } = await searchInLanguage(LanguageCode.fr);
+
+                expect(search1.items[0].productName).toBe('Laptop');
+                expect(search1.items[0].productVariantName).toBe('laptop variant fr');
+            });
+        });
     });
 });
 
@@ -942,6 +1022,8 @@ export const SEARCH_PRODUCTS = gql`
                 enabled
                 productId
                 productName
+                slug
+                description
                 productPreview
                 productVariantId
                 productVariantName
