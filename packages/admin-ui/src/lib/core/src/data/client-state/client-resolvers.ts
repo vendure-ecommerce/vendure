@@ -86,15 +86,15 @@ export const clientResolvers: ResolverDefinition = {
                 throw new Error('setActiveChannel: Could not find Channel with ID ' + args.channelId);
             }
             const permissions = activeChannel.permissions;
-            const data: { userStatus: Partial<UserStatus> } = {
+            const data: { userStatus: UserStatus } = {
                 userStatus: {
-                    __typename: 'UserStatus',
+                    ...previous.userStatus,
                     permissions,
                     activeChannelId: activeChannel.id,
                 },
             };
             cache.writeQuery({ query: GET_USER_STATUS, data });
-            return { ...previous.userStatus, ...data.userStatus };
+            return data.userStatus;
         },
         updateUserChannels: (_, args: UpdateUserChannels.Variables, { cache }): UserStatus => {
             // tslint:disable-next-line:no-non-null-assertion

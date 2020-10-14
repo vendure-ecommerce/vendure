@@ -419,6 +419,7 @@ export const UPDATE_PAYMENT_METHOD = gql`
 
 export const GLOBAL_SETTINGS_FRAGMENT = gql`
     fragment GlobalSettings on GlobalSettings {
+        id
         availableLanguages
         trackInventory
     }
@@ -548,6 +549,7 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
 export const GET_SERVER_CONFIG = gql`
     query GetServerConfig {
         globalSettings {
+            id
             serverConfig {
                 orderProcess {
                     name
