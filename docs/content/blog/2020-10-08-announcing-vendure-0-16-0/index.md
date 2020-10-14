@@ -285,7 +285,7 @@ Due to the new features described above, there are some **major breaking changes
    // If you are using a UUID strategy, replace 1 with 
    // the ID of the default channel.
     await queryRunner.query(
-      'INSERT INTO `order_channels_channel` (orderId, channelId) SELECT id, 1 FROM `order`',
+      'INSERT INTO `customer_channels_channel` (customerId, channelId) SELECT id, 1 FROM `customer`',
       undefined,
     );
    ```
@@ -293,7 +293,7 @@ Due to the new features described above, there are some **major breaking changes
    or if using Postgres:
     ```TypeScript
      await queryRunner.query(
-       'INSERT INTO "order_channels_channel" ("orderId", "channelId") SELECT id, 1 FROM "order"',
+       'INSERT INTO "customer_channels_channel" ("customerId", "channelId") SELECT id, 1 FROM "customer"',
        undefined,
      );
     ```
@@ -391,7 +391,7 @@ If you are using the helper functions `getEntityOrThrow` or `findOneInChannel`, 
 
 ```diff
 - const order = await getEntityOrThrow(this.connection, Order, orderId);
-+ const order = await this.connection.getEntityOrThrow(Order, orderId);
++ const order = await this.connection.getEntityOrThrow(ctx, Order, orderId);
 ``` 
 
 ### Update to new Vendure Service APIs
