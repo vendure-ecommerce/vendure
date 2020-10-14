@@ -24,14 +24,7 @@ import { Observable } from 'rxjs';
 import { SelectQueryBuilder } from 'typeorm';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
-import {
-    ELASTIC_SEARCH_OPTIONS,
-    loggerCtx,
-    PRODUCT_INDEX_NAME,
-    PRODUCT_INDEX_TYPE,
-    VARIANT_INDEX_NAME,
-    VARIANT_INDEX_TYPE,
-} from './constants';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
 import { createIndices, deleteByChannel, deleteIndices } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
 import {
@@ -305,7 +298,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
                 if (dropIndices) {
                     await deleteIndices(this.client, this.options.indexPrefix);
-                    await createIndices(this.client, this.options.indexPrefix);
+                    await createIndices(
+                        this.client,
+                        this.options.indexPrefix,
+                        this.configService.entityIdStrategy.primaryKeyType,
+                    );
                 } else {
                     await deleteByChannel(this.client, this.options.indexPrefix, ctx.channelId);
                 }
@@ -486,8 +483,8 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 productIdsIndexed.add(variant.productId);
             }
         }
-        await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, variantsToIndex);
-        await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, productsToIndex);
+        await this.executeBulkOperations(VARIANT_INDEX_NAME, variantsToIndex);
+        await this.executeBulkOperations(PRODUCT_INDEX_NAME, productsToIndex);
         return variantsInProduct;
     }
 
@@ -526,7 +523,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 }
             }
             Logger.verbose(`Updating ${updatedVariants.length} ProductVariants`, loggerCtx);
-            await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
+            await this.executeBulkOperations(VARIANT_INDEX_NAME, operations);
         }
     }
 
@@ -569,7 +566,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         { doc: updatedProductIndexItem, doc_as_upsert: true },
                     );
                 }
-                await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
+                await this.executeBulkOperations(PRODUCT_INDEX_NAME, operations);
             }
         }
     }
@@ -581,7 +578,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         for (const languageCode of languageVariants) {
             operations.push({ delete: { _id: this.getId(product.id, channelId, languageCode) } });
         }
-        await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
+        await this.executeBulkOperations(PRODUCT_INDEX_NAME, operations);
     }
 
     private async deleteVariantsInternal(variants: ProductVariant[], channelId: ID) {
@@ -595,12 +592,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                 });
             }
         }
-        await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
+        await this.executeBulkOperations(VARIANT_INDEX_NAME, operations);
     }
 
     private async executeBulkOperations(
         indexName: string,
-        indexType: string,
         operations: Array<BulkOperation | BulkOperationDoc<VariantIndexItem | ProductIndexItem>>,
     ) {
         try {
@@ -608,13 +604,12 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             const { body }: { body: BulkResponseBody } = await this.client.bulk({
                 refresh: true,
                 index: fullIndexName,
-                type: indexType,
                 body: operations,
             });
 
             if (body.errors) {
                 Logger.error(
-                    `Some errors occurred running bulk operations on ${indexType}! Set logger to "debug" to print all errors.`,
+                    `Some errors occurred running bulk operations on ${fullIndexName}! Set logger to "debug" to print all errors.`,
                     loggerCtx,
                 );
                 body.items.forEach(item => {

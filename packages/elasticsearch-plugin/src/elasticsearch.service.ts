@@ -2,6 +2,7 @@ import { Client, ClientOptions } from '@elastic/elasticsearch';
 import { Inject, Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SearchResult, SearchResultAsset } from '@vendure/common/lib/generated-types';
 import {
+    ConfigService,
     DeepRequired,
     FacetValue,
     FacetValueService,
@@ -13,14 +14,7 @@ import {
 } from '@vendure/core';
 
 import { buildElasticBody } from './build-elastic-body';
-import {
-    ELASTIC_SEARCH_OPTIONS,
-    loggerCtx,
-    PRODUCT_INDEX_NAME,
-    PRODUCT_INDEX_TYPE,
-    VARIANT_INDEX_NAME,
-    VARIANT_INDEX_TYPE,
-} from './constants';
+import { ELASTIC_SEARCH_OPTIONS, loggerCtx, PRODUCT_INDEX_NAME, VARIANT_INDEX_NAME } from './constants';
 import { ElasticsearchIndexService } from './elasticsearch-index.service';
 import { createIndices } from './indexing-utils';
 import { ElasticsearchOptions } from './options';
@@ -44,6 +38,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         private searchService: SearchService,
         private elasticsearchIndexService: ElasticsearchIndexService,
         private facetValueService: FacetValueService,
+        private configService: ConfigService,
     ) {
         searchService.adopt(this);
     }
@@ -76,7 +71,11 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
 
             if (result.body === false) {
                 Logger.verbose(`Index "${index}" does not exist. Creating...`, loggerCtx);
-                await createIndices(this.client, indexPrefix);
+                await createIndices(
+                    this.client,
+                    indexPrefix,
+                    this.configService.entityIdStrategy.primaryKeyType,
+                );
             } else {
                 Logger.verbose(`Index "${index}" exists`, loggerCtx);
             }
@@ -104,25 +103,33 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             enabledOnly,
         );
         if (groupByProduct) {
-            const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
-                index: indexPrefix + PRODUCT_INDEX_NAME,
-                type: PRODUCT_INDEX_TYPE,
-                body: elasticSearchBody,
-            });
-            return {
-                items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
-                totalItems: body.hits.total.value,
-            };
+            try {
+                const { body }: { body: SearchResponseBody<ProductIndexItem> } = await this.client.search({
+                    index: indexPrefix + PRODUCT_INDEX_NAME,
+                    body: elasticSearchBody,
+                });
+                return {
+                    items: body.hits.hits.map(hit => this.mapProductToSearchResult(hit)),
+                    totalItems: body.hits.total.value,
+                };
+            } catch (e) {
+                Logger.error(e.message, loggerCtx, e.stack);
+                throw e;
+            }
         } else {
-            const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
-                index: indexPrefix + VARIANT_INDEX_NAME,
-                type: VARIANT_INDEX_TYPE,
-                body: elasticSearchBody,
-            });
-            return {
-                items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
-                totalItems: body.hits.total.value,
-            };
+            try {
+                const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
+                    index: indexPrefix + VARIANT_INDEX_NAME,
+                    body: elasticSearchBody,
+                });
+                return {
+                    items: body.hits.hits.map(hit => this.mapVariantToSearchResult(hit)),
+                    totalItems: body.hits.total.value,
+                };
+            } catch (e) {
+                Logger.error(e.message, loggerCtx, e.stack);
+                throw e;
+            }
         }
     }
 
@@ -147,16 +154,22 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         elasticSearchBody.aggs = {
             facetValue: {
                 terms: {
-                    field: 'facetValueIds.keyword',
+                    field: 'facetValueIds',
                     size: this.options.searchConfig.facetValueMaxSize,
                 },
             },
         };
-        const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
-            index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
-            type: input.groupByProduct ? PRODUCT_INDEX_TYPE : VARIANT_INDEX_TYPE,
-            body: elasticSearchBody,
-        });
+        let body: SearchResponseBody<VariantIndexItem>;
+        try {
+            const result = await this.client.search<SearchResponseBody<VariantIndexItem>>({
+                index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
+                body: elasticSearchBody,
+            });
+            body = result.body;
+        } catch (e) {
+            Logger.error(e.message, loggerCtx, e.stack);
+            throw e;
+        }
 
         const buckets = body.aggregations ? body.aggregations.facetValue.buckets : [];
 
@@ -221,7 +234,6 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
         };
         const { body }: { body: SearchResponseBody<VariantIndexItem> } = await this.client.search({
             index: indexPrefix + (input.groupByProduct ? PRODUCT_INDEX_NAME : VARIANT_INDEX_NAME),
-            type: input.groupByProduct ? PRODUCT_INDEX_TYPE : VARIANT_INDEX_TYPE,
             body: elasticSearchBody,
         });
 

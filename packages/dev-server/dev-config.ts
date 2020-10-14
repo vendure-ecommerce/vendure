@@ -63,10 +63,10 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        // ElasticsearchPlugin.init({
-        //     host: 'http://localhost',
-        //     port: 9200,
-        // }),
+        /*ElasticsearchPlugin.init({
+            host: 'http://localhost',
+            port: 9200,
+        }),*/
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,

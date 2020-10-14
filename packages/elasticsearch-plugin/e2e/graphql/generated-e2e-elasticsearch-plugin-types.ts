@@ -3849,6 +3849,16 @@ export type NativeAuthInput = {
     password: Scalars['String'];
 };
 
+export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
+
+export type ReindexMutation = {
+    reindex: Pick<Job, 'id' | 'queueName' | 'state' | 'progress' | 'duration' | 'result'>;
+};
+
+export type GetCollectionListQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCollectionListQuery = { collections: { items: Array<Pick<Collection, 'id' | 'name'>> } };
+
 export type SearchProductsAdminQueryVariables = Exact<{
     input: SearchInput;
 }>;
@@ -3907,12 +3917,6 @@ export type SearchGetPricesQuery = {
     };
 };
 
-export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
-
-export type ReindexMutation = {
-    reindex: Pick<Job, 'id' | 'queueName' | 'state' | 'progress' | 'duration' | 'result'>;
-};
-
 export type GetJobInfoQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -3922,6 +3926,21 @@ export type GetJobInfoQuery = {
 };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
+
+export namespace Reindex {
+    export type Variables = ReindexMutationVariables;
+    export type Mutation = ReindexMutation;
+    export type Reindex = NonNullable<ReindexMutation['reindex']>;
+}
+
+export namespace GetCollectionList {
+    export type Variables = GetCollectionListQueryVariables;
+    export type Query = GetCollectionListQuery;
+    export type Collections = NonNullable<GetCollectionListQuery['collections']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetCollectionListQuery['collections']>['items']>[number]
+    >;
+}
 
 export namespace SearchProductsAdmin {
     export type Variables = SearchProductsAdminQueryVariables;
@@ -4011,12 +4030,6 @@ export namespace SearchGetPrices {
         >,
         { __typename?: 'SinglePrice' }
     >;
-}
-
-export namespace Reindex {
-    export type Variables = ReindexMutationVariables;
-    export type Mutation = ReindexMutation;
-    export type Reindex = NonNullable<ReindexMutation['reindex']>;
 }
 
 export namespace GetJobInfo {

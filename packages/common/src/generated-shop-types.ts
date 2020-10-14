@@ -456,6 +456,8 @@ export type SearchInput = {
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
     sort?: Maybe<SearchResultSortParameter>;
+    priceRange?: Maybe<PriceRangeInput>;
+    priceRangeWithTax?: Maybe<PriceRangeInput>;
 };
 
 export type SearchResultSortParameter = {
@@ -2140,6 +2142,7 @@ export type SearchResponse = {
     items: Array<SearchResult>;
     totalItems: Scalars['Int'];
     facetValues: Array<FacetValueResult>;
+    prices: SearchResponsePriceData;
 };
 
 /**
@@ -2452,6 +2455,25 @@ export type Zone = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     members: Array<Country>;
+};
+
+export type SearchResponsePriceData = {
+    __typename?: 'SearchResponsePriceData';
+    range: PriceRange;
+    rangeWithTax: PriceRange;
+    buckets: Array<PriceRangeBucket>;
+    bucketsWithTax: Array<PriceRangeBucket>;
+};
+
+export type PriceRangeBucket = {
+    __typename?: 'PriceRangeBucket';
+    to: Scalars['Int'];
+    count: Scalars['Int'];
+};
+
+export type PriceRangeInput = {
+    min: Scalars['Int'];
+    max: Scalars['Int'];
 };
 
 export type CollectionListOptions = {
