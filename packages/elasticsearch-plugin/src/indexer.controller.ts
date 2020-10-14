@@ -6,15 +6,19 @@ import {
     Asset,
     asyncObservable,
     AsyncQueue,
+    ConfigService,
     FacetValue,
     ID,
+    LanguageCode,
     Logger,
     Product,
     ProductVariant,
     ProductVariantService,
     RequestContext,
     TransactionalConnection,
+    Translatable,
     translateDeep,
+    Translation,
 } from '@vendure/core';
 import { Observable } from 'rxjs';
 import { SelectQueryBuilder } from 'typeorm';
@@ -76,6 +80,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         private connection: TransactionalConnection,
         @Inject(ELASTIC_SEARCH_OPTIONS) private options: Required<ElasticsearchOptions>,
         private productVariantService: ProductVariantService,
+        private configService: ConfigService,
     ) {}
 
     onModuleInit(): any {
@@ -114,12 +119,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
         const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
-            await this.deleteProductInternal(productId, ctx.channelId);
+            const product = await this.connection.getRepository(Product).findOne(productId);
+            if (!product) {
+                return false;
+            }
+            await this.deleteProductInternal(product, ctx.channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-            await this.deleteVariantsInternal(
-                variants.map(v => v.id),
-                ctx.channelId,
-            );
+            await this.deleteVariantsInternal(variants, ctx.channelId);
             return true;
         });
     }
@@ -157,12 +163,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }: RemoveProductFromChannelMessage['data']): Observable<RemoveProductFromChannelMessage['response']> {
         const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
-            await this.deleteProductInternal(productId, channelId);
+            const product = await this.connection.getRepository(Product).findOne(productId);
+            if (!product) {
+                return false;
+            }
+            await this.deleteProductInternal(product, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
-            await this.deleteVariantsInternal(
-                variants.map(v => v.id),
-                channelId,
-            );
+            await this.deleteVariantsInternal(variants, channelId);
             return true;
         });
     }
@@ -198,7 +205,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             for (const productId of productIds) {
                 await this.updateProductInternal(ctx, productId, ctx.channelId);
             }
-            await this.deleteVariantsInternal(variantIds, ctx.channelId);
+            await this.deleteVariantsInternal(variants, ctx.channelId);
             return true;
         });
     }
@@ -229,16 +236,42 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                             variants,
                             variantsInProduct,
                             (operations, variant) => {
-                                operations.push(
-                                    { update: { _id: this.getId(variant.id, ctx.channelId) } },
-                                    { doc: this.createVariantIndexItem(variant, ctx.channelId) },
-                                );
+                                const languageVariants = variant.translations.map(t => t.languageCode);
+                                for (const languageCode of languageVariants) {
+                                    operations.push(
+                                        {
+                                            update: {
+                                                _id: this.getId(variant.id, ctx.channelId, languageCode),
+                                            },
+                                        },
+                                        {
+                                            doc: this.createVariantIndexItem(
+                                                variant,
+                                                ctx.channelId,
+                                                languageCode,
+                                            ),
+                                        },
+                                    );
+                                }
                             },
                             (operations, product, _variants) => {
-                                operations.push(
-                                    { update: { _id: this.getId(product.id, ctx.channelId) } },
-                                    { doc: this.createProductIndexItem(_variants, ctx.channelId) },
-                                );
+                                const languageVariants = product.translations.map(t => t.languageCode);
+                                for (const languageCode of languageVariants) {
+                                    operations.push(
+                                        {
+                                            update: {
+                                                _id: this.getId(product.id, ctx.channelId, languageCode),
+                                            },
+                                        },
+                                        {
+                                            doc: this.createProductIndexItem(
+                                                _variants,
+                                                ctx.channelId,
+                                                languageCode,
+                                            ),
+                                        },
+                                    );
+                                }
                             },
                         );
                         observer.next({
@@ -295,16 +328,22 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         variants,
                         variantsInProduct,
                         (operations, variant) => {
-                            operations.push(
-                                { index: { _id: this.getId(variant.id, ctx.channelId) } },
-                                this.createVariantIndexItem(variant, ctx.channelId),
-                            );
+                            const languageVariants = variant.translations.map(t => t.languageCode);
+                            for (const languageCode of languageVariants) {
+                                operations.push(
+                                    { index: { _id: this.getId(variant.id, ctx.channelId, languageCode) } },
+                                    this.createVariantIndexItem(variant, ctx.channelId, languageCode),
+                                );
+                            }
                         },
                         (operations, product, _variants) => {
-                            operations.push(
-                                { index: { _id: this.getId(product.id, ctx.channelId) } },
-                                this.createProductIndexItem(_variants, ctx.channelId),
-                            );
+                            const languageVariants = product.translations.map(t => t.languageCode);
+                            for (const languageCode of languageVariants) {
+                                operations.push(
+                                    { index: { _id: this.getId(product.id, ctx.channelId, languageCode) } },
+                                    this.createProductIndexItem(_variants, ctx.channelId, languageCode),
+                                );
+                            }
                         },
                     );
                     observer.next({
@@ -473,13 +512,19 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             for (const variantProductId of productIdsOfVariants) {
                 await this.updateProductInternal(ctx, variantProductId, channelId);
             }
-            const operations = updatedVariants.reduce((ops, variant) => {
-                return [
-                    ...ops,
-                    { update: { _id: this.getId(variant.id, channelId) } },
-                    { doc: this.createVariantIndexItem(variant, channelId), doc_as_upsert: true },
-                ];
-            }, [] as Array<BulkOperation | BulkOperationDoc<VariantIndexItem>>);
+            const operations: Array<BulkOperation | BulkOperationDoc<VariantIndexItem>> = [];
+            for (const variant of updatedVariants) {
+                const languageVariants = variant.translations.map(t => t.languageCode);
+                for (const languageCode of languageVariants) {
+                    operations.push(
+                        { update: { _id: this.getId(variant.id, channelId, languageCode) } },
+                        {
+                            doc: this.createVariantIndexItem(variant, channelId, languageCode),
+                            doc_as_upsert: true,
+                        },
+                    );
+                }
+            }
             Logger.verbose(`Updating ${updatedVariants.length} ProductVariants`, loggerCtx);
             await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
         }
@@ -503,30 +548,53 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             if (product.enabled === false) {
                 updatedProductVariants.forEach(v => (v.enabled = false));
             }
-        }
-        if (updatedProductVariants.length) {
-            Logger.verbose(`Updating 1 Product (${productId})`, loggerCtx);
-            updatedProductVariants = this.hydrateVariants(ctx, updatedProductVariants);
-            const updatedProductIndexItem = this.createProductIndexItem(updatedProductVariants, channelId);
-            const operations: [BulkOperation, BulkOperationDoc<ProductIndexItem>] = [
-                { update: { _id: this.getId(updatedProductIndexItem.productId, channelId) } },
-                { doc: updatedProductIndexItem, doc_as_upsert: true },
-            ];
-            await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
+
+            if (updatedProductVariants.length) {
+                Logger.verbose(`Updating 1 Product (${productId})`, loggerCtx);
+                updatedProductVariants = this.hydrateVariants(ctx, updatedProductVariants);
+                const operations: Array<BulkOperation | BulkOperationDoc<ProductIndexItem>> = [];
+                const languageVariants = product.translations.map(t => t.languageCode);
+                for (const languageCode of languageVariants) {
+                    const updatedProductIndexItem = this.createProductIndexItem(
+                        updatedProductVariants,
+                        channelId,
+                        languageCode,
+                    );
+                    operations.push(
+                        {
+                            update: {
+                                _id: this.getId(updatedProductIndexItem.productId, channelId, languageCode),
+                            },
+                        },
+                        { doc: updatedProductIndexItem, doc_as_upsert: true },
+                    );
+                }
+                await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
+            }
         }
     }
 
-    private async deleteProductInternal(productId: ID, channelId: ID) {
-        Logger.verbose(`Deleting 1 Product (${productId})`, loggerCtx);
-        const operations: BulkOperation[] = [{ delete: { _id: this.getId(productId, channelId) } }];
+    private async deleteProductInternal(product: Product, channelId: ID) {
+        Logger.verbose(`Deleting 1 Product (${product.id})`, loggerCtx);
+        const operations: BulkOperation[] = [];
+        const languageVariants = product.translations.map(t => t.languageCode);
+        for (const languageCode of languageVariants) {
+            operations.push({ delete: { _id: this.getId(product.id, channelId, languageCode) } });
+        }
         await this.executeBulkOperations(PRODUCT_INDEX_NAME, PRODUCT_INDEX_TYPE, operations);
     }
 
-    private async deleteVariantsInternal(variantIds: ID[], channelId: ID) {
-        Logger.verbose(`Deleting ${variantIds.length} ProductVariants`, loggerCtx);
-        const operations: BulkOperation[] = variantIds.map(id => ({
-            delete: { _id: this.getId(id, channelId) },
-        }));
+    private async deleteVariantsInternal(variants: ProductVariant[], channelId: ID) {
+        Logger.verbose(`Deleting ${variants.length} ProductVariants`, loggerCtx);
+        const operations: BulkOperation[] = [];
+        for (const variant of variants) {
+            const languageVariants = variant.translations.map(t => t.languageCode);
+            for (const languageCode of languageVariants) {
+                operations.push({
+                    delete: { _id: this.getId(variant.id, channelId, languageCode) },
+                });
+            }
+        }
         await this.executeBulkOperations(VARIANT_INDEX_NAME, VARIANT_INDEX_TYPE, operations);
     }
 
@@ -631,27 +699,35 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
-    private createVariantIndexItem(v: ProductVariant, channelId: ID): VariantIndexItem {
+    private createVariantIndexItem(
+        v: ProductVariant,
+        channelId: ID,
+        languageCode: LanguageCode,
+    ): VariantIndexItem {
         const productAsset = v.product.featuredAsset;
         const variantAsset = v.featuredAsset;
+        const productTranslation = this.getTranslation(v.product, languageCode);
+        const variantTranslation = this.getTranslation(v, languageCode);
+
         const item: VariantIndexItem = {
             channelId,
+            languageCode,
             productVariantId: v.id,
             sku: v.sku,
-            slug: v.product.slug,
+            slug: productTranslation.slug,
             productId: v.product.id,
-            productName: v.product.name,
+            productName: productTranslation.name,
             productAssetId: productAsset ? productAsset.id : undefined,
             productPreview: productAsset ? productAsset.preview : '',
             productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
-            productVariantName: v.name,
+            productVariantName: variantTranslation.name,
             productVariantAssetId: variantAsset ? variantAsset.id : undefined,
             productVariantPreview: variantAsset ? variantAsset.preview : '',
             productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             price: v.price,
             priceWithTax: v.priceWithTax,
             currencyCode: v.currencyCode,
-            description: v.product.description,
+            description: productTranslation.description,
             facetIds: this.getFacetIds([v]),
             channelIds: v.product.channels.map(c => c.id),
             facetValueIds: this.getFacetValueIds([v]),
@@ -666,7 +742,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         return item;
     }
 
-    private createProductIndexItem(variants: ProductVariant[], channelId: ID): ProductIndexItem {
+    private createProductIndexItem(
+        variants: ProductVariant[],
+        channelId: ID,
+        languageCode: LanguageCode,
+    ): ProductIndexItem {
         const first = variants[0];
         const prices = variants.map(v => v.price);
         const pricesWithTax = variants.map(v => v.priceWithTax);
@@ -674,17 +754,21 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         const variantAsset = variants.filter(v => v.featuredAsset).length
             ? variants.filter(v => v.featuredAsset)[0].featuredAsset
             : null;
+        const productTranslation = this.getTranslation(first.product, languageCode);
+        const variantTranslation = this.getTranslation(first, languageCode);
+
         const item: ProductIndexItem = {
             channelId,
+            languageCode,
             sku: first.sku,
-            slug: first.product.slug,
+            slug: productTranslation.slug,
             productId: first.product.id,
-            productName: first.product.name,
+            productName: productTranslation.name,
             productAssetId: productAsset ? productAsset.id : undefined,
             productPreview: productAsset ? productAsset.preview : '',
             productPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
             productVariantId: first.id,
-            productVariantName: first.name,
+            productVariantName: variantTranslation.name,
             productVariantAssetId: variantAsset ? variantAsset.id : undefined,
             productVariantPreview: variantAsset ? variantAsset.preview : '',
             productVariantPreviewFocalPoint: productAsset ? productAsset.focalPoint || undefined : undefined,
@@ -693,7 +777,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             priceWithTaxMin: Math.min(...pricesWithTax),
             priceWithTaxMax: Math.max(...pricesWithTax),
             currencyCode: first.currencyCode,
-            description: first.product.description,
+            description: productTranslation.description,
             facetIds: this.getFacetIds(variants),
             facetValueIds: this.getFacetValueIds(variants),
             collectionIds: variants.reduce((ids, v) => [...ids, ...v.collections.map(c => c.id)], [] as ID[]),
@@ -710,6 +794,15 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             item[name] = def.valueFn(variants[0].product, variants);
         }
         return item;
+    }
+
+    private getTranslation<T extends Translatable>(
+        translatable: T,
+        languageCode: LanguageCode,
+    ): Translation<T> {
+        return ((translatable.translations.find(t => t.languageCode === languageCode) ||
+            translatable.translations.find(t => t.languageCode === this.configService.defaultLanguageCode) ||
+            translatable.translations[0]) as unknown) as Translation<T>;
     }
 
     private getFacetIds(variants: ProductVariant[]): string[] {
@@ -732,7 +825,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         return unique([...variantFacetValueIds, ...productFacetValueIds]);
     }
 
-    private getId(entityId: ID, channelId: ID): string {
-        return `${channelId.toString()}__${entityId.toString()}`;
+    private getId(entityId: ID, channelId: ID, languageCode: LanguageCode): string {
+        return `${channelId.toString()}_${entityId.toString()}_${languageCode}`;
     }
 }

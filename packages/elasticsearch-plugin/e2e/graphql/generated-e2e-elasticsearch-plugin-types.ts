@@ -3861,6 +3861,8 @@ export type SearchProductsAdminQuery = {
                 | 'enabled'
                 | 'productId'
                 | 'productName'
+                | 'slug'
+                | 'description'
                 | 'productPreview'
                 | 'productVariantId'
                 | 'productVariantName'

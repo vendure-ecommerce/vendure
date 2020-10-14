@@ -100,6 +100,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             input,
             this.options.searchConfig,
             ctx.channelId,
+            ctx.languageCode,
             enabledOnly,
         );
         if (groupByProduct) {
@@ -138,6 +139,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             input,
             this.options.searchConfig,
             ctx.channelId,
+            ctx.languageCode,
             enabledOnly,
         );
         elasticSearchBody.from = 0;
@@ -174,7 +176,13 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
     async priceRange(ctx: RequestContext, input: ElasticSearchInput): Promise<SearchPriceData> {
         const { indexPrefix, searchConfig } = this.options;
         const { groupByProduct } = input;
-        const elasticSearchBody = buildElasticBody(input, searchConfig, ctx.channelId, true);
+        const elasticSearchBody = buildElasticBody(
+            input,
+            searchConfig,
+            ctx.channelId,
+            ctx.languageCode,
+            true,
+        );
         elasticSearchBody.from = 0;
         elasticSearchBody.size = 0;
         elasticSearchBody.aggs = {

@@ -1,6 +1,7 @@
 import {
     Coordinate,
     CurrencyCode,
+    LanguageCode,
     PriceRange,
     SearchInput,
     SearchResponse,
@@ -45,6 +46,7 @@ export type VariantIndexItem = Omit<
 > &
     IndexItemAssets & {
         channelId: ID;
+        languageCode: LanguageCode;
         price: number;
         priceWithTax: number;
         collectionSlugs: string[];
@@ -56,6 +58,7 @@ export type ProductIndexItem = IndexItemAssets & {
     slug: string;
     productId: ID;
     channelId: ID;
+    languageCode: LanguageCode;
     productName: string;
     productVariantId: ID;
     productVariantName: string;

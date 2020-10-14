@@ -1,4 +1,4 @@
-import { LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
+import { LanguageCode, LogicalOperator, SortOrder } from '@vendure/common/lib/generated-types';
 import { DeepRequired } from '@vendure/core';
 
 import { buildElasticBody } from './build-elastic-body';
@@ -8,12 +8,13 @@ describe('buildElasticBody()', () => {
     const searchConfig = defaultOptions.searchConfig;
     const CHANNEL_ID = 42;
     const CHANNEL_ID_TERM = { term: { channelId: CHANNEL_ID } };
+    const LANGUAGE_CODE_TERM = { term: { languageCode: LanguageCode.en } };
 
     it('search term', () => {
-        const result = buildElasticBody({ term: 'test' }, searchConfig, CHANNEL_ID);
+        const result = buildElasticBody({ term: 'test' }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
                 must: [
                     {
                         multi_match: {
@@ -32,11 +33,13 @@ describe('buildElasticBody()', () => {
             { facetValueIds: ['1', '2'], facetValueOperator: LogicalOperator.AND },
             searchConfig,
             CHANNEL_ID,
+            LanguageCode.en,
         );
         expect(result.query).toEqual({
             bool: {
                 filter: [
                     CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
                     {
                         bool: {
                             must: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
@@ -52,11 +55,13 @@ describe('buildElasticBody()', () => {
             { facetValueIds: ['1', '2'], facetValueOperator: LogicalOperator.OR },
             searchConfig,
             CHANNEL_ID,
+            LanguageCode.en,
         );
         expect(result.query).toEqual({
             bool: {
                 filter: [
                     CHANNEL_ID_TERM,
+                    LANGUAGE_CODE_TERM,
                     {
                         bool: {
                             should: [{ term: { facetValueIds: '1' } }, { term: { facetValueIds: '2' } }],
@@ -68,41 +73,56 @@ describe('buildElasticBody()', () => {
     });
 
     it('collectionId', () => {
-        const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID);
+        const result = buildElasticBody({ collectionId: '1' }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM, { term: { collectionIds: '1' } }],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { collectionIds: '1' } }],
             },
         });
     });
 
     it('collectionSlug', () => {
-        const result = buildElasticBody({ collectionSlug: 'plants' }, searchConfig, CHANNEL_ID);
+        const result = buildElasticBody(
+            { collectionSlug: 'plants' },
+            searchConfig,
+            CHANNEL_ID,
+            LanguageCode.en,
+        );
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM, { term: { collectionSlugs: 'plants' } }],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { collectionSlugs: 'plants' } }],
             },
         });
     });
 
     it('paging', () => {
-        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig, CHANNEL_ID);
+        const result = buildElasticBody({ skip: 20, take: 10 }, searchConfig, CHANNEL_ID, LanguageCode.en);
         expect(result).toEqual({
             from: 20,
             size: 10,
-            query: { bool: { filter: [CHANNEL_ID_TERM] } },
+            query: { bool: { filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM] } },
             sort: [],
         });
     });
 
     describe('sorting', () => {
         it('name', () => {
-            const result = buildElasticBody({ sort: { name: SortOrder.DESC } }, searchConfig, CHANNEL_ID);
+            const result = buildElasticBody(
+                { sort: { name: SortOrder.DESC } },
+                searchConfig,
+                CHANNEL_ID,
+                LanguageCode.en,
+            );
             expect(result.sort).toEqual([{ 'productName.keyword': { order: 'desc' } }]);
         });
 
         it('price', () => {
-            const result = buildElasticBody({ sort: { price: SortOrder.ASC } }, searchConfig, CHANNEL_ID);
+            const result = buildElasticBody(
+                { sort: { price: SortOrder.ASC } },
+                searchConfig,
+                CHANNEL_ID,
+                LanguageCode.en,
+            );
             expect(result.sort).toEqual([{ price: { order: 'asc' } }]);
         });
 
@@ -111,24 +131,25 @@ describe('buildElasticBody()', () => {
                 { sort: { price: SortOrder.ASC }, groupByProduct: true },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.sort).toEqual([{ priceMin: { order: 'asc' } }]);
         });
     });
 
     it('enabledOnly true', () => {
-        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, true);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, true);
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM, { term: { enabled: true } }],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM, { term: { enabled: true } }],
             },
         });
     });
 
     it('enabledOnly false', () => {
-        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, false);
+        const result = buildElasticBody({}, searchConfig, CHANNEL_ID, LanguageCode.en, false);
         expect(result.query).toEqual({
-            bool: { filter: [CHANNEL_ID_TERM] },
+            bool: { filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM] },
         });
     });
 
@@ -147,6 +168,7 @@ describe('buildElasticBody()', () => {
             },
             searchConfig,
             CHANNEL_ID,
+            LanguageCode.en,
             true,
         );
 
@@ -166,6 +188,8 @@ describe('buildElasticBody()', () => {
                     ],
                     filter: [
                         CHANNEL_ID_TERM,
+
+                        LANGUAGE_CODE_TERM,
                         {
                             bool: {
                                 should: [{ term: { facetValueIds: '6' } }, { term: { facetValueIds: '7' } }],
@@ -185,10 +209,11 @@ describe('buildElasticBody()', () => {
             { term: 'test' },
             { ...searchConfig, multiMatchType: 'phrase' },
             CHANNEL_ID,
+            LanguageCode.en,
         );
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
                 must: [
                     {
                         multi_match: {
@@ -214,10 +239,10 @@ describe('buildElasticBody()', () => {
                 },
             },
         };
-        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID);
+        const result = buildElasticBody({ term: 'test' }, config, CHANNEL_ID, LanguageCode.en);
         expect(result.query).toEqual({
             bool: {
-                filter: [CHANNEL_ID_TERM],
+                filter: [CHANNEL_ID_TERM, LANGUAGE_CODE_TERM],
                 must: [
                     {
                         multi_match: {
@@ -237,11 +262,13 @@ describe('buildElasticBody()', () => {
                 { priceRange: { min: 500, max: 1500 }, groupByProduct: false },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
+                        LANGUAGE_CODE_TERM,
                         {
                             range: {
                                 price: {
@@ -260,11 +287,13 @@ describe('buildElasticBody()', () => {
                 { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: false },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
+                        LANGUAGE_CODE_TERM,
                         {
                             range: {
                                 priceWithTax: {
@@ -283,11 +312,13 @@ describe('buildElasticBody()', () => {
                 { priceRange: { min: 500, max: 1500 }, groupByProduct: true },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
+                        LANGUAGE_CODE_TERM,
                         {
                             range: {
                                 priceMin: {
@@ -312,11 +343,13 @@ describe('buildElasticBody()', () => {
                 { priceRangeWithTax: { min: 500, max: 1500 }, groupByProduct: true },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
+                        LANGUAGE_CODE_TERM,
                         {
                             range: {
                                 priceWithTaxMin: {
@@ -346,11 +379,13 @@ describe('buildElasticBody()', () => {
                 },
                 searchConfig,
                 CHANNEL_ID,
+                LanguageCode.en,
             );
             expect(result.query).toEqual({
                 bool: {
                     filter: [
                         CHANNEL_ID_TERM,
+                        LANGUAGE_CODE_TERM,
                         {
                             bool: {
                                 should: [{ term: { facetValueIds: '5' } }],
