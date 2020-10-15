@@ -1,6 +1,9 @@
 name: Build & Test
 
-on: push
+on:
+  push:
+    branches-ignore:
+      - 'vendure-io'
 env:
   CI: true
   node: 12.x
