@@ -9,8 +9,8 @@ import { Pipe, PipeTransform } from '@angular/core';
     name: 'sort',
 })
 export class SortPipe implements PipeTransform {
-    transform<T>(value: T[], orderByProp?: keyof T) {
-        return value.sort((a, b) => {
+    transform<T>(value: T[] | readonly T[], orderByProp?: keyof T) {
+        return value.slice().sort((a, b) => {
             const aProp = orderByProp ? a[orderByProp] : a;
             const bProp = orderByProp ? b[orderByProp] : b;
             if (aProp === bProp) {
