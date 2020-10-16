@@ -244,11 +244,6 @@ export class ProductVariantService {
                 if (input.facetValueIds) {
                     variant.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
-                if (input.trackInventory == null) {
-                    variant.trackInventory = (
-                        await this.globalSettingsService.getSettings(ctx)
-                    ).trackInventory;
-                }
                 variant.product = { id: input.productId } as any;
                 variant.taxCategory = { id: input.taxCategoryId } as any;
                 await this.assetService.updateFeaturedAsset(ctx, variant, input);

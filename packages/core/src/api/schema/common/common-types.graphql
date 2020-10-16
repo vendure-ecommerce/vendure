@@ -3,6 +3,12 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
+enum GlobalFlag {
+    TRUE
+    FALSE
+    INHERIT
+}
+
 enum AdjustmentType {
     TAX
     PROMOTION

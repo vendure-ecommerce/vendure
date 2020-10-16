@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import { GlobalFlag, StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -17,13 +17,19 @@ import { StockMovement } from '../../entity/stock-movement/stock-movement.entity
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
+import { GlobalSettingsService } from './global-settings.service';
+
 @Injectable()
 export class StockMovementService {
     shippingEligibilityCheckers: ShippingEligibilityChecker[];
     shippingCalculators: ShippingCalculator[];
     private activeShippingMethods: ShippingMethod[];
 
-    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private listQueryBuilder: ListQueryBuilder,
+        private globalSettingsService: GlobalSettingsService,
+    ) {}
 
     getStockMovementsByProductVariantId(
         ctx: RequestContext,
@@ -66,6 +72,7 @@ export class StockMovementService {
             throw new InternalServerError('error.cannot-create-sales-for-active-order');
         }
         const sales: Sale[] = [];
+        const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         for (const line of order.lines) {
             const { productVariant } = line;
             const sale = new Sale({
@@ -75,7 +82,7 @@ export class StockMovementService {
             });
             sales.push(sale);
 
-            if (productVariant.trackInventory === true) {
+            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
                 productVariant.stockOnHand -= line.quantity;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
@@ -93,6 +100,7 @@ export class StockMovementService {
             },
         );
         const cancellations: Cancellation[] = [];
+        const globalTrackInventory = (await this.globalSettingsService.getSettings(ctx)).trackInventory;
         const variantsMap = new Map<ID, ProductVariant>();
         for (const item of orderItems) {
             let productVariant: ProductVariant;
@@ -111,7 +119,7 @@ export class StockMovementService {
             });
             cancellations.push(cancellation);
 
-            if (productVariant.trackInventory === true) {
+            if (this.trackInventoryForVariant(productVariant, globalTrackInventory)) {
                 productVariant.stockOnHand += 1;
                 await this.connection
                     .getRepository(ctx, ProductVariant)
@@ -119,5 +127,12 @@ export class StockMovementService {
             }
         }
         return this.connection.getRepository(ctx, Cancellation).save(cancellations);
+    }
+
+    private trackInventoryForVariant(variant: ProductVariant, globalTrackInventory: boolean): boolean {
+        return (
+            variant.trackInventory === GlobalFlag.TRUE ||
+            (variant.trackInventory === GlobalFlag.INHERIT && globalTrackInventory)
+        );
     }
 }

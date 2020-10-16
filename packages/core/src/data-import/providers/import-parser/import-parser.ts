@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GlobalFlag } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { unique } from '@vendure/common/lib/unique';
 import parse from 'csv-parse';
@@ -29,7 +30,7 @@ export interface ParsedProductVariant {
     price: number;
     taxCategory: string;
     stockOnHand: number;
-    trackInventory: boolean;
+    trackInventory: GlobalFlag;
     assetPaths: string[];
     facets: Array<{
         facet: string;
@@ -251,7 +252,12 @@ function parseVariantFromRecord(r: RawProductRecord): ParsedProductVariant {
         price: parseNumber(r.price),
         taxCategory: parseString(r.taxCategory),
         stockOnHand: parseNumber(r.stockOnHand),
-        trackInventory: parseBoolean(r.trackInventory),
+        trackInventory:
+            r.trackInventory == null || r.trackInventory === ''
+                ? GlobalFlag.INHERIT
+                : parseBoolean(r.trackInventory)
+                ? GlobalFlag.TRUE
+                : GlobalFlag.FALSE,
         assetPaths: parseStringArray(r.variantAssets),
         facets: parseStringArray(r.variantFacets).map(pair => {
             const [facet, value] = pair.split(':');

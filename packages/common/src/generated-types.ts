@@ -1605,7 +1605,7 @@ export type ProductVariant = Node & {
   __typename?: 'ProductVariant';
   enabled: Scalars['Boolean'];
   stockOnHand: Scalars['Int'];
-  trackInventory: Scalars['Boolean'];
+  trackInventory: GlobalFlag;
   stockMovements: StockMovementList;
   id: Scalars['ID'];
   product: Product;
@@ -1691,7 +1691,7 @@ export type CreateProductVariantInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   stockOnHand?: Maybe<Scalars['Int']>;
-  trackInventory?: Maybe<Scalars['Boolean']>;
+  trackInventory?: Maybe<GlobalFlag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1706,7 +1706,7 @@ export type UpdateProductVariantInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   stockOnHand?: Maybe<Scalars['Int']>;
-  trackInventory?: Maybe<Scalars['Boolean']>;
+  trackInventory?: Maybe<GlobalFlag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1868,6 +1868,12 @@ export type UpdateZoneInput = {
 
 
 
+
+export enum GlobalFlag {
+  TRUE = 'TRUE',
+  FALSE = 'FALSE',
+  INHERIT = 'INHERIT'
+}
 
 export enum AdjustmentType {
   TAX = 'TAX',
@@ -4013,7 +4019,7 @@ export type TaxRateSortParameter = {
 export type ProductVariantFilterParameter = {
   enabled?: Maybe<BooleanOperators>;
   stockOnHand?: Maybe<NumberOperators>;
-  trackInventory?: Maybe<BooleanOperators>;
+  trackInventory?: Maybe<StringOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;

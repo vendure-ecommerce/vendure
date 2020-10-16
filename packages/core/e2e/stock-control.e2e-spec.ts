@@ -5,13 +5,14 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CreateAddressInput,
     GetStockMovement,
+    GlobalFlag,
     StockMovementType,
     UpdateProductVariantInput,
     UpdateStock,
@@ -150,19 +151,24 @@ describe('Stock control', () => {
                 GET_STOCK_MOVEMENT,
                 { id: 'T_2' },
             );
-            const [variant1, variant2] = product!.variants;
+            const [variant1, variant2, variant3] = product!.variants;
 
             await adminClient.query<UpdateStock.Mutation, UpdateStock.Variables>(UPDATE_STOCK_ON_HAND, {
                 input: [
                     {
                         id: variant1.id,
                         stockOnHand: 5,
-                        trackInventory: false,
+                        trackInventory: GlobalFlag.FALSE,
                     },
                     {
                         id: variant2.id,
                         stockOnHand: 5,
-                        trackInventory: true,
+                        trackInventory: GlobalFlag.TRUE,
+                    },
+                    {
+                        id: variant3.id,
+                        stockOnHand: 5,
+                        trackInventory: GlobalFlag.INHERIT,
                     },
                 ] as UpdateProductVariantInput[],
             });
@@ -176,6 +182,10 @@ describe('Stock control', () => {
             await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
                 productVariantId: variant2.id,
                 quantity: 3,
+            });
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: variant3.id,
+                quantity: 4,
             });
             await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
                 SET_SHIPPING_ADDRESS,
@@ -208,7 +218,7 @@ describe('Stock control', () => {
                 GET_STOCK_MOVEMENT,
                 { id: 'T_2' },
             );
-            const [variant1, variant2] = product!.variants;
+            const [variant1, variant2, variant3] = product!.variants;
 
             expect(variant1.stockMovements.totalItems).toBe(2);
             expect(variant1.stockMovements.items[1].type).toBe(StockMovementType.SALE);
@@ -217,6 +227,10 @@ describe('Stock control', () => {
             expect(variant2.stockMovements.totalItems).toBe(2);
             expect(variant2.stockMovements.items[1].type).toBe(StockMovementType.SALE);
             expect(variant2.stockMovements.items[1].quantity).toBe(-3);
+
+            expect(variant3.stockMovements.totalItems).toBe(2);
+            expect(variant3.stockMovements.items[1].type).toBe(StockMovementType.SALE);
+            expect(variant3.stockMovements.items[1].quantity).toBe(-4);
         });
 
         it('stockOnHand is updated according to trackInventory setting', async () => {
@@ -224,10 +238,11 @@ describe('Stock control', () => {
                 GET_STOCK_MOVEMENT,
                 { id: 'T_2' },
             );
-            const [variant1, variant2] = product!.variants;
+            const [variant1, variant2, variant3] = product!.variants;
 
             expect(variant1.stockOnHand).toBe(5); // untracked inventory
             expect(variant2.stockOnHand).toBe(2); // tracked inventory
+            expect(variant3.stockOnHand).toBe(5); // inherited untracked inventory
         });
     });
 });

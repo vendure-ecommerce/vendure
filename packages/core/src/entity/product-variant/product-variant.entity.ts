@@ -1,4 +1,4 @@
-import { CurrencyCode } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
@@ -77,24 +77,24 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
      */
     taxRateApplied: TaxRate;
 
-    @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany((type) => ProductVariantAsset, (productVariantAsset) => productVariantAsset.productVariant, {
+    @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
     assets: ProductVariantAsset[];
 
-    @ManyToOne((type) => TaxCategory)
+    @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
-    @OneToMany((type) => ProductVariantPrice, (price) => price.variant, { eager: true })
+    @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
 
-    @OneToMany((type) => ProductVariantTranslation, (translation) => translation.base, { eager: true })
+    @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;
 
-    @ManyToOne((type) => Product, (product) => product.variants)
+    @ManyToOne(type => Product, product => product.variants)
     product: Product;
 
     @EntityId({ nullable: true })
@@ -103,23 +103,23 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column({ default: 0 })
     stockOnHand: number;
 
-    @Column()
-    trackInventory: boolean;
+    @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
+    trackInventory: GlobalFlag;
 
-    @OneToMany((type) => StockMovement, (stockMovement) => stockMovement.productVariant)
+    @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
 
-    @ManyToMany((type) => ProductOption)
+    @ManyToMany(type => ProductOption)
     @JoinTable()
     options: ProductOption[];
 
-    @ManyToMany((type) => FacetValue)
+    @ManyToMany(type => FacetValue)
     @JoinTable()
     facetValues: FacetValue[];
 
-    @Column((type) => CustomProductVariantFields)
+    @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
 
-    @ManyToMany((type) => Collection, (collection) => collection.productVariants)
+    @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
 }

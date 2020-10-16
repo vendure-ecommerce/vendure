@@ -291,6 +291,12 @@ export type MutationResetPasswordArgs = {
     password: Scalars['String'];
 };
 
+export enum GlobalFlag {
+    TRUE = 'TRUE',
+    FALSE = 'FALSE',
+    INHERIT = 'INHERIT',
+}
+
 export enum AdjustmentType {
     TAX = 'TAX',
     PROMOTION = 'PROMOTION',
