@@ -91,6 +91,7 @@
     "@types/node": "^10.12.18",
     "@types/progress": "^2.0.3",
     "@types/prompts": "^2.0.9",
+    "better-sqlite3": "^7.1.1",
     "gulp": "^4.0.2",
     "mysql": "^2.18.1",
     "pg": "^8.4.0",
