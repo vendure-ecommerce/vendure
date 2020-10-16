@@ -57,11 +57,14 @@ export class AuthService {
             ),
         );
         const authenticationStrategy = this.getAuthenticationStrategy(apiType, authenticationMethod);
-        const user = await authenticationStrategy.authenticate(ctx, authenticationData);
-        if (!user) {
-            return new InvalidCredentialsError();
+        const authenticateResult = await authenticationStrategy.authenticate(ctx, authenticationData);
+        if (typeof authenticateResult === 'string') {
+            return new InvalidCredentialsError(authenticateResult);
         }
-        return this.createAuthenticatedSessionForUser(ctx, user, authenticationStrategy.name);
+        if (!authenticateResult) {
+            return new InvalidCredentialsError('');
+        }
+        return this.createAuthenticatedSessionForUser(ctx, authenticateResult, authenticationStrategy.name);
     }
 
     async createAuthenticatedSessionForUser(
@@ -111,7 +114,7 @@ export class AuthService {
         );
         const passwordMatches = await nativeAuthenticationStrategy.verifyUserPassword(ctx, userId, password);
         if (!passwordMatches) {
-            return new InvalidCredentialsError();
+            return new InvalidCredentialsError('');
         }
         return true;
     }

@@ -246,7 +246,7 @@ export class UserService {
         const nativeAuthMethod = user.getNativeAuthenticationMethod();
         const matches = await this.passwordCipher.check(currentPassword, nativeAuthMethod.passwordHash);
         if (!matches) {
-            return new InvalidCredentialsError();
+            return new InvalidCredentialsError('');
         }
         nativeAuthMethod.passwordHash = await this.passwordCipher.hash(newPassword);
         await this.connection

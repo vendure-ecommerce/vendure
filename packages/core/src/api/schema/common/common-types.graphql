@@ -201,6 +201,7 @@ type NativeAuthStrategyError implements ErrorResult {
 type InvalidCredentialsError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+    authenticationError: String!
 }
 
 "Returned if there is an error in transitioning the Order state"

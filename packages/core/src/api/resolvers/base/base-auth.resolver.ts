@@ -15,6 +15,7 @@ import { NativeAuthStrategyError as AdminNativeAuthStrategyError } from '../../.
 import {
     InvalidCredentialsError,
     NativeAuthStrategyError as ShopNativeAuthStrategyError,
+    NotVerifiedError,
 } from '../../../common/error/generated-graphql-shop-errors';
 import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../../config/config.service';
@@ -52,7 +53,7 @@ export class BaseAuthResolver {
         ctx: RequestContext,
         req: Request,
         res: Response,
-    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult> {
+    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult | NotVerifiedError> {
         return await this.authenticateAndCreateSession(
             ctx,
             {
@@ -105,7 +106,7 @@ export class BaseAuthResolver {
         args: MutationAuthenticateArgs,
         req: Request,
         res: Response,
-    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult> {
+    ): Promise<AdminAuthenticationResult | ShopAuthenticationResult | NotVerifiedError> {
         const [method, data] = Object.entries(args.input)[0];
         const { apiType } = ctx;
         const session = await this.authService.authenticate(ctx, apiType, method, data);
@@ -115,7 +116,7 @@ export class BaseAuthResolver {
         if (apiType && apiType === 'admin') {
             const administrator = await this.administratorService.findOneByUserId(ctx, session.user.id);
             if (!administrator) {
-                return new InvalidCredentialsError();
+                return new InvalidCredentialsError('');
             }
         }
         setSessionToken({
