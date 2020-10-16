@@ -122,6 +122,7 @@
     "search-product-name-or-code": "输入要搜索的商品名称或商品编码",
     "sku": "商品库存编码",
     "slug": "名称缩写",
+    "slug-pattern-error": "",
     "stock-on-hand": "库存",
     "tax-category": "税表分类",
     "taxes": "价格（含税）",
