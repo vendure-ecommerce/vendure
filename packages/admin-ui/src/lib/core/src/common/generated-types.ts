@@ -6205,7 +6205,7 @@ export type UpdatePaymentMethodMutation = { updatePaymentMethod: (
 
 export type GlobalSettingsFragment = (
   { __typename?: 'GlobalSettings' }
-  & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>
+  & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'>
 );
 
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -6383,6 +6383,7 @@ export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetServerConfigQuery = { globalSettings: (
     { __typename?: 'GlobalSettings' }
+    & Pick<GlobalSettings, 'id'>
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
       & Pick<ServerConfig, 'permittedAssetTypes'>

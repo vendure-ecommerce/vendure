@@ -3,14 +3,17 @@ import { ID } from '@vendure/common/lib/shared-types';
 
 import { ApiType } from '../../api/common/get-api-type';
 import { RequestContext } from '../../api/common/request-context';
-import { InternalServerError, NotVerifiedError } from '../../common/error/errors';
+import { InternalServerError } from '../../common/error/errors';
 import { InvalidCredentialsError } from '../../common/error/generated-graphql-admin-errors';
-import { InvalidCredentialsError as ShopInvalidCredentialsError } from '../../common/error/generated-graphql-shop-errors';
+import {
+    InvalidCredentialsError as ShopInvalidCredentialsError,
+    NotVerifiedError,
+} from '../../common/error/generated-graphql-shop-errors';
 import { AuthenticationStrategy } from '../../config/auth/authentication-strategy';
 import {
-    NATIVE_AUTH_STRATEGY_NAME,
     NativeAuthenticationData,
     NativeAuthenticationStrategy,
+    NATIVE_AUTH_STRATEGY_NAME,
 } from '../../config/auth/native-authentication-strategy';
 import { ConfigService } from '../../config/config.service';
 import { AuthenticatedSession } from '../../entity/session/authenticated-session.entity';
@@ -43,7 +46,7 @@ export class AuthService {
         apiType: ApiType,
         authenticationMethod: string,
         authenticationData: any,
-    ): Promise<AuthenticatedSession | InvalidCredentialsError> {
+    ): Promise<AuthenticatedSession | InvalidCredentialsError | NotVerifiedError> {
         this.eventBus.publish(
             new AttemptedLoginEvent(
                 ctx,
@@ -65,7 +68,7 @@ export class AuthService {
         ctx: RequestContext,
         user: User,
         authenticationStrategyName: string,
-    ): Promise<AuthenticatedSession> {
+    ): Promise<AuthenticatedSession | NotVerifiedError> {
         if (!user.roles || !user.roles[0]?.channels) {
             const userWithRoles = await this.connection
                 .getRepository(ctx, User)
@@ -78,7 +81,7 @@ export class AuthService {
         }
 
         if (this.configService.authOptions.requireVerification && !user.verified) {
-            throw new NotVerifiedError();
+            return new NotVerifiedError();
         }
         if (ctx.session && ctx.session.activeOrderId) {
             await this.sessionService.deleteSessionsByActiveOrderId(ctx, ctx.session.activeOrderId);

@@ -97,17 +97,3 @@ export class EntityNotFoundError extends I18nError {
         super('error.entity-with-id-not-found', { entityName, id }, 'ENTITY_NOT_FOUND', LogLevel.Warn);
     }
 }
-
-/**
- * @description
- * This error should be thrown when the `requireVerification` in {@link AuthOptions} is set to
- * `true` and an unverified user attempts to authenticate.
- *
- * @docsCategory errors
- * @docsPage Error Types
- */
-export class NotVerifiedError extends I18nError {
-    constructor() {
-        super('error.email-address-not-verified', {}, 'NOT_VERIFIED', LogLevel.Warn);
-    }
-}

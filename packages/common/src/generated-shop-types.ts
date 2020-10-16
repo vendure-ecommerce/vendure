@@ -399,6 +399,7 @@ export enum ErrorCode {
     IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR = 'IDENTIFIER_CHANGE_TOKEN_EXPIRED_ERROR',
     PASSWORD_RESET_TOKEN_INVALID_ERROR = 'PASSWORD_RESET_TOKEN_INVALID_ERROR',
     PASSWORD_RESET_TOKEN_EXPIRED_ERROR = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR',
+    NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
 }
 
 export type ErrorResult = {
@@ -456,8 +457,6 @@ export type SearchInput = {
     take?: Maybe<Scalars['Int']>;
     skip?: Maybe<Scalars['Int']>;
     sort?: Maybe<SearchResultSortParameter>;
-    priceRange?: Maybe<PriceRangeInput>;
-    priceRangeWithTax?: Maybe<PriceRangeInput>;
 };
 
 export type SearchResultSortParameter = {
@@ -1528,6 +1527,13 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
     message: Scalars['String'];
 };
 
+/** Returned if attempting to authenticate before the email address has been verfified */
+export type NotVerifiedError = ErrorResult & {
+    __typename?: 'NotVerifiedError';
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
@@ -1585,9 +1591,13 @@ export type ResetPasswordResult =
     | PasswordResetTokenExpiredError
     | NativeAuthStrategyError;
 
-export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
+export type NativeAuthenticationResult =
+    | CurrentUser
+    | InvalidCredentialsError
+    | NotVerifiedError
+    | NativeAuthStrategyError;
 
-export type AuthenticationResult = CurrentUser | InvalidCredentialsError;
+export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
 export type Address = Node & {
     __typename?: 'Address';
@@ -2142,7 +2152,6 @@ export type SearchResponse = {
     items: Array<SearchResult>;
     totalItems: Scalars['Int'];
     facetValues: Array<FacetValueResult>;
-    prices: SearchResponsePriceData;
 };
 
 /**
@@ -2455,25 +2464,6 @@ export type Zone = Node & {
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
     members: Array<Country>;
-};
-
-export type SearchResponsePriceData = {
-    __typename?: 'SearchResponsePriceData';
-    range: PriceRange;
-    rangeWithTax: PriceRange;
-    buckets: Array<PriceRangeBucket>;
-    bucketsWithTax: Array<PriceRangeBucket>;
-};
-
-export type PriceRangeBucket = {
-    __typename?: 'PriceRangeBucket';
-    to: Scalars['Int'];
-    count: Scalars['Int'];
-};
-
-export type PriceRangeInput = {
-    min: Scalars['Int'];
-    max: Scalars['Int'];
 };
 
 export type CollectionListOptions = {
