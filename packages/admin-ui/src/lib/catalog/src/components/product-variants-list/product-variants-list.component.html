@@ -1,7 +1,7 @@
 <div class="variants-list">
     <div
         class="variant-container card"
-        *ngFor="let variant of variants | paginate: pagination; trackBy:trackById, let i = index"
+        *ngFor="let variant of variants | paginate: pagination; trackBy: trackById; let i = index"
         [class.disabled]="!formGroupMap.get(variant.id)?.get('enabled')?.value"
     >
         <ng-container *ngIf="formGroupMap.get(variant.id) as formGroup" [formGroup]="formGroup">
@@ -103,16 +103,25 @@
                                         [readonly]="!('UpdateCatalog' | hasPermission)"
                                     />
                                 </clr-input-container>
-                                <clr-checkbox-wrapper class="track-inventory-toggle">
-                                    <input
-                                        type="checkbox"
-                                        clrCheckbox
-                                        name="trackInventory"
-                                        formControlName="trackInventory"
-                                        [vdrDisabled]="!('UpdateCatalog' | hasPermission)"
-                                    />
-                                    <label>{{ 'catalog.track-inventory' | translate }}</label>
-                                </clr-checkbox-wrapper>
+                                <clr-select-container *vdrIfPermissions="'UpdateCatalog'">
+                                    <label
+                                        >{{ 'catalog.track-inventory' | translate }}
+                                        <vdr-help-tooltip
+                                            [content]="'catalog.track-inventory-info' | translate"
+                                        ></vdr-help-tooltip>
+                                    </label>
+                                    <select clrSelect name="options" formControlName="trackInventory">
+                                        <option [value]="GlobalFlag.TRUE">
+                                            {{ 'catalog.track-inventory-true' | translate }}
+                                        </option>
+                                        <option [value]="GlobalFlag.FALSE">
+                                            {{ 'catalog.track-inventory-false' | translate }}
+                                        </option>
+                                        <option [value]="GlobalFlag.INHERIT">
+                                            {{ 'catalog.track-inventory-inherit' | translate }}
+                                        </option>
+                                    </select>
+                                </clr-select-container>
                             </div>
                         </div>
                         <div class="custom-fields">

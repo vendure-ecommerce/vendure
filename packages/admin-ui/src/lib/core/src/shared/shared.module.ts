@@ -52,6 +52,7 @@ import { FormFieldControlDirective } from './components/form-field/form-field-co
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { FormItemComponent } from './components/form-item/form-item.component';
 import { FormattedAddressComponent } from './components/formatted-address/formatted-address.component';
+import { HelpTooltipComponent } from './components/help-tooltip/help-tooltip.component';
 import { HistoryEntryDetailComponent } from './components/history-entry-detail/history-entry-detail.component';
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
@@ -188,6 +189,8 @@ const DECLARATIONS = [
     ProductSelectorFormInputComponent,
     OrderStateI18nTokenPipe,
     ProductSelectorComponent,
+    HelpTooltipComponent,
+    CustomerGroupFormInputComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -205,7 +208,7 @@ const DYNAMIC_FORM_INPUTS = [
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS, CustomerGroupFormInputComponent],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which

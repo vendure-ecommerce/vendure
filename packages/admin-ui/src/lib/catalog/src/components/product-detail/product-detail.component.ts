@@ -11,6 +11,7 @@ import {
     DataService,
     FacetWithValues,
     flattenFacetValues,
+    GlobalFlag,
     IGNORE_CAN_DEACTIVATE_GUARD,
     LanguageCode,
     ModalService,
@@ -59,7 +60,7 @@ export interface VariantFormValue {
     priceWithTax: number;
     taxCategoryId: string;
     stockOnHand: number;
-    trackInventory: boolean;
+    trackInventory: GlobalFlag;
     facetValueIds: string[];
     customFields?: any;
 }
@@ -75,7 +76,8 @@ export interface SelectedAssets {
     styleUrls: ['./product-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants.Fragment>
+export class ProductDetailComponent
+    extends BaseDetailComponent<ProductWithVariants.Fragment>
     implements OnInit, OnDestroy {
     activeTab$: Observable<TabName>;
     product$: Observable<ProductWithVariants.Fragment>;

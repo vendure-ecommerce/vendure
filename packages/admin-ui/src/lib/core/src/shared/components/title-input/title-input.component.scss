@@ -18,6 +18,10 @@
         max-width: 100%;
     }
 
+    ::ng-deep .clr-input-wrapper {
+        max-width: 100% !important;
+    }
+
     .edit-icon {
         position: absolute;
         right: 8px;

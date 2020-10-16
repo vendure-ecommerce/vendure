@@ -16,6 +16,7 @@ import {
     FacetValue,
     FacetWithValues,
     flattenFacetValues,
+    GlobalFlag,
     LanguageCode,
     ModalService,
     ProductOptionFragment,
@@ -62,6 +63,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         itemsPerPage: 10,
     };
     formGroupMap = new Map<string, FormGroup>();
+    GlobalFlag = GlobalFlag;
     private facetValues: FacetValue.Fragment[];
     private subscription: Subscription;
 

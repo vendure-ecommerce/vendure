@@ -41,7 +41,10 @@
             formControlName="trackInventory"
             [vdrDisabled]="!('UpdateSettings' | hasPermission)"
         />
-        <label>{{ 'settings.track-inventory-default' | translate }}</label>
+        <label
+            >{{ 'settings.track-inventory-default' | translate }}
+            <vdr-help-tooltip [content]="'catalog.track-inventory-info' | translate"></vdr-help-tooltip>
+        </label>
     </clr-toggle-wrapper>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
