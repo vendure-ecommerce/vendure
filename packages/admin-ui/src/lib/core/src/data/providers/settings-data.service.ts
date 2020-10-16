@@ -29,6 +29,7 @@ import {
     GetJobInfo,
     GetJobQueueList,
     GetJobsById,
+    GetOrderStates,
     GetPaymentMethod,
     GetPaymentMethodList,
     GetTaxCategories,
@@ -85,6 +86,7 @@ import {
     GET_TAX_RATE,
     GET_TAX_RATE_LIST,
     GET_ZONES,
+    GET_ORDER_STATES,
     REMOVE_MEMBERS_FROM_ZONE,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
@@ -136,6 +138,10 @@ export class SettingsDataService {
         return this.baseDataService.mutate<DeleteCountry.Mutation, DeleteCountry.Variables>(DELETE_COUNTRY, {
             id,
         });
+    }
+
+    getOrderStates() {
+        return this.baseDataService.query<GetOrderStates.Query>(GET_ORDER_STATES);
     }
 
     getZones() {

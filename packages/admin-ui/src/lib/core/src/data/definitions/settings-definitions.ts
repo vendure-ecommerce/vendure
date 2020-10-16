@@ -111,6 +111,13 @@ export const GET_ZONES = gql`
     }
 `;
 
+export const GET_ORDER_STATES = gql`
+    query GetOrderStates {
+        orderStates
+    }
+`;
+
+
 export const GET_ZONE = gql`
     query GetZone($id: ID!) {
         zone(id: $id) {

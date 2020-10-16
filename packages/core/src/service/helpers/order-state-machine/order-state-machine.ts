@@ -54,6 +54,13 @@ export class OrderStateMachine {
         return fsm.getNextStates();
     }
 
+    /**
+     * Returns an array of all configured states.
+     */
+    getStates(): ReadonlyArray<OrderState> {
+        return Object.keys(this.config.transitions) as OrderState[];
+    }
+
     async transition(ctx: RequestContext, order: Order, state: OrderState) {
         const fsm = new FSM(this.config, order.state);
         await fsm.transitionTo(state, { ctx, order });

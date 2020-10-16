@@ -477,6 +477,10 @@ export class OrderService {
         return this.orderStateMachine.getNextStates(order);
     }
 
+    getOrderStates(): ReadonlyArray<OrderState> {
+        return this.orderStateMachine.getStates();
+    }
+
     async setShippingAddress(ctx: RequestContext, orderId: ID, input: CreateAddressInput): Promise<Order> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const country = await this.countryService.findOneByCode(ctx, input.countryCode);
