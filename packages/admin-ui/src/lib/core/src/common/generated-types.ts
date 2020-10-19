@@ -48,6 +48,7 @@ export type Query = {
   me?: Maybe<CurrentUser>;
   networkStatus: NetworkStatus;
   order?: Maybe<Order>;
+  orderStates?: Maybe<Array<Maybe<Scalars['String']>>>;
   orders: OrderList;
   paymentMethod?: Maybe<PaymentMethod>;
   paymentMethods: PaymentMethodList;
@@ -5899,6 +5900,11 @@ export type GetZonesQuery = { zones: Array<(
     )> }
   )> };
 
+export type GetOrderStatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOrderStatesQuery = Pick<Query, 'orderStates'>;
+
 export type GetZoneQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -6205,7 +6211,7 @@ export type UpdatePaymentMethodMutation = { updatePaymentMethod: (
 
 export type GlobalSettingsFragment = (
   { __typename?: 'GlobalSettings' }
-  & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>
+  & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'>
 );
 
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -6383,6 +6389,7 @@ export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetServerConfigQuery = { globalSettings: (
     { __typename?: 'GlobalSettings' }
+    & Pick<GlobalSettings, 'id'>
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
       & Pick<ServerConfig, 'permittedAssetTypes'>
@@ -7834,6 +7841,11 @@ export namespace GetZones {
   export type Query = GetZonesQuery;
   export type Zones = NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>;
   export type Members = NonNullable<(NonNullable<NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>['members']>)[number]>;
+}
+
+export namespace GetOrderStates {
+  export type Variables = GetOrderStatesQueryVariables;
+  export type Query = GetOrderStatesQuery;
 }
 
 export namespace GetZone {

@@ -45,6 +45,7 @@ export type Query = {
   jobs: JobList;
   jobsById: Array<Job>;
   jobQueues: Array<JobQueue>;
+  orderStates?: Maybe<Array<Maybe<Scalars['String']>>>;
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethods: PaymentMethodList;
