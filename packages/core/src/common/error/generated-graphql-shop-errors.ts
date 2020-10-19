@@ -33,6 +33,7 @@ export class InvalidCredentialsError extends ErrorResult {
   readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   constructor(
+    public   authenticationError: Scalars['String'],
   ) {
     super();
   }
