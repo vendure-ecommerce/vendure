@@ -1517,12 +1517,6 @@ export type PasswordResetTokenExpiredError = ErrorResult & {
   message: Scalars['String'];
 };
 
-/** Returned if attempting to authenticate before the email address has been verfified */
-export type NotVerifiedError = ErrorResult & {
-    errorCode: ErrorCode;
-    message: Scalars['String'];
-};
-
 export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
@@ -1552,12 +1546,6 @@ export type UpdateCustomerEmailAddressResult = Success | IdentifierChangeTokenIn
 export type RequestPasswordResetResult = Success | NativeAuthStrategyError;
 
 export type ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError;
-
-export type NativeAuthenticationResult =
-    | CurrentUser
-    | InvalidCredentialsError
-    | NotVerifiedError
-    | NativeAuthStrategyError;
 
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
 
@@ -2068,6 +2056,11 @@ export type SearchReindexResponse = {
 };
 
 export type SearchResponse = {
+  items: Array<SearchResult>;
+  totalItems: Scalars['Int'];
+  facetValues: Array<FacetValueResult>;
+};
+
 /**
  * Which FacetValues are present in the products returned
  * by the search, and in what quantity.
