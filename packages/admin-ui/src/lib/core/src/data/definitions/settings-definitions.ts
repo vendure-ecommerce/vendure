@@ -422,6 +422,11 @@ export const GLOBAL_SETTINGS_FRAGMENT = gql`
         id
         availableLanguages
         trackInventory
+        serverConfig {
+            orderProcess {
+                name
+            }
+        }
     }
 `;
 
