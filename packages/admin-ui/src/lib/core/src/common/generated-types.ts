@@ -48,6 +48,7 @@ export type Query = {
   me?: Maybe<CurrentUser>;
   networkStatus: NetworkStatus;
   order?: Maybe<Order>;
+  orderStates?: Maybe<Array<Maybe<Scalars['String']>>>;
   orders: OrderList;
   paymentMethod?: Maybe<PaymentMethod>;
   paymentMethods: PaymentMethodList;
@@ -5899,6 +5900,11 @@ export type GetZonesQuery = { zones: Array<(
     )> }
   )> };
 
+export type GetOrderStatesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetOrderStatesQuery = Pick<Query, 'orderStates'>;
+
 export type GetZoneQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -7835,6 +7841,11 @@ export namespace GetZones {
   export type Query = GetZonesQuery;
   export type Zones = NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>;
   export type Members = NonNullable<(NonNullable<NonNullable<(NonNullable<GetZonesQuery['zones']>)[number]>['members']>)[number]>;
+}
+
+export namespace GetOrderStates {
+  export type Variables = GetOrderStatesQueryVariables;
+  export type Query = GetOrderStatesQuery;
 }
 
 export namespace GetZone {
