@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore:
       - 'vendure-io'
+  pull_request:
+    branches:
+      - master
 env:
   CI: true
   node: 12.x
