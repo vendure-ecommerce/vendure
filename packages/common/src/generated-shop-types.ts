@@ -558,7 +558,6 @@ export type InvalidCredentialsError = ErrorResult & {
   __typename?: 'InvalidCredentialsError';
   errorCode: ErrorCode;
   message: Scalars['String'];
-  authenticationError: Scalars['String'];
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -2660,13 +2659,7 @@ export type CustomFields = {
 };
 
 export type AuthenticationInput = {
-  mymonchique?: Maybe<MyMonchiqueAuthInput>;
   native?: Maybe<NativeAuthInput>;
-};
-
-export type MyMonchiqueAuthInput = {
-  email: Scalars['String'];
-  password: Scalars['String'];
 };
 
 export type NativeAuthInput = {
