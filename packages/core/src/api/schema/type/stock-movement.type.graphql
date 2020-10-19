@@ -1,5 +1,7 @@
 enum StockMovementType {
     ADJUSTMENT
+    ALLOCATION
+    RELEASE
     SALE
     CANCELLATION
     RETURN
@@ -23,7 +25,7 @@ type StockAdjustment implements Node & StockMovement {
     quantity: Int!
 }
 
-type Sale implements Node & StockMovement {
+type Allocation implements Node & StockMovement {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
@@ -31,6 +33,16 @@ type Sale implements Node & StockMovement {
     type: StockMovementType!
     quantity: Int!
     orderLine: OrderLine!
+}
+
+type Sale implements Node & StockMovement {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    type: StockMovementType!
+    quantity: Int!
+    orderItem: OrderItem!
 }
 
 type Cancellation implements Node & StockMovement {
@@ -53,7 +65,17 @@ type Return implements Node & StockMovement {
     orderItem: OrderItem!
 }
 
-union StockMovementItem = StockAdjustment | Sale | Cancellation | Return
+type Release implements Node & StockMovement {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    productVariant: ProductVariant!
+    type: StockMovementType!
+    quantity: Int!
+    orderItem: OrderItem!
+}
+
+union StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release
 
 type StockMovementList {
     items: [StockMovementItem!]!

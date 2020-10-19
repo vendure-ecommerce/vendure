@@ -44,7 +44,9 @@ import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
+import { Allocation } from './stock-movement/allocation.entity';
 import { Cancellation } from './stock-movement/cancellation.entity';
+import { Release } from './stock-movement/release.entity';
 import { Sale } from './stock-movement/sale.entity';
 import { StockAdjustment } from './stock-movement/stock-adjustment.entity';
 import { StockMovement } from './stock-movement/stock-movement.entity';
@@ -59,6 +61,7 @@ import { Zone } from './zone/zone.entity';
 export const coreEntitiesMap = {
     Address,
     Administrator,
+    Allocation,
     AnonymousSession,
     Asset,
     AuthenticatedSession,
@@ -101,6 +104,7 @@ export const coreEntitiesMap = {
     ProductVariantTranslation,
     Promotion,
     Refund,
+    Release,
     Role,
     Sale,
     Session,

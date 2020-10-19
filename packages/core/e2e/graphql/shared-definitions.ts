@@ -669,3 +669,25 @@ export const ADMIN_TRANSITION_TO_STATE = gql`
     }
     ${ORDER_FRAGMENT}
 `;
+
+export const CANCEL_ORDER = gql`
+    mutation CancelOrder($input: CancelOrderInput!) {
+        cancelOrder(input: $input) {
+            ...CanceledOrder
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    fragment CanceledOrder on Order {
+        id
+        lines {
+            quantity
+            items {
+                id
+                cancelled
+            }
+        }
+    }
+`;

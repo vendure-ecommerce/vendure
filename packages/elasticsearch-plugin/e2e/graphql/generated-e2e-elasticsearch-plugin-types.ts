@@ -1463,6 +1463,7 @@ export type Product = Node & {
 export type ProductVariant = Node & {
     enabled: Scalars['Boolean'];
     stockOnHand: Scalars['Int'];
+    stockAllocated: Scalars['Int'];
     trackInventory: GlobalFlag;
     stockMovements: StockMovementList;
     id: Scalars['ID'];
@@ -1946,6 +1947,7 @@ export type NativeAuthStrategyError = ErrorResult & {
 export type InvalidCredentialsError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+    authenticationError: Scalars['String'];
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -3270,6 +3272,8 @@ export type ShippingMethodList = PaginatedList & {
 
 export enum StockMovementType {
     ADJUSTMENT = 'ADJUSTMENT',
+    ALLOCATION = 'ALLOCATION',
+    RELEASE = 'RELEASE',
     SALE = 'SALE',
     CANCELLATION = 'CANCELLATION',
     RETURN = 'RETURN',
@@ -3294,7 +3298,7 @@ export type StockAdjustment = Node &
         quantity: Scalars['Int'];
     };
 
-export type Sale = Node &
+export type Allocation = Node &
     StockMovement & {
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
@@ -3303,6 +3307,17 @@ export type Sale = Node &
         type: StockMovementType;
         quantity: Scalars['Int'];
         orderLine: OrderLine;
+    };
+
+export type Sale = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
     };
 
 export type Cancellation = Node &
@@ -3327,7 +3342,18 @@ export type Return = Node &
         orderItem: OrderItem;
     };
 
-export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
+export type Release = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
 
 export type StockMovementList = {
     items: Array<StockMovementItem>;
@@ -3792,6 +3818,7 @@ export type TaxRateSortParameter = {
 export type ProductVariantFilterParameter = {
     enabled?: Maybe<BooleanOperators>;
     stockOnHand?: Maybe<NumberOperators>;
+    stockAllocated?: Maybe<NumberOperators>;
     trackInventory?: Maybe<StringOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -3806,6 +3833,7 @@ export type ProductVariantFilterParameter = {
 
 export type ProductVariantSortParameter = {
     stockOnHand?: Maybe<SortOrder>;
+    stockAllocated?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     productId?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;

@@ -7,10 +7,10 @@ import { OrderLine } from '../order-line/order-line.entity';
 import { StockMovement } from './stock-movement.entity';
 
 @ChildEntity()
-export class Sale extends StockMovement {
-    readonly type = StockMovementType.SALE;
+export class Allocation extends StockMovement {
+    readonly type = StockMovementType.ALLOCATION;
 
-    constructor(input: DeepPartial<Sale>) {
+    constructor(input: DeepPartial<Allocation>) {
         super(input);
     }
 

@@ -103,6 +103,9 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column({ default: 0 })
     stockOnHand: number;
 
+    @Column({ default: 0 })
+    stockAllocated: number;
+
     @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
     trackInventory: GlobalFlag;
 

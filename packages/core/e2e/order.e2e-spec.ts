@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     failsToSettlePaymentMethod,
@@ -37,6 +37,7 @@ import {
     GetOrderWithPayments,
     GetProductWithVariants,
     GetStockMovement,
+    GlobalFlag,
     HistoryEntryType,
     PaymentFragment,
     RefundFragment,
@@ -53,18 +54,17 @@ import {
     AddItemToOrder,
     DeletionResult,
     GetActiveOrder,
-    GetActiveOrderWithPayments,
-    GetOrderByCode,
     GetOrderByCodeWithPayments,
     TestOrderFragmentFragment,
     UpdatedOrder,
 } from './graphql/generated-e2e-shop-types';
 import {
+    CANCEL_ORDER,
     CREATE_FULFILLMENT,
     GET_CUSTOMER_LIST,
     GET_ORDER,
-    GET_ORDER_FULFILLMENTS,
     GET_ORDERS_LIST,
+    GET_ORDER_FULFILLMENTS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     TRANSIT_FULFILLMENT,
@@ -73,10 +73,7 @@ import {
 import {
     ADD_ITEM_TO_ORDER,
     GET_ACTIVE_ORDER,
-    GET_ACTIVE_ORDER_WITH_PAYMENTS,
-    GET_ORDER_BY_CODE,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
-    TEST_ORDER_WITH_PAYMENTS_FRAGMENT,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
@@ -735,10 +732,11 @@ describe('Orders resolver', () => {
                 },
             );
             let variant1 = result1.product!.variants[0];
-            expect(variant1.stockOnHand).toBe(98);
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(2);
             expect(variant1.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
                 { type: StockMovementType.ADJUSTMENT, quantity: 100 },
-                { type: StockMovementType.SALE, quantity: -2 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
             ]);
 
             const { cancelOrder } = await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(
@@ -775,11 +773,12 @@ describe('Orders resolver', () => {
             );
             variant1 = result2.product!.variants[0];
             expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(0);
             expect(variant1.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
                 { type: StockMovementType.ADJUSTMENT, quantity: 100 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
             ]);
         });
 
@@ -909,13 +908,14 @@ describe('Orders resolver', () => {
                 },
             );
             const variant1 = result1.product!.variants[0];
-            expect(variant1.stockOnHand).toBe(98);
+            expect(variant1.stockOnHand).toBe(100);
+            expect(variant1.stockAllocated).toBe(2);
             expect(variant1.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
                 { type: StockMovementType.ADJUSTMENT, quantity: 100 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.SALE, quantity: -2 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
             ]);
 
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -954,14 +954,15 @@ describe('Orders resolver', () => {
                 },
             );
             const variant2 = result2.product!.variants[0];
-            expect(variant2.stockOnHand).toBe(99);
+            expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockAllocated).toBe(1);
             expect(variant2.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
                 { type: StockMovementType.ADJUSTMENT, quantity: 100 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
             ]);
         });
 
@@ -1011,14 +1012,15 @@ describe('Orders resolver', () => {
             );
             const variant2 = result.product!.variants[0];
             expect(variant2.stockOnHand).toBe(100);
+            expect(variant2.stockAllocated).toBe(0);
             expect(variant2.stockMovements.items.map(pick(['type', 'quantity']))).toEqual([
                 { type: StockMovementType.ADJUSTMENT, quantity: 100 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.SALE, quantity: -2 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
-                { type: StockMovementType.CANCELLATION, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.ALLOCATION, quantity: 2 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
+                { type: StockMovementType.RELEASE, quantity: 1 },
             ]);
         });
 
@@ -1488,7 +1490,7 @@ async function createTestOrder(
         input: [
             {
                 id: productVariantId,
-                trackInventory: true,
+                trackInventory: GlobalFlag.TRUE,
             },
         ],
     });
@@ -1554,28 +1556,6 @@ export const GET_ORDER_FULFILLMENT_ITEMS = gql`
         }
     }
     ${FULFILLMENT_FRAGMENT}
-`;
-
-export const CANCEL_ORDER = gql`
-    mutation CancelOrder($input: CancelOrderInput!) {
-        cancelOrder(input: $input) {
-            ...CanceledOrder
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-        }
-    }
-    fragment CanceledOrder on Order {
-        id
-        lines {
-            quantity
-            items {
-                id
-                cancelled
-            }
-        }
-    }
 `;
 
 const REFUND_FRAGMENT = gql`

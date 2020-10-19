@@ -91,12 +91,16 @@ async function createGraphQLOptions(
             switch (value.type) {
                 case StockMovementType.ADJUSTMENT:
                     return 'StockAdjustment';
+                case StockMovementType.ALLOCATION:
+                    return 'Allocation';
                 case StockMovementType.SALE:
                     return 'Sale';
                 case StockMovementType.CANCELLATION:
                     return 'Cancellation';
                 case StockMovementType.RETURN:
                     return 'Return';
+                case StockMovementType.RELEASE:
+                    return 'Release';
             }
         },
     };

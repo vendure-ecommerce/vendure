@@ -1463,6 +1463,7 @@ export type Product = Node & {
 export type ProductVariant = Node & {
     enabled: Scalars['Boolean'];
     stockOnHand: Scalars['Int'];
+    stockAllocated: Scalars['Int'];
     trackInventory: GlobalFlag;
     stockMovements: StockMovementList;
     id: Scalars['ID'];
@@ -1946,6 +1947,7 @@ export type NativeAuthStrategyError = ErrorResult & {
 export type InvalidCredentialsError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+    authenticationError: Scalars['String'];
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -3270,6 +3272,8 @@ export type ShippingMethodList = PaginatedList & {
 
 export enum StockMovementType {
     ADJUSTMENT = 'ADJUSTMENT',
+    ALLOCATION = 'ALLOCATION',
+    RELEASE = 'RELEASE',
     SALE = 'SALE',
     CANCELLATION = 'CANCELLATION',
     RETURN = 'RETURN',
@@ -3294,7 +3298,7 @@ export type StockAdjustment = Node &
         quantity: Scalars['Int'];
     };
 
-export type Sale = Node &
+export type Allocation = Node &
     StockMovement & {
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
@@ -3303,6 +3307,17 @@ export type Sale = Node &
         type: StockMovementType;
         quantity: Scalars['Int'];
         orderLine: OrderLine;
+    };
+
+export type Sale = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
     };
 
 export type Cancellation = Node &
@@ -3327,7 +3342,18 @@ export type Return = Node &
         orderItem: OrderItem;
     };
 
-export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
+export type Release = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
 
 export type StockMovementList = {
     items: Array<StockMovementItem>;
@@ -3792,6 +3818,7 @@ export type TaxRateSortParameter = {
 export type ProductVariantFilterParameter = {
     enabled?: Maybe<BooleanOperators>;
     stockOnHand?: Maybe<NumberOperators>;
+    stockAllocated?: Maybe<NumberOperators>;
     trackInventory?: Maybe<StringOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -3806,6 +3833,7 @@ export type ProductVariantFilterParameter = {
 
 export type ProductVariantSortParameter = {
     stockOnHand?: Maybe<SortOrder>;
+    stockAllocated?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     productId?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
@@ -3931,7 +3959,9 @@ export type AuthenticateMutationVariables = Exact<{
 }>;
 
 export type AuthenticateMutation = {
-    authenticate: CurrentUserFragment | Pick<InvalidCredentialsError, 'errorCode' | 'message'>;
+    authenticate:
+        | CurrentUserFragment
+        | Pick<InvalidCredentialsError, 'authenticationError' | 'errorCode' | 'message'>;
 };
 
 export type GetCustomersQueryVariables = Exact<{ [key: string]: never }>;
@@ -4518,13 +4548,15 @@ export type CurrentUserFragment = Pick<CurrentUser, 'id' | 'identifier'> & {
     channels: Array<Pick<CurrentUserChannel, 'code' | 'token' | 'permissions'>>;
 };
 
-export type VariantWithStockFragment = Pick<ProductVariant, 'id' | 'stockOnHand'> & {
+export type VariantWithStockFragment = Pick<ProductVariant, 'id' | 'stockOnHand' | 'stockAllocated'> & {
     stockMovements: Pick<StockMovementList, 'totalItems'> & {
         items: Array<
             | Pick<StockAdjustment, 'id' | 'type' | 'quantity'>
+            | Pick<Allocation, 'id' | 'type' | 'quantity'>
             | Pick<Sale, 'id' | 'type' | 'quantity'>
             | Pick<Cancellation, 'id' | 'type' | 'quantity'>
             | Pick<Return, 'id' | 'type' | 'quantity'>
+            | Pick<Release, 'id' | 'type' | 'quantity'>
         >;
     };
 };
@@ -5014,6 +5046,24 @@ export type AdminTransitionMutation = {
     >;
 };
 
+export type CancelOrderMutationVariables = Exact<{
+    input: CancelOrderInput;
+}>;
+
+export type CancelOrderMutation = {
+    cancelOrder:
+        | CanceledOrderFragment
+        | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
+        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
+        | Pick<MultipleOrderError, 'errorCode' | 'message'>
+        | Pick<CancelActiveOrderError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
+};
+
+export type CanceledOrderFragment = Pick<Order, 'id'> & {
+    lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
+};
+
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5072,24 +5122,6 @@ export type GetOrderFulfillmentItemsQueryVariables = Exact<{
 
 export type GetOrderFulfillmentItemsQuery = {
     order?: Maybe<Pick<Order, 'id' | 'state'> & { fulfillments?: Maybe<Array<FulfillmentFragment>> }>;
-};
-
-export type CancelOrderMutationVariables = Exact<{
-    input: CancelOrderInput;
-}>;
-
-export type CancelOrderMutation = {
-    cancelOrder:
-        | CanceledOrderFragment
-        | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
-        | Pick<QuantityTooGreatError, 'errorCode' | 'message'>
-        | Pick<MultipleOrderError, 'errorCode' | 'message'>
-        | Pick<CancelActiveOrderError, 'errorCode' | 'message'>
-        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type CanceledOrderFragment = Pick<Order, 'id'> & {
-    lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
 };
 
 export type RefundFragment = Pick<
@@ -5655,9 +5687,9 @@ export namespace Authenticate {
     export type Variables = AuthenticateMutationVariables;
     export type Mutation = AuthenticateMutation;
     export type Authenticate = NonNullable<AuthenticateMutation['authenticate']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
+    export type InvalidCredentialsErrorInlineFragment = DiscriminateUnion<
         NonNullable<AuthenticateMutation['authenticate']>,
-        { __typename?: 'ErrorResult' }
+        { __typename?: 'InvalidCredentialsError' }
     >;
 }
 
@@ -6816,6 +6848,24 @@ export namespace AdminTransition {
     >;
 }
 
+export namespace CancelOrder {
+    export type Variables = CancelOrderMutationVariables;
+    export type Mutation = CancelOrderMutation;
+    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<CancelOrderMutation['cancelOrder']>,
+        { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace CanceledOrder {
+    export type Fragment = CanceledOrderFragment;
+    export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
+    >;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -6895,24 +6945,6 @@ export namespace GetOrderFulfillmentItems {
     export type Order = NonNullable<GetOrderFulfillmentItemsQuery['order']>;
     export type Fulfillments = NonNullable<
         NonNullable<NonNullable<GetOrderFulfillmentItemsQuery['order']>['fulfillments']>[number]
-    >;
-}
-
-export namespace CancelOrder {
-    export type Variables = CancelOrderMutationVariables;
-    export type Mutation = CancelOrderMutation;
-    export type CancelOrder = NonNullable<CancelOrderMutation['cancelOrder']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<CancelOrderMutation['cancelOrder']>,
-        { __typename?: 'ErrorResult' }
-    >;
-}
-
-export namespace CanceledOrder {
-    export type Fragment = CanceledOrderFragment;
-    export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
     >;
 }
 

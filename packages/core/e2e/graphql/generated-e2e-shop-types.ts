@@ -2247,6 +2247,8 @@ export type ShippingMethodList = PaginatedList & {
 
 export enum StockMovementType {
     ADJUSTMENT = 'ADJUSTMENT',
+    ALLOCATION = 'ALLOCATION',
+    RELEASE = 'RELEASE',
     SALE = 'SALE',
     CANCELLATION = 'CANCELLATION',
     RETURN = 'RETURN',
@@ -2271,7 +2273,7 @@ export type StockAdjustment = Node &
         quantity: Scalars['Int'];
     };
 
-export type Sale = Node &
+export type Allocation = Node &
     StockMovement & {
         id: Scalars['ID'];
         createdAt: Scalars['DateTime'];
@@ -2280,6 +2282,17 @@ export type Sale = Node &
         type: StockMovementType;
         quantity: Scalars['Int'];
         orderLine: OrderLine;
+    };
+
+export type Sale = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
     };
 
 export type Cancellation = Node &
@@ -2304,7 +2317,18 @@ export type Return = Node &
         orderItem: OrderItem;
     };
 
-export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
+export type Release = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
 
 export type StockMovementList = {
     items: Array<StockMovementItem>;
@@ -2907,7 +2931,7 @@ export type AddPaymentToOrderMutation = {
         | Pick<OrderPaymentStateError, 'errorCode' | 'message'>
         | Pick<PaymentFailedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
         | Pick<PaymentDeclinedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
-        | Pick<OrderStateTransitionError, 'errorCode' | 'message'>
+        | Pick<OrderStateTransitionError, 'errorCode' | 'message' | 'transitionError'>
     >;
 };
 
@@ -3333,6 +3357,10 @@ export namespace AddPaymentToOrder {
     export type PaymentFailedErrorInlineFragment = DiscriminateUnion<
         NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>,
         { __typename?: 'PaymentFailedError' }
+    >;
+    export type OrderStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>,
+        { __typename?: 'OrderStateTransitionError' }
     >;
 }
 

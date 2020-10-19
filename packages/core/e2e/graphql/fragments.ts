@@ -469,6 +469,7 @@ export const VARIANT_WITH_STOCK_FRAGMENT = gql`
     fragment VariantWithStock on ProductVariant {
         id
         stockOnHand
+        stockAllocated
         stockMovements {
             items {
                 ... on StockMovement {

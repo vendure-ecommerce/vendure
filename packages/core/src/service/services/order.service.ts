@@ -684,7 +684,11 @@ export class OrderService {
         ) {
             return new EmptyOrderLineSelectionError();
         }
-        const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, input.lines, i => !i.fulfillment);
+        const ordersAndItems = await this.getOrdersAndItemsFromLines(
+            ctx,
+            input.lines,
+            i => !i.fulfillment && !i.cancelled,
+        );
         if (!ordersAndItems) {
             return new ItemsAlreadyFulfilledError();
         }
@@ -694,6 +698,8 @@ export class OrderService {
             method: input.method,
             orderItems: ordersAndItems.items,
         });
+
+        await this.stockMovementService.createSalesForOrder(ctx, ordersAndItems.items);
 
         for (const order of ordersAndItems.orders) {
             await this.historyService.createHistoryEntryForOrder({
@@ -790,9 +796,12 @@ export class OrderService {
         if (order.state === 'AddingItems' || order.state === 'ArrangingPayment') {
             return new CancelActiveOrderError(order.state);
         }
+        const fullOrder = await this.findOne(ctx, order.id);
 
-        // Perform the cancellation
-        await this.stockMovementService.createCancellationsForOrderItems(ctx, items);
+        const soldItems = items.filter(i => !!i.fulfillment);
+        const allocatedItems = items.filter(i => !i.fulfillment);
+        await this.stockMovementService.createCancellationsForOrderItems(ctx, soldItems);
+        await this.stockMovementService.createReleasesForOrderItems(ctx, allocatedItems);
         items.forEach(i => (i.cancelled = true));
         await this.connection.getRepository(ctx, OrderItem).save(items, { reload: false });
 

@@ -1,6 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { mergeConfig, OrderState } from '@vendure/core';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
@@ -10,7 +10,10 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
+    CancelOrder,
     CreateAddressInput,
+    CreateFulfillment,
+    GetOrder,
     GetStockMovement,
     GlobalFlag,
     StockMovementType,
@@ -23,9 +26,15 @@ import {
     AddPaymentToOrder,
     PaymentInput,
     SetShippingAddress,
+    TestOrderFragmentFragment,
     TransitionToState,
 } from './graphql/generated-e2e-shop-types';
-import { GET_STOCK_MOVEMENT } from './graphql/shared-definitions';
+import {
+    CANCEL_ORDER,
+    CREATE_FULFILLMENT,
+    GET_ORDER,
+    GET_STOCK_MOVEMENT,
+} from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
     ADD_PAYMENT,
@@ -42,6 +51,10 @@ describe('Stock control', () => {
             },
         }),
     );
+
+    const orderGuard: ErrorResultGuard<TestOrderFragmentFragment> = createErrorResultGuard<
+        TestOrderFragmentFragment
+    >(input => !!input.lines);
 
     beforeAll(async () => {
         await server.init({
@@ -146,6 +159,8 @@ describe('Stock control', () => {
     });
 
     describe('sales', () => {
+        let orderId: string;
+
         beforeAll(async () => {
             const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
@@ -202,7 +217,7 @@ describe('Stock control', () => {
             );
         });
 
-        it('creates a Sale when order completed', async () => {
+        it('creates an Allocation when order completed', async () => {
             const { addPaymentToOrder } = await shopClient.query<
                 AddPaymentToOrder.Mutation,
                 AddPaymentToOrder.Variables
@@ -212,7 +227,9 @@ describe('Stock control', () => {
                     metadata: {},
                 } as PaymentInput,
             });
+            orderGuard.assertSuccess(addPaymentToOrder);
             expect(addPaymentToOrder).not.toBeNull();
+            orderId = addPaymentToOrder.id;
 
             const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
@@ -221,19 +238,98 @@ describe('Stock control', () => {
             const [variant1, variant2, variant3] = product!.variants;
 
             expect(variant1.stockMovements.totalItems).toBe(2);
-            expect(variant1.stockMovements.items[1].type).toBe(StockMovementType.SALE);
-            expect(variant1.stockMovements.items[1].quantity).toBe(-2);
+            expect(variant1.stockMovements.items[1].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant1.stockMovements.items[1].quantity).toBe(2);
 
             expect(variant2.stockMovements.totalItems).toBe(2);
-            expect(variant2.stockMovements.items[1].type).toBe(StockMovementType.SALE);
-            expect(variant2.stockMovements.items[1].quantity).toBe(-3);
+            expect(variant2.stockMovements.items[1].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant2.stockMovements.items[1].quantity).toBe(3);
 
             expect(variant3.stockMovements.totalItems).toBe(2);
-            expect(variant3.stockMovements.items[1].type).toBe(StockMovementType.SALE);
-            expect(variant3.stockMovements.items[1].quantity).toBe(-4);
+            expect(variant3.stockMovements.items[1].type).toBe(StockMovementType.ALLOCATION);
+            expect(variant3.stockMovements.items[1].quantity).toBe(4);
         });
 
-        it('stockOnHand is updated according to trackInventory setting', async () => {
+        it('stockAllocated is updated according to trackInventory setting', async () => {
+            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                { id: 'T_2' },
+            );
+            const [variant1, variant2, variant3] = product!.variants;
+
+            // stockOnHand not changed yet
+            expect(variant1.stockOnHand).toBe(5);
+            expect(variant2.stockOnHand).toBe(5);
+            expect(variant3.stockOnHand).toBe(5);
+
+            expect(variant1.stockAllocated).toBe(0); // untracked inventory
+            expect(variant2.stockAllocated).toBe(3); // tracked inventory
+            expect(variant3.stockAllocated).toBe(0); // inherited untracked inventory
+        });
+
+        it('creates a Release on cancelling an allocated OrderItem and updates stockAllocated', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+                input: {
+                    orderId: order!.id,
+                    lines: [{ orderLineId: order!.lines.find(l => l.quantity === 3)!.id, quantity: 1 }],
+                    reason: 'Not needed',
+                },
+            });
+
+            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                { id: 'T_2' },
+            );
+            const [_, variant2, __] = product!.variants;
+
+            expect(variant2.stockMovements.totalItems).toBe(3);
+            expect(variant2.stockMovements.items[2].type).toBe(StockMovementType.RELEASE);
+            expect(variant2.stockMovements.items[2].quantity).toBe(1);
+
+            expect(variant2.stockAllocated).toBe(2);
+        });
+
+        it('creates a Sale on Fulfillment creation', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            await adminClient.query<CreateFulfillment.Mutation, CreateFulfillment.Variables>(
+                CREATE_FULFILLMENT,
+                {
+                    input: {
+                        lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
+                        method: 'test method',
+                        trackingCode: 'ABC123',
+                    },
+                },
+            );
+
+            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                { id: 'T_2' },
+            );
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant1.stockMovements.totalItems).toBe(3);
+            expect(variant1.stockMovements.items[2].type).toBe(StockMovementType.SALE);
+            expect(variant1.stockMovements.items[2].quantity).toBe(-2);
+
+            // 4 rather than 3 since a Release was created in the previous test
+            expect(variant2.stockMovements.totalItems).toBe(4);
+            expect(variant2.stockMovements.items[3].type).toBe(StockMovementType.SALE);
+            expect(variant2.stockMovements.items[3].quantity).toBe(-2);
+
+            expect(variant3.stockMovements.totalItems).toBe(3);
+            expect(variant3.stockMovements.items[2].type).toBe(StockMovementType.SALE);
+            expect(variant3.stockMovements.items[2].quantity).toBe(-4);
+        });
+
+        it('updates stockOnHand and stockAllocated when Sales are created', async () => {
             const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
                 GET_STOCK_MOVEMENT,
                 { id: 'T_2' },
@@ -241,8 +337,46 @@ describe('Stock control', () => {
             const [variant1, variant2, variant3] = product!.variants;
 
             expect(variant1.stockOnHand).toBe(5); // untracked inventory
-            expect(variant2.stockOnHand).toBe(2); // tracked inventory
+            expect(variant2.stockOnHand).toBe(3); // tracked inventory
             expect(variant3.stockOnHand).toBe(5); // inherited untracked inventory
+
+            expect(variant1.stockAllocated).toBe(0); // untracked inventory
+            expect(variant2.stockAllocated).toBe(0); // tracked inventory
+            expect(variant3.stockAllocated).toBe(0); // inherited untracked inventory
+        });
+
+        it('creates Cancellations when cancelling items which are part of a Fulfillment', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+
+            await adminClient.query<CancelOrder.Mutation, CancelOrder.Variables>(CANCEL_ORDER, {
+                input: {
+                    orderId: order!.id,
+                    lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
+                    reason: 'Faulty',
+                },
+            });
+
+            const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
+                GET_STOCK_MOVEMENT,
+                { id: 'T_2' },
+            );
+            const [variant1, variant2, variant3] = product!.variants;
+
+            expect(variant1.stockMovements.totalItems).toBe(5);
+            expect(variant1.stockMovements.items[3].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant1.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
+
+            expect(variant2.stockMovements.totalItems).toBe(6);
+            expect(variant2.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant2.stockMovements.items[5].type).toBe(StockMovementType.CANCELLATION);
+
+            expect(variant3.stockMovements.totalItems).toBe(7);
+            expect(variant3.stockMovements.items[3].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant3.stockMovements.items[4].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant3.stockMovements.items[5].type).toBe(StockMovementType.CANCELLATION);
+            expect(variant3.stockMovements.items[6].type).toBe(StockMovementType.CANCELLATION);
         });
     });
 });

@@ -55,7 +55,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [],
@@ -75,7 +75,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [],
@@ -101,7 +101,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
   ],
 }
@@ -144,7 +144,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
   ],
 }
@@ -199,7 +199,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [
@@ -231,7 +231,7 @@ Object {
         "id": "T_1",
         "name": "Standard Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
   ],
 }
@@ -279,7 +279,7 @@ Object {
         "id": "T_2",
         "name": "Reduced Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [],
@@ -299,7 +299,7 @@ Object {
         "id": "T_2",
         "name": "Reduced Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [],
@@ -319,7 +319,7 @@ Object {
         "id": "T_2",
         "name": "Reduced Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
     Object {
       "assets": Array [],
@@ -339,7 +339,7 @@ Object {
         "id": "T_2",
         "name": "Reduced Tax",
       },
-      "trackInventory": false,
+      "trackInventory": "FALSE",
     },
   ],
 }

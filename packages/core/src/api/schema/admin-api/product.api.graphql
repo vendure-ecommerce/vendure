@@ -46,6 +46,7 @@ type Product implements Node {
 type ProductVariant implements Node {
     enabled: Boolean!
     stockOnHand: Int!
+    stockAllocated: Int!
     trackInventory: GlobalFlag!
     stockMovements(options: StockMovementListOptions): StockMovementList!
 }

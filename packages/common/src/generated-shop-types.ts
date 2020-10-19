@@ -2350,6 +2350,8 @@ export type ShippingMethodList = PaginatedList & {
 
 export enum StockMovementType {
     ADJUSTMENT = 'ADJUSTMENT',
+    ALLOCATION = 'ALLOCATION',
+    RELEASE = 'RELEASE',
     SALE = 'SALE',
     CANCELLATION = 'CANCELLATION',
     RETURN = 'RETURN',
@@ -2375,6 +2377,18 @@ export type StockAdjustment = Node &
         quantity: Scalars['Int'];
     };
 
+export type Allocation = Node &
+    StockMovement & {
+        __typename?: 'Allocation';
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderLine: OrderLine;
+    };
+
 export type Sale = Node &
     StockMovement & {
         __typename?: 'Sale';
@@ -2384,7 +2398,7 @@ export type Sale = Node &
         productVariant: ProductVariant;
         type: StockMovementType;
         quantity: Scalars['Int'];
-        orderLine: OrderLine;
+        orderItem: OrderItem;
     };
 
 export type Cancellation = Node &
@@ -2411,7 +2425,19 @@ export type Return = Node &
         orderItem: OrderItem;
     };
 
-export type StockMovementItem = StockAdjustment | Sale | Cancellation | Return;
+export type Release = Node &
+    StockMovement & {
+        __typename?: 'Release';
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
 
 export type StockMovementList = {
     __typename?: 'StockMovementList';

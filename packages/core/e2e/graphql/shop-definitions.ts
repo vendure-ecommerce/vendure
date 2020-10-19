@@ -488,6 +488,9 @@ export const ADD_PAYMENT = gql`
             ... on PaymentFailedError {
                 paymentErrorMessage
             }
+            ... on OrderStateTransitionError {
+                transitionError
+            }
         }
     }
     ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}

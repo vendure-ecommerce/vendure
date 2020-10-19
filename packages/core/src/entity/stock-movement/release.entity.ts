@@ -7,13 +7,13 @@ import { OrderItem } from '../order-item/order-item.entity';
 import { StockMovement } from './stock-movement.entity';
 
 @ChildEntity()
-export class Cancellation extends StockMovement {
-    readonly type = StockMovementType.CANCELLATION;
+export class Release extends StockMovement {
+    readonly type = StockMovementType.RELEASE;
 
-    constructor(input: DeepPartial<Cancellation>) {
+    constructor(input: DeepPartial<Release>) {
         super(input);
     }
 
-    @ManyToOne(type => OrderItem, orderItem => orderItem.cancellation)
+    @ManyToOne(type => OrderItem)
     orderItem: OrderItem;
 }
