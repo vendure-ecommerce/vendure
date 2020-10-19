@@ -9,6 +9,7 @@ import {
     GetOrder,
     GetOrderHistory,
     GetOrderList,
+    GetOrderStates,
     HistoryEntryListOptions,
     RefundOrder,
     RefundOrderInput,
@@ -36,9 +37,9 @@ import {
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
     UPDATE_ORDER_CUSTOM_FIELDS,
-    UPDATE_ORDER_NOTE,
+    UPDATE_ORDER_NOTE
 } from '../definitions/order-definitions';
-
+import { GET_ORDER_STATES } from './../definitions/settings-definitions';
 import { BaseDataService } from './base-data.service';
 
 export class OrderDataService {
@@ -51,6 +52,10 @@ export class OrderDataService {
                 skip,
             },
         });
+    }
+
+    getOrderStates() {
+        return this.baseDataService.query<GetOrderStates.Query>(GET_ORDER_STATES);
     }
 
     getOrder(id: string) {
