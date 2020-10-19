@@ -79,8 +79,7 @@ export class ShopAuthResolver extends BaseAuthResolver {
     @Mutation()
     @Allow(Permission.Public)
     async authenticate(
-        // TODO: correct typings
-        @Args() args: any,
+        @Args() args: MutationAuthenticateArgs,
         @Ctx() ctx: RequestContext,
         @Context('req') req: Request,
         @Context('res') res: Response,
