@@ -45,6 +45,7 @@ export type Query = {
   jobs: JobList;
   jobsById: Array<Job>;
   jobQueues: Array<JobQueue>;
+  orderStates?: Maybe<Array<Maybe<Scalars['String']>>>;
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethods: PaymentMethodList;
@@ -2099,7 +2100,6 @@ export type InvalidCredentialsError = ErrorResult & {
   __typename?: 'InvalidCredentialsError';
   errorCode: ErrorCode;
   message: Scalars['String'];
-  authenticationError: Scalars['String'];
 };
 
 /** Returned if there is an error in transitioning the Order state */

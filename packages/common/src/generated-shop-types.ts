@@ -519,10 +519,16 @@ export type NativeAuthStrategyError = ErrorResult & {
 
 /** Returned if the user authentication credentials are not valid */
 export type InvalidCredentialsError = ErrorResult & {
+<<<<<<< HEAD
     __typename?: 'InvalidCredentialsError';
     errorCode: ErrorCode;
     message: Scalars['String'];
     authenticationError: Scalars['String'];
+=======
+  __typename?: 'InvalidCredentialsError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+>>>>>>> Newly generated types
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -2661,7 +2667,11 @@ export type CustomFields = {
 };
 
 export type AuthenticationInput = {
+<<<<<<< HEAD
     native?: Maybe<NativeAuthInput>;
+=======
+  native?: Maybe<NativeAuthInput>;
+>>>>>>> Newly generated types
 };
 
 export type NativeAuthInput = {
