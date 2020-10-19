@@ -528,7 +528,10 @@ export type InvalidCredentialsError = ErrorResult & {
   __typename?: 'InvalidCredentialsError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+<<<<<<< HEAD
 >>>>>>> Newly generated types
+=======
+>>>>>>> b4f3f2187acfa7aaa31b80b509c4614723b45705
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -2668,10 +2671,14 @@ export type CustomFields = {
 
 export type AuthenticationInput = {
 <<<<<<< HEAD
+<<<<<<< HEAD
     native?: Maybe<NativeAuthInput>;
 =======
   native?: Maybe<NativeAuthInput>;
 >>>>>>> Newly generated types
+=======
+  native?: Maybe<NativeAuthInput>;
+>>>>>>> b4f3f2187acfa7aaa31b80b509c4614723b45705
 };
 
 export type NativeAuthInput = {
