@@ -17,6 +17,7 @@ export class OrderListComponent extends BaseListComponent<GetOrderList.Query, Ge
     implements OnInit {
     searchTerm = new FormControl('');
     stateFilter = new FormControl('all');
+    orderStates$ = this.dataService.order.getOrderStates().mapSingle(data => data.orderStates);
 
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);
