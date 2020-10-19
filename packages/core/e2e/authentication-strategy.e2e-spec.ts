@@ -81,6 +81,21 @@ describe('AuthenticationStrategy', () => {
 
             expect(authenticate.message).toBe('The provided credentials are invalid');
             expect(authenticate.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(authenticate.authenticationError).toBe('');
+        });
+
+        it('fails with an expried token', async () => {
+            const { authenticate } = await shopClient.query(AUTHENTICATE, {
+                input: {
+                    test_strategy: {
+                        token: 'expired-token',
+                    },
+                },
+            });
+
+            expect(authenticate.message).toBe('The provided credentials are invalid');
+            expect(authenticate.errorCode).toBe(ErrorCode.INVALID_CREDENTIALS_ERROR);
+            expect(authenticate.authenticationError).toBe('Expired token');
         });
 
         it('creates a new Customer with valid token', async () => {
@@ -281,7 +296,8 @@ const AUTHENTICATE = gql`
     mutation Authenticate($input: AuthenticationInput!) {
         authenticate(input: $input) {
             ...CurrentUser
-            ... on ErrorResult {
+            ... on InvalidCredentialsError {
+                authenticationError
                 errorCode
                 message
             }

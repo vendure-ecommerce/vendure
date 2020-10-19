@@ -42,8 +42,11 @@ export class TestAuthenticationStrategy implements AuthenticationStrategy<TestAu
         `;
     }
 
-    async authenticate(ctx: RequestContext, data: TestAuthPayload): Promise<User | false> {
+    async authenticate(ctx: RequestContext, data: TestAuthPayload): Promise<User | false | string> {
         const { token, userData } = data;
+        if (token === 'expired-token') {
+            return 'Expired token';
+        }
         if (data.token !== VALID_AUTH_TOKEN) {
             return false;
         }
