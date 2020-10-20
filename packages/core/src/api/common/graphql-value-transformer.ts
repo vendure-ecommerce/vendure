@@ -216,8 +216,16 @@ export class GraphqlValueTransformer {
                 if (targetNode) {
                     let children: { [name: string]: TypeTreeNode } = targetNode.children;
                     if (targetNode.fragmentRefs.length) {
-                        for (const ref of targetNode.fragmentRefs) {
-                            children = { ...children, ...typeTree.fragments[ref].children };
+                        const fragmentRefs = targetNode.fragmentRefs.slice();
+                        while (fragmentRefs.length) {
+                            const ref = fragmentRefs.pop();
+                            if (ref) {
+                                const fragment = typeTree.fragments[ref];
+                                children = { ...children, ...fragment.children };
+                                if (fragment.fragmentRefs) {
+                                    fragmentRefs.push(...fragment.fragmentRefs);
+                                }
+                            }
                         }
                     }
                     targetNode = children[segment];
