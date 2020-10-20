@@ -10,6 +10,7 @@ import {
     CUSTOMER_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
     FULFILLMENT_FRAGMENT,
+    GLOBAL_SETTINGS_FRAGMENT,
     ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
@@ -690,4 +691,17 @@ export const CANCEL_ORDER = gql`
             }
         }
     }
+`;
+
+export const UPDATE_GLOBAL_SETTINGS = gql`
+    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
+        updateGlobalSettings(input: $input) {
+            ...GlobalSettings
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+        }
+    }
+    ${GLOBAL_SETTINGS_FRAGMENT}
 `;

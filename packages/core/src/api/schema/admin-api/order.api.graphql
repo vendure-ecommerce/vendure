@@ -92,6 +92,18 @@ type ItemsAlreadyFulfilledError implements ErrorResult {
     message: String!
 }
 
+"""
+Returned if attempting to create a Fulfillment when there is insufficient
+stockOnHand of a ProductVariant to satisfy the requested quantity.
+"""
+type InsufficientStockOnHandError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    productVariantId: ID!
+    productVariantName: String!
+    stockOnHand: Int!
+}
+
 "Returned if an operation has specified OrderLines from multiple Orders"
 type MultipleOrderError implements ErrorResult {
     errorCode: ErrorCode!
@@ -165,8 +177,16 @@ type FulfillmentStateTransitionError implements ErrorResult {
 }
 
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
-union SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError
-union AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError
+union SettlePaymentResult =
+      Payment
+    | SettlePaymentError
+    | PaymentStateTransitionError
+    | OrderStateTransitionError
+union AddFulfillmentToOrderResult =
+      Fulfillment
+    | EmptyOrderLineSelectionError
+    | ItemsAlreadyFulfilledError
+    | InsufficientStockOnHandError
 union CancelOrderResult =
       Order
     | EmptyOrderLineSelectionError

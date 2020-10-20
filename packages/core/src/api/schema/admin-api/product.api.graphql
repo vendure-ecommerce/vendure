@@ -45,9 +45,11 @@ type Product implements Node {
 
 type ProductVariant implements Node {
     enabled: Boolean!
+    trackInventory: GlobalFlag!
     stockOnHand: Int!
     stockAllocated: Int!
-    trackInventory: GlobalFlag!
+    outOfStockThreshold: Int!
+    useGlobalOutOfStockThreshold: Boolean!
     stockMovements(options: StockMovementListOptions): StockMovementList!
 }
 
@@ -113,6 +115,8 @@ input CreateProductVariantInput {
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int
+    outOfStockThreshold: Int
+    useGlobalOutOfStockThreshold: Boolean
     trackInventory: GlobalFlag
 }
 
@@ -127,6 +131,8 @@ input UpdateProductVariantInput {
     featuredAssetId: ID
     assetIds: [ID!]
     stockOnHand: Int
+    outOfStockThreshold: Int
+    useGlobalOutOfStockThreshold: Boolean
     trackInventory: GlobalFlag
 }
 

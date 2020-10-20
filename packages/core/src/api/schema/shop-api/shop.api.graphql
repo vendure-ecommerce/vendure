@@ -197,6 +197,14 @@ type NegativeQuantityError implements ErrorResult {
     message: String!
 }
 
+"Returned when attempting to add more items to the Order than are available"
+type InsufficientStockError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    quantityAvailable: Int!
+    order: Order!
+}
+
 "Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state."
 type OrderPaymentStateError implements ErrorResult {
     errorCode: ErrorCode!
@@ -327,7 +335,12 @@ type NotVerifiedError implements ErrorResult {
     message: String!
 }
 
-union UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError
+union UpdateOrderItemsResult =
+      Order
+    | OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
 union RemoveOrderItemsResult = Order | OrderModificationError
 union SetOrderShippingMethodResult = Order | OrderModificationError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
@@ -360,6 +373,14 @@ union UpdateCustomerEmailAddressResult =
     | IdentifierChangeTokenExpiredError
     | NativeAuthStrategyError
 union RequestPasswordResetResult = Success | NativeAuthStrategyError
-union ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError
-union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError
+union ResetPasswordResult =
+      CurrentUser
+    | PasswordResetTokenInvalidError
+    | PasswordResetTokenExpiredError
+    | NativeAuthStrategyError
+union NativeAuthenticationResult =
+      CurrentUser
+    | InvalidCredentialsError
+    | NotVerifiedError
+    | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError

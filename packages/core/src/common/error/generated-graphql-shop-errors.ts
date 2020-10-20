@@ -15,7 +15,7 @@ export type Scalars = {
 export class ErrorResult {
   readonly __typename: string;
   readonly errorCode: string;
-  message: Scalars['String'];
+message: Scalars['String'];
 }
 
 export class NativeAuthStrategyError extends ErrorResult {
@@ -33,7 +33,7 @@ export class InvalidCredentialsError extends ErrorResult {
   readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   constructor(
-    public   authenticationError: Scalars['String'],
+    public authenticationError: Scalars['String'],
   ) {
     super();
   }
@@ -44,9 +44,9 @@ export class OrderStateTransitionError extends ErrorResult {
   readonly errorCode = 'ORDER_STATE_TRANSITION_ERROR' as any;
   readonly message = 'ORDER_STATE_TRANSITION_ERROR';
   constructor(
-    public   transitionError: Scalars['String'],
-    public   fromState: Scalars['String'],
-    public   toState: Scalars['String'],
+    public transitionError: Scalars['String'],
+    public fromState: Scalars['String'],
+    public toState: Scalars['String'],
   ) {
     super();
   }
@@ -77,7 +77,7 @@ export class OrderLimitError extends ErrorResult {
   readonly errorCode = 'ORDER_LIMIT_ERROR' as any;
   readonly message = 'ORDER_LIMIT_ERROR';
   constructor(
-    public   maxItems: Scalars['Int'],
+    public maxItems: Scalars['Int'],
   ) {
     super();
   }
@@ -88,6 +88,18 @@ export class NegativeQuantityError extends ErrorResult {
   readonly errorCode = 'NEGATIVE_QUANTITY_ERROR' as any;
   readonly message = 'NEGATIVE_QUANTITY_ERROR';
   constructor(
+  ) {
+    super();
+  }
+}
+
+export class InsufficientStockError extends ErrorResult {
+  readonly __typename = 'InsufficientStockError';
+  readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
+  readonly message = 'INSUFFICIENT_STOCK_ERROR';
+  constructor(
+    public quantityAvailable: Scalars['Int'],
+    public order: any,
   ) {
     super();
   }
@@ -108,7 +120,7 @@ export class PaymentFailedError extends ErrorResult {
   readonly errorCode = 'PAYMENT_FAILED_ERROR' as any;
   readonly message = 'PAYMENT_FAILED_ERROR';
   constructor(
-    public   paymentErrorMessage: Scalars['String'],
+    public paymentErrorMessage: Scalars['String'],
   ) {
     super();
   }
@@ -119,7 +131,7 @@ export class PaymentDeclinedError extends ErrorResult {
   readonly errorCode = 'PAYMENT_DECLINED_ERROR' as any;
   readonly message = 'PAYMENT_DECLINED_ERROR';
   constructor(
-    public   paymentErrorMessage: Scalars['String'],
+    public paymentErrorMessage: Scalars['String'],
   ) {
     super();
   }
@@ -130,7 +142,7 @@ export class CouponCodeInvalidError extends ErrorResult {
   readonly errorCode = 'COUPON_CODE_INVALID_ERROR' as any;
   readonly message = 'COUPON_CODE_INVALID_ERROR';
   constructor(
-    public   couponCode: Scalars['String'],
+    public couponCode: Scalars['String'],
   ) {
     super();
   }
@@ -141,7 +153,7 @@ export class CouponCodeExpiredError extends ErrorResult {
   readonly errorCode = 'COUPON_CODE_EXPIRED_ERROR' as any;
   readonly message = 'COUPON_CODE_EXPIRED_ERROR';
   constructor(
-    public   couponCode: Scalars['String'],
+    public couponCode: Scalars['String'],
   ) {
     super();
   }
@@ -152,8 +164,8 @@ export class CouponCodeLimitError extends ErrorResult {
   readonly errorCode = 'COUPON_CODE_LIMIT_ERROR' as any;
   readonly message = 'COUPON_CODE_LIMIT_ERROR';
   constructor(
-    public   couponCode: Scalars['String'],
-    public   limit: Scalars['Int'],
+    public couponCode: Scalars['String'],
+    public limit: Scalars['Int'],
   ) {
     super();
   }
@@ -260,7 +272,7 @@ export class NotVerifiedError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

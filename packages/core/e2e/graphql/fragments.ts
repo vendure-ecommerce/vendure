@@ -512,3 +512,26 @@ export const CHANNEL_FRAGMENT = gql`
         pricesIncludeTax
     }
 `;
+
+export const GLOBAL_SETTINGS_FRAGMENT = gql`
+    fragment GlobalSettings on GlobalSettings {
+        id
+        availableLanguages
+        trackInventory
+        outOfStockThreshold
+        serverConfig {
+            orderProcess {
+                name
+                to
+            }
+            permittedAssetTypes
+            customFieldConfig {
+                Customer {
+                    ... on CustomField {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;

@@ -29,19 +29,16 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
+import { doc } from 'prettier';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import {
-    EntityNotFoundError,
-    IllegalOperationError,
-    InternalServerError,
-    UserInputError,
-} from '../../common/error/errors';
+import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
 import {
     AlreadyRefundedError,
     CancelActiveOrderError,
     EmptyOrderLineSelectionError,
+    InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
     MultipleOrderError,
     NothingToRefundError,
@@ -52,6 +49,7 @@ import {
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
+    InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
     OrderModificationError,
@@ -342,6 +340,8 @@ export class OrderService {
         quantity?: number | null,
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
+        let correctedQuantity = quantity;
+        let quantityWasAdjustedDown = false;
         const { priceCalculationStrategy } = this.configService.orderOptions;
         const order =
             orderIdOrOrder instanceof Order
@@ -351,16 +351,28 @@ export class OrderService {
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        if (quantity != null) {
+        if (correctedQuantity != null) {
             const currentQuantity = orderLine.quantity;
             const validationError =
                 this.assertAddingItemsState(order) ||
-                this.assertQuantityIsPositive(quantity) ||
-                this.assertNotOverOrderItemsLimit(order, quantity - currentQuantity);
+                this.assertQuantityIsPositive(correctedQuantity) ||
+                this.assertNotOverOrderItemsLimit(order, correctedQuantity - currentQuantity);
             if (validationError) {
                 return validationError;
             }
-            if (currentQuantity < quantity) {
+            const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(
+                ctx,
+                orderLine.productVariant,
+            );
+            if (saleableStockLevel < correctedQuantity) {
+                correctedQuantity = Math.max(saleableStockLevel, 0);
+                quantityWasAdjustedDown = true;
+            }
+            if (correctedQuantity === 0) {
+                order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLineId));
+                await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+                return new InsufficientStockError(correctedQuantity, order);
+            } else if (currentQuantity < correctedQuantity) {
                 if (!orderLine.items) {
                     orderLine.items = [];
                 }
@@ -369,7 +381,7 @@ export class OrderService {
                     productVariant,
                     orderLine.customFields || {},
                 );
-                for (let i = currentQuantity; i < quantity; i++) {
+                for (let i = currentQuantity; i < correctedQuantity; i++) {
                     const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                         new OrderItem({
                             unitPrice: calculatedPrice.price,
@@ -382,12 +394,17 @@ export class OrderService {
                     );
                     orderLine.items.push(orderItem);
                 }
-            } else if (quantity < currentQuantity) {
-                orderLine.items = orderLine.items.slice(0, quantity);
+            } else if (correctedQuantity < currentQuantity) {
+                orderLine.items = orderLine.items.slice(0, correctedQuantity);
             }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine, { reload: false });
-        return this.applyPriceAdjustments(ctx, order, orderLine);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
+        if (correctedQuantity && quantityWasAdjustedDown) {
+            return new InsufficientStockError(correctedQuantity, updatedOrder);
+        } else {
+            return updatedOrder;
+        }
     }
 
     async removeItemFromOrder(
@@ -680,6 +697,7 @@ export class OrderService {
         if (
             !input.lines ||
             input.lines.length === 0 ||
+            input.lines.length === 0 ||
             input.lines.reduce((total, line) => total + line.quantity, 0) === 0
         ) {
             return new EmptyOrderLineSelectionError();
@@ -691,6 +709,10 @@ export class OrderService {
         );
         if (!ordersAndItems) {
             return new ItemsAlreadyFulfilledError();
+        }
+        const stockCheckResult = await this.ensureSufficientStockForFulfillment(ctx, input);
+        if (isGraphQlErrorResult(stockCheckResult)) {
+            return stockCheckResult;
         }
 
         const fulfillment = await this.fulfillmentService.create(ctx, {
@@ -712,6 +734,33 @@ export class OrderService {
             });
         }
         return fulfillment;
+    }
+
+    private async ensureSufficientStockForFulfillment(
+        ctx: RequestContext,
+        input: FulfillOrderInput,
+    ): Promise<InsufficientStockOnHandError | undefined> {
+        const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
+            input.lines.map(l => l.orderLineId),
+            { relations: ['productVariant'] },
+        );
+
+        for (const line of lines) {
+            // tslint:disable-next-line:no-non-null-assertion
+            const lineInput = input.lines.find(l => idsAreEqual(l.orderLineId, line.id))!;
+            const fulfillableStockLevel = await this.productVariantService.getFulfillableStockLevel(
+                ctx,
+                line.productVariant,
+            );
+            if (fulfillableStockLevel < lineInput.quantity) {
+                const productVariant = translateDeep(line.productVariant, ctx.languageCode);
+                return new InsufficientStockOnHandError(
+                    productVariant.id as string,
+                    productVariant.name,
+                    productVariant.stockOnHand,
+                );
+            }
+        }
     }
 
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {

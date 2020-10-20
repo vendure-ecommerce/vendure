@@ -390,6 +390,7 @@ export enum ErrorCode {
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
+    INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
@@ -1405,6 +1406,15 @@ export type NegativeQuantityError = ErrorResult & {
     message: Scalars['String'];
 };
 
+/** Returned when attempting to add more items to the Order than are available */
+export type InsufficientStockError = ErrorResult & {
+    __typename?: 'InsufficientStockError';
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    quantityAvailable: Scalars['Int'];
+    order: Order;
+};
+
 /** Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state. */
 export type OrderPaymentStateError = ErrorResult & {
     __typename?: 'OrderPaymentStateError';
@@ -1544,7 +1554,12 @@ export type NotVerifiedError = ErrorResult & {
     message: Scalars['String'];
 };
 
-export type UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError;
+export type UpdateOrderItemsResult =
+    | Order
+    | OrderModificationError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError;
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
 
@@ -1886,6 +1901,7 @@ export type GlobalSettings = {
     updatedAt: Scalars['DateTime'];
     availableLanguages: Array<LanguageCode>;
     trackInventory: Scalars['Boolean'];
+    outOfStockThreshold: Scalars['Int'];
     serverConfig: ServerConfig;
     customFields?: Maybe<Scalars['JSON']>;
 };

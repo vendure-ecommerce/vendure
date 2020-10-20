@@ -87,6 +87,12 @@ export const ADD_ITEM_TO_ORDER = gql`
                 errorCode
                 message
             }
+            ... on InsufficientStockError {
+                quantityAvailable
+                order {
+                    ...UpdatedOrder
+                }
+            }
         }
     }
     ${UPDATED_ORDER_FRAGMENT}

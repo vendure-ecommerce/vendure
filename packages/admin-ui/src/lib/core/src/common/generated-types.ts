@@ -1255,6 +1255,7 @@ export type Fulfillment = Node & {
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
+  outOfStockThreshold?: Maybe<Scalars['Int']>;
   customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1426,6 +1427,19 @@ export type ItemsAlreadyFulfilledError = ErrorResult & {
   message: Scalars['String'];
 };
 
+/**
+ * Returned if attempting to create a Fulfillment when there is insufficient
+ * stockOnHand of a ProductVariant to satisfy the requested quantity.
+ */
+export type InsufficientStockOnHandError = ErrorResult & {
+  __typename?: 'InsufficientStockOnHandError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  productVariantId: Scalars['ID'];
+  productVariantName: Scalars['String'];
+  stockOnHand: Scalars['Int'];
+};
+
 /** Returned if an operation has specified OrderLines from multiple Orders */
 export type MultipleOrderError = ErrorResult & {
   __typename?: 'MultipleOrderError';
@@ -1512,7 +1526,7 @@ export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
 
-export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError;
+export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError | InsufficientStockOnHandError;
 
 export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
 
@@ -1635,9 +1649,11 @@ export type Product = Node & {
 export type ProductVariant = Node & {
   __typename?: 'ProductVariant';
   enabled: Scalars['Boolean'];
+  trackInventory: GlobalFlag;
   stockOnHand: Scalars['Int'];
   stockAllocated: Scalars['Int'];
-  trackInventory: GlobalFlag;
+  outOfStockThreshold: Scalars['Int'];
+  useGlobalOutOfStockThreshold: Scalars['Boolean'];
   stockMovements: StockMovementList;
   id: Scalars['ID'];
   product: Product;
@@ -1723,6 +1739,8 @@ export type CreateProductVariantInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   stockOnHand?: Maybe<Scalars['Int']>;
+  outOfStockThreshold?: Maybe<Scalars['Int']>;
+  useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -1738,6 +1756,8 @@ export type UpdateProductVariantInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   stockOnHand?: Maybe<Scalars['Int']>;
+  outOfStockThreshold?: Maybe<Scalars['Int']>;
+  useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
   trackInventory?: Maybe<GlobalFlag>;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -1999,6 +2019,7 @@ export enum ErrorCode {
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+  INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
   MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
   CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
   PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
@@ -3177,6 +3198,7 @@ export type GlobalSettings = {
   updatedAt: Scalars['DateTime'];
   availableLanguages: Array<LanguageCode>;
   trackInventory: Scalars['Boolean'];
+  outOfStockThreshold: Scalars['Int'];
   serverConfig: ServerConfig;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -4074,9 +4096,11 @@ export type TaxRateSortParameter = {
 
 export type ProductVariantFilterParameter = {
   enabled?: Maybe<BooleanOperators>;
+  trackInventory?: Maybe<StringOperators>;
   stockOnHand?: Maybe<NumberOperators>;
   stockAllocated?: Maybe<NumberOperators>;
-  trackInventory?: Maybe<StringOperators>;
+  outOfStockThreshold?: Maybe<NumberOperators>;
+  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
   languageCode?: Maybe<StringOperators>;
@@ -4091,6 +4115,7 @@ export type ProductVariantFilterParameter = {
 export type ProductVariantSortParameter = {
   stockOnHand?: Maybe<SortOrder>;
   stockAllocated?: Maybe<SortOrder>;
+  outOfStockThreshold?: Maybe<SortOrder>;
   id?: Maybe<SortOrder>;
   productId?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
@@ -5102,6 +5127,9 @@ export type CreateFulfillmentMutation = { addFulfillmentToOrder: (
   ) | (
     { __typename?: 'ItemsAlreadyFulfilledError' }
     & ErrorResult_ItemsAlreadyFulfilledError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockOnHandError' }
+    & ErrorResult_InsufficientStockOnHandError_Fragment
   ) };
 
 export type CancelOrderMutationVariables = Exact<{
@@ -6786,6 +6814,11 @@ type ErrorResult_ItemsAlreadyFulfilledError_Fragment = (
   & Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_InsufficientStockOnHandError_Fragment = (
+  { __typename?: 'InsufficientStockOnHandError' }
+  & Pick<InsufficientStockOnHandError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_MultipleOrderError_Fragment = (
   { __typename?: 'MultipleOrderError' }
   & Pick<MultipleOrderError, 'errorCode' | 'message'>
@@ -6866,7 +6899,7 @@ type ErrorResult_EmailAddressConflictError_Fragment = (
   & Pick<EmailAddressConflictError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_EmailAddressConflictError_Fragment;
+export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_EmailAddressConflictError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }

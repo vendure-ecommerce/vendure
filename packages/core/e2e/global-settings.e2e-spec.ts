@@ -3,14 +3,16 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { GLOBAL_SETTINGS_FRAGMENT } from './graphql/fragments';
 import {
     GetGlobalSettings,
     GlobalSettingsFragment,
     LanguageCode,
     UpdateGlobalSettings,
 } from './graphql/generated-e2e-admin-types';
+import { UPDATE_GLOBAL_SETTINGS } from './graphql/shared-definitions';
 
 describe('GlobalSettings resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -104,45 +106,10 @@ describe('GlobalSettings resolver', () => {
     });
 });
 
-const GLOBAL_SETTINGS_FRAGMENT = gql`
-    fragment GlobalSettings on GlobalSettings {
-        id
-        availableLanguages
-        trackInventory
-        serverConfig {
-            orderProcess {
-                name
-                to
-            }
-            permittedAssetTypes
-            customFieldConfig {
-                Customer {
-                    ... on CustomField {
-                        name
-                    }
-                }
-            }
-        }
-    }
-`;
-
 const GET_GLOBAL_SETTINGS = gql`
     query GetGlobalSettings {
         globalSettings {
             ...GlobalSettings
-        }
-    }
-    ${GLOBAL_SETTINGS_FRAGMENT}
-`;
-
-const UPDATE_GLOBAL_SETTINGS = gql`
-    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
-        updateGlobalSettings(input: $input) {
-            ...GlobalSettings
-            ... on ErrorResult {
-                errorCode
-                message
-            }
         }
     }
     ${GLOBAL_SETTINGS_FRAGMENT}

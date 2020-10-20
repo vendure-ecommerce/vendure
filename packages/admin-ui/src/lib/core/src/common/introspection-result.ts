@@ -26,6 +26,7 @@ const result: PossibleTypesResultData = {
             'Fulfillment',
             'EmptyOrderLineSelectionError',
             'ItemsAlreadyFulfilledError',
+            'InsufficientStockOnHandError',
         ],
         CancelOrderResult: [
             'Order',
@@ -116,6 +117,7 @@ const result: PossibleTypesResultData = {
             'SettlePaymentError',
             'EmptyOrderLineSelectionError',
             'ItemsAlreadyFulfilledError',
+            'InsufficientStockOnHandError',
             'MultipleOrderError',
             'CancelActiveOrderError',
             'PaymentOrderMismatchError',

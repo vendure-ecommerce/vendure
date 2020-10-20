@@ -1083,6 +1083,7 @@ export type Fulfillment = Node & {
 export type UpdateGlobalSettingsInput = {
     availableLanguages?: Maybe<Array<LanguageCode>>;
     trackInventory?: Maybe<Scalars['Boolean']>;
+    outOfStockThreshold?: Maybe<Scalars['Int']>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1245,6 +1246,18 @@ export type ItemsAlreadyFulfilledError = ErrorResult & {
     message: Scalars['String'];
 };
 
+/**
+ * Returned if attempting to create a Fulfillment when there is insufficient
+ * stockOnHand of a ProductVariant to satisfy the requested quantity.
+ */
+export type InsufficientStockOnHandError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    productVariantId: Scalars['ID'];
+    productVariantName: Scalars['String'];
+    stockOnHand: Scalars['Int'];
+};
+
 /** Returned if an operation has specified OrderLines from multiple Orders */
 export type MultipleOrderError = ErrorResult & {
     errorCode: ErrorCode;
@@ -1328,7 +1341,8 @@ export type SettlePaymentResult =
 export type AddFulfillmentToOrderResult =
     | Fulfillment
     | EmptyOrderLineSelectionError
-    | ItemsAlreadyFulfilledError;
+    | ItemsAlreadyFulfilledError
+    | InsufficientStockOnHandError;
 
 export type CancelOrderResult =
     | Order
@@ -1462,9 +1476,11 @@ export type Product = Node & {
 
 export type ProductVariant = Node & {
     enabled: Scalars['Boolean'];
+    trackInventory: GlobalFlag;
     stockOnHand: Scalars['Int'];
     stockAllocated: Scalars['Int'];
-    trackInventory: GlobalFlag;
+    outOfStockThreshold: Scalars['Int'];
+    useGlobalOutOfStockThreshold: Scalars['Boolean'];
     stockMovements: StockMovementList;
     id: Scalars['ID'];
     product: Product;
@@ -1549,6 +1565,8 @@ export type CreateProductVariantInput = {
     featuredAssetId?: Maybe<Scalars['ID']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     stockOnHand?: Maybe<Scalars['Int']>;
+    outOfStockThreshold?: Maybe<Scalars['Int']>;
+    useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
     trackInventory?: Maybe<GlobalFlag>;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -1564,6 +1582,8 @@ export type UpdateProductVariantInput = {
     featuredAssetId?: Maybe<Scalars['ID']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     stockOnHand?: Maybe<Scalars['Int']>;
+    outOfStockThreshold?: Maybe<Scalars['Int']>;
+    useGlobalOutOfStockThreshold?: Maybe<Scalars['Boolean']>;
     trackInventory?: Maybe<GlobalFlag>;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -1812,6 +1832,7 @@ export enum ErrorCode {
     SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+    INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
     MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
     CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
     PAYMENT_ORDER_MISMATCH_ERROR = 'PAYMENT_ORDER_MISMATCH_ERROR',
@@ -2959,6 +2980,7 @@ export type GlobalSettings = {
     updatedAt: Scalars['DateTime'];
     availableLanguages: Array<LanguageCode>;
     trackInventory: Scalars['Boolean'];
+    outOfStockThreshold: Scalars['Int'];
     serverConfig: ServerConfig;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -3817,9 +3839,11 @@ export type TaxRateSortParameter = {
 
 export type ProductVariantFilterParameter = {
     enabled?: Maybe<BooleanOperators>;
+    trackInventory?: Maybe<StringOperators>;
     stockOnHand?: Maybe<NumberOperators>;
     stockAllocated?: Maybe<NumberOperators>;
-    trackInventory?: Maybe<StringOperators>;
+    outOfStockThreshold?: Maybe<NumberOperators>;
+    useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     languageCode?: Maybe<StringOperators>;
@@ -3834,6 +3858,7 @@ export type ProductVariantFilterParameter = {
 export type ProductVariantSortParameter = {
     stockOnHand?: Maybe<SortOrder>;
     stockAllocated?: Maybe<SortOrder>;
+    outOfStockThreshold?: Maybe<SortOrder>;
     id?: Maybe<SortOrder>;
     productId?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
@@ -4301,6 +4326,24 @@ export type IdTest9Query = { products: { items: Array<ProdFragmentFragment> } };
 
 export type ProdFragmentFragment = Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
 
+export type IdTest10QueryVariables = Exact<{ [key: string]: never }>;
+
+export type IdTest10Query = { products: { items: Array<ProdFragment1Fragment> } };
+
+export type ProdFragment1Fragment = ProdFragment2Fragment;
+
+export type ProdFragment2Fragment = Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
+
+export type IdTest11QueryVariables = Exact<{ [key: string]: never }>;
+
+export type IdTest11Query = { products: { items: Array<ProdFragment1_1Fragment> } };
+
+export type ProdFragment1_1Fragment = ProdFragment2_1Fragment;
+
+export type ProdFragment2_1Fragment = ProdFragment3_1Fragment;
+
+export type ProdFragment3_1Fragment = Pick<Product, 'id'> & { featuredAsset?: Maybe<Pick<Asset, 'id'>> };
+
 export type GetFacetWithValuesQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -4343,33 +4386,9 @@ export type UpdateFacetValuesMutationVariables = Exact<{
 
 export type UpdateFacetValuesMutation = { updateFacetValues: Array<FacetValueFragment> };
 
-export type GlobalSettingsFragment = Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'> & {
-    serverConfig: Pick<ServerConfig, 'permittedAssetTypes'> & {
-        orderProcess: Array<Pick<OrderProcessState, 'name' | 'to'>>;
-        customFieldConfig: {
-            Customer: Array<
-                | Pick<StringCustomFieldConfig, 'name'>
-                | Pick<LocaleStringCustomFieldConfig, 'name'>
-                | Pick<IntCustomFieldConfig, 'name'>
-                | Pick<FloatCustomFieldConfig, 'name'>
-                | Pick<BooleanCustomFieldConfig, 'name'>
-                | Pick<DateTimeCustomFieldConfig, 'name'>
-            >;
-        };
-    };
-};
-
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetGlobalSettingsQuery = { globalSettings: GlobalSettingsFragment };
-
-export type UpdateGlobalSettingsMutationVariables = Exact<{
-    input: UpdateGlobalSettingsInput;
-}>;
-
-export type UpdateGlobalSettingsMutation = {
-    updateGlobalSettings: GlobalSettingsFragment | Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>;
-};
 
 export type AdministratorFragment = Pick<Administrator, 'id' | 'firstName' | 'lastName' | 'emailAddress'> & {
     user: Pick<User, 'id' | 'identifier' | 'lastLogin'> & {
@@ -4570,6 +4589,25 @@ export type ChannelFragment = Pick<
     Channel,
     'id' | 'code' | 'token' | 'currencyCode' | 'defaultLanguageCode' | 'pricesIncludeTax'
 > & { defaultShippingZone?: Maybe<Pick<Zone, 'id'>>; defaultTaxZone?: Maybe<Pick<Zone, 'id'>> };
+
+export type GlobalSettingsFragment = Pick<
+    GlobalSettings,
+    'id' | 'availableLanguages' | 'trackInventory' | 'outOfStockThreshold'
+> & {
+    serverConfig: Pick<ServerConfig, 'permittedAssetTypes'> & {
+        orderProcess: Array<Pick<OrderProcessState, 'name' | 'to'>>;
+        customFieldConfig: {
+            Customer: Array<
+                | Pick<StringCustomFieldConfig, 'name'>
+                | Pick<LocaleStringCustomFieldConfig, 'name'>
+                | Pick<IntCustomFieldConfig, 'name'>
+                | Pick<FloatCustomFieldConfig, 'name'>
+                | Pick<BooleanCustomFieldConfig, 'name'>
+                | Pick<DateTimeCustomFieldConfig, 'name'>
+            >;
+        };
+    };
+};
 
 export type CreateAdministratorMutationVariables = Exact<{
     input: CreateAdministratorInput;
@@ -4875,7 +4913,8 @@ export type CreateFulfillmentMutation = {
     addFulfillmentToOrder:
         | FulfillmentFragment
         | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
-        | Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>;
+        | Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>
+        | Pick<InsufficientStockOnHandError, 'errorCode' | 'message'>;
 };
 
 export type TransitFulfillmentMutationVariables = Exact<{
@@ -5062,6 +5101,14 @@ export type CancelOrderMutation = {
 
 export type CanceledOrderFragment = Pick<Order, 'id'> & {
     lines: Array<Pick<OrderLine, 'quantity'> & { items: Array<Pick<OrderItem, 'id' | 'cancelled'>> }>;
+};
+
+export type UpdateGlobalSettingsMutationVariables = Exact<{
+    input: UpdateGlobalSettingsInput;
+}>;
+
+export type UpdateGlobalSettingsMutation = {
+    updateGlobalSettings: GlobalSettingsFragment | Pick<ChannelDefaultLanguageError, 'errorCode' | 'message'>;
 };
 
 export type UpdateOptionGroupMutationVariables = Exact<{
@@ -6137,6 +6184,42 @@ export namespace ProdFragment {
     export type FeaturedAsset = NonNullable<ProdFragmentFragment['featuredAsset']>;
 }
 
+export namespace IdTest10 {
+    export type Variables = IdTest10QueryVariables;
+    export type Query = IdTest10Query;
+    export type Products = NonNullable<IdTest10Query['products']>;
+    export type Items = NonNullable<NonNullable<NonNullable<IdTest10Query['products']>['items']>[number]>;
+}
+
+export namespace ProdFragment1 {
+    export type Fragment = ProdFragment1Fragment;
+}
+
+export namespace ProdFragment2 {
+    export type Fragment = ProdFragment2Fragment;
+    export type FeaturedAsset = NonNullable<ProdFragment2Fragment['featuredAsset']>;
+}
+
+export namespace IdTest11 {
+    export type Variables = IdTest11QueryVariables;
+    export type Query = IdTest11Query;
+    export type Products = NonNullable<IdTest11Query['products']>;
+    export type Items = NonNullable<NonNullable<NonNullable<IdTest11Query['products']>['items']>[number]>;
+}
+
+export namespace ProdFragment1_1 {
+    export type Fragment = ProdFragment1_1Fragment;
+}
+
+export namespace ProdFragment2_1 {
+    export type Fragment = ProdFragment2_1Fragment;
+}
+
+export namespace ProdFragment3_1 {
+    export type Fragment = ProdFragment3_1Fragment;
+    export type FeaturedAsset = NonNullable<ProdFragment3_1Fragment['featuredAsset']>;
+}
+
 export namespace GetFacetWithValues {
     export type Variables = GetFacetWithValuesQueryVariables;
     export type Query = GetFacetWithValuesQuery;
@@ -6189,46 +6272,10 @@ export namespace UpdateFacetValues {
     >;
 }
 
-export namespace GlobalSettings {
-    export type Fragment = GlobalSettingsFragment;
-    export type ServerConfig = NonNullable<GlobalSettingsFragment['serverConfig']>;
-    export type OrderProcess = NonNullable<
-        NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['orderProcess']>[number]
-    >;
-    export type CustomFieldConfig = NonNullable<
-        NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
-    >;
-    export type Customer = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']>['Customer']
-        >[number]
-    >;
-    export type CustomFieldInlineFragment = DiscriminateUnion<
-        NonNullable<
-            NonNullable<
-                NonNullable<
-                    NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
-                >['Customer']
-            >[number]
-        >,
-        { __typename?: 'CustomField' }
-    >;
-}
-
 export namespace GetGlobalSettings {
     export type Variables = GetGlobalSettingsQueryVariables;
     export type Query = GetGlobalSettingsQuery;
     export type GlobalSettings = NonNullable<GetGlobalSettingsQuery['globalSettings']>;
-}
-
-export namespace UpdateGlobalSettings {
-    export type Variables = UpdateGlobalSettingsMutationVariables;
-    export type Mutation = UpdateGlobalSettingsMutation;
-    export type UpdateGlobalSettings = NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>;
-    export type ErrorResultInlineFragment = DiscriminateUnion<
-        NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>,
-        { __typename?: 'ErrorResult' }
-    >;
 }
 
 export namespace Administrator {
@@ -6398,6 +6445,32 @@ export namespace Channel {
     export type Fragment = ChannelFragment;
     export type DefaultShippingZone = NonNullable<ChannelFragment['defaultShippingZone']>;
     export type DefaultTaxZone = NonNullable<ChannelFragment['defaultTaxZone']>;
+}
+
+export namespace GlobalSettings {
+    export type Fragment = GlobalSettingsFragment;
+    export type ServerConfig = NonNullable<GlobalSettingsFragment['serverConfig']>;
+    export type OrderProcess = NonNullable<
+        NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['orderProcess']>[number]
+    >;
+    export type CustomFieldConfig = NonNullable<
+        NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
+    >;
+    export type Customer = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']>['Customer']
+        >[number]
+    >;
+    export type CustomFieldInlineFragment = DiscriminateUnion<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<GlobalSettingsFragment['serverConfig']>['customFieldConfig']
+                >['Customer']
+            >[number]
+        >,
+        { __typename?: 'CustomField' }
+    >;
 }
 
 export namespace CreateAdministrator {
@@ -6863,6 +6936,16 @@ export namespace CanceledOrder {
     export type Lines = NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>;
     export type Items = NonNullable<
         NonNullable<NonNullable<NonNullable<CanceledOrderFragment['lines']>[number]>['items']>[number]
+    >;
+}
+
+export namespace UpdateGlobalSettings {
+    export type Variables = UpdateGlobalSettingsMutationVariables;
+    export type Mutation = UpdateGlobalSettingsMutation;
+    export type UpdateGlobalSettings = NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<UpdateGlobalSettingsMutation['updateGlobalSettings']>,
+        { __typename?: 'ErrorResult' }
     >;
 }
 

@@ -3,6 +3,7 @@ import {
     CreateProductVariantInput,
     DeletionResponse,
     DeletionResult,
+    GlobalFlag,
     UpdateProductVariantInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -187,6 +188,44 @@ export class ProductVariantService {
     async getProductForVariant(ctx: RequestContext, variant: ProductVariant): Promise<Translated<Product>> {
         const product = await this.connection.getEntityOrThrow(ctx, Product, variant.productId);
         return translateDeep(product, ctx.languageCode);
+    }
+
+    /**
+     * @description
+     * Returns the number of saleable units of the ProductVariant, i.e. how many are available
+     * for purchase by Customers.
+     */
+    async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
+        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
+        const inventoryNotTracked =
+            variant.trackInventory === GlobalFlag.FALSE ||
+            (variant.trackInventory === GlobalFlag.INHERIT && trackInventory === false);
+        if (inventoryNotTracked) {
+            return Number.MAX_SAFE_INTEGER;
+        }
+
+        const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
+            ? outOfStockThreshold
+            : variant.outOfStockThreshold;
+
+        return variant.stockOnHand - variant.stockAllocated - effectiveOutOfStockThreshold;
+    }
+
+    /**
+     * @description
+     * Returns the number of fulfillable units of the ProductVariant, equivalent to stockOnHand
+     * for those variants which are tracking inventory.
+     */
+    async getFulfillableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
+        const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
+        const inventoryNotTracked =
+            variant.trackInventory === GlobalFlag.FALSE ||
+            (variant.trackInventory === GlobalFlag.INHERIT && trackInventory === false);
+        if (inventoryNotTracked) {
+            return Number.MAX_SAFE_INTEGER;
+        }
+
+        return variant.stockOnHand;
     }
 
     async create(

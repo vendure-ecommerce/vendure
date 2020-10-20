@@ -16,12 +16,21 @@ export class GlobalSettings extends VendureEntity implements HasCustomFields {
     availableLanguages: LanguageCode[];
 
     /**
+     * @description
      * Specifies the default value for inventory tracking for ProductVariants.
      * Can be overridden per ProductVariant, but this value determines the default
      * if not otherwise specified.
      */
     @Column({ default: false })
     trackInventory: boolean;
+
+    /**
+     * @description
+     * Specifies the value of stockOnHand at which a given ProductVariant is considered
+     * out of stock.
+     */
+    @Column({ default: 0 })
+    outOfStockThreshold: number;
 
     @Column(type => CustomGlobalSettingsFields)
     customFields: CustomGlobalSettingsFields;

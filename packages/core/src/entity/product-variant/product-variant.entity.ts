@@ -106,6 +106,22 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column({ default: 0 })
     stockAllocated: number;
 
+    /**
+     * @description
+     * Specifies the value of stockOnHand at which the ProductVariant is considered
+     * out of stock.
+     */
+    @Column({ default: 0 })
+    outOfStockThreshold: number;
+
+    /**
+     * @description
+     * When true, the `outOfStockThreshold` value will be taken from the GlobalSettings and the
+     * value set on this ProductVariant will be ignored.
+     */
+    @Column({ default: true })
+    useGlobalOutOfStockThreshold: boolean;
+
     @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
     trackInventory: GlobalFlag;
 
