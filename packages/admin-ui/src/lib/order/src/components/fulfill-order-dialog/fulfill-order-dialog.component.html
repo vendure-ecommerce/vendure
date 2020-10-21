@@ -9,6 +9,7 @@
                     <th>{{ 'order.product-name' | translate }}</th>
                     <th>{{ 'order.product-sku' | translate }}</th>
                     <th>{{ 'order.unfulfilled' | translate }}</th>
+                    <th>{{ 'catalog.stock-on-hand' | translate }}</th>
                     <th>{{ 'order.fulfill' | translate }}</th>
                 </tr>
             </thead>
@@ -23,12 +24,14 @@
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                 <td class="align-middle quantity">{{ getUnfulfilledCount(line) }}</td>
+                <td class="align-middle quantity">{{ line.productVariant.stockOnHand }}</td>
                 <td class="align-middle fulfil">
                     <input
+                        *ngIf="fulfillmentQuantities[line.id]"
                         [disabled]="getUnfulfilledCount(line) === 0"
-                        [(ngModel)]="fulfillmentQuantities[line.id]"
+                        [(ngModel)]="fulfillmentQuantities[line.id].fulfillCount"
                         type="number"
-                        [max]="line.quantity"
+                        [max]="fulfillmentQuantities[line.id].max"
                         min="0"
                     />
                 </td>

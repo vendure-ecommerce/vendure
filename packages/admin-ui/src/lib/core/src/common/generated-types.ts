@@ -1276,7 +1276,7 @@ export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguage
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -2181,7 +2181,7 @@ export type EmailAddressConflictError = ErrorResult & {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -2615,7 +2615,7 @@ export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFiel
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -2940,7 +2940,7 @@ export enum LanguageCode {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -5012,7 +5012,7 @@ export type OrderLineFragment = (
     & Pick<Asset, 'preview'>
   )>, productVariant: (
     { __typename?: 'ProductVariant' }
-    & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+    & Pick<ProductVariant, 'id' | 'name' | 'sku' | 'trackInventory' | 'stockOnHand'>
   ), adjustments: Array<(
     { __typename?: 'Adjustment' }
     & AdjustmentFragment

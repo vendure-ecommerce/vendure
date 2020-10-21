@@ -77,6 +77,8 @@ export const ORDER_LINE_FRAGMENT = gql`
             id
             name
             sku
+            trackInventory
+            stockOnHand
         }
         adjustments {
             ...Adjustment

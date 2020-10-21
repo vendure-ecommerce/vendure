@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-
-import { FulfillOrderInput, OrderDetail, OrderDetailFragment } from '@vendure/admin-ui/core';
-import { Dialog } from '@vendure/admin-ui/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import {
+    DataService,
+    Dialog,
+    FulfillOrderInput,
+    GlobalFlag,
+    OrderDetail,
+    OrderDetailFragment,
+} from '@vendure/admin-ui/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-fulfill-order-dialog',
@@ -14,18 +21,34 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
     resolveWith: (result?: FulfillOrderInput) => void;
     method = '';
     trackingCode = '';
-    fulfillmentQuantities: { [lineId: string]: number } = {};
+    fulfillmentQuantities: { [lineId: string]: { fulfillCount: number; max: number } } = {};
+
+    constructor(private dataService: DataService, private changeDetector: ChangeDetectorRef) {}
 
     ngOnInit(): void {
-        this.fulfillmentQuantities = this.order.lines.reduce((result, line) => {
-            return {
-                ...result,
-                [line.id]: this.getUnfulfilledCount(line),
-            };
-        }, {});
+        this.dataService.settings.getGlobalSettings().single$.subscribe(({ globalSettings }) => {
+            this.fulfillmentQuantities = this.order.lines.reduce((result, line) => {
+                const fulfillCount = this.getFulfillableCount(line, globalSettings.trackInventory);
+                return {
+                    ...result,
+                    [line.id]: { fulfillCount, max: fulfillCount },
+                };
+            }, {});
+            this.changeDetector.markForCheck();
+        });
+
         if (this.order.shippingMethod) {
             this.method = this.order.shippingMethod.description;
         }
+    }
+
+    getFulfillableCount(line: OrderDetail.Lines, globalTrackInventory: boolean): number {
+        const { trackInventory, stockOnHand } = line.productVariant;
+        const effectiveTracInventory =
+            trackInventory === GlobalFlag.INHERIT ? globalTrackInventory : trackInventory === GlobalFlag.TRUE;
+
+        const unfulfilledCount = this.getUnfulfilledCount(line);
+        return effectiveTracInventory ? Math.min(unfulfilledCount, stockOnHand) : unfulfilledCount;
     }
 
     getUnfulfilledCount(line: OrderDetail.Lines): number {
@@ -34,9 +57,9 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
     }
 
     select() {
-        const lines = Object.entries(this.fulfillmentQuantities).map(([orderLineId, quantity]) => ({
+        const lines = Object.entries(this.fulfillmentQuantities).map(([orderLineId, { fulfillCount }]) => ({
             orderLineId,
-            quantity,
+            quantity: fulfillCount,
         }));
         this.resolveWith({
             lines,
