@@ -3,7 +3,7 @@
     "create-new-administrator": "Vytvořit nového administrátora"
   },
   "asset": {
-    "add-asset": "Přidat médium ",
+    "add-asset": "Přidat médium",
     "add-asset-with-count": "Přidat {count, plural, 0 {médium} =1 {médium} few {{count} média} other {{count} médií}}",
     "assets-selected-count": "{ count } médií vybráno",
     "dimensions": "Rozměry",
