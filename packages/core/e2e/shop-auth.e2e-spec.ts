@@ -18,7 +18,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateAdministrator,
@@ -400,6 +400,12 @@ describe('Shop auth & accounts', () => {
             expect(
                 pick(customers.items[0], ['firstName', 'lastName', 'emailAddress', 'phoneNumber']),
             ).toEqual(pick(input, ['firstName', 'lastName', 'emailAddress', 'phoneNumber']));
+        });
+
+        it('login fails before verification', async () => {
+            const result = await shopClient.asUserWithCredentials(emailAddress, password);
+            expect(result.errorCode).toBe(ErrorCode.NOT_VERIFIED_ERROR);
+            expect(result.message).toBe('Please verify this email address before logging in');
         });
 
         it('verification fails with password', async () => {

@@ -103,7 +103,7 @@ function getDbConfig(): ConnectionOptions {
             console.log('Using sqlite connection');
             return {
                 synchronize: false,
-                type: 'sqlite',
+                type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
         case 'sqljs':

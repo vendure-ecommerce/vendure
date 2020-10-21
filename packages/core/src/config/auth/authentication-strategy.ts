@@ -62,9 +62,10 @@ export interface AuthenticationStrategy<Data = unknown> extends InjectableStrate
      * @description
      * Used to authenticate a user with the authentication provider. This method
      * will implement the provider-specific authentication logic, and should resolve to either a
-     * {@link User} object on success, or `false` on failure.
+     * {@link User} object on success, or `false | string` on failure.
+     * A `string` return could be used to describe what error happened, otherwise `false` to an unknown error.
      */
-    authenticate(ctx: RequestContext, data: Data): Promise<User | false>;
+    authenticate(ctx: RequestContext, data: Data): Promise<User | false | string>;
 
     /**
      * @description

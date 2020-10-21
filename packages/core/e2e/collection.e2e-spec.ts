@@ -293,6 +293,7 @@ describe('Collection resolver', () => {
                 },
             });
 
+            await awaitRunningJobs(adminClient);
             expect(updateCollection).toMatchSnapshot();
 
             pearCollection = updateCollection;
@@ -309,7 +310,7 @@ describe('Collection resolver', () => {
                     featuredAssetId: assets[3].id,
                 },
             });
-
+            await awaitRunningJobs(adminClient);
             expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
 
@@ -323,7 +324,7 @@ describe('Collection resolver', () => {
                     assetIds: [],
                 },
             });
-
+            await awaitRunningJobs(adminClient);
             expect(updateCollection.assets).toEqual([]);
             expect(updateCollection.featuredAsset).toBeNull();
         });

@@ -322,7 +322,7 @@ export class OrderService {
         let orderLine = order.lines.find(line => {
             return (
                 idsAreEqual(line.productVariant.id, productVariantId) &&
-                JSON.stringify(line.customFields) === JSON.stringify(customFields)
+                this.customFieldsAreEqual(customFields, line.customFields)
             );
         });
 
@@ -1068,6 +1068,18 @@ export class OrderService {
         return await this.connection.getEntityOrThrow(ctx, Order, orderId, {
             relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
         });
+    }
+
+    private customFieldsAreEqual(
+        inputCustomFields: { [key: string]: any } | null | undefined,
+        existingCustomFields?: { [key: string]: any },
+    ): boolean {
+        if (inputCustomFields == null && typeof existingCustomFields === 'object') {
+            // A null value for an OrderLine customFields input is the equivalent
+            // of every property of an existing customFields object being null.
+            return Object.values(existingCustomFields).every(v => v === null);
+        }
+        return JSON.stringify(inputCustomFields) === JSON.stringify(existingCustomFields);
     }
 
     private async getOrdersAndItemsFromLines(

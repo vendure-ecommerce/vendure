@@ -33,6 +33,7 @@ export class InvalidCredentialsError extends ErrorResult {
   readonly errorCode = 'INVALID_CREDENTIALS_ERROR' as any;
   readonly message = 'INVALID_CREDENTIALS_ERROR';
   constructor(
+    public   authenticationError: Scalars['String'],
   ) {
     super();
   }
@@ -248,8 +249,18 @@ export class PasswordResetTokenExpiredError extends ErrorResult {
   }
 }
 
+export class NotVerifiedError extends ErrorResult {
+  readonly __typename = 'NotVerifiedError';
+  readonly errorCode = 'NOT_VERIFIED_ERROR' as any;
+  readonly message = 'NOT_VERIFIED_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError']);
+
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

@@ -18,4 +18,9 @@ describe('SortPipe', () => {
             { id: 9 },
         ]);
     });
+
+    it('sorts a frozen array', () => {
+        const input = Object.freeze([5, 4, 2, 3, 2, 7, 1]);
+        expect(sortPipe.transform(input)).toEqual([1, 2, 2, 3, 4, 5, 7]);
+    });
 });

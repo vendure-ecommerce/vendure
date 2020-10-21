@@ -318,6 +318,15 @@ type PasswordResetTokenExpiredError implements ErrorResult {
     message: String!
 }
 
+"""
+Returned if `authOptions.requireVerification` is set to `true` (which is the default)
+and an unverified user attempts to authenticate.
+"""
+type NotVerifiedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
 union UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError
 union RemoveOrderItemsResult = Order | OrderModificationError
 union SetOrderShippingMethodResult = Order | OrderModificationError
@@ -352,5 +361,5 @@ union UpdateCustomerEmailAddressResult =
     | NativeAuthStrategyError
 union RequestPasswordResetResult = Success | NativeAuthStrategyError
 union ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError
-union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError
-union AuthenticationResult = CurrentUser | InvalidCredentialsError
+union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError
+union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError

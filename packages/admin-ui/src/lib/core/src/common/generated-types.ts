@@ -2130,6 +2130,7 @@ export type InvalidCredentialsError = ErrorResult & {
   __typename?: 'InvalidCredentialsError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+  authenticationError: Scalars['String'];
 };
 
 /** Returned if there is an error in transitioning the Order state */
@@ -6205,7 +6206,14 @@ export type UpdatePaymentMethodMutation = { updatePaymentMethod: (
 
 export type GlobalSettingsFragment = (
   { __typename?: 'GlobalSettings' }
-  & Pick<GlobalSettings, 'availableLanguages' | 'trackInventory'>
+  & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'>
+  & { serverConfig: (
+    { __typename?: 'ServerConfig' }
+    & { orderProcess: Array<(
+      { __typename?: 'OrderProcessState' }
+      & Pick<OrderProcessState, 'name'>
+    )> }
+  ) }
 );
 
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -6383,6 +6391,7 @@ export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetServerConfigQuery = { globalSettings: (
     { __typename?: 'GlobalSettings' }
+    & Pick<GlobalSettings, 'id'>
     & { serverConfig: (
       { __typename?: 'ServerConfig' }
       & Pick<ServerConfig, 'permittedAssetTypes'>
@@ -8013,6 +8022,8 @@ export namespace UpdatePaymentMethod {
 
 export namespace GlobalSettings {
   export type Fragment = GlobalSettingsFragment;
+  export type ServerConfig = (NonNullable<GlobalSettingsFragment['serverConfig']>);
+  export type OrderProcess = NonNullable<(NonNullable<(NonNullable<GlobalSettingsFragment['serverConfig']>)['orderProcess']>)[number]>;
 }
 
 export namespace GetGlobalSettings {

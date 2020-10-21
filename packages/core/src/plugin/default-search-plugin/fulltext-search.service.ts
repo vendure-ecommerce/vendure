@@ -92,6 +92,7 @@ export class FulltextSearchService {
                 break;
             case 'sqlite':
             case 'sqljs':
+            case 'better-sqlite3':
                 this.searchStrategy = new SqliteSearchStrategy(this.connection);
                 break;
             case 'postgres':

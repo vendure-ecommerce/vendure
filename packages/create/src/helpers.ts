@@ -257,7 +257,7 @@ function dbDriverPackage(dbType: DbType): string {
         case 'postgres':
             return 'pg';
         case 'sqlite':
-            return 'sqlite3';
+            return 'better-sqlite3';
         case 'sqljs':
             return 'sql.js';
         case 'mssql':

@@ -53,7 +53,7 @@ export class AdministratorResolver {
 
     @Transaction()
     @Mutation()
-    @Allow(Permission.CreateAdministrator)
+    @Allow(Permission.UpdateAdministrator)
     updateAdministrator(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateAdministratorArgs,

@@ -186,6 +186,7 @@ async function generateSources(
 
     const templateContext = {
         ...answers,
+        dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isTs: answers.language === 'ts',
         isSQLite: answers.dbType === 'sqlite',

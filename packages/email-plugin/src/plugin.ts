@@ -233,14 +233,12 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
         Logger.debug(`Handling event "${handler.type}"`, 'EmailPlugin');
         const { type } = handler;
         try {
-            if (handler instanceof EmailEventHandlerWithAsyncData) {
-                const injector = new Injector(this.moduleRef);
-                (event as EventWithAsyncData<EventWithContext, any>).data = await handler._loadDataFn({
-                    event,
-                    injector,
-                });
-            }
-            const result = await handler.handle(event as any, EmailPlugin.options.globalTemplateVars);
+            const injector = new Injector(this.moduleRef);
+            const result = await handler.handle(
+                event as any,
+                EmailPlugin.options.globalTemplateVars,
+                injector,
+            );
             if (!result) {
                 return;
             }

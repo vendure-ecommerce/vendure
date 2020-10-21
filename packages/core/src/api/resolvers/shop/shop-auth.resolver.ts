@@ -157,6 +157,14 @@ export class ShopAuthResolver extends BaseAuthResolver {
             customer.user!,
             NATIVE_AUTH_STRATEGY_NAME,
         );
+        if (isGraphQlErrorResult(session)) {
+            // This code path should never be reached - in this block
+            // the type of `session` is `NotVerifiedError`, however we
+            // just successfully verified the user above. So throw it
+            // so that we have some record of the error if it somehow
+            // occurs.
+            throw session;
+        }
         setSessionToken({
             req,
             res,
