@@ -608,7 +608,7 @@
     "state-delivered": "Doručeno",
     "state-partially-delivered": "Částečně doručeno",
     "state-partially-shipped": "Částečně expedováno",
-    "state-payment-authorized": "Platba autorizovana",
+    "state-payment-authorized": "Platba autorizována",
     "state-payment-settled": "Platba vypořádana",
     "state-shipped": "Expedováno",
     "sub-total": "Mezisoučet",
