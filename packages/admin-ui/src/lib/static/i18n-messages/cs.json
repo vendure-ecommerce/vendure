@@ -609,7 +609,7 @@
     "state-partially-delivered": "Částečně doručeno",
     "state-partially-shipped": "Částečně expedováno",
     "state-payment-authorized": "Platba autorizovaná",
-    "state-payment-settled": "Platba vypořádana",
+    "state-payment-settled": "Platba vypořádána",
     "state-shipped": "Expedováno",
     "sub-total": "Mezisoučet",
     "successfully-updated-fulfillment": "Zpracování aktualizováno",
