@@ -64,7 +64,10 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         priceIncludesTax
         priceWithTax
         stockOnHand
+        stockAllocated
         trackInventory
+        outOfStockThreshold
+        useGlobalOutOfStockThreshold
         taxRateApplied {
             id
             name

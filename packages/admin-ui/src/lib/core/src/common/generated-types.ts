@@ -5326,7 +5326,7 @@ export type ProductOptionFragment = (
 
 export type ProductVariantFragment = (
   { __typename?: 'ProductVariant' }
-  & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'trackInventory' | 'sku'>
+  & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'stockAllocated' | 'trackInventory' | 'outOfStockThreshold' | 'useGlobalOutOfStockThreshold' | 'sku'>
   & { taxRateApplied: (
     { __typename?: 'TaxRate' }
     & Pick<TaxRate, 'id' | 'name' | 'value'>
@@ -6267,7 +6267,7 @@ export type UpdatePaymentMethodMutation = { updatePaymentMethod: (
 
 export type GlobalSettingsFragment = (
   { __typename?: 'GlobalSettings' }
-  & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory'>
+  & Pick<GlobalSettings, 'id' | 'availableLanguages' | 'trackInventory' | 'outOfStockThreshold'>
 );
 
 export type GetGlobalSettingsQueryVariables = Exact<{ [key: string]: never; }>;

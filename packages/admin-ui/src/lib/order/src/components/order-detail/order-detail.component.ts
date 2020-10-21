@@ -21,7 +21,7 @@ import {
 } from '@vendure/admin-ui/core';
 import { omit } from '@vendure/common/lib/omit';
 import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { map, startWith, switchMap, take } from 'rxjs/operators';
+import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
@@ -35,7 +35,8 @@ import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refu
     styleUrls: ['./order-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragment>
+export class OrderDetailComponent
+    extends BaseDetailComponent<OrderDetail.Fragment>
     implements OnInit, OnDestroy {
     detailForm = new FormGroup({});
     history$: Observable<GetOrderHistory.Items[] | undefined>;
@@ -226,11 +227,20 @@ export class OrderDetailComponent extends BaseDetailComponent<OrderDetail.Fragme
                         return of(undefined);
                     }
                 }),
-                switchMap(result => this.refetchOrder(result)),
+                switchMap(result => this.refetchOrder(result).pipe(mapTo(result))),
             )
             .subscribe(result => {
                 if (result) {
-                    this.notificationService.success(_('order.create-fulfillment-success'));
+                    switch (result.addFulfillmentToOrder.__typename) {
+                        case 'Fulfillment':
+                            this.notificationService.success(_('order.create-fulfillment-success'));
+                            break;
+                        case 'EmptyOrderLineSelectionError':
+                        case 'InsufficientStockOnHandError':
+                        case 'ItemsAlreadyFulfilledError':
+                            this.notificationService.error(result.addFulfillmentToOrder.message);
+                            break;
+                    }
                 }
             });
     }

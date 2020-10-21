@@ -33,19 +33,33 @@
             </ng-template>
         </ng-select>
     </vdr-form-field>
-    <clr-toggle-wrapper>
+    <vdr-form-field
+        [label]="'settings.global-out-of-stock-threshold' | translate"
+        for="outOfStockThreshold"
+        [tooltip]="'settings.global-out-of-stock-threshold-tooltip' | translate"
+    >
         <input
-            type="checkbox"
-            clrToggle
-            name="enabled"
-            formControlName="trackInventory"
-            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+            id="outOfStockThreshold"
+            type="number"
+            formControlName="outOfStockThreshold"
+            [readonly]="!('UpdateSettings' | hasPermission)"
         />
-        <label
-            >{{ 'settings.track-inventory-default' | translate }}
-            <vdr-help-tooltip [content]="'catalog.track-inventory-info' | translate"></vdr-help-tooltip>
-        </label>
-    </clr-toggle-wrapper>
+    </vdr-form-field>
+    <vdr-form-field
+        [label]="'settings.track-inventory-default' | translate"
+        for="enabled"
+        [tooltip]="'catalog.track-inventory-tooltip' | translate"
+    >
+        <clr-toggle-wrapper>
+            <input
+                type="checkbox"
+                clrToggle
+                name="enabled"
+                formControlName="trackInventory"
+                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+            />
+        </clr-toggle-wrapper>
+    </vdr-form-field>
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
         <ng-container *ngFor="let customField of customFields">

@@ -8,4 +8,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 })
 export class HelpTooltipComponent {
     @Input() content: string;
+    @Input() position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' | 'right' | 'left';
 }

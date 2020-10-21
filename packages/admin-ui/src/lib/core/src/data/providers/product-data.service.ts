@@ -204,6 +204,8 @@ export class ProductDataService {
                     'featuredAssetId',
                     'assetIds',
                     'trackInventory',
+                    'outOfStockThreshold',
+                    'useGlobalOutOfStockThreshold',
                     'stockOnHand',
                     'customFields',
                 ]),

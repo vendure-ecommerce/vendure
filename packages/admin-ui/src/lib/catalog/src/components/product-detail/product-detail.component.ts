@@ -60,6 +60,8 @@ export interface VariantFormValue {
     priceWithTax: number;
     taxCategoryId: string;
     stockOnHand: number;
+    useGlobalOutOfStockThreshold: boolean;
+    outOfStockThreshold: number;
     trackInventory: GlobalFlag;
     facetValueIds: string[];
     customFields?: any;
@@ -492,6 +494,8 @@ export class ProductDetailComponent
                 priceWithTax: variant.priceWithTax,
                 taxCategoryId: variant.taxCategory.id,
                 stockOnHand: variant.stockOnHand,
+                useGlobalOutOfStockThreshold: variant.useGlobalOutOfStockThreshold,
+                outOfStockThreshold: variant.outOfStockThreshold,
                 trackInventory: variant.trackInventory,
                 facetValueIds,
             };

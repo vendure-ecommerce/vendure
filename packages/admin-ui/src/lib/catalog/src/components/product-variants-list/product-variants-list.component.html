@@ -67,7 +67,7 @@
                                     <ng-template #taxCategoryLabel>
                                         <label class="clr-control-label">{{
                                             'catalog.tax-category' | translate
-                                        }}</label>
+                                            }}</label>
                                         <div class="tax-category-label">
                                             {{ getTaxCategoryName(formGroup) }}
                                         </div>
@@ -92,22 +92,11 @@
                                 ></vdr-variant-price-detail>
                             </div>
                             <div class="variant-form-input-row">
-                                <clr-input-container>
-                                    <label>{{ 'catalog.stock-on-hand' | translate }}</label>
-                                    <input
-                                        clrInput
-                                        type="number"
-                                        min="0"
-                                        step="1"
-                                        formControlName="stockOnHand"
-                                        [readonly]="!('UpdateCatalog' | hasPermission)"
-                                    />
-                                </clr-input-container>
                                 <clr-select-container *vdrIfPermissions="'UpdateCatalog'">
                                     <label
-                                        >{{ 'catalog.track-inventory' | translate }}
+                                    >{{ 'catalog.track-inventory' | translate }}
                                         <vdr-help-tooltip
-                                            [content]="'catalog.track-inventory-info' | translate"
+                                            [content]="'catalog.track-inventory-tooltip' | translate"
                                         ></vdr-help-tooltip>
                                     </label>
                                     <select clrSelect name="options" formControlName="trackInventory">
@@ -122,6 +111,53 @@
                                         </option>
                                     </select>
                                 </clr-select-container>
+                                <clr-input-container>
+                                    <label>{{ 'catalog.stock-on-hand' | translate }}</label>
+                                    <input
+                                        [class.inventory-untracked]="inventoryIsNotTracked(formGroup)"
+                                        clrInput
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        formControlName="stockOnHand"
+                                        [readonly]="!('UpdateCatalog' | hasPermission)"
+                                        [vdrDisabled]="inventoryIsNotTracked(formGroup)"
+                                    />
+                                </clr-input-container>
+                            </div>
+                            <div class="variant-form-input-row">
+                                <div class="out-of-stock-threshold-wrapper" [class.inventory-untracked]="inventoryIsNotTracked(formGroup)">
+                                    <label class="clr-control-label"
+                                        >{{ 'catalog.out-of-stock-threshold' | translate
+                                        }}<vdr-help-tooltip
+                                            [content]="'catalog.out-of-stock-threshold-tooltip' | translate"
+                                        ></vdr-help-tooltip
+                                    ></label>
+                                    <div class="flex">
+                                        <clr-input-container>
+                                            <input
+                                                clrInput
+                                                type="number"
+                                                [formControl]="formGroup.get('outOfStockThreshold')"
+                                                [readonly]="!('UpdateCatalog' | hasPermission)"
+                                                [vdrDisabled]="
+                                                    formGroup.get('useGlobalOutOfStockThreshold')?.value !==
+                                                    false || inventoryIsNotTracked(formGroup)
+                                                "
+                                            />
+                                        </clr-input-container>
+                                        <clr-toggle-wrapper>
+                                            <input
+                                                type="checkbox"
+                                                clrToggle
+                                                name="useGlobalOutOfStockThreshold"
+                                                formControlName="useGlobalOutOfStockThreshold"
+                                                [vdrDisabled]="!('UpdateCatalog' | hasPermission) || inventoryIsNotTracked(formGroup)"
+                                            />
+                                            <label>{{ 'catalog.use-global-value' | translate }} ({{ globalOutOfStockThreshold }})</label>
+                                        </clr-toggle-wrapper>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="custom-fields">

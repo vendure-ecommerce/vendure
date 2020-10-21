@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { BaseDetailComponent } from '@vendure/admin-ui/core';
@@ -34,6 +34,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         this.detailForm = this.formBuilder.group({
             availableLanguages: [''],
             trackInventory: false,
+            outOfStockThreshold: [0, Validators.required],
             customFields: this.formBuilder.group(
                 this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
             ),
@@ -86,6 +87,7 @@ export class GlobalSettingsComponent extends BaseDetailComponent<GlobalSettings>
         this.detailForm.patchValue({
             availableLanguages: entity.availableLanguages,
             trackInventory: entity.trackInventory,
+            outOfStockThreshold: entity.outOfStockThreshold,
         });
         if (this.customFields.length) {
             const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;

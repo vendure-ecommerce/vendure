@@ -130,6 +130,19 @@
         color: $color-grey-400;
     }
 }
+
+.out-of-stock-threshold-wrapper {
+    display: flex;
+    flex-direction: column;
+    clr-toggle-wrapper {
+        margin-left: 24px;
+    }
+}
+
+.inventory-untracked {
+    opacity: 0.5;
+}
+
 .table-footer {
     display: flex;
     align-items: baseline;

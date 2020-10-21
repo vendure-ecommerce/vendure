@@ -1,4 +1,4 @@
-import { FetchPolicy } from '@apollo/client/core';
+import { FetchPolicy, WatchQueryFetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
 
 import {
@@ -74,10 +74,10 @@ import {
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
-    GET_JOB_INFO,
-    GET_JOB_QUEUE_LIST,
     GET_JOBS_BY_ID,
     GET_JOBS_LIST,
+    GET_JOB_INFO,
+    GET_JOB_QUEUE_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -324,8 +324,12 @@ export class SettingsDataService {
         );
     }
 
-    getGlobalSettings() {
-        return this.baseDataService.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS);
+    getGlobalSettings(fetchPolicy?: WatchQueryFetchPolicy) {
+        return this.baseDataService.query<GetGlobalSettings.Query>(
+            GET_GLOBAL_SETTINGS,
+            undefined,
+            fetchPolicy,
+        );
     }
 
     updateGlobalSettings(input: UpdateGlobalSettingsInput) {
