@@ -1,11 +1,11 @@
 {
-  "generatedOn": "2020-10-14T18:03:37.391Z",
-  "lastCommit": "e1333504f91962398eb427de8a2eeffec6ed6abc",
+  "generatedOn": "2020-10-21T19:56:55.653Z",
+  "lastCommit": "dfb4ab8149795530883170e3acd6956b104e8360",
   "translationStatus": {
     "cs": {
       "tokenCount": 673,
-      "translatedCount": 656,
-      "percentage": 97
+      "translatedCount": 671,
+      "percentage": 100
     },
     "de": {
       "tokenCount": 673,
