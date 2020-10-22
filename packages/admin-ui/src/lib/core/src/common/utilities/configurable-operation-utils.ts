@@ -17,7 +17,7 @@ export function getConfigArgValue(value: any) {
 }
 
 export function encodeConfigArgValue(value: any): string {
-    return Array.isArray(value) ? JSON.stringify(value) : value.toString();
+    return Array.isArray(value) ? JSON.stringify(value) : (value ?? '').toString();
 }
 
 /**
