@@ -122,6 +122,7 @@
     "search-product-name-or-code": "Pesquisar por nome ou código do produto",
     "sku": "SKU",
     "slug": "Slug",
+    "slug-pattern-error": "",
     "stock-on-hand": "Estoque",
     "tax-category": "Categoria de impostos",
     "taxes": "Impostos",
