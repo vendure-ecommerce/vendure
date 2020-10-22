@@ -1,3 +1,26 @@
+## <small>0.16.2 (2020-10-22)</small>
+
+
+#### Fixes
+
+* **admin-ui** Auto-fill Product & Collection slugs in other languages ([9393d04](https://github.com/vendure-ecommerce/vendure/commit/9393d04)), closes [#522](https://github.com/vendure-ecommerce/vendure/issues/522)
+* **admin-ui** Correct display of args input in PaymentMethodDetail ([3f7627e](https://github.com/vendure-ecommerce/vendure/commit/3f7627e)), closes [#489](https://github.com/vendure-ecommerce/vendure/issues/489)
+* **admin-ui** Fix collection list "expand all" behaviour when toggling ([c77af2b](https://github.com/vendure-ecommerce/vendure/commit/c77af2b)), closes [#513](https://github.com/vendure-ecommerce/vendure/issues/513)
+* **admin-ui** Fix display of existing variants in ProductVariantEditor ([ca538b8](https://github.com/vendure-ecommerce/vendure/commit/ca538b8)), closes [#521](https://github.com/vendure-ecommerce/vendure/issues/521)
+* **admin-ui** Preserve expanded state on moving collections ([8d028cf](https://github.com/vendure-ecommerce/vendure/commit/8d028cf)), closes [#515](https://github.com/vendure-ecommerce/vendure/issues/515)
+* **core** Add missing events to export (fulfillment, logout) ([04a49bf](https://github.com/vendure-ecommerce/vendure/commit/04a49bf))
+* **core** Correctly de-duplicate OrderLines with empty custom fields ([ef99c22](https://github.com/vendure-ecommerce/vendure/commit/ef99c22)), closes [#512](https://github.com/vendure-ecommerce/vendure/issues/512)
+* **email-plugin** Only call `loadData()` function after filters run ([e22db7e](https://github.com/vendure-ecommerce/vendure/commit/e22db7e)), closes [#518](https://github.com/vendure-ecommerce/vendure/issues/518)
+
+#### Features
+
+* **admin-ui** Add Czech translations ([89ee826](https://github.com/vendure-ecommerce/vendure/commit/89ee826))
+* **admin-ui** Enable filtering by custom Order states in list view ([76d2d56](https://github.com/vendure-ecommerce/vendure/commit/76d2d56))
+* **core** Add custom error result on AuthenticationStrategy ([d3ddb96](https://github.com/vendure-ecommerce/vendure/commit/d3ddb96)), closes [#499](https://github.com/vendure-ecommerce/vendure/issues/499)
+* **core** Add NotVerifiedError to AuthenticationResult ([ee39263](https://github.com/vendure-ecommerce/vendure/commit/ee39263)), closes [#500](https://github.com/vendure-ecommerce/vendure/issues/500)
+* **core** Add support for better-sqlite3 driver to DefaultSearchPlugin ([7a71fbe](https://github.com/vendure-ecommerce/vendure/commit/7a71fbe)), closes [#505](https://github.com/vendure-ecommerce/vendure/issues/505)
+* **create** Use better-sqlite3 driver for improved sqlite perf ([dfd4f36](https://github.com/vendure-ecommerce/vendure/commit/dfd4f36)), closes [#505](https://github.com/vendure-ecommerce/vendure/issues/505)
+
 ## <small>0.16.1 (2020-10-15)</small>
 
 
