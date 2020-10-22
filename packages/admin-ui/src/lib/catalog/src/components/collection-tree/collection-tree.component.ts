@@ -8,7 +8,6 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
-
 import { Collection } from '@vendure/admin-ui/core';
 
 import { arrayToTree, HasParent, RootNode } from './array-to-tree';
@@ -32,7 +31,7 @@ export class CollectionTreeComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges) {
         if ('collections' in changes && this.collections) {
-            this.collectionTree = arrayToTree(this.collections);
+            this.collectionTree = arrayToTree(this.collections, this.collectionTree);
         }
     }
 
