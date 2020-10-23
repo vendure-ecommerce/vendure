@@ -5,7 +5,6 @@ import path from 'path';
 const CLIENT_SCHEMA_FILE = '../../packages/admin-ui/src/lib/core/src/data/client-state/client-types.graphql';
 const LANGUAGE_CODE_FILE = '../../packages/core/src/api/schema/common/language-code.graphql';
 const AUTH_TYPE_FILE = '../../packages/core/src/api/schema/type/auth.type.graphql';
-const PERMISSION_TYPE_FILE = '../../packages/core/src/api/schema/common/permission.graphql';
 
 function loadGraphQL(file: string): string {
     const filePath = path.join(__dirname, file);
@@ -24,7 +23,7 @@ function getClientSchema() {
     const clientSchemaString = loadGraphQL(CLIENT_SCHEMA_FILE);
     const languageCodeString = loadGraphQL(LANGUAGE_CODE_FILE);
     const authTypeString = loadGraphQL(AUTH_TYPE_FILE);
-    const permissionTypeString = loadGraphQL(PERMISSION_TYPE_FILE);
+    const permissionTypeString = `enum Permission { Placeholder }`;
     const schema = makeExecutableSchema({
         typeDefs: [
             clientSchemaString,

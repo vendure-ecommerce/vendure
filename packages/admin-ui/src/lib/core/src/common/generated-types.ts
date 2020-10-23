@@ -1981,6 +1981,73 @@ export enum DeletionResult {
   NOT_DELETED = 'NOT_DELETED'
 }
 
+/**
+ * @description
+ * Permissions for administrators and customers. Used to control access to
+ * GraphQL resolvers via the {@link Allow} decorator.
+ * 
+ * @docsCategory common
+ */
+export enum Permission {
+  /** Authenticated means simply that the user is logged in */
+  Authenticated = 'Authenticated',
+  /** Grants permission to Create Administrator */
+  CreateAdministrator = 'CreateAdministrator',
+  /** Grants permission to Create Catalog */
+  CreateCatalog = 'CreateCatalog',
+  /** Grants permission to Create Customer */
+  CreateCustomer = 'CreateCustomer',
+  /** Grants permission to Create Order */
+  CreateOrder = 'CreateOrder',
+  /** Grants permission to Create Promotion */
+  CreatePromotion = 'CreatePromotion',
+  /** Grants permission to Create Settings */
+  CreateSettings = 'CreateSettings',
+  /** Grants permission to Delete Administrator */
+  DeleteAdministrator = 'DeleteAdministrator',
+  /** Grants permission to Delete Catalog */
+  DeleteCatalog = 'DeleteCatalog',
+  /** Grants permission to Delete Customer */
+  DeleteCustomer = 'DeleteCustomer',
+  /** Grants permission to Delete Order */
+  DeleteOrder = 'DeleteOrder',
+  /** Grants permission to Delete Promotion */
+  DeletePromotion = 'DeletePromotion',
+  /** Grants permission to Delete Settings */
+  DeleteSettings = 'DeleteSettings',
+  /** Owner means the user owns this entity, e.g. a Customer's own Order */
+  Owner = 'Owner',
+  Placeholder = 'Placeholder',
+  /** Public means any unauthenticated user may perform the operation */
+  Public = 'Public',
+  /** Grants permission to Read Administrator */
+  ReadAdministrator = 'ReadAdministrator',
+  /** Grants permission to Read Catalog */
+  ReadCatalog = 'ReadCatalog',
+  /** Grants permission to Read Customer */
+  ReadCustomer = 'ReadCustomer',
+  /** Grants permission to Read Order */
+  ReadOrder = 'ReadOrder',
+  /** Grants permission to Read Promotion */
+  ReadPromotion = 'ReadPromotion',
+  /** Grants permission to Read Settings */
+  ReadSettings = 'ReadSettings',
+  /** SuperAdmin has unrestricted access to all operations */
+  SuperAdmin = 'SuperAdmin',
+  /** Grants permission to Update Administrator */
+  UpdateAdministrator = 'UpdateAdministrator',
+  /** Grants permission to Update Catalog */
+  UpdateCatalog = 'UpdateCatalog',
+  /** Grants permission to Update Customer */
+  UpdateCustomer = 'UpdateCustomer',
+  /** Grants permission to Update Order */
+  UpdateOrder = 'UpdateOrder',
+  /** Grants permission to Update Promotion */
+  UpdatePromotion = 'UpdatePromotion',
+  /** Grants permission to Update Settings */
+  UpdateSettings = 'UpdateSettings'
+}
+
 export type DeletionResponse = {
   __typename?: 'DeletionResponse';
   result: DeletionResult;
@@ -2933,49 +3000,6 @@ export enum LanguageCode {
   zh_Hant = 'zh_Hant',
   /** Zulu */
   zu = 'zu'
-}
-
-/**
- * "
- * @description
- * Permissions for administrators and customers. Used to control access to
- * GraphQL resolvers via the {@link Allow} decorator.
- * 
- * @docsCategory common
- */
-export enum Permission {
-  /**  The Authenticated role means simply that the user is logged in  */
-  Authenticated = 'Authenticated',
-  CreateAdministrator = 'CreateAdministrator',
-  CreateCatalog = 'CreateCatalog',
-  CreateCustomer = 'CreateCustomer',
-  CreateOrder = 'CreateOrder',
-  CreatePromotion = 'CreatePromotion',
-  CreateSettings = 'CreateSettings',
-  DeleteAdministrator = 'DeleteAdministrator',
-  DeleteCatalog = 'DeleteCatalog',
-  DeleteCustomer = 'DeleteCustomer',
-  DeleteOrder = 'DeleteOrder',
-  DeletePromotion = 'DeletePromotion',
-  DeleteSettings = 'DeleteSettings',
-  /**  Owner means the user owns this entity, e.g. a Customer's own Order */
-  Owner = 'Owner',
-  /**  Public means any unauthenticated user may perform the operation  */
-  Public = 'Public',
-  ReadAdministrator = 'ReadAdministrator',
-  ReadCatalog = 'ReadCatalog',
-  ReadCustomer = 'ReadCustomer',
-  ReadOrder = 'ReadOrder',
-  ReadPromotion = 'ReadPromotion',
-  ReadSettings = 'ReadSettings',
-  /**  SuperAdmin can perform the most sensitive tasks */
-  SuperAdmin = 'SuperAdmin',
-  UpdateAdministrator = 'UpdateAdministrator',
-  UpdateCatalog = 'UpdateCatalog',
-  UpdateCustomer = 'UpdateCustomer',
-  UpdateOrder = 'UpdateOrder',
-  UpdatePromotion = 'UpdatePromotion',
-  UpdateSettings = 'UpdateSettings'
 }
 
 export type Address = Node & {

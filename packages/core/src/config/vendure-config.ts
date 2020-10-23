@@ -9,6 +9,7 @@ import { ConnectionOptions } from 'typeorm';
 
 import { RequestContext } from '../api/common/request-context';
 import { Transitions } from '../common/finite-state-machine/types';
+import { PermissionDefinition } from '../common/permission-definition';
 import { Order } from '../entity/order/order.entity';
 import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
@@ -352,6 +353,14 @@ export interface AuthOptions {
      * @default NativeAuthenticationStrategy
      */
     adminAuthenticationStrategy?: AuthenticationStrategy[];
+    /**
+     * @description
+     * Allows custom Permissions to be defined, which can be used to restrict access to custom
+     * GraphQL resolvers defined in plugins.
+     *
+     * @default []
+     */
+    customPermissions?: PermissionDefinition[];
 }
 
 /**

@@ -76,6 +76,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         },
         shopAuthenticationStrategy: [new NativeAuthenticationStrategy()],
         adminAuthenticationStrategy: [new NativeAuthenticationStrategy()],
+        customPermissions: [],
     },
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,

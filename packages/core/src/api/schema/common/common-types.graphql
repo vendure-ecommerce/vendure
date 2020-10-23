@@ -58,6 +58,11 @@ enum DeletionResult {
     NOT_DELETED
 }
 
+# Populated at run-time
+enum Permission {
+    Placeholder
+}
+
 type DeletionResponse {
     result: DeletionResult!
     message: String

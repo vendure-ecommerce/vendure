@@ -120,6 +120,7 @@ export * from './shared/components/form-field/form-field-control.directive';
 export * from './shared/components/form-field/form-field.component';
 export * from './shared/components/form-item/form-item.component';
 export * from './shared/components/formatted-address/formatted-address.component';
+export * from './shared/components/help-tooltip/help-tooltip.component';
 export * from './shared/components/history-entry-detail/history-entry-detail.component';
 export * from './shared/components/items-per-page-controls/items-per-page-controls.component';
 export * from './shared/components/labeled-data/labeled-data.component';

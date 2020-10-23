@@ -1950,6 +1950,72 @@ export enum DeletionResult {
   NOT_DELETED = 'NOT_DELETED'
 }
 
+/**
+ * @description
+ * Permissions for administrators and customers. Used to control access to
+ * GraphQL resolvers via the {@link Allow} decorator.
+ * 
+ * @docsCategory common
+ */
+export enum Permission {
+  /** Authenticated means simply that the user is logged in */
+  Authenticated = 'Authenticated',
+  /** SuperAdmin has unrestricted access to all operations */
+  SuperAdmin = 'SuperAdmin',
+  /** Owner means the user owns this entity, e.g. a Customer's own Order */
+  Owner = 'Owner',
+  /** Public means any unauthenticated user may perform the operation */
+  Public = 'Public',
+  /** Grants permission to Create Catalog */
+  CreateCatalog = 'CreateCatalog',
+  /** Grants permission to Read Catalog */
+  ReadCatalog = 'ReadCatalog',
+  /** Grants permission to Update Catalog */
+  UpdateCatalog = 'UpdateCatalog',
+  /** Grants permission to Delete Catalog */
+  DeleteCatalog = 'DeleteCatalog',
+  /** Grants permission to Create Customer */
+  CreateCustomer = 'CreateCustomer',
+  /** Grants permission to Read Customer */
+  ReadCustomer = 'ReadCustomer',
+  /** Grants permission to Update Customer */
+  UpdateCustomer = 'UpdateCustomer',
+  /** Grants permission to Delete Customer */
+  DeleteCustomer = 'DeleteCustomer',
+  /** Grants permission to Create Administrator */
+  CreateAdministrator = 'CreateAdministrator',
+  /** Grants permission to Read Administrator */
+  ReadAdministrator = 'ReadAdministrator',
+  /** Grants permission to Update Administrator */
+  UpdateAdministrator = 'UpdateAdministrator',
+  /** Grants permission to Delete Administrator */
+  DeleteAdministrator = 'DeleteAdministrator',
+  /** Grants permission to Create Order */
+  CreateOrder = 'CreateOrder',
+  /** Grants permission to Read Order */
+  ReadOrder = 'ReadOrder',
+  /** Grants permission to Update Order */
+  UpdateOrder = 'UpdateOrder',
+  /** Grants permission to Delete Order */
+  DeleteOrder = 'DeleteOrder',
+  /** Grants permission to Create Promotion */
+  CreatePromotion = 'CreatePromotion',
+  /** Grants permission to Read Promotion */
+  ReadPromotion = 'ReadPromotion',
+  /** Grants permission to Update Promotion */
+  UpdatePromotion = 'UpdatePromotion',
+  /** Grants permission to Delete Promotion */
+  DeletePromotion = 'DeletePromotion',
+  /** Grants permission to Create Settings */
+  CreateSettings = 'CreateSettings',
+  /** Grants permission to Read Settings */
+  ReadSettings = 'ReadSettings',
+  /** Grants permission to Update Settings */
+  UpdateSettings = 'UpdateSettings',
+  /** Grants permission to Delete Settings */
+  DeleteSettings = 'DeleteSettings'
+}
+
 export type DeletionResponse = {
   __typename?: 'DeletionResponse';
   result: DeletionResult;
@@ -2902,49 +2968,6 @@ export enum LanguageCode {
   yo = 'yo',
   /** Zulu */
   zu = 'zu'
-}
-
-/**
- * "
- * @description
- * Permissions for administrators and customers. Used to control access to
- * GraphQL resolvers via the {@link Allow} decorator.
- * 
- * @docsCategory common
- */
-export enum Permission {
-  /**  The Authenticated role means simply that the user is logged in  */
-  Authenticated = 'Authenticated',
-  /**  SuperAdmin can perform the most sensitive tasks */
-  SuperAdmin = 'SuperAdmin',
-  /**  Owner means the user owns this entity, e.g. a Customer's own Order */
-  Owner = 'Owner',
-  /**  Public means any unauthenticated user may perform the operation  */
-  Public = 'Public',
-  CreateCatalog = 'CreateCatalog',
-  ReadCatalog = 'ReadCatalog',
-  UpdateCatalog = 'UpdateCatalog',
-  DeleteCatalog = 'DeleteCatalog',
-  CreateCustomer = 'CreateCustomer',
-  ReadCustomer = 'ReadCustomer',
-  UpdateCustomer = 'UpdateCustomer',
-  DeleteCustomer = 'DeleteCustomer',
-  CreateAdministrator = 'CreateAdministrator',
-  ReadAdministrator = 'ReadAdministrator',
-  UpdateAdministrator = 'UpdateAdministrator',
-  DeleteAdministrator = 'DeleteAdministrator',
-  CreateOrder = 'CreateOrder',
-  ReadOrder = 'ReadOrder',
-  UpdateOrder = 'UpdateOrder',
-  DeleteOrder = 'DeleteOrder',
-  CreatePromotion = 'CreatePromotion',
-  ReadPromotion = 'ReadPromotion',
-  UpdatePromotion = 'UpdatePromotion',
-  DeletePromotion = 'DeletePromotion',
-  CreateSettings = 'CreateSettings',
-  ReadSettings = 'ReadSettings',
-  UpdateSettings = 'UpdateSettings',
-  DeleteSettings = 'DeleteSettings'
 }
 
 export type Address = Node & {

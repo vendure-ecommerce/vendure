@@ -5,6 +5,7 @@ export * from './error/errors';
 export * from './error/error-result';
 export * from './error/generated-graphql-admin-errors';
 export * from './injector';
+export * from './permission-definition';
 export * from './ttl-cache';
 export * from './types/common-types';
 export * from './types/injectable-strategy';

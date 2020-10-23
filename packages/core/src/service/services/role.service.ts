@@ -22,8 +22,10 @@ import {
     InternalServerError,
     UserInputError,
 } from '../../common/error/errors';
+import { getAllPermissionsMetadata } from '../../common/permission-definition';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
+import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
 import { Role } from '../../entity/role/role.entity';
 import { User } from '../../entity/user/user.entity';
@@ -40,6 +42,7 @@ export class RoleService {
         private connection: TransactionalConnection,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
+        private configService: ConfigService,
     ) {}
 
     async initRoles() {
@@ -191,11 +194,12 @@ export class RoleService {
         return permittedChannels;
     }
 
-    private checkPermissionsAreValid(permissions?: string[] | null) {
+    private checkPermissionsAreValid(permissions?: Permission[] | null) {
         if (!permissions) {
             return;
         }
-        const allPermissions = this.getAllPermissions();
+        const { customPermissions } = this.configService.authOptions;
+        const allPermissions = getAllPermissionsMetadata(customPermissions).map(p => p.name as Permission);
         for (const permission of permissions) {
             if (!allPermissions.includes(permission)) {
                 throw new UserInputError('error.permission-invalid', { permission });
@@ -213,14 +217,17 @@ export class RoleService {
      * Ensure that the SuperAdmin role exists and that it has all possible Permissions.
      */
     private async ensureSuperAdminRoleExists() {
-        const allPermissions = Object.values(Permission).filter(p => p !== Permission.Owner);
+        const { customPermissions } = this.configService.authOptions;
+        const assignablePermissions = getAllPermissionsMetadata(customPermissions)
+            .filter(p => p.assignable)
+            .map(p => p.name as Permission);
         try {
             const superAdminRole = await this.getSuperAdminRole();
-            const hasAllPermissions = allPermissions.every(permission =>
+            const hasAllPermissions = assignablePermissions.every(permission =>
                 superAdminRole.permissions.includes(permission),
             );
             if (!hasAllPermissions) {
-                superAdminRole.permissions = allPermissions;
+                superAdminRole.permissions = assignablePermissions;
                 await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
             }
         } catch (err) {
@@ -229,7 +236,7 @@ export class RoleService {
                 {
                     code: SUPER_ADMIN_ROLE_CODE,
                     description: SUPER_ADMIN_ROLE_DESCRIPTION,
-                    permissions: allPermissions,
+                    permissions: assignablePermissions,
                 },
                 [this.channelService.getDefaultChannel()],
             );
