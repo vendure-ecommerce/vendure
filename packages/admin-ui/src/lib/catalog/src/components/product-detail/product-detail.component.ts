@@ -263,14 +263,16 @@ export class ProductDetailComponent
      * If creating a new product, automatically generate the slug based on the product name.
      */
     updateSlug(nameValue: string) {
-        this.isNew$.pipe(take(1)).subscribe(isNew => {
-            if (isNew) {
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(take(1))
+            .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['product', 'slug']);
-                if (slugControl && slugControl.pristine) {
+                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
-            }
-        });
+            });
     }
 
     selectProductFacetValue() {

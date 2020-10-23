@@ -423,6 +423,11 @@ export const GLOBAL_SETTINGS_FRAGMENT = gql`
         availableLanguages
         trackInventory
         outOfStockThreshold
+        serverConfig {
+            orderProcess {
+                name
+            }
+        }
     }
 `;
 

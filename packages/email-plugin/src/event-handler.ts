@@ -1,5 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
+import { Injector } from '@vendure/core';
 
 import { EmailEventListener, EmailTemplateConfig, SetTemplateVarsFn } from './event-listener';
 import { EventWithAsyncData, EventWithContext, IntermediateEmailDetails, LoadDataFn } from './types';
@@ -169,11 +170,18 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
     async handle(
         event: Event,
         globals: { [key: string]: any } = {},
+        injector: Injector,
     ): Promise<IntermediateEmailDetails | undefined> {
         for (const filterFn of this.filterFns) {
             if (!filterFn(event)) {
                 return;
             }
+        }
+        if (this instanceof EmailEventHandlerWithAsyncData) {
+            (event as EventWithAsyncData<Event, any>).data = await this._loadDataFn({
+                event,
+                injector,
+            });
         }
         if (!this.setRecipientFn) {
             throw new Error(

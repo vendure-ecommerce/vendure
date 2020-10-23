@@ -54,9 +54,9 @@
         >
             <div class="clr-col">
                 <label>{{ 'settings.payment-method-config-options' | translate }}</label>
-                <section class="form-block" *ngFor="let arg of paymentMethod.configArgs; index as i">
+                <section class="form-block" *ngFor="let arg of paymentMethod.definition.args; index as i">
                     <vdr-form-field
-                        [label]="arg.name"
+                        [label]="arg.label || arg.name"
                         [for]="arg.name"
                     >
                         <vdr-dynamic-form-input

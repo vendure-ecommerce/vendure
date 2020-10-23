@@ -421,6 +421,24 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
         });
+
+        it('only executes for filtered events', async () => {
+            let callCount = 0;
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .filter(event => event.shouldSend === true)
+                .loadData(async ({ injector }) => {
+                    callCount++;
+                });
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(RequestContext.empty(), false));
+            eventBus.publish(new MockEvent(RequestContext.empty(), true));
+            await pause();
+
+            expect(callCount).toBe(1);
+        });
     });
 
     describe('orderConfirmationHandler', () => {

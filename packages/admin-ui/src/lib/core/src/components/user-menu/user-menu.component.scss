@@ -10,6 +10,9 @@
 .user-name {
     color: $color-grey-200;
     margin-right: 12px;
+    @media screen and (max-width: $breakpoint-small) {
+        display: none;
+    }
 }
 
 .trigger clr-icon {

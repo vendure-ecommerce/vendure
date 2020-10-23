@@ -3,15 +3,9 @@
         <div class="search-form">
             <select clrSelect name="state" [formControl]="stateFilter">
                 <option value="all">{{ 'order.state-all-orders' | translate }}</option>
-                <option value="AddingItems">{{ 'order.state-adding-items' | translate }}</option>
-                <option value="ArrangingPayment">{{ 'order.state-arranging-payment' | translate }}</option>
-                <option value="PaymentAuthorized">{{ 'order.state-payment-authorized' | translate }}</option>
-                <option value="PaymentSettled">{{ 'order.state-payment-settled' | translate }}</option>
-                <option value="PartiallyDelivered">
-                    {{ 'order.state-partially-delivered' | translate }}
+                <option *ngFor="let orderState of (orderStates$ | async)" [value]="orderState">
+                    {{ orderState | orderStateI18nToken | translate }}
                 </option>
-                <option value="Delivered">{{ 'order.state-delivered' | translate }}</option>
-                <option value="Cancelled">{{ 'order.state-cancelled' | translate }}</option>
             </select>
             <input
                 type="text"

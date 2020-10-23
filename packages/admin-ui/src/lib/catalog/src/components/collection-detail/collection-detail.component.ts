@@ -40,7 +40,8 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
     styleUrls: ['./collection-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fragment>
+export class CollectionDetailComponent
+    extends BaseDetailComponent<Collection.Fragment>
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
@@ -97,17 +98,19 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     }
 
     /**
-     * If creating a new product, automatically generate the slug based on the collection name.
+     * If creating a new Collection, automatically generate the slug based on the collection name.
      */
     updateSlug(nameValue: string) {
-        this.isNew$.pipe(take(1)).subscribe(isNew => {
-            if (isNew) {
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(take(1))
+            .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['slug']);
-                if (slugControl && slugControl.pristine) {
+                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
-            }
-        });
+            });
     }
 
     addFilter(collectionFilter: ConfigurableOperation) {
