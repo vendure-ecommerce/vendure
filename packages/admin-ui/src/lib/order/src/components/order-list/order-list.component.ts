@@ -13,11 +13,14 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
     styleUrls: ['./order-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderListComponent extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
+export class OrderListComponent
+    extends BaseListComponent<GetOrderList.Query, GetOrderList.Items>
     implements OnInit {
     searchTerm = new FormControl('');
     stateFilter = new FormControl('all');
-    orderStates$ = this.dataService.settings.getGlobalSettings().mapSingle(data => data.globalSettings.serverConfig.orderProcess.map(item => item.name));
+    orderStates$ = this.dataService.settings
+        .getGlobalSettings()
+        .mapSingle(data => data.globalSettings.serverConfig.orderProcess.map(item => item.name));
 
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);
