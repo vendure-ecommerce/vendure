@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { COUNTRY_FRAGMENT } from './graphql/fragments';
 import {
@@ -19,7 +19,7 @@ import { GET_COUNTRY_LIST, UPDATE_COUNTRY } from './graphql/shared-definitions';
 
 // tslint:disable:no-non-null-assertion
 
-describe('Facet resolver', () => {
+describe('Country resolver', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
     let countries: GetCountryList.Items[];
     let GB: GetCountryList.Items;

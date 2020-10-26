@@ -26,7 +26,7 @@ import {
     Role,
     UpdateRole,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_CHANNEL, CREATE_ROLE } from './graphql/shared-definitions';
+import { CREATE_CHANNEL, CREATE_ROLE, UPDATE_ROLE } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
@@ -371,15 +371,6 @@ export const GET_ROLES = gql`
 export const GET_ROLE = gql`
     query GetRole($id: ID!) {
         role(id: $id) {
-            ...Role
-        }
-    }
-    ${ROLE_FRAGMENT}
-`;
-
-export const UPDATE_ROLE = gql`
-    mutation UpdateRole($input: UpdateRoleInput!) {
-        updateRole(input: $input) {
             ...Role
         }
     }

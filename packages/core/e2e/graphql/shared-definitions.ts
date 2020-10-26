@@ -705,3 +705,12 @@ export const UPDATE_GLOBAL_SETTINGS = gql`
     }
     ${GLOBAL_SETTINGS_FRAGMENT}
 `;
+
+export const UPDATE_ROLE = gql`
+    mutation UpdateRole($input: UpdateRoleInput!) {
+        updateRole(input: $input) {
+            ...Role
+        }
+    }
+    ${ROLE_FRAGMENT}
+`;
