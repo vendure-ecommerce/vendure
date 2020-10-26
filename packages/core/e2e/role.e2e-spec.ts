@@ -141,100 +141,145 @@ describe('Role resolver', () => {
         expect(result.role).toEqual(createdRole);
     });
 
-    it('updateRole', async () => {
-        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-            input: {
-                id: createdRole.id,
+    describe('updateRole', () => {
+        it('updates role', async () => {
+            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                input: {
+                    id: createdRole.id,
+                    code: 'test-modified',
+                    description: 'test role modified',
+                    permissions: [
+                        Permission.ReadCustomer,
+                        Permission.UpdateCustomer,
+                        Permission.DeleteCustomer,
+                    ],
+                },
+            });
+
+            expect(omit(result.updateRole, ['channels'])).toEqual({
                 code: 'test-modified',
                 description: 'test role modified',
-                permissions: [Permission.ReadCustomer, Permission.UpdateCustomer, Permission.DeleteCustomer],
-            },
+                id: 'T_5',
+                permissions: [
+                    Permission.Authenticated,
+                    Permission.ReadCustomer,
+                    Permission.UpdateCustomer,
+                    Permission.DeleteCustomer,
+                ],
+            });
         });
 
-        expect(omit(result.updateRole, ['channels'])).toEqual({
-            code: 'test-modified',
-            description: 'test role modified',
-            id: 'T_5',
-            permissions: [
+        it('works with partial input', async () => {
+            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                input: {
+                    id: createdRole.id,
+                    code: 'test-modified-again',
+                },
+            });
+
+            expect(result.updateRole.code).toBe('test-modified-again');
+            expect(result.updateRole.description).toBe('test role modified');
+            expect(result.updateRole.permissions).toEqual([
                 Permission.Authenticated,
                 Permission.ReadCustomer,
                 Permission.UpdateCustomer,
                 Permission.DeleteCustomer,
-            ],
-        });
-    });
-
-    it('updateRole works with partial input', async () => {
-        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-            input: {
-                id: createdRole.id,
-                code: 'test-modified-again',
-            },
+            ]);
         });
 
-        expect(result.updateRole.code).toBe('test-modified-again');
-        expect(result.updateRole.description).toBe('test role modified');
-        expect(result.updateRole.permissions).toEqual([
-            Permission.Authenticated,
-            Permission.ReadCustomer,
-            Permission.UpdateCustomer,
-            Permission.DeleteCustomer,
-        ]);
-    });
-
-    it('updateRole deduplicates permissions', async () => {
-        const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-            input: {
-                id: createdRole.id,
-                permissions: [
-                    Permission.Authenticated,
-                    Permission.Authenticated,
-                    Permission.ReadCustomer,
-                    Permission.ReadCustomer,
-                ],
-            },
-        });
-
-        expect(result.updateRole.permissions).toEqual([Permission.Authenticated, Permission.ReadCustomer]);
-    });
-
-    it(
-        'updateRole is not allowed for SuperAdmin role',
-        assertThrowsWithMessage(async () => {
-            const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
-            if (!superAdminRole) {
-                fail(`Could not find SuperAdmin role`);
-                return;
-            }
-            return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+        it('deduplicates permissions', async () => {
+            const result = await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
                 input: {
-                    id: superAdminRole.id,
-                    code: 'superadmin-modified',
-                    description: 'superadmin modified',
-                    permissions: [Permission.Authenticated],
+                    id: createdRole.id,
+                    permissions: [
+                        Permission.Authenticated,
+                        Permission.Authenticated,
+                        Permission.ReadCustomer,
+                        Permission.ReadCustomer,
+                    ],
                 },
             });
-        }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
-    );
 
-    it(
-        'updateRole is not allowed for Customer role',
-        assertThrowsWithMessage(async () => {
-            const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
-            if (!customerRole) {
-                fail(`Could not find Customer role`);
-                return;
-            }
-            return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
-                input: {
-                    id: customerRole.id,
-                    code: 'customer-modified',
-                    description: 'customer modified',
-                    permissions: [Permission.Authenticated, Permission.DeleteAdministrator],
-                },
-            });
-        }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
-    );
+            expect(result.updateRole.permissions).toEqual([
+                Permission.Authenticated,
+                Permission.ReadCustomer,
+            ]);
+        });
+
+        it(
+            'does not allow setting non-assignable permissions - Owner',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                    input: {
+                        id: createdRole.id,
+                        permissions: [Permission.Owner],
+                    },
+                });
+            }, 'The permission "Owner" may not be assigned'),
+        );
+
+        it(
+            'does not allow setting non-assignable permissions - Public',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                    input: {
+                        id: createdRole.id,
+                        permissions: [Permission.Public],
+                    },
+                });
+            }, 'The permission "Public" may not be assigned'),
+        );
+
+        it(
+            'does not allow setting SuperAdmin permission',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                    input: {
+                        id: createdRole.id,
+                        permissions: [Permission.SuperAdmin],
+                    },
+                });
+            }, 'The permission "SuperAdmin" may not be assigned'),
+        );
+
+        it(
+            'is not allowed for SuperAdmin role',
+            assertThrowsWithMessage(async () => {
+                const superAdminRole = defaultRoles.find(r => r.code === SUPER_ADMIN_ROLE_CODE);
+                if (!superAdminRole) {
+                    fail(`Could not find SuperAdmin role`);
+                    return;
+                }
+                return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                    input: {
+                        id: superAdminRole.id,
+                        code: 'superadmin-modified',
+                        description: 'superadmin modified',
+                        permissions: [Permission.Authenticated],
+                    },
+                });
+            }, `The role '${SUPER_ADMIN_ROLE_CODE}' cannot be modified`),
+        );
+
+        it(
+            'is not allowed for Customer role',
+            assertThrowsWithMessage(async () => {
+                const customerRole = defaultRoles.find(r => r.code === CUSTOMER_ROLE_CODE);
+                if (!customerRole) {
+                    fail(`Could not find Customer role`);
+                    return;
+                }
+                return adminClient.query<UpdateRole.Mutation, UpdateRole.Variables>(UPDATE_ROLE, {
+                    input: {
+                        id: customerRole.id,
+                        code: 'customer-modified',
+                        description: 'customer modified',
+                        permissions: [Permission.Authenticated, Permission.DeleteAdministrator],
+                    },
+                });
+            }, `The role '${CUSTOMER_ROLE_CODE}' cannot be modified`),
+        );
+    });
 
     it(
         'deleteRole is not allowed for Customer role',
@@ -300,7 +345,7 @@ describe('Role resolver', () => {
                 },
             });
 
-            secondChannel = createChannel;
+            secondChannel = createChannel as any;
         });
 
         it('createRole with specified channel', async () => {

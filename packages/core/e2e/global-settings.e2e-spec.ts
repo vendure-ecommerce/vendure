@@ -69,6 +69,14 @@ describe('GlobalSettings resolver', () => {
         it('includes customFieldConfig', () => {
             expect(globalSettings.serverConfig.customFieldConfig.Customer).toEqual([{ name: 'age' }]);
         });
+
+        it('includes non-internal permission definitions', () => {
+            const permissionNames = globalSettings.serverConfig.permissions.map(p => p.name);
+            expect(permissionNames).toContain('CreateAdministrator');
+            expect(permissionNames).not.toContain('SuperAdmin');
+            expect(permissionNames).not.toContain('Owner');
+            expect(permissionNames).not.toContain('Authenticated');
+        });
     });
 
     describe('update', () => {

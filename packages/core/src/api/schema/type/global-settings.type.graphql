@@ -13,8 +13,15 @@ type OrderProcessState {
     to: [String!]!
 }
 
+type PermissionDefinition {
+    name: String!
+    description: String!
+    assignable: Boolean!
+}
+
 # Programatically extended by the addGraphQLCustomFields function
 type ServerConfig {
     orderProcess: [OrderProcessState!]!
     permittedAssetTypes: [String!]!
+    permissions: [PermissionDefinition!]!
 }

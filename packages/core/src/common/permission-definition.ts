@@ -29,6 +29,14 @@ export interface PermissionDefinitionConfig {
      * @default true
      */
     assignable?: boolean;
+    /**
+     * @description
+     * Internal permissions are not exposed via the API and are reserved for
+     * special use-cases such at the `Owner` or `Public` permissions.
+     *
+     * @default false
+     */
+    internal?: boolean;
 }
 
 /**
@@ -82,12 +90,13 @@ export class PermissionDefinition {
 
     /** @internal */
     getMetadata(): PermissionMetadata[] {
-        const { name, description, assignable } = this.config;
+        const { name, description, assignable, internal } = this.config;
         return [
             {
                 name,
                 description: description || `Grants permissions on ${name} operations`,
                 assignable: assignable ?? true,
+                internal: internal ?? false,
             },
         ];
     }

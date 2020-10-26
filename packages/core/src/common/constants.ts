@@ -13,19 +13,26 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new PermissionDefinition({
         name: 'Authenticated',
         description: 'Authenticated means simply that the user is logged in',
+        assignable: true,
+        internal: true,
     }),
     new PermissionDefinition({
         name: 'SuperAdmin',
         description: 'SuperAdmin has unrestricted access to all operations',
+        assignable: true,
+        internal: true,
     }),
     new PermissionDefinition({
         name: 'Owner',
         description: `Owner means the user owns this entity, e.g. a Customer's own Order`,
         assignable: false,
+        internal: true,
     }),
     new PermissionDefinition({
         name: 'Public',
         description: `Public means any unauthenticated user may perform the operation`,
+        assignable: false,
+        internal: true,
     }),
     new CrudPermissionDefinition('Catalog'),
     new CrudPermissionDefinition('Customer'),

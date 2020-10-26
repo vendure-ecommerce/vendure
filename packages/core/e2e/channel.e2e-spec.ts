@@ -10,7 +10,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -140,7 +140,9 @@ describe('Channels', () => {
         expect(me!.channels.length).toBe(2);
 
         const secondChannelData = me!.channels.find(c => c.token === SECOND_CHANNEL_TOKEN);
-        const nonOwnerPermissions = Object.values(Permission).filter(p => p !== Permission.Owner);
+        const nonOwnerPermissions = Object.values(Permission).filter(
+            p => p !== Permission.Owner && p !== Permission.Public,
+        );
         expect(secondChannelData!.permissions).toEqual(nonOwnerPermissions);
     });
 

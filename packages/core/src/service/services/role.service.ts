@@ -199,9 +199,11 @@ export class RoleService {
             return;
         }
         const { customPermissions } = this.configService.authOptions;
-        const allPermissions = getAllPermissionsMetadata(customPermissions).map(p => p.name as Permission);
+        const allAssignablePermissions = getAllPermissionsMetadata(customPermissions)
+            .filter(p => p.assignable)
+            .map(p => p.name as Permission);
         for (const permission of permissions) {
-            if (!allPermissions.includes(permission)) {
+            if (!allAssignablePermissions.includes(permission) || permission === Permission.SuperAdmin) {
                 throw new UserInputError('error.permission-invalid', { permission });
             }
         }
@@ -223,13 +225,8 @@ export class RoleService {
             .map(p => p.name as Permission);
         try {
             const superAdminRole = await this.getSuperAdminRole();
-            const hasAllPermissions = assignablePermissions.every(permission =>
-                superAdminRole.permissions.includes(permission),
-            );
-            if (!hasAllPermissions) {
-                superAdminRole.permissions = assignablePermissions;
-                await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
-            }
+            superAdminRole.permissions = assignablePermissions;
+            await this.connection.getRepository(Role).save(superAdminRole, { reload: false });
         } catch (err) {
             await this.createRoleForChannels(
                 RequestContext.empty(),

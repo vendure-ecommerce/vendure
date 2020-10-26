@@ -367,53 +367,53 @@ export enum Permission {
     Owner = 'Owner',
     /** Public means any unauthenticated user may perform the operation */
     Public = 'Public',
-    /** Grants permission to Create Catalog */
+    /** Grants permission to create Catalog */
     CreateCatalog = 'CreateCatalog',
-    /** Grants permission to Read Catalog */
+    /** Grants permission to read Catalog */
     ReadCatalog = 'ReadCatalog',
-    /** Grants permission to Update Catalog */
+    /** Grants permission to update Catalog */
     UpdateCatalog = 'UpdateCatalog',
-    /** Grants permission to Delete Catalog */
+    /** Grants permission to delete Catalog */
     DeleteCatalog = 'DeleteCatalog',
-    /** Grants permission to Create Customer */
+    /** Grants permission to create Customer */
     CreateCustomer = 'CreateCustomer',
-    /** Grants permission to Read Customer */
+    /** Grants permission to read Customer */
     ReadCustomer = 'ReadCustomer',
-    /** Grants permission to Update Customer */
+    /** Grants permission to update Customer */
     UpdateCustomer = 'UpdateCustomer',
-    /** Grants permission to Delete Customer */
+    /** Grants permission to delete Customer */
     DeleteCustomer = 'DeleteCustomer',
-    /** Grants permission to Create Administrator */
+    /** Grants permission to create Administrator */
     CreateAdministrator = 'CreateAdministrator',
-    /** Grants permission to Read Administrator */
+    /** Grants permission to read Administrator */
     ReadAdministrator = 'ReadAdministrator',
-    /** Grants permission to Update Administrator */
+    /** Grants permission to update Administrator */
     UpdateAdministrator = 'UpdateAdministrator',
-    /** Grants permission to Delete Administrator */
+    /** Grants permission to delete Administrator */
     DeleteAdministrator = 'DeleteAdministrator',
-    /** Grants permission to Create Order */
+    /** Grants permission to create Order */
     CreateOrder = 'CreateOrder',
-    /** Grants permission to Read Order */
+    /** Grants permission to read Order */
     ReadOrder = 'ReadOrder',
-    /** Grants permission to Update Order */
+    /** Grants permission to update Order */
     UpdateOrder = 'UpdateOrder',
-    /** Grants permission to Delete Order */
+    /** Grants permission to delete Order */
     DeleteOrder = 'DeleteOrder',
-    /** Grants permission to Create Promotion */
+    /** Grants permission to create Promotion */
     CreatePromotion = 'CreatePromotion',
-    /** Grants permission to Read Promotion */
+    /** Grants permission to read Promotion */
     ReadPromotion = 'ReadPromotion',
-    /** Grants permission to Update Promotion */
+    /** Grants permission to update Promotion */
     UpdatePromotion = 'UpdatePromotion',
-    /** Grants permission to Delete Promotion */
+    /** Grants permission to delete Promotion */
     DeletePromotion = 'DeletePromotion',
-    /** Grants permission to Create Settings */
+    /** Grants permission to create Settings */
     CreateSettings = 'CreateSettings',
-    /** Grants permission to Read Settings */
+    /** Grants permission to read Settings */
     ReadSettings = 'ReadSettings',
-    /** Grants permission to Update Settings */
+    /** Grants permission to update Settings */
     UpdateSettings = 'UpdateSettings',
-    /** Grants permission to Delete Settings */
+    /** Grants permission to delete Settings */
     DeleteSettings = 'DeleteSettings',
 }
 
@@ -1935,10 +1935,18 @@ export type OrderProcessState = {
     to: Array<Scalars['String']>;
 };
 
+export type PermissionDefinition = {
+    __typename?: 'PermissionDefinition';
+    name: Scalars['String'];
+    description: Scalars['String'];
+    assignable: Scalars['Boolean'];
+};
+
 export type ServerConfig = {
     __typename?: 'ServerConfig';
     orderProcess: Array<OrderProcessState>;
     permittedAssetTypes: Array<Scalars['String']>;
+    permissions: Array<PermissionDefinition>;
     customFieldConfig: CustomFields;
 };
 

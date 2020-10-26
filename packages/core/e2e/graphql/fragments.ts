@@ -525,6 +525,11 @@ export const GLOBAL_SETTINGS_FRAGMENT = gql`
                 to
             }
             permittedAssetTypes
+            permissions {
+                name
+                description
+                assignable
+            }
             customFieldConfig {
                 Customer {
                     ... on CustomField {
