@@ -86,9 +86,8 @@
         </li>
     </ul>
     <vdr-permission-grid
-        *ngIf="permissionDefinitions$ | async as defs"
         [activePermissions]="getPermissionsForSelectedChannel()"
-        [permissionDefinitions]="defs"
+        [permissionDefinitions]="permissionDefinitions"
         [readonly]="true"
     ></vdr-permission-grid>
 </form>

@@ -28,7 +28,7 @@ import { mergeMap, take } from 'rxjs/operators';
 export class RoleDetailComponent extends BaseDetailComponent<Role> implements OnInit, OnDestroy {
     role$: Observable<Role>;
     detailForm: FormGroup;
-    permissionDefinitions$: Observable<PermissionDefinition[]>;
+    permissionDefinitions: PermissionDefinition[];
     constructor(
         router: Router,
         route: ActivatedRoute,
@@ -50,9 +50,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
     ngOnInit() {
         this.init();
         this.role$ = this.entity$;
-        this.permissionDefinitions$ = this.dataService.settings
-            .getGlobalSettings('cache-and-network')
-            .mapSingle(({ globalSettings }) => globalSettings.serverConfig.permissions);
+        this.permissionDefinitions = this.serverConfigService.getPermissionDefinitions();
     }
 
     ngOnDestroy(): void {

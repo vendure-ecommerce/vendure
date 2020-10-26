@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BaseListComponent } from '@vendure/admin-ui/core';
+import { BaseListComponent, ServerConfigService } from '@vendure/admin-ui/core';
 import { GetOrderList, SortOrder } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { merge } from 'rxjs';
@@ -18,11 +18,14 @@ export class OrderListComponent
     implements OnInit {
     searchTerm = new FormControl('');
     stateFilter = new FormControl('all');
-    orderStates$ = this.dataService.settings
-        .getGlobalSettings()
-        .mapSingle(data => data.globalSettings.serverConfig.orderProcess.map(item => item.name));
+    orderStates = this.serverConfigService.getOrderProcessStates().map(item => item.name);
 
-    constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
+    constructor(
+        private serverConfigService: ServerConfigService,
+        private dataService: DataService,
+        router: Router,
+        route: ActivatedRoute,
+    ) {
         super(router, route);
         super.setQueryFn(
             (...args: any[]) => this.dataService.order.getOrders(...args).refetchOnChannelChange(),

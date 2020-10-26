@@ -35,7 +35,7 @@ export class AdminDetailComponent
     extends BaseDetailComponent<GetAdministrator.Administrator>
     implements OnInit, OnDestroy {
     administrator$: Observable<GetAdministrator.Administrator>;
-    permissionDefinitions$: Observable<PermissionDefinition[]>;
+    permissionDefinitions: PermissionDefinition[];
     allRoles$: Observable<Role.Fragment[]>;
     selectedRoles: Role.Fragment[] = [];
     detailForm: FormGroup;
@@ -77,9 +77,7 @@ export class AdminDetailComponent
                 }
             }
         });
-        this.permissionDefinitions$ = this.dataService.settings
-            .getGlobalSettings('cache-and-network')
-            .mapSingle(({ globalSettings }) => globalSettings.serverConfig.permissions);
+        this.permissionDefinitions = this.serverConfigService.getPermissionDefinitions();
     }
 
     ngOnDestroy(): void {
@@ -189,41 +187,39 @@ export class AdminDetailComponent
     }
 
     private buildPermissionsMap() {
-        this.permissionDefinitions$.pipe(take(1)).subscribe(defs => {
-            const permissionsControl = this.detailForm.get('roles');
-            if (permissionsControl) {
-                const roles: RoleFragment[] = permissionsControl.value;
-                const channelIdPermissionsMap = new Map<string, Set<Permission>>();
-                const channelIdCodeMap = new Map<string, string>();
+        const permissionsControl = this.detailForm.get('roles');
+        if (permissionsControl) {
+            const roles: RoleFragment[] = permissionsControl.value;
+            const channelIdPermissionsMap = new Map<string, Set<Permission>>();
+            const channelIdCodeMap = new Map<string, string>();
 
-                for (const role of roles) {
-                    for (const channel of role.channels) {
-                        const channelPermissions = channelIdPermissionsMap.get(channel.id);
-                        const permissionSet = channelPermissions || new Set<Permission>();
+            for (const role of roles) {
+                for (const channel of role.channels) {
+                    const channelPermissions = channelIdPermissionsMap.get(channel.id);
+                    const permissionSet = channelPermissions || new Set<Permission>();
 
-                        role.permissions.forEach(p => permissionSet.add(p));
-                        channelIdPermissionsMap.set(channel.id, permissionSet);
-                        channelIdCodeMap.set(channel.id, channel.code);
-                    }
-                }
-
-                this.selectedRolePermissions = {} as any;
-                for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
-                    // tslint:disable-next-line:no-non-null-assertion
-                    const permissionSet = channelIdPermissionsMap.get(channelId)!;
-                    const permissionsHash: { [K in Permission]: boolean } = {} as any;
-                    for (const def of defs) {
-                        permissionsHash[def.name] = permissionSet.has(def.name as Permission);
-                    }
-                    this.selectedRolePermissions[channelId] = {
-                        // tslint:disable:no-non-null-assertion
-                        channelId,
-                        channelCode: channelIdCodeMap.get(channelId)!,
-                        permissions: permissionsHash,
-                        // tslint:enable:no-non-null-assertion
-                    };
+                    role.permissions.forEach(p => permissionSet.add(p));
+                    channelIdPermissionsMap.set(channel.id, permissionSet);
+                    channelIdCodeMap.set(channel.id, channel.code);
                 }
             }
-        });
+
+            this.selectedRolePermissions = {} as any;
+            for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
+                // tslint:disable-next-line:no-non-null-assertion
+                const permissionSet = channelIdPermissionsMap.get(channelId)!;
+                const permissionsHash: { [K in Permission]: boolean } = {} as any;
+                for (const def of this.serverConfigService.getPermissionDefinitions()) {
+                    permissionsHash[def.name] = permissionSet.has(def.name as Permission);
+                }
+                this.selectedRolePermissions[channelId] = {
+                    // tslint:disable:no-non-null-assertion
+                    channelId,
+                    channelCode: channelIdCodeMap.get(channelId)!,
+                    permissions: permissionsHash,
+                    // tslint:enable:no-non-null-assertion
+                };
+            }
+        }
     }
 }

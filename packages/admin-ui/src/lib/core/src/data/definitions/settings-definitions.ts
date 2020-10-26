@@ -567,6 +567,11 @@ export const GET_SERVER_CONFIG = gql`
                     to
                 }
                 permittedAssetTypes
+                permissions {
+                    name
+                    description
+                    assignable
+                }
                 customFieldConfig {
                     Address {
                         ...CustomFields
