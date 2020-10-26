@@ -156,6 +156,7 @@ export class CrudPermissionDefinition extends PermissionDefinition {
             name: `${operation}${this.config.name}`,
             description: `Grants permission to ${operation.toLocaleLowerCase()} ${this.config.name}`,
             assignable: true,
+            internal: false,
         }));
     }
 

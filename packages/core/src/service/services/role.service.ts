@@ -48,6 +48,7 @@ export class RoleService {
     async initRoles() {
         await this.ensureSuperAdminRoleExists();
         await this.ensureCustomerRoleExists();
+        await this.ensureRolesHaveValidPermissions();
     }
 
     findAll(ctx: RequestContext, options?: ListQueryOptions<Role>): Promise<PaginatedList<Role>> {
@@ -198,10 +199,7 @@ export class RoleService {
         if (!permissions) {
             return;
         }
-        const { customPermissions } = this.configService.authOptions;
-        const allAssignablePermissions = getAllPermissionsMetadata(customPermissions)
-            .filter(p => p.assignable)
-            .map(p => p.name as Permission);
+        const allAssignablePermissions = this.getAllAssignablePermissions();
         for (const permission of permissions) {
             if (!allAssignablePermissions.includes(permission) || permission === Permission.SuperAdmin) {
                 throw new UserInputError('error.permission-invalid', { permission });
@@ -219,10 +217,7 @@ export class RoleService {
      * Ensure that the SuperAdmin role exists and that it has all possible Permissions.
      */
     private async ensureSuperAdminRoleExists() {
-        const { customPermissions } = this.configService.authOptions;
-        const assignablePermissions = getAllPermissionsMetadata(customPermissions)
-            .filter(p => p.assignable)
-            .map(p => p.name as Permission);
+        const assignablePermissions = this.getAllAssignablePermissions();
         try {
             const superAdminRole = await this.getSuperAdminRole();
             superAdminRole.permissions = assignablePermissions;
@@ -240,6 +235,9 @@ export class RoleService {
         }
     }
 
+    /**
+     * The Customer Role is a special case which must always exist.
+     */
     private async ensureCustomerRoleExists() {
         try {
             await this.getCustomerRole();
@@ -256,6 +254,24 @@ export class RoleService {
         }
     }
 
+    /**
+     * Since custom permissions can be added and removed by config, there may exist one or more Roles with
+     * invalid permissions (i.e. permissions that were set previously to a custom permission, which has been
+     * subsequently removed from config). This method should run on startup to ensure that any such invalid
+     * permissions are removed from those Roles.
+     */
+    private async ensureRolesHaveValidPermissions() {
+        const roles = await this.connection.getRepository(Role).find();
+        const assignablePermissions = this.getAllAssignablePermissions();
+        for (const role of roles) {
+            const invalidPermissions = role.permissions.filter(p => !assignablePermissions.includes(p));
+            if (invalidPermissions.length) {
+                role.permissions = role.permissions.filter(p => assignablePermissions.includes(p));
+                await this.connection.getRepository(Role).save(role);
+            }
+        }
+    }
+
     private createRoleForChannels(ctx: RequestContext, input: CreateRoleInput, channels: Channel[]) {
         const role = new Role({
             code: input.code,
@@ -264,5 +280,11 @@ export class RoleService {
         });
         role.channels = channels;
         return this.connection.getRepository(ctx, Role).save(role);
+    }
+
+    private getAllAssignablePermissions(): Permission[] {
+        return getAllPermissionsMetadata(this.configService.authOptions.customPermissions)
+            .filter(p => p.assignable)
+            .map(p => p.name as Permission);
     }
 }
