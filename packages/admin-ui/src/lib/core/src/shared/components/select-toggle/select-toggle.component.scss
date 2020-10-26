@@ -1,5 +1,5 @@
-@import "variables";
-@import "mixins";
+@import 'variables';
+@import 'mixins';
 
 :host {
     display: flex;
@@ -45,10 +45,19 @@
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 2px 2px #6bc1e3
+        box-shadow: 0 0 2px 2px #6bc1e3;
     }
 
     &.disabled {
         cursor: default;
+    }
+}
+.toggle-label {
+    flex: 1;
+    margin-left: 6px;
+    text-align: left;
+    font-size: 12px;
+    &:not(.disabled) {
+        cursor: pointer;
     }
 }

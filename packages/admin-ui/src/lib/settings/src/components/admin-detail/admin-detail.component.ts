@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { BaseDetailComponent } from '@vendure/admin-ui/core';
+import { BaseDetailComponent, PermissionDefinition } from '@vendure/admin-ui/core';
 import {
     Administrator,
     CreateAdministratorInput,
@@ -31,9 +31,11 @@ export interface PermissionsByChannel {
     styleUrls: ['./admin-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.Administrator>
+export class AdminDetailComponent
+    extends BaseDetailComponent<GetAdministrator.Administrator>
     implements OnInit, OnDestroy {
     administrator$: Observable<GetAdministrator.Administrator>;
+    permissionDefinitions$: Observable<PermissionDefinition[]>;
     allRoles$: Observable<Role.Fragment[]>;
     selectedRoles: Role.Fragment[] = [];
     detailForm: FormGroup;
@@ -66,7 +68,7 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
     ngOnInit() {
         this.init();
         this.administrator$ = this.entity$;
-        this.allRoles$ = this.dataService.administrator.getRoles(99999).mapStream((item) => item.roles.items);
+        this.allRoles$ = this.dataService.administrator.getRoles(99999).mapStream(item => item.roles.items);
         this.dataService.client.userStatus().single$.subscribe(({ userStatus }) => {
             if (!userStatus.permissions.includes(Permission.UpdateAdministrator)) {
                 const rolesSelect = this.detailForm.get('roles');
@@ -75,6 +77,9 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
                 }
             }
         });
+        this.permissionDefinitions$ = this.dataService.settings
+            .getGlobalSettings('cache-and-network')
+            .mapSingle(({ globalSettings }) => globalSettings.serverConfig.permissions);
     }
 
     ngOnDestroy(): void {
@@ -85,17 +90,23 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
         this.buildPermissionsMap();
     }
 
-    getPermissionsForSelectedChannel() {
+    getPermissionsForSelectedChannel(): string[] {
+        function getActivePermissions(input: PermissionsByChannel['permissions']): string[] {
+            return Object.entries(input)
+                .filter(([permission, active]) => active)
+                .map(([permission, active]) => permission);
+        }
         if (this.selectedChannelId) {
             const selectedChannel = this.selectedRolePermissions[this.selectedChannelId];
             if (selectedChannel) {
-                return this.selectedRolePermissions[this.selectedChannelId].permissions;
+                const permissionMap = this.selectedRolePermissions[this.selectedChannelId].permissions;
+                return getActivePermissions(permissionMap);
             }
         }
         const channels = Object.values(this.selectedRolePermissions);
         if (0 < channels.length) {
             this.selectedChannelId = channels[0].channelId;
-            return channels[0].permissions;
+            return getActivePermissions(channels[0].permissions);
         }
         return [];
     }
@@ -107,10 +118,10 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
             firstName: formValue.firstName,
             lastName: formValue.lastName,
             password: formValue.password,
-            roleIds: formValue.roles.map((role) => role.id),
+            roleIds: formValue.roles.map(role => role.id),
         };
         this.dataService.administrator.createAdministrator(administrator).subscribe(
-            (data) => {
+            data => {
                 this.notificationService.success(_('common.notify-create-success'), {
                     entity: 'Administrator',
                 });
@@ -118,7 +129,7 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
                 this.changeDetector.markForCheck();
                 this.router.navigate(['../', data.createAdministrator.id], { relativeTo: this.route });
             },
-            (err) => {
+            err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Administrator',
                 });
@@ -138,20 +149,20 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
                         firstName: formValue.firstName,
                         lastName: formValue.lastName,
                         password: formValue.password,
-                        roleIds: formValue.roles.map((role) => role.id),
+                        roleIds: formValue.roles.map(role => role.id),
                     };
                     return this.dataService.administrator.updateAdministrator(administrator);
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Administrator',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Administrator',
                     });
@@ -178,39 +189,41 @@ export class AdminDetailComponent extends BaseDetailComponent<GetAdministrator.A
     }
 
     private buildPermissionsMap() {
-        const permissionsControl = this.detailForm.get('roles');
-        if (permissionsControl) {
-            const roles: RoleFragment[] = permissionsControl.value;
-            const channelIdPermissionsMap = new Map<string, Set<Permission>>();
-            const channelIdCodeMap = new Map<string, string>();
+        this.permissionDefinitions$.pipe(take(1)).subscribe(defs => {
+            const permissionsControl = this.detailForm.get('roles');
+            if (permissionsControl) {
+                const roles: RoleFragment[] = permissionsControl.value;
+                const channelIdPermissionsMap = new Map<string, Set<Permission>>();
+                const channelIdCodeMap = new Map<string, string>();
 
-            for (const role of roles) {
-                for (const channel of role.channels) {
-                    const channelPermissions = channelIdPermissionsMap.get(channel.id);
-                    const permissionSet = channelPermissions || new Set<Permission>();
+                for (const role of roles) {
+                    for (const channel of role.channels) {
+                        const channelPermissions = channelIdPermissionsMap.get(channel.id);
+                        const permissionSet = channelPermissions || new Set<Permission>();
 
-                    role.permissions.forEach((p) => permissionSet.add(p));
-                    channelIdPermissionsMap.set(channel.id, permissionSet);
-                    channelIdCodeMap.set(channel.id, channel.code);
+                        role.permissions.forEach(p => permissionSet.add(p));
+                        channelIdPermissionsMap.set(channel.id, permissionSet);
+                        channelIdCodeMap.set(channel.id, channel.code);
+                    }
+                }
+
+                this.selectedRolePermissions = {} as any;
+                for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
+                    // tslint:disable-next-line:no-non-null-assertion
+                    const permissionSet = channelIdPermissionsMap.get(channelId)!;
+                    const permissionsHash: { [K in Permission]: boolean } = {} as any;
+                    for (const def of defs) {
+                        permissionsHash[def.name] = permissionSet.has(def.name as Permission);
+                    }
+                    this.selectedRolePermissions[channelId] = {
+                        // tslint:disable:no-non-null-assertion
+                        channelId,
+                        channelCode: channelIdCodeMap.get(channelId)!,
+                        permissions: permissionsHash,
+                        // tslint:enable:no-non-null-assertion
+                    };
                 }
             }
-
-            this.selectedRolePermissions = {} as any;
-            for (const channelId of Array.from(channelIdPermissionsMap.keys())) {
-                // tslint:disable-next-line:no-non-null-assertion
-                const permissionSet = channelIdPermissionsMap.get(channelId)!;
-                const permissionsHash: { [K in Permission]: boolean } = {} as any;
-                for (const permission of Object.keys(Permission)) {
-                    permissionsHash[permission] = permissionSet.has(permission as Permission);
-                }
-                this.selectedRolePermissions[channelId] = {
-                    // tslint:disable:no-non-null-assertion
-                    channelId,
-                    channelCode: channelIdCodeMap.get(channelId)!,
-                    permissions: permissionsHash,
-                    // tslint:enable:no-non-null-assertion
-                };
-            }
-        }
+        });
     }
 }

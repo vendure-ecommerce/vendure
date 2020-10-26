@@ -424,6 +424,11 @@ export const GLOBAL_SETTINGS_FRAGMENT = gql`
         trackInventory
         outOfStockThreshold
         serverConfig {
+            permissions {
+                name
+                description
+                assignable
+            }
             orderProcess {
                 name
             }

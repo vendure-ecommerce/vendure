@@ -13,5 +13,6 @@ export class SelectToggleComponent {
     @Input() size: 'small' | 'large' = 'large';
     @Input() selected = false;
     @Input() disabled = false;
+    @Input() label: string | undefined;
     @Output() selectedChange = new EventEmitter<boolean>();
 }

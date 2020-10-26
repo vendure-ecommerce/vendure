@@ -17,7 +17,7 @@
                 class="btn btn-primary"
                 (click)="save()"
                 *vdrIfPermissions="'UpdateAdministrator'"
-                [disabled]="(detailForm.invalid || detailForm.pristine)"
+                [disabled]="detailForm.invalid || detailForm.pristine"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -86,7 +86,9 @@
         </li>
     </ul>
     <vdr-permission-grid
-        [permissions]="getPermissionsForSelectedChannel()"
+        *ngIf="permissionDefinitions$ | async as defs"
+        [activePermissions]="getPermissionsForSelectedChannel()"
+        [permissionDefinitions]="defs"
         [readonly]="true"
     ></vdr-permission-grid>
 </form>

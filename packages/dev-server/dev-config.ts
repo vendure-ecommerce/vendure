@@ -8,6 +8,7 @@ import {
     DefaultSearchPlugin,
     examplePaymentHandler,
     LogLevel,
+    PermissionDefinition,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
@@ -40,6 +41,12 @@ export const devConfig: VendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: 'some-secret',
         requireVerification: true,
+        customPermissions: [
+            new PermissionDefinition({
+                name: 'SyncInventory',
+                description: 'Allows external tools to sync stock levels',
+            }),
+        ],
     },
     dbConnectionOptions: {
         synchronize: false,
