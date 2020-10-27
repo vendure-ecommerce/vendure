@@ -588,6 +588,9 @@ export const GET_SERVER_CONFIG = gql`
                     FacetValue {
                         ...CustomFields
                     }
+                    Fulfillment {
+                        ...CustomFields
+                    }
                     GlobalSettings {
                         ...CustomFields
                     }

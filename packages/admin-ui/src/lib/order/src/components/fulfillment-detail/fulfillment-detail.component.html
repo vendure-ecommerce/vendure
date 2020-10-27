@@ -10,3 +10,6 @@
 <vdr-labeled-data [label]="'order.contents' | translate">
     <vdr-simple-item-list [items]="items"></vdr-simple-item-list>
 </vdr-labeled-data>
+<ng-container *ngFor="let customField of getCustomFields()">
+    <vdr-labeled-data [label]="customField.key">{{ customField.value }}</vdr-labeled-data>
+</ng-container>

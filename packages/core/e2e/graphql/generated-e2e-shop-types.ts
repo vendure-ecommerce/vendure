@@ -2059,6 +2059,7 @@ export type Fulfillment = Node & {
     state: Scalars['String'];
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type PaymentMethod = Node & {
@@ -2609,6 +2610,7 @@ export type CustomFields = {
     Customer: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
     FacetValue: Array<CustomFieldConfig>;
+    Fulfillment: Array<CustomFieldConfig>;
     GlobalSettings: Array<CustomFieldConfig>;
     Order: Array<CustomFieldConfig>;
     OrderLine: Array<CustomFieldConfig>;
