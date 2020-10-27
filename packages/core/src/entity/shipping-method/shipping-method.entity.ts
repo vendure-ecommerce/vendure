@@ -2,6 +2,7 @@ import { ConfigurableOperation } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -49,17 +50,17 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
 
     @Column('simple-json') calculator: ConfigurableOperation;
 
-    @ManyToMany((type) => Channel)
+    @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
 
-    @Column((type) => CustomShippingMethodFields)
+    @Column(type => CustomShippingMethodFields)
     customFields: CustomShippingMethodFields;
 
-    async apply(order: Order): Promise<ShippingCalculationResult | undefined> {
+    async apply(ctx: RequestContext, order: Order): Promise<ShippingCalculationResult | undefined> {
         const calculator = this.allCalculators[this.calculator.code];
         if (calculator) {
-            const response = await calculator.calculate(order, this.calculator.args);
+            const response = await calculator.calculate(ctx, order, this.calculator.args);
             if (response) {
                 const { price, priceWithTax, metadata } = response;
                 return {

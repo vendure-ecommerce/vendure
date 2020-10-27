@@ -46,7 +46,7 @@ export class OrderTestingService {
         });
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligible = await shippingMethod.test(mockOrder);
-        const result = eligible ? await shippingMethod.apply(mockOrder) : undefined;
+        const result = eligible ? await shippingMethod.apply(ctx, mockOrder) : undefined;
         return {
             eligible,
             quote: result && {

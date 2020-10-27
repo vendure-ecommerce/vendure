@@ -1,5 +1,6 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import {
     ConfigArgs,
     ConfigArgValues,
@@ -50,8 +51,8 @@ export class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Confi
      *
      * @internal
      */
-    calculate(order: Order, args: ConfigArg[]): CalculateShippingFnResult {
-        return this.calculateFn(order, this.argsArrayToHash(args));
+    calculate(ctx: RequestContext, order: Order, args: ConfigArg[]): CalculateShippingFnResult {
+        return this.calculateFn(ctx, order, this.argsArrayToHash(args));
     }
 }
 
@@ -97,6 +98,7 @@ export type CalculateShippingFnResult =
  * @docsPage ShippingCalculator
  */
 export type CalculateShippingFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
 ) => CalculateShippingFnResult;

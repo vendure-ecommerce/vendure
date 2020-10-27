@@ -17,7 +17,7 @@ export const defaultShippingCalculator = new ShippingCalculator({
             label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
         },
     },
-    calculate: (order, args) => {
+    calculate: (ctx, order, args) => {
         return { price: args.rate, priceWithTax: args.rate * ((100 + args.taxRate) / 100) };
     },
 });

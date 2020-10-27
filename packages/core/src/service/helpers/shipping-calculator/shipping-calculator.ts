@@ -23,8 +23,8 @@ export class ShippingCalculator {
     async getEligibleShippingMethods(ctx: RequestContext, order: Order): Promise<EligibleShippingMethod[]> {
         const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
 
-        const checkEligibilityPromises = shippingMethods.map((method) =>
-            this.checkEligibilityByShippingMethod(order, method),
+        const checkEligibilityPromises = shippingMethods.map(method =>
+            this.checkEligibilityByShippingMethod(ctx, order, method),
         );
         const eligibleMethods = await Promise.all(checkEligibilityPromises);
 
@@ -32,12 +32,13 @@ export class ShippingCalculator {
     }
 
     private async checkEligibilityByShippingMethod(
+        ctx: RequestContext,
         order: Order,
         method: ShippingMethod,
     ): Promise<EligibleShippingMethod | undefined> {
         const eligible = await method.test(order);
         if (eligible) {
-            const result = await method.apply(order);
+            const result = await method.apply(ctx, order);
             if (result) {
                 return { method, result };
             }
