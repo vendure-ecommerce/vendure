@@ -1,5 +1,5 @@
 import { AssetType } from '@vendure/common/lib/generated-types';
-import { AssetPreviewStrategy, getAssetType } from '@vendure/core';
+import { AssetPreviewStrategy, getAssetType, RequestContext } from '@vendure/core';
 import path from 'path';
 import sharp from 'sharp';
 
@@ -11,7 +11,7 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
         },
     ) {}
 
-    async generatePreviewImage(mimeType: string, data: Buffer): Promise<Buffer> {
+    async generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer> {
         const assetType = getAssetType(mimeType);
         const { maxWidth, maxHeight } = this.config;
 

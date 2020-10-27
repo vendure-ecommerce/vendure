@@ -254,7 +254,7 @@ export class AssetService {
         const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileIdentifier);
         let preview: Buffer;
         try {
-            preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+            preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
         } catch (e) {
             Logger.error(`Could not create Asset preview image: ${e.message}`);
             throw e;

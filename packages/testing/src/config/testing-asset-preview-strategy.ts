@@ -1,4 +1,4 @@
-import { AssetPreviewStrategy } from '@vendure/core';
+import { AssetPreviewStrategy, RequestContext } from '@vendure/core';
 
 const TEST_IMAGE_BASE_64 =
     // tslint:disable-next-line:max-line-length
@@ -15,7 +15,7 @@ export function getTestImageBuffer() {
  * A mock preview strategy which returns a new Buffer without doing any actual work.
  */
 export class TestingAssetPreviewStrategy implements AssetPreviewStrategy {
-    generatePreviewImage(mimeType: string, data: Buffer): Promise<Buffer> {
+    generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer> {
         return Promise.resolve(getTestImageBuffer());
     }
 }
