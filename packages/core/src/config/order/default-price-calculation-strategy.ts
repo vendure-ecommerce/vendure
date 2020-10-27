@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 import { CalculatedPrice, PriceCalculationStrategy } from './price-calculation-strategy';
@@ -10,7 +11,10 @@ import { CalculatedPrice, PriceCalculationStrategy } from './price-calculation-s
  * @docsCategory orders
  */
 export class DefaultPriceCalculationStrategy implements PriceCalculationStrategy {
-    calculateUnitPrice(productVariant: ProductVariant): CalculatedPrice | Promise<CalculatedPrice> {
+    calculateUnitPrice(
+        ctx: RequestContext,
+        productVariant: ProductVariant,
+    ): CalculatedPrice | Promise<CalculatedPrice> {
         return productVariant;
     }
 }

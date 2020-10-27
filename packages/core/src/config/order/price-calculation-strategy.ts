@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
@@ -54,6 +55,7 @@ export interface PriceCalculationStrategy extends InjectableStrategy {
      * the price for a single unit.
      */
     calculateUnitPrice(
+        ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },
     ): CalculatedPrice | Promise<CalculatedPrice>;

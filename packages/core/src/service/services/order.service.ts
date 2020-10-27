@@ -378,6 +378,7 @@ export class OrderService {
                 }
                 const productVariant = orderLine.productVariant;
                 const calculatedPrice = await priceCalculationStrategy.calculateUnitPrice(
+                    ctx,
                     productVariant,
                     orderLine.customFields || {},
                 );
