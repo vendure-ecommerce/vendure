@@ -1,4 +1,4 @@
-import { mergeConfig } from '@vendure/common/lib/merge-config';
+import { mergeConfig } from '@vendure/core';
 import gql from 'graphql-tag';
 import path from 'path';
 
