@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { Order } from '../../entity/order/order.entity';
 import { createOrderFromLines, parseLines } from '../../testing/order-test-utils';
 
@@ -5,12 +6,13 @@ import { MergeOrdersStrategy } from './merge-orders-strategy';
 
 describe('MergeOrdersStrategy', () => {
     const strategy = new MergeOrdersStrategy();
+    const ctx = RequestContext.empty();
 
     it('both orders empty', () => {
         const guestOrder = new Order({ lines: [] });
         const existingOrder = new Order({ lines: [] });
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(result).toEqual([]);
     });
@@ -20,7 +22,7 @@ describe('MergeOrdersStrategy', () => {
         const guestOrder = createOrderFromLines(guestLines);
         const existingOrder = new Order({ lines: [] });
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(parseLines(result)).toEqual(guestLines);
     });
@@ -30,7 +32,7 @@ describe('MergeOrdersStrategy', () => {
         const guestOrder = new Order({ lines: [] });
         const existingOrder = createOrderFromLines(existingLines);
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(parseLines(result)).toEqual(existingLines);
     });
@@ -48,7 +50,7 @@ describe('MergeOrdersStrategy', () => {
         const guestOrder = createOrderFromLines(guestLines);
         const existingOrder = createOrderFromLines(existingLines);
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(parseLines(result)).toEqual([
             { lineId: 21, quantity: 2, productVariantId: 201 },
@@ -72,7 +74,7 @@ describe('MergeOrdersStrategy', () => {
         const guestOrder = createOrderFromLines(guestLines);
         const existingOrder = createOrderFromLines(existingLines);
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(parseLines(result)).toEqual([
             { lineId: 22, quantity: 1, productVariantId: 202 },
@@ -88,7 +90,7 @@ describe('MergeOrdersStrategy', () => {
         const guestOrder = createOrderFromLines(guestLines);
         const existingOrder = createOrderFromLines(existingLines);
 
-        const result = strategy.merge(guestOrder, existingOrder);
+        const result = strategy.merge(ctx, guestOrder, existingOrder);
 
         expect(result).not.toBe(guestOrder.lines);
         expect(result).not.toBe(existingOrder.lines);

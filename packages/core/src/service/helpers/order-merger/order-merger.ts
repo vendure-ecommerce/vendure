@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ID } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
@@ -22,10 +23,10 @@ export class OrderMerger {
      * Applies the configured OrderMergeStrategy to the supplied guestOrder and existingOrder. Returns an object
      * containing entities which then need to be persisted to the database by the OrderService methods.
      */
-    merge(guestOrder?: Order, existingOrder?: Order): MergeResult {
+    merge(ctx: RequestContext, guestOrder?: Order, existingOrder?: Order): MergeResult {
         if (guestOrder && !this.orderEmpty(guestOrder) && existingOrder && !this.orderEmpty(existingOrder)) {
             const { mergeStrategy } = this.configService.orderOptions;
-            const mergedLines = mergeStrategy.merge(guestOrder, existingOrder);
+            const mergedLines = mergeStrategy.merge(ctx, guestOrder, existingOrder);
             return {
                 order: existingOrder,
                 linesToInsert: this.getLinesToInsert(guestOrder, existingOrder, mergedLines),

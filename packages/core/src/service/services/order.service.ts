@@ -1008,7 +1008,7 @@ export class OrderService {
             // so we do not want to merge at all. See https://github.com/vendure-ecommerce/vendure/issues/263
             return existingOrder;
         }
-        const mergeResult = await this.orderMerger.merge(guestOrder, existingOrder);
+        const mergeResult = await this.orderMerger.merge(ctx, guestOrder, existingOrder);
         const { orderToDelete, linesToInsert } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
