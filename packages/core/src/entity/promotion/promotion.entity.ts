@@ -101,7 +101,10 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
      */
     @Column() priorityScore: number;
 
-    async apply(args: ApplyOrderActionArgs | ApplyOrderItemActionArgs): Promise<Adjustment | undefined> {
+    async apply(
+        ctx: RequestContext,
+        args: ApplyOrderActionArgs | ApplyOrderItemActionArgs,
+    ): Promise<Adjustment | undefined> {
         let amount = 0;
 
         for (const action of this.actions) {
@@ -109,12 +112,14 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             if (this.isItemAction(promotionAction)) {
                 if (this.isOrderItemArg(args)) {
                     const { orderItem, orderLine } = args;
-                    amount += Math.round(await promotionAction.execute(orderItem, orderLine, action.args));
+                    amount += Math.round(
+                        await promotionAction.execute(ctx, orderItem, orderLine, action.args),
+                    );
                 }
             } else {
                 if (!this.isOrderItemArg(args)) {
                     const { order } = args;
-                    amount += Math.round(await promotionAction.execute(order, action.args));
+                    amount += Math.round(await promotionAction.execute(ctx, order, action.args));
                 }
             }
         }

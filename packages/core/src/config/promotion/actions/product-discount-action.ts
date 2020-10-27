@@ -24,7 +24,7 @@ export const productsPercentageDiscount = new PromotionItemAction({
         },
     },
 
-    execute(orderItem, orderLine, args) {
+    execute(ctx, orderItem, orderLine, args) {
         if (lineContainsIds(args.productVariantIds, orderLine)) {
             return -orderItem.unitPriceWithPromotions * (args.discount / 100);
         }

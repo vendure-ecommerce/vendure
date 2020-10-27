@@ -13,7 +13,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
             },
         },
     },
-    execute(order, args) {
+    execute(ctx, order, args) {
         return -order.subTotal * (args.discount / 100);
     },
     description: [{ languageCode: LanguageCode.en, value: 'Discount order by { discount }%' }],

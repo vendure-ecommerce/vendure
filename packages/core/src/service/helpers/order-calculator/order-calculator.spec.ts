@@ -155,7 +155,7 @@ describe('OrderCalculator', () => {
             code: 'fixed_price_item_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
-            execute(item) {
+            execute(ctx, item) {
                 return -item.unitPrice + 42;
             },
         });
@@ -164,7 +164,7 @@ describe('OrderCalculator', () => {
             code: 'fixed_price_order_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
-            execute(order) {
+            execute(ctx, order) {
                 return -order.total + 42;
             },
         });
@@ -173,7 +173,7 @@ describe('OrderCalculator', () => {
             code: 'percentage_item_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
-            async execute(orderItem, orderLine, args) {
+            async execute(ctx, orderItem, orderLine, args) {
                 return -orderLine.unitPrice * (args.discount / 100);
             },
         });
@@ -182,7 +182,7 @@ describe('OrderCalculator', () => {
             code: 'percentage_order_action',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
-            execute(order, args) {
+            execute(ctx, order, args) {
                 return -order.subTotal * (args.discount / 100);
             },
         });

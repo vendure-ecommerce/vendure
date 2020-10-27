@@ -199,7 +199,7 @@ export class OrderCalculator {
                 // as to render later promotions no longer applicable.
                 if (await promotion.test(ctx, order)) {
                     for (const item of line.items) {
-                        const adjustment = await promotion.apply({
+                        const adjustment = await promotion.apply(ctx, {
                             orderItem: item,
                             orderLine: line,
                         });
@@ -262,7 +262,7 @@ export class OrderCalculator {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
                 if (await promotion.test(ctx, order)) {
-                    const adjustment = await promotion.apply({ order });
+                    const adjustment = await promotion.apply(ctx, { order });
                     if (adjustment) {
                         order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
                     }

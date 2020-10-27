@@ -1,5 +1,6 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import {
     ConfigArgs,
     ConfigArgValues,
@@ -19,6 +20,7 @@ import { Order } from '../../entity/order/order.entity';
  * @docsPage promotion-action
  */
 export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     orderItem: OrderItem,
     orderLine: OrderLine,
     args: ConfigArgValues<T>,
@@ -33,6 +35,7 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
  * @docsPage promotion-action
  */
 export type ExecutePromotionOrderActionFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
 ) => number | Promise<number>;
@@ -123,8 +126,8 @@ export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends Prom
     }
 
     /** @internal */
-    execute(orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
-        return this.executeFn(orderItem, orderLine, this.argsArrayToHash(args));
+    execute(ctx: RequestContext, orderItem: OrderItem, orderLine: OrderLine, args: ConfigArg[]) {
+        return this.executeFn(ctx, orderItem, orderLine, this.argsArrayToHash(args));
     }
 }
 
@@ -157,7 +160,7 @@ export class PromotionOrderAction<T extends ConfigArgs = ConfigArgs> extends Pro
     }
 
     /** @internal */
-    execute(order: Order, args: ConfigArg[]) {
-        return this.executeFn(order, this.argsArrayToHash(args));
+    execute(ctx: RequestContext, order: Order, args: ConfigArg[]) {
+        return this.executeFn(ctx, order, this.argsArrayToHash(args));
     }
 }
