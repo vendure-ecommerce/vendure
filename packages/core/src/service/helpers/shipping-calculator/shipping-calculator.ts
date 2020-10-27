@@ -36,7 +36,7 @@ export class ShippingCalculator {
         order: Order,
         method: ShippingMethod,
     ): Promise<EligibleShippingMethod | undefined> {
-        const eligible = await method.test(order);
+        const eligible = await method.test(ctx, order);
         if (eligible) {
             const result = await method.apply(ctx, order);
             if (result) {

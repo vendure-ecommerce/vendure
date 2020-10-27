@@ -45,7 +45,7 @@ export class OrderTestingService {
             calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
         });
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
-        const eligible = await shippingMethod.test(mockOrder);
+        const eligible = await shippingMethod.test(ctx, mockOrder);
         const result = eligible ? await shippingMethod.apply(ctx, mockOrder) : undefined;
         return {
             eligible,

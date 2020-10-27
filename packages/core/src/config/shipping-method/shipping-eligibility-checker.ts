@@ -1,5 +1,6 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import {
     ConfigArgs,
     ConfigArgValues,
@@ -57,8 +58,8 @@ export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> exten
      *
      * @internal
      */
-    check(order: Order, args: ConfigArg[]): boolean | Promise<boolean> {
-        return this.checkFn(order, this.argsArrayToHash(args));
+    check(ctx: RequestContext, order: Order, args: ConfigArg[]): boolean | Promise<boolean> {
+        return this.checkFn(ctx, order, this.argsArrayToHash(args));
     }
 }
 
@@ -70,6 +71,7 @@ export class ShippingEligibilityChecker<T extends ConfigArgs = ConfigArgs> exten
  * @docsCategory shipping
  */
 export type CheckShippingEligibilityCheckerFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
 ) => boolean | Promise<boolean>;

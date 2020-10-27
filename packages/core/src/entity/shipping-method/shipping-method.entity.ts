@@ -72,10 +72,10 @@ export class ShippingMethod extends VendureEntity implements ChannelAware, SoftD
         }
     }
 
-    async test(order: Order): Promise<boolean> {
+    async test(ctx: RequestContext, order: Order): Promise<boolean> {
         const checker = this.allCheckers[this.checker.code];
         if (checker) {
-            return checker.check(order, this.checker.args);
+            return checker.check(ctx, order, this.checker.args);
         } else {
             return false;
         }
