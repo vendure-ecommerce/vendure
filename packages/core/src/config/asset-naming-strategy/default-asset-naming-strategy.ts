@@ -1,6 +1,8 @@
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import path from 'path';
 
+import { RequestContext } from '../../api/common/request-context';
+
 import { AssetNamingStrategy } from './asset-naming-strategy';
 
 /**
@@ -13,7 +15,7 @@ import { AssetNamingStrategy } from './asset-naming-strategy';
 export class DefaultAssetNamingStrategy implements AssetNamingStrategy {
     private readonly numberingRe = /__(\d+)(\.[^.]+)?$/;
 
-    generateSourceFileName(originalFileName: string, conflictFileName?: string): string {
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string {
         const normalized = normalizeString(originalFileName, '-');
         if (!conflictFileName) {
             return normalized;
@@ -22,7 +24,7 @@ export class DefaultAssetNamingStrategy implements AssetNamingStrategy {
         }
     }
 
-    generatePreviewFileName(sourceFileName: string, conflictFileName?: string): string {
+    generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string): string {
         const previewSuffix = '__preview';
         const previewFileName = this.isSupportedImageFormat(sourceFileName)
             ? this.addSuffix(sourceFileName, previewSuffix)
