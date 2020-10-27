@@ -72,5 +72,5 @@ export interface AuthenticationStrategy<Data = unknown> extends InjectableStrate
      * Called when a user logs out, and may perform any required tasks
      * related to the user logging out with the external provider.
      */
-    onLogOut?(user: User): Promise<void>;
+    onLogOut?(ctx: RequestContext, user: User): Promise<void>;
 }
