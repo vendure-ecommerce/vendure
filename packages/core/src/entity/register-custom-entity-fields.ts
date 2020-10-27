@@ -16,6 +16,7 @@ import {
     CustomFacetFieldsTranslation,
     CustomFacetValueFields,
     CustomFacetValueFieldsTranslation,
+    CustomFulfillmentFields,
     CustomGlobalSettingsFields,
     CustomOrderFields,
     CustomOrderLineFields,
@@ -175,6 +176,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'Fulfillment', CustomFulfillmentFields);
     registerCustomFieldsForEntity(config, 'Order', CustomOrderFields);
     registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);

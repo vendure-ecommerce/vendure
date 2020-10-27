@@ -136,6 +136,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         Customer: [],
         Facet: [],
         FacetValue: [],
+        Fulfillment: [],
         GlobalSettings: [],
         Order: [],
         OrderLine: [],

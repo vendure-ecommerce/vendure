@@ -3,6 +3,7 @@ export class CustomFacetFields {}
 export class CustomFacetFieldsTranslation {}
 export class CustomFacetValueFields {}
 export class CustomFacetValueFieldsTranslation {}
+export class CustomFulfillmentFields {}
 export class CustomCustomerFields {}
 export class CustomOrderLineFields {}
 export class CustomProductFields {}
