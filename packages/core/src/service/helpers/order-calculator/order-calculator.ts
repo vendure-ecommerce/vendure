@@ -42,7 +42,7 @@ export class OrderCalculator {
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
-        const activeTaxZone = taxZoneStrategy.determineTaxZone(zones, ctx.channel, order);
+        const activeTaxZone = taxZoneStrategy.determineTaxZone(ctx, zones, ctx.channel, order);
         let taxZoneChanged = false;
         if (!activeTaxZone) {
             throw new InternalServerError(`error.no-active-tax-zone`);
