@@ -6,7 +6,7 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
     code: 'test-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Settled',
@@ -14,7 +14,7 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
             metadata: { public: metadata },
         };
     },
-    settlePayment: order => ({
+    settlePayment: () => ({
         success: true,
     }),
 });
@@ -27,7 +27,7 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
     code: 'authorize-only-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Authorized',
@@ -55,7 +55,7 @@ export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
     code: 'single-stage-refundable-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Settled',
@@ -66,7 +66,7 @@ export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
     settlePayment: () => {
         return { success: true };
     },
-    createRefund: (input, total, order, payment, args) => {
+    createRefund: (ctx, input, total, order, payment, args) => {
         return {
             amount: total,
             state: 'Settled',
@@ -82,7 +82,7 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
     code: 'fails-to-settle-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Authorized',
@@ -112,7 +112,7 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
     code: 'test-failing-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Failing Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Declined',
@@ -120,7 +120,7 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
             metadata: { public: metadata },
         };
     },
-    settlePayment: order => ({
+    settlePayment: () => ({
         success: true,
     }),
 });
@@ -128,7 +128,7 @@ export const testErrorPaymentMethod = new PaymentMethodHandler({
     code: 'test-error-payment-method',
     description: [{ languageCode: LanguageCode.en, value: 'Test Error Payment Method' }],
     args: {},
-    createPayment: (order, args, metadata) => {
+    createPayment: (ctx, order, args, metadata) => {
         return {
             amount: order.total,
             state: 'Error',
@@ -136,7 +136,7 @@ export const testErrorPaymentMethod = new PaymentMethodHandler({
             metadata,
         };
     },
-    settlePayment: order => ({
+    settlePayment: () => ({
         success: true,
     }),
 });

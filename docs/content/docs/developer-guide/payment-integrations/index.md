@@ -46,7 +46,7 @@ const myPaymentIntegration = new PaymentMethodHandler({
   },
 
   /** This is called when the `addPaymentToOrder` mutation is executed */
-  createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
+  createPayment: async (ctx, order, args, metadata): Promise<CreatePaymentResult> => {
     try {
       const result = await sdk.charges.create({
         apiKey: args.apiKey,
@@ -80,7 +80,7 @@ const myPaymentIntegration = new PaymentMethodHandler({
   },
 
   /** This is called when the `settlePayment` mutation is executed */
-  settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
+  settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
     try {
       const result = await sdk.charges.capture({ 
         apiKey: args.apiKey,

@@ -80,7 +80,7 @@ export class PaymentMethodService {
 
     async createPayment(ctx: RequestContext, order: Order, method: string, metadata: any): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
-        const result = await handler.createPayment(order, paymentMethod.configArgs, metadata || {});
+        const result = await handler.createPayment(ctx, order, paymentMethod.configArgs, metadata || {});
         const initialState = 'Created';
         const payment = await this.connection
             .getRepository(ctx, Payment)
@@ -95,7 +95,7 @@ export class PaymentMethodService {
 
     async settlePayment(ctx: RequestContext, payment: Payment, order: Order) {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
-        return handler.settlePayment(order, payment, paymentMethod.configArgs);
+        return handler.settlePayment(ctx, order, payment, paymentMethod.configArgs);
     }
 
     async createRefund(
@@ -121,6 +121,7 @@ export class PaymentMethodService {
             metadata: {},
         });
         const createRefundResult = await handler.createRefund(
+            ctx,
             input,
             refundAmount,
             order,

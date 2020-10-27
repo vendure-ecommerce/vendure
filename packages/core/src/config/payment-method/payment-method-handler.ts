@@ -1,5 +1,6 @@
 import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import {
     ConfigArgs,
     ConfigArgValues,
@@ -121,6 +122,7 @@ export interface SettlePaymentResult {
  * @docsPage Payment Method Types
  */
 export type CreatePaymentFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
@@ -134,6 +136,7 @@ export type CreatePaymentFn<T extends ConfigArgs> = (
  * @docsPage Payment Method Types
  */
 export type SettlePaymentFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
@@ -147,6 +150,7 @@ export type SettlePaymentFn<T extends ConfigArgs> = (
  * @docsPage Payment Method Types
  */
 export type CreateRefundFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     input: RefundOrderInput,
     total: number,
     order: Order,
@@ -217,7 +221,7 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  *     args: {
  *         apiKey: { type: 'string' },
  *     },
- *     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
+ *     createPayment: async (ctx, order, args, metadata): Promise<CreatePaymentResult> => {
  *         try {
  *             const result = await gripeSDK.charges.create({
  *                 apiKey: args.apiKey,
@@ -240,7 +244,7 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  *             };
  *         }
  *     },
- *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
+ *     settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
  *         return { success: true };
  *     }
  * });
@@ -269,8 +273,8 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
      *
      * @internal
      */
-    async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
-        const paymentConfig = await this.createPaymentFn(order, this.argsArrayToHash(args), metadata);
+    async createPayment(ctx: RequestContext, order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
+        const paymentConfig = await this.createPaymentFn(ctx, order, this.argsArrayToHash(args), metadata);
         return {
             method: this.code,
             ...paymentConfig,
@@ -283,8 +287,8 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
      *
      * @internal
      */
-    async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
-        return this.settlePaymentFn(order, payment, this.argsArrayToHash(args));
+    async settlePayment(ctx: RequestContext, order: Order, payment: Payment, args: ConfigArg[]) {
+        return this.settlePaymentFn(ctx, order, payment, this.argsArrayToHash(args));
     }
 
     /**
@@ -294,6 +298,7 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
      * @internal
      */
     async createRefund(
+        ctx: RequestContext,
         input: RefundOrderInput,
         total: number,
         order: Order,
@@ -301,7 +306,7 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
         args: ConfigArg[],
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(input, total, order, payment, this.argsArrayToHash(args))
+            ? this.createRefundFn(ctx, input, total, order, payment, this.argsArrayToHash(args))
             : false;
     }
 
