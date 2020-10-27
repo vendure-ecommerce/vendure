@@ -37,7 +37,9 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
         private changeDetectorRef: ChangeDetectorRef,
     ) {
         super(_viewContainer, templateRef, permission => {
-            if (!permission) {
+            if (permission == null) {
+                return of(true);
+            } else if (!permission) {
                 return of(false);
             }
             return this.dataService.client
