@@ -1,3 +1,4 @@
+export * from './custom-entity-fields';
 export * from './address/address.entity';
 export * from './administrator/administrator.entity';
 export * from './asset/asset.entity';
