@@ -11,6 +11,6 @@ export class OrderHistoryEntry extends HistoryEntry {
         super(input);
     }
 
-    @ManyToOne(type => Order)
+    @ManyToOne(type => Order, { onDelete: 'CASCADE' })
     order: Order;
 }

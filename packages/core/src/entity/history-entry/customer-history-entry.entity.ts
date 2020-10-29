@@ -11,6 +11,6 @@ export class CustomerHistoryEntry extends HistoryEntry {
         super(input);
     }
 
-    @ManyToOne((type) => Customer)
+    @ManyToOne(type => Customer, { onDelete: 'CASCADE' })
     customer: Customer;
 }
