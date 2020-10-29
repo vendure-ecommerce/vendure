@@ -740,7 +740,12 @@ export class OrderService {
                 },
             });
         }
-        return fulfillment;
+        const { fulfillment: pendingFulfillment } = await this.fulfillmentService.transitionToState(
+            ctx,
+            fulfillment.id,
+            'Pending',
+        );
+        return pendingFulfillment;
     }
 
     private async ensureSufficientStockForFulfillment(

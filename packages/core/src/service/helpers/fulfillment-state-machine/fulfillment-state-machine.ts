@@ -22,7 +22,7 @@ import {
 @Injectable()
 export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
-    private readonly initialState: FulfillmentState = 'Pending';
+    private readonly initialState: FulfillmentState = 'Created';
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {
         this.config = this.initConfig();

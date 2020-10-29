@@ -566,9 +566,25 @@ describe('Orders resolver', () => {
                 },
                 {
                     data: {
+                        from: 'Created',
+                        fulfillmentId: 'T_1',
+                        to: 'Pending',
+                    },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
+                },
+                {
+                    data: {
                         fulfillmentId: 'T_2',
                     },
                     type: HistoryEntryType.ORDER_FULFILLMENT,
+                },
+                {
+                    data: {
+                        from: 'Created',
+                        fulfillmentId: 'T_2',
+                        to: 'Pending',
+                    },
+                    type: HistoryEntryType.ORDER_FULFILLMENT_TRANSITION,
                 },
                 {
                     data: {
