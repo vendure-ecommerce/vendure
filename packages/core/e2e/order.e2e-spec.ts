@@ -157,13 +157,21 @@ describe('Orders resolver', () => {
         expect(result.order!.id).toBe('T_2');
     });
 
-    it('order history initially empty', async () => {
+    it('order history initially contains Created -> AddingItems transition', async () => {
         const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
             GET_ORDER_HISTORY,
             { id: 'T_1' },
         );
-        expect(order!.history.totalItems).toBe(0);
-        expect(order!.history.items).toEqual([]);
+        expect(order!.history.totalItems).toBe(1);
+        expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+            {
+                type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                data: {
+                    from: 'Created',
+                    to: 'AddingItems',
+                },
+            },
+        ]);
     });
 
     describe('payments', () => {
@@ -278,6 +286,13 @@ describe('Orders resolver', () => {
                 { id: 'T_2', options: { sort: { id: SortOrder.ASC } } },
             );
             expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
@@ -538,7 +553,7 @@ describe('Orders resolver', () => {
                 {
                     id: 'T_2',
                     options: {
-                        skip: 5,
+                        skip: 6,
                     },
                 },
             );
@@ -1038,6 +1053,13 @@ describe('Orders resolver', () => {
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
                         from: 'AddingItems',
                         to: 'ArrangingPayment',
                     },
@@ -1275,6 +1297,13 @@ describe('Orders resolver', () => {
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
                         from: 'AddingItems',
                         to: 'ArrangingPayment',
                     },
@@ -1356,7 +1385,7 @@ describe('Orders resolver', () => {
                 {
                     id: orderId,
                     options: {
-                        skip: 0,
+                        skip: 1,
                     },
                 },
             );
@@ -1374,7 +1403,9 @@ describe('Orders resolver', () => {
 
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
-            expect(activeOrder!.history.items.map(pick(['type', 'data']))).toEqual([]);
+            expect(activeOrder!.history.items.map(pick(['type']))).toEqual([
+                { type: HistoryEntryType.ORDER_STATE_TRANSITION },
+            ]);
         });
 
         it('public note', async () => {
@@ -1396,7 +1427,7 @@ describe('Orders resolver', () => {
                 {
                     id: orderId,
                     options: {
-                        skip: 1,
+                        skip: 2,
                     },
                 },
             );
@@ -1413,6 +1444,13 @@ describe('Orders resolver', () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
             expect(activeOrder!.history.items.map(pick(['type', 'data']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
                 {
                     type: HistoryEntryType.ORDER_NOTE,
                     data: {
@@ -1443,7 +1481,7 @@ describe('Orders resolver', () => {
                 GetOrderHistory.Query,
                 GetOrderHistory.Variables
             >(GET_ORDER_HISTORY, { id: orderId });
-            expect(before?.history.totalItems).toBe(2);
+            expect(before?.history.totalItems).toBe(3);
 
             const { deleteOrderNote } = await adminClient.query<
                 DeleteOrderNote.Mutation,
@@ -1458,7 +1496,7 @@ describe('Orders resolver', () => {
                 GetOrderHistory.Query,
                 GetOrderHistory.Variables
             >(GET_ORDER_HISTORY, { id: orderId });
-            expect(after?.history.totalItems).toBe(1);
+            expect(after?.history.totalItems).toBe(2);
         });
     });
 });

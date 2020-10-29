@@ -15,7 +15,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
@@ -183,6 +183,13 @@ describe('Promotions applied to Orders', () => {
 
             expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
+                {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -220,6 +227,13 @@ describe('Promotions applied to Orders', () => {
 
             expect(activeOrder!.history.items.map(i => omit(i, ['id']))).toEqual([
                 {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
+                {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {
                         couponCode: TEST_COUPON_CODE,
@@ -244,6 +258,13 @@ describe('Promotions applied to Orders', () => {
             });
 
             expect(removeCouponCode!.history.items.map(i => omit(i, ['id']))).toEqual([
+                {
+                    type: HistoryEntryType.ORDER_STATE_TRANSITION,
+                    data: {
+                        from: 'Created',
+                        to: 'AddingItems',
+                    },
+                },
                 {
                     type: HistoryEntryType.ORDER_COUPON_APPLIED,
                     data: {

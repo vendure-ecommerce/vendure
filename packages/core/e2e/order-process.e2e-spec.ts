@@ -4,7 +4,7 @@ import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from 
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { AdminTransition, GetOrder, OrderFragment } from './graphql/generated-e2e-admin-types';
@@ -107,6 +107,24 @@ describe('Order process', () => {
 
     afterAll(async () => {
         await server.destroy();
+    });
+
+    describe('Initial transition', () => {
+        it('transitions from Created to AddingItems on creation', async () => {
+            transitionStartSpy.mockClear();
+            transitionEndSpy.mockClear();
+            await shopClient.asAnonymousUser();
+
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 1,
+            });
+
+            expect(transitionStartSpy).toHaveBeenCalledTimes(1);
+            expect(transitionEndSpy).toHaveBeenCalledTimes(1);
+            expect(transitionStartSpy.mock.calls[0].slice(0, 2)).toEqual(['Created', 'AddingItems']);
+            expect(transitionEndSpy.mock.calls[0].slice(0, 2)).toEqual(['Created', 'AddingItems']);
+        });
     });
 
     describe('CustomOrderProcess', () => {

@@ -10,6 +10,7 @@ import { Order } from '../../../entity/order/order.entity';
  * @docsCategory orders
  */
 export type OrderState =
+    | 'Created'
     | 'AddingItems'
     | 'ArrangingPayment'
     | 'PaymentAuthorized'
@@ -21,6 +22,9 @@ export type OrderState =
     | 'Cancelled';
 
 export const orderStateTransitions: Transitions<OrderState> = {
+    Created: {
+        to: ['AddingItems'],
+    },
     AddingItems: {
         to: ['ArrangingPayment', 'Cancelled'],
     },

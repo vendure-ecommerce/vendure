@@ -52,8 +52,8 @@ describe('GlobalSettings resolver', () => {
 
         it('includes orderProcess', () => {
             expect(globalSettings.serverConfig.orderProcess[0]).toEqual({
-                name: 'AddingItems',
-                to: ['ArrangingPayment', 'Cancelled'],
+                name: 'Created',
+                to: ['AddingItems'],
             });
         });
 

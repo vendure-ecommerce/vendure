@@ -292,7 +292,13 @@ export class OrderService {
             }
         }
         this.channelService.assignToCurrentChannel(newOrder, ctx);
-        return this.connection.getRepository(ctx, Order).save(newOrder);
+        const order = await this.connection.getRepository(ctx, Order).save(newOrder);
+        const transitionResult = await this.transitionToState(ctx, order.id, 'AddingItems');
+        if (isGraphQlErrorResult(transitionResult)) {
+            // this should never occur, so we will throw rather than return
+            throw transitionResult;
+        }
+        return transitionResult;
     }
 
     async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {

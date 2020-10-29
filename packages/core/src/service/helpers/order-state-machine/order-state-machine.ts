@@ -29,7 +29,7 @@ import { OrderState, orderStateTransitions, OrderTransitionData } from './order-
 @Injectable()
 export class OrderStateMachine {
     readonly config: StateMachineConfig<OrderState, OrderTransitionData>;
-    private readonly initialState: OrderState = 'AddingItems';
+    private readonly initialState: OrderState = 'Created';
 
     constructor(
         private connection: TransactionalConnection,
