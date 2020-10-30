@@ -12,7 +12,6 @@ import { ConfigService } from '../../../config/config.service';
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { HistoryService } from '../../services/history.service';
-import { OrderState, OrderTransitionData } from '../order-state-machine/order-state';
 
 import { PaymentState, paymentStateTransitions, PaymentTransitionData } from './payment-state';
 
