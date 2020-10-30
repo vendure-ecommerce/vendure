@@ -62,7 +62,9 @@ type OrderItem implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     cancelled: Boolean!
+    "The price of a single unit, excluding tax"
     unitPrice: Int!
+    "The price of a single unit, including tax"
     unitPriceWithTax: Int!
     unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
@@ -81,7 +83,14 @@ type OrderLine implements Node {
     unitPriceWithTax: Int!
     quantity: Int!
     items: [OrderItem!]!
-    totalPrice: Int!
+    totalPrice: Int! @deprecated(reason: "Use `linePriceWithTax` instead")
+    taxRate: Float!
+    "The total price of the line excluding tax"
+    linePrice: Int!
+    "The total tax on this line"
+    lineTax: Int!
+    "The total price of the line including tax"
+    linePriceWithTax: Int!
     adjustments: [Adjustment!]!
     order: Order!
 }

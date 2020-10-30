@@ -714,3 +714,24 @@ export const UPDATE_ROLE = gql`
     }
     ${ROLE_FRAGMENT}
 `;
+
+export const GET_PRODUCTS_WITH_VARIANT_PRICES = gql`
+    query GetProductsWithVariantPrices {
+        products {
+            items {
+                id
+                slug
+                variants {
+                    id
+                    price
+                    priceWithTax
+                    sku
+                    facetValues {
+                        id
+                        code
+                    }
+                }
+            }
+        }
+    }
+`;

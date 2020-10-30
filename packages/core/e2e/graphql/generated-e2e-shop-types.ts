@@ -408,6 +408,8 @@ export enum Permission {
     UpdateSettings = 'UpdateSettings',
     /** Grants permission to delete Settings */
     DeleteSettings = 'DeleteSettings',
+    /** Allows external tools to sync stock levels */
+    SyncInventory = 'SyncInventory',
 }
 
 export type DeletionResponse = {
@@ -1996,8 +1998,11 @@ export type OrderItem = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     cancelled: Scalars['Boolean'];
+    /** The price of a single unit, excluding tax */
     unitPrice: Scalars['Int'];
+    /** The price of a single unit, including tax */
     unitPriceWithTax: Scalars['Int'];
+    /** @deprecated `unitPrice` is now always without tax */
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
     adjustments: Array<Adjustment>;
@@ -2015,7 +2020,15 @@ export type OrderLine = Node & {
     unitPriceWithTax: Scalars['Int'];
     quantity: Scalars['Int'];
     items: Array<OrderItem>;
+    /** @deprecated Use `linePriceWithTax` instead */
     totalPrice: Scalars['Int'];
+    taxRate: Scalars['Float'];
+    /** The total price of the line excluding tax */
+    linePrice: Scalars['Int'];
+    /** The total tax on this line */
+    lineTax: Scalars['Int'];
+    /** The total price of the line including tax */
+    linePriceWithTax: Scalars['Int'];
     adjustments: Array<Adjustment>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
@@ -2831,6 +2844,30 @@ export type GetActiveOrderQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetActiveOrderQuery = { activeOrder?: Maybe<TestOrderFragmentFragment> };
 
+export type GetActiveOrderWithPriceDataQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetActiveOrderWithPriceDataQuery = {
+    activeOrder?: Maybe<
+        Pick<Order, 'id' | 'subTotalBeforeTax' | 'subTotal' | 'totalBeforeTax' | 'total'> & {
+            lines: Array<
+                Pick<
+                    OrderLine,
+                    | 'id'
+                    | 'unitPrice'
+                    | 'unitPriceWithTax'
+                    | 'taxRate'
+                    | 'linePrice'
+                    | 'lineTax'
+                    | 'linePriceWithTax'
+                > & {
+                    items: Array<Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate'>>;
+                    adjustments: Array<Pick<Adjustment, 'amount' | 'type'>>;
+                }
+            >;
+        }
+    >;
+};
+
 export type AdjustItemQuantityMutationVariables = Exact<{
     orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
@@ -3285,6 +3322,29 @@ export namespace GetActiveOrder {
     export type Variables = GetActiveOrderQueryVariables;
     export type Query = GetActiveOrderQuery;
     export type ActiveOrder = NonNullable<GetActiveOrderQuery['activeOrder']>;
+}
+
+export namespace GetActiveOrderWithPriceData {
+    export type Variables = GetActiveOrderWithPriceDataQueryVariables;
+    export type Query = GetActiveOrderWithPriceDataQuery;
+    export type ActiveOrder = NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>;
+    export type Lines = NonNullable<
+        NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
+    >;
+    export type Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
+            >['items']
+        >[number]
+    >;
+    export type Adjustments = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
+            >['adjustments']
+        >[number]
+    >;
 }
 
 export namespace AdjustItemQuantity {

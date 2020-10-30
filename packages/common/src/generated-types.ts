@@ -2014,7 +2014,9 @@ export enum Permission {
   /** Grants permission to update Settings */
   UpdateSettings = 'UpdateSettings',
   /** Grants permission to delete Settings */
-  DeleteSettings = 'DeleteSettings'
+  DeleteSettings = 'DeleteSettings',
+  /** Allows external tools to sync stock levels */
+  SyncInventory = 'SyncInventory'
 }
 
 export type DeletionResponse = {
@@ -3302,8 +3304,11 @@ export type OrderItem = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   cancelled: Scalars['Boolean'];
+  /** The price of a single unit, excluding tax */
   unitPrice: Scalars['Int'];
+  /** The price of a single unit, including tax */
   unitPriceWithTax: Scalars['Int'];
+  /** @deprecated `unitPrice` is now always without tax */
   unitPriceIncludesTax: Scalars['Boolean'];
   taxRate: Scalars['Float'];
   adjustments: Array<Adjustment>;
@@ -3322,7 +3327,15 @@ export type OrderLine = Node & {
   unitPriceWithTax: Scalars['Int'];
   quantity: Scalars['Int'];
   items: Array<OrderItem>;
+  /** @deprecated Use `linePriceWithTax` instead */
   totalPrice: Scalars['Int'];
+  taxRate: Scalars['Float'];
+  /** The total price of the line excluding tax */
+  linePrice: Scalars['Int'];
+  /** The total tax on this line */
+  lineTax: Scalars['Int'];
+  /** The total price of the line including tax */
+  linePriceWithTax: Scalars['Int'];
   adjustments: Array<Adjustment>;
   order: Order;
   customFields?: Maybe<Scalars['JSON']>;

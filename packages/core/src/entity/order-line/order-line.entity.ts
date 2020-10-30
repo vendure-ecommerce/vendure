@@ -57,6 +57,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return this.activeItems.length;
     }
 
+    /**
+     * @deprecated Use `linePriceWithTax`
+     * TODO: Remove this in a future release
+     */
     @Calculated()
     get totalPrice(): number {
         return this.activeItems.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
@@ -70,10 +74,29 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         );
     }
 
+    @Calculated()
+    get taxRate(): number {
+        return this.activeItems.length ? this.activeItems[0].taxRate : 0;
+    }
+
+    @Calculated()
+    get linePrice(): number {
+        return this.activeItems.reduce((total, item) => total + item.unitPrice, 0);
+    }
+
+    @Calculated()
     get lineTax(): number {
         return this.activeItems.reduce((total, item) => total + item.unitTax, 0);
     }
 
+    @Calculated()
+    get linePriceWithTax(): number {
+        return this.activeItems.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
+    }
+
+    /**
+     * Returns all non-cancelled OrderItems on this line.
+     */
     get activeItems(): OrderItem[] {
         return (this.items || []).filter(i => !i.cancelled);
     }
