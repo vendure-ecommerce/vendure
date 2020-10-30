@@ -27,7 +27,8 @@ import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
-import { PaymentMethodHandler } from './payment-method/payment-method-handler';
+import { CustomPaymentProcess } from './payment/custom-payment-process';
+import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
@@ -568,6 +569,13 @@ export interface PaymentOptions {
      * An array of {@link PaymentMethodHandler}s with which to process payments.
      */
     paymentMethodHandlers: PaymentMethodHandler[];
+
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the payment process state machine.
+     * Takes an array of objects implementing the {@link CustomPaymentProcess} interface.
+     */
+    customPaymentProcess?: Array<CustomPaymentProcess<any>>;
 }
 
 /**
