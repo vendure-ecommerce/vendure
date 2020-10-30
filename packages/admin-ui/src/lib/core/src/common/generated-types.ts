@@ -5066,7 +5066,7 @@ export type FulfillmentFragment = (
 
 export type OrderLineFragment = (
   { __typename?: 'OrderLine' }
-  & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'totalPrice'>
+  & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'linePrice' | 'lineTax' | 'linePriceWithTax'>
   & { featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & Pick<Asset, 'preview'>
@@ -5078,7 +5078,7 @@ export type OrderLineFragment = (
     & AdjustmentFragment
   )>, items: Array<(
     { __typename?: 'OrderItem' }
-    & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceIncludesTax' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'>
+    & Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate' | 'refundId' | 'cancelled'>
     & { fulfillment?: Maybe<(
       { __typename?: 'Fulfillment' }
       & FulfillmentFragment

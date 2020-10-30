@@ -89,7 +89,6 @@ export const ORDER_LINE_FRAGMENT = gql`
         items {
             id
             unitPrice
-            unitPriceIncludesTax
             unitPriceWithTax
             taxRate
             refundId
@@ -98,7 +97,9 @@ export const ORDER_LINE_FRAGMENT = gql`
                 ...Fulfillment
             }
         }
-        totalPrice
+        linePrice
+        lineTax
+        linePriceWithTax
     }
 `;
 
