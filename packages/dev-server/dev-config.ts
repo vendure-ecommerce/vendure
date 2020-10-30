@@ -41,12 +41,7 @@ export const devConfig: VendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: 'some-secret',
         requireVerification: true,
-        customPermissions: [
-            new PermissionDefinition({
-                name: 'SyncInventory',
-                description: 'Allows external tools to sync stock levels',
-            }),
-        ],
+        customPermissions: [],
     },
     dbConnectionOptions: {
         synchronize: false,

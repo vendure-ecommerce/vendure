@@ -28,7 +28,21 @@ type Order implements Node {
     shippingMethod: ShippingMethod
     totalBeforeTax: Int!
     total: Int!
+    taxSummary: [OrderTaxSummary!]!
     history(options: HistoryEntryListOptions): HistoryEntryList!
+}
+
+"""
+A summary of the taxes being applied to this order, grouped
+by taxRate.
+"""
+type OrderTaxSummary {
+    "The taxRate as a percentage"
+    taxRate: Float!
+    "The total net price or OrderItems to which this taxRate applies"
+    taxBase: Int!
+    "The total tax being applied to the Order at this taxRate"
+    taxTotal: Int!
 }
 
 type OrderAddress {

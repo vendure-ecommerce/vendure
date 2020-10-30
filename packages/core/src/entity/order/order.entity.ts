@@ -1,4 +1,10 @@
-import { Adjustment, AdjustmentType, CurrencyCode, OrderAddress } from '@vendure/common/lib/generated-types';
+import {
+    Adjustment,
+    AdjustmentType,
+    CurrencyCode,
+    OrderAddress,
+    OrderTaxSummary,
+} from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
@@ -118,6 +124,28 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Calculated()
     get totalQuantity(): number {
         return (this.lines || []).reduce((total, line) => total + line.quantity, 0);
+    }
+
+    @Calculated()
+    get taxSummary(): OrderTaxSummary[] {
+        const taxRateMap = new Map<number, { base: number; tax: number }>();
+        for (const line of this.lines) {
+            const row = taxRateMap.get(line.taxRate);
+            if (row) {
+                row.tax += line.lineTax;
+                row.base += line.linePrice;
+            } else {
+                taxRateMap.set(line.taxRate, {
+                    tax: line.lineTax,
+                    base: line.linePrice,
+                });
+            }
+        }
+        return Array.from(taxRateMap.entries()).map(([taxRate, row]) => ({
+            taxRate,
+            taxBase: row.base,
+            taxTotal: row.tax,
+        }));
     }
 
     get promotionAdjustmentsTotal(): number {

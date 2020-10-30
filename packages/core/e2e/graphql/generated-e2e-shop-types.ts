@@ -408,8 +408,6 @@ export enum Permission {
     UpdateSettings = 'UpdateSettings',
     /** Grants permission to delete Settings */
     DeleteSettings = 'DeleteSettings',
-    /** Allows external tools to sync stock levels */
-    SyncInventory = 'SyncInventory',
 }
 
 export type DeletionResponse = {
@@ -1959,12 +1957,26 @@ export type Order = Node & {
     shippingMethod?: Maybe<ShippingMethod>;
     totalBeforeTax: Scalars['Int'];
     total: Scalars['Int'];
+    taxSummary: Array<OrderTaxSummary>;
     history: HistoryEntryList;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderHistoryArgs = {
     options?: Maybe<HistoryEntryListOptions>;
+};
+
+/**
+ * A summary of the taxes being applied to this order, grouped
+ * by taxRate.
+ */
+export type OrderTaxSummary = {
+    /** The taxRate as a percentage */
+    taxRate: Scalars['Float'];
+    /** The total net price or OrderItems to which this taxRate applies */
+    taxBase: Scalars['Int'];
+    /** The total tax being applied to the Order at this taxRate */
+    taxTotal: Scalars['Int'];
 };
 
 export type OrderAddress = {
@@ -2864,6 +2876,7 @@ export type GetActiveOrderWithPriceDataQuery = {
                     adjustments: Array<Pick<Adjustment, 'amount' | 'type'>>;
                 }
             >;
+            taxSummary: Array<Pick<OrderTaxSummary, 'taxRate' | 'taxBase' | 'taxTotal'>>;
         }
     >;
 };
@@ -3344,6 +3357,9 @@ export namespace GetActiveOrderWithPriceData {
                 NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
             >['adjustments']
         >[number]
+    >;
+    export type TaxSummary = NonNullable<
+        NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['taxSummary']>[number]
     >;
 }
 

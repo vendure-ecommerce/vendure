@@ -323,6 +323,11 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                     type
                 }
             }
+            taxSummary {
+                taxRate
+                taxBase
+                taxTotal
+            }
         }
     }
 `;

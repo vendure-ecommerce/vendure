@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -34,7 +35,7 @@ describe('Order taxes', () => {
     beforeAll(async () => {
         await server.init({
             initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
+            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-order-taxes.csv'),
             customerCount: 2,
         });
         await adminClient.asSuperAdmin();
@@ -136,5 +137,56 @@ describe('Order taxes', () => {
                 },
             ]);
         });
+    });
+
+    it('taxSummary works', async () => {
+        await adminClient.query<UpdateChannel.Mutation, UpdateChannel.Variables>(UPDATE_CHANNEL, {
+            input: {
+                id: 'T_1',
+                pricesIncludeTax: false,
+            },
+        });
+        await shopClient.asAnonymousUser();
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: products[0].variants[0].id,
+            quantity: 2,
+        });
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: products[1].variants[0].id,
+            quantity: 2,
+        });
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: products[2].variants[0].id,
+            quantity: 2,
+        });
+
+        const { activeOrder } = await shopClient.query<GetActiveOrderWithPriceData.Query>(
+            GET_ACTIVE_ORDER_WITH_PRICE_DATA,
+        );
+
+        expect(activeOrder?.taxSummary).toEqual([
+            {
+                taxRate: 20,
+                taxBase: 200,
+                taxTotal: 40,
+            },
+            {
+                taxRate: 10,
+                taxBase: 200,
+                taxTotal: 20,
+            },
+            {
+                taxRate: 0,
+                taxBase: 200,
+                taxTotal: 0,
+            },
+        ]);
+
+        // ensure that the summary total add up to the overall totals
+        const taxSummaryBaseTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxBase, 0);
+        const taxSummaryTaxTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxTotal, 0);
+
+        expect(taxSummaryBaseTotal).toBe(activeOrder?.totalBeforeTax);
+        expect(taxSummaryBaseTotal + taxSummaryTaxTotal).toBe(activeOrder?.total);
     });
 });

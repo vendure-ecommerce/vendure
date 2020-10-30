@@ -1317,6 +1317,7 @@ export type Order = Node & {
   shippingMethod?: Maybe<ShippingMethod>;
   totalBeforeTax: Scalars['Int'];
   total: Scalars['Int'];
+  taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
   customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2014,9 +2015,7 @@ export enum Permission {
   /** Grants permission to update Settings */
   UpdateSettings = 'UpdateSettings',
   /** Grants permission to delete Settings */
-  DeleteSettings = 'DeleteSettings',
-  /** Allows external tools to sync stock levels */
-  SyncInventory = 'SyncInventory'
+  DeleteSettings = 'DeleteSettings'
 }
 
 export type DeletionResponse = {
@@ -3267,6 +3266,20 @@ export type ImportInfo = {
   errors?: Maybe<Array<Scalars['String']>>;
   processed: Scalars['Int'];
   imported: Scalars['Int'];
+};
+
+/**
+ * A summary of the taxes being applied to this order, grouped
+ * by taxRate.
+ */
+export type OrderTaxSummary = {
+  __typename?: 'OrderTaxSummary';
+  /** The taxRate as a percentage */
+  taxRate: Scalars['Float'];
+  /** The total net price or OrderItems to which this taxRate applies */
+  taxBase: Scalars['Int'];
+  /** The total tax being applied to the Order at this taxRate */
+  taxTotal: Scalars['Int'];
 };
 
 export type OrderAddress = {
