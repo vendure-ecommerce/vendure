@@ -6,7 +6,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AddOptionGroupToProduct,
@@ -1069,8 +1069,8 @@ describe('Product resolver', () => {
                 });
 
                 expect(createProductVariants.length).toBe(1);
-                expect(createProductVariants[0]!.options.map(o => o.code)).toEqual(
-                    deletedVariant.options.map(o => o.code),
+                expect(createProductVariants[0]!.options.map(o => o.code).sort()).toEqual(
+                    deletedVariant.options.map(o => o.code).sort(),
                 );
             });
         });
