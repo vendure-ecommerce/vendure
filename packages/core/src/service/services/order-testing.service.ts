@@ -9,6 +9,7 @@ import {
 
 import { ID } from '../../../../common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
+import { ConfigService } from '../../config/config.service';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -18,6 +19,8 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { TransactionalConnection } from '../transaction/transactional-connection';
+
+import { ProductVariantService } from './product-variant.service';
 
 /**
  * This service is responsible for creating temporary mock Orders against which tests can be run, such as
@@ -30,6 +33,8 @@ export class OrderTestingService {
         private orderCalculator: OrderCalculator,
         private shippingCalculator: ShippingCalculator,
         private shippingConfiguration: ShippingConfiguration,
+        private configService: ConfigService,
+        private productVariantService: ProductVariantService,
     ) {}
 
     /**
@@ -80,6 +85,7 @@ export class OrderTestingService {
         shippingAddress: CreateAddressInput,
         lines: Array<{ productVariantId: ID; quantity: number }>,
     ): Promise<Order> {
+        const { priceCalculationStrategy } = this.configService.orderOptions;
         const mockOrder = new Order({
             lines: [],
         });
@@ -91,6 +97,7 @@ export class OrderTestingService {
                 line.productVariantId,
                 { relations: ['taxCategory'] },
             );
+            this.productVariantService.applyChannelPriceAndTax(productVariant, ctx);
             const orderLine = new OrderLine({
                 productVariant,
                 items: [],
@@ -98,12 +105,19 @@ export class OrderTestingService {
             });
             mockOrder.lines.push(orderLine);
 
+            const { price, priceIncludesTax } = await priceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                productVariant,
+                orderLine.customFields || {},
+            );
+            const taxRate = productVariant.taxRateApplied;
+            const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;
+
             for (let i = 0; i < line.quantity; i++) {
                 const orderItem = new OrderItem({
-                    unitPrice: productVariant.price,
+                    unitPrice,
+                    taxRate: taxRate.value,
                     pendingAdjustments: [],
-                    unitPriceIncludesTax: productVariant.priceIncludesTax,
-                    taxRate: productVariant.priceIncludesTax ? productVariant.taxRateApplied.value : 0,
                 });
                 orderLine.items.push(orderItem);
             }

@@ -28,7 +28,7 @@ export class TaxCalculator {
     constructor(private configService: ConfigService, private taxRateService: TaxRateService) {}
 
     /**
-     * Given a price and TacxCategory, this method calculates the applicable tax rate and returns the adjusted
+     * Given a price and TaxCategory, this method calculates the applicable tax rate and returns the adjusted
      * price along with other contextual information.
      */
     calculate(

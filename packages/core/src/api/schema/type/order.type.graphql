@@ -64,7 +64,7 @@ type OrderItem implements Node {
     cancelled: Boolean!
     unitPrice: Int!
     unitPriceWithTax: Int!
-    unitPriceIncludesTax: Boolean!
+    unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
     fulfillment: Fulfillment

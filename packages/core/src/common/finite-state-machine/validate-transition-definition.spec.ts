@@ -46,7 +46,7 @@ describe('FSM validateTransitionDefinition()', () => {
             },
         };
 
-        const result = validateTransitionDefinition(orderStateTransitions, 'AddingItems');
+        const result = validateTransitionDefinition(orderStateTransitions, 'Created');
 
         expect(result.valid).toBe(true);
     });

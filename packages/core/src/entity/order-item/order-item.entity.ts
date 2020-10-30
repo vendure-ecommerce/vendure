@@ -1,6 +1,6 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
@@ -28,7 +28,11 @@ export class OrderItem extends VendureEntity {
 
     @Column() readonly unitPrice: number;
 
-    @Column() unitPriceIncludesTax: boolean;
+    /**
+     * @deprecated
+     * TODO: remove once the field has been removed from the GraphQL type
+     */
+    unitPriceIncludesTax = false;
 
     @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() })
     taxRate: number;
@@ -55,11 +59,7 @@ export class OrderItem extends VendureEntity {
 
     @Calculated()
     get unitPriceWithTax(): number {
-        if (this.unitPriceIncludesTax) {
-            return this.unitPrice;
-        } else {
-            return Math.round(this.unitPrice * ((100 + this.taxRate) / 100));
-        }
+        return Math.round(this.unitPrice * ((100 + this.taxRate) / 100));
     }
 
     /**
@@ -70,44 +70,30 @@ export class OrderItem extends VendureEntity {
         if (!this.pendingAdjustments) {
             return [];
         }
-        if (this.unitPriceIncludesTax) {
-            return this.pendingAdjustments;
-        } else {
-            return this.pendingAdjustments.map(a => {
-                if (a.type === AdjustmentType.PROMOTION) {
-                    // Add the tax that would have been payable on the discount so that the numbers add up
-                    // for the end-user.
-                    const adjustmentWithTax = Math.round(a.amount * ((100 + this.taxRate) / 100));
-                    return {
-                        ...a,
-                        amount: adjustmentWithTax,
-                    };
-                }
-                return a;
-            });
-        }
+        return this.pendingAdjustments.map(a => {
+            if (a.type === AdjustmentType.PROMOTION) {
+                // Add the tax that would have been payable on the discount so that the numbers add up
+                // for the end-user.
+                const adjustmentWithTax = Math.round(a.amount * ((100 + this.taxRate) / 100));
+                return {
+                    ...a,
+                    amount: adjustmentWithTax,
+                };
+            }
+            return a;
+        });
     }
 
     /**
      * This is the actual, final price of the OrderItem payable by the customer.
      */
     get unitPriceWithPromotionsAndTax(): number {
-        if (this.unitPriceIncludesTax) {
-            return this.unitPriceWithPromotions;
-        } else {
-            return this.unitPriceWithPromotions + this.unitTax;
-        }
+        return this.unitPriceWithPromotions + this.unitTax;
     }
 
     get unitTax(): number {
-        if (this.unitPriceIncludesTax) {
-            return Math.round(
-                this.unitPriceWithPromotions - this.unitPriceWithPromotions / ((100 + this.taxRate) / 100),
-            );
-        } else {
-            const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-            return taxAdjustment ? taxAdjustment.amount : 0;
-        }
+        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
+        return taxAdjustment ? taxAdjustment.amount : 0;
     }
 
     get promotionAdjustmentsTotal(): number {

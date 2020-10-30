@@ -79,24 +79,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     /**
-     * Sets whether the unitPrice of each OrderItem in the line includes tax.
-     */
-    setUnitPriceIncludesTax(includesTax: boolean) {
-        this.activeItems.forEach(item => {
-            item.unitPriceIncludesTax = includesTax;
-        });
-    }
-
-    /**
-     * Sets the tax rate being applied to each Orderitem in this line.
-     */
-    setTaxRate(taxRate: number) {
-        this.activeItems.forEach(item => {
-            item.taxRate = taxRate;
-        });
-    }
-
-    /**
      * Clears Adjustments from all OrderItems of the given type. If no type
      * is specified, then all adjustments are removed.
      */

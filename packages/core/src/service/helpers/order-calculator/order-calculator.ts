@@ -108,21 +108,11 @@ export class OrderCalculator {
         line.clearAdjustments(AdjustmentType.TAX);
 
         const applicableTaxRate = getTaxRate(line.taxCategory);
-        const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
-            line.unitPrice,
-            line.taxCategory,
-            activeZone,
-            ctx,
-        );
-
         for (const item of line.activeItems) {
-            item.unitPriceIncludesTax = priceIncludesTax;
             item.taxRate = applicableTaxRate.value;
-            if (!priceIncludesTax) {
-                item.pendingAdjustments = item.pendingAdjustments.concat(
-                    applicableTaxRate.apply(item.unitPriceWithPromotions),
-                );
-            }
+            item.pendingAdjustments = item.pendingAdjustments.concat(
+                applicableTaxRate.apply(item.unitPriceWithPromotions),
+            );
         }
     }
 
@@ -291,7 +281,7 @@ export class OrderCalculator {
         let totalTax = 0;
 
         for (const line of order.lines) {
-            totalPrice += line.totalPrice;
+            totalPrice += line.linePriceWithTax;
             totalTax += line.lineTax;
         }
         const totalPriceBeforeTax = totalPrice - totalTax;
