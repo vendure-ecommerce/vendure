@@ -11,23 +11,28 @@ import {
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
+import dotenv from 'dotenv';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
+
+const configPath = path.join(__dirname, '.env');
+console.log(`Loading .env file from ${configPath}`);
+dotenv.config({ path: configPath });
 
 /**
  * Config settings used during development
  */
 export const devConfig: VendureConfig = {
     apiOptions: {
-        port: API_PORT,
-        adminApiPath: ADMIN_API_PATH,
+        port: +(process.env.PORT ?? API_PORT),
+        adminApiPath: process.env.ADMIN_API_PATH ?? ADMIN_API_PATH,
         adminApiPlayground: {
             settings: {
                 'request.credentials': 'include',
             } as any,
         },
         adminApiDebug: true,
-        shopApiPath: SHOP_API_PATH,
+        shopApiPath: process.env.SHOP_API_PATH ?? SHOP_API_PATH,
         shopApiPlayground: {
             settings: {
                 'request.credentials': 'include',
@@ -63,10 +68,6 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        /*ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-        }),*/
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,
@@ -93,11 +94,11 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: true,
                 type: 'postgres',
-                host: '127.0.0.1',
-                port: 5432,
-                username: 'admin',
-                password: 'secret',
-                database: 'vendure-dev',
+                host: process.env.DB_HOST || '127.0.0.1',
+                port: +(process.env.DB_PORT ?? 5432),
+                username: process.env.DB_USER ?? 'root',
+                password: process.env.DB_PASS ?? '',
+                database: process.env.DB_NAME ?? 'vendure-dev',
             };
         case 'sqlite':
             console.log('Using sqlite connection');
@@ -120,11 +121,11 @@ function getDbConfig(): ConnectionOptions {
             return {
                 synchronize: false,
                 type: 'mysql',
-                host: '127.0.0.1',
-                port: 3306,
-                username: 'root',
-                password: '',
-                database: 'vendure-dev',
+                host: process.env.DB_HOST ?? '127.0.0.1',
+                port: +(process.env.DB_PORT ?? 3306),
+                username: process.env.DB_USER ?? 'root',
+                password: process.env.DB_PASS ?? '',
+                database: process.env.DB_NAME ?? 'vendure-dev',
             };
     }
 }
