@@ -21,6 +21,7 @@
     "@vendure/elasticsearch-plugin": "^0.16.2",
     "@vendure/email-plugin": "^0.16.2",
     "dotenv": "^8.2.0",
+    "ts-node": "^9.0.0",
     "typescript": "4.0.3"
   },
   "devDependencies": {

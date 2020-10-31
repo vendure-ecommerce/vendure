@@ -25,7 +25,7 @@ dotenv.config({ path: configPath });
 export const devConfig: VendureConfig = {
     apiOptions: {
         port: +(process.env.PORT ?? API_PORT),
-        adminApiPath: process.env.ADMIN_API_PATH ?? ADMIN_API_PATH,
+        adminApiPath: process.env.ADMIN_API_PATH || ADMIN_API_PATH,
         adminApiPlayground: {
             settings: {
                 'request.credentials': 'include',
