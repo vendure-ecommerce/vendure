@@ -85,7 +85,7 @@ describe('OrderCalculator', () => {
     }
 
     describe('taxes', () => {
-        it('single line with taxes not included', async () => {
+        it('single line', async () => {
             const ctx = createRequestContext(false);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
@@ -96,7 +96,7 @@ describe('OrderCalculator', () => {
             expect(order.subTotalBeforeTax).toBe(123);
         });
 
-        it('single line with taxes not included, multiple items', async () => {
+        it('single line, multiple items', async () => {
             const ctx = createRequestContext(false);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 3 }],
@@ -107,19 +107,8 @@ describe('OrderCalculator', () => {
             expect(order.subTotalBeforeTax).toBe(369);
         });
 
-        it('single line with taxes included', async () => {
-            const ctx = createRequestContext(true);
-            const order = createOrder({
-                lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
-            });
-            await orderCalculator.applyPriceAdjustments(ctx, order, []);
-
-            expect(order.subTotal).toBe(123);
-            expect(order.subTotalBeforeTax).toBe(102);
-        });
-
         it('resets totals when lines array is empty', async () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext(false);
             const order = createOrder({
                 lines: [],
                 subTotal: 148,
@@ -183,7 +172,7 @@ describe('OrderCalculator', () => {
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: { discount: { type: 'int' } },
             execute(ctx, order, args) {
-                return -order.subTotal * (args.discount / 100);
+                return -order.total * (args.discount / 100);
             },
         });
 
@@ -196,13 +185,13 @@ describe('OrderCalculator', () => {
                 promotionActions: [fixedPriceOrderAction],
             });
 
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext(false);
             const order = createOrder({
                 lines: [{ unitPrice: 123, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
             await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-            expect(order.subTotal).toBe(123);
+            expect(order.subTotal).toBe(148);
             expect(order.total).toBe(42);
         });
 
@@ -221,56 +210,29 @@ describe('OrderCalculator', () => {
                 promotionActions: [fixedPriceOrderAction],
             });
 
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext(false);
             const order = createOrder({
                 lines: [{ unitPrice: 50, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
             await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-            expect(order.subTotal).toBe(50);
+            expect(order.subTotal).toBe(60);
             expect(order.adjustments.length).toBe(0);
-            expect(order.total).toBe(50);
+            expect(order.total).toBe(60);
 
             // increase the quantity to 2, which will take the total over the minimum set by the
             // condition.
             order.lines[0].items.push(new OrderItem({ unitPrice: 50 }));
 
-            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
 
-            expect(order.subTotal).toBe(100);
+            expect(order.subTotal).toBe(120);
             // Now the fixedPriceOrderAction should be in effect
             expect(order.adjustments.length).toBe(1);
             expect(order.total).toBe(42);
         });
 
-        it('percentage order discount (price includes tax)', async () => {
-            const promotion = new Promotion({
-                id: 1,
-                name: '50% off order',
-                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
-                promotionConditions: [alwaysTrueCondition],
-                actions: [
-                    {
-                        code: percentageOrderAction.code,
-                        args: [{ name: 'discount', value: '50' }],
-                    },
-                ],
-                promotionActions: [percentageOrderAction],
-            });
-
-            const ctx = createRequestContext(true);
-            const order = createOrder({
-                lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
-            });
-            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
-
-            expect(order.subTotal).toBe(100);
-            expect(order.adjustments.length).toBe(1);
-            expect(order.adjustments[0].description).toBe('50% off order');
-            expect(order.total).toBe(50);
-        });
-
-        it('percentage order discount (price excludes tax)', async () => {
+        it('percentage order discount', async () => {
             const promotion = new Promotion({
                 id: 1,
                 name: '50% off order',
@@ -287,17 +249,17 @@ describe('OrderCalculator', () => {
 
             const ctx = createRequestContext(false);
             const order = createOrder({
-                lines: [{ unitPrice: 83, taxCategory: taxCategoryStandard, quantity: 1 }],
+                lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
             await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-            expect(order.subTotal).toBe(100);
+            expect(order.subTotal).toBe(120);
             expect(order.adjustments.length).toBe(1);
             expect(order.adjustments[0].description).toBe('50% off order');
-            expect(order.total).toBe(50);
+            expect(order.total).toBe(60);
         });
 
-        it('percentage items discount (price includes tax)', async () => {
+        it('percentage items discount', async () => {
             const promotion = new Promotion({
                 id: 1,
                 name: '50% off each item',
@@ -312,41 +274,16 @@ describe('OrderCalculator', () => {
                 promotionActions: [percentageItemAction],
             });
 
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext(false);
             const order = createOrder({
-                lines: [{ unitPrice: 100, taxCategory: taxCategoryStandard, quantity: 1 }],
+                lines: [{ unitPrice: 8333, taxCategory: taxCategoryStandard, quantity: 1 }],
             });
-            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
 
-            expect(order.subTotal).toBe(50);
-            expect(order.lines[0].adjustments.length).toBe(1);
+            expect(order.subTotal).toBe(5000);
+            expect(order.lines[0].adjustments.length).toBe(2);
             expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
-            expect(order.total).toBe(50);
-        });
-
-        it('percentage items discount (price excludes tax)', async () => {
-            const promotion = new Promotion({
-                id: 1,
-                name: '50% off each item',
-                conditions: [{ code: alwaysTrueCondition.code, args: [] }],
-                promotionConditions: [alwaysTrueCondition],
-                actions: [
-                    {
-                        code: percentageItemAction.code,
-                        args: [{ name: 'discount', value: '50' }],
-                    },
-                ],
-                promotionActions: [percentageItemAction],
-            });
-
-            const ctx = createRequestContext(false);
-            const order = createOrder({
-                lines: [{ unitPrice: 83, taxCategory: taxCategoryStandard, quantity: 1 }],
-            });
-            await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
-
-            expect(order.subTotal).toBe(50);
-            expect(order.total).toBe(50);
+            expect(order.total).toBe(5000);
         });
 
         describe('interaction amongst promotion actions', () => {
@@ -369,7 +306,7 @@ describe('OrderCalculator', () => {
                 },
             });
 
-            const buy3Get10pcOffOrder = new Promotion({
+            const buy3Get50pcOffOrder = new Promotion({
                 id: 1,
                 name: 'Buy 3 Get 50% off order',
                 conditions: [
@@ -407,35 +344,37 @@ describe('OrderCalculator', () => {
                 promotionActions: [percentageOrderAction],
             });
 
-            it('two order-level percentage discounts (tax included in prices)', async () => {
-                const ctx = createRequestContext(true);
+            it('two order-level percentage discounts', async () => {
+                const ctx = createRequestContext(false);
                 const order = createOrder({
                     lines: [{ unitPrice: 50, taxCategory: taxCategoryStandard, quantity: 2 }],
                 });
 
                 // initially the order is $100, so the second promotion applies
                 await orderCalculator.applyPriceAdjustments(ctx, order, [
-                    buy3Get10pcOffOrder,
                     spend100Get10pcOffOrder,
+                    buy3Get50pcOffOrder,
                 ]);
 
-                expect(order.subTotal).toBe(100);
+                expect(order.subTotal).toBe(120);
                 expect(order.adjustments.length).toBe(1);
                 expect(order.adjustments[0].description).toBe(spend100Get10pcOffOrder.name);
-                expect(order.total).toBe(90);
+                expect(order.total).toBe(108);
 
                 // increase the quantity to 3, which will trigger the first promotion and thus
                 // bring the order total below the threshold for the second promotion.
                 order.lines[0].items.push(new OrderItem({ unitPrice: 50 }));
 
-                await orderCalculator.applyPriceAdjustments(ctx, order, [
-                    buy3Get10pcOffOrder,
-                    spend100Get10pcOffOrder,
-                ]);
+                await orderCalculator.applyPriceAdjustments(
+                    ctx,
+                    order,
+                    [spend100Get10pcOffOrder, buy3Get50pcOffOrder],
+                    order.lines[0],
+                );
 
-                expect(order.subTotal).toBe(150);
-                expect(order.adjustments.length).toBe(1);
-                expect(order.total).toBe(75);
+                expect(order.subTotal).toBe(180);
+                expect(order.adjustments.length).toBe(2);
+                expect(order.total).toBe(81);
             });
 
             it('two order-level percentage discounts (tax excluded from prices)', async () => {
@@ -446,7 +385,7 @@ describe('OrderCalculator', () => {
 
                 // initially the order is $100, so the second promotion applies
                 await orderCalculator.applyPriceAdjustments(ctx, order, [
-                    buy3Get10pcOffOrder,
+                    buy3Get50pcOffOrder,
                     spend100Get10pcOffOrder,
                 ]);
 
@@ -462,7 +401,7 @@ describe('OrderCalculator', () => {
                 await orderCalculator.applyPriceAdjustments(
                     ctx,
                     order,
-                    [buy3Get10pcOffOrder, spend100Get10pcOffOrder],
+                    [buy3Get50pcOffOrder, spend100Get10pcOffOrder],
                     order.lines[0],
                 );
 
@@ -502,23 +441,23 @@ describe('OrderCalculator', () => {
             });
 
             it('item-level & order-level percentage discounts', async () => {
-                const ctx = createRequestContext(true);
+                const ctx = createRequestContext(false);
                 const order = createOrder({
                     lines: [{ unitPrice: 155880, taxCategory: taxCategoryStandard, quantity: 1 }],
                 });
                 await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
 
-                expect(order.total).toBe(155880);
+                expect(order.total).toBe(187056);
 
                 // Apply the item-level discount
                 order.couponCodes.push('ITEM10');
                 await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
-                expect(order.total).toBe(140292);
+                expect(order.total).toBe(168350);
 
                 // Apply the order-level discount
                 order.couponCodes.push('ORDER10');
                 await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
-                expect(order.total).toBe(126263);
+                expect(order.total).toBe(151515);
             });
 
             it('item-level & order-level percentage (tax not included)', async () => {

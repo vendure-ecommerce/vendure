@@ -17,6 +17,9 @@ describe('FSM validateTransitionDefinition()', () => {
 
     it('valid complex definition', () => {
         const orderStateTransitions: Transitions<OrderState> = {
+            Created: {
+                to: ['AddingItems'],
+            },
             AddingItems: {
                 to: ['ArrangingPayment', 'Cancelled'],
             },
@@ -46,7 +49,7 @@ describe('FSM validateTransitionDefinition()', () => {
             },
         };
 
-        const result = validateTransitionDefinition(orderStateTransitions, 'AddingItems');
+        const result = validateTransitionDefinition(orderStateTransitions, 'Created');
 
         expect(result.valid).toBe(true);
     });

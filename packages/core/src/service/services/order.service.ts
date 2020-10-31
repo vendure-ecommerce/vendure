@@ -383,20 +383,19 @@ export class OrderService {
                     orderLine.items = [];
                 }
                 const productVariant = orderLine.productVariant;
-                const calculatedPrice = await priceCalculationStrategy.calculateUnitPrice(
+                const { price, priceIncludesTax } = await priceCalculationStrategy.calculateUnitPrice(
                     ctx,
                     productVariant,
                     orderLine.customFields || {},
                 );
+                const taxRate = productVariant.taxRateApplied;
+                const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;
                 for (let i = currentQuantity; i < correctedQuantity; i++) {
                     const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                         new OrderItem({
-                            unitPrice: calculatedPrice.price,
+                            unitPrice,
                             pendingAdjustments: [],
-                            unitPriceIncludesTax: calculatedPrice.priceIncludesTax,
-                            taxRate: productVariant.priceIncludesTax
-                                ? productVariant.taxRateApplied.value
-                                : 0,
+                            taxRate: taxRate.value,
                         }),
                     );
                     orderLine.items.push(orderItem);

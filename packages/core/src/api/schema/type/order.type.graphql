@@ -28,7 +28,21 @@ type Order implements Node {
     shippingMethod: ShippingMethod
     totalBeforeTax: Int!
     total: Int!
+    taxSummary: [OrderTaxSummary!]!
     history(options: HistoryEntryListOptions): HistoryEntryList!
+}
+
+"""
+A summary of the taxes being applied to this order, grouped
+by taxRate.
+"""
+type OrderTaxSummary {
+    "The taxRate as a percentage"
+    taxRate: Float!
+    "The total net price or OrderItems to which this taxRate applies"
+    taxBase: Int!
+    "The total tax being applied to the Order at this taxRate"
+    taxTotal: Int!
 }
 
 type OrderAddress {
@@ -62,9 +76,11 @@ type OrderItem implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     cancelled: Boolean!
+    "The price of a single unit, excluding tax"
     unitPrice: Int!
+    "The price of a single unit, including tax"
     unitPriceWithTax: Int!
-    unitPriceIncludesTax: Boolean!
+    unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
     fulfillment: Fulfillment
@@ -81,7 +97,14 @@ type OrderLine implements Node {
     unitPriceWithTax: Int!
     quantity: Int!
     items: [OrderItem!]!
-    totalPrice: Int!
+    totalPrice: Int! @deprecated(reason: "Use `linePriceWithTax` instead")
+    taxRate: Float!
+    "The total price of the line excluding tax"
+    linePrice: Int!
+    "The total tax on this line"
+    lineTax: Int!
+    "The total price of the line including tax"
+    linePriceWithTax: Int!
     adjustments: [Adjustment!]!
     order: Order!
 }

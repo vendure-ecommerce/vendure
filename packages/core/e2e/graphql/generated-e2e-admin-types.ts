@@ -1171,6 +1171,7 @@ export type Order = Node & {
     shippingMethod?: Maybe<ShippingMethod>;
     totalBeforeTax: Scalars['Int'];
     total: Scalars['Int'];
+    taxSummary: Array<OrderTaxSummary>;
     history: HistoryEntryList;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -3074,6 +3075,19 @@ export type ImportInfo = {
     imported: Scalars['Int'];
 };
 
+/**
+ * A summary of the taxes being applied to this order, grouped
+ * by taxRate.
+ */
+export type OrderTaxSummary = {
+    /** The taxRate as a percentage */
+    taxRate: Scalars['Float'];
+    /** The total net price or OrderItems to which this taxRate applies */
+    taxBase: Scalars['Int'];
+    /** The total tax being applied to the Order at this taxRate */
+    taxTotal: Scalars['Int'];
+};
+
 export type OrderAddress = {
     fullName?: Maybe<Scalars['String']>;
     company?: Maybe<Scalars['String']>;
@@ -3105,8 +3119,11 @@ export type OrderItem = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     cancelled: Scalars['Boolean'];
+    /** The price of a single unit, excluding tax */
     unitPrice: Scalars['Int'];
+    /** The price of a single unit, including tax */
     unitPriceWithTax: Scalars['Int'];
+    /** @deprecated `unitPrice` is now always without tax */
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
     adjustments: Array<Adjustment>;
@@ -3124,7 +3141,15 @@ export type OrderLine = Node & {
     unitPriceWithTax: Scalars['Int'];
     quantity: Scalars['Int'];
     items: Array<OrderItem>;
+    /** @deprecated Use `linePriceWithTax` instead */
     totalPrice: Scalars['Int'];
+    taxRate: Scalars['Float'];
+    /** The total price of the line excluding tax */
+    linePrice: Scalars['Int'];
+    /** The total tax on this line */
+    lineTax: Scalars['Int'];
+    /** The total price of the line including tax */
+    linePriceWithTax: Scalars['Int'];
     adjustments: Array<Adjustment>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
@@ -5150,19 +5175,9 @@ export type UpdateRoleMutationVariables = Exact<{
 
 export type UpdateRoleMutation = { updateRole: RoleFragment };
 
-export type UpdateOptionGroupMutationVariables = Exact<{
-    input: UpdateProductOptionGroupInput;
-}>;
+export type GetProductsWithVariantPricesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
-
-export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
-
-export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
-
-export type GetPromoProductsQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetPromoProductsQuery = {
+export type GetProductsWithVariantPricesQuery = {
     products: {
         items: Array<
             Pick<Product, 'id' | 'slug'> & {
@@ -5175,6 +5190,16 @@ export type GetPromoProductsQuery = {
         >;
     };
 };
+
+export type UpdateOptionGroupMutationVariables = Exact<{
+    input: UpdateProductOptionGroupInput;
+}>;
+
+export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
+
+export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
+
+export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
 export type SettlePaymentMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6991,6 +7016,35 @@ export namespace UpdateRole {
     export type UpdateRole = NonNullable<UpdateRoleMutation['updateRole']>;
 }
 
+export namespace GetProductsWithVariantPrices {
+    export type Variables = GetProductsWithVariantPricesQueryVariables;
+    export type Query = GetProductsWithVariantPricesQuery;
+    export type Products = NonNullable<GetProductsWithVariantPricesQuery['products']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetProductsWithVariantPricesQuery['products']>['items']>[number]
+    >;
+    export type Variants = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetProductsWithVariantPricesQuery['products']>['items']>[number]
+            >['variants']
+        >[number]
+    >;
+    export type FacetValues = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<
+                            NonNullable<GetProductsWithVariantPricesQuery['products']>['items']
+                        >[number]
+                    >['variants']
+                >[number]
+            >['facetValues']
+        >[number]
+    >;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -7001,33 +7055,6 @@ export namespace DeletePromotionAdHoc1 {
     export type Variables = DeletePromotionAdHoc1MutationVariables;
     export type Mutation = DeletePromotionAdHoc1Mutation;
     export type DeletePromotion = NonNullable<DeletePromotionAdHoc1Mutation['deletePromotion']>;
-}
-
-export namespace GetPromoProducts {
-    export type Variables = GetPromoProductsQueryVariables;
-    export type Query = GetPromoProductsQuery;
-    export type Products = NonNullable<GetPromoProductsQuery['products']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<GetPromoProductsQuery['products']>['items']>[number]
-    >;
-    export type Variants = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<NonNullable<GetPromoProductsQuery['products']>['items']>[number]
-            >['variants']
-        >[number]
-    >;
-    export type FacetValues = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<
-                    NonNullable<
-                        NonNullable<NonNullable<GetPromoProductsQuery['products']>['items']>[number]
-                    >['variants']
-                >[number]
-            >['facetValues']
-        >[number]
-    >;
 }
 
 export namespace SettlePayment {

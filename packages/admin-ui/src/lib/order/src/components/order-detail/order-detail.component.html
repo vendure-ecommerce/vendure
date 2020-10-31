@@ -147,9 +147,9 @@
                             ></clr-icon></td
                     ></ng-container>
                     <td class="align-middle total">
-                        {{ line.totalPrice / 100 | currency: order.currencyCode }}
+                        {{ line.linePriceWithTax / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">
-                            {{ (line.unitPrice * line.quantity) / 100 | currency: order.currencyCode }}
+                            {{ line.linePrice / 100 | currency: order.currencyCode }}
                         </div>
 
                         <ng-container *ngIf="getLinePromotions(line) as promotions">

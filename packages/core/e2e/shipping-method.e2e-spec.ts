@@ -34,7 +34,7 @@ const calculatorWithMetadata = new ShippingCalculator({
     code: 'calculator-with-metadata',
     description: [{ languageCode: LanguageCode.en, value: 'Has metadata' }],
     args: {},
-    calculate: order => {
+    calculate: () => {
         return {
             price: 100,
             priceWithTax: 100,
