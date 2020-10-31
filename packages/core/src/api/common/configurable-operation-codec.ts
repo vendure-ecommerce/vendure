@@ -13,7 +13,7 @@ import {
 } from '../../config';
 import { CollectionFilter } from '../../config/collection/collection-filter';
 import { ConfigService } from '../../config/config.service';
-import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 
 import { IdCodecService } from './id-codec.service';
 

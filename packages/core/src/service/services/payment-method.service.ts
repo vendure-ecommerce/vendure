@@ -14,7 +14,7 @@ import { UserInputError } from '../../common/error/errors';
 import { RefundStateTransitionError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
-import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';
