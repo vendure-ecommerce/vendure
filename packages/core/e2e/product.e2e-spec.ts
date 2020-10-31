@@ -1,12 +1,12 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { createTestEnvironment } from '@vendure/testing';
+import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AddOptionGroupToProduct,
@@ -15,12 +15,16 @@ import {
     DeleteProduct,
     DeleteProductVariant,
     DeletionResult,
+    ErrorCode,
     GetAssetList,
     GetOptionGroup,
     GetProductList,
     GetProductSimple,
+    GetProductVariant,
     GetProductWithVariants,
     LanguageCode,
+    ProductVariantFragment,
+    ProductWithOptionsFragment,
     ProductWithVariants,
     RemoveOptionGroupFromProduct,
     SortOrder,
@@ -46,6 +50,10 @@ import { sortById } from './utils/test-order-utils';
 
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
+
+    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard<
+        ProductWithOptionsFragment
+    >(input => !!input.optionGroups);
 
     beforeAll(async () => {
         await server.init({
@@ -309,6 +317,30 @@ describe('Product resolver', () => {
             });
 
             expect(result.product).toBeNull();
+        });
+    });
+
+    describe('productVariant query', () => {
+        it('by id', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_1',
+            });
+
+            expect(productVariant?.id).toBe('T_1');
+            expect(productVariant?.name).toBe('Laptop 13 inch 8GB');
+        });
+        it('returns null when id not found', async () => {
+            const { productVariant } = await adminClient.query<
+                GetProductVariant.Query,
+                GetProductVariant.Variables
+            >(GET_PRODUCT_VARIANT, {
+                id: 'T_999',
+            });
+
+            expect(productVariant).toBeNull();
         });
     });
 
@@ -656,31 +688,36 @@ describe('Product resolver', () => {
             });
             expect(addOptionGroupToProduct.optionGroups.length).toBe(1);
 
-            const result = await adminClient.query<
+            const { removeOptionGroupFromProduct } = await adminClient.query<
                 RemoveOptionGroupFromProduct.Mutation,
                 RemoveOptionGroupFromProduct.Variables
             >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
                 optionGroupId: 'T_1',
                 productId: newProductWithAssets.id,
             });
-            expect(result.removeOptionGroupFromProduct.id).toBe(newProductWithAssets.id);
-            expect(result.removeOptionGroupFromProduct.optionGroups.length).toBe(0);
+            removeOptionGuard.assertSuccess(removeOptionGroupFromProduct);
+
+            expect(removeOptionGroupFromProduct.id).toBe(newProductWithAssets.id);
+            expect(removeOptionGroupFromProduct.optionGroups.length).toBe(0);
         });
 
-        it(
-            'removeOptionGroupFromProduct errors if the optionGroup is being used by variants',
-            assertThrowsWithMessage(
-                () =>
-                    adminClient.query<
-                        RemoveOptionGroupFromProduct.Mutation,
-                        RemoveOptionGroupFromProduct.Variables
-                    >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
-                        optionGroupId: 'T_3',
-                        productId: 'T_2',
-                    }),
+        it('removeOptionGroupFromProduct return error result if the optionGroup is being used by variants', async () => {
+            const { removeOptionGroupFromProduct } = await adminClient.query<
+                RemoveOptionGroupFromProduct.Mutation,
+                RemoveOptionGroupFromProduct.Variables
+            >(REMOVE_OPTION_GROUP_FROM_PRODUCT, {
+                optionGroupId: 'T_3',
+                productId: 'T_2',
+            });
+            removeOptionGuard.assertErrorResult(removeOptionGroupFromProduct);
+
+            expect(removeOptionGroupFromProduct.message).toBe(
                 `Cannot remove ProductOptionGroup "curvy-monitor-monitor-size" as it is used by 2 ProductVariants`,
-            ),
-        );
+            );
+            expect(removeOptionGroupFromProduct.errorCode).toBe(ErrorCode.PRODUCT_OPTION_IN_USE_ERROR);
+            expect(removeOptionGroupFromProduct.optionGroupCode).toBe('curvy-monitor-monitor-size');
+            expect(removeOptionGroupFromProduct.productVariantCount).toBe(2);
+        });
 
         it(
             'removeOptionGroupFromProduct errors with an invalid productId',
@@ -983,6 +1020,8 @@ describe('Product resolver', () => {
                 ),
             );
 
+            let deletedVariant: ProductVariantFragment;
+
             it('deleteProductVariant', async () => {
                 const result1 = await adminClient.query<
                     GetProductWithVariants.Query,
@@ -1009,6 +1048,30 @@ describe('Product resolver', () => {
                     id: newProduct.id,
                 });
                 expect(result2.product!.variants.map(v => v.id).sort()).toEqual(['T_36', 'T_37']);
+
+                deletedVariant = result1.product?.variants.find(v => v.id === 'T_35')!;
+            });
+
+            /** Testing https://github.com/vendure-ecommerce/vendure/issues/412 **/
+            it('createProductVariants ignores deleted variants when checking for existing combinations', async () => {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: newProduct.id,
+                            sku: 'RE1',
+                            optionIds: [deletedVariant.options[0].id, deletedVariant.options[1].id],
+                            translations: [{ languageCode: LanguageCode.en, name: 'Re-created Variant' }],
+                        },
+                    ],
+                });
+
+                expect(createProductVariants.length).toBe(1);
+                expect(createProductVariants[0]!.options.map(o => o.code)).toEqual(
+                    deletedVariant.options.map(o => o.code),
+                );
             });
         });
     });
@@ -1105,36 +1168,42 @@ describe('Product resolver', () => {
     });
 });
 
-export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
+    fragment ProductWithOptions on Product {
+        id
+        optionGroups {
             id
-            optionGroups {
+            code
+            options {
                 id
                 code
-                options {
-                    id
-                    code
-                }
             }
         }
     }
 `;
 
+export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
+    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            ...ProductWithOptions
+        }
+    }
+    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
+`;
+
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {
         removeOptionGroupFromProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            id
-            optionGroups {
-                id
-                code
-                options {
-                    id
-                    code
-                }
+            ...ProductWithOptions
+            ... on ProductOptionInUseError {
+                errorCode
+                message
+                optionGroupCode
+                productVariantCount
             }
         }
     }
+    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
 `;
 
 export const GET_OPTION_GROUP = gql`
@@ -1146,6 +1215,15 @@ export const GET_OPTION_GROUP = gql`
                 id
                 code
             }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT = gql`
+    query GetProductVariant($id: ID!) {
+        productVariant(id: $id) {
+            id
+            name
         }
     }
 `;

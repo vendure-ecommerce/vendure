@@ -130,7 +130,7 @@ export class GoogleAuthenticationStrategy implements AuthenticationStrategy<Goog
     // First we check to see if this user has already authenticated in our
     // Vendure server using this Google account. If so, we return that
     // User object, and they will be now authenticated in Vendure.
-    const user = await this.externalAuthenticationService.findCustomerUser(this.name, payload.sub);
+    const user = await this.externalAuthenticationService.findCustomerUser(ctx, this.name, payload.sub);
     if (user) {
         return user;
     }

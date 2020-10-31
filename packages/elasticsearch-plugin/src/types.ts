@@ -1,6 +1,7 @@
 import {
     Coordinate,
     CurrencyCode,
+    LanguageCode,
     PriceRange,
     SearchInput,
     SearchResponse,
@@ -31,12 +32,12 @@ export type PriceRangeBucket = {
 };
 
 export type IndexItemAssets = {
-    productAssetId: ID | null;
+    productAssetId: ID | undefined;
     productPreview: string;
-    productPreviewFocalPoint: Coordinate | null;
-    productVariantAssetId: ID | null;
+    productPreviewFocalPoint: Coordinate | undefined;
+    productVariantAssetId: ID | undefined;
     productVariantPreview: string;
-    productVariantPreviewFocalPoint: Coordinate | null;
+    productVariantPreviewFocalPoint: Coordinate | undefined;
 };
 
 export type VariantIndexItem = Omit<
@@ -45,8 +46,10 @@ export type VariantIndexItem = Omit<
 > &
     IndexItemAssets & {
         channelId: ID;
+        languageCode: LanguageCode;
         price: number;
         priceWithTax: number;
+        collectionSlugs: string[];
         [customMapping: string]: any;
     };
 
@@ -55,6 +58,7 @@ export type ProductIndexItem = IndexItemAssets & {
     slug: string;
     productId: ID;
     channelId: ID;
+    languageCode: LanguageCode;
     productName: string;
     productVariantId: ID;
     productVariantName: string;
@@ -63,6 +67,7 @@ export type ProductIndexItem = IndexItemAssets & {
     facetIds: ID[];
     facetValueIds: ID[];
     collectionIds: ID[];
+    collectionSlugs: string[];
     channelIds: ID[];
     enabled: boolean;
     priceMin: number;
@@ -212,7 +217,7 @@ export class DeleteAssetMessage extends WorkerMessage<UpdateAssetMessageData, bo
     static readonly pattern = 'DeleteAsset';
 }
 
-type Maybe<T> = T | null | undefined;
+type Maybe<T> = T | undefined;
 type CustomMappingDefinition<Args extends any[], T extends string, R> = {
     graphQlType: T;
     valueFn: (...args: Args) => R;

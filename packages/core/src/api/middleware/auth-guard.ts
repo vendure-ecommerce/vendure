@@ -3,13 +3,18 @@ import { Reflector } from '@nestjs/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 import { Request, Response } from 'express';
 
+import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import { ForbiddenError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { CachedSession } from '../../config/session-cache/session-cache-strategy';
+import { Customer } from '../../entity/customer/customer.entity';
+import { ChannelService } from '../../service/services/channel.service';
+import { CustomerService } from '../../service/services/customer.service';
 import { SessionService } from '../../service/services/session.service';
 import { extractSessionToken } from '../common/extract-session-token';
 import { parseContext } from '../common/parse-context';
-import { REQUEST_CONTEXT_KEY, RequestContextService } from '../common/request-context.service';
+import { RequestContext } from '../common/request-context';
+import { RequestContextService } from '../common/request-context.service';
 import { setSessionToken } from '../common/set-session-token';
 import { PERMISSIONS_METADATA_KEY } from '../decorators/allow.decorator';
 
@@ -26,6 +31,8 @@ export class AuthGuard implements CanActivate {
         private configService: ConfigService,
         private requestContextService: RequestContextService,
         private sessionService: SessionService,
+        private customerService: CustomerService,
+        private channelService: ChannelService,
     ) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,7 +42,12 @@ export class AuthGuard implements CanActivate {
         const isPublic = !!permissions && permissions.includes(Permission.Public);
         const hasOwnerPermission = !!permissions && permissions.includes(Permission.Owner);
         const session = await this.getSession(req, res, hasOwnerPermission);
-        const requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+        let requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+
+        const requestContextShouldBeReinitialized = await this.setActiveChannel(requestContext, session);
+        if (requestContextShouldBeReinitialized) {
+            requestContext = await this.requestContextService.fromRequest(req, info, permissions, session);
+        }
         (req as any)[REQUEST_CONTEXT_KEY] = requestContext;
 
         if (authDisabled || !permissions || isPublic) {
@@ -48,6 +60,38 @@ export class AuthGuard implements CanActivate {
                 return canActivate;
             }
         }
+    }
+
+    private async setActiveChannel(
+        requestContext: RequestContext,
+        session?: CachedSession,
+    ): Promise<boolean> {
+        if (!session) {
+            return false;
+        }
+        // In case the session does not have an activeChannelId or the activeChannelId
+        // does not correspond to the current channel, the activeChannelId on the session is set
+        const activeChannelShouldBeSet =
+            !session.activeChannelId || session.activeChannelId !== requestContext.channelId;
+        if (activeChannelShouldBeSet) {
+            await this.sessionService.setActiveChannel(session, requestContext.channel);
+            if (requestContext.activeUserId) {
+                const customer = await this.customerService.findOneByUserId(
+                    requestContext,
+                    requestContext.activeUserId,
+                    false,
+                );
+                // To avoid assigning the customer to the active channel on every request,
+                // it is only done on the first request and whenever the channel changes
+                if (customer) {
+                    await this.channelService.assignToChannels(requestContext, Customer, customer.id, [
+                        requestContext.channelId,
+                    ]);
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     private async getSession(

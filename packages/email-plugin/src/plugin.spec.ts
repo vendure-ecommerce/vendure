@@ -367,8 +367,8 @@ describe('EmailPlugin', () => {
         it('loads async data', async () => {
             const handler = new EmailEventListener('test')
                 .on(MockEvent)
-                .loadData(async ({ inject }) => {
-                    const service = inject(MockService);
+                .loadData(async ({ injector }) => {
+                    const service = injector.get(MockService);
                     return service.someAsyncMethod();
                 })
                 .setFrom('"test from" <noreply@test.com>')
@@ -398,8 +398,8 @@ describe('EmailPlugin', () => {
                 .setFrom('"test from" <noreply@test.com>')
                 .setSubject('Hello, {{ testData }}!')
                 .setRecipient(() => 'test@test.com')
-                .loadData(async ({ inject }) => {
-                    const service = inject(MockService);
+                .loadData(async ({ injector }) => {
+                    const service = injector.get(MockService);
                     return service.someAsyncMethod();
                 })
                 .setTemplateVars(event => ({ testData: event.data }));
@@ -420,6 +420,24 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].subject).toBe('Hello, loaded data!');
             expect(onSend.mock.calls[0][0].from).toBe('"test from" <noreply@test.com>');
             expect(onSend.mock.calls[0][0].recipient).toBe('test@test.com');
+        });
+
+        it('only executes for filtered events', async () => {
+            let callCount = 0;
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .filter(event => event.shouldSend === true)
+                .loadData(async ({ injector }) => {
+                    callCount++;
+                });
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(RequestContext.empty(), false));
+            eventBus.publish(new MockEvent(RequestContext.empty(), true));
+            await pause();
+
+            expect(callCount).toBe(1);
         });
     });
 

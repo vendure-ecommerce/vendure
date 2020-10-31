@@ -82,7 +82,7 @@ export class DefaultInterceptor implements HttpInterceptor {
             // inside the body of the response.
             const graqhQLErrors = response.body.errors;
             if (graqhQLErrors && Array.isArray(graqhQLErrors)) {
-                const firstCode: string = graqhQLErrors[0].extensions.code;
+                const firstCode: string = graqhQLErrors[0]?.extensions?.code;
                 if (firstCode === 'FORBIDDEN') {
                     this.authService.logOut().subscribe(() => {
                         if (!window.location.pathname.includes('login')) {

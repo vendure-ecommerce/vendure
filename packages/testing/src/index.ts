@@ -4,6 +4,7 @@ export * from './config/test-config';
 export * from './create-test-environment';
 export * from './data-population/clear-all-tables';
 export * from './data-population/populate-customers';
+export * from './error-result-guard';
 export * from './initializers/initializers';
 export * from './initializers/test-db-initializer';
 export * from './initializers/mysql-initializer';

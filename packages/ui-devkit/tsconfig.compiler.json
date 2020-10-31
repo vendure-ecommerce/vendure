@@ -3,6 +3,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./compiler",
+    "removeComments": false,
     "sourceMap": true,
     "module": "commonjs",
     "declaration": true,

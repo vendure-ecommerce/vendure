@@ -125,7 +125,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
      * Gets jobs by ids. The implementation is handled by the configured
      * {@link JobQueueStrategy}.
      */
-    getJobsById(ids: string[]): Promise<Job[]> {
+    getJobsById(ids: ID[]): Promise<Job[]> {
         return this.jobQueueStrategy.findManyById(ids);
     }
 

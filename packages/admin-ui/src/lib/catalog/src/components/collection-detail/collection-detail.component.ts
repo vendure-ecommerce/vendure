@@ -13,14 +13,15 @@ import {
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
+    ConfigurableOperationDef,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
     CreateCollectionInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
-    FacetWithValues,
-    GetActiveChannel,
+    encodeConfigArgValue,
+    getConfigArgValue,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -28,8 +29,8 @@ import {
     UpdateCollectionInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
-import { combineLatest, Observable } from 'rxjs';
-import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { combineLatest } from 'rxjs';
+import { mergeMap, take } from 'rxjs/operators';
 
 import { CollectionContentsComponent } from '../collection-contents/collection-contents.component';
 
@@ -39,15 +40,14 @@ import { CollectionContentsComponent } from '../collection-contents/collection-c
     styleUrls: ['./collection-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fragment>
+export class CollectionDetailComponent
+    extends BaseDetailComponent<Collection.Fragment>
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
     assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
-    facets$: Observable<FacetWithValues.Fragment[]>;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
 
     constructor(
@@ -76,17 +76,9 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
 
     ngOnInit() {
         this.init();
-        this.facets$ = this.dataService.facet
-            .getAllFacets()
-            .mapSingle(data => data.facets.items)
-            .pipe(shareReplay(1));
-
         this.dataService.collection.getCollectionFilters().single$.subscribe(res => {
             this.allFilters = res.collectionFilters;
         });
-        this.activeChannel$ = this.dataService.settings
-            .getActiveChannel()
-            .mapStream(data => data.activeChannel);
     }
 
     ngOnDestroy() {
@@ -106,17 +98,19 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
     }
 
     /**
-     * If creating a new product, automatically generate the slug based on the collection name.
+     * If creating a new Collection, automatically generate the slug based on the collection name.
      */
     updateSlug(nameValue: string) {
-        this.isNew$.pipe(take(1)).subscribe(isNew => {
-            if (isNew) {
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(take(1))
+            .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['slug']);
-                if (slugControl && slugControl.pristine) {
+                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
-            }
-        });
+            });
     }
 
     addFilter(collectionFilter: ConfigurableOperation) {
@@ -126,7 +120,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
             const argsHash = collectionFilter.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value,
+                    [arg.name]: getConfigArgValue(arg.value),
                 }),
                 {},
             );
@@ -136,7 +130,10 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                     args: argsHash,
                 }),
             );
-            this.filters.push(collectionFilter);
+            this.filters.push({
+                code: collectionFilter.code,
+                args: collectionFilter.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+            });
         }
     }
 
@@ -295,8 +292,7 @@ export class CollectionDetailComponent extends BaseDetailComponent<Collection.Fr
                 code: o.code,
                 arguments: Object.values(formValueOperations[i].args).map((value: any, j) => ({
                     name: o.args[j].name,
-                    value: value.toString(),
-                    type: o.args[j].type,
+                    value: encodeConfigArgValue(value),
                 })),
             };
         });

@@ -2,6 +2,7 @@ import { Adjustment, AdjustmentType, ConfigurableOperation } from '@vendure/comm
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
+import { RequestContext } from '../../api/common/request-context';
 import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { getConfig } from '../../config/config-helpers';
@@ -11,7 +12,6 @@ import {
     PromotionOrderAction,
 } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
-import { PromotionUtils } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
@@ -20,12 +20,10 @@ import { Order } from '../order/order.entity';
 export interface ApplyOrderItemActionArgs {
     orderItem: OrderItem;
     orderLine: OrderLine;
-    utils: PromotionUtils;
 }
 
 export interface ApplyOrderActionArgs {
     order: Order;
-    utils: PromotionUtils;
 }
 
 /**
@@ -96,6 +94,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
      *
      * An example illustrating the need for a priority is this:
      *
+     *
      * Consider 2 Promotions, 1) buy 1 get one free and 2) 10% off when order total is over $50.
      * If Promotion 2 is evaluated prior to Promotion 1, then it can trigger the 10% discount even
      * if the subsequent application of Promotion 1 brings the order total down to way below $50.
@@ -109,15 +108,13 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
             const promotionAction = this.allActions[action.code];
             if (this.isItemAction(promotionAction)) {
                 if (this.isOrderItemArg(args)) {
-                    const { orderItem, orderLine, utils } = args;
-                    amount += Math.round(
-                        await promotionAction.execute(orderItem, orderLine, action.args, utils),
-                    );
+                    const { orderItem, orderLine } = args;
+                    amount += Math.round(await promotionAction.execute(orderItem, orderLine, action.args));
                 }
             } else {
                 if (!this.isOrderItemArg(args)) {
-                    const { order, utils } = args;
-                    amount += Math.round(await promotionAction.execute(order, action.args, utils));
+                    const { order } = args;
+                    amount += Math.round(await promotionAction.execute(order, action.args));
                 }
             }
         }
@@ -131,7 +128,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
     }
 
-    async test(order: Order, utils: PromotionUtils): Promise<boolean> {
+    async test(ctx: RequestContext, order: Order): Promise<boolean> {
         if (this.endsAt && this.endsAt < new Date()) {
             return false;
         }
@@ -143,7 +140,7 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
         for (const condition of this.conditions) {
             const promotionCondition = this.allConditions[condition.code];
-            if (!promotionCondition || !(await promotionCondition.check(order, condition.args, utils))) {
+            if (!promotionCondition || !(await promotionCondition.check(ctx, order, condition.args))) {
                 return false;
             }
         }

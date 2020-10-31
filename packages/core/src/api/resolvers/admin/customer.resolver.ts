@@ -1,8 +1,8 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    CreateCustomerResult,
     DeletionResponse,
     MutationAddNoteToCustomerArgs,
-    MutationAddNoteToOrderArgs,
     MutationCreateCustomerAddressArgs,
     MutationCreateCustomerArgs,
     MutationDeleteCustomerAddressArgs,
@@ -14,9 +14,12 @@ import {
     Permission,
     QueryCustomerArgs,
     QueryCustomersArgs,
+    Success,
+    UpdateCustomerResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { Address } from '../../../entity/address/address.entity';
 import { Customer } from '../../../entity/customer/customer.entity';
 import { CustomerService } from '../../../service/services/customer.service';
@@ -24,6 +27,7 @@ import { OrderService } from '../../../service/services/order.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver()
 export class CustomerResolver {
@@ -31,36 +35,45 @@ export class CustomerResolver {
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customers(@Args() args: QueryCustomersArgs): Promise<PaginatedList<Customer>> {
-        return this.customerService.findAll(args.options || undefined);
+    async customers(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryCustomersArgs,
+    ): Promise<PaginatedList<Customer>> {
+        return this.customerService.findAll(ctx, args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadCustomer)
-    async customer(@Args() args: QueryCustomerArgs): Promise<Customer | undefined> {
-        return this.customerService.findOne(args.id);
+    async customer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryCustomerArgs,
+    ): Promise<Customer | undefined> {
+        return this.customerService.findOne(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCustomer)
     async createCustomer(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationCreateCustomerArgs,
-    ): Promise<Customer> {
+    ): Promise<ErrorResultUnion<CreateCustomerResult, Customer>> {
         const { input, password } = args;
         return this.customerService.create(ctx, input, password || undefined);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomer(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationUpdateCustomerArgs,
-    ): Promise<Customer> {
+    ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>> {
         const { input } = args;
         return this.customerService.update(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCustomer)
     async createCustomerAddress(
@@ -71,6 +84,7 @@ export class CustomerResolver {
         return this.customerService.createAddress(ctx, customerId, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomerAddress(
@@ -81,33 +95,43 @@ export class CustomerResolver {
         return this.customerService.updateAddress(ctx, input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCustomer)
     async deleteCustomerAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationDeleteCustomerAddressArgs,
-    ): Promise<boolean> {
+    ): Promise<Success> {
         const { id } = args;
-        return this.customerService.deleteAddress(ctx, id);
+        const success = await this.customerService.deleteAddress(ctx, id);
+        return { success };
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCustomer)
-    async deleteCustomer(@Args() args: MutationDeleteCustomerArgs): Promise<DeletionResponse> {
-        return this.customerService.softDelete(args.id);
+    async deleteCustomer(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationDeleteCustomerArgs,
+    ): Promise<DeletionResponse> {
+        return this.customerService.softDelete(ctx, args.id);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async addNoteToCustomer(@Ctx() ctx: RequestContext, @Args() args: MutationAddNoteToCustomerArgs) {
         return this.customerService.addNoteToCustomer(ctx, args.input);
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async updateCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationUpdateCustomerNoteArgs) {
         return this.customerService.updateCustomerNote(ctx, args.input);
     }
+
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateCustomer)
     async deleteCustomerNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteCustomerNoteArgs) {

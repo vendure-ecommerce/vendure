@@ -5,12 +5,12 @@ import { EntityIdStrategy } from '../config/entity-id-strategy/entity-id-strateg
 
 import { getIdColumnsFor, getPrimaryGeneratedIdColumn } from './entity-id.decorator';
 
-export function setEntityIdStrategy(entityIdStrategy: EntityIdStrategy, entities: Array<Type<any>>) {
+export function setEntityIdStrategy(entityIdStrategy: EntityIdStrategy<any>, entities: Array<Type<any>>) {
     setBaseEntityIdType(entityIdStrategy);
     setEntityIdColumnTypes(entityIdStrategy, entities);
 }
 
-function setEntityIdColumnTypes(entityIdStrategy: EntityIdStrategy, entities: Array<Type<any>>) {
+function setEntityIdColumnTypes(entityIdStrategy: EntityIdStrategy<any>, entities: Array<Type<any>>) {
     const columnDataType = entityIdStrategy.primaryKeyType === 'increment' ? 'int' : 'varchar';
     for (const EntityCtor of entities) {
         const columnConfig = getIdColumnsFor(EntityCtor);
@@ -24,7 +24,7 @@ function setEntityIdColumnTypes(entityIdStrategy: EntityIdStrategy, entities: Ar
     }
 }
 
-function setBaseEntityIdType(entityIdStrategy: EntityIdStrategy) {
+function setBaseEntityIdType(entityIdStrategy: EntityIdStrategy<any>) {
     const { entity, name } = getPrimaryGeneratedIdColumn();
     PrimaryGeneratedColumn(entityIdStrategy.primaryKeyType as any)(entity, name);
 }

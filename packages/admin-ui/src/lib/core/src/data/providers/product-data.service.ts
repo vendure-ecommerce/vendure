@@ -21,8 +21,11 @@ import {
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
+    GetProductVariant,
     GetProductVariantOptions,
     GetProductWithVariants,
+    ProductListOptions,
+    ProductSelectorSearch,
     Reindex,
     RemoveOptionGroupFromProduct,
     RemoveProductsFromChannel,
@@ -54,8 +57,10 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUP,
     GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
+    PRODUCT_SELECTOR_SEARCH,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
@@ -82,16 +87,23 @@ export class ProductDataService {
         });
     }
 
+    productSelectorSearch(term: string, take: number) {
+        return this.baseDataService.query<ProductSelectorSearch.Query, ProductSelectorSearch.Variables>(
+            PRODUCT_SELECTOR_SEARCH,
+            {
+                take,
+                term,
+            },
+        );
+    }
+
     reindex() {
         return this.baseDataService.mutate<Reindex.Mutation>(REINDEX);
     }
 
-    getProducts(take: number = 10, skip: number = 0) {
+    getProducts(options: ProductListOptions) {
         return this.baseDataService.query<GetProductList.Query, GetProductList.Variables>(GET_PRODUCT_LIST, {
-            options: {
-                take,
-                skip,
-            },
+            options,
         });
     }
 
@@ -101,6 +113,13 @@ export class ProductDataService {
             {
                 id,
             },
+        );
+    }
+
+    getProductVariant(id: string) {
+        return this.baseDataService.query<GetProductVariant.Query, GetProductVariant.Variables>(
+            GET_PRODUCT_VARIANT,
+            { id },
         );
     }
 
@@ -274,7 +293,7 @@ export class ProductDataService {
 
     createAssets(files: File[]) {
         return this.baseDataService.mutate<CreateAssets.Mutation, CreateAssets.Variables>(CREATE_ASSETS, {
-            input: files.map((file) => ({ file })),
+            input: files.map(file => ({ file })),
         });
     }
 

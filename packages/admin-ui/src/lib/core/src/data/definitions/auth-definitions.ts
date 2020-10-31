@@ -1,4 +1,6 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
+
+import { ERROR_RESULT_FRAGMENT } from './shared-definitions';
 
 export const CURRENT_USER_FRAGMENT = gql`
     fragment CurrentUser on CurrentUser {
@@ -16,17 +18,19 @@ export const CURRENT_USER_FRAGMENT = gql`
 export const ATTEMPT_LOGIN = gql`
     mutation AttemptLogin($username: String!, $password: String!, $rememberMe: Boolean!) {
         login(username: $username, password: $password, rememberMe: $rememberMe) {
-            user {
-                ...CurrentUser
-            }
+            ...CurrentUser
+            ...ErrorResult
         }
     }
     ${CURRENT_USER_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;
 
 export const LOG_OUT = gql`
     mutation LogOut {
-        logout
+        logout {
+            success
+        }
     }
 `;
 

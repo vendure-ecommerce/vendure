@@ -27,7 +27,8 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
                 name: 'dbType',
                 message: 'Which database are you using?',
                 choices: [
-                    { title: 'MySQL / MariaDB', value: 'mysql' },
+                    { title: 'MySQL', value: 'mysql' },
+                    { title: 'MariaDB', value: 'mariadb' },
                     { title: 'Postgres', value: 'postgres' },
                     { title: 'SQLite', value: 'sqlite' },
                     { title: 'SQL.js', value: 'sqljs' },
@@ -41,7 +42,7 @@ export async function gatherUserResponses(root: string): Promise<UserResponses> 
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
                 name: 'dbHost',
                 message: `What's the database host address?`,
-                initial: '192.168.99.100',
+                initial: 'localhost',
             },
             {
                 type: (() => (dbType === 'sqlite' || dbType === 'sqljs' ? null : 'text')) as any,
@@ -185,12 +186,12 @@ async function generateSources(
 
     const templateContext = {
         ...answers,
+        dbType: answers.dbType === 'sqlite' ? 'better-sqlite3' : answers.dbType,
         name: path.basename(root),
         isTs: answers.language === 'ts',
         isSQLite: answers.dbType === 'sqlite',
         isSQLjs: answers.dbType === 'sqljs',
         requiresConnection: answers.dbType !== 'sqlite' && answers.dbType !== 'sqljs',
-        sessionSecret: Math.random().toString(36).substr(3),
     };
     const configTemplate = await fs.readFile(assetPath('vendure-config.hbs'), 'utf-8');
     const configSource = Handlebars.compile(configTemplate)(templateContext);
@@ -208,6 +209,7 @@ async function generateSources(
 function defaultDBPort(dbType: DbType): number {
     switch (dbType) {
         case 'mysql':
+        case 'mariadb':
             return 3306;
         case 'postgres':
             return 5432;

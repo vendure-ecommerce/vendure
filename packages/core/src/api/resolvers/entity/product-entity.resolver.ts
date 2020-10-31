@@ -1,10 +1,10 @@
-import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { ID } from '@vendure/common/lib/shared-types';
+import { Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Translated } from '../../../common/types/locale-types';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
+import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
@@ -25,6 +25,7 @@ export class ProductEntityResolver {
         private collectionService: CollectionService,
         private productOptionGroupService: ProductOptionGroupService,
         private assetService: AssetService,
+        private productService: ProductService,
     ) {}
 
     @ResolveField()
@@ -48,10 +49,23 @@ export class ProductEntityResolver {
 
     @ResolveField()
     async optionGroups(
+        @Info() info: any,
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<ProductOptionGroup>>> {
+        const a = info;
         return this.productOptionGroupService.getOptionGroupsByProductId(ctx, product.id);
+    }
+
+    @ResolveField()
+    async facetValues(
+        @Ctx() ctx: RequestContext,
+        @Parent() product: Product,
+    ): Promise<Array<Translated<FacetValue>>> {
+        if (product.facetValues) {
+            return product.facetValues as Array<Translated<FacetValue>>;
+        }
+        return this.productService.getFacetValuesForProduct(ctx, product.id);
     }
 
     @ResolveField()
@@ -59,12 +73,12 @@ export class ProductEntityResolver {
         if (product.featuredAsset) {
             return product.featuredAsset;
         }
-        return this.assetService.getFeaturedAsset(product);
+        return this.assetService.getFeaturedAsset(ctx, product);
     }
 
     @ResolveField()
     async assets(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Asset[] | undefined> {
-        return this.assetService.getEntityAssets(product);
+        return this.assetService.getEntityAssets(ctx, product);
     }
 }
 

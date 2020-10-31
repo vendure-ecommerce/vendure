@@ -247,9 +247,7 @@ const parts = [
 ];
 function generateProductDescription(): string {
     const take = Math.ceil(Math.random() * 4);
-    return shuffle(parts)
-        .slice(0, take)
-        .join('. ');
+    return shuffle(parts).slice(0, take).join('. ');
 }
 
 /**

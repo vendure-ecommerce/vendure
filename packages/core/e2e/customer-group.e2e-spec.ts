@@ -1,18 +1,9 @@
 import { pick } from '@vendure/common/lib/pick';
-import {
-    AccountRegistrationEvent,
-    EventBus,
-    EventBusModule,
-    mergeConfig,
-    VendurePlugin,
-} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
-import cu from 'i18next-icu/locale-data/cu';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
 
 import {
     AddCustomersToGroup,
@@ -28,7 +19,18 @@ import {
     UpdateCustomerGroup,
 } from './graphql/generated-e2e-admin-types';
 import { DeletionResult } from './graphql/generated-e2e-shop-types';
-import { GET_CUSTOMER_HISTORY, GET_CUSTOMER_LIST } from './graphql/shared-definitions';
+import {
+    ADD_CUSTOMERS_TO_GROUP,
+    CREATE_CUSTOMER_GROUP,
+    DELETE_CUSTOMER_GROUP,
+    GET_CUSTOMER_GROUP,
+    GET_CUSTOMER_GROUPS,
+    GET_CUSTOMER_HISTORY,
+    GET_CUSTOMER_LIST,
+    GET_CUSTOMER_WITH_GROUPS,
+    REMOVE_CUSTOMERS_FROM_GROUP,
+    UPDATE_CUSTOMER_GROUP,
+} from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { sortById } from './utils/test-order-utils';
 
@@ -284,100 +286,3 @@ describe('CustomerGroup resolver', () => {
         expect(customerGroups.totalItems).toBe(0);
     });
 });
-
-export const CUSTOMER_GROUP_FRAGMENT = gql`
-    fragment CustomerGroup on CustomerGroup {
-        id
-        name
-        customers {
-            items {
-                id
-            }
-            totalItems
-        }
-    }
-`;
-
-export const CREATE_CUSTOMER_GROUP = gql`
-    mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
-        createCustomerGroup(input: $input) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const UPDATE_CUSTOMER_GROUP = gql`
-    mutation UpdateCustomerGroup($input: UpdateCustomerGroupInput!) {
-        updateCustomerGroup(input: $input) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const DELETE_CUSTOMER_GROUP = gql`
-    mutation DeleteCustomerGroup($id: ID!) {
-        deleteCustomerGroup(id: $id) {
-            result
-            message
-        }
-    }
-`;
-
-export const GET_CUSTOMER_GROUPS = gql`
-    query GetCustomerGroups($options: CustomerGroupListOptions) {
-        customerGroups(options: $options) {
-            items {
-                id
-                name
-            }
-            totalItems
-        }
-    }
-`;
-
-export const GET_CUSTOMER_GROUP = gql`
-    query GetCustomerGroup($id: ID!, $options: CustomerListOptions) {
-        customerGroup(id: $id) {
-            id
-            name
-            customers(options: $options) {
-                items {
-                    id
-                }
-                totalItems
-            }
-        }
-    }
-`;
-
-export const ADD_CUSTOMERS_TO_GROUP = gql`
-    mutation AddCustomersToGroup($groupId: ID!, $customerIds: [ID!]!) {
-        addCustomersToGroup(customerGroupId: $groupId, customerIds: $customerIds) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const REMOVE_CUSTOMERS_FROM_GROUP = gql`
-    mutation RemoveCustomersFromGroup($groupId: ID!, $customerIds: [ID!]!) {
-        removeCustomersFromGroup(customerGroupId: $groupId, customerIds: $customerIds) {
-            ...CustomerGroup
-        }
-    }
-    ${CUSTOMER_GROUP_FRAGMENT}
-`;
-
-export const GET_CUSTOMER_WITH_GROUPS = gql`
-    query GetCustomerWithGroups($id: ID!) {
-        customer(id: $id) {
-            id
-            groups {
-                id
-                name
-            }
-        }
-    }
-`;

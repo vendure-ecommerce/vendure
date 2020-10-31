@@ -5,7 +5,7 @@ import { interpolateDescription } from './interpolate-description';
 describe('interpolateDescription()', () => {
     it('works for single argument', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string' }],
+            args: [{ name: 'foo', type: 'string', list: false }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -15,7 +15,10 @@ describe('interpolateDescription()', () => {
 
     it('works for multiple arguments', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
+            args: [
+                { name: 'foo', type: 'string', list: false },
+                { name: 'bar', type: 'string', list: false },
+            ],
             description: 'The value is { foo } and { bar }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val1', bar: 'val2' });
@@ -25,7 +28,7 @@ describe('interpolateDescription()', () => {
 
     it('is case-insensitive', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string' }],
+            args: [{ name: 'foo', type: 'string', list: false }],
             description: 'The value is { FOo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -35,7 +38,10 @@ describe('interpolateDescription()', () => {
 
     it('ignores whitespaces in interpolation', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string' }, { name: 'bar', type: 'string' }],
+            args: [
+                { name: 'foo', type: 'string', list: false },
+                { name: 'bar', type: 'string', list: false },
+            ],
             description: 'The value is {foo} and {      bar    }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val1', bar: 'val2' });
@@ -43,9 +49,9 @@ describe('interpolateDescription()', () => {
         expect(result).toBe('The value is val1 and val2');
     });
 
-    it('formats money as a decimal', () => {
+    it('formats currency-form-input value as a decimal', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'price', type: 'int', config: { inputType: 'money' } }],
+            args: [{ name: 'price', type: 'int', list: false, ui: { component: 'currency-form-input' } }],
             description: 'The price is { price }',
         };
         const result = interpolateDescription(operation as any, { price: 1234 });
@@ -55,7 +61,7 @@ describe('interpolateDescription()', () => {
 
     it('formats Date object as human-readable', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'date', type: 'datetime' }],
+            args: [{ name: 'date', type: 'datetime', list: false }],
             description: 'The date is { date }',
         };
         const date = new Date('2017-09-15 00:00:00');
@@ -66,7 +72,7 @@ describe('interpolateDescription()', () => {
 
     it('formats date string object as human-readable', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'date', type: 'datetime' }],
+            args: [{ name: 'date', type: 'datetime', list: false }],
             description: 'The date is { date }',
         };
         const date = '2017-09-15';
@@ -77,7 +83,7 @@ describe('interpolateDescription()', () => {
 
     it('correctly interprets falsy-looking values', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'int' }],
+            args: [{ name: 'foo', type: 'int', list: false }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 0 });

@@ -17,7 +17,7 @@
     "no-valid-channel-specified": "No se ha especificado ningún canal válido (asegúrate de que el encabezado 'vendure-token'  sea especificado en el requisito)",
     "order-contents-may-only-be-modified-in-addingitems-state": "Los contenidos de un pedido solo pueden ser modificados durante el \"AddingItems\" estado ",
     "order-does-not-contain-line-with-id": "Este pedido no contiene una línea de pedido con el id { id }",
-    "order-item-quantity-must-be-positive": "{ quantity } no es una cantidad válida para una linea de pedido",
+    "order-item-quantity-must-be-positive": "no es una cantidad válida para una linea de pedido",
     "order-items-limit-exceeded": "No es posible añadir artículos, Un pedido puede consistir de un máximo de { maxItems } artículos ",
     "payment-may-only-be-added-in-arrangingpayment-state": "Un pago sólo puede ser añadido cuando el pedido se encuentra en el estado de \"ArrangingPayment\"",
     "password-reset-token-has-expired": "Este token de restablecimiento de contraseña ha expirado.",

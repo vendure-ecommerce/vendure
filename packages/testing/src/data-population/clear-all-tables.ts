@@ -18,7 +18,7 @@ export async function clearAllTables(config: VendureConfig, logging = true) {
         await connection.synchronize(true);
     } catch (err) {
         console.error('Error occurred when attempting to clear tables!');
-        console.error(err);
+        console.log(err);
     } finally {
         await connection.close();
     }

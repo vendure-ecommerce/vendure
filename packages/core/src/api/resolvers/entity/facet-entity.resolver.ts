@@ -15,6 +15,6 @@ export class FacetEntityResolver {
         if (facet.values) {
             return facet.values;
         }
-        return this.facetValueService.findByFacetId(facet.id, ctx.languageCode);
+        return this.facetValueService.findByFacetId(ctx, facet.id);
     }
 }

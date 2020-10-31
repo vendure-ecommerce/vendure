@@ -3,9 +3,11 @@ import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomOrderFields } from '../custom-entity-fields';
 import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
@@ -27,7 +29,7 @@ import { ShippingMethod } from '../shipping-method/shipping-method.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Order extends VendureEntity implements HasCustomFields {
+export class Order extends VendureEntity implements ChannelAware, HasCustomFields {
     constructor(input?: DeepPartial<Order>) {
         super(input);
     }
@@ -94,6 +96,10 @@ export class Order extends VendureEntity implements HasCustomFields {
     @EntityId({ nullable: true })
     taxZoneId?: ID;
 
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
+
     @Calculated()
     get totalBeforeTax(): number {
         return this.subTotalBeforeTax + this.promotionAdjustmentsTotal + (this.shipping || 0);
@@ -107,6 +113,11 @@ export class Order extends VendureEntity implements HasCustomFields {
     @Calculated()
     get adjustments(): Adjustment[] {
         return this.pendingAdjustments || [];
+    }
+
+    @Calculated()
+    get totalQuantity(): number {
+        return (this.lines || []).reduce((total, line) => total + line.quantity, 0);
     }
 
     get promotionAdjustmentsTotal(): number {
@@ -128,11 +139,8 @@ export class Order extends VendureEntity implements HasCustomFields {
     }
 
     getOrderItems(): OrderItem[] {
-        return this.lines.reduce(
-            (items, line) => {
-                return [...items, ...line.items];
-            },
-            [] as OrderItem[],
-        );
+        return this.lines.reduce((items, line) => {
+            return [...items, ...line.items];
+        }, [] as OrderItem[]);
     }
 }

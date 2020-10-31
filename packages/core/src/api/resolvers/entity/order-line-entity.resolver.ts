@@ -28,7 +28,7 @@ export class OrderLineEntityResolver {
         if (orderLine.featuredAsset) {
             return orderLine.featuredAsset;
         } else {
-            return this.assetService.getFeaturedAsset(orderLine);
+            return this.assetService.getFeaturedAsset(ctx, orderLine);
         }
     }
 }

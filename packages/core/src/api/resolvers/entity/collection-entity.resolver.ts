@@ -73,11 +73,11 @@ export class CollectionEntityResolver {
         if (collection.featuredAsset) {
             return collection.featuredAsset;
         }
-        return this.assetService.getFeaturedAsset(collection);
+        return this.assetService.getFeaturedAsset(ctx, collection);
     }
 
     @ResolveField()
     async assets(@Ctx() ctx: RequestContext, @Parent() collection: Collection): Promise<Asset[] | undefined> {
-        return this.assetService.getEntityAssets(collection);
+        return this.assetService.getEntityAssets(ctx, collection);
     }
 }

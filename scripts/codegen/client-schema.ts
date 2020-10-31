@@ -1,5 +1,5 @@
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import fs from 'fs';
-import { makeExecutableSchema } from 'graphql-tools';
 import path from 'path';
 
 const CLIENT_SCHEMA_FILE = '../../packages/admin-ui/src/lib/core/src/data/client-state/client-types.graphql';
@@ -26,7 +26,13 @@ function getClientSchema() {
     const authTypeString = loadGraphQL(AUTH_TYPE_FILE);
     const permissionTypeString = loadGraphQL(PERMISSION_TYPE_FILE);
     const schema = makeExecutableSchema({
-        typeDefs: [clientSchemaString, clientDirective, languageCodeString, authTypeString, permissionTypeString],
+        typeDefs: [
+            clientSchemaString,
+            clientDirective,
+            languageCodeString,
+            authTypeString,
+            permissionTypeString,
+        ],
     });
     return schema;
 }

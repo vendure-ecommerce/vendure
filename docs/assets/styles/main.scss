@@ -1,17 +1,17 @@
-@import "variables";
-@import "markdown";
-@import "utils";
-@import "article";
-@import "landing-page";
-@import "top-bar";
-@import "menu";
-@import "shortcodes";
-@import "syntax";
-@import "search-widget";
-@import "graphql-playground-widget";
-@import "breadcrumbs";
-@import "blog";
-@import "toc";
+@import 'variables';
+@import 'markdown';
+@import 'utils';
+@import 'article';
+@import 'landing-page';
+@import 'top-bar';
+@import 'menu';
+@import 'shortcodes';
+@import 'syntax';
+@import 'search-widget';
+@import 'graphql-playground-widget';
+@import 'breadcrumbs';
+@import 'blog';
+@import 'toc';
 
 html {
     font-size: $font-size-base;
@@ -64,9 +64,21 @@ img {
 ul.pagination {
     display: flex;
     justify-content: center;
+    list-style-type: none;
 
     .page-item a {
-        padding: $padding-16;
+        padding: $padding-8 $padding-16;
+        border: 1px solid $gray-200;
+        border-radius: 3px;
+    }
+    .page-item.active a {
+        background-color: $gray-200;
+    }
+    .page-item.disabled a {
+        color: $gray-500;
+    }
+    li + li {
+        margin-left: $padding-4;
     }
 }
 
@@ -121,6 +133,8 @@ ul.contents-list {
     margin-bottom: $padding-16;
     display: none;
 }
+
+
 
 .book-toc {
     flex: 0 0 $toc-width;
@@ -189,6 +203,7 @@ ul.contents-list {
     padding: 30px 10px;
     margin-top: 120px;
     color: $gray-600;
+    position: relative;
 
     .gh-link {
         margin-left: 12px;
@@ -217,13 +232,13 @@ ul.contents-list {
             height: 24px;
             margin-right: 6px;
         }
-
     }
     .copyright {
         font-size: 12px;
         text-align: center;
     }
-    a:link, a:visited {
+    a:link,
+    a:visited {
         color: $gray-500;
         transition: color 0.2s;
     }
@@ -243,6 +258,9 @@ aside nav,
 
 @media screen and (max-width: $md-breakpoint) {
     .book-toc {
+        display: none;
+    }
+    .left-gutter {
         display: none;
     }
 }

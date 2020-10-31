@@ -1,22 +1,19 @@
 {{ define "main" }}
-<div class="blog-post">
-    <header>
+    <div class="blog-post">
+        <header>
+            {{ partial "breadcrumbs" . }}
 
-        {{ partial "breadcrumbs" . }}
-
-        <h1>{{ .Title }}</h1>
-        <div class="date-author">
-            {{ $author := index $.Site.Data.authors .Params.author | default $.Site.Data.authors.unknown }}
-            <img alt="Author avatar" class="avatar" src='{{ $author.avatar }}'>
-            <div class="details">
-                <div class="name">{{ .Params.Author }}</div>
-                <div class="date">{{ .Date.Format "January 2, 2006" }}</div>
+            <h1>{{ .Title }}</h1>
+            <div class="date-author">
+                {{ $author := index $.Site.Data.authors .Params.author | default $.Site.Data.authors.unknown }}
+                <img alt="Author avatar" class="avatar" src="{{ $author.avatar }}" />
+                <div class="details">
+                    <div class="name">{{ .Params.Author }}</div>
+                    <div class="date">{{ .Date.Format "January 2, 2006" }}</div>
+                </div>
             </div>
-        </div>
-    </header>
-    <article class="markdown">
-        {{- .Content -}}
-    </article>
-    {{ partial "author-bio" . }}
-</div>
+        </header>
+        <article class="markdown">{{- .Content -}}</article>
+        {{ partial "author-bio" . }}
+    </div>
 {{ end }}

@@ -104,7 +104,9 @@ describe('Session caching', () => {
         await adminClient.query(
             gql`
                 mutation Logout {
-                    logout
+                    logout {
+                        success
+                    }
                 }
             `,
         );
@@ -151,7 +153,7 @@ describe('Session expiry', () => {
 
     it('session expires when not used for longer than sessionDuration', async () => {
         await adminClient.asSuperAdmin();
-        await pause(3000);
+        await pause(3500);
         try {
             await adminClient.query(ME);
             fail('Should have thrown');
@@ -162,5 +164,5 @@ describe('Session expiry', () => {
 });
 
 function pause(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }

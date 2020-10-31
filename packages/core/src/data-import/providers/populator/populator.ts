@@ -101,13 +101,11 @@ export class Populator {
                     arguments: [
                         {
                             name: 'facetValueIds',
-                            type: 'facetValueIds',
                             value: JSON.stringify(facetValueIds),
                         },
                         {
                             name: 'containsAny',
                             value: filter.args.containsAny.toString(),
-                            type: 'boolean',
                         },
                     ],
                 };
@@ -135,9 +133,9 @@ export class Populator {
                 `The defaultZone (${data.defaultZone}) did not match any zones from the InitialData`,
             );
         }
-        const defaultZoneId = defaultZone.entity.id as string;
-        await this.channelService.update({
-            id: channel.id as string,
+        const defaultZoneId = defaultZone.entity.id;
+        await this.channelService.update(RequestContext.empty(), {
+            id: channel.id,
             defaultTaxZoneId: defaultZoneId,
             defaultShippingZoneId: defaultZoneId,
         });
@@ -158,13 +156,13 @@ export class Populator {
                 zoneItem = { entity: zoneEntity, members: [] };
                 zones.set(zone, zoneItem);
             }
-            zoneItem.members.push(countryEntity.id as string);
+            zoneItem.members.push(countryEntity.id);
         }
 
         // add the countries to the respective zones
         for (const zoneItem of zones.values()) {
             await this.zoneService.addMembersToZone(ctx, {
-                zoneId: zoneItem.entity.id as string,
+                zoneId: zoneItem.entity.id,
                 memberIds: zoneItem.members,
             });
         }
@@ -179,13 +177,13 @@ export class Populator {
         const taxCategories: TaxCategory[] = [];
 
         for (const taxRate of taxRates) {
-            const category = await this.taxCategoryService.create({ name: taxRate.name });
+            const category = await this.taxCategoryService.create(ctx, { name: taxRate.name });
 
             for (const { entity } of zoneMap.values()) {
                 await this.taxRateService.create(ctx, {
-                    zoneId: entity.id as string,
+                    zoneId: entity.id,
                     value: taxRate.percentage,
-                    categoryId: category.id as string,
+                    categoryId: category.id,
                     name: `${taxRate.name} ${entity.name}`,
                     enabled: true,
                 });
@@ -201,13 +199,13 @@ export class Populator {
             await this.shippingMethodService.create(ctx, {
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
-                    arguments: [{ name: 'orderMinimum', value: '0', type: 'int' }],
+                    arguments: [{ name: 'orderMinimum', value: '0' }],
                 },
                 calculator: {
                     code: defaultShippingCalculator.code,
                     arguments: [
-                        { name: 'rate', value: method.price.toString(), type: 'int' },
-                        { name: 'taxRate', value: '0', type: 'int' },
+                        { name: 'rate', value: method.price.toString() },
+                        { name: 'taxRate', value: '0' },
                     ],
                 },
                 description: method.name,

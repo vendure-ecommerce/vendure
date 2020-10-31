@@ -1,14 +1,13 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { EMPTY } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { DeletionResult, GetFacetList } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { EMPTY } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-facet-list',
@@ -52,6 +51,8 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                         );
                     }
                 }),
+                // Refresh the cached facets to reflect the changes
+                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
             )
             .subscribe(
                 () => {

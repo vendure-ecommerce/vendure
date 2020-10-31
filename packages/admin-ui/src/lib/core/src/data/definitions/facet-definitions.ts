@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 
 export const FACET_VALUE_FRAGMENT = gql`
     fragment FacetValue on FacetValue {

@@ -8,6 +8,7 @@ import {
     GetShippingMethods,
     SetShippingAddress,
     SetShippingMethod,
+    TestOrderFragmentFragment,
     TransitionToState,
 } from '../graphql/generated-e2e-shop-types';
 import {
@@ -42,7 +43,7 @@ export async function proceedToArrangingPayment(shopClient: SimpleGraphQLClient)
         TransitionToState.Variables
     >(TRANSITION_TO_STATE, { state: 'ArrangingPayment' });
 
-    return transitionOrderToState!.id;
+    return (transitionOrderToState as TestOrderFragmentFragment)!.id;
 }
 
 export async function addPaymentToOrder(

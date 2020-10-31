@@ -1,9 +1,9 @@
 import { LogicalOperator, SearchInput, SearchResult } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
-import { Brackets, Connection, SelectQueryBuilder } from 'typeorm';
+import { Brackets, SelectQueryBuilder } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { SearchIndexItem } from '../search-index-item.entity';
 
 import { SearchStrategy } from './search-strategy';
@@ -16,7 +16,7 @@ import { createFacetIdCountMap, mapToSearchResult } from './search-strategy-util
 export class SqliteSearchStrategy implements SearchStrategy {
     private readonly minTermLength = 2;
 
-    constructor(private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     async getFacetValueIds(
         ctx: RequestContext,
@@ -92,7 +92,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
             innerQb.andWhere('si.enabled = :enabled', { enabled: true });
         }
 
-        const totalItemsQb = this.connection
+        const totalItemsQb = this.connection.rawConnection
             .createQueryBuilder()
             .select('COUNT(*) as total')
             .from(`(${innerQb.getQuery()})`, 'inner')
@@ -105,7 +105,7 @@ export class SqliteSearchStrategy implements SearchStrategy {
         qb: SelectQueryBuilder<SearchIndexItem>,
         input: SearchInput,
     ): SelectQueryBuilder<SearchIndexItem> {
-        const { term, facetValueIds, facetValueOperator, collectionId } = input;
+        const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {
@@ -148,6 +148,11 @@ export class SqliteSearchStrategy implements SearchStrategy {
         if (collectionId) {
             qb.andWhere(`(',' || collectionIds || ',') LIKE :collectionId`, {
                 collectionId: `%,${collectionId},%`,
+            });
+        }
+        if (collectionSlug) {
+            qb.andWhere(`(',' || collectionSlugs || ',') LIKE :collectionSlug`, {
+                collectionSlug: `%,${collectionSlug},%`,
             });
         }
         qb.andWhere('languageCode = :languageCode', { languageCode: ctx.languageCode });

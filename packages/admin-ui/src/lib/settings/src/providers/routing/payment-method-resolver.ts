@@ -22,6 +22,7 @@ export class PaymentMethodResolver extends BaseEntityResolver<PaymentMethod.Frag
                 code: '',
                 enabled: true,
                 configArgs: [],
+                definition: {} as any,
             },
             id => dataService.settings.getPaymentMethod(id).mapStream(data => data.paymentMethod),
         );

@@ -19,9 +19,9 @@ import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
 import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
+import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
-import { defaultPromotionActions } from './promotion/default-promotion-actions';
-import { defaultPromotionConditions } from './promotion/default-promotion-conditions';
+import { defaultPromotionActions, defaultPromotionConditions } from './promotion';
 import { InMemorySessionCacheStrategy } from './session-cache/in-memory-session-cache-strategy';
 import { defaultShippingCalculator } from './shipping-method/default-shipping-calculator';
 import { defaultShippingEligibilityChecker } from './shipping-method/default-shipping-eligibility-checker';
@@ -59,7 +59,11 @@ export const defaultConfig: RuntimeVendureConfig = {
     authOptions: {
         disableAuth: false,
         tokenMethod: 'cookie',
-        sessionSecret: 'session-secret',
+        sessionSecret: '',
+        cookieOptions: {
+            secret: Math.random().toString(36).substr(3),
+            httpOnly: true,
+        },
         authTokenHeaderKey: DEFAULT_AUTH_TOKEN_HEADER_KEY,
         sessionDuration: '1y',
         sessionCacheStrategy: new InMemorySessionCacheStrategy(),
@@ -81,6 +85,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         assetNamingStrategy: new DefaultAssetNamingStrategy(),
         assetStorageStrategy: new NoAssetStorageStrategy(),
         assetPreviewStrategy: new NoAssetPreviewStrategy(),
+        permittedFileTypes: ['image/*', 'video/*', 'audio/*', '.pdf'],
         uploadMaxFileSize: 20971520,
     },
     dbConnectionOptions: {
@@ -101,7 +106,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: [],
-        generateOrderCode: () => generatePublicId(),
+        orderCodeStrategy: new DefaultOrderCodeStrategy(),
     },
     paymentOptions: {
         paymentMethodHandlers: [],

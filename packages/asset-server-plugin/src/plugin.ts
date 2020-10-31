@@ -125,7 +125,7 @@ import { AssetServerOptions, ImageTransformPreset } from './types';
  */
 @VendurePlugin({
     imports: [PluginCommonModule, TerminusModule],
-    configuration: (config) => AssetServerPlugin.configure(config),
+    configuration: config => AssetServerPlugin.configure(config),
 })
 export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     private server: Server;
@@ -177,7 +177,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
     onVendureBootstrap(): void | Promise<void> {
         if (AssetServerPlugin.options.presets) {
             for (const preset of AssetServerPlugin.options.presets) {
-                const existingIndex = this.presets.findIndex((p) => p.name === preset.name);
+                const existingIndex = this.presets.findIndex(p => p.name === preset.name);
                 if (-1 < existingIndex) {
                     this.presets.splice(existingIndex, 1, preset);
                 } else {
@@ -194,7 +194,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
 
     /** @internal */
     onVendureClose(): Promise<void> {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.server.close(() => resolve());
         });
     }
@@ -260,7 +260,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
                         res.status(404).send('Resource not found');
                         return;
                     }
-                    const image = await transformImage(file, req.query, this.presets || []);
+                    const image = await transformImage(file, req.query as any, this.presets || []);
                     try {
                         const imageBuffer = await image.toBuffer();
                         if (!req.query.cache || req.query.cache === 'true') {
@@ -292,7 +292,7 @@ export class AssetServerPlugin implements OnVendureBootstrap, OnVendureClose {
             const height = h || '';
             imageParamHash = this.md5(`_transform_w${width}_h${height}_m${mode}${focalPoint}`);
         } else if (preset) {
-            if (this.presets && !!this.presets.find((p) => p.name === preset)) {
+            if (this.presets && !!this.presets.find(p => p.name === preset)) {
                 imageParamHash = this.md5(`_transform_pre_${preset}${focalPoint}`);
             }
         }

@@ -1,6 +1,6 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -8,11 +8,15 @@ import {
     CreateProductInput,
     createUpdatedTranslatable,
     CustomFieldConfig,
+    DataService,
     FacetWithValues,
     flattenFacetValues,
     IGNORE_CAN_DEACTIVATE_GUARD,
     LanguageCode,
+    ModalService,
+    NotificationService,
     ProductWithVariants,
+    ServerConfigService,
     TaxCategory,
     UpdateProductInput,
     UpdateProductMutation,
@@ -20,16 +24,18 @@ import {
     UpdateProductVariantInput,
     UpdateProductVariantsMutation,
 } from '@vendure/admin-ui/core';
-import { DataService, ModalService, NotificationService, ServerConfigService } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
+    debounceTime,
     distinctUntilChanged,
     map,
     mergeMap,
+    shareReplay,
+    startWith,
     switchMap,
     take,
     takeUntil,
@@ -44,6 +50,7 @@ import { VariantAssetChange } from '../product-variants-list/product-variants-li
 
 export type TabName = 'details' | 'variants';
 export interface VariantFormValue {
+    id: string;
     enabled: boolean;
     sku: string;
     name: string;
@@ -68,7 +75,8 @@ export interface SelectedAssets {
     styleUrls: ['./product-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailComponent extends BaseDetailComponent<ProductWithVariants.Fragment>
+export class ProductDetailComponent
+    extends BaseDetailComponent<ProductWithVariants.Fragment>
     implements OnInit, OnDestroy {
     activeTab$: Observable<TabName>;
     product$: Observable<ProductWithVariants.Fragment>;
@@ -79,6 +87,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     customOptionGroupFields: CustomFieldConfig[];
     customOptionFields: CustomFieldConfig[];
     detailForm: FormGroup;
+    filterInput = new FormControl('');
     assetChanges: SelectedAssets = {};
     variantAssetChanges: { [variantId: string]: SelectedAssets } = {};
     productChannels$: Observable<ProductWithVariants.Channels[]>;
@@ -123,21 +132,39 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     ngOnInit() {
         this.init();
         this.product$ = this.entity$;
-        this.variants$ = this.product$.pipe(map((product) => product.variants));
+        const variants$ = this.product$.pipe(map(product => product.variants));
+        const filterTerm$ = this.filterInput.valueChanges.pipe(
+            startWith(''),
+            debounceTime(50),
+            shareReplay(),
+        );
+        this.variants$ = combineLatest(variants$, filterTerm$).pipe(
+            map(([variants, term]) => {
+                return term
+                    ? variants.filter(v => {
+                          const lcTerm = term.toLocaleLowerCase();
+                          return (
+                              v.name.toLocaleLowerCase().includes(term) ||
+                              v.sku.toLocaleLowerCase().includes(term)
+                          );
+                      })
+                    : variants;
+            }),
+        );
         this.taxCategories$ = this.productDetailService.getTaxCategories().pipe(takeUntil(this.destroy$));
-        this.activeTab$ = this.route.paramMap.pipe(map((qpm) => qpm.get('tab') as any));
+        this.activeTab$ = this.route.paramMap.pipe(map(qpm => qpm.get('tab') as any));
 
         // FacetValues are provided initially by the nested array of the
         // Product entity, but once a fetch to get all Facets is made (as when
         // opening the FacetValue selector modal), then these additional values
         // are concatenated onto the initial array.
         this.facets$ = this.productDetailService.getFacets();
-        const productFacetValues$ = this.product$.pipe(map((product) => product.facetValues));
+        const productFacetValues$ = this.product$.pipe(map(product => product.facetValues));
         const allFacetValues$ = this.facets$.pipe(map(flattenFacetValues));
         const productGroup = this.getProductFormGroup();
 
         const formFacetValueIdChanges$ = productGroup.valueChanges.pipe(
-            map((val) => val.facetValueIds as string[]),
+            map(val => val.facetValueIds as string[]),
             distinctUntilChanged(),
         );
         const formChangeFacetValues$ = combineLatest(
@@ -147,12 +174,12 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         ).pipe(
             map(([ids, productFacetValues, allFacetValues]) => {
                 const combined = [...productFacetValues, ...allFacetValues];
-                return ids.map((id) => combined.find((fv) => fv.id === id)).filter(notNullOrUndefined);
+                return ids.map(id => combined.find(fv => fv.id === id)).filter(notNullOrUndefined);
             }),
         );
 
         this.facetValues$ = merge(productFacetValues$, formChangeFacetValues$);
-        this.productChannels$ = this.product$.pipe(map((p) => p.channels));
+        this.productChannels$ = this.product$.pipe(map(p => p.channels));
     }
 
     ngOnDestroy() {
@@ -194,7 +221,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 ],
             })
             .pipe(
-                switchMap((response) =>
+                switchMap(response =>
                     response
                         ? this.dataService.product.removeProductsFromChannel({
                               channelId,
@@ -207,7 +234,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 () => {
                     this.notificationService.success(_('catalog.notify-remove-product-from-channel-success'));
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('catalog.notify-remove-product-from-channel-error'));
                 },
             );
@@ -233,18 +260,20 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      * If creating a new product, automatically generate the slug based on the product name.
      */
     updateSlug(nameValue: string) {
-        this.isNew$.pipe(take(1)).subscribe((isNew) => {
-            if (isNew) {
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(take(1))
+            .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['product', 'slug']);
-                if (slugControl && slugControl.pristine) {
+                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
+                if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
                 }
-            }
-        });
+            });
     }
 
     selectProductFacetValue() {
-        this.displayFacetValueModal().subscribe((facetValueIds) => {
+        this.displayFacetValueModal().subscribe(facetValueIds => {
             if (facetValueIds) {
                 const productGroup = this.getProductFormGroup();
                 const currentFacetValueIds = productGroup.value.facetValueIds;
@@ -263,7 +292,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     entity: 'ProductOption',
                 });
             },
-            (err) => {
+            err => {
                 this.notificationService.error(_('common.notify-update-error'), {
                     entity: 'ProductOption',
                 });
@@ -275,7 +304,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
         const productGroup = this.getProductFormGroup();
         const currentFacetValueIds = productGroup.value.facetValueIds;
         productGroup.patchValue({
-            facetValueIds: currentFacetValueIds.filter((id) => id !== facetValueId),
+            facetValueIds: currentFacetValueIds.filter(id => id !== facetValueId),
         });
         productGroup.markAsDirty();
     }
@@ -289,9 +318,9 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             .subscribe(([facetValueIds, variants]) => {
                 if (facetValueIds) {
                     for (const variantId of selectedVariantIds) {
-                        const index = variants.findIndex((v) => v.id === variantId);
+                        const index = variants.findIndex(v => v.id === variantId);
                         const variant = variants[index];
-                        const existingFacetValueIds = variant ? variant.facetValues.map((fv) => fv.id) : [];
+                        const existingFacetValueIds = variant ? variant.facetValues.map(fv => fv.id) : [];
                         const variantFormGroup = this.detailForm.get(['variants', index]);
                         if (variantFormGroup) {
                             variantFormGroup.patchValue({
@@ -308,7 +337,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
     variantsToCreateAreValid(): boolean {
         return (
             0 < this.createVariantsConfig.variants.length &&
-            this.createVariantsConfig.variants.every((v) => {
+            this.createVariantsConfig.variants.every(v => {
                 return v.sku !== '';
             })
         );
@@ -316,14 +345,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
     private displayFacetValueModal(): Observable<string[] | undefined> {
         return this.productDetailService.getFacets().pipe(
-            mergeMap((facets) =>
+            mergeMap(facets =>
                 this.modalService.fromComponent(ApplyFacetDialogComponent, {
                     size: 'md',
                     closable: true,
                     locals: { facets },
                 }),
             ),
-            map((facetValues) => facetValues && facetValues.map((v) => v.id)),
+            map(facetValues => facetValues && facetValues.map(v => v.id)),
         );
     }
 
@@ -358,7 +387,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     this.detailForm.markAsPristine();
                     this.router.navigate(['../', productId], { relativeTo: this.route });
                 },
-                (err) => {
+                err => {
                     // tslint:disable-next-line:no-console
                     console.error(err);
                     this.notificationService.error(_('common.notify-create-error'), {
@@ -397,7 +426,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                 }),
             )
             .subscribe(
-                (result) => {
+                result => {
                     this.updateSlugAfterSave(result);
                     this.detailForm.markAsPristine();
                     this.assetChanges = {};
@@ -407,7 +436,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
                     });
                     this.changeDetector.markForCheck();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Product',
                     });
@@ -423,14 +452,14 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
      * Sets the values of the form on changes to the product or current language.
      */
     protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = product.translations.find((t) => t.languageCode === languageCode);
+        const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
         this.detailForm.patchValue({
             product: {
                 enabled: product.enabled,
                 name: currentTranslation ? currentTranslation.name : '',
                 slug: currentTranslation ? currentTranslation.slug : '',
                 description: currentTranslation ? currentTranslation.description : '',
-                facetValueIds: product.facetValues.map((fv) => fv.id),
+                facetValueIds: product.facetValues.map(fv => fv.id),
             },
         });
 
@@ -452,9 +481,10 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
 
         const variantsFormArray = this.detailForm.get('variants') as FormArray;
         product.variants.forEach((variant, i) => {
-            const variantTranslation = variant.translations.find((t) => t.languageCode === languageCode);
-            const facetValueIds = variant.facetValues.map((fv) => fv.id);
+            const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
+            const facetValueIds = variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
+                id: variant.id,
                 enabled: variant.enabled,
                 sku: variant.sku,
                 name: variantTranslation ? variantTranslation.name : '',
@@ -543,7 +573,7 @@ export class ProductDetailComponent extends BaseDetailComponent<ProductWithVaria
             const formRow = variantsFormArray.get(i.toString());
             return formRow && formRow.dirty;
         });
-        const dirtyVariantValues = variantsFormArray.controls.filter((c) => c.dirty).map((c) => c.value);
+        const dirtyVariantValues = variantsFormArray.controls.filter(c => c.dirty).map(c => c.value);
 
         if (dirtyVariants.length !== dirtyVariantValues.length) {
             throw new Error(_(`error.product-variant-form-values-do-not-match`));

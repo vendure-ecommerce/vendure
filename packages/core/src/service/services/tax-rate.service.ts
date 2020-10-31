@@ -1,4 +1,4 @@
-import { InjectConnection } from '@nestjs/typeorm';
+import { Injectable } from '@nestjs/common';
 import {
     CreateTaxRateInput,
     DeletionResponse,
@@ -6,7 +6,6 @@ import {
     UpdateTaxRateInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { EntityNotFoundError } from '../../common/error/errors';
@@ -20,10 +19,11 @@ import { EventBus } from '../../event-bus/event-bus';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { WorkerService } from '../../worker/worker.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { getEntityOrThrow } from '../helpers/utils/get-entity-or-throw';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { TransactionalConnection } from '../transaction/transactional-connection';
 import { TaxRateUpdatedMessage } from '../types/tax-rate-messages';
 
+@Injectable()
 export class TaxRateService {
     /**
      * We cache all active TaxRates to avoid hitting the DB many times
@@ -38,19 +38,19 @@ export class TaxRateService {
     });
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private eventBus: EventBus,
         private listQueryBuilder: ListQueryBuilder,
         private workerService: WorkerService,
     ) {}
 
     async initTaxRates() {
-        return this.updateActiveTaxRates();
+        return this.updateActiveTaxRates(RequestContext.empty());
     }
 
-    findAll(options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
+    findAll(ctx: RequestContext, options?: ListQueryOptions<TaxRate>): Promise<PaginatedList<TaxRate>> {
         return this.listQueryBuilder
-            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'] })
+            .build(TaxRate, options, { relations: ['category', 'zone', 'customerGroup'], ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
                 items,
@@ -58,60 +58,69 @@ export class TaxRateService {
             }));
     }
 
-    findOne(taxRateId: ID): Promise<TaxRate | undefined> {
-        return this.connection.manager.findOne(TaxRate, taxRateId, {
+    findOne(ctx: RequestContext, taxRateId: ID): Promise<TaxRate | undefined> {
+        return this.connection.getRepository(ctx, TaxRate).findOne(taxRateId, {
             relations: ['category', 'zone', 'customerGroup'],
         });
     }
 
     async create(ctx: RequestContext, input: CreateTaxRateInput): Promise<TaxRate> {
         const taxRate = new TaxRate(input);
-        taxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
-        taxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+        taxRate.category = await this.connection.getEntityOrThrow(ctx, TaxCategory, input.categoryId);
+        taxRate.zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId);
         if (input.customerGroupId) {
-            taxRate.customerGroup = await getEntityOrThrow(
-                this.connection,
+            taxRate.customerGroup = await this.connection.getEntityOrThrow(
+                ctx,
                 CustomerGroup,
                 input.customerGroupId,
             );
         }
-        const newTaxRate = await this.connection.getRepository(TaxRate).save(taxRate);
-        await this.updateActiveTaxRates();
+        const newTaxRate = await this.connection.getRepository(ctx, TaxRate).save(taxRate);
+        await this.updateActiveTaxRates(ctx);
         await this.workerService.send(new TaxRateUpdatedMessage(newTaxRate.id)).toPromise();
         this.eventBus.publish(new TaxRateModificationEvent(ctx, newTaxRate));
-        return assertFound(this.findOne(newTaxRate.id));
+        return assertFound(this.findOne(ctx, newTaxRate.id));
     }
 
     async update(ctx: RequestContext, input: UpdateTaxRateInput): Promise<TaxRate> {
-        const taxRate = await this.findOne(input.id);
+        const taxRate = await this.findOne(ctx, input.id);
         if (!taxRate) {
             throw new EntityNotFoundError('TaxRate', input.id);
         }
         const updatedTaxRate = patchEntity(taxRate, input);
         if (input.categoryId) {
-            updatedTaxRate.category = await getEntityOrThrow(this.connection, TaxCategory, input.categoryId);
+            updatedTaxRate.category = await this.connection.getEntityOrThrow(
+                ctx,
+                TaxCategory,
+                input.categoryId,
+            );
         }
         if (input.zoneId) {
-            updatedTaxRate.zone = await getEntityOrThrow(this.connection, Zone, input.zoneId);
+            updatedTaxRate.zone = await this.connection.getEntityOrThrow(ctx, Zone, input.zoneId);
         }
         if (input.customerGroupId) {
-            updatedTaxRate.customerGroup = await getEntityOrThrow(
-                this.connection,
+            updatedTaxRate.customerGroup = await this.connection.getEntityOrThrow(
+                ctx,
                 CustomerGroup,
                 input.customerGroupId,
             );
         }
-        await this.connection.getRepository(TaxRate).save(updatedTaxRate, { reload: false });
-        await this.updateActiveTaxRates();
+        await this.connection.getRepository(ctx, TaxRate).save(updatedTaxRate, { reload: false });
+        await this.updateActiveTaxRates(ctx);
+
+        // Commit the transaction so that the worker process can access the updated
+        // TaxRate when updating its own tax rate cache.
+        await this.connection.commitOpenTransaction(ctx);
         await this.workerService.send(new TaxRateUpdatedMessage(updatedTaxRate.id)).toPromise();
+
         this.eventBus.publish(new TaxRateModificationEvent(ctx, updatedTaxRate));
-        return assertFound(this.findOne(taxRate.id));
+        return assertFound(this.findOne(ctx, taxRate.id));
     }
 
-    async delete(id: ID): Promise<DeletionResponse> {
-        const taxRate = await getEntityOrThrow(this.connection, TaxRate, id);
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const taxRate = await this.connection.getEntityOrThrow(ctx, TaxRate, id);
         try {
-            await this.connection.getRepository(TaxRate).remove(taxRate);
+            await this.connection.getRepository(ctx, TaxRate).remove(taxRate);
             return {
                 result: DeletionResult.DELETED,
             };
@@ -132,8 +141,8 @@ export class TaxRateService {
         return rate || this.defaultTaxRate;
     }
 
-    async updateActiveTaxRates() {
-        this.activeTaxRates = await this.connection.getRepository(TaxRate).find({
+    async updateActiveTaxRates(ctx: RequestContext) {
+        this.activeTaxRates = await this.connection.getRepository(ctx, TaxRate).find({
             relations: ['category', 'zone', 'customerGroup'],
             where: {
                 enabled: true,

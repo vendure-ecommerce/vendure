@@ -11,7 +11,12 @@ import {
     Output,
     ViewChild,
 } from '@angular/core';
-import { Asset, AssetPickerDialogComponent, AssetPreviewDialogComponent, ModalService } from '@vendure/admin-ui/core';
+import {
+    Asset,
+    AssetPickerDialogComponent,
+    AssetPreviewDialogComponent,
+    ModalService,
+} from '@vendure/admin-ui/core';
 import { unique } from '@vendure/common/lib/unique';
 
 export interface AssetChange {
@@ -189,13 +194,13 @@ export class ProductAssetsComponent implements AfterViewInit {
             );
         }
 
-        this.placeholder.enter(
-            drag,
+        this.placeholder._dropListRef.enter(
+            drag._dragRef,
             drag.element.nativeElement.offsetLeft,
             drag.element.nativeElement.offsetTop,
         );
         return false;
-    }
+    };
 
     /** Determines the point of the page that was touched by the user. */
     getPointerPositionOnPage(event: MouseEvent | TouchEvent) {

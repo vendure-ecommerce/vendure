@@ -46,7 +46,7 @@ export class DatetimePickerService {
     selectDatetime(date: Date | string | dayjs.Dayjs | null) {
         let viewingValue: dayjs.Dayjs;
         let selectedValue: dayjs.Dayjs | null = null;
-        if (date == null) {
+        if (date == null || date === '') {
             viewingValue = dayjs();
         } else {
             viewingValue = dayjs(date);

@@ -12,8 +12,6 @@ import { ChannelService } from '../../service/services/channel.service';
 import { getApiType } from './get-api-type';
 import { RequestContext } from './request-context';
 
-export const REQUEST_CONTEXT_KEY = 'vendureRequestContext';
-
 /**
  * Creates new RequestContext instances.
  */
@@ -51,7 +49,7 @@ export class RequestContextService {
         });
     }
 
-    private getChannelToken(req: Request): string {
+    private getChannelToken(req: Request<any, any, any, { [key: string]: any }>): string {
         const tokenKey = this.configService.apiOptions.channelTokenKey;
         let channelToken = '';
 
@@ -65,7 +63,7 @@ export class RequestContextService {
 
     private getLanguageCode(req: Request, channel: Channel): LanguageCode | undefined {
         return (
-            (req.query && req.query.languageCode) ??
+            (req.query && (req.query.languageCode as LanguageCode)) ??
             channel.defaultLanguageCode ??
             this.configService.defaultLanguageCode
         );
@@ -79,7 +77,7 @@ export class RequestContextService {
         if (!user || !channel) {
             return false;
         }
-        const permissionsOnChannel = user.channelPermissions.find((c) => idsAreEqual(c.id, channel.id));
+        const permissionsOnChannel = user.channelPermissions.find(c => idsAreEqual(c.id, channel.id));
         if (permissionsOnChannel) {
             return this.arraysIntersect(permissionsOnChannel.permissions, permissions);
         }

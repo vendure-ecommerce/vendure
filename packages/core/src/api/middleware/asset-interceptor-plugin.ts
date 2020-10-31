@@ -1,6 +1,6 @@
 import { Asset } from '@vendure/common/lib/generated-types';
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } from 'apollo-server-plugin-base';
-import { DocumentNode } from 'graphql';
+import { DocumentNode, GraphQLNamedType, isUnionType } from 'graphql';
 
 import { AssetStorageStrategy } from '../../config/asset-storage-strategy/asset-storage-strategy';
 import { ConfigService } from '../../config/config.service';
@@ -49,8 +49,12 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
             return;
         }
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {
-            const isAssetType = type && type.name === 'Asset';
-            if (isAssetType) {
+            if (!type) {
+                return value;
+            }
+            const isAssetType = this.isAssetType(type);
+            const isUnionWithAssetType = isUnionType(type) && type.getTypes().find(t => this.isAssetType(t));
+            if (isAssetType || isUnionWithAssetType) {
                 if (value && !Array.isArray(value)) {
                     if (value.preview) {
                         value.preview = toAbsoluteUrl(request, value.preview);
@@ -60,20 +64,12 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
                     }
                 }
             }
+
+            // TODO: This path is deprecated and should be removed in a future version
+            // once the fields are removed from the GraphQL API
             const isSearchResultType = type && type.name === 'SearchResult';
             if (isSearchResultType) {
                 if (value && !Array.isArray(value)) {
-                    if (value.productAsset) {
-                        value.productAsset.preview = toAbsoluteUrl(request, value.productAsset.preview);
-                    }
-                    if (value.productVariantAsset) {
-                        value.productVariantAsset.preview = toAbsoluteUrl(
-                            request,
-                            value.productVariantAsset.preview,
-                        );
-                    }
-                    // TODO: This path is deprecated and should be removed in a future version
-                    // once the fields are removed from the GraphQL API
                     if (value.productPreview) {
                         value.productPreview = toAbsoluteUrl(request, value.productPreview);
                     }
@@ -84,5 +80,10 @@ export class AssetInterceptorPlugin implements ApolloServerPlugin {
             }
             return value;
         });
+    }
+
+    private isAssetType(type: GraphQLNamedType): boolean {
+        const assetTypeNames = ['Asset', 'SearchResultAsset'];
+        return assetTypeNames.includes(type.name);
     }
 }

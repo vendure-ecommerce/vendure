@@ -7,11 +7,9 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
-    LanguageCode,
     LogLevel,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -53,7 +51,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [examplePaymentHandler],
     },
     customFields: {},
-    logger: new DefaultLogger({ level: LogLevel.Debug }),
+    logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
@@ -65,10 +63,10 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        // ElasticsearchPlugin.init({
-        //     host: 'http://192.168.99.100',
-        //     port: 9200,
-        // }),
+        /*ElasticsearchPlugin.init({
+            host: 'http://localhost',
+            port: 9200,
+        }),*/
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,
@@ -105,7 +103,7 @@ function getDbConfig(): ConnectionOptions {
             console.log('Using sqlite connection');
             return {
                 synchronize: false,
-                type: 'sqlite',
+                type: 'better-sqlite3',
                 database: path.join(__dirname, 'vendure.sqlite'),
             };
         case 'sqljs':

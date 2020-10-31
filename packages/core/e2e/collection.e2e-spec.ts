@@ -119,12 +119,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('electronics')}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -167,12 +165,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('computers')}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -200,12 +196,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('pear')}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -299,6 +293,7 @@ describe('Collection resolver', () => {
                 },
             });
 
+            await awaitRunningJobs(adminClient);
             expect(updateCollection).toMatchSnapshot();
 
             pearCollection = updateCollection;
@@ -315,7 +310,7 @@ describe('Collection resolver', () => {
                     featuredAssetId: assets[3].id,
                 },
             });
-
+            await awaitRunningJobs(adminClient);
             expect(updateCollection.assets.map(a => a.id)).toEqual([assets[3].id, assets[0].id]);
         });
 
@@ -329,7 +324,7 @@ describe('Collection resolver', () => {
                     assetIds: [],
                 },
             });
-
+            await awaitRunningJobs(adminClient);
             expect(updateCollection.assets).toEqual([]);
             expect(updateCollection.featuredAsset).toBeNull();
         });
@@ -630,12 +625,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'operator',
                                         value: 'contains',
-                                        type: 'string',
                                     },
                                     {
                                         name: 'term',
                                         value: 'laptop',
-                                        type: 'string',
                                     },
                                 ],
                             },
@@ -867,12 +860,10 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `false`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -914,12 +905,10 @@ describe('Collection resolver', () => {
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId(
                                             'photo',
                                         )}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `true`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -970,12 +959,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'facetValueIds',
                                         value: `["${getFacetValueId('pear')}", "${getFacetValueId('bell')}"]`,
-                                        type: 'facetValueIds',
                                     },
                                     {
                                         name: 'containsAny',
                                         value: `true`,
-                                        type: 'boolean',
                                     },
                                 ],
                             },
@@ -1027,12 +1014,10 @@ describe('Collection resolver', () => {
                                     {
                                         name: 'operator',
                                         value: operator,
-                                        type: 'string',
                                     },
                                     {
                                         name: 'term',
                                         value: term,
-                                        type: 'string',
                                     },
                                 ],
                             },
@@ -1261,12 +1246,10 @@ describe('Collection resolver', () => {
                                 {
                                     name: 'facetValueIds',
                                     value: `["${getFacetValueId('pear')}"]`,
-                                    type: 'facetValueIds',
                                 },
                                 {
                                     name: 'containsAny',
                                     value: `false`,
-                                    type: 'boolean',
                                 },
                             ],
                         },

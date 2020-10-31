@@ -3,15 +3,22 @@ import {
     MutationUpdateGlobalSettingsArgs,
     OrderProcessState,
     Permission,
+    UpdateGlobalSettingsResult,
 } from '@vendure/common/lib/generated-types';
 
+import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
+import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFields } from '../../../config/custom-field/custom-field-types';
+import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
 import { ChannelService } from '../../../service/services/channel.service';
 import { GlobalSettingsService } from '../../../service/services/global-settings.service';
 import { OrderService } from '../../../service/services/order.service';
+import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
+import { Ctx } from '../../decorators/request-context.decorator';
+import { Transaction } from '../../decorators/transaction.decorator';
 
 @Resolver('GlobalSettings')
 export class GlobalSettingsResolver {
@@ -24,8 +31,8 @@ export class GlobalSettingsResolver {
 
     @Query()
     @Allow(Permission.Authenticated)
-    async globalSettings() {
-        return this.globalSettingsService.getSettings();
+    async globalSettings(@Ctx() ctx: RequestContext) {
+        return this.globalSettingsService.getSettings(ctx);
     }
 
     /**
@@ -35,38 +42,44 @@ export class GlobalSettingsResolver {
     serverConfig(): {
         customFieldConfig: CustomFields;
         orderProcess: OrderProcessState[];
+        permittedAssetTypes: string[];
     } {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
-            exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields.filter(
-                (c) => !c.internal,
-            );
+            exposedCustomFieldConfig[entityType as keyof CustomFields] = customFields
+                .filter(c => !c.internal)
+                .map(c => ({ ...c, list: !!c.list as any }));
         }
         return {
             customFieldConfig: exposedCustomFieldConfig,
             orderProcess: this.orderService.getOrderProcessStates(),
+            permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
         };
     }
 
+    @Transaction()
     @Mutation()
     @Allow(Permission.UpdateSettings)
-    async updateGlobalSettings(@Args() args: MutationUpdateGlobalSettingsArgs) {
+    async updateGlobalSettings(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateGlobalSettingsArgs,
+    ): Promise<ErrorResultUnion<UpdateGlobalSettingsResult, GlobalSettings>> {
         // This validation is performed here in the resolver rather than at the service
         // layer to avoid a circular dependency [ChannelService <> GlobalSettingsService]
         const { availableLanguages } = args.input;
         if (availableLanguages) {
-            const channels = await this.channelService.findAll();
+            const channels = await this.channelService.findAll(ctx);
             const unavailableDefaults = channels.filter(
-                (c) => !availableLanguages.includes(c.defaultLanguageCode),
+                c => !availableLanguages.includes(c.defaultLanguageCode),
             );
             if (unavailableDefaults.length) {
-                throw new UserInputError('error.cannot-set-default-language-as-unavailable', {
-                    language: unavailableDefaults.map((c) => c.defaultLanguageCode).join(', '),
-                    channelCode: unavailableDefaults.map((c) => c.code).join(', '),
-                });
+                return new ChannelDefaultLanguageError(
+                    unavailableDefaults.map(c => c.defaultLanguageCode).join(', '),
+                    unavailableDefaults.map(c => c.code).join(', '),
+                );
             }
         }
-        return this.globalSettingsService.updateSettings(args.input);
+        return this.globalSettingsService.updateSettings(ctx, args.input);
     }
 }

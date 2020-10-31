@@ -17,7 +17,6 @@ export function insertImageItem(nodeType: NodeType, modalService: ModalService) 
         label: 'Image',
         class: '',
         css: '',
-        execEvent: 'mousedown',
         enable(state: EditorState) {
             return canInsert(state, nodeType);
         },

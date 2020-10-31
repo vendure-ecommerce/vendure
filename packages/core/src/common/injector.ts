@@ -27,6 +27,8 @@ export class Injector {
     /**
      * @description
      * Retrieve the TypeORM `Connection` instance.
+     *
+     * @deprecated Use `.get(TransactionalConnection)` instead.
      */
     getConnection(): Connection {
         return this.moduleRef.get(getConnectionToken() as any, { strict: false });

@@ -10,7 +10,7 @@ const adminUrl = 'http://localhost:3000/admin-api';
  */
 awaitServerStartup()
     .then(() => runTests())
-    .catch((e) => {
+    .catch(e => {
         console.log('Tests failed!');
         console.log(e);
         process.exit(1);
@@ -60,17 +60,17 @@ async function runTests() {
     const result2 = await gqlRequest(
         adminUrl,
         `
-        { "query": "mutation { login(username: \\"superadmin\\" password: \\"superadmin\\")  { user { id } } }" }
+        { "query": "mutation { login(username: \\"superadmin\\" password: \\"superadmin\\")  { ...on CurrentUser { id } } }" }
     `,
     );
-    assertEquals(result2.data.login, { user: { id: '1' } });
+    assertEquals(result2.data.login, { id: '1' });
 
     console.log(`All tests passed!`);
     process.exit(0);
 }
 
 function gqlRequest(url, body) {
-    return request(url, 'POST', body).catch((e) => console.log(e));
+    return request(url, 'POST', body).catch(e => console.log(e));
 }
 
 /**
@@ -88,10 +88,10 @@ function request(url, method, body) {
     };
 
     return new Promise((resolve, reject) => {
-        const req = http.request(url, options, (res) => {
+        const req = http.request(url, options, res => {
             var response = '';
             res.setEncoding('utf8');
-            res.on('data', (chunk) => {
+            res.on('data', chunk => {
                 return (response += chunk);
             });
             res.on('end', () => {
@@ -99,7 +99,7 @@ function request(url, method, body) {
             });
         });
 
-        req.on('error', (e) => {
+        req.on('error', e => {
             reject(e);
         });
 

@@ -1,7 +1,7 @@
 // @ts-check
-import {sleep} from 'k6';
+import { sleep } from 'k6';
 import { check } from 'k6';
-import {ShopApiRequest} from '../utils/api-request.js';
+import { ShopApiRequest } from '../utils/api-request.js';
 
 const searchQuery = new ShopApiRequest('shop/search.graphql');
 const productQuery = new ShopApiRequest('shop/product.graphql');
@@ -11,18 +11,16 @@ const getShippingMethodsQuery = new ShopApiRequest('shop/get-shipping-methods.gr
 const completeOrderMutation = new ShopApiRequest('shop/complete-order.graphql');
 
 export let options = {
-    stages: [
-        { duration: '4m', target: 500 },
-    ],
+    stages: [{ duration: '4m', target: 500 }],
 };
 
 /**
  * Searches for products, adds to order, checks out.
  */
-export default function() {
+export default function () {
     const itemsToAdd = Math.ceil(Math.random() * 10);
 
-    for (let i = 0; i < itemsToAdd; i ++) {
+    for (let i = 0; i < itemsToAdd; i++) {
         searchProducts();
         const product = findAndLoadProduct();
         addToCart(randomItem(product.variants).id);
@@ -53,8 +51,8 @@ function addToCart(variantId) {
     const qty = Math.ceil(Math.random() * 4);
     const result = addItemToOrderMutation.post({ id: variantId, qty });
     check(result.data, {
-        'Product added to cart': r => !!r.addItemToOrder.lines
-            .find(l => l.productVariant.id === variantId && l.quantity >= qty),
+        'Product added to cart': r =>
+            !!r.addItemToOrder.lines.find(l => l.productVariant.id === variantId && l.quantity >= qty),
     });
 }
 

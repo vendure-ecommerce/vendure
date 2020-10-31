@@ -40,7 +40,6 @@
             filters {
                 args {
                     name
-                    type
                     value
                 }
                 code

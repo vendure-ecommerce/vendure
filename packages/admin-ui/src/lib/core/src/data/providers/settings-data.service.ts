@@ -1,5 +1,5 @@
+import { FetchPolicy } from '@apollo/client/core';
 import { pick } from '@vendure/common/lib/pick';
-import { FetchPolicy } from 'apollo-client';
 
 import {
     AddMembersToZone,
@@ -40,7 +40,6 @@ import {
     JobListOptions,
     JobState,
     RemoveMembersFromZone,
-    SearchForTestOrder,
     UpdateChannel,
     UpdateChannelInput,
     UpdateCountry,
@@ -75,10 +74,10 @@ import {
     GET_COUNTRY,
     GET_COUNTRY_LIST,
     GET_GLOBAL_SETTINGS,
-    GET_JOBS_BY_ID,
-    GET_JOBS_LIST,
     GET_JOB_INFO,
     GET_JOB_QUEUE_LIST,
+    GET_JOBS_BY_ID,
+    GET_JOBS_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
     GET_TAX_CATEGORIES,
@@ -87,7 +86,6 @@ import {
     GET_TAX_RATE_LIST,
     GET_ZONES,
     REMOVE_MEMBERS_FROM_ZONE,
-    SEARCH_FOR_TEST_ORDER,
     UPDATE_CHANNEL,
     UPDATE_COUNTRY,
     UPDATE_GLOBAL_SETTINGS,
@@ -369,15 +367,5 @@ export class SettingsDataService {
                 },
             },
         });
-    }
-
-    searchForTestOrder(term: string, take: number) {
-        return this.baseDataService.query<SearchForTestOrder.Query, SearchForTestOrder.Variables>(
-            SEARCH_FOR_TEST_ORDER,
-            {
-                take,
-                term,
-            },
-        );
     }
 }

@@ -8,6 +8,11 @@ import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
 import path from 'path';
 
+import {
+    adminErrorOperationTypeResolvers,
+    ErrorResult,
+} from '../../common/error/generated-graphql-admin-errors';
+import { shopErrorOperationTypeResolvers } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { I18nModule } from '../../i18n/i18n.module';
@@ -21,6 +26,7 @@ import { IdCodecPlugin } from '../middleware/id-codec-plugin';
 import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 
 import { generateAuthenticationTypes } from './generate-auth-types';
+import { generateErrorCodeEnum } from './generate-error-code-enum';
 import { generateListOptions } from './generate-list-options';
 import {
     addGraphQLCustomFields,
@@ -133,6 +139,14 @@ async function createGraphQLOptions(
             StockMovement: stockMovementResolveType,
             CustomFieldConfig: customFieldsConfigResolveType,
             CustomField: customFieldsConfigResolveType,
+            ErrorResult: {
+                __resolveType(value: ErrorResult) {
+                    return value.__typename;
+                },
+            },
+            ...(options.apiType === 'admin'
+                ? adminErrorOperationTypeResolvers
+                : shopErrorOperationTypeResolvers),
         },
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
@@ -160,7 +174,7 @@ async function createGraphQLOptions(
         const customFields = configService.customFields;
         // Paths must be normalized to use forward-slash separators.
         // See https://github.com/nestjs/graphql/issues/336
-        const normalizedPaths = options.typePaths.map((p) => p.split(path.sep).join('/'));
+        const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
         const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
         const authStrategies =
             apiType === 'shop'
@@ -169,14 +183,15 @@ async function createGraphQLOptions(
         let schema = buildSchema(typeDefs);
 
         getPluginAPIExtensions(configService.plugins, apiType)
-            .map((e) => (typeof e.schema === 'function' ? e.schema() : e.schema))
+            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
-            .forEach((documentNode) => (schema = extendSchema(schema, documentNode)));
+            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
         schema = generateAuthenticationTypes(schema, authStrategies);
+        schema = generateErrorCodeEnum(schema);
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }

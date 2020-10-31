@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { SearchInput, SearchResponse } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
@@ -12,6 +10,7 @@ import { Job } from '../../job-queue/job';
 import { FacetValueService } from '../../service/services/facet-value.service';
 import { ProductVariantService } from '../../service/services/product-variant.service';
 import { SearchService } from '../../service/services/search.service';
+import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 
 import { SearchIndexService } from './indexer/search-index.service';
 import { MysqlSearchStrategy } from './search-strategy/mysql-search-strategy';
@@ -29,7 +28,7 @@ export class FulltextSearchService {
     private readonly minTermLength = 2;
 
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private eventBus: EventBus,
         private facetValueService: FacetValueService,
         private productVariantService: ProductVariantService,
@@ -65,10 +64,7 @@ export class FulltextSearchService {
         enabledOnly: boolean = false,
     ): Promise<Array<{ facetValue: FacetValue; count: number }>> {
         const facetValueIdsMap = await this.searchStrategy.getFacetValueIds(ctx, input, enabledOnly);
-        const facetValues = await this.facetValueService.findByIds(
-            Array.from(facetValueIdsMap.keys()),
-            ctx.languageCode,
-        );
+        const facetValues = await this.facetValueService.findByIds(ctx, Array.from(facetValueIdsMap.keys()));
         return facetValues.map((facetValue, index) => {
             return {
                 facetValue,
@@ -89,13 +85,14 @@ export class FulltextSearchService {
      * Sets the SearchStrategy appropriate to th configured database type.
      */
     private setSearchStrategy() {
-        switch (this.connection.options.type) {
+        switch (this.connection.rawConnection.options.type) {
             case 'mysql':
             case 'mariadb':
                 this.searchStrategy = new MysqlSearchStrategy(this.connection);
                 break;
             case 'sqlite':
             case 'sqljs':
+            case 'better-sqlite3':
                 this.searchStrategy = new SqliteSearchStrategy(this.connection);
                 break;
             case 'postgres':

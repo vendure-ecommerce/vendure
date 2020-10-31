@@ -49,7 +49,7 @@ export interface S3Config {
      * S3.Types.ClientConfiguration can be used after importing aws-sdk.
      * Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
      */
-    nativeS3Configuration: any;
+    nativeS3Configuration?: any;
 }
 
 /**
@@ -114,6 +114,7 @@ export function configureS3AssetStorage(s3Config: S3Config) {
  *
  * @docsCategory asset-server-plugin
  * @docsPage S3AssetStorageStrategy
+ * @docsWeight 0
  */
 export class S3AssetStorageStrategy implements AssetStorageStrategy {
     private AWS: typeof import('aws-sdk');

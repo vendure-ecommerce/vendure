@@ -63,8 +63,8 @@ describe('AssetServerPlugin', () => {
         const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
             mutation: CREATE_ASSETS,
             filePaths: filesToUpload,
-            mapVariables: (filePaths) => ({
-                input: filePaths.map((p) => ({ file: null })),
+            mapVariables: filePaths => ({
+                input: filePaths.map(p => ({ file: null })),
             }),
         });
 
@@ -188,7 +188,7 @@ describe('AssetServerPlugin', () => {
         let testImages: CreateAssets.CreateAssets[] = [];
 
         async function testMimeTypeOfAssetWithExt(ext: string, expectedMimeType: string) {
-            const testImage = testImages.find((i) => i.source.endsWith(ext))!;
+            const testImage = testImages.find(i => i.source.endsWith(ext))!;
             const result = await fetch(testImage.source);
             const contentType = result.headers.get('Content-Type');
 
@@ -198,12 +198,12 @@ describe('AssetServerPlugin', () => {
         beforeAll(async () => {
             const formats = ['gif', 'jpg', 'png', 'svg', 'tiff', 'webp'];
 
-            const filesToUpload = formats.map((ext) => path.join(__dirname, `fixtures/assets/test.${ext}`));
+            const filesToUpload = formats.map(ext => path.join(__dirname, `fixtures/assets/test.${ext}`));
             const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
                 mutation: CREATE_ASSETS,
                 filePaths: filesToUpload,
-                mapVariables: (filePaths) => ({
-                    input: filePaths.map((p) => ({ file: null })),
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null })),
                 }),
             });
 
@@ -239,13 +239,15 @@ describe('AssetServerPlugin', () => {
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
-            id
-            name
-            source
-            preview
-            focalPoint {
-                x
-                y
+            ... on Asset {
+                id
+                name
+                source
+                preview
+                focalPoint {
+                    x
+                    y
+                }
             }
         }
     }

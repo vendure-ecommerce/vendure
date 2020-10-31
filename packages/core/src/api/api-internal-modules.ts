@@ -6,6 +6,7 @@ import { JobQueueModule } from '../job-queue/job-queue.module';
 import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-api.module';
 import { ServiceModule } from '../service/service.module';
 
+import { ConfigurableOperationCodec } from './common/configurable-operation-codec';
 import { IdCodecService } from './common/id-codec.service';
 import { AdministratorResolver } from './resolvers/admin/administrator.resolver';
 import { AssetResolver } from './resolvers/admin/asset.resolver';
@@ -38,10 +39,14 @@ import {
 import { CustomerGroupEntityResolver } from './resolvers/entity/customer-group-entity.resolver';
 import { FacetEntityResolver } from './resolvers/entity/facet-entity.resolver';
 import { FacetValueEntityResolver } from './resolvers/entity/facet-value-entity.resolver';
-import { FulfillmentEntityResolver } from './resolvers/entity/fulfillment-entity.resolver';
+import {
+    FulfillmentAdminEntityResolver,
+    FulfillmentEntityResolver,
+} from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
 import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
+import { PaymentMethodEntityResolver } from './resolvers/entity/payment-method-entity.resolver';
 import {
     ProductAdminEntityResolver,
     ProductEntityResolver,
@@ -105,6 +110,7 @@ export const entityResolvers = [
     OrderEntityResolver,
     OrderLineEntityResolver,
     PaymentEntityResolver,
+    PaymentMethodEntityResolver,
     ProductEntityResolver,
     ProductOptionEntityResolver,
     ProductOptionGroupEntityResolver,
@@ -117,6 +123,7 @@ export const entityResolvers = [
 export const adminEntityResolvers = [
     CustomerAdminEntityResolver,
     OrderAdminEntityResolver,
+    FulfillmentAdminEntityResolver,
     ProductVariantAdminEntityResolver,
     ProductAdminEntityResolver,
 ];
@@ -127,8 +134,8 @@ export const adminEntityResolvers = [
  */
 @Module({
     imports: [ConfigModule],
-    providers: [IdCodecService],
-    exports: [IdCodecService, ConfigModule],
+    providers: [IdCodecService, ConfigurableOperationCodec],
+    exports: [IdCodecService, ConfigModule, ConfigurableOperationCodec],
 })
 export class ApiSharedModule {}
 

@@ -1,41 +1,15 @@
 import { ConfigArg } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset, ID } from '@vendure/common/lib/shared-types';
+import { ConfigArgType, ID } from '@vendure/common/lib/shared-types';
 
+import { RequestContext } from '../../api/common/request-context';
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OrderLine } from '../../entity';
 import { Order } from '../../entity/order/order.entity';
-
-export type PromotionConditionArgType = ConfigArgSubset<
-    'int' | 'string' | 'datetime' | 'boolean' | 'facetValueIds'
->;
-export type PromotionConditionArgs = ConfigArgs<PromotionConditionArgType>;
-
-/**
- * @description
- * An object containing utility methods which may be used in promotion `check` functions
- * in order to determine whether a promotion should be applied.
- *
- * TODO: Remove this and use the new init() method to inject providers where needed.
- *
- * @docsCategory promotions
- * @docsPage promotion-condition
- */
-export interface PromotionUtils {
-    /**
-     * @description
-     * Checks a given {@link OrderLine} against the facetValueIds and returns
-     * `true` if the associated {@link ProductVariant} & {@link Product} together
-     * have *all* the specified {@link FacetValue}s.
-     */
-    hasFacetValues: (orderLine: OrderLine, facetValueIds: ID[]) => Promise<boolean>;
-}
 
 /**
  * @description
@@ -44,14 +18,21 @@ export interface PromotionUtils {
  * @docsCategory promotions
  * @docsPage promotion-condition
  */
-export type CheckPromotionConditionFn<T extends PromotionConditionArgs> = (
+export type CheckPromotionConditionFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
     order: Order,
     args: ConfigArgValues<T>,
-    utils: PromotionUtils,
 ) => boolean | Promise<boolean>;
 
-export interface PromotionConditionConfig<T extends PromotionConditionArgs>
-    extends ConfigurableOperationDefOptions<T> {
+/**
+ * @description
+ * This object is used to configure a PromotionCondition.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-condition
+ * @docsWeight 1
+ */
+export interface PromotionConditionConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     check: CheckPromotionConditionFn<T>;
     priorityValue?: number;
 }
@@ -64,8 +45,17 @@ export interface PromotionConditionConfig<T extends PromotionConditionArgs>
  *
  * @docsCategory promotions
  * @docsPage promotion-condition
+ * @docsWeight 0
  */
-export class PromotionCondition<T extends PromotionConditionArgs = {}> extends ConfigurableOperationDef<T> {
+export class PromotionCondition<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
+    /**
+     * @description
+     * Used to determine the order of application of multiple Promotions
+     * on the same Order. See the {@link Promotion} `priorityScore` field for
+     * more information.
+     *
+     * @default 0
+     */
     readonly priorityValue: number;
     private readonly checkFn: CheckPromotionConditionFn<T>;
 
@@ -75,7 +65,7 @@ export class PromotionCondition<T extends PromotionConditionArgs = {}> extends C
         this.priorityValue = config.priorityValue || 0;
     }
 
-    async check(order: Order, args: ConfigArg[], utils: PromotionUtils): Promise<boolean> {
-        return this.checkFn(order, argsArrayToHash<T>(args), utils);
+    async check(ctx: RequestContext, order: Order, args: ConfigArg[]): Promise<boolean> {
+        return this.checkFn(ctx, order, this.argsArrayToHash(args));
     }
 }

@@ -1,7 +1,20 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnInit,
+    Output,
+    SimpleChanges,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { CustomFieldConfig, GetAvailableCountries, ModalService } from '@vendure/admin-ui/core';
+import { BehaviorSubject } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
-import { GetAvailableCountries } from '@vendure/admin-ui/core';
+import { AddressDetailDialogComponent } from '../address-detail-dialog/address-detail-dialog.component';
 
 @Component({
     selector: 'vdr-address-card',
@@ -9,19 +22,37 @@ import { GetAvailableCountries } from '@vendure/admin-ui/core';
     styleUrls: ['./address-card.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AddressCardComponent implements OnInit {
-    editing = false;
+export class AddressCardComponent implements OnInit, OnChanges {
     @Input() addressForm: FormGroup;
+    @Input() customFields: CustomFieldConfig;
     @Input() availableCountries: GetAvailableCountries.Items[] = [];
     @Input() isDefaultBilling: string;
     @Input() isDefaultShipping: string;
     @Output() setAsDefaultShipping = new EventEmitter<string>();
     @Output() setAsDefaultBilling = new EventEmitter<string>();
+    private dataDependenciesPopulated = new BehaviorSubject<boolean>(false);
+
+    constructor(private modalService: ModalService, private changeDetector: ChangeDetectorRef) {}
 
     ngOnInit(): void {
         const streetLine1 = this.addressForm.get('streetLine1') as FormControl;
+        // Make the address dialog display automatically if there is no address line
+        // as is the case when adding a new address.
         if (!streetLine1.value) {
-            this.editing = true;
+            this.dataDependenciesPopulated
+                .pipe(
+                    filter(value => value),
+                    take(1),
+                )
+                .subscribe(() => {
+                    this.editAddress();
+                });
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (this.customFields != null && this.availableCountries != null) {
+            this.dataDependenciesPopulated.next(true);
         }
     }
 
@@ -41,5 +72,21 @@ export class AddressCardComponent implements OnInit {
     setAsDefaultShippingAddress() {
         this.setAsDefaultShipping.emit(this.addressForm.value.id);
         this.addressForm.markAsDirty();
+    }
+
+    editAddress() {
+        this.modalService
+            .fromComponent(AddressDetailDialogComponent, {
+                locals: {
+                    addressForm: this.addressForm,
+                    customFields: this.customFields,
+                    availableCountries: this.availableCountries,
+                },
+                size: 'md',
+                closable: true,
+            })
+            .subscribe(() => {
+                this.changeDetector.markForCheck();
+            });
     }
 }

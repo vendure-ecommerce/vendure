@@ -34,7 +34,7 @@ export class ProductVariantEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() productVariant: ProductVariant,
     ): Promise<Asset[] | undefined> {
-        return this.assetService.getEntityAssets(productVariant);
+        return this.assetService.getEntityAssets(ctx, productVariant);
     }
 
     @ResolveField()
@@ -45,7 +45,7 @@ export class ProductVariantEntityResolver {
         if (productVariant.featuredAsset) {
             return productVariant.featuredAsset;
         }
-        return this.assetService.getFeaturedAsset(productVariant);
+        return this.assetService.getFeaturedAsset(ctx, productVariant);
     }
 
     @ResolveField()
@@ -72,7 +72,7 @@ export class ProductVariantEntityResolver {
             facetValues = await this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
         }
         if (apiType === 'shop') {
-            facetValues = facetValues.filter((fv) => !fv.facet.isPrivate);
+            facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
         }
         return facetValues;
     }

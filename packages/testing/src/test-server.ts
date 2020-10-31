@@ -43,8 +43,7 @@ export class TestServer {
             await initializer.populate(populateFn);
             await initializer.destroy();
         } catch (e) {
-            console.error(e);
-            process.exit(1);
+            throw e;
         }
         await this.bootstrap();
     }
@@ -75,7 +74,7 @@ export class TestServer {
      */
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
-        await new Promise((resolve) => global.setTimeout(resolve, 500));
+        await new Promise(resolve => global.setTimeout(resolve, 500));
         await this.app.close();
         if (this.worker) {
             await this.worker.close();

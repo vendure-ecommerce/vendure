@@ -14,14 +14,31 @@ services:
     environment:
       - PMA_HOST=mariadb
       - PMA_USER=root
-    restart: always
     ports:
       - 8080:80
     volumes:
       - /sessions
+  mysql:
+    image: bitnami/mysql:8.0
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+    volumes:
+      - 'mysql_data:/bitnami'
+    ports:
+      - '3306:3306'
+  phpmyadmin-mysql:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    container_name: phpmyadmin-mysql
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=root
+    ports:
+      - 8082:80
+    volumes:
+      - /sessions
   postgres:
     image: postgres:12.3
-    restart: always
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: admin
@@ -33,7 +50,6 @@ services:
       - "5432:5432"
   pgadmin:
     image: dpage/pgadmin4:4.18
-    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@localhost.dev
       PGADMIN_DEFAULT_PASSWORD: secret
@@ -50,6 +66,8 @@ volumes:
   pgadmin_data:
     driver: local
   mariadb_data:
+    driver: local
+  mysql_data:
     driver: local
   phpmyadmin_data:
     driver: local

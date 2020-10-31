@@ -42,13 +42,15 @@ export class TestAuthenticationStrategy implements AuthenticationStrategy<TestAu
         `;
     }
 
-    async authenticate(ctx: RequestContext, data: TestAuthPayload): Promise<User | false> {
+    async authenticate(ctx: RequestContext, data: TestAuthPayload): Promise<User | false | string> {
         const { token, userData } = data;
+        if (token === 'expired-token') {
+            return 'Expired token';
+        }
         if (data.token !== VALID_AUTH_TOKEN) {
             return false;
         }
-        const user = await this.externalAuthenticationService.findUser(this.name, data.token);
-
+        const user = await this.externalAuthenticationService.findUser(ctx, this.name, data.token);
         if (user) {
             return user;
         }

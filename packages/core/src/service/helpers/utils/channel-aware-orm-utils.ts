@@ -1,27 +1,30 @@
 import { ID, Type } from '@vendure/common/lib/shared-types';
-import { Connection, FindManyOptions, FindOptionsUtils } from 'typeorm';
+import { FindManyOptions, FindOptionsUtils } from 'typeorm';
 
 import { ChannelAware } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 
 /**
  * Like the TypeOrm `Repository.findByIds()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated
  */
 export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entity: Type<T>,
     ids: ID[],
     channelId: ID,
     findOptions?: FindManyOptions<T>,
     eager = true,
 ) {
-    //the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
-    //breaks if the array is empty
-    if(ids.length === 0){
+    // the syntax described in https://github.com/typeorm/typeorm/issues/1239#issuecomment-366955628
+    // breaks if the array is empty
+    if (ids.length === 0) {
         return Promise.resolve([]);
     }
-    
+
     const qb = connection.getRepository(entity).createQueryBuilder('product');
     FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, findOptions);
     if (eager) {
@@ -30,7 +33,7 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
     }
     return qb
         .leftJoin('product.channels', 'channel')
-        .andWhere("product.id IN (:...ids)", { ids })
+        .andWhere('product.id IN (:...ids)', { ids })
         .andWhere('channel.id = :channelId', { channelId })
         .getMany();
 }
@@ -38,9 +41,11 @@ export function findByIdsInChannel<T extends ChannelAware | VendureEntity>(
 /**
  * Like the TypeOrm `Repository.findOne()` method, but limits the results to
  * the given Channel.
+ *
+ * @deprecated Use {@link TransactionalConnection}.findOneInChannel() instead.
  */
 export function findOneInChannel<T extends ChannelAware | VendureEntity>(
-    connection: Connection,
+    connection: TransactionalConnection,
     entity: Type<T>,
     id: ID,
     channelId: ID,

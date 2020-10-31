@@ -1,3 +1,4 @@
+import { ClientOptions } from '@elastic/elasticsearch';
 import { DeepRequired, ID, Product, ProductVariant } from '@vendure/core';
 import deepmerge from 'deepmerge';
 
@@ -13,14 +14,26 @@ import { CustomMapping, ElasticSearchInput } from './types';
 export interface ElasticsearchOptions {
     /**
      * @description
-     * The host of the Elasticsearch server.
+     * The host of the Elasticsearch server. May also be specified in `clientOptions.node`.
+     *
+     * @default 'http://localhost'
      */
-    host: string;
+    host?: string;
     /**
      * @description
-     * The port of the Elasticsearch server.
+     * The port of the Elasticsearch server. May also be specified in `clientOptions.node`.
+     *
+     * @default 9200
      */
-    port: number;
+    port?: number;
+    /**
+     * @description
+     * Options to pass directly to the
+     * [Elasticsearch Node.js client](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/index.html). For example, to
+     * set authentication or other more advanced options.
+     * Note that if the `node` or `nodes` option is specified, it will override the values provided in the `host` and `port` options.
+     */
+    clientOptions?: ClientOptions;
     /**
      * @description
      * Prefix for the indices created by the plugin.
@@ -275,7 +288,11 @@ export interface BoostFieldsConfig {
     sku?: number;
 }
 
-export const defaultOptions: DeepRequired<ElasticsearchOptions> = {
+export type ElasticsearchRuntimeOptions = DeepRequired<Omit<ElasticsearchOptions, 'clientOptions'>> & {
+    clientOptions?: ClientOptions;
+};
+
+export const defaultOptions: ElasticsearchRuntimeOptions = {
     host: 'http://localhost',
     port: 9200,
     indexPrefix: 'vendure-',
@@ -290,12 +307,14 @@ export const defaultOptions: DeepRequired<ElasticsearchOptions> = {
             sku: 1,
         },
         priceRangeBucketInterval: 1000,
-        mapQuery: (query) => query,
+        mapQuery: query => query,
     },
     customProductMappings: {},
     customProductVariantMappings: {},
 };
 
-export function mergeWithDefaults(userOptions: ElasticsearchOptions): DeepRequired<ElasticsearchOptions> {
-    return deepmerge(defaultOptions, userOptions) as DeepRequired<ElasticsearchOptions>;
+export function mergeWithDefaults(userOptions: ElasticsearchOptions): ElasticsearchRuntimeOptions {
+    const { clientOptions, ...pluginOptions } = userOptions;
+    const merged = deepmerge(defaultOptions, pluginOptions) as ElasticsearchRuntimeOptions;
+    return { ...merged, clientOptions };
 }

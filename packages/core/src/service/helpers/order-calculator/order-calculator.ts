@@ -1,30 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/typeorm';
 import { filterAsync } from '@vendure/common/lib/filter-async';
 import { AdjustmentType } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
-import { PromotionUtils, ShippingCalculationResult } from '../../../config';
+import { ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
-import { OrderItem, OrderLine, ProductVariant, TaxCategory, TaxRate } from '../../../entity';
+import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
+import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 @Injectable()
 export class OrderCalculator {
     constructor(
-        @InjectConnection() private connection: Connection,
+        private connection: TransactionalConnection,
         private configService: ConfigService,
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,
@@ -74,7 +71,7 @@ export class OrderCalculator {
 
             // Then test and apply promotions
             const totalBeforePromotions = order.total;
-            const itemsModifiedByPromotions = await this.applyPromotions(order, promotions);
+            const itemsModifiedByPromotions = await this.applyPromotions(ctx, order, promotions);
             itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
 
             if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
@@ -151,10 +148,13 @@ export class OrderCalculator {
      * Applies any eligible promotions to each OrderItem in the order. Returns an array of
      * any OrderItems which had their Adjustments modified.
      */
-    private async applyPromotions(order: Order, promotions: Promotion[]): Promise<OrderItem[]> {
-        const utils = this.createPromotionUtils();
-        const updatedItems = await this.applyOrderItemPromotions(order, promotions, utils);
-        await this.applyOrderPromotions(order, promotions, utils);
+    private async applyPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<OrderItem[]> {
+        const updatedItems = await this.applyOrderItemPromotions(ctx, order, promotions);
+        await this.applyOrderPromotions(ctx, order, promotions);
         return updatedItems;
     }
 
@@ -163,7 +163,7 @@ export class OrderCalculator {
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
      */
-    private async applyOrderItemPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+    private async applyOrderItemPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
         // The naive implementation updates *every* OrderItem after this function is run.
         // However, on a very large order with hundreds or thousands of OrderItems, this results in
         // very poor performance. E.g. updating a single quantity of an OrderLine results in saving
@@ -175,7 +175,7 @@ export class OrderCalculator {
         for (const line of order.lines) {
             // Must be re-calculated for each line, since the previous lines may have triggered promotions
             // which affected the order price.
-            const applicablePromotions = await filterAsync(promotions, p => p.test(order, utils));
+            const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order));
 
             const lineHasExistingPromotions =
                 line.items[0].pendingAdjustments &&
@@ -197,12 +197,11 @@ export class OrderCalculator {
                 // We need to test the promotion *again*, even though we've tested them for the line.
                 // This is because the previous Promotions may have adjusted the Order in such a way
                 // as to render later promotions no longer applicable.
-                if (await promotion.test(order, utils)) {
+                if (await promotion.test(ctx, order)) {
                     for (const item of line.items) {
                         const adjustment = await promotion.apply({
                             orderItem: item,
                             orderLine: line,
-                            utils,
                         });
                         if (adjustment) {
                             item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
@@ -255,15 +254,15 @@ export class OrderCalculator {
         return hasPromotionsThatAreNoLongerApplicable;
     }
 
-    private async applyOrderPromotions(order: Order, promotions: Promotion[], utils: PromotionUtils) {
+    private async applyOrderPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
         order.clearAdjustments(AdjustmentType.PROMOTION);
-        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(order, utils));
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
                 // re-test the promotion on each iteration, since the order total
                 // may be modified by a previously-applied promotion
-                if (await promotion.test(order, utils)) {
-                    const adjustment = await promotion.apply({ order, utils });
+                if (await promotion.test(ctx, order)) {
+                    const adjustment = await promotion.apply({ order });
                     if (adjustment) {
                         order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
                     }
@@ -299,34 +298,5 @@ export class OrderCalculator {
 
         order.subTotalBeforeTax = totalPriceBeforeTax;
         order.subTotal = totalPrice;
-    }
-
-    /**
-     * Creates a new PromotionUtils object with a cache which lives as long as the created object.
-     */
-    private createPromotionUtils(): PromotionUtils {
-        const variantCache = new Map<ID, ProductVariant>();
-
-        return {
-            hasFacetValues: async (orderLine: OrderLine, facetValueIds: ID[]): Promise<boolean> => {
-                let variant = variantCache.get(orderLine.productVariant.id);
-                if (!variant) {
-                    variant = await this.connection
-                        .getRepository(ProductVariant)
-                        .findOne(orderLine.productVariant.id, {
-                            relations: ['product', 'product.facetValues', 'facetValues'],
-                        });
-                    if (!variant) {
-                        return false;
-                    }
-                    variantCache.set(variant.id, variant);
-                }
-                const allFacetValues = unique([...variant.facetValues, ...variant.product.facetValues], 'id');
-                return facetValueIds.reduce(
-                    (result, id) => result && !!allFacetValues.find(fv => idsAreEqual(fv.id, id)),
-                    true as boolean,
-                );
-            },
-        };
     }
 }

@@ -9,8 +9,8 @@ import {
     ConfigurableOperationInput,
     CreatePromotionInput,
     DataService,
-    FacetWithValues,
-    GetActiveChannel,
+    encodeConfigArgValue,
+    getConfigArgValue,
     getDefaultConfigArgValue,
     LanguageCode,
     NotificationService,
@@ -19,7 +19,7 @@ import {
     UpdatePromotionInput,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
-import { mergeMap, shareReplay, take } from 'rxjs/operators';
+import { mergeMap, take } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-promotion-detail',
@@ -33,8 +33,6 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     detailForm: FormGroup;
     conditions: ConfigurableOperation[] = [];
     actions: ConfigurableOperation[] = [];
-    facets$: Observable<FacetWithValues.Fragment[]>;
-    activeChannel$: Observable<GetActiveChannel.ActiveChannel>;
 
     private allConditions: ConfigurableOperationDefinition[] = [];
     private allActions: ConfigurableOperationDefinition[] = [];
@@ -63,23 +61,12 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
 
     ngOnInit() {
         this.init();
-        this.facets$ = this.dataService.facet
-            .getAllFacets()
-            .mapSingle((data) => data.facets.items)
-            .pipe(shareReplay(1));
-
         this.promotion$ = this.entity$;
-        this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe((data) => {
+        this.dataService.promotion.getPromotionActionsAndConditions().single$.subscribe(data => {
             this.allActions = data.promotionActions;
             this.allConditions = data.promotionConditions;
+            this.changeDetector.markForCheck();
         });
-        this.activeChannel$ = this.dataService.settings
-            .getActiveChannel()
-            .mapStream((data) => data.activeChannel);
-
-        // When creating a new Promotion, the initial bindings do not work
-        // unless explicitly re-running the change detector. Don't know why.
-        setTimeout(() => this.changeDetector.markForCheck(), 0);
     }
 
     ngOnDestroy() {
@@ -87,19 +74,19 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     }
 
     getAvailableConditions(): ConfigurableOperationDefinition[] {
-        return this.allConditions.filter((o) => !this.conditions.find((c) => c.code === o.code));
+        return this.allConditions.filter(o => !this.conditions.find(c => c.code === o.code));
     }
 
     getConditionDefinition(condition: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
-        return this.allConditions.find((c) => c.code === condition.code);
+        return this.allConditions.find(c => c.code === condition.code);
     }
 
     getAvailableActions(): ConfigurableOperationDefinition[] {
-        return this.allActions.filter((o) => !this.actions.find((a) => a.code === o.code));
+        return this.allActions.filter(o => !this.actions.find(a => a.code === o.code));
     }
 
     getActionDefinition(action: ConfigurableOperation): ConfigurableOperationDefinition | undefined {
-        return this.allActions.find((c) => c.code === action.code);
+        return this.allActions.find(c => c.code === action.code);
     }
 
     saveButtonEnabled(): boolean {
@@ -151,13 +138,22 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             actions: this.mapOperationsToInputs(this.actions, formValue.actions),
         };
         this.dataService.promotion.createPromotion(input).subscribe(
-            (data) => {
-                this.notificationService.success(_('common.notify-create-success'), { entity: 'Promotion' });
-                this.detailForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createPromotion.id], { relativeTo: this.route });
+            ({ createPromotion }) => {
+                switch (createPromotion.__typename) {
+                    case 'Promotion':
+                        this.notificationService.success(_('common.notify-create-success'), {
+                            entity: 'Promotion',
+                        });
+                        this.detailForm.markAsPristine();
+                        this.changeDetector.markForCheck();
+                        this.router.navigate(['../', createPromotion.id], { relativeTo: this.route });
+                        break;
+                    case 'MissingConditionsError':
+                        this.notificationService.error(createPromotion.message);
+                        break;
+                }
             },
-            (err) => {
+            err => {
                 this.notificationService.error(_('common.notify-create-error'), {
                     entity: 'Promotion',
                 });
@@ -173,7 +169,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
         this.promotion$
             .pipe(
                 take(1),
-                mergeMap((promotion) => {
+                mergeMap(promotion => {
                     const input: UpdatePromotionInput = {
                         id: promotion.id,
                         name: formValue.name,
@@ -189,14 +185,14 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                 }),
             )
             .subscribe(
-                (data) => {
+                data => {
                     this.notificationService.success(_('common.notify-update-success'), {
                         entity: 'Promotion',
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-update-error'), {
                         entity: 'Promotion',
                     });
@@ -216,10 +212,10 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
             startsAt: entity.startsAt,
             endsAt: entity.endsAt,
         });
-        entity.conditions.forEach((o) => {
+        entity.conditions.forEach(o => {
             this.addOperation('conditions', o);
         });
-        entity.actions.forEach((o) => this.addOperation('actions', o));
+        entity.actions.forEach(o => this.addOperation('actions', o));
     }
 
     /**
@@ -234,8 +230,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                 code: o.code,
                 arguments: Object.values<any>(formValueOperations[i].args).map((value, j) => ({
                     name: o.args[j].name,
-                    value: value.toString(),
-                    type: o.args[j].type,
+                    value: encodeConfigArgValue(value),
                 })),
             };
         });
@@ -247,12 +242,13 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     private addOperation(key: 'conditions' | 'actions', operation: ConfigurableOperation) {
         const operationsArray = this.formArrayOf(key);
         const collection = key === 'conditions' ? this.conditions : this.actions;
-        const index = operationsArray.value.findIndex((o) => o.code === operation.code);
+        const index = operationsArray.value.findIndex(o => o.code === operation.code);
         if (index === -1) {
             const argsHash = operation.args.reduce(
                 (output, arg) => ({
                     ...output,
-                    [arg.name]: arg.value != null ? arg.value : getDefaultConfigArgValue(arg),
+                    [arg.name]:
+                        getConfigArgValue(arg.value) ?? this.getDefaultArgValue(key, operation, arg.name),
                 }),
                 {},
             );
@@ -262,8 +258,29 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
                     args: argsHash,
                 }),
             );
-            collection.push(operation);
+            collection.push({
+                code: operation.code,
+                args: operation.args.map(a => ({ name: a.name, value: getConfigArgValue(a.value) })),
+            });
         }
+    }
+
+    private getDefaultArgValue(
+        key: 'conditions' | 'actions',
+        operation: ConfigurableOperation,
+        argName: string,
+    ) {
+        const def =
+            key === 'conditions'
+                ? this.allConditions.find(c => c.code === operation.code)
+                : this.allActions.find(a => a.code === operation.code);
+        if (def) {
+            const argDef = def.args.find(a => a.name === argName);
+            if (argDef) {
+                return getDefaultConfigArgValue(argDef);
+            }
+        }
+        throw new Error(`Could not determine default value for "argName"`);
     }
 
     /**
@@ -272,7 +289,7 @@ export class PromotionDetailComponent extends BaseDetailComponent<Promotion.Frag
     private removeOperation(key: 'conditions' | 'actions', operation: ConfigurableOperation) {
         const operationsArray = this.formArrayOf(key);
         const collection = key === 'conditions' ? this.conditions : this.actions;
-        const index = operationsArray.value.findIndex((o) => o.code === operation.code);
+        const index = operationsArray.value.findIndex(o => o.code === operation.code);
         if (index !== -1) {
             operationsArray.removeAt(index);
             collection.splice(index, 1);

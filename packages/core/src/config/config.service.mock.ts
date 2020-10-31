@@ -52,8 +52,8 @@ export class MockConfigService implements MockClass<ConfigService> {
 export const ENCODED = 'encoded';
 export const DECODED = 'decoded';
 
-export class MockIdStrategy implements EntityIdStrategy {
-    primaryKeyType = 'integer' as any;
+export class MockIdStrategy implements EntityIdStrategy<'increment'> {
+    readonly primaryKeyType = 'increment';
     encodeId = jest.fn().mockReturnValue(ENCODED);
     decodeId = jest.fn().mockReturnValue(DECODED);
 }

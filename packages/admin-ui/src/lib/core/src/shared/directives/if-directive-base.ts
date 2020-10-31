@@ -1,12 +1,13 @@
-import { EmbeddedViewRef, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
-
-import { Permission } from '../../common/generated-types';
+import { Directive, EmbeddedViewRef, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 /**
  * A base class for implementing custom *ngIf-style structural directives based on custom conditions.
+ *
+ * @dynamic
  */
+@Directive()
 export class IfDirectiveBase<Args extends any[]> implements OnInit, OnDestroy {
     protected updateArgs$ = new BehaviorSubject<Args>([] as any);
     private readonly _thenTemplateRef: TemplateRef<any> | null = null;

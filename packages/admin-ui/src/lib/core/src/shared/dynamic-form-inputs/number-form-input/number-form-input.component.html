@@ -1,0 +1,10 @@
+<vdr-affixed-input [suffix]="config?.suffix" [prefix]="config?.prefix">
+    <input
+        type="number"
+        [readonly]="readonly"
+        [min]="config?.min"
+        [max]="config?.max"
+        [step]="config?.step"
+        [formControl]="formControl"
+    />
+</vdr-affixed-input>

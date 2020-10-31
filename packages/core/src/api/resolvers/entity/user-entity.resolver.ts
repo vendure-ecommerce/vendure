@@ -23,7 +23,7 @@ export class UserEntityResolver {
             methodEntities = user.authenticationMethods;
         }
         methodEntities = await this.userService
-            .getUserById(user.id)
+            .getUserById(ctx, user.id)
             .then(u => u?.authenticationMethods ?? []);
 
         return methodEntities.map(m => ({

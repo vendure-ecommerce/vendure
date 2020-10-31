@@ -1,25 +1,21 @@
 import { ConfigArg, RefundOrderInput } from '@vendure/common/lib/generated-types';
-import { ConfigArgSubset } from '@vendure/common/lib/shared-types';
 
 import {
-    argsArrayToHash,
     ConfigArgs,
     ConfigArgValues,
     ConfigurableOperationDef,
     ConfigurableOperationDefOptions,
-    LocalizedStringArray,
 } from '../../common/configurable-operation';
 import { OnTransitionStartFn, StateMachineConfig } from '../../common/finite-state-machine/types';
+import { PaymentMetadata } from '../../common/types/common-types';
 import { Order } from '../../entity/order/order.entity';
-import { Payment, PaymentMetadata } from '../../entity/payment/payment.entity';
+import { Payment } from '../../entity/payment/payment.entity';
 import {
     PaymentState,
     PaymentTransitionData,
 } from '../../service/helpers/payment-state-machine/payment-state';
 import { RefundState } from '../../service/helpers/refund-state-machine/refund-state';
 
-export type PaymentMethodArgType = ConfigArgSubset<'int' | 'string' | 'boolean'>;
-export type PaymentMethodArgs = ConfigArgs<PaymentMethodArgType>;
 export type OnPaymentTransitionStartReturnType = ReturnType<
     Required<StateMachineConfig<any>>['onTransitionStart']
 >;
@@ -32,10 +28,45 @@ export type OnPaymentTransitionStartReturnType = ReturnType<
  * @docsPage Payment Method Types
  */
 export interface CreatePaymentResult {
+    /**
+     * @description
+     * The amount (as an integer - i.e. $10 = `1000`) that this payment is for.
+     * Typically this should equal the Order total, unless multiple payment methods
+     * are being used for the order.
+     */
     amount: number;
-    state: Exclude<PaymentState, 'Refunded' | 'Error'>;
+    /**
+     * @description
+     * The {@link PaymentState} of the resulting Payment.
+     *
+     * In a single-step payment flow, this should be set to `'Settled'`.
+     * In a two-step flow, this should be set to `'Authorized'`.
+     */
+    state: Exclude<PaymentState, 'Error'>;
+    /**
+     * @description
+     * The unique payment reference code typically assigned by
+     * the payment provider.
+     */
     transactionId?: string;
+    /**
+     * @description
+     * If the payment is declined or fails for ome other reason, pass the
+     * relevant error message here, and it gets returned with the
+     * ErrorResponse of the `addPaymentToOrder` mutation.
+     */
     errorMessage?: string;
+    /**
+     * @description
+     * This field can be used to store other relevant data which is often
+     * provided by the payment provider, such as security data related to
+     * the payment method or data used in troubleshooting or debugging.
+     *
+     * Any data stored in the optional `public` property will be available
+     * via the Shop API. This is useful for certain checkout flows such as
+     * external gateways, where the payment provider returns a unique
+     * url which must then be passed to the storefront app.
+     */
     metadata?: PaymentMetadata;
 }
 
@@ -84,10 +115,12 @@ export interface SettlePaymentResult {
  * @description
  * This function contains the logic for creating a payment. See {@link PaymentMethodHandler} for an example.
  *
+ * Returns a {@link CreatePaymentResult}.
+ *
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreatePaymentFn<T extends PaymentMethodArgs> = (
+export type CreatePaymentFn<T extends ConfigArgs> = (
     order: Order,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
@@ -100,7 +133,7 @@ export type CreatePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type SettlePaymentFn<T extends PaymentMethodArgs> = (
+export type SettlePaymentFn<T extends ConfigArgs> = (
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
@@ -113,7 +146,7 @@ export type SettlePaymentFn<T extends PaymentMethodArgs> = (
  * @docsCategory payment
  * @docsPage Payment Method Types
  */
-export type CreateRefundFn<T extends PaymentMethodArgs> = (
+export type CreateRefundFn<T extends ConfigArgs> = (
     input: RefundOrderInput,
     total: number,
     order: Order,
@@ -127,8 +160,7 @@ export type CreateRefundFn<T extends PaymentMethodArgs> = (
  *
  * @docsCategory payment
  */
-export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = PaymentMethodArgs>
-    extends ConfigurableOperationDefOptions<T> {
+export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
     /**
      * @description
      * This function provides the logic for creating a payment. For example,
@@ -167,8 +199,12 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  * third-party payment gateway before the Payment is created and can also define actions to fire
  * when the state of the payment is changed.
  *
+ * PaymentMethodHandlers are instantiated using a {@link PaymentMethodConfigOptions} object, which
+ * configures the business logic used to create, settle and refund payments.
+ *
  * @example
  * ```ts
+ * import { PaymentMethodHandler, CreatePaymentResult, SettlePaymentResult, LanguageCode } from '\@vendure/core';
  * // A mock 3rd-party payment SDK
  * import gripeSDK from 'gripe';
  *
@@ -181,7 +217,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *     args: {
  *         apiKey: { type: 'string' },
  *     },
- *     createPayment: async (order, args, metadata): Promise<PaymentConfig> => {
+ *     createPayment: async (order, args, metadata): Promise<CreatePaymentResult> => {
  *         try {
  *             const result = await gripeSDK.charges.create({
  *                 apiKey: args.apiKey,
@@ -190,21 +226,21 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *             });
  *             return {
  *                 amount: order.total,
- *                 state: 'Settled' as 'Settled',
+ *                 state: 'Settled' as const,
  *                 transactionId: result.id.toString(),
  *                 metadata: result.outcome,
  *             };
  *         } catch (err) {
  *             return {
  *                 amount: order.total,
- *                 state: 'Declined' as 'Declined',
+ *                 state: 'Declined' as const,
  *                 metadata: {
  *                     errorMessage: err.message,
  *                 },
  *             };
  *         }
  *     },
- *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> {
+ *     settlePayment: async (order, payment, args): Promise<SettlePaymentResult> => {
  *         return { success: true };
  *     }
  * });
@@ -212,9 +248,7 @@ export interface PaymentMethodConfigOptions<T extends PaymentMethodArgs = Paymen
  *
  * @docsCategory payment
  */
-export class PaymentMethodHandler<
-    T extends PaymentMethodArgs = PaymentMethodArgs
-> extends ConfigurableOperationDef<T> {
+export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends ConfigurableOperationDef<T> {
     private readonly createPaymentFn: CreatePaymentFn<T>;
     private readonly settlePaymentFn: SettlePaymentFn<T>;
     private readonly createRefundFn?: CreateRefundFn<T>;
@@ -236,7 +270,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async createPayment(order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
-        const paymentConfig = await this.createPaymentFn(order, argsArrayToHash(args), metadata);
+        const paymentConfig = await this.createPaymentFn(order, this.argsArrayToHash(args), metadata);
         return {
             method: this.code,
             ...paymentConfig,
@@ -250,7 +284,7 @@ export class PaymentMethodHandler<
      * @internal
      */
     async settlePayment(order: Order, payment: Payment, args: ConfigArg[]) {
-        return this.settlePaymentFn(order, payment, argsArrayToHash(args));
+        return this.settlePaymentFn(order, payment, this.argsArrayToHash(args));
     }
 
     /**
@@ -267,7 +301,7 @@ export class PaymentMethodHandler<
         args: ConfigArg[],
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(input, total, order, payment, argsArrayToHash(args))
+            ? this.createRefundFn(input, total, order, payment, this.argsArrayToHash(args))
             : false;
     }
 

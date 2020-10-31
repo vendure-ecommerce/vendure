@@ -1,14 +1,14 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { InjectConnection } from '@nestjs/typeorm';
 import {
     ListQueryBuilder,
     OnVendureBootstrap,
     PluginCommonModule,
+    TransactionalConnection,
     VendureEntity,
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
-import { Column, Connection, Entity } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 @Entity()
 export class TestEntity extends VendureEntity {
@@ -70,7 +70,7 @@ const adminApiExtensions = gql`
     },
 })
 export class ListQueryPlugin implements OnVendureBootstrap {
-    constructor(@InjectConnection() private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
 
     async onVendureBootstrap() {
         const count = await this.connection.getRepository(TestEntity).count();

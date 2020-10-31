@@ -42,11 +42,11 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
 
     const conflicts = fs
         .readdirSync(root)
-        .filter((file) => !validFiles.includes(file))
+        .filter(file => !validFiles.includes(file))
         // IntelliJ IDEA creates module files before CRA is launched
-        .filter((file) => !/\.iml$/.test(file))
+        .filter(file => !/\.iml$/.test(file))
         // Don't treat log files from previous installation as conflicts
-        .filter((file) => !errorLogFilePatterns.some((pattern) => file.indexOf(pattern) === 0));
+        .filter(file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0));
 
     if (conflicts.length > 0) {
         console.log(`The directory ${chalk.green(name)} contains files that could conflict:`);
@@ -62,8 +62,8 @@ export function isSafeToCreateProjectIn(root: string, name: string) {
 
     // Remove any remnant files from a previous installation
     const currentFiles = fs.readdirSync(path.join(root));
-    currentFiles.forEach((file) => {
-        errorLogFilePatterns.forEach((errorLogFilePattern) => {
+    currentFiles.forEach(file => {
+        errorLogFilePatterns.forEach(errorLogFilePattern => {
             // This will catch `(npm-debug|yarn-error|yarn-debug).log*` files
             if (file.indexOf(errorLogFilePattern) === 0) {
                 fs.removeSync(path.join(root, file));
@@ -121,7 +121,7 @@ export function checkThatNpmCanReadCwd() {
     // "; cwd = C:\path\to\current\dir" (unquoted)
     // I couldn't find an easier way to get it.
     const prefix = '; cwd = ';
-    const line = lines.find((l) => l.indexOf(prefix) === 0);
+    const line = lines.find(l => l.indexOf(prefix) === 0);
     if (typeof line !== 'string') {
         // Fail gracefully. They could remove it.
         return true;
@@ -207,7 +207,7 @@ export function installPackages(
         }
 
         const child = spawn(command, args, { stdio: logLevel === 'silent' ? 'ignore' : 'inherit' });
-        child.on('close', (code) => {
+        child.on('close', code => {
             if (code !== 0) {
                 let message = 'An error occurred when installing dependencies.';
                 if (logLevel === 'silent') {
@@ -252,11 +252,12 @@ export function getDependencies(
 function dbDriverPackage(dbType: DbType): string {
     switch (dbType) {
         case 'mysql':
+        case 'mariadb':
             return 'mysql';
         case 'postgres':
             return 'pg';
         case 'sqlite':
-            return 'sqlite3';
+            return 'better-sqlite3';
         case 'sqljs':
             return 'sql.js';
         case 'mssql':

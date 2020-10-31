@@ -1,12 +1,11 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { merge } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import { GetOrderList, SortOrder } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
+import { merge } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-order-list',
@@ -18,11 +17,12 @@ export class OrderListComponent extends BaseListComponent<GetOrderList.Query, Ge
     implements OnInit {
     searchTerm = new FormControl('');
     stateFilter = new FormControl('all');
+    orderStates$ = this.dataService.settings.getGlobalSettings().mapSingle(data => data.globalSettings.serverConfig.orderProcess.map(item => item.name));
 
     constructor(private dataService: DataService, router: Router, route: ActivatedRoute) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.order.getOrders(...args),
+            (...args: any[]) => this.dataService.order.getOrders(...args).refetchOnChannelChange(),
             data => data.orders,
             (skip, take) => {
                 const stateFilter = this.stateFilter.value;
@@ -49,10 +49,7 @@ export class OrderListComponent extends BaseListComponent<GetOrderList.Query, Ge
     ngOnInit() {
         super.ngOnInit();
         merge(this.searchTerm.valueChanges, this.stateFilter.valueChanges)
-            .pipe(
-                debounceTime(250),
-                takeUntil(this.destroy$),
-            )
+            .pipe(debounceTime(250), takeUntil(this.destroy$))
             .subscribe(() => this.refresh());
     }
 }

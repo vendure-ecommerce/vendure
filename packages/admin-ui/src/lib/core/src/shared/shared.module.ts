@@ -63,6 +63,7 @@ import { ModalDialogComponent } from './components/modal-dialog/modal-dialog.com
 import { ObjectTreeComponent } from './components/object-tree/object-tree.component';
 import { OrderStateLabelComponent } from './components/order-state-label/order-state-label.component';
 import { PaginationControlsComponent } from './components/pagination-controls/pagination-controls.component';
+import { ProductSelectorComponent } from './components/product-selector/product-selector.component';
 import { ExternalImageDialogComponent } from './components/rich-text-editor/external-image-dialog/external-image-dialog.component';
 import { LinkDialogComponent } from './components/rich-text-editor/link-dialog/link-dialog.component';
 import { RichTextEditorComponent } from './components/rich-text-editor/rich-text-editor.component';
@@ -75,6 +76,17 @@ import { DisabledDirective } from './directives/disabled.directive';
 import { IfDefaultChannelActiveDirective } from './directives/if-default-channel-active.directive';
 import { IfMultichannelDirective } from './directives/if-multichannel.directive';
 import { IfPermissionsDirective } from './directives/if-permissions.directive';
+import { BooleanFormInputComponent } from './dynamic-form-inputs/boolean-form-input/boolean-form-input.component';
+import { CurrencyFormInputComponent } from './dynamic-form-inputs/currency-form-input/currency-form-input.component';
+import { CustomerGroupFormInputComponent } from './dynamic-form-inputs/customer-group-form-input/customer-group-form-input.component';
+import { DateFormInputComponent } from './dynamic-form-inputs/date-form-input/date-form-input.component';
+import { DynamicFormInputComponent } from './dynamic-form-inputs/dynamic-form-input/dynamic-form-input.component';
+import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-form-input/facet-value-form-input.component';
+import { NumberFormInputComponent } from './dynamic-form-inputs/number-form-input/number-form-input.component';
+import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-input/password-form-input.component';
+import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
+import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
+import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
 import { CurrencyNamePipe } from './pipes/currency-name.pipe';
@@ -173,13 +185,27 @@ const DECLARATIONS = [
     TimelineEntryComponent,
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
+    ProductSelectorFormInputComponent,
     OrderStateI18nTokenPipe,
+    ProductSelectorComponent,
+];
+
+const DYNAMIC_FORM_INPUTS = [
+    TextFormInputComponent,
+    PasswordFormInputComponent,
+    NumberFormInputComponent,
+    DateFormInputComponent,
+    CurrencyFormInputComponent,
+    BooleanFormInputComponent,
+    SelectFormInputComponent,
+    FacetValueFormInputComponent,
+    DynamicFormInputComponent,
 ];
 
 @NgModule({
-    imports: IMPORTS,
-    exports: [...IMPORTS, ...DECLARATIONS],
-    declarations: DECLARATIONS,
+    imports: [IMPORTS],
+    exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS, CustomerGroupFormInputComponent],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which
