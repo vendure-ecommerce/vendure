@@ -1,153 +1,153 @@
 type Query {
-    "The active Channel"
-    activeChannel: Channel!
-    "The active Customer"
-    activeCustomer: Customer
-    """
-    The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
-    state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
-    query will once again return `null`.
-    """
-    activeOrder: Order
-    "An array of supported Countries"
-    availableCountries: [Country!]!
-    "A list of Collections available to the shop"
-    collections(options: CollectionListOptions): CollectionList!
-    "Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
-    collection(id: ID, slug: String): Collection
-    "Returns a list of eligible shipping methods based on the current active Order"
-    eligibleShippingMethods: [ShippingMethodQuote!]!
-    "Returns information about the current authenticated User"
-    me: CurrentUser
-    "Returns the possible next states that the activeOrder can transition to"
-    nextOrderStates: [String!]!
-    """
-    Returns an Order based on the id. Note that in the Shop API, only orders belonging to the
-    currently-authenticated User may be queried.
-    """
-    order(id: ID!): Order
-    """
-    Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)
-    this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation
-    screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing
-    general anonymous access to Order data.
-    """
-    orderByCode(code: String!): Order
-    "Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
-    product(id: ID, slug: String): Product
-    "Get a list of Products"
-    products(options: ProductListOptions): ProductList!
-    "Search Products based on the criteria set by the `SearchInput`"
-    search(input: SearchInput!): SearchResponse!
+  "The active Channel"
+  activeChannel: Channel!
+  "The active Customer"
+  activeCustomer: Customer
+  """
+  The active Order. Will be `null` until an Order is created via `addItemToOrder`. Once an Order reaches the
+  state of `PaymentApproved` or `PaymentSettled`, then that Order is no longer considered "active" and this
+  query will once again return `null`.
+  """
+  activeOrder: Order
+  "An array of supported Countries"
+  availableCountries: [Country!]!
+  "A list of Collections available to the shop"
+  collections(options: CollectionListOptions): CollectionList!
+  "Returns a Collection either by its id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
+  collection(id: ID, slug: String): Collection
+  "Returns a list of eligible shipping methods based on the current active Order"
+  eligibleShippingMethods: [ShippingMethodQuote!]!
+  "Returns information about the current authenticated User"
+  me: CurrentUser
+  "Returns the possible next states that the activeOrder can transition to"
+  nextOrderStates: [String!]!
+  """
+  Returns an Order based on the id. Note that in the Shop API, only orders belonging to the
+  currently-authenticated User may be queried.
+  """
+  order(id: ID!): Order
+  """
+  Returns an Order based on the order `code`. For guest Orders (i.e. Orders placed by non-authenticated Customers)
+  this query will only return the Order within 2 hours of the Order being placed. This allows an Order confirmation
+  screen to be shown immediately after completion of a guest checkout, yet prevents security risks of allowing
+  general anonymous access to Order data.
+  """
+  orderByCode(code: String!): Order
+  "Get a Product either by id or slug. If neither 'id' nor 'slug' is speicified, an error will result."
+  product(id: ID, slug: String): Product
+  "Get a list of Products"
+  products(options: ProductListOptions): ProductList!
+  "Search Products based on the criteria set by the `SearchInput`"
+  search(input: SearchInput!): SearchResponse!
 }
 
 type Mutation {
-    "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
-    addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
-    "Remove an OrderLine from the Order"
-    removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
-    "Remove all OrderLine from the Order"
-    removeAllOrderLines: RemoveOrderItemsResult!
-    "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
-    adjustOrderLine(orderLineId: ID!, quantity: Int): UpdateOrderItemsResult!
-    "Applies the given coupon code to the active Order"
-    applyCouponCode(couponCode: String!): ApplyCouponCodeResult!
-    "Removes the given coupon code from the active Order"
-    removeCouponCode(couponCode: String!): Order
-    "Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`"
-    transitionOrderToState(state: String!): TransitionOrderToStateResult
-    "Sets the shipping address for this order"
-    setOrderShippingAddress(input: CreateAddressInput!): Order
-    "Sets the billing address for this order"
-    setOrderBillingAddress(input: CreateAddressInput!): Order
-    "Allows any custom fields to be set for the active order"
-    setOrderCustomFields(input: UpdateOrderInput!): Order
-    "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
-    setOrderShippingMethod(shippingMethodId: ID!): SetOrderShippingMethodResult!
-    "Add a Payment to the Order"
-    addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult
-    "Set the Customer for the Order. Required only if the Customer is not currently logged in"
-    setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult
-    "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
-    login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
-    "Authenticates the user using a named authentication strategy"
-    authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
-    "End the current authenticated session"
-    logout: Success!
-    """
-    Register a Customer account with the given credentials. There are three possible registration flows:
+  "Adds an item to the order. If custom fields are defined on the OrderLine entity, a third argument 'customFields' will be available."
+  addItemToOrder(productVariantId: ID!, quantity: Int!): UpdateOrderItemsResult!
+  "Remove an OrderLine from the Order"
+  removeOrderLine(orderLineId: ID!): RemoveOrderItemsResult!
+  "Remove all OrderLine from the Order"
+  removeAllOrderLines: RemoveOrderItemsResult!
+  "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
+  adjustOrderLine(orderLineId: ID!, quantity: Int): UpdateOrderItemsResult!
+  "Applies the given coupon code to the active Order"
+  applyCouponCode(couponCode: String!): ApplyCouponCodeResult!
+  "Removes the given coupon code from the active Order"
+  removeCouponCode(couponCode: String!): Order
+  "Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`"
+  transitionOrderToState(state: String!): TransitionOrderToStateResult
+  "Sets the shipping address for this order"
+  setOrderShippingAddress(input: CreateAddressInput!): Order
+  "Sets the billing address for this order"
+  setOrderBillingAddress(input: CreateAddressInput!): Order
+  "Allows any custom fields to be set for the active order"
+  setOrderCustomFields(input: UpdateOrderInput!): Order
+  "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
+  setOrderShippingMethod(shippingMethodId: ID!): SetOrderShippingMethodResult!
+  "Add a Payment to the Order"
+  addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult
+  "Set the Customer for the Order. Required only if the Customer is not currently logged in"
+  setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult
+  "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
+  login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
+  "Authenticates the user using a named authentication strategy"
+  authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
+  "End the current authenticated session"
+  logout: Success!
+  """
+  Register a Customer account with the given credentials. There are three possible registration flows:
 
-    _If `authOptions.requireVerification` is set to `true`:_
+  _If `authOptions.requireVerification` is set to `true`:_
 
-    1. **The Customer is registered _with_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-       verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
-       verified and authenticated in one step.
-    2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
-       verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosed password of the Customer. The Customer is then
-       verified and authenticated in one step.
+  1. **The Customer is registered _with_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
+     verificationToken would then be passed to the `verifyCustomerAccount` mutation _without_ a password. The Customer is then
+     verified and authenticated in one step.
+  2. **The Customer is registered _without_ a password**. A verificationToken will be created (and typically emailed to the Customer). That
+     verificationToken would then be passed to the `verifyCustomerAccount` mutation _with_ the chosed password of the Customer. The Customer is then
+     verified and authenticated in one step.
 
-    _If `authOptions.requireVerification` is set to `false`:_
+  _If `authOptions.requireVerification` is set to `false`:_
 
-    3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
-    """
-    registerCustomerAccount(input: RegisterCustomerInput!): RegisterCustomerAccountResult!
-    "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
-    refreshCustomerVerification(emailAddress: String!): RefreshCustomerVerificationResult!
-    "Update an existing Customer"
-    updateCustomer(input: UpdateCustomerInput!): Customer!
-    "Create a new Customer Address"
-    createCustomerAddress(input: CreateAddressInput!): Address!
-    "Update an existing Address"
-    updateCustomerAddress(input: UpdateAddressInput!): Address!
-    "Delete an existing Address"
-    deleteCustomerAddress(id: ID!): Success!
-    """
-    Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
+  3. The Customer _must_ be registered _with_ a password. No further action is needed - the Customer is able to authenticate immediately.
+  """
+  registerCustomerAccount(input: RegisterCustomerInput!): RegisterCustomerAccountResult!
+  "Regenerate and send a verification token for a new Customer registration. Only applicable if `authOptions.requireVerification` is set to true."
+  refreshCustomerVerification(emailAddress: String!): RefreshCustomerVerificationResult!
+  "Update an existing Customer"
+  updateCustomer(input: UpdateCustomerInput!): Customer!
+  "Create a new Customer Address"
+  createCustomerAddress(input: CreateAddressInput!): Address!
+  "Update an existing Address"
+  updateCustomerAddress(input: UpdateAddressInput!): Address!
+  "Delete an existing Address"
+  deleteCustomerAddress(id: ID!): Success!
+  """
+  Verify a Customer email address with the token sent to that address. Only applicable if `authOptions.requireVerification` is set to true.
 
-    If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
-    provided here.
-    """
-    verifyCustomerAccount(token: String!, password: String): VerifyCustomerAccountResult!
-    "Update the password of the active Customer"
-    updateCustomerPassword(currentPassword: String!, newPassword: String!): UpdateCustomerPasswordResult!
-    """
-    Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
-    (as is the default), then the `identifierChangeToken` will be assigned to the current User and
-    a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email
-    that verification token to the Customer, which is then used to verify the change of email address.
-    """
-    requestUpdateCustomerEmailAddress(
-        password: String!
-        newEmailAddress: String!
-    ): RequestUpdateCustomerEmailAddressResult!
-    """
-    Confirm the update of the emailAddress with the provided token, which has been generated by the
-    `requestUpdateCustomerEmailAddress` mutation.
-    """
-    updateCustomerEmailAddress(token: String!): UpdateCustomerEmailAddressResult!
-    "Requests a password reset email to be sent"
-    requestPasswordReset(emailAddress: String!): RequestPasswordResetResult
-    "Resets a Customer's password based on the provided token"
-    resetPassword(token: String!, password: String!): ResetPasswordResult!
+  If the Customer was not registered with a password in the `registerCustomerAccount` mutation, the a password _must_ be
+  provided here.
+  """
+  verifyCustomerAccount(token: String!, password: String): VerifyCustomerAccountResult!
+  "Update the password of the active Customer"
+  updateCustomerPassword(currentPassword: String!, newPassword: String!): UpdateCustomerPasswordResult!
+  """
+  Request to update the emailAddress of the active Customer. If `authOptions.requireVerification` is enabled
+  (as is the default), then the `identifierChangeToken` will be assigned to the current User and
+  a IdentifierChangeRequestEvent will be raised. This can then be used e.g. by the EmailPlugin to email
+  that verification token to the Customer, which is then used to verify the change of email address.
+  """
+  requestUpdateCustomerEmailAddress(
+    password: String!
+    newEmailAddress: String!
+  ): RequestUpdateCustomerEmailAddressResult!
+  """
+  Confirm the update of the emailAddress with the provided token, which has been generated by the
+  `requestUpdateCustomerEmailAddress` mutation.
+  """
+  updateCustomerEmailAddress(token: String!): UpdateCustomerEmailAddressResult!
+  "Requests a password reset email to be sent"
+  requestPasswordReset(emailAddress: String!): RequestPasswordResetResult
+  "Resets a Customer's password based on the provided token"
+  resetPassword(token: String!, password: String!): ResetPasswordResult!
 }
 
 # Populated at run-time
 input AuthenticationInput
 
 input RegisterCustomerInput {
-    emailAddress: String!
-    title: String
-    firstName: String
-    lastName: String
-    phoneNumber: String
-    password: String
+  emailAddress: String!
+  title: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
+  password: String
 }
 
 input UpdateCustomerInput {
-    title: String
-    firstName: String
-    lastName: String
-    phoneNumber: String
+  title: String
+  firstName: String
+  lastName: String
+  phoneNumber: String
 }
 
 # Populated with any custom fields at run-time
@@ -157,16 +157,16 @@ input UpdateOrderInput
 Passed as input to the `addPaymentToOrder` mutation.
 """
 input PaymentInput {
-    """
-    This field should correspond to the `code` property of a PaymentMethodHandler.
-    """
-    method: String!
-    """
-    This field should contain arbitrary data passed to the specified PaymentMethodHandler's `createPayment()` method
-    as the "metadata" argument. For example, it could contain an ID for the payment and other
-    data generated by the payment provider.
-    """
-    metadata: JSON!
+  """
+  This field should correspond to the `code` property of a PaymentMethodHandler.
+  """
+  method: String!
+  """
+  This field should contain arbitrary data passed to the specified PaymentMethodHandler's `createPayment()` method
+  as the "metadata" argument. For example, it could contain an ID for the payment and other
+  data generated by the payment provider.
+  """
+  metadata: JSON!
 }
 
 # generated by generateListOptions function
@@ -180,88 +180,88 @@ input ProductListOptions
 
 "Returned when attempting to modify the contents of an Order that is not in the `AddingItems` state."
 type OrderModificationError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 "Retured when the maximum order size limit has been reached."
 type OrderLimitError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    maxItems: Int!
+  errorCode: ErrorCode!
+  message: String!
+  maxItems: Int!
 }
 
 "Retured when attemting to set a negative OrderLine quantity."
 type NegativeQuantityError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 "Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state."
 type OrderPaymentStateError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 "Returned when a Payment fails due to an error."
 type PaymentFailedError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    paymentErrorMessage: String!
+  errorCode: ErrorCode!
+  message: String!
+  paymentErrorMessage: String!
 }
 
 "Returned when a Payment is declined by the payment provider."
 type PaymentDeclinedError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    paymentErrorMessage: String!
+  errorCode: ErrorCode!
+  message: String!
+  paymentErrorMessage: String!
 }
 
 "Returned if the provided coupon code is invalid"
 type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
+  errorCode: ErrorCode!
+  message: String!
+  couponCode: String!
 }
 
 "Returned if the provided coupon code is invalid"
 type CouponCodeInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
+  errorCode: ErrorCode!
+  message: String!
+  couponCode: String!
 }
 
 "Returned if the provided coupon code is invalid"
 type CouponCodeExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
+  errorCode: ErrorCode!
+  message: String!
+  couponCode: String!
 }
 
 "Returned if the provided coupon code is invalid"
 type CouponCodeLimitError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    couponCode: String!
-    limit: Int!
+  errorCode: ErrorCode!
+  message: String!
+  couponCode: String!
+  limit: Int!
 }
 
 "Retured when attemting to set the Customer for an Order when already logged in."
 type AlreadyLoggedInError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 "Retured when attemting to register or verify a customer account without a password, when one is required."
 type MissingPasswordError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 "Retured when attemting to verify a customer account with a password, when a password has already been set."
 type PasswordAlreadySetError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -269,8 +269,8 @@ Retured if the verification token (used to verify a Customer's email address) is
 invalid or does not match any expected tokens.
 """
 type VerificationTokenInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -278,8 +278,8 @@ Returned if the verification token (used to verify a Customer's email address) i
 expired according to the `verificationTokenDuration` setting in the AuthOptions.
 """
 type VerificationTokenExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -287,8 +287,8 @@ Retured if the token used to change a Customer's email address is either
 invalid or does not match any expected tokens.
 """
 type IdentifierChangeTokenInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -296,8 +296,8 @@ Retured if the token used to change a Customer's email address is valid, but has
 expired according to the `verificationTokenDuration` setting in the AuthOptions.
 """
 type IdentifierChangeTokenExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -305,8 +305,8 @@ Retured if the token used to reset a Customer's password is either
 invalid or does not match any expected tokens.
 """
 type PasswordResetTokenInvalidError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -314,8 +314,8 @@ Retured if the token used to reset a Customer's password is valid, but has
 expired according to the `verificationTokenDuration` setting in the AuthOptions.
 """
 type PasswordResetTokenExpiredError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 """
@@ -323,8 +323,8 @@ Returned if `authOptions.requireVerification` is set to `true` (which is the def
 and an unverified user attempts to authenticate.
 """
 type NotVerifiedError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
+  errorCode: ErrorCode!
+  message: String!
 }
 
 union UpdateOrderItemsResult = Order | OrderModificationError | OrderLimitError | NegativeQuantityError
@@ -332,34 +332,42 @@ union RemoveOrderItemsResult = Order | OrderModificationError
 union SetOrderShippingMethodResult = Order | OrderModificationError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 union AddPaymentToOrderResult =
-      Order
-    | OrderPaymentStateError
-    | PaymentFailedError
-    | PaymentDeclinedError
-    | OrderStateTransitionError
+    Order
+  | OrderPaymentStateError
+  | PaymentFailedError
+  | PaymentDeclinedError
+  | OrderStateTransitionError
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError
 union RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
 union VerifyCustomerAccountResult =
-      CurrentUser
-    | VerificationTokenInvalidError
-    | VerificationTokenExpiredError
-    | MissingPasswordError
-    | PasswordAlreadySetError
-    | NativeAuthStrategyError
+    CurrentUser
+  | VerificationTokenInvalidError
+  | VerificationTokenExpiredError
+  | MissingPasswordError
+  | PasswordAlreadySetError
+  | NativeAuthStrategyError
 union UpdateCustomerPasswordResult = Success | InvalidCredentialsError | NativeAuthStrategyError
 union RequestUpdateCustomerEmailAddressResult =
-      Success
-    | InvalidCredentialsError
-    | EmailAddressConflictError
-    | NativeAuthStrategyError
+    Success
+  | InvalidCredentialsError
+  | EmailAddressConflictError
+  | NativeAuthStrategyError
 union UpdateCustomerEmailAddressResult =
-      Success
-    | IdentifierChangeTokenInvalidError
-    | IdentifierChangeTokenExpiredError
-    | NativeAuthStrategyError
+    Success
+  | IdentifierChangeTokenInvalidError
+  | IdentifierChangeTokenExpiredError
+  | NativeAuthStrategyError
 union RequestPasswordResetResult = Success | NativeAuthStrategyError
-union ResetPasswordResult = CurrentUser | PasswordResetTokenInvalidError | PasswordResetTokenExpiredError | NativeAuthStrategyError
-union NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError | NativeAuthStrategyError
+union ResetPasswordResult =
+    CurrentUser
+  | PasswordResetTokenInvalidError
+  | PasswordResetTokenExpiredError
+  | NativeAuthStrategyError
+union NativeAuthenticationResult =
+    CurrentUser
+  | InvalidCredentialsError
+  | NotVerifiedError
+  | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError

@@ -1,13 +1,13 @@
-mutation ($id: ID! $qty: Int!) {
-    addItemToOrder(productVariantId: $id quantity: $qty) {
+mutation($id: ID!, $qty: Int!) {
+  addItemToOrder(productVariantId: $id, quantity: $qty) {
+    id
+    code
+    lines {
+      id
+      quantity
+      productVariant {
         id
-        code
-        lines {
-            id
-            quantity
-            productVariant {
-                id
-            }
-        }
+      }
     }
+  }
 }

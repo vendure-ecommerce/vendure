@@ -1,7 +1,7 @@
 query GetEligibleShippingMethods {
-    eligibleShippingMethods {
-        id
-        description
-        price
-    }
+  eligibleShippingMethods {
+    id
+    description
+    price
+  }
 }

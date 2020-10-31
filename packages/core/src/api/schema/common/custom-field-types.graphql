@@ -1,95 +1,101 @@
 interface CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
+  name: String!
+  type: String!
+  list: Boolean!
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
 }
 
 type StringCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    length: Int
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    pattern: String
-    options: [StringFieldOption!]
+  name: String!
+  type: String!
+  list: Boolean!
+  length: Int
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
+  pattern: String
+  options: [StringFieldOption!]
 }
 
 type StringFieldOption {
-    value: String!
-    label: [LocalizedString!]
+  value: String!
+  label: [LocalizedString!]
 }
 
 type LocaleStringCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    length: Int
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    pattern: String
+  name: String!
+  type: String!
+  list: Boolean!
+  length: Int
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
+  pattern: String
 }
 type IntCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    min: Int
-    max: Int
-    step: Int
+  name: String!
+  type: String!
+  list: Boolean!
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
+  min: Int
+  max: Int
+  step: Int
 }
 type FloatCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    min: Float
-    max: Float
-    step: Float
+  name: String!
+  type: String!
+  list: Boolean!
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
+  min: Float
+  max: Float
+  step: Float
 }
 type BooleanCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
+  name: String!
+  type: String!
+  list: Boolean!
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
 }
 """
 Expects the same validation formats as the `<input type="datetime-local">` HTML element.
 See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local#Additional_attributes
 """
 type DateTimeCustomFieldConfig implements CustomField {
-    name: String!
-    type: String!
-    list: Boolean!
-    label: [LocalizedString!]
-    description: [LocalizedString!]
-    readonly: Boolean
-    internal: Boolean
-    min: String
-    max: String
-    step: Int
+  name: String!
+  type: String!
+  list: Boolean!
+  label: [LocalizedString!]
+  description: [LocalizedString!]
+  readonly: Boolean
+  internal: Boolean
+  min: String
+  max: String
+  step: Int
 }
 
 type LocalizedString {
-    languageCode: LanguageCode!
-    value: String!
+  languageCode: LanguageCode!
+  value: String!
 }
 
-union CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig
+union CustomFieldConfig =
+    StringCustomFieldConfig
+  | LocaleStringCustomFieldConfig
+  | IntCustomFieldConfig
+  | FloatCustomFieldConfig
+  | BooleanCustomFieldConfig
+  | DateTimeCustomFieldConfig

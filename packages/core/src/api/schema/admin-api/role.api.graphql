@@ -16,16 +16,16 @@ type Mutation {
 input RoleListOptions
 
 input CreateRoleInput {
-    code: String!
-    description: String!
-    permissions: [Permission!]!
-    channelIds: [ID!]
+  code: String!
+  description: String!
+  permissions: [Permission!]!
+  channelIds: [ID!]
 }
 
 input UpdateRoleInput {
-    id: ID!
-    code: String
-    description: String
-    permissions: [Permission!]
-    channelIds: [ID!]
+  id: ID!
+  code: String
+  description: String
+  permissions: [Permission!]
+  channelIds: [ID!]
 }

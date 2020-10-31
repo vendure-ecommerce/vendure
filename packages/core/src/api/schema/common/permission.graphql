@@ -1,4 +1,5 @@
-""""
+"""
+"
 @description
 Permissions for administrators and customers. Used to control access to
 GraphQL resolvers via the {@link Allow} decorator.
@@ -6,42 +7,42 @@ GraphQL resolvers via the {@link Allow} decorator.
 @docsCategory common
 """
 enum Permission {
-    " The Authenticated role means simply that the user is logged in "
-    Authenticated
-    " SuperAdmin can perform the most sensitive tasks"
-    SuperAdmin
-    " Owner means the user owns this entity, e.g. a Customer's own Order"
-    Owner
-    " Public means any unauthenticated user may perform the operation "
-    Public
+  " The Authenticated role means simply that the user is logged in "
+  Authenticated
+  " SuperAdmin can perform the most sensitive tasks"
+  SuperAdmin
+  " Owner means the user owns this entity, e.g. a Customer's own Order"
+  Owner
+  " Public means any unauthenticated user may perform the operation "
+  Public
 
-    CreateCatalog
-    ReadCatalog
-    UpdateCatalog
-    DeleteCatalog
+  CreateCatalog
+  ReadCatalog
+  UpdateCatalog
+  DeleteCatalog
 
-    CreateCustomer
-    ReadCustomer
-    UpdateCustomer
-    DeleteCustomer
+  CreateCustomer
+  ReadCustomer
+  UpdateCustomer
+  DeleteCustomer
 
-    CreateAdministrator
-    ReadAdministrator
-    UpdateAdministrator
-    DeleteAdministrator
+  CreateAdministrator
+  ReadAdministrator
+  UpdateAdministrator
+  DeleteAdministrator
 
-    CreateOrder
-    ReadOrder
-    UpdateOrder
-    DeleteOrder
+  CreateOrder
+  ReadOrder
+  UpdateOrder
+  DeleteOrder
 
-    CreatePromotion
-    ReadPromotion
-    UpdatePromotion
-    DeletePromotion
+  CreatePromotion
+  ReadPromotion
+  UpdatePromotion
+  DeletePromotion
 
-    CreateSettings
-    ReadSettings
-    UpdateSettings
-    DeleteSettings
+  CreateSettings
+  ReadSettings
+  UpdateSettings
+  DeleteSettings
 }

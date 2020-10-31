@@ -1,22 +1,12 @@
 {
-  "extends": [
-    "../../tslint.json"
-  ],
-  "rulesDirectory": [
-    "./node_modules/codelyzer"
-  ],
+  "extends": ["../../tslint.json"],
+  "rulesDirectory": ["./node_modules/codelyzer"],
   "rules": {
     "deprecation": {
       "severity": "warn"
     },
-    "import-blacklist": [
-      true,
-      "rxjs/Rx"
-    ],
-    "indent": [
-      true,
-      "spaces"
-    ],
+    "import-blacklist": [true, "rxjs/Rx"],
+    "indent": [true, "spaces"],
     "no-string-literal": false,
     "no-output-on-prefix": true,
     "use-input-property-decorator": true,

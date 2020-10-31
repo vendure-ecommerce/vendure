@@ -3,7 +3,5 @@
   "compilerOptions": {
     "outDir": "./lib"
   },
-  "files": [
-    "./index.ts"
-  ]
+  "files": ["./index.ts"]
 }

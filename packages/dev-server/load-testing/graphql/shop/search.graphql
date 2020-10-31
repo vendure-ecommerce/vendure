@@ -1,8 +1,5 @@
 query {
-  search(input: {
-    take: 20
-    groupByProduct: true
-  }) {
+  search(input: { take: 20, groupByProduct: true }) {
     items {
       productId
       productVariantId

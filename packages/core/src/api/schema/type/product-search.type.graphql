@@ -1,11 +1,11 @@
 type SearchReindexResponse {
-    success: Boolean!
+  success: Boolean!
 }
 
 type SearchResponse {
-    items: [SearchResult!]!
-    totalItems: Int!
-    facetValues: [FacetValueResult!]!
+  items: [SearchResult!]!
+  totalItems: Int!
+  facetValues: [FacetValueResult!]!
 }
 
 """
@@ -13,37 +13,37 @@ Which FacetValues are present in the products returned
 by the search, and in what quantity.
 """
 type FacetValueResult {
-    facetValue: FacetValue!
-    count: Int!
+  facetValue: FacetValue!
+  count: Int!
 }
 
 type SearchResultAsset {
-    id: ID!
-    preview: String!
-    focalPoint: Coordinate
+  id: ID!
+  preview: String!
+  focalPoint: Coordinate
 }
 
 type SearchResult {
-    sku: String!
-    slug: String!
-    productId: ID!
-    productName: String!
-    productPreview: String! @deprecated(reason: "Use `productAsset.preview` instead")
-    productAsset: SearchResultAsset
-    productVariantId: ID!
-    productVariantName: String!
-    productVariantPreview: String! @deprecated(reason: "Use `productVariantAsset.preview` instead")
-    productVariantAsset: SearchResultAsset
-    price: SearchResultPrice!
-    priceWithTax: SearchResultPrice!
-    currencyCode: CurrencyCode!
-    description: String!
-    facetIds: [ID!]!
-    facetValueIds: [ID!]!
-    "An array of ids of the Collections in which this result appears"
-    collectionIds: [ID!]!
-    "A relevence score for the result. Differs between database implementations"
-    score: Float!
+  sku: String!
+  slug: String!
+  productId: ID!
+  productName: String!
+  productPreview: String! @deprecated(reason: "Use `productAsset.preview` instead")
+  productAsset: SearchResultAsset
+  productVariantId: ID!
+  productVariantName: String!
+  productVariantPreview: String! @deprecated(reason: "Use `productVariantAsset.preview` instead")
+  productVariantAsset: SearchResultAsset
+  price: SearchResultPrice!
+  priceWithTax: SearchResultPrice!
+  currencyCode: CurrencyCode!
+  description: String!
+  facetIds: [ID!]!
+  facetValueIds: [ID!]!
+  "An array of ids of the Collections in which this result appears"
+  collectionIds: [ID!]!
+  "A relevence score for the result. Differs between database implementations"
+  score: Float!
 }
 
 "The price of a search result product, either as a range or as a single price"
@@ -51,11 +51,11 @@ union SearchResultPrice = PriceRange | SinglePrice
 
 "The price value where the result has a single price"
 type SinglePrice {
-    value: Int!
+  value: Int!
 }
 
 "The price range where the result has more than one price"
 type PriceRange {
-    min: Int!
-    max: Int!
+  min: Int!
+  max: Int!
 }

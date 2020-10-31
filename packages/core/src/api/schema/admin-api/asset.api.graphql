@@ -1,26 +1,26 @@
 type Query {
-    "Get a list of Assets"
-    assets(options: AssetListOptions): AssetList!
-    "Get a single Asset by id"
-    asset(id: ID!): Asset
+  "Get a list of Assets"
+  assets(options: AssetListOptions): AssetList!
+  "Get a single Asset by id"
+  asset(id: ID!): Asset
 }
 
 type Mutation {
-    "Create a new Asset"
-    createAssets(input: [CreateAssetInput!]!): [CreateAssetResult!]!
-    "Update an existing Asset"
-    updateAsset(input: UpdateAssetInput!): Asset!
-    "Delete an Asset"
-    deleteAsset(id: ID!, force: Boolean): DeletionResponse!
-    "Delete multiple Assets"
-    deleteAssets(ids: [ID!]!, force: Boolean): DeletionResponse!
+  "Create a new Asset"
+  createAssets(input: [CreateAssetInput!]!): [CreateAssetResult!]!
+  "Update an existing Asset"
+  updateAsset(input: UpdateAssetInput!): Asset!
+  "Delete an Asset"
+  deleteAsset(id: ID!, force: Boolean): DeletionResponse!
+  "Delete multiple Assets"
+  deleteAssets(ids: [ID!]!, force: Boolean): DeletionResponse!
 }
 
 type MimeTypeError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    fileName: String!
-    mimeType: String!
+  errorCode: ErrorCode!
+  message: String!
+  fileName: String!
+  mimeType: String!
 }
 
 union CreateAssetResult = Asset | MimeTypeError
@@ -29,16 +29,16 @@ union CreateAssetResult = Asset | MimeTypeError
 input AssetListOptions
 
 input CreateAssetInput {
-    file: Upload!
+  file: Upload!
 }
 
 input CoordinateInput {
-    x: Float!
-    y: Float!
+  x: Float!
+  y: Float!
 }
 
 input UpdateAssetInput {
-    id: ID!
-    name: String
-    focalPoint: CoordinateInput
+  id: ID!
+  name: String
+  focalPoint: CoordinateInput
 }

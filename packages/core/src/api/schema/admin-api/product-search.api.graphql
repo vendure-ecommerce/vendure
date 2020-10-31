@@ -1,13 +1,13 @@
 type Query {
-    search(input: SearchInput!): SearchResponse!
+  search(input: SearchInput!): SearchResponse!
 }
 
 type Mutation {
-    reindex: Job!
+  reindex: Job!
 }
 
 type SearchResult {
-    enabled: Boolean!
-    "An array of ids of the Collections in which this result appears"
-    channelIds: [ID!]!
+  enabled: Boolean!
+  "An array of ids of the Collections in which this result appears"
+  channelIds: [ID!]!
 }
