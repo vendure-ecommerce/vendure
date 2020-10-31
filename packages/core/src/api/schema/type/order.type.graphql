@@ -1,127 +1,127 @@
 type Order implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    "A unique code for the Order"
-    code: String!
-    state: String!
-    "An order is active as long as the payment process has not been completed"
-    active: Boolean!
-    customer: Customer
-    shippingAddress: OrderAddress
-    billingAddress: OrderAddress
-    lines: [OrderLine!]!
-    "Order-level adjustments to the order total, such as discounts from promotions"
-    adjustments: [Adjustment!]!
-    couponCodes: [String!]!
-    "Promotions applied to the order. Only gets populated after the payment process has completed."
-    promotions: [Promotion!]!
-    payments: [Payment!]
-    fulfillments: [Fulfillment!]
-    totalQuantity: Int!
-    subTotalBeforeTax: Int!
-    "The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied."
-    subTotal: Int!
-    currencyCode: CurrencyCode!
-    shipping: Int!
-    shippingWithTax: Int!
-    shippingMethod: ShippingMethod
-    totalBeforeTax: Int!
-    total: Int!
-    history(options: HistoryEntryListOptions): HistoryEntryList!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  "A unique code for the Order"
+  code: String!
+  state: String!
+  "An order is active as long as the payment process has not been completed"
+  active: Boolean!
+  customer: Customer
+  shippingAddress: OrderAddress
+  billingAddress: OrderAddress
+  lines: [OrderLine!]!
+  "Order-level adjustments to the order total, such as discounts from promotions"
+  adjustments: [Adjustment!]!
+  couponCodes: [String!]!
+  "Promotions applied to the order. Only gets populated after the payment process has completed."
+  promotions: [Promotion!]!
+  payments: [Payment!]
+  fulfillments: [Fulfillment!]
+  totalQuantity: Int!
+  subTotalBeforeTax: Int!
+  "The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied."
+  subTotal: Int!
+  currencyCode: CurrencyCode!
+  shipping: Int!
+  shippingWithTax: Int!
+  shippingMethod: ShippingMethod
+  totalBeforeTax: Int!
+  total: Int!
+  history(options: HistoryEntryListOptions): HistoryEntryList!
 }
 
 type OrderAddress {
-    fullName: String
-    company: String
-    streetLine1: String
-    streetLine2: String
-    city: String
-    province: String
-    postalCode: String
-    country: String
-    countryCode: String
-    phoneNumber: String
+  fullName: String
+  company: String
+  streetLine1: String
+  streetLine2: String
+  city: String
+  province: String
+  postalCode: String
+  country: String
+  countryCode: String
+  phoneNumber: String
 }
 
 type OrderList implements PaginatedList {
-    items: [Order!]!
-    totalItems: Int!
+  items: [Order!]!
+  totalItems: Int!
 }
 
 type ShippingMethodQuote {
-    id: ID!
-    price: Int!
-    priceWithTax: Int!
-    description: String!
-    metadata: JSON
+  id: ID!
+  price: Int!
+  priceWithTax: Int!
+  description: String!
+  metadata: JSON
 }
 
 type OrderItem implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    cancelled: Boolean!
-    unitPrice: Int!
-    unitPriceWithTax: Int!
-    unitPriceIncludesTax: Boolean!
-    taxRate: Float!
-    adjustments: [Adjustment!]!
-    fulfillment: Fulfillment
-    refundId: ID
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  cancelled: Boolean!
+  unitPrice: Int!
+  unitPriceWithTax: Int!
+  unitPriceIncludesTax: Boolean!
+  taxRate: Float!
+  adjustments: [Adjustment!]!
+  fulfillment: Fulfillment
+  refundId: ID
 }
 
 type OrderLine implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    featuredAsset: Asset
-    unitPrice: Int!
-    unitPriceWithTax: Int!
-    quantity: Int!
-    items: [OrderItem!]!
-    totalPrice: Int!
-    adjustments: [Adjustment!]!
-    order: Order!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  featuredAsset: Asset
+  unitPrice: Int!
+  unitPriceWithTax: Int!
+  quantity: Int!
+  items: [OrderItem!]!
+  totalPrice: Int!
+  adjustments: [Adjustment!]!
+  order: Order!
 }
 
 type Payment implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    method: String!
-    amount: Int!
-    state: String!
-    transactionId: String
-    errorMessage: String
-    refunds: [Refund!]!
-    metadata: JSON
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  method: String!
+  amount: Int!
+  state: String!
+  transactionId: String
+  errorMessage: String
+  refunds: [Refund!]!
+  metadata: JSON
 }
 
 type Refund implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    items: Int!
-    shipping: Int!
-    adjustment: Int!
-    total: Int!
-    method: String
-    state: String!
-    transactionId: String
-    reason: String
-    orderItems: [OrderItem!]!
-    paymentId: ID!
-    metadata: JSON
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  items: Int!
+  shipping: Int!
+  adjustment: Int!
+  total: Int!
+  method: String
+  state: String!
+  transactionId: String
+  reason: String
+  orderItems: [OrderItem!]!
+  paymentId: ID!
+  metadata: JSON
 }
 
 type Fulfillment implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    orderItems: [OrderItem!]!
-    state: String!
-    method: String!
-    trackingCode: String
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  orderItems: [OrderItem!]!
+  state: String!
+  method: String!
+  trackingCode: String
 }

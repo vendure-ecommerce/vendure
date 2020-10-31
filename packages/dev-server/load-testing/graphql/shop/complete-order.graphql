@@ -1,15 +1,12 @@
 mutation SetShippingMethod($id: ID!) {
-    setOrderShippingMethod(shippingMethodId: $id) {
-        code
-    }
-    transitionOrderToState(state: "ArrangingPayment") {
-        code
-    }
-    addPaymentToOrder(input: {
-        method: "example-payment-provider",
-        metadata: {}
-    }) {
-        code
-        state
-    }
+  setOrderShippingMethod(shippingMethodId: $id) {
+    code
+  }
+  transitionOrderToState(state: "ArrangingPayment") {
+    code
+  }
+  addPaymentToOrder(input: { method: "example-payment-provider", metadata: {} }) {
+    code
+    state
+  }
 }

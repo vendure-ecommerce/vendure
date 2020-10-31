@@ -13,9 +13,9 @@ The UI is powered by the [Clarity Design System](https://vmware.github.io/clarit
 The Admin UI is structured as an Angular library conforming to the [ng-packagr format](https://github.com/ng-packagr/ng-packagr). This library is what is published to npm as `@vendure/admin-ui`. The libary consists
 of a set of modules which are accessible from consuming applications as sub-packages:
 
-* `@vendure/admin-ui/core`
-* `@vendure/admin-ui/catalog`
-* `@vendure/admin-ui/orders`
+- `@vendure/admin-ui/core`
+- `@vendure/admin-ui/catalog`
+- `@vendure/admin-ui/orders`
 
 etc. These library packages are located at [./src/lib](./src/lib)
 
@@ -30,9 +30,11 @@ In addition to the library, there is also a full application located at [./src/a
 Localization of UI strings is handled by [ngx-translate](http://www.ngx-translate.com/). The translation strings should use the [ICU MessageFormat](http://userguide.icu-project.org/formatparse/messages).
 
 Translation keys are automatically extracted by running:
+
 ```
 yarn extract-translations
 ```
+
 This scan the source files for any translation keys, and add them to each of the translation files located in [`./src/lib/static/i18n-messages/`](./src/lib/static/i18n-messages/).
 
 A report is generated for each language detailing what percentage of the translation tokens are translated into that language:
@@ -45,5 +47,3 @@ de: 592 of 650 tokens translated (91%)
 This report data is also saved to the [i18n-coverage.json](./i18n-coverage.json) file.
 
 To add support for a new language, create a new empty json file (`{}`) in the `i18n-messages` directory named `<languageCode>.json`, where `languageCode` is one of the supported codes as given in the [LanguageCode enum type](../core/src/api/schema/common/language-code.graphql), then run `yarn extract-translations`
-
-

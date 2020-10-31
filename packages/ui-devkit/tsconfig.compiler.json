@@ -12,15 +12,8 @@
     "strict": true,
     "target": "esnext",
     "skipLibCheck": true,
-    "lib": [
-      "es2017"
-    ]
+    "lib": ["es2017"]
   },
-  "files": [
-    "src/compiler/index.ts"
-  ],
-  "exclude": [
-    "src/**/*"
-  ]
+  "files": ["src/compiler/index.ts"],
+  "exclude": ["src/**/*"]
 }
-

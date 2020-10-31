@@ -1,46 +1,46 @@
 type Query {
-    channels: [Channel!]!
-    channel(id: ID!): Channel
-    activeChannel: Channel!
+  channels: [Channel!]!
+  channel(id: ID!): Channel
+  activeChannel: Channel!
 }
 
 type Mutation {
-    "Create a new Channel"
-    createChannel(input: CreateChannelInput!): CreateChannelResult!
+  "Create a new Channel"
+  createChannel(input: CreateChannelInput!): CreateChannelResult!
 
-    "Update an existing Channel"
-    updateChannel(input: UpdateChannelInput!): UpdateChannelResult!
+  "Update an existing Channel"
+  updateChannel(input: UpdateChannelInput!): UpdateChannelResult!
 
-    "Delete a Channel"
-    deleteChannel(id: ID!): DeletionResponse!
+  "Delete a Channel"
+  deleteChannel(id: ID!): DeletionResponse!
 }
 
 input CreateChannelInput {
-    code: String!
-    token: String!
-    defaultLanguageCode: LanguageCode!
-    pricesIncludeTax: Boolean!
-    currencyCode: CurrencyCode!
-    defaultTaxZoneId: ID!
-    defaultShippingZoneId: ID!
+  code: String!
+  token: String!
+  defaultLanguageCode: LanguageCode!
+  pricesIncludeTax: Boolean!
+  currencyCode: CurrencyCode!
+  defaultTaxZoneId: ID!
+  defaultShippingZoneId: ID!
 }
 
 input UpdateChannelInput {
-    id: ID!
-    code: String
-    token: String
-    defaultLanguageCode: LanguageCode
-    pricesIncludeTax: Boolean
-    currencyCode: CurrencyCode
-    defaultTaxZoneId: ID
-    defaultShippingZoneId: ID
+  id: ID!
+  code: String
+  token: String
+  defaultLanguageCode: LanguageCode
+  pricesIncludeTax: Boolean
+  currencyCode: CurrencyCode
+  defaultTaxZoneId: ID
+  defaultShippingZoneId: ID
 }
 
 "Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings"
 type LanguageNotAvailableError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    languageCode: String!
+  errorCode: ErrorCode!
+  message: String!
+  languageCode: String!
 }
 
 union CreateChannelResult = Channel | LanguageNotAvailableError

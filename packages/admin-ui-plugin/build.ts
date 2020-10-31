@@ -10,16 +10,16 @@ fs.remove(compiledUiDir);
 
 const adminUiDir = path.join(__dirname, '../admin-ui');
 const buildProcess = spawn('yarn', [`--cwd ${adminUiDir}`, 'run', 'build:app'], {
-    cwd: adminUiDir,
-    shell: true,
-    stdio: 'inherit',
+  cwd: adminUiDir,
+  shell: true,
+  stdio: 'inherit',
 });
 
-buildProcess.on('close', (code) => {
-    if (code === 0) {
-        fs.copySync(path.join(__dirname, '../admin-ui/dist'), compiledUiDir);
-    } else {
-        console.log('Could not build!');
-        process.exitCode = 1;
-    }
+buildProcess.on('close', code => {
+  if (code === 0) {
+    fs.copySync(path.join(__dirname, '../admin-ui/dist'), compiledUiDir);
+  } else {
+    console.log('Could not build!');
+    process.exitCode = 1;
+  }
 });

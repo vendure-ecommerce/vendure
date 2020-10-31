@@ -1,46 +1,46 @@
 type Query {
-    networkStatus: NetworkStatus!
-    userStatus: UserStatus!
-    uiState: UiState!
+  networkStatus: NetworkStatus!
+  userStatus: UserStatus!
+  uiState: UiState!
 }
 
 type Mutation {
-    requestStarted: Int!
-    requestCompleted: Int!
-    setAsLoggedIn(input: UserStatusInput!): UserStatus!
-    setAsLoggedOut: UserStatus!
-    setUiLanguage(languageCode: LanguageCode): LanguageCode
-    setActiveChannel(channelId: ID!): UserStatus!
-    updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
+  requestStarted: Int!
+  requestCompleted: Int!
+  setAsLoggedIn(input: UserStatusInput!): UserStatus!
+  setAsLoggedOut: UserStatus!
+  setUiLanguage(languageCode: LanguageCode): LanguageCode
+  setActiveChannel(channelId: ID!): UserStatus!
+  updateUserChannels(channels: [CurrentUserChannelInput!]!): UserStatus!
 }
 
 type NetworkStatus {
-    inFlightRequests: Int!
+  inFlightRequests: Int!
 }
 
 type UserStatus {
-    username: String!
-    isLoggedIn: Boolean!
-    loginTime: String!
-    permissions: [Permission!]!
-    activeChannelId: ID
-    channels: [CurrentUserChannel!]!
+  username: String!
+  isLoggedIn: Boolean!
+  loginTime: String!
+  permissions: [Permission!]!
+  activeChannelId: ID
+  channels: [CurrentUserChannel!]!
 }
 
 type UiState {
-    language: LanguageCode!
+  language: LanguageCode!
 }
 
 input CurrentUserChannelInput {
-    id: ID!
-    token: String!
-    code: String!
-    permissions: [Permission!]!
+  id: ID!
+  token: String!
+  code: String!
+  permissions: [Permission!]!
 }
 
 input UserStatusInput {
-    username: String!
-    loginTime: String!
-    activeChannelId: ID!
-    channels: [CurrentUserChannelInput!]!
+  username: String!
+  loginTime: String!
+  activeChannelId: ID!
+  channels: [CurrentUserChannelInput!]!
 }

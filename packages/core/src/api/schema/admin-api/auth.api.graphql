@@ -1,13 +1,13 @@
 type Query {
-    me: CurrentUser
+  me: CurrentUser
 }
 
 type Mutation {
-    "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
-    login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
-    "Authenticates the user using a named authentication strategy"
-    authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
-    logout: Success!
+  "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
+  login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
+  "Authenticates the user using a named authentication strategy"
+  authenticate(input: AuthenticationInput!, rememberMe: Boolean): AuthenticationResult!
+  logout: Success!
 }
 
 # Populated at run-time

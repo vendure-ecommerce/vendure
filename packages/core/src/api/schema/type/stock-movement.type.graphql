@@ -1,61 +1,61 @@
 enum StockMovementType {
-    ADJUSTMENT
-    SALE
-    CANCELLATION
-    RETURN
+  ADJUSTMENT
+  SALE
+  CANCELLATION
+  RETURN
 }
 
 interface StockMovement {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    type: StockMovementType!
-    quantity: Int!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  type: StockMovementType!
+  quantity: Int!
 }
 
 type StockAdjustment implements Node & StockMovement {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    type: StockMovementType!
-    quantity: Int!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  type: StockMovementType!
+  quantity: Int!
 }
 
 type Sale implements Node & StockMovement {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    type: StockMovementType!
-    quantity: Int!
-    orderLine: OrderLine!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  type: StockMovementType!
+  quantity: Int!
+  orderLine: OrderLine!
 }
 
 type Cancellation implements Node & StockMovement {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    type: StockMovementType!
-    quantity: Int!
-    orderLine: OrderLine!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  type: StockMovementType!
+  quantity: Int!
+  orderLine: OrderLine!
 }
 
 type Return implements Node & StockMovement {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    productVariant: ProductVariant!
-    type: StockMovementType!
-    quantity: Int!
-    orderItem: OrderItem!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  productVariant: ProductVariant!
+  type: StockMovementType!
+  quantity: Int!
+  orderItem: OrderItem!
 }
 
 union StockMovementItem = StockAdjustment | Sale | Cancellation | Return
 
 type StockMovementList {
-    items: [StockMovementItem!]!
-    totalItems: Int!
+  items: [StockMovementItem!]!
+  totalItems: Int!
 }

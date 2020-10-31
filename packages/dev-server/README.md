@@ -32,9 +32,9 @@ Load testing is done with [k6](https://docs.k6.io/), and to run them you will ne
 
 The load tests assume the existence of the following tables in the MySQL database:
 
-* `vendure-load-testing-1000`
-* `vendure-load-testing-10000`
-* `vendure-load-testing-100000`
+- `vendure-load-testing-1000`
+- `vendure-load-testing-10000`
+- `vendure-load-testing-100000`
 
 The npm scripts `load-test:1k`, `load-test:10k` and `load-test:100k` will populate their respective databases with test data and then run the k6 scripts against them.
 
@@ -50,7 +50,7 @@ yarn load-test:1k deep-query.js
 
 The results of the test are saved to the [`./load-testing/results`](./load-testing/results) directory. Each test run creates two files:
 
-* `load-test-<date>-<product-count>.json` Contains a summary of all load tests run
-* `load-test-<date>-<product-count>-<script-name>.csv` Contains time-series data which can be used to create charts
+- `load-test-<date>-<product-count>.json` Contains a summary of all load tests run
+- `load-test-<date>-<product-count>-<script-name>.csv` Contains time-series data which can be used to create charts
 
 Historical benchmark results with charts can be found in [this Google Sheet](https://docs.google.com/spreadsheets/d/1UaNhmokbNmKDehrnh4m9XO6-DJte-AI-l_Lnji47Qn8/edit?usp=sharing)

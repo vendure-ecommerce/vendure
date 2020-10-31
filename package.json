@@ -8,7 +8,7 @@
   "scripts": {
     "watch": "lerna run watch --parallel",
     "lint": "yarn tslint --fix",
-    "format": "prettier --write --html-whitespace-sensitivity ignore",
+    "format": "prettier --write ./packages/**/*{.md,.js,.json,.graphql,.ts}",
     "bootstrap": "lerna bootstrap",
     "docs:watch": "concurrently --restart-tries 5 -n docgen,hugo,webpack -c green,blue,cyan \"yarn generate-graphql-docs && yarn generate-typescript-docs -w\" \"cd docs && hugo server\" \"cd docs && yarn webpack -w\"",
     "docs:build": "yarn generate-graphql-docs && yarn generate-typescript-docs && cd docs && yarn webpack --prod && node build.js && hugo",

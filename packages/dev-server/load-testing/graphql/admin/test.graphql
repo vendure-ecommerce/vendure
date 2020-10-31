@@ -1,10 +1,10 @@
 query {
-    activeChannel {
-        code
+  activeChannel {
+    code
+  }
+  administrators {
+    items {
+      createdAt
     }
-    administrators {
-        items {
-            createdAt
-        }
-    }
+  }
 }

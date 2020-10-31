@@ -16,20 +16,20 @@ type Mutation {
 input TaxRateListOptions
 
 input CreateTaxRateInput {
-    name: String!
-    enabled: Boolean!
-    value: Float!
-    categoryId: ID!
-    zoneId: ID!
-    customerGroupId: ID
+  name: String!
+  enabled: Boolean!
+  value: Float!
+  categoryId: ID!
+  zoneId: ID!
+  customerGroupId: ID
 }
 
 input UpdateTaxRateInput {
-    id: ID!
-    name: String
-    value: Float
-    enabled: Boolean
-    categoryId: ID
-    zoneId: ID
-    customerGroupId: ID
+  id: ID!
+  name: String
+  value: Float
+  enabled: Boolean
+  categoryId: ID
+  zoneId: ID
+  customerGroupId: ID
 }
