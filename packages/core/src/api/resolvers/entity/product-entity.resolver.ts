@@ -87,7 +87,6 @@ export class ProductEntityResolver {
 
   @ResolveField()
   async owner(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<User> {
-    console.log(product.ownerId);
     const owner = await this.userService.getBareUserById(ctx, product.ownerId);
     if (!owner) throw new EntityNotFoundError('User', product.ownerId);
     return owner;
