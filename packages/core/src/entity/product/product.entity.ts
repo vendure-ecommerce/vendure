@@ -1,5 +1,5 @@
-import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 
 import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
@@ -25,50 +25,54 @@ import { ProductTranslation } from './product-translation.entity';
  */
 @Entity()
 export class Product
-    extends VendureEntity
-    implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {
-    constructor(input?: DeepPartial<Product>) {
-        super(input);
-    }
+  extends VendureEntity
+  implements Translatable, HasCustomFields, ChannelAware, SoftDeletable {
+  constructor(input?: DeepPartial<Product>) {
+    super(input);
+  }
 
-    @Column({ type: Date, nullable: true })
-    deletedAt: Date | null;
+  @Column({ type: Date, nullable: true })
+  deletedAt: Date | null;
 
-    name: LocaleString;
+  name: LocaleString;
 
-    slug: LocaleString;
+  slug: LocaleString;
 
-    description: LocaleString;
+  description: LocaleString;
 
-    @Column({ default: true })
-    enabled: boolean;
+  @Column({ default: true })
+  enabled: boolean;
 
-    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
-    featuredAsset: Asset;
+  @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
+  featuredAsset: Asset;
 
-    @OneToMany(type => ProductAsset, productAsset => productAsset.product)
-    assets: ProductAsset[];
+  @OneToMany(type => ProductAsset, productAsset => productAsset.product)
+  assets: ProductAsset[];
 
-    @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
-    translations: Array<Translation<Product>>;
+  @OneToMany(type => ProductTranslation, translation => translation.base, { eager: true })
+  translations: Array<Translation<Product>>;
 
-    @OneToMany(type => ProductVariant, variant => variant.product)
-    variants: ProductVariant[];
+  @OneToMany(type => ProductVariant, variant => variant.product)
+  variants: ProductVariant[];
 
-    @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
-    optionGroups: ProductOptionGroup[];
+  @OneToMany(type => ProductOptionGroup, optionGroup => optionGroup.product)
+  optionGroups: ProductOptionGroup[];
 
-    @ManyToMany(type => FacetValue)
-    @JoinTable()
-    facetValues: FacetValue[];
+  @ManyToMany(type => FacetValue)
+  @JoinTable()
+  facetValues: FacetValue[];
 
-    @Column(type => CustomProductFields)
-    customFields: CustomProductFields;
+  @Column(type => CustomProductFields)
+  customFields: CustomProductFields;
 
-    @ManyToMany(type => Channel)
-    @JoinTable()
-    channels: Channel[];
+  @ManyToMany(type => Channel)
+  @JoinTable()
+  channels: Channel[];
 
-    @ManyToOne(type => User, user => user.products)
-    owner: User;
+  @ManyToOne(type => User, user => user.products, { nullable: false })
+  @JoinColumn({ name: 'ownerId' })
+  owner: User;
+
+  @Column({ name: 'ownerId', nullable: false })
+  public ownerId: ID;
 }

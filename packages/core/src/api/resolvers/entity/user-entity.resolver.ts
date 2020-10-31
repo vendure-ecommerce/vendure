@@ -5,31 +5,38 @@ import { NATIVE_AUTH_STRATEGY_NAME } from '../../../config/auth/native-authentic
 import { AuthenticationMethod } from '../../../entity/authentication-method/authentication-method.entity';
 import { ExternalAuthenticationMethod } from '../../../entity/authentication-method/external-authentication-method.entity';
 import { User } from '../../../entity/user/user.entity';
+import { Product } from '../../../entity/product/product.entity';
+import { ProductService } from '../../../service/services/product.service';
 import { UserService } from '../../../service/services/user.service';
 import { RequestContext } from '../../common/request-context';
 import { Ctx } from '../../decorators/request-context.decorator';
 
 @Resolver('User')
 export class UserEntityResolver {
-    constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private productService: ProductService) {}
 
-    @ResolveField()
-    async authenticationMethods(
-        @Ctx() ctx: RequestContext,
-        @Parent() user: User,
-    ): Promise<AuthenticationMethodType[]> {
-        let methodEntities: AuthenticationMethod[] = [];
-        if (user.authenticationMethods) {
-            methodEntities = user.authenticationMethods;
-        }
-        methodEntities = await this.userService
-            .getUserById(ctx, user.id)
-            .then(u => u?.authenticationMethods ?? []);
-
-        return methodEntities.map(m => ({
-            ...m,
-            id: m.id.toString(),
-            strategy: m instanceof ExternalAuthenticationMethod ? m.strategy : NATIVE_AUTH_STRATEGY_NAME,
-        }));
+  @ResolveField()
+  async authenticationMethods(
+    @Ctx() ctx: RequestContext,
+    @Parent() user: User,
+  ): Promise<AuthenticationMethodType[]> {
+    let methodEntities: AuthenticationMethod[] = [];
+    if (user.authenticationMethods) {
+      methodEntities = user.authenticationMethods;
     }
+    methodEntities = await this.userService
+      .getUserById(ctx, user.id)
+      .then(u => u?.authenticationMethods ?? []);
+
+    return methodEntities.map(m => ({
+      ...m,
+      id: m.id.toString(),
+      strategy: m instanceof ExternalAuthenticationMethod ? m.strategy : NATIVE_AUTH_STRATEGY_NAME,
+    }));
+  }
+
+  @ResolveField()
+  async products(@Ctx() ctx: RequestContext, @Parent() user: User): Promise<Product[]> {
+    return this.productService.getProductsForUser(ctx, user.id);
+  }
 }

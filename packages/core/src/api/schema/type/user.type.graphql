@@ -1,17 +1,18 @@
 type User implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    identifier: String!
-    verified: Boolean!
-    roles: [Role!]!
-    lastLogin: DateTime
-    authenticationMethods: [AuthenticationMethod!]!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  identifier: String!
+  verified: Boolean!
+  roles: [Role!]!
+  lastLogin: DateTime
+  authenticationMethods: [AuthenticationMethod!]!
+  products: [Product!]!
 }
 
 type AuthenticationMethod implements Node {
-    id: ID!
-    createdAt: DateTime!
-    updatedAt: DateTime!
-    strategy: String!
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  strategy: String!
 }
