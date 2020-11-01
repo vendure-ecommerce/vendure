@@ -82,6 +82,7 @@ import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
+import { PaymentState } from '../helpers/payment-state-machine/payment-state';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
@@ -101,6 +102,7 @@ import { CustomerService } from './customer.service';
 import { FulfillmentService } from './fulfillment.service';
 import { HistoryService } from './history.service';
 import { PaymentMethodService } from './payment-method.service';
+import { PaymentService } from './payment.service';
 import { ProductVariantService } from './product-variant.service';
 import { PromotionService } from './promotion.service';
 import { StockMovementService } from './stock-movement.service';
@@ -117,6 +119,7 @@ export class OrderService {
         private shippingCalculator: ShippingCalculator,
         private orderStateMachine: OrderStateMachine,
         private orderMerger: OrderMerger,
+        private paymentService: PaymentService,
         private paymentStateMachine: PaymentStateMachine,
         private paymentMethodService: PaymentMethodService,
         private fulfillmentService: FulfillmentService,
@@ -611,6 +614,20 @@ export class OrderService {
         }
     }
 
+    async transitionPaymentToState(
+        ctx: RequestContext,
+        paymentId: ID,
+        state: PaymentState,
+    ): Promise<Payment> {
+        const payment = await this.paymentService.transitionToState(ctx, paymentId, state);
+
+        const order = payment.order;
+
+        await this.transitionOrderIfTotalIsCovered(ctx, order);
+
+        return payment;
+    }
+
     async addPaymentToOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -638,6 +655,14 @@ export class OrderService {
             return new PaymentDeclinedError(payment.errorMessage || '');
         }
 
+        return this.transitionOrderIfTotalIsCovered(ctx, order);
+    }
+
+    private async transitionOrderIfTotalIsCovered(
+        ctx: RequestContext,
+        order: Order,
+    ): Promise<Order | OrderStateTransitionError> {
+        const orderId = order.id;
         if (orderTotalIsCovered(order, 'Settled')) {
             return this.transitionToState(ctx, orderId, 'PaymentSettled');
         }

@@ -14,6 +14,7 @@ type Mutation {
     deleteOrderNote(id: ID!): DeletionResponse!
     transitionOrderToState(id: ID!, state: String!): TransitionOrderToStateResult
     transitionFulfillmentToState(id: ID!, state: String!): TransitionFulfillmentToStateResult!
+    transitionPaymentToState(id: ID!, state: String!): TransitionPaymentToStateResult!
     setOrderCustomFields(input: UpdateOrderInput!): Order
 }
 
