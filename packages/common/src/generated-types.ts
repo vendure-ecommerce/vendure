@@ -373,6 +373,7 @@ export type Mutation = {
   deleteOrderNote: DeletionResponse;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
+  transitionPaymentToState: TransitionPaymentToStateResult;
   setOrderCustomFields?: Maybe<Order>;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
@@ -720,6 +721,12 @@ export type MutationTransitionOrderToStateArgs = {
 
 
 export type MutationTransitionFulfillmentToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type MutationTransitionPaymentToStateArgs = {
   id: Scalars['ID'];
   state: Scalars['String'];
 };
@@ -1507,6 +1514,8 @@ export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
 
+export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionError;
+
 export type PaymentMethodList = PaginatedList & {
   __typename?: 'PaymentMethodList';
   items: Array<PaymentMethod>;
@@ -1518,6 +1527,21 @@ export type UpdatePaymentMethodInput = {
   code?: Maybe<Scalars['String']>;
   enabled?: Maybe<Scalars['Boolean']>;
   configArgs?: Maybe<Array<ConfigArgInput>>;
+};
+
+export type Payment = Node & {
+  __typename?: 'Payment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type ProductOptionGroupTranslationInput = {
@@ -3352,20 +3376,6 @@ export type OrderLine = Node & {
   adjustments: Array<Adjustment>;
   order: Order;
   customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type Payment = Node & {
-  __typename?: 'Payment';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  method: Scalars['String'];
-  amount: Scalars['Int'];
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  refunds: Array<Refund>;
-  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type Refund = Node & {

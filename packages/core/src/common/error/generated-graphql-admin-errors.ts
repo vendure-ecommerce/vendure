@@ -357,6 +357,11 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
     },
   },
+  TransitionPaymentToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+    },
+  },
   RemoveOptionGroupFromProductResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Product';
