@@ -49,7 +49,7 @@
                     <div class="dropdown-divider"></div>
                     <button type="button" class="btn" vdrDropdownItem (click)="transitionToState(nextState)">
                         <clr-icon shape="step-forward-2"></clr-icon>
-                        {{ 'order.transition-to-state' | translate: { state: nextState } }}
+                        {{ 'order.transition-to-state' | translate: { state: (nextState | stateI18nToken | translate) } }}
                     </button>
                 </ng-container>
             </vdr-dropdown-menu>

@@ -2,9 +2,9 @@
     <vdr-ab-left>
         <div class="search-form">
             <select clrSelect name="state" [formControl]="stateFilter">
-                <option value="all">{{ 'order.state-all-orders' | translate }}</option>
+                <option value="all">{{ 'state.all-orders' | translate }}</option>
                 <option *ngFor="let orderState of (orderStates$ | async)" [value]="orderState">
-                    {{ orderState | orderStateI18nToken | translate }}
+                    {{ orderState | stateI18nToken | translate }}
                 </option>
             </select>
             <input

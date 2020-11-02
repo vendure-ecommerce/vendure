@@ -174,7 +174,7 @@ export * from './shared/pipes/custom-field-label.pipe';
 export * from './shared/pipes/duration.pipe';
 export * from './shared/pipes/file-size.pipe';
 export * from './shared/pipes/has-permission.pipe';
-export * from './shared/pipes/order-state-i18n-token.pipe';
+export * from './shared/pipes/state-i18n-token.pipe';
 export * from './shared/pipes/sentence-case.pipe';
 export * from './shared/pipes/sort.pipe';
 export * from './shared/pipes/string-to-color.pipe';
