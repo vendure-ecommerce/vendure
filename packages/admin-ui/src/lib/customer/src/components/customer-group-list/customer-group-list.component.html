@@ -9,7 +9,7 @@
     </vdr-ab-right>
 </vdr-action-bar>
 <div class="group-wrapper">
-    <table class="table group-list" *ngIf="!(listIsEmpty$ | async); else emptyPlaceholder">
+    <table class="table group-list" [class.expanded]="activeGroup$ | async" *ngIf="!(listIsEmpty$ | async); else emptyPlaceholder">
         <tbody>
             <tr *ngFor="let group of groups$ | async" [class.active]="group.id === (activeGroup$ | async)?.id">
                 <td class="left align-middle"><vdr-entity-info [entity]="group"></vdr-entity-info></td>
