@@ -95,9 +95,9 @@ import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
-import { OrderStateI18nTokenPipe } from './pipes/order-state-i18n-token.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
+import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
@@ -187,7 +187,7 @@ const DECLARATIONS = [
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
     ProductSelectorFormInputComponent,
-    OrderStateI18nTokenPipe,
+    StateI18nTokenPipe,
     ProductSelectorComponent,
     HelpTooltipComponent,
     CustomerGroupFormInputComponent,
