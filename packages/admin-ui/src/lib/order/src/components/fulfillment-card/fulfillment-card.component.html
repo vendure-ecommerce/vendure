@@ -15,7 +15,7 @@
     <div class="card-footer">
         <ng-container *ngIf="nextSuggestedState() as suggestedState">
             <button class="btn btn-sm btn-primary" (click)="transitionState.emit(suggestedState)">
-                {{ 'order.set-fulfillment-state' | translate: { state: suggestedState } }}
+                {{ 'order.set-fulfillment-state' | translate: { state: (suggestedState | stateI18nToken | translate) } }}
             </button>
         </ng-container>
         <vdr-dropdown>
@@ -32,7 +32,7 @@
                     >
                         <ng-container *ngIf="nextState !== 'Cancelled'; else cancel">
                             <clr-icon shape="step-forward-2"></clr-icon>
-                            {{ 'order.transition-to-state' | translate: { state: nextState } }}
+                            {{ 'order.transition-to-state' | translate: { state: (nextState | stateI18nToken | translate) } }}
                         </ng-container>
                         <ng-template #cancel>
                             <clr-icon shape="error-standard" class="is-error"></clr-icon>

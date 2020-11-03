@@ -3,14 +3,14 @@
         class="node"
         [class.active-target]="activeTarget$ | async"
     >
-        {{ node.name | orderStateI18nToken | translate }}
+        {{ node.name | stateI18nToken | translate }}
     </div>
     <div class="cancelled-wrapper" *ngIf="isCancellable">
         <div class="cancelled-edge">
         </div>
         <clr-icon shape="dot-circle"></clr-icon>
         <div class="cancelled-node">
-            {{ cancelledState | orderStateI18nToken | translate }}
+            {{ cancelledState | stateI18nToken | translate }}
         </div>
     </div>
 </div>
