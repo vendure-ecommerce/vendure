@@ -669,3 +669,53 @@ export const ADMIN_TRANSITION_TO_STATE = gql`
     }
     ${ORDER_FRAGMENT}
 `;
+
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        code
+        name
+        options {
+            id
+            code
+            name
+        }
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
+export const CREATE_PRODUCT_OPTION_GROUP = gql`
+    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
+        createProductOptionGroup(input: $input) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
+export const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
+    fragment ProductWithOptions on Product {
+        id
+        optionGroups {
+            id
+            code
+            options {
+                id
+                code
+            }
+        }
+    }
+`;
+
+export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
+    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            ...ProductWithOptions
+        }
+    }
+    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
+`;
