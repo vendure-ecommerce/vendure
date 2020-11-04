@@ -15,6 +15,7 @@ export * from './conditions/has-facet-values-condition';
 export * from './conditions/min-order-amount-condition';
 export * from './conditions/contains-products-condition';
 export * from './conditions/customer-group-condition';
+export * from './utils/facet-value-checker';
 
 export const defaultPromotionActions = [
     orderPercentageDiscount,
