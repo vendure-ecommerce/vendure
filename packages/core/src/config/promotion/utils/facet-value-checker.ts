@@ -1,16 +1,16 @@
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { Connection } from 'typeorm';
 
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 
 export class FacetValueChecker {
     private variantCache = new TtlCache<ID, ProductVariant>({ ttl: 5000 });
 
-    constructor(private connection: Connection) {}
+    constructor(private connection: TransactionalConnection) {}
     /**
      * @description
      * Checks a given {@link OrderLine} against the facetValueIds and returns
