@@ -1,3 +1,19 @@
+## <small>0.16.3 (2020-11-05)</small>
+
+
+#### Fixes
+
+* **admin-ui** Add missing I18n state tokens ([215a637](https://github.com/vendure-ecommerce/vendure/commit/215a637))
+* **admin-ui** Fix Apollo cache warning for GlobalSettings.serverConfig ([8b135ad](https://github.com/vendure-ecommerce/vendure/commit/8b135ad))
+* **admin-ui** Fix CustomerGroupList layout in Firefox ([c432a14](https://github.com/vendure-ecommerce/vendure/commit/c432a14)), closes [#531](https://github.com/vendure-ecommerce/vendure/issues/531)
+* **admin-ui** Fix overflow that made ui unusable on mobile ([f129e0c](https://github.com/vendure-ecommerce/vendure/commit/f129e0c))
+* **admin-ui** Fix saving countries in other languages ([11a1004](https://github.com/vendure-ecommerce/vendure/commit/11a1004)), closes [#528](https://github.com/vendure-ecommerce/vendure/issues/528)
+* **core** Add retry logic in case of transaction deadlocks ([3b60bcb](https://github.com/vendure-ecommerce/vendure/commit/3b60bcb)), closes [#527](https://github.com/vendure-ecommerce/vendure/issues/527)
+
+#### Features
+
+* **core** Export FacetValueChecker promotion utility ([fc3890e](https://github.com/vendure-ecommerce/vendure/commit/fc3890e))
+
 ## <small>0.16.2 (2020-10-22)</small>
 
 
