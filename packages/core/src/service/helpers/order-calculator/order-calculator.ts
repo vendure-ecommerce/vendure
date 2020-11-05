@@ -12,6 +12,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
+import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
@@ -26,6 +27,7 @@ export class OrderCalculator {
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,
         private taxCalculator: TaxCalculator,
+        private shippingMethodService: ShippingMethodService,
         private shippingCalculator: ShippingCalculator,
     ) {}
 
@@ -263,16 +265,28 @@ export class OrderCalculator {
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
-        const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const currentShippingMethod = order.shippingMethod;
-        if (results && results.length && currentShippingMethod) {
-            let selected: { method: ShippingMethod; result: ShippingCalculationResult } | undefined;
-            selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
-            if (!selected) {
-                selected = results[0];
+        const currentShippingMethod =
+            order.shippingMethodId && (await this.shippingMethodService.findOne(ctx, order.shippingMethodId));
+        if (!currentShippingMethod) {
+            return;
+        }
+        const currentMethodStillEligible = await currentShippingMethod.test(ctx, order);
+        if (currentMethodStillEligible) {
+            const result = await currentShippingMethod.apply(ctx, order);
+            if (result) {
+                order.shipping = result.price;
+                order.shippingWithTax = result.priceWithTax;
             }
-            order.shipping = selected.result.price;
-            order.shippingWithTax = selected.result.priceWithTax;
+            return;
+        }
+        const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order, [
+            currentShippingMethod.id,
+        ]);
+        if (results && results.length) {
+            const cheapest = results[0];
+            order.shipping = cheapest.result.price;
+            order.shippingWithTax = cheapest.result.priceWithTax;
+            order.shippingMethod = cheapest.method;
         }
     }
 

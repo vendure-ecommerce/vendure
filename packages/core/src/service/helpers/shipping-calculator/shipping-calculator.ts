@@ -20,9 +20,17 @@ export class ShippingCalculator {
     /**
      * Returns an array of each eligible ShippingMethod for the given Order and sorts them by
      * price, with the cheapest first.
+     *
+     * The `skipIds` argument is used to skip ShippingMethods with those IDs from being checked and calculated.
      */
-    async getEligibleShippingMethods(ctx: RequestContext, order: Order): Promise<EligibleShippingMethod[]> {
-        const shippingMethods = this.shippingMethodService.getActiveShippingMethods(ctx.channel);
+    async getEligibleShippingMethods(
+        ctx: RequestContext,
+        order: Order,
+        skipIds: ID[] = [],
+    ): Promise<EligibleShippingMethod[]> {
+        const shippingMethods = this.shippingMethodService
+            .getActiveShippingMethods(ctx.channel)
+            .filter(method => !skipIds.includes(method.id));
 
         const checkEligibilityPromises = shippingMethods.map(method =>
             this.checkEligibilityByShippingMethod(ctx, order, method),

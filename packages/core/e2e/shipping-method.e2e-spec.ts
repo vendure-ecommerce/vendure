@@ -11,6 +11,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { SHIPPING_METHOD_FRAGMENT } from './graphql/fragments';
 import {
     CreateShippingMethod,
     DeleteShippingMethod,
@@ -24,6 +25,7 @@ import {
     TestShippingMethod,
     UpdateShippingMethod,
 } from './graphql/generated-e2e-admin-types';
+import { CREATE_SHIPPING_METHOD } from './graphql/shared-definitions';
 
 const TEST_METADATA = {
     foo: 'bar',
@@ -294,20 +296,6 @@ describe('ShippingMethod resolver', () => {
     });
 });
 
-const SHIPPING_METHOD_FRAGMENT = gql`
-    fragment ShippingMethod on ShippingMethod {
-        id
-        code
-        description
-        calculator {
-            code
-        }
-        checker {
-            code
-        }
-    }
-`;
-
 const GET_SHIPPING_METHOD_LIST = gql`
     query GetShippingMethodList {
         shippingMethods {
@@ -323,15 +311,6 @@ const GET_SHIPPING_METHOD_LIST = gql`
 const GET_SHIPPING_METHOD = gql`
     query GetShippingMethod($id: ID!) {
         shippingMethod(id: $id) {
-            ...ShippingMethod
-        }
-    }
-    ${SHIPPING_METHOD_FRAGMENT}
-`;
-
-const CREATE_SHIPPING_METHOD = gql`
-    mutation CreateShippingMethod($input: CreateShippingMethodInput!) {
-        createShippingMethod(input: $input) {
             ...ShippingMethod
         }
     }

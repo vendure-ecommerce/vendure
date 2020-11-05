@@ -540,3 +540,62 @@ export const GLOBAL_SETTINGS_FRAGMENT = gql`
         }
     }
 `;
+
+export const CUSTOMER_GROUP_FRAGMENT = gql`
+    fragment CustomerGroup on CustomerGroup {
+        id
+        name
+        customers {
+            items {
+                id
+            }
+            totalItems
+        }
+    }
+`;
+
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        code
+        name
+        options {
+            id
+            code
+            name
+        }
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
+export const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
+    fragment ProductWithOptions on Product {
+        id
+        optionGroups {
+            id
+            code
+            options {
+                id
+                code
+            }
+        }
+    }
+`;
+
+export const SHIPPING_METHOD_FRAGMENT = gql`
+    fragment ShippingMethod on ShippingMethod {
+        id
+        code
+        description
+        calculator {
+            code
+        }
+        checker {
+            code
+        }
+    }
+`;

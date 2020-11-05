@@ -16,6 +16,7 @@ import { Order } from '../../../entity/order/order.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { WorkerService } from '../../../worker/worker.service';
+import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
@@ -40,6 +41,7 @@ describe('OrderCalculator', () => {
                 TaxCalculator,
                 TaxRateService,
                 { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
+                { provide: ShippingMethodService, useValue: { findOne: () => undefined } },
                 { provide: TransactionalConnection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: ConfigService, useClass: MockConfigService },

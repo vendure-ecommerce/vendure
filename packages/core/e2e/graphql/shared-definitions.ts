@@ -8,15 +8,19 @@ import {
     COUNTRY_FRAGMENT,
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
+    CUSTOMER_GROUP_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
     FULFILLMENT_FRAGMENT,
     GLOBAL_SETTINGS_FRAGMENT,
     ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
+    PRODUCT_OPTION_GROUP_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
+    PRODUCT_WITH_OPTIONS_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
     PROMOTION_FRAGMENT,
     ROLE_FRAGMENT,
+    SHIPPING_METHOD_FRAGMENT,
     TAX_RATE_FRAGMENT,
     VARIANT_WITH_STOCK_FRAGMENT,
 } from './fragments';
@@ -413,19 +417,6 @@ export const GET_ORDER = gql`
     ${ORDER_WITH_LINES_FRAGMENT}
 `;
 
-export const CUSTOMER_GROUP_FRAGMENT = gql`
-    fragment CustomerGroup on CustomerGroup {
-        id
-        name
-        customers {
-            items {
-                id
-            }
-            totalItems
-        }
-    }
-`;
-
 export const CREATE_CUSTOMER_GROUP = gql`
     mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
         createCustomerGroup(input: $input) {
@@ -736,24 +727,6 @@ export const GET_PRODUCTS_WITH_VARIANT_PRICES = gql`
     }
 `;
 
-export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
-    fragment ProductOptionGroup on ProductOptionGroup {
-        id
-        code
-        name
-        options {
-            id
-            code
-            name
-        }
-        translations {
-            id
-            languageCode
-            name
-        }
-    }
-`;
-
 export const CREATE_PRODUCT_OPTION_GROUP = gql`
     mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
         createProductOptionGroup(input: $input) {
@@ -763,20 +736,6 @@ export const CREATE_PRODUCT_OPTION_GROUP = gql`
     ${PRODUCT_OPTION_GROUP_FRAGMENT}
 `;
 
-export const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
-    fragment ProductWithOptions on Product {
-        id
-        optionGroups {
-            id
-            code
-            options {
-                id
-                code
-            }
-        }
-    }
-`;
-
 export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
     mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
         addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
@@ -784,4 +743,13 @@ export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
         }
     }
     ${PRODUCT_WITH_OPTIONS_FRAGMENT}
+`;
+
+export const CREATE_SHIPPING_METHOD = gql`
+    mutation CreateShippingMethod($input: CreateShippingMethodInput!) {
+        createShippingMethod(input: $input) {
+            ...ShippingMethod
+        }
+    }
+    ${SHIPPING_METHOD_FRAGMENT}
 `;

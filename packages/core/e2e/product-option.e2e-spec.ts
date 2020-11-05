@@ -6,6 +6,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { omit } from '../../common/lib/omit';
 
+import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
 import {
     CreateProductOption,
     CreateProductOptionGroup,
@@ -14,7 +15,7 @@ import {
     UpdateProductOption,
     UpdateProductOptionGroup,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_PRODUCT_OPTION_GROUP, PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/shared-definitions';
+import { CREATE_PRODUCT_OPTION_GROUP } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion

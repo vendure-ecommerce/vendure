@@ -4667,6 +4667,26 @@ export type GlobalSettingsFragment = Pick<
     };
 };
 
+export type CustomerGroupFragment = Pick<CustomerGroup, 'id' | 'name'> & {
+    customers: Pick<CustomerList, 'totalItems'> & { items: Array<Pick<Customer, 'id'>> };
+};
+
+export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
+    options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
+    translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
+};
+
+export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
+    optionGroups: Array<
+        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
+    >;
+};
+
+export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'description'> & {
+    calculator: Pick<ConfigurableOperation, 'code'>;
+    checker: Pick<ConfigurableOperation, 'code'>;
+};
+
 export type CreateAdministratorMutationVariables = Exact<{
     input: CreateAdministratorInput;
 }>;
@@ -4946,10 +4966,6 @@ export type GetOrderQueryVariables = Exact<{
 
 export type GetOrderQuery = { order?: Maybe<OrderWithLinesFragment> };
 
-export type CustomerGroupFragment = Pick<CustomerGroup, 'id' | 'name'> & {
-    customers: Pick<CustomerList, 'totalItems'> & { items: Array<Pick<Customer, 'id'>> };
-};
-
 export type CreateCustomerGroupMutationVariables = Exact<{
     input: CreateCustomerGroupInput;
 }>;
@@ -5191,22 +5207,11 @@ export type GetProductsWithVariantPricesQuery = {
     };
 };
 
-export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
-    options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
-    translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
-};
-
 export type CreateProductOptionGroupMutationVariables = Exact<{
     input: CreateProductOptionGroupInput;
 }>;
 
 export type CreateProductOptionGroupMutation = { createProductOptionGroup: ProductOptionGroupFragment };
-
-export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
-    optionGroups: Array<
-        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
-    >;
-};
 
 export type AddOptionGroupToProductMutationVariables = Exact<{
     productId: Scalars['ID'];
@@ -5214,6 +5219,12 @@ export type AddOptionGroupToProductMutationVariables = Exact<{
 }>;
 
 export type AddOptionGroupToProductMutation = { addOptionGroupToProduct: ProductWithOptionsFragment };
+
+export type CreateShippingMethodMutationVariables = Exact<{
+    input: CreateShippingMethodInput;
+}>;
+
+export type CreateShippingMethodMutation = { createShippingMethod: ShippingMethodFragment };
 
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
@@ -5449,11 +5460,6 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never }>;
 
 export type LogoutMutation = { logout: Pick<Success, 'success'> };
 
-export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'description'> & {
-    calculator: Pick<ConfigurableOperation, 'code'>;
-    checker: Pick<ConfigurableOperation, 'code'>;
-};
-
 export type GetShippingMethodListQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetShippingMethodListQuery = {
@@ -5465,12 +5471,6 @@ export type GetShippingMethodQueryVariables = Exact<{
 }>;
 
 export type GetShippingMethodQuery = { shippingMethod?: Maybe<ShippingMethodFragment> };
-
-export type CreateShippingMethodMutationVariables = Exact<{
-    input: CreateShippingMethodInput;
-}>;
-
-export type CreateShippingMethodMutation = { createShippingMethod: ShippingMethodFragment };
 
 export type UpdateShippingMethodMutationVariables = Exact<{
     input: UpdateShippingMethodInput;
@@ -6534,6 +6534,36 @@ export namespace GlobalSettings {
     >;
 }
 
+export namespace CustomerGroup {
+    export type Fragment = CustomerGroupFragment;
+    export type Customers = NonNullable<CustomerGroupFragment['customers']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<CustomerGroupFragment['customers']>['items']>[number]
+    >;
+}
+
+export namespace ProductOptionGroup {
+    export type Fragment = ProductOptionGroupFragment;
+    export type Options = NonNullable<NonNullable<ProductOptionGroupFragment['options']>[number]>;
+    export type Translations = NonNullable<NonNullable<ProductOptionGroupFragment['translations']>[number]>;
+}
+
+export namespace ProductWithOptions {
+    export type Fragment = ProductWithOptionsFragment;
+    export type OptionGroups = NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>;
+    export type Options = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>['options']
+        >[number]
+    >;
+}
+
+export namespace ShippingMethod {
+    export type Fragment = ShippingMethodFragment;
+    export type Calculator = NonNullable<ShippingMethodFragment['calculator']>;
+    export type Checker = NonNullable<ShippingMethodFragment['checker']>;
+}
+
 export namespace CreateAdministrator {
     export type Variables = CreateAdministratorMutationVariables;
     export type Mutation = CreateAdministratorMutation;
@@ -6812,14 +6842,6 @@ export namespace GetOrder {
     export type Order = NonNullable<GetOrderQuery['order']>;
 }
 
-export namespace CustomerGroup {
-    export type Fragment = CustomerGroupFragment;
-    export type Customers = NonNullable<CustomerGroupFragment['customers']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<CustomerGroupFragment['customers']>['items']>[number]
-    >;
-}
-
 export namespace CreateCustomerGroup {
     export type Variables = CreateCustomerGroupMutationVariables;
     export type Mutation = CreateCustomerGroupMutation;
@@ -7045,27 +7067,11 @@ export namespace GetProductsWithVariantPrices {
     >;
 }
 
-export namespace ProductOptionGroup {
-    export type Fragment = ProductOptionGroupFragment;
-    export type Options = NonNullable<NonNullable<ProductOptionGroupFragment['options']>[number]>;
-    export type Translations = NonNullable<NonNullable<ProductOptionGroupFragment['translations']>[number]>;
-}
-
 export namespace CreateProductOptionGroup {
     export type Variables = CreateProductOptionGroupMutationVariables;
     export type Mutation = CreateProductOptionGroupMutation;
     export type CreateProductOptionGroup = NonNullable<
         CreateProductOptionGroupMutation['createProductOptionGroup']
-    >;
-}
-
-export namespace ProductWithOptions {
-    export type Fragment = ProductWithOptionsFragment;
-    export type OptionGroups = NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>;
-    export type Options = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>['options']
-        >[number]
     >;
 }
 
@@ -7075,6 +7081,12 @@ export namespace AddOptionGroupToProduct {
     export type AddOptionGroupToProduct = NonNullable<
         AddOptionGroupToProductMutation['addOptionGroupToProduct']
     >;
+}
+
+export namespace CreateShippingMethod {
+    export type Variables = CreateShippingMethodMutationVariables;
+    export type Mutation = CreateShippingMethodMutation;
+    export type CreateShippingMethod = NonNullable<CreateShippingMethodMutation['createShippingMethod']>;
 }
 
 export namespace UpdateOptionGroup {
@@ -7320,12 +7332,6 @@ export namespace Logout {
     export type Logout = NonNullable<LogoutMutation['logout']>;
 }
 
-export namespace ShippingMethod {
-    export type Fragment = ShippingMethodFragment;
-    export type Calculator = NonNullable<ShippingMethodFragment['calculator']>;
-    export type Checker = NonNullable<ShippingMethodFragment['checker']>;
-}
-
 export namespace GetShippingMethodList {
     export type Variables = GetShippingMethodListQueryVariables;
     export type Query = GetShippingMethodListQuery;
@@ -7339,12 +7345,6 @@ export namespace GetShippingMethod {
     export type Variables = GetShippingMethodQueryVariables;
     export type Query = GetShippingMethodQuery;
     export type ShippingMethod = NonNullable<GetShippingMethodQuery['shippingMethod']>;
-}
-
-export namespace CreateShippingMethod {
-    export type Variables = CreateShippingMethodMutationVariables;
-    export type Mutation = CreateShippingMethodMutation;
-    export type CreateShippingMethod = NonNullable<CreateShippingMethodMutation['createShippingMethod']>;
 }
 
 export namespace UpdateShippingMethod {
