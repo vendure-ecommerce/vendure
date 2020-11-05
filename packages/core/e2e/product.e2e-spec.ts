@@ -32,6 +32,7 @@ import {
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
@@ -40,11 +41,11 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_SIMPLE,
     GET_PRODUCT_WITH_VARIANTS,
+    PRODUCT_WITH_OPTIONS_FRAGMENT,
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { sortById } from './utils/test-order-utils';
 
 // tslint:disable:no-non-null-assertion
 
@@ -1167,29 +1168,6 @@ describe('Product resolver', () => {
         );
     });
 });
-
-const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
-    fragment ProductWithOptions on Product {
-        id
-        optionGroups {
-            id
-            code
-            options {
-                id
-                code
-            }
-        }
-    }
-`;
-
-export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            ...ProductWithOptions
-        }
-    }
-    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
-`;
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {

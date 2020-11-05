@@ -21,6 +21,7 @@ const specFileToIgnore = [
     'shop-order.e2e-spec',
     'database-transactions.e2e-spec',
     'custom-permissions.e2e-spec',
+    'parallel-transactions.e2e-spec',
 ];
 const E2E_ADMIN_QUERY_FILES = path.join(
     __dirname,

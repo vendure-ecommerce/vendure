@@ -1,5 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
+import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { PromotionItemAction } from '../promotion-action';
 import { FacetValueChecker } from '../utils/facet-value-checker';
 
@@ -22,7 +23,7 @@ export const discountOnItemWithFacets = new PromotionItemAction({
         },
     },
     init(injector) {
-        facetValueChecker = new FacetValueChecker(injector.getConnection());
+        facetValueChecker = new FacetValueChecker(injector.get(TransactionalConnection));
     },
     async execute(ctx, orderItem, orderLine, args) {
         if (await facetValueChecker.hasFacetValues(orderLine, args.facets)) {

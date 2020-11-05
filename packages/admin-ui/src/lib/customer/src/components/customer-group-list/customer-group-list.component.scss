@@ -12,6 +12,10 @@
         tr.active {
             background-color: $color-grey-200;
         }
+        &.expanded {
+            // Fix for Firefox layout https://github.com/vendure-ecommerce/vendure/issues/531
+            width: calc(100% - 40vw);
+        }
     }
 }
 .group-members {

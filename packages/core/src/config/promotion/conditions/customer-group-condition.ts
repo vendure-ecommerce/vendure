@@ -1,10 +1,8 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
-import { RequestContext } from '../../../api/common/request-context';
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
-import { Order } from '../../../entity/order/order.entity';
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;
@@ -27,7 +25,7 @@ export const customerGroup = new PromotionCondition({
         const { CustomerService } = await import('../../../service/services/customer.service');
         customerService = injector.get(CustomerService);
     },
-    async check(ctx: RequestContext, order: Order, args) {
+    async check(ctx, order, args) {
         if (!order.customer) {
             return false;
         }
