@@ -5191,6 +5191,30 @@ export type GetProductsWithVariantPricesQuery = {
     };
 };
 
+export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
+    options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
+    translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
+};
+
+export type CreateProductOptionGroupMutationVariables = Exact<{
+    input: CreateProductOptionGroupInput;
+}>;
+
+export type CreateProductOptionGroupMutation = { createProductOptionGroup: ProductOptionGroupFragment };
+
+export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
+    optionGroups: Array<
+        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
+    >;
+};
+
+export type AddOptionGroupToProductMutationVariables = Exact<{
+    productId: Scalars['ID'];
+    optionGroupId: Scalars['ID'];
+}>;
+
+export type AddOptionGroupToProductMutation = { addOptionGroupToProduct: ProductWithOptionsFragment };
+
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5312,17 +5336,6 @@ export type GetOrderWithPaymentsQuery = {
     >;
 };
 
-export type ProductOptionGroupFragment = Pick<ProductOptionGroup, 'id' | 'code' | 'name'> & {
-    options: Array<Pick<ProductOption, 'id' | 'code' | 'name'>>;
-    translations: Array<Pick<ProductOptionGroupTranslation, 'id' | 'languageCode' | 'name'>>;
-};
-
-export type CreateProductOptionGroupMutationVariables = Exact<{
-    input: CreateProductOptionGroupInput;
-}>;
-
-export type CreateProductOptionGroupMutation = { createProductOptionGroup: ProductOptionGroupFragment };
-
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5346,19 +5359,6 @@ export type UpdateProductOptionMutationVariables = Exact<{
 export type UpdateProductOptionMutation = {
     updateProductOption: Pick<ProductOption, 'id' | 'code' | 'name' | 'groupId'>;
 };
-
-export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
-    optionGroups: Array<
-        Pick<ProductOptionGroup, 'id' | 'code'> & { options: Array<Pick<ProductOption, 'id' | 'code'>> }
-    >;
-};
-
-export type AddOptionGroupToProductMutationVariables = Exact<{
-    productId: Scalars['ID'];
-    optionGroupId: Scalars['ID'];
-}>;
-
-export type AddOptionGroupToProductMutation = { addOptionGroupToProduct: ProductWithOptionsFragment };
 
 export type RemoveOptionGroupFromProductMutationVariables = Exact<{
     productId: Scalars['ID'];
@@ -7045,6 +7045,38 @@ export namespace GetProductsWithVariantPrices {
     >;
 }
 
+export namespace ProductOptionGroup {
+    export type Fragment = ProductOptionGroupFragment;
+    export type Options = NonNullable<NonNullable<ProductOptionGroupFragment['options']>[number]>;
+    export type Translations = NonNullable<NonNullable<ProductOptionGroupFragment['translations']>[number]>;
+}
+
+export namespace CreateProductOptionGroup {
+    export type Variables = CreateProductOptionGroupMutationVariables;
+    export type Mutation = CreateProductOptionGroupMutation;
+    export type CreateProductOptionGroup = NonNullable<
+        CreateProductOptionGroupMutation['createProductOptionGroup']
+    >;
+}
+
+export namespace ProductWithOptions {
+    export type Fragment = ProductWithOptionsFragment;
+    export type OptionGroups = NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>;
+    export type Options = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>['options']
+        >[number]
+    >;
+}
+
+export namespace AddOptionGroupToProduct {
+    export type Variables = AddOptionGroupToProductMutationVariables;
+    export type Mutation = AddOptionGroupToProductMutation;
+    export type AddOptionGroupToProduct = NonNullable<
+        AddOptionGroupToProductMutation['addOptionGroupToProduct']
+    >;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -7166,20 +7198,6 @@ export namespace GetOrderWithPayments {
     >;
 }
 
-export namespace ProductOptionGroup {
-    export type Fragment = ProductOptionGroupFragment;
-    export type Options = NonNullable<NonNullable<ProductOptionGroupFragment['options']>[number]>;
-    export type Translations = NonNullable<NonNullable<ProductOptionGroupFragment['translations']>[number]>;
-}
-
-export namespace CreateProductOptionGroup {
-    export type Variables = CreateProductOptionGroupMutationVariables;
-    export type Mutation = CreateProductOptionGroupMutation;
-    export type CreateProductOptionGroup = NonNullable<
-        CreateProductOptionGroupMutation['createProductOptionGroup']
-    >;
-}
-
 export namespace UpdateProductOptionGroup {
     export type Variables = UpdateProductOptionGroupMutationVariables;
     export type Mutation = UpdateProductOptionGroupMutation;
@@ -7201,24 +7219,6 @@ export namespace UpdateProductOption {
     export type Variables = UpdateProductOptionMutationVariables;
     export type Mutation = UpdateProductOptionMutation;
     export type UpdateProductOption = NonNullable<UpdateProductOptionMutation['updateProductOption']>;
-}
-
-export namespace ProductWithOptions {
-    export type Fragment = ProductWithOptionsFragment;
-    export type OptionGroups = NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>;
-    export type Options = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<ProductWithOptionsFragment['optionGroups']>[number]>['options']
-        >[number]
-    >;
-}
-
-export namespace AddOptionGroupToProduct {
-    export type Variables = AddOptionGroupToProductMutationVariables;
-    export type Mutation = AddOptionGroupToProductMutation;
-    export type AddOptionGroupToProduct = NonNullable<
-        AddOptionGroupToProductMutation['addOptionGroupToProduct']
-    >;
 }
 
 export namespace RemoveOptionGroupFromProduct {
