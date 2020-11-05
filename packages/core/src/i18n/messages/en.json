@@ -50,6 +50,7 @@
     "EMAIL_ADDRESS_CONFLICT_ERROR": "The email address is not available.",
     "EMPTY_ORDER_LINE_SELECTION_ERROR": "At least one OrderLine must be specified",
     "IDENTIFIER_CHANGE_TOKEN_INVALID_ERROR": "Identifier change token not recognized",
+    "INELIGIBLE_SHIPPING_METHOD_ERROR": "This Order is not eligible for the selected ShippingMethod",
     "INSUFFICIENT_STOCK_ERROR": "{quantityAvailable, plural, =0 {No items were} one {Only 1 item was} other {Only # items were}} added to the order due to insufficient stock",
     "INSUFFICIENT_STOCK_ON_HAND_ERROR": "Cannot create a Fulfillment as '{productVariantName}' has insufficient stockOnHand ({stockOnHand})",
     "INVALID_CREDENTIALS_ERROR": "The provided credentials are invalid",

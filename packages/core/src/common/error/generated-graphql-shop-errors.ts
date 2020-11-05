@@ -105,6 +105,16 @@ export class InsufficientStockError extends ErrorResult {
   }
 }
 
+export class IneligibleShippingMethodError extends ErrorResult {
+  readonly __typename = 'IneligibleShippingMethodError';
+  readonly errorCode = 'INELIGIBLE_SHIPPING_METHOD_ERROR' as any;
+  readonly message = 'INELIGIBLE_SHIPPING_METHOD_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
 export class OrderPaymentStateError extends ErrorResult {
   readonly __typename = 'OrderPaymentStateError';
   readonly errorCode = 'ORDER_PAYMENT_STATE_ERROR' as any;
@@ -272,7 +282,7 @@ export class NotVerifiedError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

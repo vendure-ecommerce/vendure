@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ID } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -29,6 +30,20 @@ export class ShippingCalculator {
         const eligibleMethods = await Promise.all(checkEligibilityPromises);
 
         return eligibleMethods.filter(notNullOrUndefined).sort((a, b) => a.result.price - b.result.price);
+    }
+
+    async getMethodIfEligible(
+        ctx: RequestContext,
+        order: Order,
+        shippingMethodId: ID,
+    ): Promise<ShippingMethod | undefined> {
+        const method = await this.shippingMethodService.findOne(ctx, shippingMethodId);
+        if (method) {
+            const eligible = await method.test(ctx, order);
+            if (eligible) {
+                return method;
+            }
+        }
     }
 
     private async checkEligibilityByShippingMethod(

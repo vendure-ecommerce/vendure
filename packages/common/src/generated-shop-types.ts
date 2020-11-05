@@ -457,6 +457,7 @@ export enum ErrorCode {
     ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
     NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
     INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
+    INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
@@ -1438,6 +1439,13 @@ export type InsufficientStockError = ErrorResult & {
     order: Order;
 };
 
+/** Returned when attempting to set a ShippingMethod for which the order is not eligible */
+export type IneligibleShippingMethodError = ErrorResult & {
+    __typename?: 'IneligibleShippingMethodError';
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
 /** Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state. */
 export type OrderPaymentStateError = ErrorResult & {
     __typename?: 'OrderPaymentStateError';
@@ -1586,7 +1594,7 @@ export type UpdateOrderItemsResult =
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
 
-export type SetOrderShippingMethodResult = Order | OrderModificationError;
+export type SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError;
 
 export type ApplyCouponCodeResult =
     | Order

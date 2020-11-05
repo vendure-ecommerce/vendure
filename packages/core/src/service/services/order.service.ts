@@ -49,6 +49,7 @@ import {
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
+    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
@@ -536,12 +537,15 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
-        if (!selectedMethod) {
-            throw new UserInputError(`error.shipping-method-unavailable`);
+        const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+            ctx,
+            order,
+            shippingMethodId,
+        );
+        if (!shippingMethod) {
+            return new IneligibleShippingMethodError();
         }
-        order.shippingMethod = selectedMethod.method;
+        order.shippingMethod = shippingMethod;
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);

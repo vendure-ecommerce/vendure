@@ -205,6 +205,12 @@ type InsufficientStockError implements ErrorResult {
     order: Order!
 }
 
+"Returned when attempting to set a ShippingMethod for which the order is not eligible"
+type IneligibleShippingMethodError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
 "Returned when attempting to add a Payment to an Order that is not in the `ArrangingPayment` state."
 type OrderPaymentStateError implements ErrorResult {
     errorCode: ErrorCode!
@@ -342,7 +348,7 @@ union UpdateOrderItemsResult =
     | NegativeQuantityError
     | InsufficientStockError
 union RemoveOrderItemsResult = Order | OrderModificationError
-union SetOrderShippingMethodResult = Order | OrderModificationError
+union SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 union AddPaymentToOrderResult =
       Order
