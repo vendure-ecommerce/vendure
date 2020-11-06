@@ -19,6 +19,15 @@ export class TestEntity extends VendureEntity {
     label: string;
 
     @Column()
+    description: string;
+
+    @Column()
+    active: boolean;
+
+    @Column()
+    order: number;
+
+    @Column()
     date: Date;
 }
 
@@ -46,6 +55,9 @@ const adminApiExtensions = gql`
         createdAt: DateTime!
         updatedAt: DateTime!
         label: String!
+        description: String!
+        active: Boolean!
+        order: Int!
         date: DateTime!
     }
 
@@ -75,13 +87,43 @@ export class ListQueryPlugin implements OnVendureBootstrap {
     async onVendureBootstrap() {
         const count = await this.connection.getRepository(TestEntity).count();
         if (count === 0) {
-            await this.connection
-                .getRepository(TestEntity)
-                .save([
-                    new TestEntity({ label: 'A', date: new Date('2020-01-05T10:00:00.000Z') }),
-                    new TestEntity({ label: 'B', date: new Date('2020-01-15T10:00:00.000Z') }),
-                    new TestEntity({ label: 'C', date: new Date('2020-01-25T10:00:00.000Z') }),
-                ]);
+            await this.connection.getRepository(TestEntity).save([
+                new TestEntity({
+                    label: 'A',
+                    description: 'Lorem ipsum',
+                    date: new Date('2020-01-05T10:00:00.000Z'),
+                    active: true,
+                    order: 0,
+                }),
+                new TestEntity({
+                    label: 'B',
+                    description: 'dolor sit',
+                    date: new Date('2020-01-15T10:00:00.000Z'),
+                    active: true,
+                    order: 1,
+                }),
+                new TestEntity({
+                    label: 'C',
+                    description: 'consectetur adipiscing',
+                    date: new Date('2020-01-25T10:00:00.000Z'),
+                    active: false,
+                    order: 2,
+                }),
+                new TestEntity({
+                    label: 'D',
+                    description: 'eiusmod tempor',
+                    date: new Date('2020-01-30T10:00:00.000Z'),
+                    active: true,
+                    order: 3,
+                }),
+                new TestEntity({
+                    label: 'E',
+                    description: 'incididunt ut',
+                    date: new Date('2020-02-05T10:00:00.000Z'),
+                    active: false,
+                    order: 4,
+                }),
+            ]);
         }
     }
 }
