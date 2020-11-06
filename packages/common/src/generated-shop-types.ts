@@ -484,6 +484,7 @@ export type ErrorResult = {
 export type StringOperators = {
     eq?: Maybe<Scalars['String']>;
     contains?: Maybe<Scalars['String']>;
+    in?: Maybe<Array<Scalars['String']>>;
 };
 
 export type BooleanOperators = {
@@ -1772,7 +1773,7 @@ export type Collection = Node & {
     filters: Array<ConfigurableOperation>;
     translations: Array<CollectionTranslation>;
     productVariants: ProductVariantList;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<CollectionCustomFields>;
 };
 
 export type CollectionProductVariantsArgs = {
@@ -2634,6 +2635,8 @@ export type CollectionFilterParameter = {
     slug?: Maybe<StringOperators>;
     position?: Maybe<NumberOperators>;
     description?: Maybe<StringOperators>;
+    foo?: Maybe<DateOperators>;
+    bar?: Maybe<StringOperators>;
 };
 
 export type CollectionSortParameter = {
@@ -2644,6 +2647,8 @@ export type CollectionSortParameter = {
     slug?: Maybe<SortOrder>;
     position?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
+    foo?: Maybe<SortOrder>;
+    bar?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -2754,6 +2759,12 @@ export type HistoryEntrySortParameter = {
 
 export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CollectionCustomFields = {
+    __typename?: 'CollectionCustomFields';
+    foo?: Maybe<Scalars['DateTime']>;
+    bar?: Maybe<Scalars['String']>;
 };
 
 export type CustomFields = {

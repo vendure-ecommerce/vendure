@@ -63,6 +63,20 @@ describe('ListQueryBuilder', () => {
 
             expect(getItemLabels(testEntities.items)).toEqual(['C']);
         });
+
+        it('in', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            in: ['A', 'C'],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C']);
+        });
     });
 
     describe('boolean filtering', () => {

@@ -82,6 +82,11 @@ function buildWhereCondition(
                 clause: `${fieldName} ${LIKE} :arg${argIndex}`,
                 parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
+        case 'in':
+            return {
+                clause: `${fieldName} IN (:...arg${argIndex})`,
+                parameters: { [`arg${argIndex}`]: operand },
+            };
         case 'lt':
         case 'before':
             return {
