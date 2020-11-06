@@ -1291,6 +1291,11 @@ export type Order = Node & {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  /**
+   * The date & time that the Order was placed, i.e. the Customer
+   * completed the checkout and the Order is no longer "active"
+   */
+  orderPlacedAt?: Maybe<Scalars['DateTime']>;
   /** A unique code for the Order */
   code: Scalars['String'];
   state: Scalars['String'];
@@ -3994,6 +3999,7 @@ export type JobSortParameter = {
 export type OrderFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
+  orderPlacedAt?: Maybe<DateOperators>;
   code?: Maybe<StringOperators>;
   state?: Maybe<StringOperators>;
   active?: Maybe<BooleanOperators>;
@@ -4011,6 +4017,7 @@ export type OrderSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+  orderPlacedAt?: Maybe<SortOrder>;
   code?: Maybe<SortOrder>;
   state?: Maybe<SortOrder>;
   totalQuantity?: Maybe<SortOrder>;

@@ -42,6 +42,7 @@ export const ORDER_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        orderPlacedAt
         code
         state
         nextStates

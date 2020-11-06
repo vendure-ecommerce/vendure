@@ -21,6 +21,10 @@ a:focus, button:focus {
     flex: 1;
 }
 
+.align-center {
+    align-items: center;
+}
+
 .btn-link.btn-warning {
     color: $color-warning-500;
 

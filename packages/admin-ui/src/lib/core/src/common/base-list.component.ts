@@ -14,6 +14,7 @@ export type OnPageChangeFn<V> = (skip: number, take: number) => V;
  * a list of data from a query which returns a PaginatedList type.
  */
 @Directive()
+// tslint:disable-next-line:directive-class-suffix
 export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
     result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
@@ -82,11 +83,11 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     }
 
     setPageNumber(page: number) {
-        this.setQueryParam('page', page);
+        this.setQueryParam('page', page, true);
     }
 
     setItemsPerPage(perPage: number) {
-        this.setQueryParam('perPage', perPage);
+        this.setQueryParam('perPage', perPage, true);
     }
 
     /**
@@ -96,13 +97,20 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.refresh$.next(undefined);
     }
 
-    protected setQueryParam(hash: { [key: string]: any });
-    protected setQueryParam(key: string, value: any);
-    protected setQueryParam(keyOrHash: string | { [key: string]: any }, value?: any) {
+    protected setQueryParam(hash: { [key: string]: any }, replaceUrl?: boolean);
+    protected setQueryParam(key: string, value: any, replaceUrl?: boolean);
+    protected setQueryParam(
+        keyOrHash: string | { [key: string]: any },
+        valueOrReplaceUrl?: any,
+        maybeReplaceUrl?: boolean,
+    ) {
+        const paramsObject = typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrReplaceUrl } : keyOrHash;
+        const replaceUrl = (typeof keyOrHash === 'string' ? maybeReplaceUrl : valueOrReplaceUrl) ?? false;
         this.router.navigate(['./'], {
-            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: value } : keyOrHash,
+            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrReplaceUrl } : keyOrHash,
             relativeTo: this.route,
             queryParamsHandling: 'merge',
+            replaceUrl,
         });
     }
 }

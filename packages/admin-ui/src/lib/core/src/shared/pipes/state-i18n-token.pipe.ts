@@ -6,6 +6,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 })
 export class StateI18nTokenPipe implements PipeTransform {
     private readonly stateI18nTokens = {
+        Created: _('state.created'),
         AddingItems: _('state.adding-items'),
         ArrangingPayment: _('state.arranging-payment'),
         PaymentAuthorized: _('state.payment-authorized'),

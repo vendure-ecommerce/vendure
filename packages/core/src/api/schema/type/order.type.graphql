@@ -2,6 +2,11 @@ type Order implements Node {
     id: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+    """
+    The date & time that the Order was placed, i.e. the Customer
+    completed the checkout and the Order is no longer "active"
+    """
+    orderPlacedAt: DateTime
     "A unique code for the Order"
     code: String!
     state: String!
