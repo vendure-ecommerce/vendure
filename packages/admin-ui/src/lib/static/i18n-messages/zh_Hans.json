@@ -680,6 +680,7 @@
     "arranging-payment": "正在付款",
     "cancelled": "已取消",
     "delivered": "已完成",
+    "error": "",
     "failed": "",
     "partially-delivered": "部分配货",
     "partially-shipped": "",
