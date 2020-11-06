@@ -13,6 +13,7 @@ export class StateI18nTokenPipe implements PipeTransform {
         PartiallyShipped: _('state.partially-shipped'),
         Shipped: _('state.shipped'),
         PartiallyDelivered: _('state.partially-delivered'),
+        Authorized: _('state.authorized'),
         Delivered: _('state.delivered'),
         Cancelled: _('state.cancelled'),
         Pending: _('state.pending'),
