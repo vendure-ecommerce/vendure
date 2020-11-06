@@ -680,6 +680,7 @@
     "arranging-payment": "",
     "cancelled": "",
     "delivered": "",
+    "error": "",
     "failed": "",
     "partially-delivered": "",
     "partially-shipped": "",
