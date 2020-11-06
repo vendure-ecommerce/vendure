@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
+import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
+import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
@@ -25,8 +27,12 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
 };
 
 @Injectable()
-export class ListQueryBuilder {
+export class ListQueryBuilder implements OnApplicationBootstrap {
     constructor(private connection: TransactionalConnection) {}
+
+    onApplicationBootstrap(): any {
+        this.registerSQLiteRegexpFunction();
+    }
 
     /**
      * Creates and configures a SelectQueryBuilder for queries that return paginated lists of entities.
@@ -74,5 +80,25 @@ export class ListQueryBuilder {
         }
 
         return qb.orderBy(sort);
+    }
+
+    /**
+     * Registers a user-defined function (for flavors of SQLite driver that support it)
+     * so that we can run regex filters on string fields.
+     */
+    private registerSQLiteRegexpFunction() {
+        const regexpFn = (pattern: string, value: string) => {
+            const result = new RegExp(`${pattern}`, 'i').test(value);
+            return result ? 1 : 0;
+        };
+        const dbType = this.connection.rawConnection.options.type;
+        if (dbType === 'better-sqlite3') {
+            const driver = this.connection.rawConnection.driver as BetterSqlite3Driver;
+            driver.databaseConnection.function('regexp', regexpFn);
+        }
+        if (dbType === 'sqljs') {
+            const driver = this.connection.rawConnection.driver as SqljsDriver;
+            driver.databaseConnection.create_function('regexp', regexpFn);
+        }
     }
 }

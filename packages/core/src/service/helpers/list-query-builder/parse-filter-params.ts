@@ -3,7 +3,7 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 import { Connection, ConnectionOptions } from 'typeorm';
 import { DateUtils } from 'typeorm/util/DateUtils';
 
-import { UserInputError } from '../../../common/error/errors';
+import { InternalServerError, UserInputError } from '../../../common/error/errors';
 import {
     BooleanOperators,
     DateOperators,
@@ -87,6 +87,11 @@ function buildWhereCondition(
                 clause: `${fieldName} IN (:...arg${argIndex})`,
                 parameters: { [`arg${argIndex}`]: operand },
             };
+        case 'regex':
+            return {
+                clause: getRegexpClause(fieldName, argIndex, dbType),
+                parameters: { [`arg${argIndex}`]: operand },
+            };
         case 'lt':
         case 'before':
             return {
@@ -135,4 +140,30 @@ function convertDate(input: Date | string | number): string | number {
         return DateUtils.mixedDateToUtcDatetimeString(input);
     }
     return input;
+}
+
+/**
+ * Returns a valid regexp clause based on the current DB driver type.
+ */
+function getRegexpClause(fieldName: string, argIndex: number, dbType: ConnectionOptions['type']): string {
+    switch (dbType) {
+        case 'mariadb':
+        case 'mysql':
+        case 'sqljs':
+        case 'better-sqlite3':
+        case 'aurora-data-api':
+            return `${fieldName} REGEXP :arg${argIndex}`;
+        case 'postgres':
+        case 'aurora-data-api-pg':
+        case 'cockroachdb':
+            return `${fieldName} ~* :arg${argIndex}`;
+        // The node-sqlite3 driver does not support user-defined functions
+        // and therefore we are unable to define a custom regexp
+        // function. See https://github.com/mapbox/node-sqlite3/issues/140
+        case 'sqlite':
+        default:
+            throw new InternalServerError(
+                `The 'regex' filter is not available when using the '${dbType}' driver`,
+            );
+    }
 }

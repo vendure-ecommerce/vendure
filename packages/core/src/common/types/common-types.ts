@@ -83,6 +83,7 @@ export interface StringOperators {
     eq?: string;
     contains?: string;
     in?: string[];
+    regex?: string;
 }
 
 export interface BooleanOperators {

@@ -1037,7 +1037,7 @@ export type Collection = Node & {
   filters: Array<ConfigurableOperation>;
   translations: Array<CollectionTranslation>;
   productVariants: ProductVariantList;
-  customFields?: Maybe<CollectionCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 
@@ -1075,7 +1075,7 @@ export type CreateCollectionInput = {
   parentId?: Maybe<Scalars['ID']>;
   filters: Array<ConfigurableOperationInput>;
   translations: Array<CreateCollectionTranslationInput>;
-  customFields?: Maybe<CreateCollectionCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateCollectionInput = {
@@ -1086,7 +1086,7 @@ export type UpdateCollectionInput = {
   assetIds?: Maybe<Array<Scalars['ID']>>;
   filters?: Maybe<Array<ConfigurableOperationInput>>;
   translations?: Maybe<Array<UpdateCollectionTranslationInput>>;
-  customFields?: Maybe<UpdateCollectionCustomFieldsInput>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CountryTranslationInput = {
@@ -2116,6 +2116,7 @@ export type StringOperators = {
   eq?: Maybe<Scalars['String']>;
   contains?: Maybe<Scalars['String']>;
   in?: Maybe<Array<Scalars['String']>>;
+  regex?: Maybe<Scalars['String']>;
 };
 
 export type BooleanOperators = {
@@ -3921,8 +3922,6 @@ export type CollectionFilterParameter = {
   slug?: Maybe<StringOperators>;
   position?: Maybe<NumberOperators>;
   description?: Maybe<StringOperators>;
-  foo?: Maybe<DateOperators>;
-  bar?: Maybe<StringOperators>;
 };
 
 export type CollectionSortParameter = {
@@ -3933,8 +3932,6 @@ export type CollectionSortParameter = {
   slug?: Maybe<SortOrder>;
   position?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
-  foo?: Maybe<SortOrder>;
-  bar?: Maybe<SortOrder>;
 };
 
 export type CountryFilterParameter = {
@@ -4201,22 +4198,6 @@ export type HistoryEntrySortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
-};
-
-export type CollectionCustomFields = {
-  __typename?: 'CollectionCustomFields';
-  foo?: Maybe<Scalars['DateTime']>;
-  bar?: Maybe<Scalars['String']>;
-};
-
-export type CreateCollectionCustomFieldsInput = {
-  foo?: Maybe<Scalars['DateTime']>;
-  bar?: Maybe<Scalars['String']>;
-};
-
-export type UpdateCollectionCustomFieldsInput = {
-  foo?: Maybe<Scalars['DateTime']>;
-  bar?: Maybe<Scalars['String']>;
 };
 
 export type CustomFields = {

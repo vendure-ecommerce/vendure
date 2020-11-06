@@ -77,6 +77,78 @@ describe('ListQueryBuilder', () => {
 
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'C']);
         });
+
+        describe('regex', () => {
+            it('simple substring', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'or',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'D']);
+            });
+
+            it('start of string', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: '^in',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['E']);
+            });
+
+            it('end of string', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'or$',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['D']);
+            });
+
+            it('alternation', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'dolor|tempor',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['B', 'D']);
+            });
+
+            it('complex', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: '(dolor|tempor)|inc[i]?d[^a]d.*nt',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E']);
+            });
+        });
     });
 
     describe('boolean filtering', () => {
