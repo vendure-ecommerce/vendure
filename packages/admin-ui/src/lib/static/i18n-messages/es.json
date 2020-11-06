@@ -680,6 +680,8 @@
     "arranging-payment": "",
     "authorized": "",
     "cancelled": "",
+    "created": "",
+    "declined": "",
     "delivered": "",
     "error": "",
     "failed": "",

@@ -680,6 +680,8 @@
     "arranging-payment": "Arranging payment",
     "authorized": "Authorized",
     "cancelled": "Cancelled",
+    "created": "Created",
+    "declined": "Declined",
     "delivered": "Delivered",
     "error": "Error",
     "failed": "Failed",

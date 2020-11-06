@@ -680,6 +680,8 @@
     "arranging-payment": "正在付款",
     "authorized": "",
     "cancelled": "已取消",
+    "created": "",
+    "declined": "",
     "delivered": "已完成",
     "error": "",
     "failed": "",

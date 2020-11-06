@@ -680,6 +680,8 @@
     "arranging-payment": "Organização de pagamento",
     "authorized": "Autorizado",
     "cancelled": "Cancelado",
+    "created": "",
+    "declined": "",
     "delivered": "Realizado",
     "error": "",
     "failed": "",

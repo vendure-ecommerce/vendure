@@ -680,6 +680,8 @@
     "arranging-payment": "Oczekiwanie na płatność",
     "authorized": "",
     "cancelled": "Anulowano",
+    "created": "",
+    "declined": "",
     "delivered": "Zrealizowano",
     "error": "",
     "failed": "",
