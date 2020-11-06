@@ -1,6 +1,6 @@
 {
-  "generatedOn": "2020-11-06T14:39:00.067Z",
-  "lastCommit": "443df73d615c2eddbe35155a422e7faa35511d93",
+  "generatedOn": "2020-11-06T14:43:15.173Z",
+  "lastCommit": "d41471b9a7958847813e314d016ff0d5807d1189",
   "translationStatus": {
     "cs": {
       "tokenCount": 680,
@@ -9,7 +9,7 @@
     },
     "de": {
       "tokenCount": 680,
-      "translatedCount": 609,
+      "translatedCount": 610,
       "percentage": 90
     },
     "en": {
@@ -29,7 +29,7 @@
     },
     "pt_BR": {
       "tokenCount": 680,
-      "translatedCount": 655,
+      "translatedCount": 656,
       "percentage": 96
     },
     "zh_Hans": {
