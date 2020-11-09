@@ -119,7 +119,10 @@ export class OrderStateMachine {
      * Specific business logic to be executed after Order state transition completes.
      */
     private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
-        if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
+        if (
+            fromState === 'ArrangingPayment' &&
+            (toState === 'PaymentAuthorized' || toState === 'PaymentSettled')
+        ) {
             data.order.active = false;
             data.order.orderPlacedAt = new Date();
             await this.stockMovementService.createAllocationsForOrder(data.ctx, data.order);

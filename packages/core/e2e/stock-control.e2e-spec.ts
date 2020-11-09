@@ -7,7 +7,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
+import { testSuccessfulPaymentMethod, twoStagePaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CancelOrder,
@@ -18,6 +18,7 @@ import {
     GetOrder,
     GetStockMovement,
     GlobalFlag,
+    SettlePayment,
     StockMovementType,
     UpdateGlobalSettings,
     UpdateProductVariantInput,
@@ -41,6 +42,7 @@ import {
     CREATE_FULFILLMENT,
     GET_ORDER,
     GET_STOCK_MOVEMENT,
+    SETTLE_PAYMENT,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -57,7 +59,7 @@ describe('Stock control', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             paymentOptions: {
-                paymentMethodHandlers: [testSuccessfulPaymentMethod],
+                paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
             },
         }),
     );
@@ -543,9 +545,30 @@ describe('Stock control', () => {
 
         it('allocates stock', async () => {
             await proceedToArrangingPayment(shopClient);
-            const result = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            const result = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
             orderGuard.assertSuccess(result);
             order = result;
+
+            const product = await getProductWithStockMovement('T_1');
+            const [variant1, variant2, variant3, variant4] = product!.variants;
+
+            expect(variant1.stockAllocated).toBe(3);
+            expect(variant1.stockOnHand).toBe(3);
+
+            expect(variant2.stockAllocated).toBe(0); // inventory not tracked
+            expect(variant2.stockOnHand).toBe(3);
+
+            expect(variant3.stockAllocated).toBe(1);
+            expect(variant3.stockOnHand).toBe(3);
+
+            expect(variant4.stockAllocated).toBe(8);
+            expect(variant4.stockOnHand).toBe(3);
+        });
+
+        it('does not re-allocate stock when transitioning Payment from Authorized -> Settled', async () => {
+            await adminClient.query<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+                id: order.id,
+            });
 
             const product = await getProductWithStockMovement('T_1');
             const [variant1, variant2, variant3, variant4] = product!.variants;

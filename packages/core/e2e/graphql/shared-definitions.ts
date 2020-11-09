@@ -753,3 +753,23 @@ export const CREATE_SHIPPING_METHOD = gql`
     }
     ${SHIPPING_METHOD_FRAGMENT}
 `;
+
+export const SETTLE_PAYMENT = gql`
+    mutation SettlePayment($id: ID!) {
+        settlePayment(id: $id) {
+            ...Payment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on SettlePaymentError {
+                paymentErrorMessage
+            }
+        }
+    }
+    fragment Payment on Payment {
+        id
+        state
+        metadata
+    }
+`;

@@ -67,6 +67,7 @@ import {
     GET_ORDER_FULFILLMENTS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
+    SETTLE_PAYMENT,
     TRANSIT_FULFILLMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -1561,26 +1562,6 @@ async function createTestOrder(
     const orderId = (addItemToOrder as UpdatedOrder.Fragment).id;
     return { product, productVariantId, orderId };
 }
-
-export const SETTLE_PAYMENT = gql`
-    mutation SettlePayment($id: ID!) {
-        settlePayment(id: $id) {
-            ...Payment
-            ... on ErrorResult {
-                errorCode
-                message
-            }
-            ... on SettlePaymentError {
-                paymentErrorMessage
-            }
-        }
-    }
-    fragment Payment on Payment {
-        id
-        state
-        metadata
-    }
-`;
 
 export const GET_ORDER_LIST_FULFILLMENTS = gql`
     query GetOrderListFulfillments {
