@@ -27,6 +27,7 @@ import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { PriceCalculationStrategy } from './order/price-calculation-strategy';
+import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
@@ -398,6 +399,13 @@ export interface OrderOptions {
      * @default []
      */
     process?: Array<CustomOrderProcess<any>>;
+    /**
+     * @description
+     * Determines the point of the order process at which stock gets allocated.
+     *
+     * @default DefaultStockAllocationStrategy
+     */
+    stockAllocationStrategy: StockAllocationStrategy;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when

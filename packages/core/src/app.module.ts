@@ -127,6 +127,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             priceCalculationStrategy,
             process,
             orderCodeStrategy,
+            stockAllocationStrategy,
         } = this.configService.orderOptions;
         const { entityIdStrategy } = this.configService;
         return [
@@ -144,6 +145,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             entityIdStrategy,
             priceCalculationStrategy,
             ...process,
+            stockAllocationStrategy,
         ];
     }
 

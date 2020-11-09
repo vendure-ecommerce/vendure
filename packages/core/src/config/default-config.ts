@@ -18,6 +18,7 @@ import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-
 import { DefaultLogger } from './logger/default-logger';
 import { TypeOrmLogger } from './logger/typeorm-logger';
 import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
+import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
 import { UseGuestStrategy } from './order/use-guest-strategy';
@@ -107,6 +108,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         mergeStrategy: new MergeOrdersStrategy(),
         checkoutMergeStrategy: new UseGuestStrategy(),
         process: [],
+        stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
     },
     paymentOptions: {

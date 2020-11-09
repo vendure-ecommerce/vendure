@@ -119,22 +119,32 @@ export class OrderStateMachine {
      * Specific business logic to be executed after Order state transition completes.
      */
     private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
+        const { ctx, order } = data;
+        const { stockAllocationStrategy } = this.configService.orderOptions;
         if (
             fromState === 'ArrangingPayment' &&
             (toState === 'PaymentAuthorized' || toState === 'PaymentSettled')
         ) {
-            data.order.active = false;
-            data.order.orderPlacedAt = new Date();
-            await this.stockMovementService.createAllocationsForOrder(data.ctx, data.order);
-            await this.promotionService.addPromotionsToOrder(data.ctx, data.order);
+            order.active = false;
+            order.orderPlacedAt = new Date();
+            await this.promotionService.addPromotionsToOrder(ctx, order);
+        }
+        const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(
+            ctx,
+            fromState,
+            toState,
+            order,
+        );
+        if (shouldAllocateStock) {
+            await this.stockMovementService.createAllocationsForOrder(ctx, order);
         }
         if (toState === 'Cancelled') {
-            data.order.active = false;
+            order.active = false;
         }
         await this.historyService.createHistoryEntryForOrder({
-            orderId: data.order.id,
+            orderId: order.id,
             type: HistoryEntryType.ORDER_STATE_TRANSITION,
-            ctx: data.ctx,
+            ctx,
             data: {
                 from: fromState,
                 to: toState,
