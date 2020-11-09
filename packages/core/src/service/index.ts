@@ -31,6 +31,7 @@ export * from './services/role.service';
 export * from './services/search.service';
 export * from './services/session.service';
 export * from './services/shipping-method.service';
+export * from './services/stock-movement.service';
 export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
