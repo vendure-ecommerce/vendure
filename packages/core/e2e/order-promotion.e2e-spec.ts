@@ -86,7 +86,7 @@ describe('Promotions applied to Orders', () => {
         input => !!input.lines,
     );
 
-    let products: GetPromoProducts.Items[];
+    let products: GetProductsWithVariantPrices.Items[];
 
     beforeAll(async () => {
         await server.init({
