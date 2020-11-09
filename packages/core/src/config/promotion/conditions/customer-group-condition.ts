@@ -1,11 +1,15 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
+import { Subscription } from 'rxjs';
 
 import { TtlCache } from '../../../common/ttl-cache';
 import { idsAreEqual } from '../../../common/utils';
+import { EventBus } from '../../../event-bus/event-bus';
+import { CustomerGroupEvent } from '../../../event-bus/events/customer-group-event';
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;
+let subscription: Subscription;
 
 const fiveMinutes = 5 * 60 * 1000;
 const cache = new TtlCache<ID, ID[]>({ ttl: fiveMinutes });
@@ -24,6 +28,19 @@ export const customerGroup = new PromotionCondition({
         // Lazily-imported to avoid circular dependency issues.
         const { CustomerService } = await import('../../../service/services/customer.service');
         customerService = injector.get(CustomerService);
+        subscription = injector
+            .get(EventBus)
+            .ofType(CustomerGroupEvent)
+            .subscribe(event => {
+                // When a customer is added to or removed from a group, we need
+                // to invalidate the cache for that customer id
+                for (const customer of event.customers) {
+                    cache.delete(customer.id);
+                }
+            });
+    },
+    destroy() {
+        subscription.unsubscribe();
     },
     async check(ctx, order, args) {
         if (!order.customer) {
