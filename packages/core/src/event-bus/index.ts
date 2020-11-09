@@ -6,6 +6,7 @@ export * from './events/account-registration-event';
 export * from './events/asset-event';
 export * from './events/attempted-login-event';
 export * from './events/collection-modification-event';
+export * from './events/customer-group-event';
 export * from './events/fulfillment-state-transition-event';
 export * from './events/identifier-change-event';
 export * from './events/identifier-change-request-event';
