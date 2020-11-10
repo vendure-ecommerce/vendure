@@ -24,10 +24,7 @@ export class ProductTranslation extends VendureEntity implements Translation<Pro
 
     @Column('text') description: string;
 
-    @ManyToOne(
-        type => Product,
-        base => base.translations,
-    )
+    @ManyToOne(type => Product, base => base.translations)
     base: Product;
 
     @Column(type => CustomProductFieldsTranslation)

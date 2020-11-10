@@ -3,9 +3,20 @@ type ShippingMethod implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     code: String!
+    name: String!
     description: String!
     checker: ConfigurableOperation!
     calculator: ConfigurableOperation!
+    translations: [ShippingMethodTranslation!]!
+}
+
+type ShippingMethodTranslation {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    languageCode: LanguageCode!
+    name: String!
+    description: String!
 }
 
 type ShippingMethodList implements PaginatedList {

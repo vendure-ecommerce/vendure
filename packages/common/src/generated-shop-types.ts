@@ -2094,6 +2094,7 @@ export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -2425,10 +2426,22 @@ export type ShippingMethod = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     code: Scalars['String'];
+    name: Scalars['String'];
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    translations: Array<ShippingMethodTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingMethodTranslation = {
+    __typename?: 'ShippingMethodTranslation';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    description: Scalars['String'];
 };
 
 export type ShippingMethodList = PaginatedList & {

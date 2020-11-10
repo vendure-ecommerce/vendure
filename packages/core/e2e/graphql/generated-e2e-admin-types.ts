@@ -1663,20 +1663,28 @@ export type UpdateRoleInput = {
     channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type ShippingMethodTranslationInput = {
+    id?: Maybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type CreateShippingMethodInput = {
     code: Scalars['String'];
-    description: Scalars['String'];
     checker: ConfigurableOperationInput;
     calculator: ConfigurableOperationInput;
+    translations: Array<ShippingMethodTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateShippingMethodInput = {
     id: Scalars['ID'];
     code?: Maybe<Scalars['String']>;
-    description?: Maybe<Scalars['String']>;
     checker?: Maybe<ConfigurableOperationInput>;
     calculator?: Maybe<ConfigurableOperationInput>;
+    translations: Array<ShippingMethodTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1705,7 +1713,6 @@ export type TestShippingMethodResult = {
 export type TestShippingMethodQuote = {
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
-    description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
 
@@ -3117,6 +3124,7 @@ export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -3344,10 +3352,21 @@ export type ShippingMethod = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     code: Scalars['String'];
+    name: Scalars['String'];
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    translations: Array<ShippingMethodTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingMethodTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    description: Scalars['String'];
 };
 
 export type ShippingMethodList = PaginatedList & {
@@ -3875,6 +3894,7 @@ export type ShippingMethodFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     code?: Maybe<StringOperators>;
+    name?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
 };
 
@@ -3883,6 +3903,7 @@ export type ShippingMethodSortParameter = {
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
 };
 
@@ -4691,7 +4712,7 @@ export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
     >;
 };
 
-export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'description'> & {
+export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'name' | 'description'> & {
     calculator: Pick<ConfigurableOperation, 'code'>;
     checker: Pick<ConfigurableOperation, 'code'>;
 };
@@ -5235,16 +5256,6 @@ export type CreateShippingMethodMutationVariables = Exact<{
 
 export type CreateShippingMethodMutation = { createShippingMethod: ShippingMethodFragment };
 
-export type UpdateOptionGroupMutationVariables = Exact<{
-    input: UpdateProductOptionGroupInput;
-}>;
-
-export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
-
-export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
-
-export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
-
 export type SettlePaymentMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -5258,6 +5269,16 @@ export type SettlePaymentMutation = {
 };
 
 export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
+
+export type UpdateOptionGroupMutationVariables = Exact<{
+    input: UpdateProductOptionGroupInput;
+}>;
+
+export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
+
+export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
+
+export type DeletePromotionAdHoc1Mutation = { deletePromotion: Pick<DeletionResponse, 'result'> };
 
 export type GetOrderListFulfillmentsQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -5531,7 +5552,7 @@ export type TestEligibleMethodsQueryVariables = Exact<{
 
 export type TestEligibleMethodsQuery = {
     testEligibleShippingMethods: Array<
-        Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+        Pick<ShippingMethodQuote, 'id' | 'name' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
     >;
 };
 
@@ -7098,18 +7119,6 @@ export namespace CreateShippingMethod {
     export type CreateShippingMethod = NonNullable<CreateShippingMethodMutation['createShippingMethod']>;
 }
 
-export namespace UpdateOptionGroup {
-    export type Variables = UpdateOptionGroupMutationVariables;
-    export type Mutation = UpdateOptionGroupMutation;
-    export type UpdateProductOptionGroup = NonNullable<UpdateOptionGroupMutation['updateProductOptionGroup']>;
-}
-
-export namespace DeletePromotionAdHoc1 {
-    export type Variables = DeletePromotionAdHoc1MutationVariables;
-    export type Mutation = DeletePromotionAdHoc1Mutation;
-    export type DeletePromotion = NonNullable<DeletePromotionAdHoc1Mutation['deletePromotion']>;
-}
-
 export namespace SettlePayment {
     export type Variables = SettlePaymentMutationVariables;
     export type Mutation = SettlePaymentMutation;
@@ -7126,6 +7135,18 @@ export namespace SettlePayment {
 
 export namespace Payment {
     export type Fragment = PaymentFragment;
+}
+
+export namespace UpdateOptionGroup {
+    export type Variables = UpdateOptionGroupMutationVariables;
+    export type Mutation = UpdateOptionGroupMutation;
+    export type UpdateProductOptionGroup = NonNullable<UpdateOptionGroupMutation['updateProductOptionGroup']>;
+}
+
+export namespace DeletePromotionAdHoc1 {
+    export type Variables = DeletePromotionAdHoc1MutationVariables;
+    export type Mutation = DeletePromotionAdHoc1Mutation;
+    export type DeletePromotion = NonNullable<DeletePromotionAdHoc1Mutation['deletePromotion']>;
 }
 
 export namespace GetOrderListFulfillments {

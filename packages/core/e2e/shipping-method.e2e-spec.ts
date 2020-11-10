@@ -154,7 +154,6 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'new-method',
-                description: 'new method',
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
                     arguments: [
@@ -168,13 +167,15 @@ describe('ShippingMethod resolver', () => {
                     code: calculatorWithMetadata.code,
                     arguments: [],
                 },
+                translations: [{ languageCode: LanguageCode.en, name: 'new method', description: '' }],
             },
         });
 
         expect(createShippingMethod).toEqual({
             id: 'T_3',
             code: 'new-method',
-            description: 'new method',
+            name: 'new method',
+            description: '',
             calculator: {
                 code: 'calculator-with-metadata',
             },
@@ -238,7 +239,8 @@ describe('ShippingMethod resolver', () => {
         expect(testEligibleShippingMethods).toEqual([
             {
                 id: 'T_3',
-                description: 'new method',
+                name: 'new method',
+                description: '',
                 price: 100,
                 priceWithTax: 100,
                 metadata: TEST_METADATA,
@@ -246,14 +248,16 @@ describe('ShippingMethod resolver', () => {
 
             {
                 id: 'T_1',
-                description: 'Standard Shipping',
+                name: 'Standard Shipping',
+                description: '',
                 price: 500,
                 priceWithTax: 500,
                 metadata: null,
             },
             {
                 id: 'T_2',
-                description: 'Express Shipping',
+                name: 'Express Shipping',
+                description: '',
                 price: 1000,
                 priceWithTax: 1000,
                 metadata: null,
@@ -268,11 +272,11 @@ describe('ShippingMethod resolver', () => {
         >(UPDATE_SHIPPING_METHOD, {
             input: {
                 id: 'T_3',
-                description: 'changed method',
+                translations: [{ languageCode: LanguageCode.en, name: 'changed method', description: '' }],
             },
         });
 
-        expect(updateShippingMethod.description).toBe('changed method');
+        expect(updateShippingMethod.name).toBe('changed method');
     });
 
     it('deleteShippingMethod', async () => {
@@ -384,6 +388,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
     query TestEligibleMethods($input: TestEligibleShippingMethodsInput!) {
         testEligibleShippingMethods(input: $input) {
             id
+            name
             description
             price
             priceWithTax

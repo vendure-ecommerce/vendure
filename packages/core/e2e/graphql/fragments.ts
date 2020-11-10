@@ -590,6 +590,7 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
     fragment ShippingMethod on ShippingMethod {
         id
         code
+        name
         description
         calculator {
             code

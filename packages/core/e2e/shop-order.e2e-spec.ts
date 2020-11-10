@@ -844,8 +844,8 @@ describe('Shop orders', () => {
                 shippingMethods = result.eligibleShippingMethods;
 
                 expect(shippingMethods).toEqual([
-                    { id: 'T_1', price: 500, description: 'Standard Shipping' },
-                    { id: 'T_2', price: 1000, description: 'Express Shipping' },
+                    { id: 'T_1', price: 500, name: 'Standard Shipping', description: '' },
+                    { id: 'T_2', price: 1000, name: 'Express Shipping', description: '' },
                 ]);
             });
 

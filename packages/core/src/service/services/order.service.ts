@@ -523,6 +523,7 @@ export class OrderService {
             price: eligible.result.price,
             priceWithTax: eligible.result.priceWithTax,
             description: eligible.method.description,
+            name: eligible.method.name,
             metadata: eligible.result.metadata,
         }));
     }

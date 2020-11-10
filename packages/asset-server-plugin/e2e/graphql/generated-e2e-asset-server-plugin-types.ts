@@ -1663,20 +1663,28 @@ export type UpdateRoleInput = {
     channelIds?: Maybe<Array<Scalars['ID']>>;
 };
 
+export type ShippingMethodTranslationInput = {
+    id?: Maybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type CreateShippingMethodInput = {
     code: Scalars['String'];
-    description: Scalars['String'];
     checker: ConfigurableOperationInput;
     calculator: ConfigurableOperationInput;
+    translations: Array<ShippingMethodTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateShippingMethodInput = {
     id: Scalars['ID'];
     code?: Maybe<Scalars['String']>;
-    description?: Maybe<Scalars['String']>;
     checker?: Maybe<ConfigurableOperationInput>;
     calculator?: Maybe<ConfigurableOperationInput>;
+    translations: Array<ShippingMethodTranslationInput>;
     customFields?: Maybe<Scalars['JSON']>;
 };
 
@@ -1705,7 +1713,6 @@ export type TestShippingMethodResult = {
 export type TestShippingMethodQuote = {
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
-    description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
 
@@ -3117,6 +3124,7 @@ export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -3344,10 +3352,21 @@ export type ShippingMethod = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     code: Scalars['String'];
+    name: Scalars['String'];
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    translations: Array<ShippingMethodTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingMethodTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    description: Scalars['String'];
 };
 
 export type ShippingMethodList = PaginatedList & {
@@ -3875,6 +3894,7 @@ export type ShippingMethodFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
     code?: Maybe<StringOperators>;
+    name?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
 };
 
@@ -3883,6 +3903,7 @@ export type ShippingMethodSortParameter = {
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
 };
 

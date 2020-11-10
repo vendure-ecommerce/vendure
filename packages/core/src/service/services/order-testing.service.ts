@@ -18,6 +18,7 @@ import { ShippingMethod } from '../../entity/shipping-method/shipping-method.ent
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
+import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ProductVariantService } from './product-variant.service';
@@ -54,10 +55,7 @@ export class OrderTestingService {
         const result = eligible ? await shippingMethod.apply(ctx, mockOrder) : undefined;
         return {
             eligible,
-            quote: result && {
-                ...result,
-                description: shippingMethod.description,
-            },
+            quote: result,
         };
     }
 
@@ -71,13 +69,19 @@ export class OrderTestingService {
     ): Promise<ShippingMethodQuote[]> {
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, mockOrder);
-        return eligibleMethods.map(result => ({
-            id: result.method.id,
-            price: result.result.price,
-            priceWithTax: result.result.priceWithTax,
-            description: result.method.description,
-            metadata: result.result.metadata,
-        }));
+        return eligibleMethods
+            .map(result => {
+                translateDeep(result.method, ctx.languageCode);
+                return result;
+            })
+            .map(result => ({
+                id: result.method.id,
+                price: result.result.price,
+                priceWithTax: result.result.priceWithTax,
+                name: result.method.name,
+                description: result.method.description,
+                metadata: result.result.metadata,
+            }));
     }
 
     private async buildMockOrder(

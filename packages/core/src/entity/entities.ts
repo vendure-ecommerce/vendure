@@ -43,6 +43,7 @@ import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { ShippingMethodTranslation } from './shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
 import { Allocation } from './stock-movement/allocation.entity';
 import { Cancellation } from './stock-movement/cancellation.entity';
@@ -109,6 +110,7 @@ export const coreEntitiesMap = {
     Sale,
     Session,
     ShippingMethod,
+    ShippingMethodTranslation,
     StockAdjustment,
     StockMovement,
     TaxCategory,

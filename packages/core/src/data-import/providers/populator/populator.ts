@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigurableOperationInput } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
@@ -208,8 +208,8 @@ export class Populator {
                         { name: 'taxRate', value: '0' },
                     ],
                 },
-                description: method.name,
                 code: normalizeString(method.name, '-'),
+                translations: [{ languageCode: ctx.languageCode, name: method.name, description: '' }],
             });
         }
     }

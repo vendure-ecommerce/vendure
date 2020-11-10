@@ -10,7 +10,11 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { CreateShippingMethod, ShippingMethodFragment } from './graphql/generated-e2e-admin-types';
+import {
+    CreateShippingMethod,
+    LanguageCode,
+    ShippingMethodFragment,
+} from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
     AdjustItemQuantity,
@@ -18,7 +22,6 @@ import {
     GetActiveOrder,
     GetShippingMethods,
     RemoveItemFromOrder,
-    SetCustomerForOrder,
     SetShippingAddress,
     SetShippingMethod,
     TestOrderFragmentFragment,
@@ -31,7 +34,6 @@ import {
     GET_ACTIVE_ORDER,
     GET_ELIGIBLE_SHIPPING_METHODS,
     REMOVE_ITEM_FROM_ORDER,
-    SET_CUSTOMER,
     SET_SHIPPING_ADDRESS,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
@@ -118,7 +120,6 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'single-line',
-                description: 'For single-line orders',
                 checker: {
                     code: checker1.code,
                     arguments: [],
@@ -127,6 +128,9 @@ describe('ShippingMethod resolver', () => {
                     code: calculator.code,
                     arguments: [],
                 },
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'For single-line orders', description: '' },
+                ],
             },
         });
         singleLineShippingMethod = result1.createShippingMethod;
@@ -137,7 +141,6 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'multi-line',
-                description: 'For multi-line orders',
                 checker: {
                     code: checker2.code,
                     arguments: [],
@@ -146,6 +149,9 @@ describe('ShippingMethod resolver', () => {
                     code: calculator.code,
                     arguments: [],
                 },
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'For multi-line orders', description: '' },
+                ],
             },
         });
         multiLineShippingMethod = result2.createShippingMethod;
@@ -156,7 +162,6 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'optimized',
-                description: 'Optimized with shouldRunCheck',
                 checker: {
                     code: checker3.code,
                     arguments: [],
@@ -165,6 +170,9 @@ describe('ShippingMethod resolver', () => {
                     code: calculator.code,
                     arguments: [],
                 },
+                translations: [
+                    { languageCode: LanguageCode.en, name: 'Optimized with shouldRunCheck', description: '' },
+                ],
             },
         });
         optimizedShippingMethod = result3.createShippingMethod;

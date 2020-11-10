@@ -20,3 +20,4 @@ export class CustomUserFields {}
 export class CustomGlobalSettingsFields {}
 export class CustomOrderFields {}
 export class CustomShippingMethodFields {}
+export class CustomShippingMethodFieldsTranslation {}

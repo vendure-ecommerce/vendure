@@ -2015,6 +2015,7 @@ export type ShippingMethodQuote = {
     id: Scalars['ID'];
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
 };
@@ -2319,10 +2320,21 @@ export type ShippingMethod = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     code: Scalars['String'];
+    name: Scalars['String'];
     description: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
+    translations: Array<ShippingMethodTranslation>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingMethodTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    description: Scalars['String'];
 };
 
 export type ShippingMethodList = PaginatedList & {
@@ -2922,7 +2934,7 @@ export type RemoveItemFromOrderMutation = {
 export type GetShippingMethodsQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetShippingMethodsQuery = {
-    eligibleShippingMethods: Array<Pick<ShippingMethodQuote, 'id' | 'price' | 'description'>>;
+    eligibleShippingMethods: Array<Pick<ShippingMethodQuote, 'id' | 'price' | 'name' | 'description'>>;
 };
 
 export type SetShippingMethodMutationVariables = Exact<{

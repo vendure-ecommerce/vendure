@@ -363,6 +363,7 @@ export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
         eligibleShippingMethods {
             id
             price
+            name
             description
         }
     }

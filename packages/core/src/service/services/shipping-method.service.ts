@@ -15,10 +15,13 @@ import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { Channel } from '../../entity/channel/channel.entity';
+import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
@@ -33,6 +36,7 @@ export class ShippingMethodService {
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
         private shippingConfiguration: ShippingConfiguration,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     async initShippingMethods() {
@@ -52,24 +56,35 @@ export class ShippingMethodService {
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
-                items,
+                items: items.map(i => translateDeep(i, ctx.languageCode)),
                 totalItems,
             }));
     }
 
-    findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
-        return this.connection.findOneInChannel(ctx, ShippingMethod, shippingMethodId, ctx.channelId, {
-            relations: ['channels'],
-            where: { deletedAt: null },
-        });
+    async findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
+        const shippingMethod = await this.connection.findOneInChannel(
+            ctx,
+            ShippingMethod,
+            shippingMethodId,
+            ctx.channelId,
+            {
+                relations: ['channels'],
+                where: { deletedAt: null },
+            },
+        );
+        return shippingMethod && translateDeep(shippingMethod, ctx.languageCode);
     }
 
     async create(ctx: RequestContext, input: CreateShippingMethodInput): Promise<ShippingMethod> {
-        const shippingMethod = new ShippingMethod({
-            code: input.code,
-            description: input.description,
-            checker: this.shippingConfiguration.parseCheckerInput(input.checker),
-            calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
+        const shippingMethod = await this.translatableSaver.create({
+            ctx,
+            input,
+            entityType: ShippingMethod,
+            translationType: ShippingMethodTranslation,
+            beforeSave: method => {
+                method.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
+                method.calculator = this.shippingConfiguration.parseCalculatorInput(input.calculator);
+            },
         });
         this.channelService.assignToCurrentChannel(shippingMethod, ctx);
         const newShippingMethod = await this.connection
@@ -84,7 +99,12 @@ export class ShippingMethodService {
         if (!shippingMethod) {
             throw new EntityNotFoundError('ShippingMethod', input.id);
         }
-        const updatedShippingMethod = patchEntity(shippingMethod, omit(input, ['checker', 'calculator']));
+        const updatedShippingMethod = await this.translatableSaver.update({
+            ctx,
+            input: omit(input, ['checker', 'calculator']),
+            entityType: ShippingMethod,
+            translationType: ShippingMethodTranslation,
+        });
         if (input.checker) {
             updatedShippingMethod.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
         }
@@ -126,9 +146,10 @@ export class ShippingMethodService {
     }
 
     private async updateActiveShippingMethods(ctx: RequestContext) {
-        this.activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
+        const activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
             relations: ['channels'],
             where: { deletedAt: null },
         });
+        this.activeShippingMethods = activeShippingMethods.map(m => translateDeep(m, ctx.languageCode));
     }
 }
