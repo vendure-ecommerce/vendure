@@ -247,7 +247,7 @@ export function shippingMethodBreadcrumb(data: any, params: any) {
         entity: data.entity,
         id: params.id,
         breadcrumbKey: 'breadcrumb.shipping-methods',
-        getName: method => method.description,
+        getName: method => method.name,
         route: 'shipping-methods',
     });
 }

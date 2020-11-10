@@ -20,9 +20,11 @@ export class ShippingMethodResolver extends BaseEntityResolver<ShippingMethod.Fr
                 updatedAt: '',
                 id: '',
                 code: '',
+                name: '',
                 description: '',
                 checker: undefined as any,
                 calculator: undefined as any,
+                translations: [],
             },
             id => dataService.shippingMethod.getShippingMethod(id).mapStream(data => data.shippingMethod),
         );

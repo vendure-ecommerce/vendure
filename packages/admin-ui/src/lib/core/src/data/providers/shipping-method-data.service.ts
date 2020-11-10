@@ -1,3 +1,5 @@
+import { pick } from '@vendure/common/lib/pick';
+
 import {
     CreateShippingMethod,
     CreateShippingMethodInput,
@@ -54,20 +56,22 @@ export class ShippingMethodDataService {
     }
 
     createShippingMethod(input: CreateShippingMethodInput) {
+        const variables: CreateShippingMethod.Variables = {
+            input: pick(input, ['code', 'checker', 'calculator', 'customFields', 'translations']),
+        };
         return this.baseDataService.mutate<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
             CREATE_SHIPPING_METHOD,
-            {
-                input,
-            },
+            variables,
         );
     }
 
     updateShippingMethod(input: UpdateShippingMethodInput) {
+        const variables: UpdateShippingMethod.Variables = {
+            input: pick(input, ['id', 'code', 'checker', 'calculator', 'customFields', 'translations']),
+        };
         return this.baseDataService.mutate<UpdateShippingMethod.Mutation, UpdateShippingMethod.Variables>(
             UPDATE_SHIPPING_METHOD,
-            {
-                input,
-            },
+            variables,
         );
     }
 

@@ -17,12 +17,12 @@
     (itemsPerPageChange)="setItemsPerPage($event)"
 >
     <vdr-dt-column>{{ 'common.code' | translate }}</vdr-dt-column>
-    <vdr-dt-column>{{ 'common.description' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-shippingMethod="item">
         <td class="left align-middle">{{ shippingMethod.code }}</td>
-        <td class="left align-middle">{{ shippingMethod.description }}</td>
+        <td class="left align-middle">{{ shippingMethod.name }}</td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"

@@ -1891,7 +1891,6 @@ export type TestShippingMethodQuote = {
   __typename?: 'TestShippingMethodQuote';
   price: Scalars['Int'];
   priceWithTax: Scalars['Int'];
-  description: Scalars['String'];
   metadata?: Maybe<Scalars['JSON']>;
 };
 
@@ -3609,7 +3608,18 @@ export type ShippingMethod = Node & {
   description: Scalars['String'];
   checker: ConfigurableOperation;
   calculator: ConfigurableOperation;
+  translations: Array<ShippingMethodTranslation>;
   customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingMethodTranslation = {
+  __typename?: 'ShippingMethodTranslation';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  languageCode: LanguageCode;
+  name: Scalars['String'];
+  description: Scalars['String'];
 };
 
 export type ShippingMethodList = PaginatedList & {
@@ -7015,14 +7025,17 @@ export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResu
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
-  & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'description'>
+  & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'description'>
   & { checker: (
     { __typename?: 'ConfigurableOperation' }
     & ConfigurableOperationFragment
   ), calculator: (
     { __typename?: 'ConfigurableOperation' }
     & ConfigurableOperationFragment
-  ) }
+  ), translations: Array<(
+    { __typename?: 'ShippingMethodTranslation' }
+    & Pick<ShippingMethodTranslation, 'id' | 'languageCode' | 'name' | 'description'>
+  )> }
 );
 
 export type GetShippingMethodListQueryVariables = Exact<{
@@ -7100,7 +7113,7 @@ export type TestShippingMethodQuery = { testShippingMethod: (
     & Pick<TestShippingMethodResult, 'eligible'>
     & { quote?: Maybe<(
       { __typename?: 'TestShippingMethodQuote' }
-      & Pick<TestShippingMethodQuote, 'price' | 'priceWithTax' | 'description' | 'metadata'>
+      & Pick<TestShippingMethodQuote, 'price' | 'priceWithTax' | 'metadata'>
     )> }
   ) };
 
@@ -7111,7 +7124,7 @@ export type TestEligibleShippingMethodsQueryVariables = Exact<{
 
 export type TestEligibleShippingMethodsQuery = { testEligibleShippingMethods: Array<(
     { __typename?: 'ShippingMethodQuote' }
-    & Pick<ShippingMethodQuote, 'id' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
+    & Pick<ShippingMethodQuote, 'id' | 'name' | 'description' | 'price' | 'priceWithTax' | 'metadata'>
   )> };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
@@ -8330,6 +8343,7 @@ export namespace ShippingMethod {
   export type Fragment = ShippingMethodFragment;
   export type Checker = (NonNullable<ShippingMethodFragment['checker']>);
   export type Calculator = (NonNullable<ShippingMethodFragment['calculator']>);
+  export type Translations = NonNullable<(NonNullable<ShippingMethodFragment['translations']>)[number]>;
 }
 
 export namespace GetShippingMethodList {

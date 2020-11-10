@@ -8,12 +8,19 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
         createdAt
         updatedAt
         code
+        name
         description
         checker {
             ...ConfigurableOperation
         }
         calculator {
             ...ConfigurableOperation
+        }
+        translations {
+            id
+            languageCode
+            name
+            description
         }
     }
     ${CONFIGURABLE_OPERATION_FRAGMENT}
@@ -86,7 +93,6 @@ export const TEST_SHIPPING_METHOD = gql`
             quote {
                 price
                 priceWithTax
-                description
                 metadata
             }
         }
@@ -97,6 +103,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
     query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
         testEligibleShippingMethods(input: $input) {
             id
+            name
             description
             price
             priceWithTax

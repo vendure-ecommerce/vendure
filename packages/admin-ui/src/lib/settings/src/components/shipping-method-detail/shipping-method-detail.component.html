@@ -1,6 +1,12 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+        <vdr-language-selector
+            [disabled]="isNew$ | async"
+            [availableLanguageCodes]="availableLanguages$ | async"
+            [currentLanguageCode]="languageCode$ | async"
+            (languageCodeChange)="setLanguage($event)"
+        ></vdr-language-selector>
     </vdr-ab-left>
 
     <vdr-ab-right>
@@ -18,7 +24,9 @@
                 class="btn btn-primary"
                 (click)="save()"
                 *vdrIfPermissions="'UpdateSettings'"
-                [disabled]="detailForm.pristine || detailForm.invalid || !selectedChecker || !selectedCalculator"
+                [disabled]="
+                    detailForm.pristine || detailForm.invalid || !selectedChecker || !selectedCalculator
+                "
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -27,18 +35,44 @@
 </vdr-action-bar>
 
 <form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as shippingMethod">
-    <vdr-form-field [label]="'common.description' | translate" for="description">
+    <vdr-form-field [label]="'common.name' | translate" for="name">
         <input
-            id="description"
+            id="name"
             type="text"
-            formControlName="description"
+            formControlName="name"
             [readonly]="!('UpdateSettings' | hasPermission)"
             (input)="updateCode(shippingMethod.code, $event.target.value)"
         />
     </vdr-form-field>
-    <vdr-form-field [label]="'common.code' | translate" for="code" [readOnlyToggle]="'UpdateSettings' | hasPermission">
-        <input id="code" type="text" formControlName="code" [readonly]="!('UpdateSettings' | hasPermission)" />
+    <vdr-form-field
+        [label]="'common.code' | translate"
+        for="code"
+        [readOnlyToggle]="'UpdateSettings' | hasPermission"
+    >
+        <input
+            id="code"
+            type="text"
+            formControlName="code"
+            [readonly]="!('UpdateSettings' | hasPermission)"
+        />
     </vdr-form-field>
+    <vdr-rich-text-editor
+        formControlName="description"
+        [readonly]="!('UpdateSettings' | hasPermission)"
+        [label]="'common.description' | translate"
+    ></vdr-rich-text-editor>
+
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="ShippingMethod"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 
     <div class="clr-row">
         <div class="clr-col">

@@ -7,17 +7,23 @@ import {
     ConfigurableOperation,
     ConfigurableOperationDefinition,
     ConfigurableOperationInput,
+    CreateFacetInput,
     CreateShippingMethodInput,
+    createUpdatedTranslatable,
+    CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
+    FacetWithValues,
     GetActiveChannel,
     getConfigArgValue,
     getDefaultConfigArgValue,
+    LanguageCode,
     NotificationService,
     ServerConfigService,
     ShippingMethod,
     TestShippingMethodInput,
     TestShippingMethodResult,
+    UpdateFacetInput,
     UpdateShippingMethodInput,
 } from '@vendure/admin-ui/core';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
@@ -34,7 +40,8 @@ import { TestOrderLine } from '../test-order-builder/test-order-builder.componen
     styleUrls: ['./shipping-method-detail.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingMethod.Fragment>
+export class ShippingMethodDetailComponent
+    extends BaseDetailComponent<ShippingMethod.Fragment>
     implements OnInit, OnDestroy {
     detailForm: FormGroup;
     checkers: ConfigurableOperationDefinition[] = [];
@@ -48,6 +55,7 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     testOrderLines: TestOrderLine[];
     testDataUpdated = false;
     testResult$: Observable<TestShippingMethodResult | undefined>;
+    customFields: CustomFieldConfig[];
     private fetchTestResult$ = new Subject<[TestAddress, TestOrderLine[]]>();
 
     constructor(
@@ -60,11 +68,16 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('ShippingMethod');
         this.detailForm = this.formBuilder.group({
             code: ['', Validators.required],
-            description: ['', Validators.required],
+            name: ['', Validators.required],
+            description: '',
             checker: {},
             calculator: {},
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -124,6 +137,10 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         this.destroy();
     }
 
+    customFieldIsSet(name: string): boolean {
+        return !!this.detailForm.get(['customFields', name]);
+    }
+
     updateCode(currentCode: string, nameValue: string) {
         if (!currentCode) {
             const codeControl = this.detailForm.get(['code']);
@@ -166,31 +183,43 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     }
 
     create() {
-        if (!this.selectedChecker || !this.selectedCalculator) {
+        const selectedChecker = this.selectedChecker;
+        const selectedCalculator = this.selectedCalculator;
+        if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        const formValue = this.detailForm.value;
-        const input: CreateShippingMethodInput = {
-            code: formValue.code,
-            description: formValue.description,
-            checker: this.toAdjustmentOperationInput(this.selectedChecker, formValue.checker),
-            calculator: this.toAdjustmentOperationInput(this.selectedCalculator, formValue.calculator),
-        };
-        this.dataService.shippingMethod.createShippingMethod(input).subscribe(
-            data => {
-                this.notificationService.success(_('common.notify-create-success'), {
-                    entity: 'ShippingMethod',
-                });
-                this.detailForm.markAsPristine();
-                this.changeDetector.markForCheck();
-                this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-create-error'), {
-                    entity: 'ShippingMethod',
-                });
-            },
-        );
+        combineLatest(this.entity$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([shippingMethod, languageCode]) => {
+                    const formValue = this.detailForm.value;
+                    const input = {
+                        ...(this.getUpdatedShippingMethod(
+                            shippingMethod,
+                            this.detailForm,
+                            languageCode,
+                        ) as CreateShippingMethodInput),
+                        checker: this.toAdjustmentOperationInput(selectedChecker, formValue.checker),
+                        calculator: this.toAdjustmentOperationInput(selectedCalculator, formValue.calculator),
+                    };
+                    return this.dataService.shippingMethod.createShippingMethod(input);
+                }),
+            )
+            .subscribe(
+                data => {
+                    this.notificationService.success(_('common.notify-create-success'), {
+                        entity: 'ShippingMethod',
+                    });
+                    this.detailForm.markAsPristine();
+                    this.changeDetector.markForCheck();
+                    this.router.navigate(['../', data.createShippingMethod.id], { relativeTo: this.route });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-create-error'), {
+                        entity: 'ShippingMethod',
+                    });
+                },
+            );
     }
 
     save() {
@@ -199,15 +228,17 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        this.entity$
+        combineLatest(this.entity$, this.languageCode$)
             .pipe(
                 take(1),
-                mergeMap(({ id }) => {
+                mergeMap(([shippingMethod, languageCode]) => {
                     const formValue = this.detailForm.value;
-                    const input: UpdateShippingMethodInput = {
-                        id,
-                        code: formValue.code,
-                        description: formValue.description,
+                    const input = {
+                        ...(this.getUpdatedShippingMethod(
+                            shippingMethod,
+                            this.detailForm,
+                            languageCode,
+                        ) as UpdateShippingMethodInput),
                         checker: this.toAdjustmentOperationInput(selectedChecker, formValue.checker),
                         calculator: this.toAdjustmentOperationInput(selectedCalculator, formValue.calculator),
                     };
@@ -256,6 +287,29 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
     }
 
     /**
+     * Given a ShippingMethod and the value of the detailForm, this method creates an updated copy which
+     * can then be persisted to the API.
+     */
+    private getUpdatedShippingMethod(
+        shippingMethod: ShippingMethod.Fragment,
+        formGroup: FormGroup,
+        languageCode: LanguageCode,
+    ): Omit<CreateShippingMethodInput | UpdateShippingMethodInput, 'checker' | 'calculator'> {
+        const input = createUpdatedTranslatable({
+            translatable: shippingMethod,
+            updatedFields: formGroup.value,
+            customFieldConfig: this.customFields,
+            languageCode,
+            defaultTranslation: {
+                languageCode,
+                name: shippingMethod.name || '',
+                description: shippingMethod.description || '',
+            },
+        });
+        return input;
+    }
+
+    /**
      * Maps an array of conditions or actions to the input format expected by the GraphQL API.
      */
     private toAdjustmentOperationInput(
@@ -273,20 +327,37 @@ export class ShippingMethodDetailComponent extends BaseDetailComponent<ShippingM
         };
     }
 
-    protected setFormValues(shippingMethod: ShippingMethod.Fragment): void {
+    protected setFormValues(shippingMethod: ShippingMethod.Fragment, languageCode: LanguageCode): void {
+        const currentTranslation = shippingMethod.translations.find(t => t.languageCode === languageCode);
         this.detailForm.patchValue({
-            description: shippingMethod.description,
+            name: currentTranslation?.name ?? '',
+            description: currentTranslation?.description ?? '',
             code: shippingMethod.code,
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });
-        this.selectedChecker = {
+        this.selectedChecker = shippingMethod.checker && {
             code: shippingMethod.checker.code,
             args: shippingMethod.checker.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
         };
-        this.selectedCalculator = {
-            code: shippingMethod.calculator.code,
-            args: shippingMethod.calculator.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
+        this.selectedCalculator = shippingMethod.calculator && {
+            code: shippingMethod.calculator?.code,
+            args: shippingMethod.calculator?.args.map(a => ({ ...a, value: getConfigArgValue(a.value) })),
         };
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value =
+                    fieldDef.type === 'localeString'
+                        ? (currentTranslation as any).customFields[key]
+                        : (shippingMethod as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
+                }
+            }
+        }
     }
 }
