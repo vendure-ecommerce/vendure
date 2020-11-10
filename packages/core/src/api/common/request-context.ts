@@ -85,8 +85,8 @@ export class RequestContext {
 
     /**
      * @description
-     * Creates a new RequestContext object from a plain object which is the result of
-     * a JSON serialization - deserialization operation.
+     * Creates a new RequestContext object from a serialized object created by the
+     * `serialize()` method.
      */
     static deserialize(ctxObject: SerializedRequestContext): RequestContext {
         return new RequestContext({
@@ -102,8 +102,24 @@ export class RequestContext {
         });
     }
 
+    /**
+     * @description
+     * Serializes the RequestContext object into a JSON-compatible simple object.
+     * This is useful when you need to send a RequestContext object to another
+     * process, e.g. to pass it to the Worker process via the {@link WorkerService}.
+     */
     serialize(): SerializedRequestContext {
         return JSON.parse(JSON.stringify(this));
+    }
+
+    /**
+     * @description
+     * Creates a shallow copy of the RequestContext instance. This means that
+     * mutations to the copy itself will not affect the original, but deep mutations
+     * (e.g. copy.channel.code = 'new') *will* also affect the original.
+     */
+    copy(): RequestContext {
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
     }
 
     get apiType(): ApiType {

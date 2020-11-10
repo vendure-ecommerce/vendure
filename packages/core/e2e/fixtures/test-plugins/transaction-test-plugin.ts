@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     Administrator,
     Ctx,
+    EventBus,
     InternalServerError,
     NativeAuthenticationMethod,
     PluginCommonModule,
@@ -10,9 +11,19 @@ import {
     Transaction,
     TransactionalConnection,
     User,
+    VendureEvent,
     VendurePlugin,
 } from '@vendure/core';
 import gql from 'graphql-tag';
+import { ReplaySubject, Subscription } from 'rxjs';
+
+export class TestEvent extends VendureEvent {
+    constructor(public ctx: RequestContext, public administrator: Administrator) {
+        super();
+    }
+}
+
+export const TRIGGER_EMAIL = 'trigger-email';
 
 @Injectable()
 class TestUserService {
@@ -60,12 +71,18 @@ class TestAdminService {
 
 @Resolver()
 class TestResolver {
-    constructor(private testAdminService: TestAdminService, private connection: TransactionalConnection) {}
+    constructor(
+        private testAdminService: TestAdminService,
+        private connection: TransactionalConnection,
+        private eventBus: EventBus,
+    ) {}
 
     @Mutation()
     @Transaction()
-    createTestAdministrator(@Ctx() ctx: RequestContext, @Args() args: any) {
-        return this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
+    async createTestAdministrator(@Ctx() ctx: RequestContext, @Args() args: any) {
+        const admin = await this.testAdminService.createAdministrator(ctx, args.emailAddress, args.fail);
+        this.eventBus.publish(new TestEvent(ctx, admin));
+        return admin;
     }
 
     @Mutation()
@@ -114,4 +131,29 @@ class TestResolver {
         resolvers: [TestResolver],
     },
 })
-export class TransactionTestPlugin {}
+export class TransactionTestPlugin implements OnApplicationBootstrap {
+    private subscription: Subscription;
+    static errorHandler = jest.fn();
+    static eventHandlerComplete$ = new ReplaySubject(1);
+
+    constructor(private eventBus: EventBus, private connection: TransactionalConnection) {}
+
+    onApplicationBootstrap(): any {
+        // This part is used to test how RequestContext with transactions behave
+        // when used in an Event subscription
+        this.subscription = this.eventBus.ofType(TestEvent).subscribe(async event => {
+            const { ctx, administrator } = event;
+            if (administrator.emailAddress === TRIGGER_EMAIL) {
+                administrator.lastName = 'modified';
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 1));
+                    await this.connection.getRepository(ctx, Administrator).save(administrator);
+                } catch (e) {
+                    TransactionTestPlugin.errorHandler(e);
+                } finally {
+                    TransactionTestPlugin.eventHandlerComplete$.complete();
+                }
+            }
+        });
+    }
+}

@@ -6,7 +6,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { TransactionTestPlugin } from './fixtures/test-plugins/transaction-test-plugin';
+import { TransactionTestPlugin, TRIGGER_EMAIL } from './fixtures/test-plugins/transaction-test-plugin';
 
 describe('Transaction infrastructure', () => {
     const { server, adminClient } = createTestEnvironment(
@@ -100,6 +100,18 @@ describe('Transaction infrastructure', () => {
         expect(verify.users.length).toBe(3);
         expect(!!verify.admins.find((a: any) => a.emailAddress === 'test4')).toBe(false);
         expect(!!verify.users.find((u: any) => u.identifier === 'test4')).toBe(true);
+    });
+
+    // Testing https://github.com/vendure-ecommerce/vendure/issues/520
+    it('passing transaction via EventBus', async () => {
+        TransactionTestPlugin.errorHandler.mockClear();
+        const { createTestAdministrator } = await adminClient.query(CREATE_ADMIN, {
+            emailAddress: TRIGGER_EMAIL,
+            fail: false,
+        });
+        await TransactionTestPlugin.eventHandlerComplete$.toPromise();
+        expect(createTestAdministrator.emailAddress).toBe(TRIGGER_EMAIL);
+        expect(TransactionTestPlugin.errorHandler).not.toHaveBeenCalled();
     });
 });
 
