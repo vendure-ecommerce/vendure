@@ -21,7 +21,6 @@ export class StateI18nTokenPipe implements PipeTransform {
         Settled: _('state.settled'),
         Failed: _('state.failed'),
         Error: _('state.error'),
-        Created: _('state.created'),
         Declined: _('state.declined'),
     };
     transform<T extends unknown>(value: T): T {
