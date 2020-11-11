@@ -39,8 +39,20 @@ export interface MigrationOptions {
 export async function runMigrations(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
     const connection = await createConnection(createConnectionOptions(config));
-    await disableForeignKeysForSqLite(connection, () => connection.runMigrations({ transaction: 'each' }));
-    await connection.close();
+    try {
+        const migrations = await disableForeignKeysForSqLite(connection, () =>
+            connection.runMigrations({ transaction: 'each' }),
+        );
+        for (const migration of migrations) {
+            console.log(chalk.green(`Successfully ran migration: ${migration.name}`));
+        }
+    } catch (e) {
+        console.log(chalk.red(`An error occurred when running migrations:`));
+        console.log(e.message);
+        process.exitCode = 1;
+    } finally {
+        await connection.close();
+    }
 }
 
 /**
@@ -53,10 +65,17 @@ export async function runMigrations(userConfig: Partial<VendureConfig>) {
 export async function revertLastMigration(userConfig: Partial<VendureConfig>) {
     const config = await preBootstrapConfig(userConfig);
     const connection = await createConnection(createConnectionOptions(config));
-    await disableForeignKeysForSqLite(connection, () =>
-        connection.undoLastMigration({ transaction: 'each' }),
-    );
-    await connection.close();
+    try {
+        await disableForeignKeysForSqLite(connection, () =>
+            connection.undoLastMigration({ transaction: 'each' }),
+        );
+    } catch (e) {
+        console.log(chalk.red(`An error occurred when reverting migration:`));
+        console.log(e.message);
+        process.exitCode = 1;
+    } finally {
+        await connection.close();
+    }
 }
 
 /**
@@ -154,15 +173,16 @@ function createConnectionOptions(userConfig: Partial<VendureConfig>): Connection
  * is a work-around for the issue.
  * See https://github.com/typeorm/typeorm/issues/2576#issuecomment-499506647
  */
-async function disableForeignKeysForSqLite(connection: Connection, work: () => Promise<any>) {
+async function disableForeignKeysForSqLite<T>(connection: Connection, work: () => Promise<T>): Promise<T> {
     const isSqLite = connection.options.type === 'sqlite';
     if (isSqLite) {
         await connection.query('PRAGMA foreign_keys=OFF');
     }
-    await work();
+    const result = await work();
     if (isSqLite) {
         await connection.query('PRAGMA foreign_keys=ON');
     }
+    return result;
 }
 
 /**
