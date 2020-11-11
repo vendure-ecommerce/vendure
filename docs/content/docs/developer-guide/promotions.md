@@ -155,3 +155,9 @@ export const config: VendureConfig = {
   }
 }
 ```
+
+{{% alert %}}
+**Dependency Injection**
+
+If your PromotionCondition or PromotionAction needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
+{{< /alert >}}

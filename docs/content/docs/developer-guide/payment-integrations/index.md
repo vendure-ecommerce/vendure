@@ -107,6 +107,12 @@ export const config: VendureConfig = {
 };
 ```
 
+{{% alert %}}
+**Dependency Injection**
+
+If your PaymentMethodHandler needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
+{{< /alert >}}
+
 ## Payment flow
 
 1. Once the active Order has been transitioned to the ArrangingPayment state (see the [Order Workflow guide]({{< relref "order-workflow" >}})), one or more Payments are created by executing the [`addPaymentToOrder` mutation]({{< relref "/docs/graphql-api/shop/mutations#addpaymenttoorder" >}}). This mutation has a required `method` input field, which _must_ match the `code` of one of the configured PaymentMethodHandlers. In the case above, this would be set to `"my-payment-method"`.

@@ -125,6 +125,12 @@ export const config: VendureConfig = {
 }
 ```
 
+{{% alert %}}
+**Dependency Injection**
+
+If your ShippingEligibilityChecker or ShippingCalculator needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
+{{< /alert >}}
+
 ## Fulfillments
 
 Fulfillments represent the actual shipping status of items in an order. Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):

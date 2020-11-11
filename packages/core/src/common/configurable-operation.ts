@@ -243,7 +243,7 @@ export interface ConfigurableOperationDefOptions<T extends ConfigArgs> extends I
  * the docs of {@link ConfigArgs}.
  *
  * ## Dependency Injection
- * If your business logic relies on injectable providers, such as the TypeORM `Connection` object, or any of the
+ * If your business logic relies on injectable providers, such as the `TransactionalConnection` object, or any of the
  * internal Vendure services or those defined in a plugin, you can inject them by using the config object's
  * `init()` method, which exposes the {@link Injector}.
  *
