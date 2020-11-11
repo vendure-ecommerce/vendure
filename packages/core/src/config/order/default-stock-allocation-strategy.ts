@@ -9,7 +9,7 @@ import { StockAllocationStrategy } from './stock-allocation-strategy';
  * Allocates stock when the Order transitions from `ArrangingPayment` to either
  * `PaymentAuthorized` or `PaymentSettled`.
  *
- * @docsCategory order
+ * @docsCategory orders
  */
 export class DefaultStockAllocationStrategy implements StockAllocationStrategy {
     shouldAllocateStock(

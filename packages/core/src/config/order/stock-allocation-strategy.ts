@@ -8,7 +8,7 @@ import { OrderState } from '../../service/helpers/order-state-machine/order-stat
  * This strategy is responsible for deciding at which stage in the order process
  * stock will be allocated.
  *
- * @docsCategory order
+ * @docsCategory orders
  */
 export interface StockAllocationStrategy extends InjectableStrategy {
     /**
