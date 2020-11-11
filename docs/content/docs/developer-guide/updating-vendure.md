@@ -58,10 +58,11 @@ The key rule is **never run your production instance with the `synchronize` opti
 For any database schema changes, it is advised to:
 
 1. Read the changelog breaking changes entries to see what changes to expect
-2. Create a new database migration as described in the [Migrations guide](https://www.vendure.io/docs/developer-guide/migrations/)
-3. Manually check the migration script. In some cases manual action is needed to customize the script in order to correctly migrate your existing data.
-4. Test the migration script against non-production data.
-5. Only when you have verified that the migration works as expected, run it against your production database.
+2. **Important:** Make a backup of your database!
+3. Create a new database migration as described in the [Migrations guide]({{< relref "migrations" >}})
+4. Manually check the migration script. In some cases manual action is needed to customize the script in order to correctly migrate your existing data.
+5. Test the migration script against non-production data.
+6. Only when you have verified that the migration works as expected, run it against your production database.
 
 ### GraphQL schema changes
 
