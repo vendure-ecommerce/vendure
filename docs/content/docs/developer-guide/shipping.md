@@ -43,7 +43,7 @@ export const maxWeightChecker = new ShippingEligibilityChecker({
    * (This example assumes a custom field "weight" is defined on the
    * ProductVariant entity)
    */
-  check: (order, args) => {
+  check: (ctx, order, args) => {
     const totalWeight = order.lines
       .map((l) => (l.productVariant.customFields as any).weight * l.quantity)
       .reduce((total, lineWeight) => total + lineWeight, 0);
@@ -89,7 +89,7 @@ export const externalShippingCalculator = new ShippingCalculator({
       label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
     },
   },
-  calculate: async (order, args) => {
+  calculate: async (ctx, order, args) => {
     // `shippingDataSource` is assumed to fetch the data from some
     // external data source.
     const { rate, deliveryDate, courier } = await shippingDataSource.getRate({

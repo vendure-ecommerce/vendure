@@ -71,7 +71,7 @@ export const minimumOrderAmount = new PromotionCondition({
    * must resolve to a boolean value indicating whether the condition has
    * been satisfied.
    */
-  check(order, args) {
+  check(ctx, order, args) {
     if (args.taxInclusive) {
       return order.subTotal >= args.amount;
     } else {
@@ -132,7 +132,7 @@ export const orderPercentageDiscount = new PromotionOrderAction({
    * It should return a negative number representing the discount in
    * pennies/cents etc. Rounding to an integer is handled automatically.
    */
-  execute(order, args) {
+  execute(ctx, order, args) {
       return -order.subTotal * (args.discount / 100);
   },
 });

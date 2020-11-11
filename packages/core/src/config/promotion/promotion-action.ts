@@ -46,6 +46,7 @@ export interface PromotionActionConfig<T extends ConfigArgs> extends Configurabl
 
 /**
  * @description
+ * Configuration for a {@link PromotionItemAction}
  *
  * @docsCategory promotions
  * @docsPage promotion-action
@@ -107,7 +108,7 @@ export abstract class PromotionAction<T extends ConfigArgs = {}> extends Configu
  * const itemPercentageDiscount = new PromotionItemAction({
  *     code: 'item_percentage_discount',
  *     args: { discount: 'percentage' },
- *     execute(orderItem, orderLine, args) {
+ *     execute(ctx, orderItem, orderLine, args) {
  *         return -orderLine.unitPrice * (args.discount / 100);
  *     },
  *     description: 'Discount every item by { discount }%',
@@ -141,7 +142,7 @@ export class PromotionItemAction<T extends ConfigArgs = ConfigArgs> extends Prom
  * const orderPercentageDiscount = new PromotionOrderAction({
  *     code: 'order_percentage_discount',
  *     args: { discount: 'percentage' },
- *     execute(order, args) {
+ *     execute(ctx, order, args) {
  *         return -order.subTotal * (args.discount / 100);
  *     },
  *     description: 'Discount order by { discount }%',
