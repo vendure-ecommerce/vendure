@@ -14,11 +14,15 @@ export class StateI18nTokenPipe implements PipeTransform {
         PartiallyShipped: _('state.partially-shipped'),
         Shipped: _('state.shipped'),
         PartiallyDelivered: _('state.partially-delivered'),
+        Authorized: _('state.authorized'),
         Delivered: _('state.delivered'),
         Cancelled: _('state.cancelled'),
         Pending: _('state.pending'),
         Settled: _('state.settled'),
         Failed: _('state.failed'),
+        Error: _('state.error'),
+        Created: _('state.created'),
+        Declined: _('state.declined'),
     };
     transform<T extends unknown>(value: T): T {
         if (typeof value === 'string') {

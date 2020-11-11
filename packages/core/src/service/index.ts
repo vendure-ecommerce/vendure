@@ -36,4 +36,5 @@ export * from './services/tax-category.service';
 export * from './services/tax-rate.service';
 export * from './services/user.service';
 export * from './services/zone.service';
+export * from './services/history.service';
 export * from './transaction/transactional-connection';
