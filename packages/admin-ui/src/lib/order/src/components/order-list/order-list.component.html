@@ -41,6 +41,11 @@
                         [clearable]="true"
                         [searchable]="false"
                     >
+                        <ng-template ng-option-tmp let-item="item">{{ item | stateI18nToken | translate }}</ng-template>
+                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span class="ng-value-label"> {{ item | stateI18nToken | translate }}</span>
+                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                        </ng-template>
                     </ng-select>
                     <button
                         class="btn btn-secondary"
