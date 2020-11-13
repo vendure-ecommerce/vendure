@@ -36,6 +36,14 @@ describe('GlobalSettings resolver', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+            UPDATE_GLOBAL_SETTINGS,
+            {
+                input: {
+                    trackInventory: false,
+                },
+            },
+        );
         const result = await adminClient.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS);
         globalSettings = result.globalSettings;
     }, TEST_SETUP_TIMEOUT_MS);

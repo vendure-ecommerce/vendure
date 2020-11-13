@@ -87,6 +87,15 @@ describe('Stock control', () => {
             customerCount: 3,
         });
         await adminClient.asSuperAdmin();
+
+        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+            UPDATE_GLOBAL_SETTINGS,
+            {
+                input: {
+                    trackInventory: false,
+                },
+            },
+        );
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
