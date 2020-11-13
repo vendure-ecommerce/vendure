@@ -21,7 +21,7 @@ export class GlobalSettings extends VendureEntity implements HasCustomFields {
      * Can be overridden per ProductVariant, but this value determines the default
      * if not otherwise specified.
      */
-    @Column({ default: false })
+    @Column({ default: true })
     trackInventory: boolean;
 
     /**
