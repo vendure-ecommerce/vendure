@@ -146,7 +146,7 @@ export class TransactionTestPlugin implements OnApplicationBootstrap {
             if (administrator.emailAddress === TRIGGER_EMAIL) {
                 administrator.lastName = 'modified';
                 try {
-                    await new Promise(resolve => setTimeout(resolve, 1));
+                    await new Promise(resolve => setTimeout(resolve, 50));
                     await this.connection.getRepository(ctx, Administrator).save(administrator);
                 } catch (e) {
                     TransactionTestPlugin.errorHandler(e);
