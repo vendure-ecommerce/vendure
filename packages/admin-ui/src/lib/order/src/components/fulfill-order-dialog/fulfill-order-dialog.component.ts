@@ -38,7 +38,7 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
         });
 
         if (this.order.shippingMethod) {
-            this.method = this.order.shippingMethod.description;
+            this.method = this.order.shippingMethod.name;
         }
     }
 

@@ -5134,7 +5134,7 @@ export type OrderDetailFragment = (
     & Pick<Promotion, 'id' | 'couponCode'>
   )>, shippingMethod?: Maybe<(
     { __typename?: 'ShippingMethod' }
-    & Pick<ShippingMethod, 'id' | 'code' | 'description'>
+    & Pick<ShippingMethod, 'id' | 'code' | 'name' | 'description'>
   )>, shippingAddress?: Maybe<(
     { __typename?: 'OrderAddress' }
     & OrderAddressFragment

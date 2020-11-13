@@ -52,12 +52,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        ShippingMethod: [
-            { name: 'isGood', type: 'boolean' },
-            { name: 'localName', type: 'localeString' },
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),

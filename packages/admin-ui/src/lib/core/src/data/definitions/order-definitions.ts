@@ -137,6 +137,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         shippingMethod {
             id
             code
+            name
             description
         }
         shippingAddress {
