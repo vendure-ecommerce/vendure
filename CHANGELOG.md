@@ -1,3 +1,123 @@
+## 0.17.0 (2020-11-13)
+
+
+#### Fixes
+
+* **admin-ui** Add missing "authorized" state translation ([788ba87](https://github.com/vendure-ecommerce/vendure/commit/788ba87))
+* **admin-ui** Add missing "state.error" token ([b40843a](https://github.com/vendure-ecommerce/vendure/commit/b40843a))
+* **admin-ui** Fix payment states ([df32ba1](https://github.com/vendure-ecommerce/vendure/commit/df32ba1))
+* **admin-ui** Fix permission handling in nav menu ([70037e5](https://github.com/vendure-ecommerce/vendure/commit/70037e5))
+* **admin-ui** Use select control for string custom field with options ([5c59b67](https://github.com/vendure-ecommerce/vendure/commit/5c59b67)), closes [#546](https://github.com/vendure-ecommerce/vendure/issues/546)
+* **admin-ui** Use the ShippingMethod name in fulfillment dialog ([ca2ed58](https://github.com/vendure-ecommerce/vendure/commit/ca2ed58))
+* **admin-ui** Use translated state labels in custom filter select ([5f6f9ff](https://github.com/vendure-ecommerce/vendure/commit/5f6f9ff))
+* **core** Allow configurable stock allocation logic ([782c0f4](https://github.com/vendure-ecommerce/vendure/commit/782c0f4)), closes [#550](https://github.com/vendure-ecommerce/vendure/issues/550)
+* **core** Correctly cascade deletions in HistoryEntries ([6054b71](https://github.com/vendure-ecommerce/vendure/commit/6054b71))
+* **core** Correctly encode IDs in nested fragments ([d2333fc](https://github.com/vendure-ecommerce/vendure/commit/d2333fc))
+* **core** Correctly update cache in customerGroup promo condition ([8df4fec](https://github.com/vendure-ecommerce/vendure/commit/8df4fec))
+* **core** Fix double-allocation of stock on 2-stage payments ([c43a343](https://github.com/vendure-ecommerce/vendure/commit/c43a343)), closes [#550](https://github.com/vendure-ecommerce/vendure/issues/550)
+* **core** Mitigate QueryRunnerAlreadyReleasedError in EventBus handlers ([739e56c](https://github.com/vendure-ecommerce/vendure/commit/739e56c)), closes [#520](https://github.com/vendure-ecommerce/vendure/issues/520)
+* **core** Validate all Role permissions on bootstrap ([60c8a0e](https://github.com/vendure-ecommerce/vendure/commit/60c8a0e)), closes [#450](https://github.com/vendure-ecommerce/vendure/issues/450)
+
+#### Features
+
+* **admin-ui** Account for stockOnHand when creating Fulfillments ([540d2c6](https://github.com/vendure-ecommerce/vendure/commit/540d2c6)), closes [#319](https://github.com/vendure-ecommerce/vendure/issues/319)
+* **admin-ui** Add filter presets to the OrderDetail view ([4f5a440](https://github.com/vendure-ecommerce/vendure/commit/4f5a440)), closes [#477](https://github.com/vendure-ecommerce/vendure/issues/477)
+* **admin-ui** Allow the setting of custom Permissions ([d525a32](https://github.com/vendure-ecommerce/vendure/commit/d525a32)), closes [#450](https://github.com/vendure-ecommerce/vendure/issues/450)
+* **admin-ui** Display Fulfillment custom fields ([838943e](https://github.com/vendure-ecommerce/vendure/commit/838943e)), closes [#525](https://github.com/vendure-ecommerce/vendure/issues/525)
+* **admin-ui** Implement UI controls for setting outOfStockThreshold ([335c345](https://github.com/vendure-ecommerce/vendure/commit/335c345)), closes [#319](https://github.com/vendure-ecommerce/vendure/issues/319)
+* **admin-ui** Support for ShippingMethod translations & custom fields ([e189bd4](https://github.com/vendure-ecommerce/vendure/commit/e189bd4)), closes [#530](https://github.com/vendure-ecommerce/vendure/issues/530)
+* **admin-ui** Support new API for ProductVariant.trackInventory ([b825df1](https://github.com/vendure-ecommerce/vendure/commit/b825df1))
+* **core** Add `shouldRunCheck` function to ShippingEligibilityChecker ([3b7e7db](https://github.com/vendure-ecommerce/vendure/commit/3b7e7db)), closes [#536](https://github.com/vendure-ecommerce/vendure/issues/536)
+* **core** Add tax summary data to Order type ([a666fab](https://github.com/vendure-ecommerce/vendure/commit/a666fab)), closes [#467](https://github.com/vendure-ecommerce/vendure/issues/467)
+* **core** Allow custom Permissions to be defined ([1baeedf](https://github.com/vendure-ecommerce/vendure/commit/1baeedf)), closes [#450](https://github.com/vendure-ecommerce/vendure/issues/450)
+* **core** Emit event when assigning/removing Customer to/from group ([6676335](https://github.com/vendure-ecommerce/vendure/commit/6676335))
+* **core** Enable inventory tracking by default in GlobalSettings ([31bb06a](https://github.com/vendure-ecommerce/vendure/commit/31bb06a))
+* **core** Export custom entity field types ([21706b3](https://github.com/vendure-ecommerce/vendure/commit/21706b3))
+* **core** Export HistoryService ([8688c35](https://github.com/vendure-ecommerce/vendure/commit/8688c35))
+* **core** Export StockMovementService ([fe98c79](https://github.com/vendure-ecommerce/vendure/commit/fe98c79)), closes [#550](https://github.com/vendure-ecommerce/vendure/issues/550)
+* **core** Expose additional price & tax data on OrderLine ([c870684](https://github.com/vendure-ecommerce/vendure/commit/c870684)), closes [#467](https://github.com/vendure-ecommerce/vendure/issues/467)
+* **core** Expose assignable Permissions via ServerConfig type ([ab2f62c](https://github.com/vendure-ecommerce/vendure/commit/ab2f62c)), closes [#450](https://github.com/vendure-ecommerce/vendure/issues/450)
+* **core** Implement `in` string filter for PaginatedList queries ([7c7dcf2](https://github.com/vendure-ecommerce/vendure/commit/7c7dcf2)), closes [#543](https://github.com/vendure-ecommerce/vendure/issues/543)
+* **core** Implement `regex` string filter for PaginatedList queries ([0a33441](https://github.com/vendure-ecommerce/vendure/commit/0a33441)), closes [#543](https://github.com/vendure-ecommerce/vendure/issues/543)
+* **core** Implement constraints on adding & fulfilling OrderItems ([87d07f8](https://github.com/vendure-ecommerce/vendure/commit/87d07f8)), closes [#319](https://github.com/vendure-ecommerce/vendure/issues/319)
+* **core** Implement inheritance for ProductVariant.trackInventory ([f27f985](https://github.com/vendure-ecommerce/vendure/commit/f27f985))
+* **core** Improve feedback & error handling in migration functions ([7a1773c](https://github.com/vendure-ecommerce/vendure/commit/7a1773c))
+* **core** Make ShippingMethod translatable ([c7418d1](https://github.com/vendure-ecommerce/vendure/commit/c7418d1)), closes [#530](https://github.com/vendure-ecommerce/vendure/issues/530)
+* **core** New "Created" initial state for Fulfillments ([a53f27e](https://github.com/vendure-ecommerce/vendure/commit/a53f27e)), closes [#510](https://github.com/vendure-ecommerce/vendure/issues/510)
+* **core** New "Created" initial state for Orders ([7a774e3](https://github.com/vendure-ecommerce/vendure/commit/7a774e3)), closes [#510](https://github.com/vendure-ecommerce/vendure/issues/510)
+* **core** OrderItem.unitPrice now _always_ excludes tax ([6e2d490](https://github.com/vendure-ecommerce/vendure/commit/6e2d490)), closes [#467](https://github.com/vendure-ecommerce/vendure/issues/467)
+* **core** Pass RequestContext to AssetNamingStrategy functions ([48ae372](https://github.com/vendure-ecommerce/vendure/commit/48ae372))
+* **core** Pass RequestContext to AssetPreviewStrategy functions ([05e6f9e](https://github.com/vendure-ecommerce/vendure/commit/05e6f9e))
+* **core** Pass RequestContext to AuthenticationStrategy.onLogOut() ([a46ea5d](https://github.com/vendure-ecommerce/vendure/commit/a46ea5d))
+* **core** Pass RequestContext to OrderMergeStrategy functions ([eae71f0](https://github.com/vendure-ecommerce/vendure/commit/eae71f0))
+* **core** Pass RequestContext to PaymentMethodHandler functions ([9c2257d](https://github.com/vendure-ecommerce/vendure/commit/9c2257d)), closes [#488](https://github.com/vendure-ecommerce/vendure/issues/488)
+* **core** Pass RequestContext to PriceCalculationStrategy ([8a58325](https://github.com/vendure-ecommerce/vendure/commit/8a58325)), closes [#487](https://github.com/vendure-ecommerce/vendure/issues/487)
+* **core** Pass RequestContext to PromotionAction functions ([0a35a12](https://github.com/vendure-ecommerce/vendure/commit/0a35a12))
+* **core** Pass RequestContext to ShippingCalculator functions ([6eee894](https://github.com/vendure-ecommerce/vendure/commit/6eee894))
+* **core** Pass RequestContext to ShippingEligibilityChecker functions ([a5db022](https://github.com/vendure-ecommerce/vendure/commit/a5db022))
+* **core** Pass RequestContext to TaxZoneStrategy functions ([a4d4311](https://github.com/vendure-ecommerce/vendure/commit/a4d4311))
+* **core** Return ErrorResult when setting ineligible ShippingMethod ([0e09d51](https://github.com/vendure-ecommerce/vendure/commit/0e09d51))
+* **core** Support custom fields on Fulfillment entity ([380f68e](https://github.com/vendure-ecommerce/vendure/commit/380f68e)), closes [#525](https://github.com/vendure-ecommerce/vendure/issues/525)
+* **core** Track stock allocations ([75e3f9c](https://github.com/vendure-ecommerce/vendure/commit/75e3f9c)), closes [#319](https://github.com/vendure-ecommerce/vendure/issues/319)
+
+#### Perf
+
+* **core** Optimize invocation of ShippingEligibilityCheckers ([11415e6](https://github.com/vendure-ecommerce/vendure/commit/11415e6)), closes [#536](https://github.com/vendure-ecommerce/vendure/issues/536)
+
+
+### BREAKING CHANGE
+
+* Deletions of Orders or Customers now cascade to any associated HistoryEntries,
+thus preserving referential integrity. This involves a DB schema change which will necessitate
+a migration.
+* Fulfillments now start in the new "Created" state, and then _immediately_
+transition to the "Pending" state. This allows e.g. event listeners to pick up newly-created
+Fulfillments.
+* Orders now start in the new "Created" state, and then _immediately_ transition
+to the "AddingItems" state. This allows e.g. event listeners to pick up newly-created Orders.
+* The `AuthenticationStrategy.onLogOut()` function
+signature has changed: the first argument is now the RequestContext of the current request.
+* The `OrderItem.unitPrice` is now _always_ given as the net (without tax) price
+of the related ProductVariant. Formerly, it was either the net or gross price, depending on
+the `pricesIncludeTax` setting of the Channel. If you have existing Orders where
+`unitPriceIncludesTax = true`, you will need to manually update the `unitPrice` value *before*
+running any other migrations for this release. The query will look like:
+
+    `UPDATE order_item SET unitPrice = ROUND(unitPrice / ((taxRate + 100) / 100)) WHERE unitPriceIncludesTax = 1`
+* The `OrderLine.totalPrice` field has been deprecated and will be removed in a
+future release. Use the new `OrderLine.linePriceWithTax` field instead.
+* The `PaymentMethodHandler` function signatures have changed:
+`createPayment()`, `settlePayment()` & `createRefund()` now all get passed the
+RequestContext object as the first argument.
+* The `PriceCalculationStrategy.calculateUnitPrice()` function
+signature has changed: the first argument is now the RequestContext of the current request.
+* The `ProductVariant.trackInventory` field is now an Enum rather than a boolean, allowing explicit inheritance of the value set in GlobalSettings. This will require a DB migration with a custom query to transform the previous boolean values to the new enum (string) values of "TRUE", "FALSE" or "INHERIT". Check the release blog post for more details.
+* The `ShippingMethod` entity is now translatable. This change will require a DB
+migration to be performed, including custom queries to migrate any existing ShippingMethods
+to the new table structure (see release blog post for details).
+* The AssetNamingStrategy `generateSourceFileName()` & `generatePreviewFileName()`
+function signatures have changed: the first argument is now the
+RequestContext of the current request.
+* The AssetPreviewStrategy `generatePreviewImage()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
+* The internal handling of stock movements has been refined,
+which required changes to the DB schema. This will require a migration.
+* The OrderMergeStrategy `merge()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
+* The PromotionAction `execute()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
+* The ShippingCalculator `calculate()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
+* The ShippingEligibilityChecker `check()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
+* The TaxZoneStrategy `determineTaxZone()`
+function signature has changed: the first argument is now the
+RequestContext of the current request.
 ## <small>0.16.3 (2020-11-05)</small>
 
 
