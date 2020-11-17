@@ -19,6 +19,7 @@ export type Scalars = {
 export type Query = {
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
+    activeAdministrator?: Maybe<Administrator>;
     /** Get a list of Assets */
     assets: AssetList;
     /** Get a single Asset by id */

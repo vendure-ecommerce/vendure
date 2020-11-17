@@ -19,6 +19,7 @@ export type Scalars = {
 export type Query = {
     administrators: AdministratorList;
     administrator?: Maybe<Administrator>;
+    activeAdministrator?: Maybe<Administrator>;
     /** Get a list of Assets */
     assets: AssetList;
     /** Get a single Asset by id */
@@ -4009,6 +4010,10 @@ export type GetAdministratorQueryVariables = Exact<{
 
 export type GetAdministratorQuery = { administrator?: Maybe<AdministratorFragment> };
 
+export type ActiveAdministratorQueryVariables = Exact<{ [key: string]: never }>;
+
+export type ActiveAdministratorQuery = { activeAdministrator?: Maybe<AdministratorFragment> };
+
 export type UpdateAdministratorMutationVariables = Exact<{
     input: UpdateAdministratorInput;
 }>;
@@ -5740,6 +5745,12 @@ export namespace GetAdministrator {
     export type Variables = GetAdministratorQueryVariables;
     export type Query = GetAdministratorQuery;
     export type Administrator = NonNullable<GetAdministratorQuery['administrator']>;
+}
+
+export namespace ActiveAdministrator {
+    export type Variables = ActiveAdministratorQueryVariables;
+    export type Query = ActiveAdministratorQuery;
+    export type ActiveAdministrator = NonNullable<ActiveAdministratorQuery['activeAdministrator']>;
 }
 
 export namespace UpdateAdministrator {

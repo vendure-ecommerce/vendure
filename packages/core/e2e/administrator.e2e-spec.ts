@@ -1,12 +1,14 @@
+import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import {
+    ActiveAdministrator,
     Administrator,
     CreateAdministrator,
     DeleteAdministrator,
@@ -69,6 +71,22 @@ describe('Administrator resolver', () => {
             },
         );
         expect(result.administrator).toEqual(createdAdmin);
+    });
+
+    it('activeAdministrator', async () => {
+        await adminClient.asAnonymousUser();
+
+        const { activeAdministrator: result1 } = await adminClient.query<ActiveAdministrator.Query>(
+            GET_ACTIVE_ADMINISTRATOR,
+        );
+        expect(result1).toBeNull();
+
+        await adminClient.asSuperAdmin();
+
+        const { activeAdministrator: result2 } = await adminClient.query<ActiveAdministrator.Query>(
+            GET_ACTIVE_ADMINISTRATOR,
+        );
+        expect(result2?.emailAddress).toBe(SUPER_ADMIN_USER_IDENTIFIER);
     });
 
     it('updateAdministrator', async () => {
@@ -174,6 +192,15 @@ export const GET_ADMINISTRATORS = gql`
 export const GET_ADMINISTRATOR = gql`
     query GetAdministrator($id: ID!) {
         administrator(id: $id) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const GET_ACTIVE_ADMINISTRATOR = gql`
+    query ActiveAdministrator {
+        activeAdministrator {
             ...Administrator
         }
     }

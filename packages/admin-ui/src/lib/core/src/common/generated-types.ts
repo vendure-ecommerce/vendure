@@ -19,6 +19,7 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
+  activeAdministrator?: Maybe<Administrator>;
   activeChannel: Channel;
   administrator?: Maybe<Administrator>;
   administrators: AdministratorList;

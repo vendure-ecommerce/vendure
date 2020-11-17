@@ -40,6 +40,14 @@ export class AdministratorResolver {
         return this.administratorService.findOne(ctx, args.id);
     }
 
+    @Query()
+    @Allow(Permission.Owner)
+    async activeAdministrator(@Ctx() ctx: RequestContext): Promise<Administrator | undefined> {
+        if (ctx.activeUserId) {
+            return this.administratorService.findOneByUserId(ctx, ctx.activeUserId);
+        }
+    }
+
     @Transaction()
     @Mutation()
     @Allow(Permission.CreateAdministrator)
