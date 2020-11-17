@@ -23,12 +23,15 @@ import { IfDirectiveBase } from './if-directive-base';
  * <button *vdrIfPermissions="'DeleteCatalog'; else unauthorized">Delete Product</button>
  * <ng-template #unauthorized>Not allowed!</ng-template>
  * ```
+ *
+ * The permission can be a single string, or an array. If an array is passed, then _all_ of the permissions
+ * must match (logical AND)
  */
 @Directive({
     selector: '[vdrIfPermissions]',
 })
-export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]> {
-    private permissionToCheck: string | null = '__initial_value__';
+export class IfPermissionsDirective extends IfDirectiveBase<Array<Permission[] | null>> {
+    private permissionToCheck: string[] | null = ['__initial_value__'];
 
     constructor(
         _viewContainer: ViewContainerRef,
@@ -36,15 +39,22 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
         private dataService: DataService,
         private changeDetectorRef: ChangeDetectorRef,
     ) {
-        super(_viewContainer, templateRef, permission => {
-            if (permission == null) {
+        super(_viewContainer, templateRef, permissions => {
+            if (permissions == null) {
                 return of(true);
-            } else if (!permission) {
+            } else if (!permissions) {
                 return of(false);
             }
             return this.dataService.client
                 .userStatus()
-                .mapStream(({ userStatus }) => userStatus.permissions.includes(permission))
+                .mapStream(({ userStatus }) => {
+                    for (const permission of permissions) {
+                        if (!userStatus.permissions.includes(permission)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
                 .pipe(tap(() => this.changeDetectorRef.markForCheck()));
         });
     }
@@ -53,17 +63,18 @@ export class IfPermissionsDirective extends IfDirectiveBase<[Permission | null]>
      * The permission to check to determine whether to show the template.
      */
     @Input()
-    set vdrIfPermissions(permission: string | null) {
-        this.permissionToCheck = permission;
-        this.updateArgs$.next([permission as Permission]);
+    set vdrIfPermissions(permission: string | string[] | null) {
+        this.permissionToCheck =
+            (permission && (Array.isArray(permission) ? permission : [permission])) || null;
+        this.updateArgs$.next([this.permissionToCheck as Permission[]]);
     }
 
     /**
-     * A template to show if the current user does not have the speicified permission.
+     * A template to show if the current user does not have the specified permission.
      */
     @Input()
     set vdrIfPermissionsElse(templateRef: TemplateRef<any> | null) {
         this.setElseTemplate(templateRef);
-        this.updateArgs$.next([this.permissionToCheck as Permission]);
+        this.updateArgs$.next([this.permissionToCheck as Permission[]]);
     }
 }

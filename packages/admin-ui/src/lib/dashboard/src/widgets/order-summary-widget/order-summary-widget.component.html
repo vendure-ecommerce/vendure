@@ -1,0 +1,29 @@
+<div class="stats">
+    <div class="stat">
+        <div class="stat-figure">{{ totalOrderCount$ | async }}</div>
+        <div class="stat-label">{{ 'dashboard.total-orders' | translate }}</div>
+    </div>
+    <div class="stat">
+        <div class="stat-figure">
+            {{ totalOrderValue$ | async | currency: (currencyCode$ | async) || undefined }}
+        </div>
+        <div class="stat-label">{{ 'dashboard.total-order-value' | translate }}</div>
+    </div>
+</div>
+<div class="footer">
+    <div class="btn-group btn-outline-primary btn-sm" *ngIf="timeframe$ | async as timeframe">
+        <button class="btn" [class.btn-primary]="timeframe === 'day'" (click)="timeframe$.next('day')">
+            Day
+        </button>
+        <button class="btn" [class.btn-primary]="timeframe === 'week'" (click)="timeframe$.next('week')">
+            Week
+        </button>
+        <button class="btn" [class.btn-primary]="timeframe === 'month'" (click)="timeframe$.next('month')">
+            Month
+        </button>
+    </div>
+
+    <div class="date-range p5" *ngIf="dateRange$ | async as range">
+        {{ range.start | date }} - {{ range.end | date }}
+    </div>
+</div>

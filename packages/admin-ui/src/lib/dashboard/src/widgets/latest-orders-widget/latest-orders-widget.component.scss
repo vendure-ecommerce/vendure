@@ -1,0 +1,9 @@
+@import "variables";
+
+vdr-data-table {
+    ::ng-deep {
+        table {
+            margin-top: 0;
+        }
+    }
+}

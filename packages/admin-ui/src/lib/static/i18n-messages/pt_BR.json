@@ -281,6 +281,12 @@
     "verified": "Verificado",
     "view-group-members": "Visualizar membros do grupo"
   },
+  "dashboard": {
+    "latest-orders": "",
+    "orders-summary": "",
+    "total-order-value": "",
+    "total-orders": ""
+  },
   "datetime": {
     "ago-days": "{count, plural, one {1 day} other {{count} days}} atrás",
     "ago-hours": "{count, plural, one {1 hr} other {{count} hrs}} atrás",

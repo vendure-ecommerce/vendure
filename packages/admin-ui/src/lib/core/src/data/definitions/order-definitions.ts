@@ -359,3 +359,16 @@ export const TRANSITION_FULFILLMENT_TO_STATE = gql`
     ${FULFILLMENT_FRAGMENT}
     ${ERROR_RESULT_FRAGMENT}
 `;
+
+export const GET_ORDER_SUMMARY = gql`
+    query GetOrderSummary($start: DateTime!, $end: DateTime!) {
+        orders(options: { filter: { orderPlacedAt: { between: { start: $start, end: $end } } } }) {
+            totalItems
+            items {
+                id
+                total
+                currencyCode
+            }
+        }
+    }
+`;

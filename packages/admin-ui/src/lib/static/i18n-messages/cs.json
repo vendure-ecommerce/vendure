@@ -281,6 +281,12 @@
     "verified": "Ověřený",
     "view-group-members": "Zobrazit členy skupiny"
   },
+  "dashboard": {
+    "latest-orders": "",
+    "orders-summary": "",
+    "total-order-value": "",
+    "total-orders": ""
+  },
   "datetime": {
     "ago-days": "před {count, plural, one {1 dnem} other {{count} dny}}",
     "ago-hours": "před {count, plural, one {1 hod} other {{count} hod}}",

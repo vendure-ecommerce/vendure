@@ -1,0 +1,29 @@
+@import "variables";
+
+.stats {
+    display: flex;
+    justify-content: space-evenly;
+}
+.stat {
+    text-align: center;
+}
+.stat-figure {
+    font-size: 2rem;
+    line-height: 3rem;
+}
+.stat-label {
+    color: $color-grey-700;
+    text-transform: uppercase;
+}
+.date-range {
+    margin-top: 0;
+}
+.footer {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    @media screen and (min-width: $breakpoint-small) {
+        flex-direction: row;
+    }
+    justify-content: space-between;
+}

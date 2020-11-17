@@ -9,7 +9,9 @@ import {
     GetOrder,
     GetOrderHistory,
     GetOrderList,
+    GetOrderSummary,
     HistoryEntryListOptions,
+    OrderListOptions,
     RefundOrder,
     RefundOrderInput,
     SettlePayment,
@@ -28,8 +30,9 @@ import {
     CREATE_FULFILLMENT,
     DELETE_ORDER_NOTE,
     GET_ORDER,
-    GET_ORDER_HISTORY,
     GET_ORDERS_LIST,
+    GET_ORDER_HISTORY,
+    GET_ORDER_SUMMARY,
     REFUND_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
@@ -44,12 +47,9 @@ import { BaseDataService } from './base-data.service';
 export class OrderDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getOrders(take: number = 10, skip: number = 0) {
+    getOrders(options: OrderListOptions = { take: 10 }) {
         return this.baseDataService.query<GetOrderList.Query, GetOrderList.Variables>(GET_ORDERS_LIST, {
-            options: {
-                take,
-                skip,
-            },
+            options,
         });
     }
 
@@ -154,5 +154,15 @@ export class OrderDataService {
         >(UPDATE_ORDER_CUSTOM_FIELDS, {
             input,
         });
+    }
+
+    getOrderSummary(start: Date, end: Date) {
+        return this.baseDataService.query<GetOrderSummary.Query, GetOrderSummary.Variables>(
+            GET_ORDER_SUMMARY,
+            {
+                start: start.toISOString(),
+                end: end.toISOString(),
+            },
+        );
     }
 }

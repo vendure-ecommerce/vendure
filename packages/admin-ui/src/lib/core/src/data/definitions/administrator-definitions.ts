@@ -36,6 +36,15 @@ export const ADMINISTRATOR_FRAGMENT = gql`
     ${ROLE_FRAGMENT}
 `;
 
+export const GET_ACTIVE_ADMINISTRATOR = gql`
+    query GetActiveAdministrator {
+        activeAdministrator {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
 export const GET_ADMINISTRATORS = gql`
     query GetAdministrators($options: AdministratorListOptions) {
         administrators(options: $options) {

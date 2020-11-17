@@ -4314,6 +4314,14 @@ export type AdministratorFragment = (
   ) }
 );
 
+export type GetActiveAdministratorQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveAdministratorQuery = { activeAdministrator?: Maybe<(
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  )> };
+
 export type GetAdministratorsQueryVariables = Exact<{
   options?: Maybe<AdministratorListOptions>;
 }>;
@@ -5387,6 +5395,21 @@ export type TransitionFulfillmentToStateMutation = { transitionFulfillmentToStat
     { __typename?: 'FulfillmentStateTransitionError' }
     & Pick<FulfillmentStateTransitionError, 'transitionError'>
     & ErrorResult_FulfillmentStateTransitionError_Fragment
+  ) };
+
+export type GetOrderSummaryQueryVariables = Exact<{
+  start: Scalars['DateTime'];
+  end: Scalars['DateTime'];
+}>;
+
+
+export type GetOrderSummaryQuery = { orders: (
+    { __typename?: 'OrderList' }
+    & Pick<OrderList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Order' }
+      & Pick<Order, 'id' | 'total' | 'currencyCode'>
+    )> }
   ) };
 
 export type AssetFragment = (
@@ -7141,6 +7164,12 @@ export namespace Administrator {
   export type Roles = NonNullable<(NonNullable<(NonNullable<AdministratorFragment['user']>)['roles']>)[number]>;
 }
 
+export namespace GetActiveAdministrator {
+  export type Variables = GetActiveAdministratorQueryVariables;
+  export type Query = GetActiveAdministratorQuery;
+  export type ActiveAdministrator = (NonNullable<GetActiveAdministratorQuery['activeAdministrator']>);
+}
+
 export namespace GetAdministrators {
   export type Variables = GetAdministratorsQueryVariables;
   export type Query = GetAdministratorsQuery;
@@ -7693,6 +7722,13 @@ export namespace TransitionFulfillmentToState {
   export type Mutation = TransitionFulfillmentToStateMutation;
   export type TransitionFulfillmentToState = (NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>);
   export type FulfillmentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<TransitionFulfillmentToStateMutation['transitionFulfillmentToState']>), { __typename?: 'FulfillmentStateTransitionError' }>);
+}
+
+export namespace GetOrderSummary {
+  export type Variables = GetOrderSummaryQueryVariables;
+  export type Query = GetOrderSummaryQuery;
+  export type Orders = (NonNullable<GetOrderSummaryQuery['orders']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetOrderSummaryQuery['orders']>)['items']>)[number]>;
 }
 
 export namespace Asset {

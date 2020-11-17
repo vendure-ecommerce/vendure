@@ -78,7 +78,8 @@ export class OrderListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.order.getOrders(...args).refetchOnChannelChange(),
+            // tslint:disable-next-line:no-shadowed-variable
+            (take, skip) => this.dataService.order.getOrders({ take, skip }).refetchOnChannelChange(),
             data => data.orders,
             // tslint:disable-next-line:no-shadowed-variable
             (skip, take) =>

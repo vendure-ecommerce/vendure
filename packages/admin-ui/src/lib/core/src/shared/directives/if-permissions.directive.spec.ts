@@ -17,7 +17,7 @@ describe('vdrIfPermissions directive', () => {
         fixture.detectChanges(); // initial binding
     });
 
-    it('has permission', () => {
+    it('has permission (single)', () => {
         fixture.componentInstance.permissionToTest = 'ValidPermission';
         fixture.detectChanges();
 
@@ -25,6 +25,26 @@ describe('vdrIfPermissions directive', () => {
         expect(thenEl).not.toBeNull();
         const elseEl = fixture.nativeElement.querySelector('.else');
         expect(elseEl).toBeNull();
+    });
+
+    it('has permission (array all match)', () => {
+        fixture.componentInstance.permissionToTest = ['ValidPermission'];
+        fixture.detectChanges();
+
+        const thenEl = fixture.nativeElement.querySelector('.then');
+        expect(thenEl).not.toBeNull();
+        const elseEl = fixture.nativeElement.querySelector('.else');
+        expect(elseEl).toBeNull();
+    });
+
+    it('has permission (array not all match)', () => {
+        fixture.componentInstance.permissionToTest = ['ValidPermission', 'InvalidPermission'];
+        fixture.detectChanges();
+
+        const thenEl = fixture.nativeElement.querySelector('.then');
+        expect(thenEl).toBeNull();
+        const elseEl = fixture.nativeElement.querySelector('.else');
+        expect(elseEl).not.toBeNull();
     });
 
     it('does not have permission', () => {
@@ -35,6 +55,16 @@ describe('vdrIfPermissions directive', () => {
         expect(thenEl).toBeNull();
         const elseEl = fixture.nativeElement.querySelector('.else');
         expect(elseEl).not.toBeNull();
+    });
+
+    it('pass null', () => {
+        fixture.componentInstance.permissionToTest = null;
+        fixture.detectChanges();
+
+        const thenEl = fixture.nativeElement.querySelector('.then');
+        expect(thenEl).not.toBeNull();
+        const elseEl = fixture.nativeElement.querySelector('.else');
+        expect(elseEl).toBeNull();
     });
 });
 
@@ -47,7 +77,7 @@ describe('vdrIfPermissions directive', () => {
     `,
 })
 export class TestComponent {
-    @Input() permissionToTest = '';
+    @Input() permissionToTest: string | string[] | null = '';
 }
 
 class MockDataService {
