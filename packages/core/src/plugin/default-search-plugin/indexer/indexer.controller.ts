@@ -352,7 +352,7 @@ export class IndexerController {
                         productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
                         productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
                         productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                        channelIds: v.product.channels.map(c => c.id as string),
+                        channelIds: v.channels.map(c => c.id as string),
                         facetIds: this.getFacetIds(v),
                         facetValueIds: this.getFacetValueIds(v),
                         collectionIds: v.collections.map(c => c.id.toString()),

@@ -3,7 +3,7 @@ import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
-import { Asset, FacetValue, Product, ProductOption } from '../../../entity';
+import { Asset, Channel, FacetValue, Product, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
 import { AssetService } from '../../../service/services/asset.service';
@@ -80,7 +80,10 @@ export class ProductVariantEntityResolver {
 
 @Resolver('ProductVariant')
 export class ProductVariantAdminEntityResolver {
-    constructor(private stockMovementService: StockMovementService) {}
+    constructor(
+        private productVariantService: ProductVariantService,
+        private stockMovementService: StockMovementService,
+    ) {}
 
     @ResolveField()
     async stockMovements(
@@ -93,5 +96,14 @@ export class ProductVariantAdminEntityResolver {
             productVariant.id,
             args.options,
         );
+    }
+
+    @ResolveField()
+    async channels(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<Channel[]> {
+        if (productVariant.channels) {
+            return productVariant.channels;
+        } else {
+            return this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
+        }
     }
 }

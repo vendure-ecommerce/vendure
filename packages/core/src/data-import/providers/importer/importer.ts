@@ -161,6 +161,7 @@ export class Importer {
                     },
                 ],
                 customFields: product.customFields,
+                variants: [],
             });
 
             const optionsMap: { [optionName: string]: ID } = {};

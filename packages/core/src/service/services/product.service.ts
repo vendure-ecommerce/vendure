@@ -4,17 +4,17 @@ import {
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
-    Permission,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -25,7 +25,6 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
-import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
@@ -43,7 +42,7 @@ import { TaxRateService } from './tax-rate.service';
 
 @Injectable()
 export class ProductService {
-    private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
+    private readonly relations = ['featuredAsset', 'assets', 'facetValues', 'facetValues.facet'];
 
     constructor(
         private connection: TransactionalConnection,
@@ -71,6 +70,10 @@ export class ProductService {
                 where: { deletedAt: null },
                 ctx,
             })
+            .leftJoin('product.variants', 'variant')
+            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
+                channelId: ctx.channelId,
+            })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
@@ -84,16 +87,23 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
-            relations: this.relations,
-            where: {
-                deletedAt: null,
-            },
-        });
-        if (!product) {
-            return;
-        }
-        return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
+        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
+        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
+        // tslint:disable-next-line:no-non-null-assertion
+        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+        return qb
+            .leftJoin('product.variants', 'variant')
+            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .andWhere('product.id = :productId', { productId })
+            .andWhere('product.deletedAt IS NULL')
+            .getOne()
+            .then(product => {
+                return product
+                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
+                    : undefined;
+            });
     }
 
     async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
@@ -102,9 +112,12 @@ export class ProductService {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
-            .leftJoin('product.channels', 'channel')
+            .leftJoin('product.variants', 'variant')
+            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
+                channelId: ctx.channelId,
+            })
+            .andWhere('product.deletedAt IS NULL')
             .andWhere('product.id IN (:...ids)', { ids: productIds })
-            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getMany()
             .then(products =>
                 products.map(product =>
@@ -113,12 +126,19 @@ export class ProductService {
             );
     }
 
+    // private async isProductInChannel(ctx: RequestContext, productId: ID, channelId: ID): Promise<boolean> {
+    //     const channelIds = (await this.getProductChannels(ctx, productId))
+    //         .map(channel => channel.id);
+    //     return channelIds.includes(channelId);
+    // }
+
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
-        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
-            relations: ['channels'],
-            channelId: ctx.channelId,
-        });
-        return product.channels;
+        const productVariantChannels = ([] as Channel[]).concat(
+            ...(await this.productVariantService.getVariantsByProductId(ctx, productId)).map(
+                pv => pv.channels,
+            ),
+        );
+        return unique(productVariantChannels, 'code');
     }
 
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
@@ -152,7 +172,6 @@ export class ProductService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
-                this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
@@ -161,6 +180,12 @@ export class ProductService {
         });
         await this.assetService.updateEntityAssets(ctx, product, input);
         this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
+        await this.productVariantService.create(
+            ctx,
+            input.variants.map(variant => {
+                return { productId: product.id, ...variant };
+            }),
+        );
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -185,9 +210,8 @@ export class ProductService {
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
-        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
-            channelId: ctx.channelId,
-        });
+        // TODO: product should only be deleted if no active ProductVariants?
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId);
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));
@@ -200,32 +224,18 @@ export class ProductService {
         ctx: RequestContext,
         input: AssignProductsToChannelInput,
     ): Promise<Array<Translated<Product>>> {
-        const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx,
-            input.channelId,
-            Permission.UpdateCatalog,
-        );
-        if (!hasPermission) {
-            throw new ForbiddenError();
-        }
         const productsWithVariants = await this.connection
             .getRepository(ctx, Product)
             .findByIds(input.productIds, {
                 relations: ['variants'],
             });
-        const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
-        for (const product of productsWithVariants) {
-            await this.channelService.assignToChannels(ctx, Product, product.id, [input.channelId]);
-            for (const variant of product.variants) {
-                await this.productVariantService.createProductVariantPrice(
-                    ctx,
-                    variant.id,
-                    variant.price * priceFactor,
-                    input.channelId,
-                );
-            }
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
-        }
+        await this.productVariantService.assignProductVariantsToChannel(ctx, {
+            productVariantIds: ([] as ID[]).concat(
+                ...productsWithVariants.map(p => p.variants.map(v => v.id)),
+            ),
+            channelId: input.channelId,
+            priceFactor: input.priceFactor,
+        });
         return this.findByIds(
             ctx,
             productsWithVariants.map(p => p.id),
@@ -236,25 +246,20 @@ export class ProductService {
         ctx: RequestContext,
         input: RemoveProductsFromChannelInput,
     ): Promise<Array<Translated<Product>>> {
-        const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx,
-            input.channelId,
-            Permission.UpdateCatalog,
-        );
-        if (!hasPermission) {
-            throw new ForbiddenError();
-        }
-        if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
-            throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
-        }
-        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
-        for (const product of products) {
-            await this.channelService.removeFromChannels(ctx, Product, product.id, [input.channelId]);
-            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
-        }
+        const productsWithVariants = await this.connection
+            .getRepository(ctx, Product)
+            .findByIds(input.productIds, {
+                relations: ['variants'],
+            });
+        await this.productVariantService.removeProductVariantsFromChannel(ctx, {
+            productVariantIds: ([] as ID[]).concat(
+                ...productsWithVariants.map(p => p.variants.map(v => v.id)),
+            ),
+            channelId: input.channelId,
+        });
         return this.findByIds(
             ctx,
-            products.map(p => p.id),
+            productsWithVariants.map(p => p.id),
         );
     }
 

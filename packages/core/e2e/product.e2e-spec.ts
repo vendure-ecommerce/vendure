@@ -368,6 +368,21 @@ describe('Product resolver', () => {
                                 description: 'Eine baked Erdapfel',
                             },
                         ],
+                        variants: [
+                            {
+                                translations: [
+                                    {
+                                        languageCode: LanguageCode.en,
+                                        name: 'Small Baked Potato',
+                                    },
+                                    {
+                                        languageCode: LanguageCode.de,
+                                        name: 'Klein baked Erdapfel',
+                                    },
+                                ],
+                                sku: 'PV0',
+                            },
+                        ],
                     },
                 },
             );
@@ -398,6 +413,17 @@ describe('Product resolver', () => {
                                 name: 'en Has Assets',
                                 slug: 'en-has-assets',
                                 description: 'A product with assets',
+                            },
+                        ],
+                        variants: [
+                            {
+                                translations: [
+                                    {
+                                        languageCode: LanguageCode.en,
+                                        name: 'A productVariant with assets',
+                                    },
+                                ],
+                                sku: 'PV0',
                             },
                         ],
                     },
@@ -468,6 +494,17 @@ describe('Product resolver', () => {
                                 name: 'Another baked potato',
                                 slug: 'a-very-nice-potato',
                                 description: 'Another baked potato but a bit different',
+                            },
+                        ],
+                        variants: [
+                            {
+                                translations: [
+                                    {
+                                        languageCode: LanguageCode.en,
+                                        name: 'Another small Baked Potato',
+                                    },
+                                ],
+                                sku: 'PV0',
                             },
                         ],
                     },
