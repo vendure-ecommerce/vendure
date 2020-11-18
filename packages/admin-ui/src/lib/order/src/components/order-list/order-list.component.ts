@@ -41,7 +41,15 @@ export class OrderListComponent
             label: _('order.filter-preset-open'),
             config: {
                 active: false,
-                states: this.orderStates.filter(s => s !== 'Delivered'),
+                states: this.orderStates.filter(s => s !== 'Delivered' && s !== 'Cancelled' && s !== 'Shipped'),
+            },
+        },
+        {
+            name: 'shipped',
+            label: _('order.filter-preset-shipped'),
+            config: {
+                active: false,
+                states: ['Shipped'],
             },
         },
         {
@@ -49,7 +57,7 @@ export class OrderListComponent
             label: _('order.filter-preset-completed'),
             config: {
                 active: false,
-                states: ['Delivered'],
+                states: ['Delivered', 'Cancelled'],
             },
         },
         {
