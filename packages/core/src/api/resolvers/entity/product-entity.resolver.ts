@@ -88,10 +88,6 @@ export class ProductAdminEntityResolver {
 
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Channel[]> {
-        if (product.channels) {
-            return product.channels;
-        } else {
-            return this.productService.getProductChannels(ctx, product.id);
-        }
+        return this.productService.getProductChannels(ctx, product.id);
     }
 }
