@@ -1,5 +1,5 @@
 <div class="clr-row dashboard-row" *ngFor="let row of widgetLayout">
     <div *ngFor="let widget of row" [ngClass]="getClassForWidth(widget.width)">
-        <vdr-dashboard-widget *vdrIfPermissions="widget.requiresPermissions || null" [widgetConfig]="widget"></vdr-dashboard-widget>
+        <vdr-dashboard-widget *vdrIfPermissions="widget.config.requiresPermissions || null" [widgetConfig]="widget.config"></vdr-dashboard-widget>
     </div>
 </div>

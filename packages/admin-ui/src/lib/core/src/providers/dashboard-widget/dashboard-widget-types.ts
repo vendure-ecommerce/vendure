@@ -1,5 +1,7 @@
 import { Type } from '@angular/core';
 
+export type DashboardWidgetWidth = 3 | 4 | 6 | 8 | 12;
+
 export interface DashboardWidgetConfig {
     /**
      * Used to specify the widget component. Supports both eager- and lazy-loading.
@@ -19,12 +21,16 @@ export interface DashboardWidgetConfig {
      */
     title?: string;
     /**
-     * The width of the widget, in terms of a Bootstrap-style 12-column grid.
+     * The supported widths of the widget, in terms of a Bootstrap-style 12-column grid.
+     * If omitted, then it is assumed the widget supports all widths.
      */
-    width: 3 | 4 | 6 | 12;
+    supportedWidths?: DashboardWidgetWidth[];
     /**
      * If set, the widget will only be displayed if the current user has all the
      * specified permissions.
      */
     requiresPermissions?: string[];
 }
+
+export type WidgetLayoutDefinition = Array<{ id: string; width: DashboardWidgetWidth }>;
+export type WidgetLayout = Array<Array<{ config: DashboardWidgetConfig; width: DashboardWidgetWidth }>>;

@@ -1,17 +1,22 @@
 import { Injectable } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { DashboardWidgetConfig } from './dashboard-widget-types';
+import {
+    DashboardWidgetConfig,
+    DashboardWidgetWidth,
+    WidgetLayout,
+    WidgetLayoutDefinition,
+} from './dashboard-widget-types';
 
 /**
- * Registers a component to be used as a dashboard widget.
+ * Responsible for registering dashboard widget components and querying for layouts.
  */
 @Injectable({
     providedIn: 'root',
 })
 export class DashboardWidgetService {
     private registry = new Map<string, DashboardWidgetConfig>();
-    private layout: ReadonlyArray<string> = [];
+    private layoutDef: WidgetLayoutDefinition = [];
 
     registerWidget(id: string, config: DashboardWidgetConfig) {
         if (this.registry.has(id)) {
@@ -21,30 +26,74 @@ export class DashboardWidgetService {
         this.registry.set(id, config);
     }
 
-    setDefaultLayout(ids: string[] | ReadonlyArray<string>) {
-        this.layout = ids;
+    setDefaultLayout(layout: WidgetLayoutDefinition) {
+        this.layoutDef = layout;
     }
 
-    getDefaultLayout(): ReadonlyArray<string> {
-        return this.layout;
+    getDefaultLayout(): WidgetLayoutDefinition {
+        return this.layoutDef;
     }
 
-    getWidgets(): DashboardWidgetConfig[] {
-        return this.layout
-            .map(id => {
+    getWidgetLayout(): WidgetLayout {
+        const intermediateLayout = this.layoutDef
+            .map(({ id, width }) => {
                 const config = this.registry.get(id);
                 if (!config) {
-                    // tslint:disable-next-line:no-console
-                    console.error(
-                        `No dashboard widget was found with the id "${id}"\nAvailable ids: ${[
-                            ...this.registry.keys(),
-                        ]
-                            .map(_id => `"${_id}"`)
-                            .join(', ')}`,
-                    );
+                    return this.idNotFound(id);
                 }
-                return config;
+                return { config, width: this.getValidWidth(id, config, width) };
             })
             .filter(notNullOrUndefined);
+
+        return this.buildLayout(intermediateLayout);
+    }
+
+    private idNotFound(id: string): undefined {
+        // tslint:disable-next-line:no-console
+        console.error(
+            `No dashboard widget was found with the id "${id}"\nAvailable ids: ${[...this.registry.keys()]
+                .map(_id => `"${_id}"`)
+                .join(', ')}`,
+        );
+        return;
+    }
+
+    private getValidWidth(
+        id: string,
+        config: DashboardWidgetConfig,
+        targetWidth: DashboardWidgetWidth,
+    ): DashboardWidgetWidth {
+        let adjustedWidth = targetWidth;
+        const supportedWidths = config.supportedWidths?.length
+            ? config.supportedWidths
+            : ([3, 4, 6, 8, 12] as DashboardWidgetWidth[]);
+        if (!supportedWidths.includes(targetWidth)) {
+            // Fall back to the largest supported width
+            const sortedWidths = supportedWidths.sort((a, b) => a - b);
+            const fallbackWidth = supportedWidths[sortedWidths.length - 1];
+            // tslint:disable-next-line:no-console
+            console.error(
+                `The "${id}" widget does not support the specified width (${targetWidth}).\nSupported widths are: [${sortedWidths.join(
+                    ', ',
+                )}].\nUsing (${fallbackWidth}) instead.`,
+            );
+            adjustedWidth = fallbackWidth;
+        }
+        return adjustedWidth;
+    }
+
+    private buildLayout(intermediateLayout: WidgetLayout[number]): WidgetLayout {
+        const layout: WidgetLayout = [];
+        let row: WidgetLayout[number] = [];
+        for (const { config, width } of intermediateLayout) {
+            const rowSize = row.reduce((size, c) => size + c.width, 0);
+            if (12 < rowSize + width) {
+                layout.push(row);
+                row = [];
+            }
+            row.push({ config, width });
+        }
+        layout.push(row);
+        return layout;
     }
 }
