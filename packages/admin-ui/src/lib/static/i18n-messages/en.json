@@ -548,6 +548,7 @@
     "filter-preset-active": "Active",
     "filter-preset-completed": "Completed",
     "filter-preset-open": "Open",
+    "filter-preset-shipped": "Shipped",
     "fulfill": "Fulfill",
     "fulfill-order": "Fulfill order",
     "fulfillment": "Fulfillment",
