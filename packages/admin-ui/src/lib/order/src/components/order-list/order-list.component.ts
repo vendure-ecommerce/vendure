@@ -6,11 +6,12 @@ import {
     BaseListComponent,
     DataService,
     GetOrderList,
+    LocalStorageService,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
 import { merge, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, skip, takeUntil } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, skip, takeUntil, tap } from 'rxjs/operators';
 
 interface OrderFilterConfig {
     active?: boolean;
@@ -75,6 +76,7 @@ export class OrderListComponent
     constructor(
         private serverConfigService: ServerConfigService,
         private dataService: DataService,
+        private localStorageService: LocalStorageService,
         router: Router,
         route: ActivatedRoute,
     ) {
@@ -91,6 +93,10 @@ export class OrderListComponent
                     this.route.snapshot.queryParamMap.get('filter') || 'open',
                 ),
         );
+        const lastFilters = this.localStorageService.get('orderListLastCustomFilters');
+        if (lastFilters) {
+            this.setQueryParam(lastFilters, { replaceUrl: true });
+        }
     }
 
     ngOnInit() {
@@ -99,9 +105,12 @@ export class OrderListComponent
             map(qpm => qpm.get('filter') || 'open'),
             distinctUntilChanged(),
         );
-        merge(this.searchTerm.valueChanges, this.activePreset$.pipe(skip(1)))
-            .pipe(debounceTime(250), takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        merge(this.searchTerm.valueChanges.pipe(debounceTime(250)), this.route.queryParamMap)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(val => {
+                this.refresh();
+            });
+
         const queryParamMap = this.route.snapshot.queryParamMap;
         this.customFilterForm = new FormGroup({
             states: new FormControl(queryParamMap.getAll('states') ?? []),
@@ -111,24 +120,32 @@ export class OrderListComponent
     }
 
     selectFilterPreset(presetName: string) {
+        const lastCustomFilters = this.localStorageService.get('orderListLastCustomFilters') ?? {};
+        const emptyCustomFilters = { states: undefined, placedAtStart: undefined, placedAtEnd: undefined };
+        const filters = presetName === 'custom' ? lastCustomFilters : emptyCustomFilters;
         this.setQueryParam(
             {
                 filter: presetName,
                 page: 1,
+                ...filters,
             },
-            true,
+            { replaceUrl: true },
         );
     }
 
     applyCustomFilters() {
         const formValue = this.customFilterForm.value;
-        this.setQueryParam({
-            filter: 'custom',
+        const customFilters = {
             states: formValue.states,
             placedAtStart: formValue.placedAtStart,
             placedAtEnd: formValue.placedAtEnd,
+        };
+        this.setQueryParam({
+            filter: 'custom',
+            ...customFilters,
         });
         this.customFilterForm.markAsPristine();
+        this.localStorageService.set('orderListLastCustomFilters', customFilters);
     }
 
     // tslint:disable-next-line:no-shadowed-variable
