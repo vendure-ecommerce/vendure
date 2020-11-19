@@ -57,7 +57,7 @@ Object {
   "lastName": "new last",
   "user": Object {
     "id": "T_3",
-    "identifier": "test@test.com",
+    "identifier": "new-email",
     "lastLogin": null,
     "roles": Array [
       Object {

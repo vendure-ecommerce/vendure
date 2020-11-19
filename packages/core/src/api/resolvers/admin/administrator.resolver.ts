@@ -4,6 +4,7 @@ import {
     MutationAssignRoleToAdministratorArgs,
     MutationCreateAdministratorArgs,
     MutationDeleteAdministratorArgs,
+    MutationUpdateActiveAdministratorArgs,
     MutationUpdateAdministratorArgs,
     Permission,
     QueryAdministratorArgs,
@@ -68,6 +69,22 @@ export class AdministratorResolver {
     ): Promise<Administrator> {
         const { input } = args;
         return this.administratorService.update(ctx, input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.Owner)
+    async updateActiveAdministrator(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationUpdateActiveAdministratorArgs,
+    ): Promise<Administrator | undefined> {
+        if (ctx.activeUserId) {
+            const { input } = args;
+            const administrator = await this.administratorService.findOneByUserId(ctx, ctx.activeUserId);
+            if (administrator) {
+                return this.administratorService.update(ctx, { ...input, id: administrator.id });
+            }
+        }
     }
 
     @Transaction()

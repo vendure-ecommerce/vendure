@@ -91,6 +91,10 @@ export class AdministratorService {
         let updatedAdministrator = patchEntity(administrator, input);
         await this.connection.getRepository(ctx, Administrator).save(administrator, { reload: false });
 
+        if (input.emailAddress) {
+            updatedAdministrator.user.identifier = input.emailAddress;
+            await this.connection.getRepository(ctx, User).save(updatedAdministrator.user);
+        }
         if (input.password) {
             const user = await this.userService.getUserById(ctx, administrator.user.id);
             if (user) {

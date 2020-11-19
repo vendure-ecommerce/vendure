@@ -409,6 +409,8 @@ export type Mutation = {
   settleRefund: SettleRefundResult;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+  /** Update the active (currently logged-in) Administrator */
+  updateActiveAdministrator: Administrator;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
   /** Update an existing Asset */
@@ -816,6 +818,11 @@ export type MutationTransitionOrderToStateArgs = {
 };
 
 
+export type MutationUpdateActiveAdministratorArgs = {
+  input: UpdateActiveAdministratorInput;
+};
+
+
 export type MutationUpdateAdministratorArgs = {
   input: UpdateAdministratorInput;
 };
@@ -955,6 +962,13 @@ export type UpdateAdministratorInput = {
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   roleIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateActiveAdministratorInput = {
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
 };
 
 export type MimeTypeError = ErrorResult & {
