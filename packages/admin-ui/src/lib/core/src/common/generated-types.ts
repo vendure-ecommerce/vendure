@@ -4328,14 +4328,6 @@ export type AdministratorFragment = (
   ) }
 );
 
-export type GetActiveAdministratorQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetActiveAdministratorQuery = { activeAdministrator?: Maybe<(
-    { __typename?: 'Administrator' }
-    & AdministratorFragment
-  )> };
-
 export type GetAdministratorsQueryVariables = Exact<{
   options?: Maybe<AdministratorListOptions>;
 }>;
@@ -7194,12 +7186,6 @@ export namespace Administrator {
   export type Fragment = AdministratorFragment;
   export type User = (NonNullable<AdministratorFragment['user']>);
   export type Roles = NonNullable<(NonNullable<(NonNullable<AdministratorFragment['user']>)['roles']>)[number]>;
-}
-
-export namespace GetActiveAdministrator {
-  export type Variables = GetActiveAdministratorQueryVariables;
-  export type Query = GetActiveAdministratorQuery;
-  export type ActiveAdministrator = (NonNullable<GetActiveAdministratorQuery['activeAdministrator']>);
 }
 
 export namespace GetAdministrators {
