@@ -288,10 +288,14 @@
     "view-group-members": ""
   },
   "dashboard": {
+    "add-widget": "",
     "latest-orders": "",
     "orders-summary": "",
+    "remove-widget": "",
     "total-order-value": "",
-    "total-orders": ""
+    "total-orders": "",
+    "widget-resize": "",
+    "widget-width": ""
   },
   "datetime": {
     "ago-days": "",

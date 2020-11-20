@@ -1,4 +1,9 @@
-@import "variables";
+@import 'variables';
+
+.widget-header {
+    display: flex;
+    justify-content: flex-end;
+}
 
 .placeholder {
     color: $color-grey-300;
@@ -15,4 +20,32 @@
 
 vdr-dashboard-widget {
     margin-bottom: 24px;
+}
+
+.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.cdk-drag-placeholder {
+    opacity: 0;
+}
+
+.cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.dashboard-row {
+    padding: 0;
+    border-width: 1;
+    margin-bottom: 6px;
+    transition: padding 0.2s, margin 0.2s;
+}
+
+.dashboard-row.cdk-drop-list-dragging, .dashboard-row.cdk-drop-list-receiving  {
+    border: 1px dashed $color-grey-300;
+    padding: 6px;
+}
+.dashboard-row.cdk-drop-list-dragging .dashboard-item:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }

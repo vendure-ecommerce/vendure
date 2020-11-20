@@ -1,6 +1,11 @@
 <div class="card">
-    <div class="card-header" *ngIf="widgetConfig.title as title">
-        {{ title | translate }}
+    <div class="card-header">
+        <div class="title">
+            <ng-container *ngIf="widgetConfig.title as title">{{ title | translate }}</ng-container>
+        </div>
+        <div class="controls">
+            <ng-content></ng-content>
+        </div>
     </div>
     <div class="card-block">
         <ng-template #portal></ng-template>

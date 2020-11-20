@@ -33,4 +33,6 @@ export interface DashboardWidgetConfig {
 }
 
 export type WidgetLayoutDefinition = Array<{ id: string; width: DashboardWidgetWidth }>;
-export type WidgetLayout = Array<Array<{ config: DashboardWidgetConfig; width: DashboardWidgetWidth }>>;
+export type WidgetLayout = Array<
+    Array<{ id: string; config: DashboardWidgetConfig; width: DashboardWidgetWidth }>
+>;

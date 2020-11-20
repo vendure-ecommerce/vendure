@@ -26,6 +26,17 @@ export class DashboardWidgetService {
         this.registry.set(id, config);
     }
 
+    getAvailableIds(): string[] {
+        return [...this.registry.keys()];
+    }
+
+    getWidgetById(id: string) {
+        if (!this.registry.has(id)) {
+            throw new Error(`No widget was found with the id "${id}"`);
+        }
+        return this.registry.get(id);
+    }
+
     setDefaultLayout(layout: WidgetLayoutDefinition) {
         this.layoutDef = layout;
     }
@@ -34,14 +45,14 @@ export class DashboardWidgetService {
         return this.layoutDef;
     }
 
-    getWidgetLayout(): WidgetLayout {
-        const intermediateLayout = this.layoutDef
+    getWidgetLayout(layoutDef?: WidgetLayoutDefinition): WidgetLayout {
+        const intermediateLayout = (layoutDef || this.layoutDef)
             .map(({ id, width }) => {
                 const config = this.registry.get(id);
                 if (!config) {
                     return this.idNotFound(id);
                 }
-                return { config, width: this.getValidWidth(id, config, width) };
+                return { id, config, width: this.getValidWidth(id, config, width) };
             })
             .filter(notNullOrUndefined);
 
@@ -85,13 +96,13 @@ export class DashboardWidgetService {
     private buildLayout(intermediateLayout: WidgetLayout[number]): WidgetLayout {
         const layout: WidgetLayout = [];
         let row: WidgetLayout[number] = [];
-        for (const { config, width } of intermediateLayout) {
+        for (const { id, config, width } of intermediateLayout) {
             const rowSize = row.reduce((size, c) => size + c.width, 0);
             if (12 < rowSize + width) {
                 layout.push(row);
                 row = [];
             }
-            row.push({ config, width });
+            row.push({ id, config, width });
         }
         layout.push(row);
         return layout;

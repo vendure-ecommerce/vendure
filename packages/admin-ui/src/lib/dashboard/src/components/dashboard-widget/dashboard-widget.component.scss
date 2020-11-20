@@ -7,3 +7,8 @@
 .card {
     margin-top: 0;
 }
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+}

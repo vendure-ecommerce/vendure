@@ -288,10 +288,14 @@
     "view-group-members": "Visualizar membros do grupo"
   },
   "dashboard": {
+    "add-widget": "",
     "latest-orders": "",
     "orders-summary": "",
+    "remove-widget": "",
     "total-order-value": "",
-    "total-orders": ""
+    "total-orders": "",
+    "widget-resize": "",
+    "widget-width": ""
   },
   "datetime": {
     "ago-days": "{count, plural, one {1 day} other {{count} days}} atrás",

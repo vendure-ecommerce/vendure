@@ -16,6 +16,9 @@ export const DEFAULT_DASHBOARD_WIDGET_LAYOUT: WidgetLayoutDefinition = [
     { id: 'welcome', width: 12 },
     { id: 'orderSummary', width: 6 },
     { id: 'latestOrders', width: 6 },
+    { id: 'testWidget', width: 4 },
+    { id: 'testWidget', width: 4 },
+    { id: 'testWidget', width: 4 },
 ];
 
 export const DEFAULT_WIDGETS: { [id: string]: DashboardWidgetConfig } = {
