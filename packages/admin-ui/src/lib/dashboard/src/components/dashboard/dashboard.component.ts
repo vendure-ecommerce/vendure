@@ -1,9 +1,10 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {
     DashboardWidgetConfig,
     DashboardWidgetService,
     DashboardWidgetWidth,
+    LocalStorageService,
     WidgetLayout,
     WidgetLayoutDefinition,
 } from '@vendure/admin-ui/core';
@@ -20,11 +21,15 @@ export class DashboardComponent implements OnInit {
     availableWidgetIds: string[];
     private readonly deletionMarker = '__delete__';
 
-    constructor(private dashboardWidgetService: DashboardWidgetService) {}
+    constructor(
+        private dashboardWidgetService: DashboardWidgetService,
+        private localStorageService: LocalStorageService,
+        private changedDetectorRef: ChangeDetectorRef,
+    ) {}
 
     ngOnInit() {
-        this.widgetLayout = this.dashboardWidgetService.getWidgetLayout();
         this.availableWidgetIds = this.dashboardWidgetService.getAvailableIds();
+        this.widgetLayout = this.initLayout(this.availableWidgetIds);
     }
 
     getClassForWidth(width: DashboardWidgetWidth): string {
@@ -51,6 +56,11 @@ export class DashboardComponent implements OnInit {
     setWidgetWidth(widget: WidgetLayout[number][number], width: DashboardWidgetWidth) {
         widget.width = width;
         this.recalculateLayout();
+    }
+
+    trackRow(index: number, row: WidgetLayout[number]) {
+        const id = row.map(item => `${item.id}:${item.width}`).join('|');
+        return id;
     }
 
     trackRowItem(index: number, item: WidgetLayout[number][number]) {
@@ -84,12 +94,27 @@ export class DashboardComponent implements OnInit {
     }
 
     drop(event: CdkDragDrop<{ index: number }>) {
-        const previousLayoutRow = this.widgetLayout[event.previousContainer.data.index];
-        const newLayoutRow = this.widgetLayout[event.container.data.index];
+        const { currentIndex, previousIndex, previousContainer, container } = event;
+        if (previousIndex === currentIndex && previousContainer.data.index === container.data.index) {
+            // Nothing changed
+            return;
+        }
+        const previousLayoutRow = this.widgetLayout[previousContainer.data.index];
+        const newLayoutRow = this.widgetLayout[container.data.index];
 
-        previousLayoutRow.splice(event.previousIndex, 1);
-        newLayoutRow.splice(event.currentIndex, 0, event.item.data);
+        previousLayoutRow.splice(previousIndex, 1);
+        newLayoutRow.splice(currentIndex, 0, event.item.data);
         this.recalculateLayout();
+    }
+
+    private initLayout(availableIds: string[]): WidgetLayout {
+        const savedLayoutDef = this.localStorageService.get('dashboardWidgetLayout');
+        let layoutDef: WidgetLayoutDefinition | undefined;
+        if (savedLayoutDef) {
+            // validate all the IDs from the saved layout are still available
+            layoutDef = savedLayoutDef.filter(item => availableIds.includes(item.id));
+        }
+        return this.dashboardWidgetService.getWidgetLayout(layoutDef);
     }
 
     private recalculateLayout() {
@@ -101,5 +126,6 @@ export class DashboardComponent implements OnInit {
             width: item.width,
         }));
         this.widgetLayout = this.dashboardWidgetService.getWidgetLayout(newLayoutDef);
+        setTimeout(() => this.changedDetectorRef.markForCheck());
     }
 }

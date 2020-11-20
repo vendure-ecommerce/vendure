@@ -1,12 +1,22 @@
 import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
 
-export type LocalStorageKey =
-    | 'activeChannelToken'
-    | 'authToken'
-    | 'uiLanguageCode'
-    | 'orderListLastCustomFilters';
-export type LocalStorageLocationBasedKey = 'shippingTestOrder' | 'shippingTestAddress';
+import { LanguageCode } from '../../common/generated-types';
+import { WidgetLayoutDefinition } from '../dashboard-widget/dashboard-widget-types';
+
+export type LocalStorageTypeMap = {
+    activeChannelToken: string;
+    authToken: string;
+    uiLanguageCode: LanguageCode;
+    orderListLastCustomFilters: any;
+    dashboardWidgetLayout: WidgetLayoutDefinition;
+};
+
+export type LocalStorageLocationBasedTypeMap = {
+    shippingTestOrder: any;
+    shippingTestAddress: any;
+};
+
 const PREFIX = 'vnd_';
 
 /**
@@ -20,7 +30,7 @@ export class LocalStorageService {
     /**
      * Set a key-value pair in the browser's LocalStorage
      */
-    public set(key: LocalStorageKey, value: any): void {
+    public set<K extends keyof LocalStorageTypeMap>(key: K, value: LocalStorageTypeMap[K]): void {
         const keyName = this.keyName(key);
         localStorage.setItem(keyName, JSON.stringify(value));
     }
@@ -28,7 +38,10 @@ export class LocalStorageService {
     /**
      * Set a key-value pair specific to the current location (url)
      */
-    public setForCurrentLocation(key: LocalStorageLocationBasedKey, value: any) {
+    public setForCurrentLocation<K extends keyof LocalStorageLocationBasedTypeMap>(
+        key: K,
+        value: LocalStorageLocationBasedTypeMap[K],
+    ) {
         const compositeKey = this.getLocationBasedKey(key);
         this.set(compositeKey as any, value);
     }
@@ -36,7 +49,7 @@ export class LocalStorageService {
     /**
      * Set a key-value pair in the browser's SessionStorage
      */
-    public setForSession(key: LocalStorageKey, value: any): void {
+    public setForSession<K extends keyof LocalStorageTypeMap>(key: K, value: LocalStorageTypeMap[K]): void {
         const keyName = this.keyName(key);
         sessionStorage.setItem(keyName, JSON.stringify(value));
     }
@@ -44,7 +57,7 @@ export class LocalStorageService {
     /**
      * Get the value of the given key from the SessionStorage or LocalStorage.
      */
-    public get(key: LocalStorageKey): any {
+    public get<K extends keyof LocalStorageTypeMap>(key: K): LocalStorageTypeMap[K] | null {
         const keyName = this.keyName(key);
         const item = sessionStorage.getItem(keyName) || localStorage.getItem(keyName);
         let result: any;
@@ -60,12 +73,14 @@ export class LocalStorageService {
     /**
      * Get the value of the given key for the current location (url)
      */
-    public getForCurrentLocation(key: LocalStorageLocationBasedKey): any {
+    public getForCurrentLocation<K extends keyof LocalStorageLocationBasedTypeMap>(
+        key: K,
+    ): LocalStorageLocationBasedTypeMap[K] {
         const compositeKey = this.getLocationBasedKey(key);
         return this.get(compositeKey as any);
     }
 
-    public remove(key: LocalStorageKey): void {
+    public remove(key: keyof LocalStorageTypeMap): void {
         const keyName = this.keyName(key);
         sessionStorage.removeItem(keyName);
         localStorage.removeItem(keyName);
@@ -76,7 +91,7 @@ export class LocalStorageService {
         return key + path;
     }
 
-    private keyName(key: LocalStorageKey): string {
+    private keyName(key: keyof LocalStorageTypeMap): string {
         return PREFIX + key;
     }
 }

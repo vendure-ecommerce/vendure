@@ -19,7 +19,7 @@
 <div cdkDropListGroup>
     <div
         class="clr-row dashboard-row"
-        *ngFor="let row of widgetLayout; index as rowIndex"
+        *ngFor="let row of widgetLayout; index as rowIndex; trackBy: trackRow"
         cdkDropList
         (cdkDropListDropped)="drop($event)"
         cdkDropListOrientation="horizontal"

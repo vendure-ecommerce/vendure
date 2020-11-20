@@ -69,7 +69,8 @@ export class CoreModule {
                     .join(', ')}]`,
             );
         }
-        const uiLanguage = availableLanguages.includes(lastLanguage) ? lastLanguage : defaultLanguage;
+        const uiLanguage =
+            lastLanguage && availableLanguages.includes(lastLanguage) ? lastLanguage : defaultLanguage;
         this.localStorageService.set('uiLanguageCode', uiLanguage);
         this.i18nService.setLanguage(uiLanguage);
         this.i18nService.setDefaultLanguage(defaultLanguage);
