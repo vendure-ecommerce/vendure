@@ -22,6 +22,7 @@ import { CountryListComponent } from './components/country-list/country-list.com
 import { GlobalSettingsComponent } from './components/global-settings/global-settings.component';
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { ShippingMethodDetailComponent } from './components/shipping-method-detail/shipping-method-detail.component';
@@ -36,12 +37,22 @@ import { ChannelResolver } from './providers/routing/channel-resolver';
 import { CountryResolver } from './providers/routing/country-resolver';
 import { GlobalSettingsResolver } from './providers/routing/global-settings-resolver';
 import { PaymentMethodResolver } from './providers/routing/payment-method-resolver';
+import { ProfileResolver } from './providers/routing/profile-resolver';
 import { RoleResolver } from './providers/routing/role-resolver';
 import { ShippingMethodResolver } from './providers/routing/shipping-method-resolver';
 import { TaxCategoryResolver } from './providers/routing/tax-category-resolver';
 import { TaxRateResolver } from './providers/routing/tax-rate-resolver';
 
 export const settingsRoutes: Route[] = [
+    {
+        path: 'profile',
+        component: ProfileComponent,
+        resolve: createResolveData(ProfileResolver),
+        canDeactivate: [CanDeactivateDetailGuard],
+        data: {
+            breadcrumb: _('breadcrumb.profile'),
+        },
+    },
     {
         path: 'administrators',
         component: AdministratorListComponent,

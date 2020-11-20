@@ -4342,6 +4342,14 @@ export type GetAdministratorsQuery = { administrators: (
     )> }
   ) };
 
+export type GetActiveAdministratorQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveAdministratorQuery = { activeAdministrator?: Maybe<(
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  )> };
+
 export type GetAdministratorQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -4368,6 +4376,16 @@ export type UpdateAdministratorMutationVariables = Exact<{
 
 
 export type UpdateAdministratorMutation = { updateAdministrator: (
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  ) };
+
+export type UpdateActiveAdministratorMutationVariables = Exact<{
+  input: UpdateActiveAdministratorInput;
+}>;
+
+
+export type UpdateActiveAdministratorMutation = { updateActiveAdministrator: (
     { __typename?: 'Administrator' }
     & AdministratorFragment
   ) };
@@ -7162,6 +7180,12 @@ export namespace GetAdministrators {
   export type Items = NonNullable<(NonNullable<(NonNullable<GetAdministratorsQuery['administrators']>)['items']>)[number]>;
 }
 
+export namespace GetActiveAdministrator {
+  export type Variables = GetActiveAdministratorQueryVariables;
+  export type Query = GetActiveAdministratorQuery;
+  export type ActiveAdministrator = (NonNullable<GetActiveAdministratorQuery['activeAdministrator']>);
+}
+
 export namespace GetAdministrator {
   export type Variables = GetAdministratorQueryVariables;
   export type Query = GetAdministratorQuery;
@@ -7178,6 +7202,12 @@ export namespace UpdateAdministrator {
   export type Variables = UpdateAdministratorMutationVariables;
   export type Mutation = UpdateAdministratorMutation;
   export type UpdateAdministrator = (NonNullable<UpdateAdministratorMutation['updateAdministrator']>);
+}
+
+export namespace UpdateActiveAdministrator {
+  export type Variables = UpdateActiveAdministratorMutationVariables;
+  export type Mutation = UpdateActiveAdministratorMutation;
+  export type UpdateActiveAdministrator = (NonNullable<UpdateActiveAdministratorMutation['updateActiveAdministrator']>);
 }
 
 export namespace DeleteAdministrator {
