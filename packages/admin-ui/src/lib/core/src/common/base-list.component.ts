@@ -1,7 +1,7 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, shareReplay, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
 
@@ -66,10 +66,12 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
             map(page => (!page ? 1 : +page)),
+            distinctUntilChanged(),
         );
         this.itemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('perPage')),
             map(perPage => (!perPage ? 10 : +perPage)),
+            distinctUntilChanged(),
         );
 
         combineLatest(this.currentPage$, this.itemsPerPage$, this.refresh$)
@@ -83,11 +85,11 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     }
 
     setPageNumber(page: number) {
-        this.setQueryParam('page', page, true);
+        this.setQueryParam('page', page, { replaceUrl: true });
     }
 
     setItemsPerPage(perPage: number) {
-        this.setQueryParam('perPage', perPage, true);
+        this.setQueryParam('perPage', perPage, { replaceUrl: true });
     }
 
     /**
@@ -97,20 +99,27 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.refresh$.next(undefined);
     }
 
-    protected setQueryParam(hash: { [key: string]: any }, replaceUrl?: boolean);
-    protected setQueryParam(key: string, value: any, replaceUrl?: boolean);
+    protected setQueryParam(
+        hash: { [key: string]: any },
+        options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
+    );
+    protected setQueryParam(
+        key: string,
+        value: any,
+        options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
+    );
     protected setQueryParam(
         keyOrHash: string | { [key: string]: any },
-        valueOrReplaceUrl?: any,
-        maybeReplaceUrl?: boolean,
+        valueOrOptions?: any,
+        maybeOptions?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
     ) {
-        const paramsObject = typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrReplaceUrl } : keyOrHash;
-        const replaceUrl = (typeof keyOrHash === 'string' ? maybeReplaceUrl : valueOrReplaceUrl) ?? false;
+        const paramsObject = typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash;
+        const options = (typeof keyOrHash === 'string' ? maybeOptions : valueOrOptions) ?? {};
         this.router.navigate(['./'], {
-            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrReplaceUrl } : keyOrHash,
+            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash,
             relativeTo: this.route,
             queryParamsHandling: 'merge',
-            replaceUrl,
+            ...options,
         });
     }
 }

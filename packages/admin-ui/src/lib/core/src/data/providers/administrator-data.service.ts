@@ -12,6 +12,8 @@ import {
     GetAdministrators,
     GetRole,
     GetRoles,
+    UpdateActiveAdministrator,
+    UpdateActiveAdministratorInput,
     UpdateAdministrator,
     UpdateAdministratorInput,
     UpdateRole,
@@ -27,6 +29,7 @@ import {
     GET_ADMINISTRATORS,
     GET_ROLE,
     GET_ROLES,
+    UPDATE_ACTIVE_ADMINISTRATOR,
     UPDATE_ADMINISTRATOR,
     UPDATE_ROLE,
 } from '../definitions/administrator-definitions';
@@ -77,6 +80,13 @@ export class AdministratorDataService {
             UPDATE_ADMINISTRATOR,
             { input },
         );
+    }
+
+    updateActiveAdministrator(input: UpdateActiveAdministratorInput) {
+        return this.baseDataService.mutate<
+            UpdateActiveAdministrator.Mutation,
+            UpdateActiveAdministrator.Variables
+        >(UPDATE_ACTIVE_ADMINISTRATOR, { input });
     }
 
     deleteAdministrator(id: string) {

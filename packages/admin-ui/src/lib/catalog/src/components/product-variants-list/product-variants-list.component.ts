@@ -137,6 +137,13 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         return '';
     }
 
+    getSaleableStockLevel(variant: ProductWithVariants.Variants) {
+        const effectiveOutOfStockThreshold = variant.useGlobalOutOfStockThreshold
+            ? this.globalOutOfStockThreshold
+            : variant.outOfStockThreshold;
+        return variant.stockOnHand - variant.stockAllocated - effectiveOutOfStockThreshold;
+    }
+
     areAllSelected(): boolean {
         return !!this.variants && this.selectedVariantIds.length === this.variants.length;
     }

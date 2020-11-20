@@ -9,6 +9,8 @@ type Mutation {
     createAdministrator(input: CreateAdministratorInput!): Administrator!
     "Update an existing Administrator"
     updateAdministrator(input: UpdateAdministratorInput!): Administrator!
+    "Update the active (currently logged-in) Administrator"
+    updateActiveAdministrator(input: UpdateActiveAdministratorInput!): Administrator!
     "Delete an Administrator"
     deleteAdministrator(id: ID!): DeletionResponse!
     "Assign a Role to an Administrator"
@@ -33,4 +35,11 @@ input UpdateAdministratorInput {
     emailAddress: String
     password: String
     roleIds: [ID!]
+}
+
+input UpdateActiveAdministratorInput {
+    firstName: String
+    lastName: String
+    emailAddress: String
+    password: String
 }

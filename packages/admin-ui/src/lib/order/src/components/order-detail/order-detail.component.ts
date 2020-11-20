@@ -204,7 +204,9 @@ export class OrderDetailComponent
             .every(item => !!item.fulfillment);
         return (
             !allItemsFulfilled &&
-            (order.nextStates.includes('Shipped') || order.nextStates.includes('PartiallyShipped'))
+            (order.nextStates.includes('Shipped') ||
+                order.nextStates.includes('PartiallyShipped') ||
+                order.nextStates.includes('Delivered'))
         );
     }
 

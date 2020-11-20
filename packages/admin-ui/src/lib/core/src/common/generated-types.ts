@@ -409,6 +409,8 @@ export type Mutation = {
   settleRefund: SettleRefundResult;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+  /** Update the active (currently logged-in) Administrator */
+  updateActiveAdministrator: Administrator;
   /** Update an existing Administrator */
   updateAdministrator: Administrator;
   /** Update an existing Asset */
@@ -816,6 +818,11 @@ export type MutationTransitionOrderToStateArgs = {
 };
 
 
+export type MutationUpdateActiveAdministratorArgs = {
+  input: UpdateActiveAdministratorInput;
+};
+
+
 export type MutationUpdateAdministratorArgs = {
   input: UpdateAdministratorInput;
 };
@@ -955,6 +962,13 @@ export type UpdateAdministratorInput = {
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   roleIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateActiveAdministratorInput = {
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  emailAddress?: Maybe<Scalars['String']>;
+  password?: Maybe<Scalars['String']>;
 };
 
 export type MimeTypeError = ErrorResult & {
@@ -4336,6 +4350,14 @@ export type GetAdministratorsQuery = { administrators: (
     )> }
   ) };
 
+export type GetActiveAdministratorQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetActiveAdministratorQuery = { activeAdministrator?: Maybe<(
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  )> };
+
 export type GetAdministratorQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -4362,6 +4384,16 @@ export type UpdateAdministratorMutationVariables = Exact<{
 
 
 export type UpdateAdministratorMutation = { updateAdministrator: (
+    { __typename?: 'Administrator' }
+    & AdministratorFragment
+  ) };
+
+export type UpdateActiveAdministratorMutationVariables = Exact<{
+  input: UpdateActiveAdministratorInput;
+}>;
+
+
+export type UpdateActiveAdministratorMutation = { updateActiveAdministrator: (
     { __typename?: 'Administrator' }
     & AdministratorFragment
   ) };
@@ -7177,6 +7209,12 @@ export namespace GetAdministrators {
   export type Items = NonNullable<(NonNullable<(NonNullable<GetAdministratorsQuery['administrators']>)['items']>)[number]>;
 }
 
+export namespace GetActiveAdministrator {
+  export type Variables = GetActiveAdministratorQueryVariables;
+  export type Query = GetActiveAdministratorQuery;
+  export type ActiveAdministrator = (NonNullable<GetActiveAdministratorQuery['activeAdministrator']>);
+}
+
 export namespace GetAdministrator {
   export type Variables = GetAdministratorQueryVariables;
   export type Query = GetAdministratorQuery;
@@ -7193,6 +7231,12 @@ export namespace UpdateAdministrator {
   export type Variables = UpdateAdministratorMutationVariables;
   export type Mutation = UpdateAdministratorMutation;
   export type UpdateAdministrator = (NonNullable<UpdateAdministratorMutation['updateAdministrator']>);
+}
+
+export namespace UpdateActiveAdministrator {
+  export type Variables = UpdateActiveAdministratorMutationVariables;
+  export type Mutation = UpdateActiveAdministratorMutation;
+  export type UpdateActiveAdministrator = (NonNullable<UpdateActiveAdministratorMutation['updateActiveAdministrator']>);
 }
 
 export namespace DeleteAdministrator {
