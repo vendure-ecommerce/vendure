@@ -360,10 +360,14 @@ export type Mutation = {
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
-    /** Assigns Products to the specified Channel */
+    /** Assigns all ProductVariants of Product to the specified Channel */
     assignProductsToChannel: Array<Product>;
-    /** Removes Products from the specified Channel */
+    /** Removes all ProductVariants of Product from the specified Channel */
     removeProductsFromChannel: Array<Product>;
+    /** Assigns ProductVariants to the specified Channel */
+    assignProductVariantsToChannel: Array<ProductVariant>;
+    /** Removes ProductVariants from the specified Channel */
+    removeProductVariantsFromChannel: Array<ProductVariant>;
     createPromotion: CreatePromotionResult;
     updatePromotion: UpdatePromotionResult;
     deletePromotion: DeletionResponse;
@@ -694,6 +698,14 @@ export type MutationAssignProductsToChannelArgs = {
 
 export type MutationRemoveProductsFromChannelArgs = {
     input: RemoveProductsFromChannelInput;
+};
+
+export type MutationAssignProductVariantsToChannelArgs = {
+    input: AssignProductVariantsToChannelInput;
+};
+
+export type MutationRemoveProductVariantsFromChannelArgs = {
+    input: RemoveProductVariantsFromChannelInput;
 };
 
 export type MutationCreatePromotionArgs = {
@@ -1490,6 +1502,7 @@ export type ProductVariant = Node & {
     outOfStockThreshold: Scalars['Int'];
     useGlobalOutOfStockThreshold: Scalars['Boolean'];
     stockMovements: StockMovementList;
+    channels: Array<Channel>;
     id: Scalars['ID'];
     product: Product;
     productId: Scalars['ID'];
@@ -1604,6 +1617,17 @@ export type AssignProductsToChannelInput = {
 
 export type RemoveProductsFromChannelInput = {
     productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+};
+
+export type AssignProductVariantsToChannelInput = {
+    productVariantIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+    priceFactor?: Maybe<Scalars['Float']>;
+};
+
+export type RemoveProductVariantsFromChannelInput = {
+    productVariantIds: Array<Scalars['ID']>;
     channelId: Scalars['ID'];
 };
 
@@ -4514,6 +4538,7 @@ export type ProductVariantFragment = Pick<
     featuredAsset?: Maybe<AssetFragment>;
     assets: Array<AssetFragment>;
     translations: Array<Pick<ProductVariantTranslation, 'id' | 'languageCode' | 'name'>>;
+    channels: Array<Pick<Channel, 'id' | 'code'>>;
 };
 
 export type ProductWithVariantsFragment = Pick<
@@ -4949,6 +4974,22 @@ export type RemoveProductsFromChannelMutationVariables = Exact<{
 
 export type RemoveProductsFromChannelMutation = {
     removeProductsFromChannel: Array<ProductWithVariantsFragment>;
+};
+
+export type AssignProductVariantsToChannelMutationVariables = Exact<{
+    input: AssignProductVariantsToChannelInput;
+}>;
+
+export type AssignProductVariantsToChannelMutation = {
+    assignProductVariantsToChannel: Array<ProductVariantFragment>;
+};
+
+export type RemoveProductVariantsFromChannelMutationVariables = Exact<{
+    input: RemoveProductVariantsFromChannelInput;
+}>;
+
+export type RemoveProductVariantsFromChannelMutation = {
+    removeProductVariantsFromChannel: Array<ProductVariantFragment>;
 };
 
 export type UpdateAssetMutationVariables = Exact<{
@@ -6399,6 +6440,7 @@ export namespace ProductVariant {
     export type FeaturedAsset = NonNullable<ProductVariantFragment['featuredAsset']>;
     export type Assets = NonNullable<NonNullable<ProductVariantFragment['assets']>[number]>;
     export type Translations = NonNullable<NonNullable<ProductVariantFragment['translations']>[number]>;
+    export type Channels = NonNullable<NonNullable<ProductVariantFragment['channels']>[number]>;
 }
 
 export namespace ProductWithVariants {
@@ -6825,6 +6867,22 @@ export namespace RemoveProductsFromChannel {
     export type Mutation = RemoveProductsFromChannelMutation;
     export type RemoveProductsFromChannel = NonNullable<
         NonNullable<RemoveProductsFromChannelMutation['removeProductsFromChannel']>[number]
+    >;
+}
+
+export namespace AssignProductVariantsToChannel {
+    export type Variables = AssignProductVariantsToChannelMutationVariables;
+    export type Mutation = AssignProductVariantsToChannelMutation;
+    export type AssignProductVariantsToChannel = NonNullable<
+        NonNullable<AssignProductVariantsToChannelMutation['assignProductVariantsToChannel']>[number]
+    >;
+}
+
+export namespace RemoveProductVariantsFromChannel {
+    export type Variables = RemoveProductVariantsFromChannelMutationVariables;
+    export type Mutation = RemoveProductVariantsFromChannelMutation;
+    export type RemoveProductVariantsFromChannel = NonNullable<
+        NonNullable<RemoveProductVariantsFromChannelMutation['removeProductVariantsFromChannel']>[number]
     >;
 }
 

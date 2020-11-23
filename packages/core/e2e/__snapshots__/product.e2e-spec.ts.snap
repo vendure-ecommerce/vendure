@@ -18,46 +18,7 @@ Object {
   "name": "en Baked Potato",
   "optionGroups": Array [],
   "slug": "en-baked-potato",
-  "variants": Array [
-    Object {
-      "assets": Array [],
-      "currencyCode": "USD",
-      "enabled": true,
-      "facetValues": Array [],
-      "featuredAsset": null,
-      "id": "T_35",
-      "languageCode": "en",
-      "name": "Small Baked Potato",
-      "options": Array [],
-      "price": 0,
-      "priceIncludesTax": false,
-      "priceWithTax": 0,
-      "sku": "PV0",
-      "stockOnHand": 0,
-      "taxCategory": Object {
-        "id": "T_1",
-        "name": "Standard Tax",
-      },
-      "taxRateApplied": Object {
-        "id": "T_2",
-        "name": "Standard Tax Europe",
-        "value": 20,
-      },
-      "trackInventory": "INHERIT",
-      "translations": Array [
-        Object {
-          "id": "T_35",
-          "languageCode": "en",
-          "name": "Small Baked Potato",
-        },
-        Object {
-          "id": "T_36",
-          "languageCode": "de",
-          "name": "Klein baked Erdapfel",
-        },
-      ],
-    },
-  ],
+  "variants": Array [],
 }
 `;
 

@@ -9,7 +9,6 @@ import {
     UpdateProductInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { unique } from '@vendure/common/lib/unique';
 import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -42,7 +41,7 @@ import { TaxRateService } from './tax-rate.service';
 
 @Injectable()
 export class ProductService {
-    private readonly relations = ['featuredAsset', 'assets', 'facetValues', 'facetValues.facet'];
+    private readonly relations = ['featuredAsset', 'assets', 'channels', 'facetValues', 'facetValues.facet'];
 
     constructor(
         private connection: TransactionalConnection,
@@ -70,10 +69,6 @@ export class ProductService {
                 where: { deletedAt: null },
                 ctx,
             })
-            .leftJoin('product.variants', 'variant')
-            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
-                channelId: ctx.channelId,
-            })
             .getManyAndCount()
             .then(async ([products, totalItems]) => {
                 const items = products.map(product =>
@@ -87,23 +82,16 @@ export class ProductService {
     }
 
     async findOne(ctx: RequestContext, productId: ID): Promise<Translated<Product> | undefined> {
-        const qb = this.connection.getRepository(ctx, Product).createQueryBuilder('product');
-        FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, { relations: this.relations });
-        // tslint:disable-next-line:no-non-null-assertion
-        FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
-        return qb
-            .leftJoin('product.variants', 'variant')
-            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
-                channelId: ctx.channelId,
-            })
-            .andWhere('product.id = :productId', { productId })
-            .andWhere('product.deletedAt IS NULL')
-            .getOne()
-            .then(product => {
-                return product
-                    ? translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']])
-                    : undefined;
-            });
+        const product = await this.connection.findOneInChannel(ctx, Product, productId, ctx.channelId, {
+            relations: this.relations,
+            where: {
+                deletedAt: null,
+            },
+        });
+        if (!product) {
+            return;
+        }
+        return translateDeep(product, ctx.languageCode, ['facetValues', ['facetValues', 'facet']]);
     }
 
     async findByIds(ctx: RequestContext, productIds: ID[]): Promise<Array<Translated<Product>>> {
@@ -112,12 +100,10 @@ export class ProductService {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
-            .leftJoin('product.variants', 'variant')
-            .innerJoinAndSelect('variant.channels', 'channel', 'channel.id = :channelId', {
-                channelId: ctx.channelId,
-            })
+            .leftJoin('product.channels', 'channel')
             .andWhere('product.deletedAt IS NULL')
             .andWhere('product.id IN (:...ids)', { ids: productIds })
+            .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getMany()
             .then(products =>
                 products.map(product =>
@@ -126,19 +112,12 @@ export class ProductService {
             );
     }
 
-    // private async isProductInChannel(ctx: RequestContext, productId: ID, channelId: ID): Promise<boolean> {
-    //     const channelIds = (await this.getProductChannels(ctx, productId))
-    //         .map(channel => channel.id);
-    //     return channelIds.includes(channelId);
-    // }
-
     async getProductChannels(ctx: RequestContext, productId: ID): Promise<Channel[]> {
-        const productVariantChannels = ([] as Channel[]).concat(
-            ...(await this.productVariantService.getVariantsByProductId(ctx, productId)).map(
-                pv => pv.channels,
-            ),
-        );
-        return unique(productVariantChannels, 'code');
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            relations: ['channels'],
+            channelId: ctx.channelId,
+        });
+        return product.channels;
     }
 
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
@@ -172,6 +151,7 @@ export class ProductService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
+                this.channelService.assignToCurrentChannel(p, ctx);
                 if (input.facetValueIds) {
                     p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
                 }
@@ -180,12 +160,6 @@ export class ProductService {
         });
         await this.assetService.updateEntityAssets(ctx, product, input);
         this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
-        await this.productVariantService.create(
-            ctx,
-            input.variants.map(variant => {
-                return { productId: product.id, ...variant };
-            }),
-        );
         return assertFound(this.findOne(ctx, product.id));
     }
 
@@ -210,8 +184,9 @@ export class ProductService {
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {
-        // TODO: product should only be deleted if no active ProductVariants?
-        const product = await this.connection.getEntityOrThrow(ctx, Product, productId);
+        const product = await this.connection.getEntityOrThrow(ctx, Product, productId, {
+            channelId: ctx.channelId,
+        });
         product.deletedAt = new Date();
         await this.connection.getRepository(ctx, Product).save(product, { reload: false });
         this.eventBus.publish(new ProductEvent(ctx, product, 'deleted'));

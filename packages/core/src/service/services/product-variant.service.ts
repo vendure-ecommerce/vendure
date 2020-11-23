@@ -463,6 +463,7 @@ export class ProductVariantService {
             .findByIds(input.productVariantIds);
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
+            await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
             await this.createProductVariantPrice(
                 ctx,
@@ -472,7 +473,6 @@ export class ProductVariantService {
             );
             this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
         }
-
         return this.findByIds(
             ctx,
             variants.map(v => v.id),
@@ -499,9 +499,27 @@ export class ProductVariantService {
             .findByIds(input.productVariantIds);
         for (const variant of variants) {
             await this.channelService.removeFromChannels(ctx, ProductVariant, variant.id, [input.channelId]);
+            await this.connection.getRepository(ctx, ProductVariantPrice).delete({
+                channelId: input.channelId,
+                variant,
+            });
+            // If none of the ProductVariants is assigned to the Channel, remove the Channel from Product
+            const productVariants = await this.connection.getRepository(ctx, ProductVariant).find({
+                where: {
+                    productId: variant.productId,
+                },
+                relations: ['channels'],
+            });
+            const productChannelsFromVariants = ([] as Channel[]).concat(
+                ...productVariants.map(pv => pv.channels),
+            );
+            if (!productChannelsFromVariants.find(c => c.id === input.channelId)) {
+                await this.channelService.removeFromChannels(ctx, Product, variant.productId, [
+                    input.channelId,
+                ]);
+            }
             this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
         }
-
         return this.findByIds(
             ctx,
             variants.map(v => v.id),
@@ -513,6 +531,7 @@ export class ProductVariantService {
         // https://github.com/vendure-ecommerce/vendure/issues/328
         const optionGroups = (
             await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+                channelId: ctx.channelId,
                 relations: ['optionGroups', 'optionGroups.options'],
                 loadEagerRelations: false,
             })
@@ -533,6 +552,7 @@ export class ProductVariantService {
         }
 
         const product = await this.connection.getEntityOrThrow(ctx, Product, input.productId, {
+            channelId: ctx.channelId,
             relations: ['variants', 'variants.options'],
             loadEagerRelations: false,
         });

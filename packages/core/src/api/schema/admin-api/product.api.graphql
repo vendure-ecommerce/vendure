@@ -7,7 +7,7 @@ type Query {
 }
 
 type Mutation {
-    "Create a new Product. Must provide at least one ProductVariant"
+    "Create a new Product"
     createProduct(input: CreateProductInput!): Product!
 
     "Update an existing Product"
@@ -82,22 +82,6 @@ input CreateProductInput {
     assetIds: [ID!]
     facetValueIds: [ID!]
     translations: [ProductTranslationInput!]!
-    variants: [CreateProductProductVariantInput!]!
-}
-
-input CreateProductProductVariantInput {
-    translations: [ProductVariantTranslationInput!]!
-    facetValueIds: [ID!]
-    sku: String!
-    price: Int
-    taxCategoryId: ID
-    optionIds: [ID!]
-    featuredAssetId: ID
-    assetIds: [ID!]
-    stockOnHand: Int
-    outOfStockThreshold: Int
-    useGlobalOutOfStockThreshold: Boolean
-    trackInventory: GlobalFlag
 }
 
 input UpdateProductInput {

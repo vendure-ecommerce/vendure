@@ -360,10 +360,14 @@ export type Mutation = {
     updateProductVariants: Array<Maybe<ProductVariant>>;
     /** Delete a ProductVariant */
     deleteProductVariant: DeletionResponse;
-    /** Assigns Products to the specified Channel */
+    /** Assigns all ProductVariants of Product to the specified Channel */
     assignProductsToChannel: Array<Product>;
-    /** Removes Products from the specified Channel */
+    /** Removes all ProductVariants of Product from the specified Channel */
     removeProductsFromChannel: Array<Product>;
+    /** Assigns ProductVariants to the specified Channel */
+    assignProductVariantsToChannel: Array<ProductVariant>;
+    /** Removes ProductVariants from the specified Channel */
+    removeProductVariantsFromChannel: Array<ProductVariant>;
     createPromotion: CreatePromotionResult;
     updatePromotion: UpdatePromotionResult;
     deletePromotion: DeletionResponse;
@@ -694,6 +698,14 @@ export type MutationAssignProductsToChannelArgs = {
 
 export type MutationRemoveProductsFromChannelArgs = {
     input: RemoveProductsFromChannelInput;
+};
+
+export type MutationAssignProductVariantsToChannelArgs = {
+    input: AssignProductVariantsToChannelInput;
+};
+
+export type MutationRemoveProductVariantsFromChannelArgs = {
+    input: RemoveProductVariantsFromChannelInput;
 };
 
 export type MutationCreatePromotionArgs = {
@@ -1490,6 +1502,7 @@ export type ProductVariant = Node & {
     outOfStockThreshold: Scalars['Int'];
     useGlobalOutOfStockThreshold: Scalars['Boolean'];
     stockMovements: StockMovementList;
+    channels: Array<Channel>;
     id: Scalars['ID'];
     product: Product;
     productId: Scalars['ID'];
@@ -1604,6 +1617,17 @@ export type AssignProductsToChannelInput = {
 
 export type RemoveProductsFromChannelInput = {
     productIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+};
+
+export type AssignProductVariantsToChannelInput = {
+    productVariantIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
+    priceFactor?: Maybe<Scalars['Float']>;
+};
+
+export type RemoveProductVariantsFromChannelInput = {
+    productVariantIds: Array<Scalars['ID']>;
     channelId: Scalars['ID'];
 };
 

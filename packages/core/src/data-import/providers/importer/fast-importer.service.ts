@@ -52,6 +52,7 @@ export class FastImporterService {
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
+                p.channels = [this.defaultChannel];
                 if (input.facetValueIds) {
                     p.facetValues = input.facetValueIds.map(id => ({ id } as any));
                 }
