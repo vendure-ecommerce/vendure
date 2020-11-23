@@ -1,12 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
-import {
-    createErrorResultGuard,
-    createTestEnvironment,
-    E2E_DEFAULT_CHANNEL_TOKEN,
-    ErrorResultGuard,
-} from '@vendure/testing';
-import gql from 'graphql-tag';
+import { createTestEnvironment, E2E_DEFAULT_CHANNEL_TOKEN } from '@vendure/testing';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -15,24 +8,15 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 import {
     AssignProductsToChannel,
     AssignProductVariantsToChannel,
-    ChannelFragment,
     CreateAdministrator,
     CreateChannel,
     CreateRole,
     CurrencyCode,
-    DeleteChannel,
-    DeletionResult,
-    ErrorCode,
-    GetChannels,
-    GetCustomerList,
     GetProductWithVariants,
     LanguageCode,
-    Me,
     Permission,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
-    UpdateChannel,
-    UpdateGlobalLanguages,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
@@ -40,12 +24,9 @@ import {
     CREATE_ADMINISTRATOR,
     CREATE_CHANNEL,
     CREATE_ROLE,
-    GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
-    ME,
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
-    UPDATE_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -217,21 +198,21 @@ describe('ChannelAware Products and ProductVariants', () => {
             }, 'Products cannot be removed from the default Channel'),
         );
 
-        // it('removes Product from Channel', async () => {
-        //     await adminClient.asSuperAdmin();
-        //     await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-        //     const { removeProductsFromChannel } = await adminClient.query<
-        //         RemoveProductsFromChannel.Mutation,
-        //         RemoveProductsFromChannel.Variables
-        //     >(REMOVE_PRODUCT_FROM_CHANNEL, {
-        //         input: {
-        //             productIds: [product1.id],
-        //             channelId: 'T_2',
-        //         },
-        //     });
+        it('removes Product from Channel', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeProductsFromChannel } = await adminClient.query<
+                RemoveProductsFromChannel.Mutation,
+                RemoveProductsFromChannel.Variables
+            >(REMOVE_PRODUCT_FROM_CHANNEL, {
+                input: {
+                    productIds: [product1.id],
+                    channelId: 'T_2',
+                },
+            });
 
-        //     expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
-        // });
+            expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
+        });
     });
 
     describe('assigning ProductVariant to Channels', () => {
@@ -290,13 +271,11 @@ describe('ChannelAware Products and ProductVariants', () => {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
-            expect(product!.variants.map(v => v.price)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
-            );
+            expect(product!.variants.map(v => v.price)).toEqual([product1.variants[0].price * PRICE_FACTOR]);
             // Third Channel is configured to include taxes in price, so they should be the same.
-            expect(product!.variants.map(v => v.priceWithTax)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
-            );
+            expect(product!.variants.map(v => v.priceWithTax)).toEqual([
+                product1.variants[0].price * PRICE_FACTOR,
+            ]);
         });
 
         it('does not assign ProductVariant to same channel twice', async () => {
@@ -329,62 +308,62 @@ describe('ChannelAware Products and ProductVariants', () => {
             }, 'Products cannot be removed from the default Channel'),
         );
 
-        // it('removes ProductVariant but not Product from Channel', async () => {
-        //     await adminClient.asSuperAdmin();
-        //     await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-        //     const { assignProductVariantsToChannel } = await adminClient.query<
-        //         AssignProductVariantsToChannel.Mutation,
-        //         AssignProductVariantsToChannel.Variables
-        //     >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
-        //         input: {
-        //             channelId: 'T_3',
-        //             productVariantIds: [product1.variants[1].id],
-        //         },
-        //     });
-        //     expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+        it('removes ProductVariant but not Product from Channel', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { assignProductVariantsToChannel } = await adminClient.query<
+                AssignProductVariantsToChannel.Mutation,
+                AssignProductVariantsToChannel.Variables
+            >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                input: {
+                    channelId: 'T_3',
+                    productVariantIds: [product1.variants[1].id],
+                },
+            });
+            expect(assignProductVariantsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
 
-        //     const { removeProductVariantsFromChannel } = await adminClient.query<
-        //         RemoveProductVariantsFromChannel.Mutation,
-        //         RemoveProductVariantsFromChannel.Variables
-        //     >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
-        //         input: {
-        //             productVariantIds: [product1.variants[1].id],
-        //             channelId: 'T_3',
-        //         },
-        //     });
-        //     expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
+            const { removeProductVariantsFromChannel } = await adminClient.query<
+                RemoveProductVariantsFromChannel.Mutation,
+                RemoveProductVariantsFromChannel.Variables
+            >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                input: {
+                    productVariantIds: [product1.variants[1].id],
+                    channelId: 'T_3',
+                },
+            });
+            expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
 
-        //     const { product } = await adminClient.query<
-        //         GetProductWithVariants.Query,
-        //         GetProductWithVariants.Variables
-        //     >(GET_PRODUCT_WITH_VARIANTS, {
-        //         id: product1.id,
-        //     });
-        //     expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
-        // });
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: product1.id,
+            });
+            expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+        });
 
-        // it('removes ProductVariant and Product from Channel', async () => {
-        //     await adminClient.asSuperAdmin();
-        //     await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-        //     const { removeProductVariantsFromChannel } = await adminClient.query<
-        //         RemoveProductVariantsFromChannel.Mutation,
-        //         RemoveProductVariantsFromChannel.Variables
-        //     >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
-        //         input: {
-        //             productVariantIds: [product1.variants[0].id],
-        //             channelId: 'T_3',
-        //         },
-        //     });
+        it('removes ProductVariant and Product from Channel', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { removeProductVariantsFromChannel } = await adminClient.query<
+                RemoveProductVariantsFromChannel.Mutation,
+                RemoveProductVariantsFromChannel.Variables
+            >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                input: {
+                    productVariantIds: [product1.variants[0].id],
+                    channelId: 'T_3',
+                },
+            });
 
-        //     expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
+            expect(removeProductVariantsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
 
-        //     const { product } = await adminClient.query<
-        //         GetProductWithVariants.Query,
-        //         GetProductWithVariants.Variables
-        //     >(GET_PRODUCT_WITH_VARIANTS, {
-        //         id: product1.id,
-        //     });
-        //     expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1']);
-        // });
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: product1.id,
+            });
+            expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1']);
+        });
     });
 });
