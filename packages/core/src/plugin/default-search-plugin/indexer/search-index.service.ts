@@ -14,12 +14,14 @@ import { WorkerMessage } from '../../../worker/types';
 import { WorkerService } from '../../../worker/worker.service';
 import {
     AssignProductToChannelMessage,
+    AssignVariantToChannelMessage,
     DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
     ReindexMessageResponse,
     RemoveProductFromChannelMessage,
+    RemoveVariantFromChannelMessage,
     UpdateAssetMessage,
     UpdateIndexQueueJobData,
     UpdateProductMessage,
@@ -40,7 +42,7 @@ export class SearchIndexService {
         updateIndexQueue = this.jobService.createQueue({
             name: 'update-search-index',
             concurrency: 1,
-            process: (job) => {
+            process: job => {
                 const data = job.data;
                 switch (data.type) {
                     case 'reindex':
@@ -74,6 +76,12 @@ export class SearchIndexService {
                     case 'remove-product-from-channel':
                         this.sendMessage(job, new RemoveProductFromChannelMessage(data));
                         break;
+                    case 'assign-variant-to-channel':
+                        this.sendMessage(job, new AssignVariantToChannelMessage(data));
+                        break;
+                    case 'remove-variant-from-channel':
+                        this.sendMessage(job, new RemoveVariantFromChannelMessage(data));
+                        break;
                     default:
                         assertNever(data);
                 }
@@ -90,7 +98,7 @@ export class SearchIndexService {
     }
 
     updateVariants(ctx: RequestContext, variants: ProductVariant[]) {
-        const variantIds = variants.map((v) => v.id);
+        const variantIds = variants.map(v => v.id);
         this.addJobToQueue({ type: 'update-variants', ctx: ctx.serialize(), variantIds });
     }
 
@@ -99,7 +107,7 @@ export class SearchIndexService {
     }
 
     deleteVariant(ctx: RequestContext, variants: ProductVariant[]) {
-        const variantIds = variants.map((v) => v.id);
+        const variantIds = variants.map(v => v.id);
         this.addJobToQueue({ type: 'delete-variant', ctx: ctx.serialize(), variantIds });
     }
 
@@ -133,6 +141,24 @@ export class SearchIndexService {
         });
     }
 
+    assignVariantToChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
+        this.addJobToQueue({
+            type: 'assign-variant-to-channel',
+            ctx: ctx.serialize(),
+            productVariantId,
+            channelId,
+        });
+    }
+
+    removeVariantFromChannel(ctx: RequestContext, productVariantId: ID, channelId: ID) {
+        this.addJobToQueue({
+            type: 'remove-variant-from-channel',
+            ctx: ctx.serialize(),
+            productVariantId,
+            channelId,
+        });
+    }
+
     private addJobToQueue(data: UpdateIndexQueueJobData) {
         if (updateIndexQueue) {
             return updateIndexQueue.add(data);
@@ -142,7 +168,7 @@ export class SearchIndexService {
     private sendMessage(job: Job<any>, message: WorkerMessage<any, any>) {
         this.workerService.send(message).subscribe({
             complete: () => job.complete(true),
-            error: (err) => {
+            error: err => {
                 Logger.error(err);
                 job.fail(err);
             },

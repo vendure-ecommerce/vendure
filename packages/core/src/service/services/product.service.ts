@@ -24,6 +24,7 @@ import { ProductOptionGroup } from '../../entity/product-option-group/product-op
 import { ProductTranslation } from '../../entity/product/product-translation.entity';
 import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
+import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
@@ -211,6 +212,10 @@ export class ProductService {
             channelId: input.channelId,
             priceFactor: input.priceFactor,
         });
+        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
+        for (const product of products) {
+            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
+        }
         return this.findByIds(
             ctx,
             productsWithVariants.map(p => p.id),
@@ -232,6 +237,10 @@ export class ProductService {
             ),
             channelId: input.channelId,
         });
+        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
+        for (const product of products) {
+            this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
+        }
         return this.findByIds(
             ctx,
             productsWithVariants.map(p => p.id),

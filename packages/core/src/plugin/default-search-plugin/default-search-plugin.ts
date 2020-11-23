@@ -8,6 +8,7 @@ import { AssetEvent } from '../../event-bus/events/asset-event';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
+import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { TaxRateModificationEvent } from '../../event-bus/events/tax-rate-modification-event';
 import { PluginCommonModule } from '../plugin-common.module';
@@ -102,6 +103,21 @@ export class DefaultSearchPlugin implements OnVendureBootstrap {
                 return this.searchIndexService.removeProductFromChannel(
                     event.ctx,
                     event.product.id,
+                    event.channelId,
+                );
+            }
+        });
+        this.eventBus.ofType(ProductVariantChannelEvent).subscribe(event => {
+            if (event.type === 'assigned') {
+                return this.searchIndexService.assignVariantToChannel(
+                    event.ctx,
+                    event.productVariant.id,
+                    event.channelId,
+                );
+            } else {
+                return this.searchIndexService.removeVariantFromChannel(
+                    event.ctx,
+                    event.productVariant.id,
                     event.channelId,
                 );
             }

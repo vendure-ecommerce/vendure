@@ -21,11 +21,13 @@ import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     AssignProductToChannelMessage,
+    AssignVariantToChannelMessage,
     DeleteAssetMessage,
     DeleteProductMessage,
     DeleteVariantMessage,
     ReindexMessage,
     RemoveProductFromChannelMessage,
+    RemoveVariantFromChannelMessage,
     UpdateAssetMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
@@ -44,6 +46,7 @@ export const variantRelations = [
     'facetValues.facet',
     'collections',
     'taxCategory',
+    'channels',
 ];
 
 export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
@@ -195,6 +198,27 @@ export class IndexerController {
         const ctx = RequestContext.deserialize(data.ctx);
         return asyncObservable(async () => {
             return this.deleteProductInChannel(ctx, data.productId, data.channelId);
+        });
+    }
+
+    @MessagePattern(AssignVariantToChannelMessage.pattern)
+    assignVariantToChannel(
+        data: AssignVariantToChannelMessage['data'],
+    ): Observable<AssignProductToChannelMessage['response']> {
+        const ctx = RequestContext.deserialize(data.ctx);
+        return asyncObservable(async () => {
+            return this.updateVariantsInChannel(ctx, [data.productVariantId], data.channelId);
+        });
+    }
+
+    @MessagePattern(RemoveVariantFromChannelMessage.pattern)
+    removeVariantFromChannel(
+        data: RemoveVariantFromChannelMessage['data'],
+    ): Observable<RemoveProductFromChannelMessage['response']> {
+        const ctx = RequestContext.deserialize(data.ctx);
+        return asyncObservable(async () => {
+            await this.removeSearchIndexItems(ctx.languageCode, data.channelId, [data.productVariantId]);
+            return true;
         });
     }
 
