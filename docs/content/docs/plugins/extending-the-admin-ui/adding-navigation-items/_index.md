@@ -61,6 +61,12 @@ Running the server will compile our new shared module into the app, and the resu
 
 {{< figure src="./ui-extensions-navbar.jpg" >}}
 
+## Overriding existing items
+
+It is also possible to override one of the default (built-in) nav menu sections or items. This can be useful for example if you wish to provide a completely different implementation of the product list view. 
+
+This is done by setting the `id` property to that of an existing nav menu section or item.
+
 
 ## Adding new ActionBar buttons
 
