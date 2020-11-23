@@ -8,7 +8,7 @@
             <button
                 class="button"
                 vdrDropdownItem
-                *ngFor="let id of availableWidgetIds"
+                *ngFor="let id of availableWidgetIds$ | async"
                 (click)="addWidget(id)"
             >
                 {{ id }}

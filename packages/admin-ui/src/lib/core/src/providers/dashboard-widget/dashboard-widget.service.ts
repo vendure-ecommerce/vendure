@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
+import { Permission } from '../../common/generated-types';
+
 import {
     DashboardWidgetConfig,
     DashboardWidgetWidth,
@@ -26,8 +28,19 @@ export class DashboardWidgetService {
         this.registry.set(id, config);
     }
 
-    getAvailableIds(): string[] {
-        return [...this.registry.keys()];
+    getAvailableIds(currentUserPermissions: Permission[]): string[] {
+        const hasAllPermissions = (requiredPerms: string[], userPerms: string[]): boolean => {
+            return requiredPerms.every(p => userPerms.includes(p));
+        };
+
+        return [...this.registry.entries()]
+            .filter(([id, config]) => {
+                return (
+                    !config.requiresPermissions ||
+                    hasAllPermissions(config.requiresPermissions, currentUserPermissions)
+                );
+            })
+            .map(([id]) => id);
     }
 
     getWidgetById(id: string) {

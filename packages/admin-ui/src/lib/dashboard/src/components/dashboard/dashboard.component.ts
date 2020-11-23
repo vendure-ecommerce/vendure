@@ -4,11 +4,14 @@ import {
     DashboardWidgetConfig,
     DashboardWidgetService,
     DashboardWidgetWidth,
+    DataService,
     LocalStorageService,
     WidgetLayout,
     WidgetLayoutDefinition,
 } from '@vendure/admin-ui/core';
 import { assertNever } from '@vendure/common/lib/shared-utils';
+import { Observable } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-dashboard',
@@ -17,19 +20,23 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
-    widgetLayout: WidgetLayout;
-    availableWidgetIds: string[];
+    widgetLayout: WidgetLayout | undefined;
+    availableWidgetIds$: Observable<string[]>;
     private readonly deletionMarker = '__delete__';
 
     constructor(
         private dashboardWidgetService: DashboardWidgetService,
         private localStorageService: LocalStorageService,
         private changedDetectorRef: ChangeDetectorRef,
+        private dataService: DataService,
     ) {}
 
     ngOnInit() {
-        this.availableWidgetIds = this.dashboardWidgetService.getAvailableIds();
-        this.widgetLayout = this.initLayout(this.availableWidgetIds);
+        this.availableWidgetIds$ = this.dataService.client.userStatus().stream$.pipe(
+            map(({ userStatus }) => userStatus.permissions),
+            map(permissions => this.dashboardWidgetService.getAvailableIds(permissions)),
+            tap(ids => (this.widgetLayout = this.initLayout(ids))),
+        );
     }
 
     getClassForWidth(width: DashboardWidgetWidth): string {
@@ -77,11 +84,11 @@ export class DashboardComponent implements OnInit {
                 width,
             };
             let targetRow: WidgetLayout[number];
-            if (this.widgetLayout.length) {
+            if (this.widgetLayout && this.widgetLayout.length) {
                 targetRow = this.widgetLayout[this.widgetLayout.length - 1];
             } else {
                 targetRow = [];
-                this.widgetLayout.push(targetRow);
+                this.widgetLayout?.push(targetRow);
             }
             targetRow.push(widget);
             this.recalculateLayout();
@@ -99,12 +106,14 @@ export class DashboardComponent implements OnInit {
             // Nothing changed
             return;
         }
-        const previousLayoutRow = this.widgetLayout[previousContainer.data.index];
-        const newLayoutRow = this.widgetLayout[container.data.index];
+        if (this.widgetLayout) {
+            const previousLayoutRow = this.widgetLayout[previousContainer.data.index];
+            const newLayoutRow = this.widgetLayout[container.data.index];
 
-        previousLayoutRow.splice(previousIndex, 1);
-        newLayoutRow.splice(currentIndex, 0, event.item.data);
-        this.recalculateLayout();
+            previousLayoutRow.splice(previousIndex, 1);
+            newLayoutRow.splice(currentIndex, 0, event.item.data);
+            this.recalculateLayout();
+        }
     }
 
     private initLayout(availableIds: string[]): WidgetLayout {
@@ -118,14 +127,16 @@ export class DashboardComponent implements OnInit {
     }
 
     private recalculateLayout() {
-        const flattened = this.widgetLayout
-            .reduce((flat, row) => [...flat, ...row], [])
-            .filter(item => item.id !== this.deletionMarker);
-        const newLayoutDef: WidgetLayoutDefinition = flattened.map(item => ({
-            id: item.id,
-            width: item.width,
-        }));
-        this.widgetLayout = this.dashboardWidgetService.getWidgetLayout(newLayoutDef);
-        setTimeout(() => this.changedDetectorRef.markForCheck());
+        if (this.widgetLayout) {
+            const flattened = this.widgetLayout
+                .reduce((flat, row) => [...flat, ...row], [])
+                .filter(item => item.id !== this.deletionMarker);
+            const newLayoutDef: WidgetLayoutDefinition = flattened.map(item => ({
+                id: item.id,
+                width: item.width,
+            }));
+            this.widgetLayout = this.dashboardWidgetService.getWidgetLayout(newLayoutDef);
+            setTimeout(() => this.changedDetectorRef.markForCheck());
+        }
     }
 }
