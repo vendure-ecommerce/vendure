@@ -260,6 +260,27 @@
                     </div>
                 </div>
             </div>
+            <ng-container *vdrIfMultichannel>
+                <div class="card-block" *vdrIfDefaultChannelActive>
+                    <div class="flex channel-assignment">
+                        <ng-container *ngFor="let channel of variant.channels">
+                            <vdr-chip
+                                *ngIf="!isDefaultChannel(channel.code)"
+                                icon="times-circle"
+                                [title]="'catalog.remove-from-channel' | translate"
+                                (iconClick)="removeFromChannel.emit({ channelId: channel.id, variant: variant })"
+                            >
+                                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                                {{ channel.code | channelCodeToLabel }}
+                            </vdr-chip>
+                        </ng-container>
+                        <button class="btn btn-sm" (click)="assignToChannel.emit(variant)">
+                            <clr-icon shape="layers"></clr-icon>
+                            {{ 'catalog.assign-to-channel' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
         </ng-container>
     </div>
     <div class="table-footer">

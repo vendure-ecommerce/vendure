@@ -2,11 +2,12 @@ import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { SoftDeletable } from '../../common/types/common-types';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
@@ -31,7 +32,9 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
  * @docsCategory entities
  */
 @Entity()
-export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
+export class ProductVariant
+    extends VendureEntity
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
@@ -141,4 +144,8 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

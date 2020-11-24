@@ -3,12 +3,14 @@ import {
     DeletionResponse,
     MutationAddOptionGroupToProductArgs,
     MutationAssignProductsToChannelArgs,
+    MutationAssignProductVariantsToChannelArgs,
     MutationCreateProductArgs,
     MutationCreateProductVariantsArgs,
     MutationDeleteProductArgs,
     MutationDeleteProductVariantArgs,
     MutationRemoveOptionGroupFromProductArgs,
     MutationRemoveProductsFromChannelArgs,
+    MutationRemoveProductVariantsFromChannelArgs,
     MutationUpdateProductArgs,
     MutationUpdateProductVariantsArgs,
     Permission,
@@ -181,5 +183,25 @@ export class ProductResolver {
         @Args() args: MutationRemoveProductsFromChannelArgs,
     ): Promise<Array<Translated<Product>>> {
         return this.productService.removeProductsFromChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async assignProductVariantsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAssignProductVariantsToChannelArgs,
+    ): Promise<Array<Translated<ProductVariant>>> {
+        return this.productVariantService.assignProductVariantsToChannel(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async removeProductVariantsFromChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationRemoveProductVariantsFromChannelArgs,
+    ): Promise<Array<Translated<ProductVariant>>> {
+        return this.productVariantService.removeProductVariantsFromChannel(ctx, args.input);
     }
 }

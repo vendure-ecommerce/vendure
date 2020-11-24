@@ -132,7 +132,7 @@ export class Job<T extends JobData<T> = any> {
      * Sets the progress (0 - 100) of the job.
      */
     setProgress(percent: number) {
-        this._progress = Math.min(percent, 100);
+        this._progress = Math.min(percent || 0, 100);
         this.fireEvent('progress');
     }
 

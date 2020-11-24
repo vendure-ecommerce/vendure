@@ -1,7 +1,4 @@
 <ng-select
-    [items]="channels$ | async"
-    bindLabel="code"
-    bindValue="id"
     appendTo="body"
     [addTag]="false"
     [multiple]="multiple"
@@ -17,9 +14,9 @@
         <vdr-channel-badge [channelCode]="item.code"></vdr-channel-badge>
         <span class="channel-label">{{ item.code | channelCodeToLabel | translate }}</span>
     </ng-template>
-    <ng-template ng-option-tmp let-item="item">
+    <ng-option *ngFor="let item of channels$ | async" [value]="item" [disabled]="channelIsDisabled(item.id)">
         <vdr-channel-badge [channelCode]="item.code"></vdr-channel-badge>
         {{ item.code | channelCodeToLabel | translate }}
-    </ng-template>
+    </ng-option>
 </ng-select>
 

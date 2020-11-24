@@ -28,7 +28,6 @@ import {
     LanguageCode,
     Me,
     Permission,
-    RemoveProductsFromChannel,
     UpdateChannel,
     UpdateGlobalLanguages,
 } from './graphql/generated-e2e-admin-types';
@@ -40,7 +39,6 @@ import {
     GET_CUSTOMER_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     ME,
-    REMOVE_PRODUCT_FROM_CHANNEL,
     UPDATE_CHANNEL,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
@@ -48,7 +46,6 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Channels', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
     const SECOND_CHANNEL_TOKEN = 'second_channel_token';
-    const THIRD_CHANNEL_TOKEN = 'third_channel_token';
     let secondChannelAdminRole: CreateRole.CreateRole;
     let customerUser: GetCustomerList.Items;
 
@@ -272,129 +269,10 @@ describe('Channels', () => {
         ]);
     });
 
-    describe('assigning Product to Channels', () => {
-        let product1: GetProductWithVariants.Product;
-
-        beforeAll(async () => {
-            await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(CREATE_CHANNEL, {
-                input: {
-                    code: 'third-channel',
-                    token: THIRD_CHANNEL_TOKEN,
-                    defaultLanguageCode: LanguageCode.en,
-                    currencyCode: CurrencyCode.GBP,
-                    pricesIncludeTax: true,
-                    defaultShippingZoneId: 'T_1',
-                    defaultTaxZoneId: 'T_1',
-                },
-            });
-
-            const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
-            >(GET_PRODUCT_WITH_VARIANTS, {
-                id: 'T_1',
-            });
-            product1 = product!;
-        });
-
-        it(
-            'throws if attempting to assign Product to channel to which the admin has no access',
-            assertThrowsWithMessage(async () => {
-                await adminClient.asUserWithCredentials('admin2@test.com', 'test');
-                await adminClient.query<AssignProductsToChannel.Mutation, AssignProductsToChannel.Variables>(
-                    ASSIGN_PRODUCT_TO_CHANNEL,
-                    {
-                        input: {
-                            channelId: 'T_3',
-                            productIds: [product1.id],
-                        },
-                    },
-                );
-            }, 'You are not currently authorized to perform this action'),
-        );
-
-        it('assigns Product to Channel and applies price factor', async () => {
-            const PRICE_FACTOR = 0.5;
-            await adminClient.asSuperAdmin();
-            const { assignProductsToChannel } = await adminClient.query<
-                AssignProductsToChannel.Mutation,
-                AssignProductsToChannel.Variables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
-                input: {
-                    channelId: 'T_2',
-                    productIds: [product1.id],
-                    priceFactor: PRICE_FACTOR,
-                },
-            });
-
-            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
-            await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-            const { product } = await adminClient.query<
-                GetProductWithVariants.Query,
-                GetProductWithVariants.Variables
-            >(GET_PRODUCT_WITH_VARIANTS, {
-                id: product1.id,
-            });
-
-            expect(product!.variants.map(v => v.price)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
-            );
-            // Second Channel is configured to include taxes in price, so they should be the same.
-            expect(product!.variants.map(v => v.priceWithTax)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
-            );
-        });
-
-        it('does not assign Product to same channel twice', async () => {
-            const { assignProductsToChannel } = await adminClient.query<
-                AssignProductsToChannel.Mutation,
-                AssignProductsToChannel.Variables
-            >(ASSIGN_PRODUCT_TO_CHANNEL, {
-                input: {
-                    channelId: 'T_2',
-                    productIds: [product1.id],
-                },
-            });
-
-            expect(assignProductsToChannel[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
-        });
-
-        it(
-            'throws if attempting to remove Product from default Channel',
-            assertThrowsWithMessage(async () => {
-                await adminClient.query<
-                    RemoveProductsFromChannel.Mutation,
-                    RemoveProductsFromChannel.Variables
-                >(REMOVE_PRODUCT_FROM_CHANNEL, {
-                    input: {
-                        productIds: [product1.id],
-                        channelId: 'T_1',
-                    },
-                });
-            }, 'Products cannot be removed from the default Channel'),
-        );
-
-        it('removes Product from Channel', async () => {
-            await adminClient.asSuperAdmin();
-            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
-            const { removeProductsFromChannel } = await adminClient.query<
-                RemoveProductsFromChannel.Mutation,
-                RemoveProductsFromChannel.Variables
-            >(REMOVE_PRODUCT_FROM_CHANNEL, {
-                input: {
-                    productIds: [product1.id],
-                    channelId: 'T_2',
-                },
-            });
-
-            expect(removeProductsFromChannel[0].channels.map(c => c.id)).toEqual(['T_1']);
-        });
-    });
-
     describe('setting defaultLanguage', () => {
         it('returns error result if languageCode not in availableLanguages', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const { updateChannel } = await adminClient.query<
                 UpdateChannel.Mutation,
                 UpdateChannel.Variables
@@ -414,6 +292,8 @@ describe('Channels', () => {
         });
 
         it('allows setting to an available language', async () => {
+            await adminClient.asSuperAdmin();
+            await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             await adminClient.query<UpdateGlobalLanguages.Mutation, UpdateGlobalLanguages.Variables>(
                 UPDATE_GLOBAL_LANGUAGES,
                 {
@@ -439,6 +319,8 @@ describe('Channels', () => {
 
     it('deleteChannel', async () => {
         const PROD_ID = 'T_1';
+        await adminClient.asSuperAdmin();
+        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
 
         const { assignProductsToChannel } = await adminClient.query<
             AssignProductsToChannel.Mutation,
@@ -461,7 +343,7 @@ describe('Channels', () => {
         expect(deleteChannel.result).toBe(DeletionResult.DELETED);
 
         const { channels } = await adminClient.query<GetChannels.Query>(GET_CHANNELS);
-        expect(channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
+        expect(channels.map(c => c.id).sort()).toEqual(['T_1']);
 
         const { product } = await adminClient.query<
             GetProductWithVariants.Query,

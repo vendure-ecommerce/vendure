@@ -11,6 +11,7 @@ import {
     PermissionDefinition,
     VendureConfig,
 } from '@vendure/core';
+import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
@@ -65,10 +66,10 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        /*ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-        }),*/
+        // ElasticsearchPlugin.init({
+        //     host: 'http://localhost',
+        //     port: 9200,
+        // }),
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,

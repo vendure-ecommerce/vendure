@@ -204,13 +204,19 @@ export class ProductDetailComponent
     }
 
     assignToChannel() {
-        this.modalService
-            .fromComponent(AssignProductsToChannelDialogComponent, {
-                size: 'lg',
-                locals: {
-                    productIds: [this.id],
-                },
-            })
+        this.productChannels$
+            .pipe(
+                take(1),
+                switchMap(channels => {
+                    return this.modalService.fromComponent(AssignProductsToChannelDialogComponent, {
+                        size: 'lg',
+                        locals: {
+                            productIds: [this.id],
+                            currentChannelIds: channels.map(c => c.id),
+                        },
+                    });
+                }),
+            )
             .subscribe();
     }
 
@@ -239,6 +245,54 @@ export class ProductDetailComponent
                 },
                 err => {
                     this.notificationService.error(_('catalog.notify-remove-product-from-channel-error'));
+                },
+            );
+    }
+
+    assignVariantToChannel(variant: ProductWithVariants.Variants) {
+        return this.modalService
+            .fromComponent(AssignProductsToChannelDialogComponent, {
+                size: 'lg',
+                locals: {
+                    productIds: [this.id],
+                    productVariantIds: [variant.id],
+                    currentChannelIds: variant.channels.map(c => c.id),
+                },
+            })
+            .subscribe();
+    }
+
+    removeVariantFromChannel({
+        channelId,
+        variant,
+    }: {
+        channelId: string;
+        variant: ProductWithVariants.Variants;
+    }) {
+        this.modalService
+            .dialog({
+                title: _('catalog.remove-product-variant-from-channel'),
+                buttons: [
+                    { type: 'secondary', label: _('common.cancel') },
+                    { type: 'danger', label: _('catalog.remove-from-channel'), returnValue: true },
+                ],
+            })
+            .pipe(
+                switchMap(response =>
+                    response
+                        ? this.dataService.product.removeVariantsFromChannel({
+                              channelId,
+                              productVariantIds: [variant.id],
+                          })
+                        : EMPTY,
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('catalog.notify-remove-variant-from-channel-success'));
+                },
+                err => {
+                    this.notificationService.error(_('catalog.notify-remove-variant-from-channel-error'));
                 },
             );
     }

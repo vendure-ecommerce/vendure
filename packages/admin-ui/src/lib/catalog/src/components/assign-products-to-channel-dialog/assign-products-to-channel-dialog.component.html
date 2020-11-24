@@ -1,4 +1,9 @@
-<ng-template vdrDialogTitle>{{ 'catalog.assign-products-to-channel' | translate }}</ng-template>
+<ng-template vdrDialogTitle>
+    <ng-container *ngIf="isProductVariantMode; else productModeTitle">{{
+        'catalog.assign-variants-to-channel' | translate
+    }}</ng-container>
+    <ng-template #productModeTitle>{{ 'catalog.assign-products-to-channel' | translate }}</ng-template>
+</ng-template>
 
 <div class="flex">
     <clr-input-container>
@@ -7,6 +12,7 @@
             clrInput
             [multiple]="false"
             [includeDefaultChannel]="false"
+            [disableChannelIds]="currentChannelIds"
             [formControl]="selectedChannelIdControl"
         ></vdr-channel-assignment-control>
     </clr-input-container>
@@ -47,9 +53,7 @@
                     <ng-template [ngIf]="selectedChannel" [ngIfElse]="noChannelSelected">
                         {{ row.pricePreview / 100 | currency: selectedChannel?.currencyCode }}
                     </ng-template>
-                    <ng-template #noChannelSelected>
-                        -
-                    </ng-template>
+                    <ng-template #noChannelSelected> - </ng-template>
                 </td>
             </tr>
         </tbody>

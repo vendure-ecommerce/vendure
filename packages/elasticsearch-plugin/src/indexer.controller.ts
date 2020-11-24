@@ -9,6 +9,7 @@ import {
     ConfigService,
     FacetValue,
     ID,
+    idsAreEqual,
     LanguageCode,
     Logger,
     Product,
@@ -29,6 +30,7 @@ import { createIndices, deleteByChannel, deleteIndices } from './indexing-utils'
 import { ElasticsearchOptions } from './options';
 import {
     AssignProductToChannelMessage,
+    AssignVariantToChannelMessage,
     BulkOperation,
     BulkOperationDoc,
     BulkResponseBody,
@@ -38,6 +40,7 @@ import {
     ProductIndexItem,
     ReindexMessage,
     RemoveProductFromChannelMessage,
+    RemoveVariantFromChannelMessage,
     UpdateAssetMessage,
     UpdateProductMessage,
     UpdateVariantMessage,
@@ -56,6 +59,7 @@ export const variantRelations = [
     'facetValues.facet',
     'collections',
     'taxCategory',
+    'channels',
 ];
 
 export interface ReindexMessageResponse {
@@ -163,6 +167,42 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             await this.deleteProductInternal(product, channelId);
             const variants = await this.productVariantService.getVariantsByProductId(ctx, productId);
             await this.deleteVariantsInternal(variants, channelId);
+            return true;
+        });
+    }
+
+    @MessagePattern(AssignVariantToChannelMessage.pattern)
+    assignVariantToChannel({
+        ctx: rawContext,
+        productVariantId,
+        channelId,
+    }: AssignVariantToChannelMessage['data']): Observable<AssignVariantToChannelMessage['response']> {
+        const ctx = RequestContext.deserialize(rawContext);
+        return asyncObservable(async () => {
+            await this.updateVariantsInternal(ctx, [productVariantId], channelId);
+            return true;
+        });
+    }
+
+    @MessagePattern(RemoveVariantFromChannelMessage.pattern)
+    removeVariantFromChannel({
+        ctx: rawContext,
+        productVariantId,
+        channelId,
+    }: AssignVariantToChannelMessage['data']): Observable<AssignVariantToChannelMessage['response']> {
+        const ctx = RequestContext.deserialize(rawContext);
+        return asyncObservable(async () => {
+            const productVariant = await this.connection.getEntityOrThrow(
+                ctx,
+                ProductVariant,
+                productVariantId,
+                { relations: ['product', 'product.channels'] },
+            );
+            await this.deleteVariantsInternal([productVariant], channelId);
+
+            if (!productVariant.product.channels.find(c => idsAreEqual(c.id, channelId))) {
+                await this.deleteProductInternal(productVariant.product, channelId);
+            }
             return true;
         });
     }
@@ -724,7 +764,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             currencyCode: v.currencyCode,
             description: productTranslation.description,
             facetIds: this.getFacetIds([v]),
-            channelIds: v.product.channels.map(c => c.id),
+            channelIds: v.channels.map(c => c.id),
             facetValueIds: this.getFacetValueIds([v]),
             collectionIds: v.collections.map(c => c.id.toString()),
             collectionSlugs: v.collections.map(c => c.slug),

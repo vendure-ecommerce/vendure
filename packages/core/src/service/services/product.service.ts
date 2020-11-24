@@ -4,7 +4,6 @@ import {
     CreateProductInput,
     DeletionResponse,
     DeletionResult,
-    Permission,
     RemoveOptionGroupFromProductResult,
     RemoveProductsFromChannelInput,
     UpdateProductInput,
@@ -14,7 +13,7 @@ import { FindOptionsUtils } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion } from '../../common/error/error-result';
-import { EntityNotFoundError, ForbiddenError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError } from '../../common/error/errors';
 import { ProductOptionInUseError } from '../../common/error/generated-graphql-admin-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
@@ -103,6 +102,7 @@ export class ProductService {
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         return qb
             .leftJoin('product.channels', 'channel')
+            .andWhere('product.deletedAt IS NULL')
             .andWhere('product.id IN (:...ids)', { ids: productIds })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
             .getMany()
@@ -200,30 +200,20 @@ export class ProductService {
         ctx: RequestContext,
         input: AssignProductsToChannelInput,
     ): Promise<Array<Translated<Product>>> {
-        const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx,
-            input.channelId,
-            Permission.UpdateCatalog,
-        );
-        if (!hasPermission) {
-            throw new ForbiddenError();
-        }
         const productsWithVariants = await this.connection
             .getRepository(ctx, Product)
             .findByIds(input.productIds, {
                 relations: ['variants'],
             });
-        const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
-        for (const product of productsWithVariants) {
-            await this.channelService.assignToChannels(ctx, Product, product.id, [input.channelId]);
-            for (const variant of product.variants) {
-                await this.productVariantService.createProductVariantPrice(
-                    ctx,
-                    variant.id,
-                    variant.price * priceFactor,
-                    input.channelId,
-                );
-            }
+        await this.productVariantService.assignProductVariantsToChannel(ctx, {
+            productVariantIds: ([] as ID[]).concat(
+                ...productsWithVariants.map(p => p.variants.map(v => v.id)),
+            ),
+            channelId: input.channelId,
+            priceFactor: input.priceFactor,
+        });
+        const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
+        for (const product of products) {
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));
         }
         return this.findByIds(
@@ -236,25 +226,24 @@ export class ProductService {
         ctx: RequestContext,
         input: RemoveProductsFromChannelInput,
     ): Promise<Array<Translated<Product>>> {
-        const hasPermission = await this.roleService.userHasPermissionOnChannel(
-            ctx,
-            input.channelId,
-            Permission.UpdateCatalog,
-        );
-        if (!hasPermission) {
-            throw new ForbiddenError();
-        }
-        if (idsAreEqual(input.channelId, this.channelService.getDefaultChannel().id)) {
-            throw new UserInputError('error.products-cannot-be-removed-from-default-channel');
-        }
+        const productsWithVariants = await this.connection
+            .getRepository(ctx, Product)
+            .findByIds(input.productIds, {
+                relations: ['variants'],
+            });
+        await this.productVariantService.removeProductVariantsFromChannel(ctx, {
+            productVariantIds: ([] as ID[]).concat(
+                ...productsWithVariants.map(p => p.variants.map(v => v.id)),
+            ),
+            channelId: input.channelId,
+        });
         const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
         for (const product of products) {
-            await this.channelService.removeFromChannels(ctx, Product, product.id, [input.channelId]);
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'removed'));
         }
         return this.findByIds(
             ctx,
-            products.map(p => p.id),
+            productsWithVariants.map(p => p.id),
         );
     }
 
