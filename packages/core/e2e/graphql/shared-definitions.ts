@@ -351,6 +351,24 @@ export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const ASSIGN_PRODUCTVARIANT_TO_CHANNEL = gql`
+    mutation AssignProductVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
+export const REMOVE_PRODUCTVARIANT_FROM_CHANNEL = gql`
+    mutation RemoveProductVariantsFromChannel($input: RemoveProductVariantsFromChannelInput!) {
+        removeProductVariantsFromChannel(input: $input) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {

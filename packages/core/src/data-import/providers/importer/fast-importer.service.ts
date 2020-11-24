@@ -119,6 +119,7 @@ export class FastImporterService {
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async variant => {
+                variant.channels = [this.defaultChannel];
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
                     variant.options = optionIds.map(id => ({ id } as any));

@@ -80,6 +80,10 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             languageCode
             name
         }
+        channels {
+            id
+            code
+        }
     }
     ${ASSET_FRAGMENT}
 `;

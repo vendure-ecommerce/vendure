@@ -190,7 +190,7 @@ export class TransactionalConnection {
 
         const qb = this.getRepository(ctx, entity).createQueryBuilder('entity');
         FindOptionsUtils.applyFindManyOptionsOrConditionsToQueryBuilder(qb, options);
-        if (options.loadEagerRelations) {
+        if (options.loadEagerRelations !== false) {
             // tslint:disable-next-line:no-non-null-assertion
             FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
         }

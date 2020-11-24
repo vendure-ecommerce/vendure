@@ -31,11 +31,17 @@ type Mutation {
     "Delete a ProductVariant"
     deleteProductVariant(id: ID!): DeletionResponse!
 
-    "Assigns Products to the specified Channel"
+    "Assigns all ProductVariants of Product to the specified Channel"
     assignProductsToChannel(input: AssignProductsToChannelInput!): [Product!]!
 
-    "Removes Products from the specified Channel"
+    "Removes all ProductVariants of Product from the specified Channel"
     removeProductsFromChannel(input: RemoveProductsFromChannelInput!): [Product!]!
+
+    "Assigns ProductVariants to the specified Channel"
+    assignProductVariantsToChannel(input: AssignProductVariantsToChannelInput!): [ProductVariant!]!
+
+    "Removes ProductVariants from the specified Channel"
+    removeProductVariantsFromChannel(input: RemoveProductVariantsFromChannelInput!): [ProductVariant!]!
 }
 
 type Product implements Node {
@@ -51,6 +57,7 @@ type ProductVariant implements Node {
     outOfStockThreshold: Int!
     useGlobalOutOfStockThreshold: Boolean!
     stockMovements(options: StockMovementListOptions): StockMovementList!
+    channels: [Channel!]!
 }
 
 input StockMovementListOptions {
@@ -144,6 +151,17 @@ input AssignProductsToChannelInput {
 
 input RemoveProductsFromChannelInput {
     productIds: [ID!]!
+    channelId: ID!
+}
+
+input AssignProductVariantsToChannelInput {
+    productVariantIds: [ID!]!
+    channelId: ID!
+    priceFactor: Float
+}
+
+input RemoveProductVariantsFromChannelInput {
+    productVariantIds: [ID!]!
     channelId: ID!
 }
 
