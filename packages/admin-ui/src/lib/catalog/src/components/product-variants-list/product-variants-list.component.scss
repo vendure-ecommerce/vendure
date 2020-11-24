@@ -131,6 +131,13 @@
     }
 }
 
+.channel-assignment {
+    justify-content: flex-end;
+    .btn {
+        margin: 6px 12px 6px 0;
+    }
+}
+
 .out-of-stock-threshold-wrapper {
     display: flex;
     flex-direction: column;

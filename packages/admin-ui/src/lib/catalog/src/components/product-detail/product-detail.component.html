@@ -65,21 +65,19 @@
                                     [label]="'common.channels' | translate"
                                     *vdrIfDefaultChannelActive
                                 >
-                                    <div class="flex">
-                                        <div class="product-channels">
-                                            <ng-container *ngFor="let channel of productChannels$ | async">
-                                                <vdr-chip
-                                                    *ngIf="!isDefaultChannel(channel.code)"
-                                                    icon="times-circle"
-                                                    (iconClick)="removeFromChannel(channel.id)"
-                                                >
-                                                    <vdr-channel-badge
-                                                        [channelCode]="channel.code"
-                                                    ></vdr-channel-badge>
-                                                    {{ channel.code | channelCodeToLabel }}
-                                                </vdr-chip>
-                                            </ng-container>
-                                        </div>
+                                    <div class="flex channel-assignment">
+                                        <ng-container *ngFor="let channel of productChannels$ | async">
+                                            <vdr-chip
+                                                *ngIf="!isDefaultChannel(channel.code)"
+                                                icon="times-circle"
+                                                (iconClick)="removeFromChannel(channel.id)"
+                                            >
+                                                <vdr-channel-badge
+                                                    [channelCode]="channel.code"
+                                                ></vdr-channel-badge>
+                                                {{ channel.code | channelCodeToLabel }}
+                                            </vdr-chip>
+                                        </ng-container>
                                         <button class="btn btn-sm" (click)="assignToChannel()">
                                             <clr-icon shape="layers"></clr-icon>
                                             {{ 'catalog.assign-to-channel' | translate }}
@@ -225,6 +223,8 @@
                         [customFields]="customVariantFields"
                         [customOptionFields]="customOptionFields"
                         [activeLanguage]="languageCode$ | async"
+                        (assignToChannel)="assignVariantToChannel($event)"
+                        (removeFromChannel)="removeVariantFromChannel($event)"
                         (assetChange)="variantAssetChange($event)"
                         (updateProductOption)="updateProductOption($event)"
                         (selectionChange)="selectedVariantIds = $event"

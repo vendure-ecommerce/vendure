@@ -26,6 +26,7 @@ import {
     TaxCategory,
     UpdateProductOptionInput,
 } from '@vendure/admin-ui/core';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { PaginationInstance } from 'ngx-pagination';
 import { Subscription } from 'rxjs';
@@ -54,6 +55,11 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
+    @Output() assignToChannel = new EventEmitter<ProductWithVariants.Variants>();
+    @Output() removeFromChannel = new EventEmitter<{
+        channelId: string;
+        variant: ProductWithVariants.Variants;
+    }>();
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
@@ -114,6 +120,10 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    isDefaultChannel(channelCode: string): boolean {
+        return channelCode === DEFAULT_CHANNEL_CODE;
     }
 
     trackById(index: number, item: ProductWithVariants.Variants) {

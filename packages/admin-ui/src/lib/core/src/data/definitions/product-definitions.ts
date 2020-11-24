@@ -101,6 +101,10 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             languageCode
             name
         }
+        channels {
+            id
+            code
+        }
     }
     ${PRODUCT_OPTION_FRAGMENT}
     ${ASSET_FRAGMENT}
@@ -554,9 +558,33 @@ export const ASSIGN_PRODUCTS_TO_CHANNEL = gql`
     }
 `;
 
+export const ASSIGN_VARIANTS_TO_CHANNEL = gql`
+    mutation AssignVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`;
+
 export const REMOVE_PRODUCTS_FROM_CHANNEL = gql`
     mutation RemoveProductsFromChannel($input: RemoveProductsFromChannelInput!) {
         removeProductsFromChannel(input: $input) {
+            id
+            channels {
+                id
+                code
+            }
+        }
+    }
+`;
+
+export const REMOVE_VARIANTS_FROM_CHANNEL = gql`
+    mutation RemoveVariantsFromChannel($input: RemoveProductVariantsFromChannelInput!) {
+        removeProductVariantsFromChannel(input: $input) {
             id
             channels {
                 id
