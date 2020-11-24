@@ -169,6 +169,30 @@ describe('ChannelAware Products and ProductVariants', () => {
             );
         });
 
+        it('ProductVariant.channels includes all Channels from default Channel', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: product1.id,
+            });
+
+            expect(product?.variants[0].channels.map(c => c.id)).toEqual(['T_1', 'T_2']);
+        });
+
+        it('ProductVariant.channels includes only current Channel from non-default Channel', async () => {
+            adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+            const { product } = await adminClient.query<
+                GetProductWithVariants.Query,
+                GetProductWithVariants.Variables
+            >(GET_PRODUCT_WITH_VARIANTS, {
+                id: product1.id,
+            });
+
+            expect(product?.variants[0].channels.map(c => c.id)).toEqual(['T_2']);
+        });
+
         it('does not assign Product to same channel twice', async () => {
             const { assignProductsToChannel } = await adminClient.query<
                 AssignProductsToChannel.Mutation,

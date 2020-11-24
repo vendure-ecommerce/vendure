@@ -1,8 +1,10 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { StockMovementListOptions } from '@vendure/common/lib/generated-types';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { Translated } from '../../../common/types/locale-types';
+import { idsAreEqual } from '../../../common/utils';
 import { Asset, Channel, FacetValue, Product, ProductOption } from '../../../entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { StockMovement } from '../../../entity/stock-movement/stock-movement.entity';
@@ -100,10 +102,17 @@ export class ProductVariantAdminEntityResolver {
 
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<Channel[]> {
-        if (productVariant.channels) {
+        const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
+        if (!isDefaultChannel && productVariant.channels) {
             return productVariant.channels;
         } else {
-            return this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
+            const channels = await this.productVariantService.getProductVariantChannels(
+                ctx,
+                productVariant.id,
+            );
+            return channels.filter(channel =>
+                isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId),
+            );
         }
     }
 }
