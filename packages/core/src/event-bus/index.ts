@@ -18,5 +18,6 @@ export * from './events/payment-state-transition-event';
 export * from './events/product-event';
 export * from './events/product-channel-event';
 export * from './events/product-variant-event';
+export * from './events/product-variant-channel-event';
 export * from './events/refund-state-transition-event';
 export * from './events/tax-rate-modification-event';

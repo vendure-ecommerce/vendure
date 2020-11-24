@@ -186,7 +186,7 @@ export class SearchIndexService {
                 }
                 duration = response.duration;
                 completed = response.completed;
-                const progress = Math.ceil((completed / total) * 100);
+                const progress = total === 0 ? 100 : Math.ceil((completed / total) * 100);
                 job.setProgress(progress);
             },
             complete: () => {
