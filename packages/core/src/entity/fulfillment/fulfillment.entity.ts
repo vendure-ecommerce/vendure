@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
 import { DeepPartial } from '../../../../common/lib/shared-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
@@ -28,7 +28,7 @@ export class Fulfillment extends VendureEntity implements HasCustomFields {
     @Column()
     method: string;
 
-    @OneToMany(type => OrderItem, orderItem => orderItem.fulfillment)
+    @ManyToMany(type => OrderItem, orderItem => orderItem.fulfillments)
     orderItems: OrderItem[];
 
     @Column(type => CustomFulfillmentFields)

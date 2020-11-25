@@ -1,6 +1,6 @@
 import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
 import { VendureEntity } from '../base/base.entity';
@@ -39,11 +39,9 @@ export class OrderItem extends VendureEntity {
 
     @Column('simple-json') pendingAdjustments: Adjustment[];
 
-    @ManyToOne(type => Fulfillment)
-    fulfillment: Fulfillment;
-
-    @EntityId({ nullable: true })
-    fulfillmentId: ID | null;
+    @ManyToMany(type => Fulfillment, fulfillment => fulfillment.orderItems)
+    @JoinTable()
+    fulfillments: Fulfillment[];
 
     @ManyToOne(type => Refund)
     refund: Refund;
@@ -56,6 +54,10 @@ export class OrderItem extends VendureEntity {
 
     @Column({ default: false })
     cancelled: boolean;
+
+    get fulfillment(): Fulfillment | undefined {
+        return this.fulfillments?.find(f => f.state !== 'Cancelled');
+    }
 
     @Calculated()
     get unitPriceWithTax(): number {

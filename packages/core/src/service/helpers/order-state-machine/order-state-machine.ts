@@ -62,7 +62,7 @@ export class OrderStateMachine {
 
     private async findOrderWithFulfillments(ctx: RequestContext, id: ID): Promise<Order> {
         return await this.connection.getEntityOrThrow(ctx, Order, id, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
         });
     }
 

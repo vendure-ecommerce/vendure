@@ -60,8 +60,8 @@ function getNonCancelledItems(order: Order): OrderItem[] {
 }
 
 function isDelivered(orderItem: OrderItem) {
-    return orderItem.fulfillment && orderItem.fulfillment.state === 'Delivered';
+    return orderItem.fulfillment?.state === 'Delivered';
 }
 function isShipped(orderItem: OrderItem) {
-    return orderItem.fulfillment && orderItem.fulfillment.state === 'Shipped';
+    return orderItem.fulfillment?.state === 'Shipped';
 }

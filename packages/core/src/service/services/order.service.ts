@@ -167,7 +167,7 @@ export class OrderService {
             .leftJoinAndSelect('productVariant.translations', 'translations')
             .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
             .leftJoinAndSelect('lines.items', 'items')
-            .leftJoinAndSelect('items.fulfillment', 'fulfillment')
+            .leftJoinAndSelect('items.fulfillments', 'fulfillments')
             .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
@@ -781,23 +781,19 @@ export class OrderService {
 
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
-        if (
-            order.lines &&
-            order.lines[0] &&
-            order.lines[0].items &&
-            order.lines[0].items[0].fulfillment !== undefined
-        ) {
+        if (order.lines?.[0].items?.[0]?.fulfillments !== undefined) {
             lines = order.lines;
         } else {
             lines = await this.connection.getRepository(ctx, OrderLine).find({
                 where: {
                     order: order.id,
                 },
-                relations: ['items', 'items.fulfillment'],
+                relations: ['items', 'items.fulfillments'],
             });
         }
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
+        const fulfillments = items.reduce((acc, i) => [...acc, ...i.fulfillments], [] as Fulfillment[]);
+        return unique(fulfillments, 'id');
     }
 
     async cancelOrder(
@@ -1140,7 +1136,7 @@ export class OrderService {
 
     private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {
         return await this.connection.getEntityOrThrow(ctx, Order, orderId, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
         });
     }
 
@@ -1167,7 +1163,7 @@ export class OrderService {
         const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             orderLinesInput.map(l => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillment', 'order.channels'],
+                relations: ['order', 'items', 'items.fulfillments', 'order.channels'],
                 order: { id: 'ASC' },
             },
         );
