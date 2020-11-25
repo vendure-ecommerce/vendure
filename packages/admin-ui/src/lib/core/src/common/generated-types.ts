@@ -5152,6 +5152,10 @@ export type OrderFragment = (
 export type FulfillmentFragment = (
   { __typename?: 'Fulfillment' }
   & Pick<Fulfillment, 'id' | 'state' | 'nextStates' | 'createdAt' | 'updatedAt' | 'method' | 'trackingCode'>
+  & { orderItems: Array<(
+    { __typename?: 'OrderItem' }
+    & Pick<OrderItem, 'id'>
+  )> }
 );
 
 export type OrderLineFragment = (
@@ -7691,6 +7695,7 @@ export namespace Order {
 
 export namespace Fulfillment {
   export type Fragment = FulfillmentFragment;
+  export type OrderItems = NonNullable<(NonNullable<FulfillmentFragment['orderItems']>)[number]>;
 }
 
 export namespace OrderLine {

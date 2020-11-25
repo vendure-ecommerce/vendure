@@ -64,6 +64,9 @@ export const FULFILLMENT_FRAGMENT = gql`
         createdAt
         updatedAt
         method
+        orderItems {
+            id
+        }
         trackingCode
     }
 `;

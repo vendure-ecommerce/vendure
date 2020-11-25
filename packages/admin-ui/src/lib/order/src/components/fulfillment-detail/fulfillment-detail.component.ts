@@ -17,9 +17,10 @@ export class FulfillmentDetailComponent {
 
     get items(): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
+        const fulfillmentItemIds = this.fulfillment?.orderItems.map(i => i.id);
         for (const line of this.order.lines) {
             for (const item of line.items) {
-                if (item.fulfillment && item.fulfillment.id === this.fulfillmentId) {
+                if (fulfillmentItemIds?.includes(item.id)) {
                     const count = itemMap.get(line.productVariant.name);
                     if (count != null) {
                         itemMap.set(line.productVariant.name, count + 1);
