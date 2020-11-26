@@ -1,10 +1,10 @@
-import { mergeConfig } from '@vendure/common/lib/merge-config';
 import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     FulfillmentHandler,
     LanguageCode,
     manualFulfillmentHandler,
+    mergeConfig,
 } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
