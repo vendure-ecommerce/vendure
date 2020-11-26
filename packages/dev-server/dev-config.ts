@@ -31,18 +31,36 @@ const customFulfillmentHandler = new FulfillmentHandler({
     args: {
         preferredService: {
             type: 'string',
-            config: {
+            ui: {
+                component: 'select-form-input',
                 options: [{ value: 'first_class' }, { value: 'priority' }, { value: 'standard' }],
             },
         },
     },
     createFulfillment: async (ctx, orders, orderItems, args) => {
         return {
+            method: `Ship-o-matic ${args.preferredService}`,
             trackingCode: 'SHIP-' + Math.random().toString(36).substr(3),
         };
     },
     onFulfillmentTransition: async (fromState, toState, { fulfillment }) => {
         Logger.info(`Transitioned Fulfillment ${fulfillment.trackingCode} to state ${toState}`);
+    },
+});
+
+const pickupFulfillmentHandler = new FulfillmentHandler({
+    code: 'customer-collect',
+    description: [
+        {
+            languageCode: LanguageCode.en,
+            value: 'Customer collect fulfillment',
+        },
+    ],
+    args: {},
+    createFulfillment: async (ctx, orders, orderItems, args) => {
+        return {
+            method: `Customer collect`,
+        };
     },
 });
 
@@ -89,7 +107,7 @@ export const devConfig: VendureConfig = {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     shippingOptions: {
-        fulfillmentHandlers: [manualFulfillmentHandler, customFulfillmentHandler],
+        fulfillmentHandlers: [manualFulfillmentHandler, customFulfillmentHandler, pickupFulfillmentHandler],
     },
     plugins: [
         AssetServerPlugin.init({

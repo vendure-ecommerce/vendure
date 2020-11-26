@@ -141,6 +141,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             id
             code
             name
+            fulfillmentHandlerCode
             description
         }
         shippingAddress {

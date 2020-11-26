@@ -1,7 +1,12 @@
 import { ConfigArgType, CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
-import { ConfigArgDefinition } from '../generated-types';
+import {
+    ConfigArgDefinition,
+    ConfigurableOperation,
+    ConfigurableOperationDefinition,
+    ConfigurableOperationInput,
+} from '../generated-types';
 
 /**
  * ConfigArg values are always stored as strings. If they are not primitives, then
@@ -18,6 +23,58 @@ export function getConfigArgValue(value: any) {
 
 export function encodeConfigArgValue(value: any): string {
     return Array.isArray(value) ? JSON.stringify(value) : (value ?? '').toString();
+}
+
+/**
+ * Creates an empty ConfigurableOperation object based on the definition.
+ */
+export function configurableDefinitionToInstance(
+    def: ConfigurableOperationDefinition,
+): ConfigurableOperation {
+    return {
+        ...def,
+        args: def.args.map(arg => {
+            return {
+                ...arg,
+                value: getDefaultConfigArgValue(arg),
+            };
+        }),
+    } as ConfigurableOperation;
+}
+
+/**
+ * Converts an object of the type:
+ * ```
+ * {
+ *     code: 'my-operation',
+ *     args: {
+ *         someProperty: 'foo'
+ *     }
+ * }
+ * ```
+ * to the format defined by the ConfigurableOperationInput GraphQL input type:
+ * ```
+ * {
+ *     code: 'my-operation',
+ *     args: [
+ *         { name: 'someProperty', value: 'foo' }
+ *     ]
+ * }
+ * ```
+ */
+export function toConfigurableOperationInput(
+    operation: ConfigurableOperation,
+    formValueOperations: any,
+): ConfigurableOperationInput {
+    return {
+        code: operation.code,
+        arguments: Object.values<any>(formValueOperations.args || {}).map((value, j) => ({
+            name: operation.args[j].name,
+            value: value.hasOwnProperty('value')
+                ? encodeConfigArgValue((value as any).value)
+                : encodeConfigArgValue(value),
+        })),
+    };
 }
 
 /**

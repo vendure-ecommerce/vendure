@@ -19,7 +19,7 @@
                 [class.ignore]="getUnfulfilledCount(line) === 0"
             >
                 <td class="align-middle thumb">
-                    <img *ngIf="line.featuredAsset" [src]="line.featuredAsset | assetPreview:'tiny'" />
+                    <img *ngIf="line.featuredAsset" [src]="line.featuredAsset | assetPreview: 'tiny'" />
                 </td>
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
@@ -43,20 +43,18 @@
         <h6>{{ 'order.shipping-method' | translate }}</h6>
         {{ order.shippingMethod?.name }}
         <strong>{{ order.shipping / 100 | currency: order.currencyCode }}</strong>
-        <clr-input-container>
-            <label>{{ 'order.fulfillment-method' | translate }}</label>
-            <input clrInput placeholder="" name="method" [(ngModel)]="method" required />
-        </clr-input-container>
-        <clr-input-container>
-            <label>{{ 'order.tracking-code' | translate }}</label>
-            <input clrInput placeholder="" name="trackingCode" [(ngModel)]="trackingCode" />
-        </clr-input-container>
+        <vdr-configurable-input
+            [operationDefinition]="fulfillmentHandlerDef"
+            [operation]="fulfillmentHandler"
+            [formControl]="fulfillmentHandlerControl"
+            [removable]="false"
+        ></vdr-configurable-input>
     </div>
 </div>
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button type="submit" (click)="select()" [disabled]="!method" class="btn btn-primary">
+    <button type="submit" (click)="select()" [disabled]="!canSubmit()" class="btn btn-primary">
         {{ 'order.create-fulfillment' | translate }}
     </button>
 </ng-template>

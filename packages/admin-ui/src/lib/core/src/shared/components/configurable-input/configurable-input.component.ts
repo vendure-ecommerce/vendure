@@ -59,6 +59,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     @Input() operation?: ConfigurableOperation;
     @Input() operationDefinition?: ConfigurableOperationDefinition;
     @Input() readonly = false;
+    @Input() removable = true;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;

@@ -205,7 +205,7 @@
                 </tr>
                 <tr class="shipping">
                     <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
-                    <td class="clr-align-middle">{{ order.shippingMethod?.description }}</td>
+                    <td class="clr-align-middle">{{ order.shippingMethod?.name }}</td>
                     <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
