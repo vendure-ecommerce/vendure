@@ -51,7 +51,7 @@ import {
  * const config: VendureConfig = {
  *   // Add an instance of the plugin to the plugins array
  *   plugins: [
- *     new EmailPlugin({
+ *     EmailPlugin.init({
  *       handlers: defaultEmailHandlers,
  *       templatePath: path.join(__dirname, 'vendure/email/templates'),
  *       transport: {
