@@ -79,7 +79,7 @@ import {
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
+import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
 
 describe('Orders resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
@@ -747,7 +747,7 @@ describe('Orders resolver', () => {
                 id: orderId,
             });
 
-            expect(order!.fulfillments).toEqual([
+            expect(order!.fulfillments?.sort(sortById)).toEqual([
                 { id: f1Id, method: 'Test1', state: 'Delivered', nextStates: ['Cancelled'] },
                 { id: f2Id, method: 'Test2', state: 'Cancelled', nextStates: [] },
                 { id: f3Id, method: 'Test3', state: 'Delivered', nextStates: ['Cancelled'] },
@@ -1402,7 +1402,7 @@ describe('Orders resolver', () => {
                     },
                 },
             );
-            expect(order!.history.items.map(pick(['type', 'data']))).toEqual([
+            expect(order!.history.items.sort(sortById).map(pick(['type', 'data']))).toEqual([
                 {
                     type: HistoryEntryType.ORDER_STATE_TRANSITION,
                     data: {
