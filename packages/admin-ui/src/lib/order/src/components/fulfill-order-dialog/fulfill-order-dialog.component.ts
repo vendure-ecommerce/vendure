@@ -63,8 +63,12 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
         }));
         this.resolveWith({
             lines,
-            trackingCode: this.trackingCode,
-            method: this.method,
+            handler: {
+                code: 'foo',
+                arguments: [],
+            },
+            // trackingCode: this.trackingCode,
+            // method: this.method,
         });
     }
 

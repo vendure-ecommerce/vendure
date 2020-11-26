@@ -61,6 +61,17 @@
         [readonly]="!('UpdateSettings' | hasPermission)"
         [label]="'common.description' | translate"
     ></vdr-rich-text-editor>
+    <vdr-form-field [label]="'settings.fulfillment-handler' | translate" for="fulfillmentHandler" class="mb2">
+        <select
+            name="fulfillmentHandler"
+            formControlName="fulfillmentHandler"
+            [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+        >
+            <option *ngFor="let handler of fulfillmentHandlers" [value]="handler.code">
+                {{ handler.code }}: {{ handler.description }}
+            </option>
+        </select>
+    </vdr-form-field>
 
     <section formGroupName="customFields" *ngIf="customFields.length">
         <label>{{ 'common.custom-fields' | translate }}</label>
@@ -74,7 +85,7 @@
         </ng-container>
     </section>
 
-    <div class="clr-row">
+    <div class="clr-row mt4">
         <div class="clr-col">
             <label class="clr-control-label">{{ 'settings.shipping-eligibility-checker' | translate }}</label>
             <vdr-configurable-input

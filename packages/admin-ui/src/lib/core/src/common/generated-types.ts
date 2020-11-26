@@ -41,6 +41,7 @@ export type Query = {
   customers: CustomerList;
   facet?: Maybe<Facet>;
   facets: FacetList;
+  fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
   globalSettings: GlobalSettings;
   job?: Maybe<Job>;
   jobQueues: Array<JobQueue>;
@@ -1306,7 +1307,7 @@ export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguage
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -1399,8 +1400,7 @@ export type UpdateOrderInput = {
 
 export type FulfillOrderInput = {
   lines: Array<OrderLineInput>;
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
+  handler: ConfigurableOperationInput;
 };
 
 export type CancelOrderInput = {
@@ -1461,6 +1461,21 @@ export type ItemsAlreadyFulfilledError = ErrorResult & {
   __typename?: 'ItemsAlreadyFulfilledError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+};
+
+/** Returned if the specified FulfillmentHandler code is not valid */
+export type InvalidFulfillmentHandlerError = ErrorResult & {
+  __typename?: 'InvalidFulfillmentHandlerError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an error is thrown in a FulfillmentHandler's createFulfillment method */
+export type CreateFulfillmentError = ErrorResult & {
+  __typename?: 'CreateFulfillmentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  fulfillmentHandlerError: Scalars['String'];
 };
 
 /**
@@ -1562,7 +1577,7 @@ export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
 
-export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError | InsufficientStockOnHandError;
+export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError | InsufficientStockOnHandError | InvalidFulfillmentHandlerError | FulfillmentStateTransitionError | CreateFulfillmentError;
 
 export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
 
@@ -1890,6 +1905,7 @@ export type ShippingMethodTranslationInput = {
 
 export type CreateShippingMethodInput = {
   code: Scalars['String'];
+  fulfillmentHandler: Scalars['String'];
   checker: ConfigurableOperationInput;
   calculator: ConfigurableOperationInput;
   translations: Array<ShippingMethodTranslationInput>;
@@ -1899,6 +1915,7 @@ export type CreateShippingMethodInput = {
 export type UpdateShippingMethodInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
+  fulfillmentHandler?: Maybe<Scalars['String']>;
   checker?: Maybe<ConfigurableOperationInput>;
   calculator?: Maybe<ConfigurableOperationInput>;
   translations: Array<ShippingMethodTranslationInput>;
@@ -2040,7 +2057,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -2141,6 +2158,8 @@ export enum ErrorCode {
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+  INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
+  CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
   INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
   MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
   CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
@@ -2305,7 +2324,7 @@ export type EmailAddressConflictError = ErrorResult & {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -2739,7 +2758,7 @@ export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFiel
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3647,6 +3666,7 @@ export type ShippingMethod = Node & {
   code: Scalars['String'];
   name: Scalars['String'];
   description: Scalars['String'];
+  fulfillmentHandlerCode: Scalars['String'];
   checker: ConfigurableOperation;
   calculator: ConfigurableOperation;
   translations: Array<ShippingMethodTranslation>;
@@ -4198,6 +4218,7 @@ export type ShippingMethodFilterParameter = {
   code?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
   description?: Maybe<StringOperators>;
+  fulfillmentHandlerCode?: Maybe<StringOperators>;
 };
 
 export type ShippingMethodSortParameter = {
@@ -4207,6 +4228,7 @@ export type ShippingMethodSortParameter = {
   code?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
+  fulfillmentHandlerCode?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {
@@ -5284,6 +5306,15 @@ export type CreateFulfillmentMutation = { addFulfillmentToOrder: (
   ) | (
     { __typename?: 'InsufficientStockOnHandError' }
     & ErrorResult_InsufficientStockOnHandError_Fragment
+  ) | (
+    { __typename?: 'InvalidFulfillmentHandlerError' }
+    & ErrorResult_InvalidFulfillmentHandlerError_Fragment
+  ) | (
+    { __typename?: 'FulfillmentStateTransitionError' }
+    & ErrorResult_FulfillmentStateTransitionError_Fragment
+  ) | (
+    { __typename?: 'CreateFulfillmentError' }
+    & ErrorResult_CreateFulfillmentError_Fragment
   ) };
 
 export type CancelOrderMutationVariables = Exact<{
@@ -7045,6 +7076,16 @@ type ErrorResult_ItemsAlreadyFulfilledError_Fragment = (
   & Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>
 );
 
+type ErrorResult_InvalidFulfillmentHandlerError_Fragment = (
+  { __typename?: 'InvalidFulfillmentHandlerError' }
+  & Pick<InvalidFulfillmentHandlerError, 'errorCode' | 'message'>
+);
+
+type ErrorResult_CreateFulfillmentError_Fragment = (
+  { __typename?: 'CreateFulfillmentError' }
+  & Pick<CreateFulfillmentError, 'errorCode' | 'message'>
+);
+
 type ErrorResult_InsufficientStockOnHandError_Fragment = (
   { __typename?: 'InsufficientStockOnHandError' }
   & Pick<InsufficientStockOnHandError, 'errorCode' | 'message'>
@@ -7130,11 +7171,11 @@ type ErrorResult_EmailAddressConflictError_Fragment = (
   & Pick<EmailAddressConflictError, 'errorCode' | 'message'>
 );
 
-export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_EmailAddressConflictError_Fragment;
+export type ErrorResultFragment = ErrorResult_MimeTypeError_Fragment | ErrorResult_LanguageNotAvailableError_Fragment | ErrorResult_ChannelDefaultLanguageError_Fragment | ErrorResult_SettlePaymentError_Fragment | ErrorResult_EmptyOrderLineSelectionError_Fragment | ErrorResult_ItemsAlreadyFulfilledError_Fragment | ErrorResult_InvalidFulfillmentHandlerError_Fragment | ErrorResult_CreateFulfillmentError_Fragment | ErrorResult_InsufficientStockOnHandError_Fragment | ErrorResult_MultipleOrderError_Fragment | ErrorResult_CancelActiveOrderError_Fragment | ErrorResult_PaymentOrderMismatchError_Fragment | ErrorResult_RefundOrderStateError_Fragment | ErrorResult_NothingToRefundError_Fragment | ErrorResult_AlreadyRefundedError_Fragment | ErrorResult_QuantityTooGreatError_Fragment | ErrorResult_RefundStateTransitionError_Fragment | ErrorResult_PaymentStateTransitionError_Fragment | ErrorResult_FulfillmentStateTransitionError_Fragment | ErrorResult_ProductOptionInUseError_Fragment | ErrorResult_MissingConditionsError_Fragment | ErrorResult_NativeAuthStrategyError_Fragment | ErrorResult_InvalidCredentialsError_Fragment | ErrorResult_OrderStateTransitionError_Fragment | ErrorResult_EmailAddressConflictError_Fragment;
 
 export type ShippingMethodFragment = (
   { __typename?: 'ShippingMethod' }
-  & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'description'>
+  & Pick<ShippingMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'name' | 'description' | 'fulfillmentHandlerCode'>
   & { checker: (
     { __typename?: 'ConfigurableOperation' }
     & ConfigurableOperationFragment
@@ -7178,6 +7219,9 @@ export type GetShippingMethodOperationsQuery = { shippingEligibilityCheckers: Ar
     { __typename?: 'ConfigurableOperationDefinition' }
     & ConfigurableOperationDefFragment
   )>, shippingCalculators: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )>, fulfillmentHandlers: Array<(
     { __typename?: 'ConfigurableOperationDefinition' }
     & ConfigurableOperationDefFragment
   )> };
@@ -8508,6 +8552,7 @@ export namespace GetShippingMethodOperations {
   export type Query = GetShippingMethodOperationsQuery;
   export type ShippingEligibilityCheckers = NonNullable<(NonNullable<GetShippingMethodOperationsQuery['shippingEligibilityCheckers']>)[number]>;
   export type ShippingCalculators = NonNullable<(NonNullable<GetShippingMethodOperationsQuery['shippingCalculators']>)[number]>;
+  export type FulfillmentHandlers = NonNullable<(NonNullable<GetShippingMethodOperationsQuery['fulfillmentHandlers']>)[number]>;
 }
 
 export namespace CreateShippingMethod {

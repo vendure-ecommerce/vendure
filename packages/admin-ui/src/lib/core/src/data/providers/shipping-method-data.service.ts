@@ -57,7 +57,14 @@ export class ShippingMethodDataService {
 
     createShippingMethod(input: CreateShippingMethodInput) {
         const variables: CreateShippingMethod.Variables = {
-            input: pick(input, ['code', 'checker', 'calculator', 'customFields', 'translations']),
+            input: pick(input, [
+                'code',
+                'checker',
+                'calculator',
+                'fulfillmentHandler',
+                'customFields',
+                'translations',
+            ]),
         };
         return this.baseDataService.mutate<CreateShippingMethod.Mutation, CreateShippingMethod.Variables>(
             CREATE_SHIPPING_METHOD,
@@ -67,7 +74,15 @@ export class ShippingMethodDataService {
 
     updateShippingMethod(input: UpdateShippingMethodInput) {
         const variables: UpdateShippingMethod.Variables = {
-            input: pick(input, ['id', 'code', 'checker', 'calculator', 'customFields', 'translations']),
+            input: pick(input, [
+                'id',
+                'code',
+                'checker',
+                'calculator',
+                'fulfillmentHandler',
+                'customFields',
+                'translations',
+            ]),
         };
         return this.baseDataService.mutate<UpdateShippingMethod.Mutation, UpdateShippingMethod.Variables>(
             UPDATE_SHIPPING_METHOD,

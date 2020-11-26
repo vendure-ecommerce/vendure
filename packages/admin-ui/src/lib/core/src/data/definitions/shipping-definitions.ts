@@ -10,6 +10,7 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
         code
         name
         description
+        fulfillmentHandlerCode
         checker {
             ...ConfigurableOperation
         }
@@ -53,6 +54,9 @@ export const GET_SHIPPING_METHOD_OPERATIONS = gql`
             ...ConfigurableOperationDef
         }
         shippingCalculators {
+            ...ConfigurableOperationDef
+        }
+        fulfillmentHandlers {
             ...ConfigurableOperationDef
         }
     }

@@ -46,6 +46,7 @@ export class ShippingMethodDetailComponent
     detailForm: FormGroup;
     checkers: ConfigurableOperationDefinition[] = [];
     calculators: ConfigurableOperationDefinition[] = [];
+    fulfillmentHandlers: ConfigurableOperationDefinition[] = [];
     selectedChecker?: ConfigurableOperation | null;
     selectedCheckerDefinition?: ConfigurableOperationDefinition;
     selectedCalculator?: ConfigurableOperation | null;
@@ -73,6 +74,7 @@ export class ShippingMethodDetailComponent
             code: ['', Validators.required],
             name: ['', Validators.required],
             description: '',
+            fulfillmentHandler: '',
             checker: {},
             calculator: {},
             customFields: this.formBuilder.group(
@@ -89,6 +91,7 @@ export class ShippingMethodDetailComponent
         ).subscribe(([data, entity]) => {
             this.checkers = data.shippingEligibilityCheckers;
             this.calculators = data.shippingCalculators;
+            this.fulfillmentHandlers = data.fulfillmentHandlers;
             this.changeDetector.markForCheck();
             this.selectedCheckerDefinition = data.shippingEligibilityCheckers.find(
                 c => c.code === (entity.checker && entity.checker.code),
@@ -295,9 +298,10 @@ export class ShippingMethodDetailComponent
         formGroup: FormGroup,
         languageCode: LanguageCode,
     ): Omit<CreateShippingMethodInput | UpdateShippingMethodInput, 'checker' | 'calculator'> {
+        const formValue = formGroup.value;
         const input = createUpdatedTranslatable({
             translatable: shippingMethod,
-            updatedFields: formGroup.value,
+            updatedFields: formValue,
             customFieldConfig: this.customFields,
             languageCode,
             defaultTranslation: {
@@ -306,7 +310,7 @@ export class ShippingMethodDetailComponent
                 description: shippingMethod.description || '',
             },
         });
-        return input;
+        return { ...input, fulfillmentHandler: formValue.fulfillmentHandler };
     }
 
     /**
@@ -333,6 +337,7 @@ export class ShippingMethodDetailComponent
             name: currentTranslation?.name ?? '',
             description: currentTranslation?.description ?? '',
             code: shippingMethod.code,
+            fulfillmentHandler: shippingMethod.fulfillmentHandlerCode,
             checker: shippingMethod.checker || {},
             calculator: shippingMethod.calculator || {},
         });

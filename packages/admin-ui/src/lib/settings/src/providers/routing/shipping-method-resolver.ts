@@ -22,6 +22,7 @@ export class ShippingMethodResolver extends BaseEntityResolver<ShippingMethod.Fr
                 code: '',
                 name: '',
                 description: '',
+                fulfillmentHandlerCode: undefined as any,
                 checker: undefined as any,
                 calculator: undefined as any,
                 translations: [],
