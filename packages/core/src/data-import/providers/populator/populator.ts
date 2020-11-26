@@ -5,6 +5,7 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
+import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
 import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
 import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
@@ -197,6 +198,7 @@ export class Populator {
     ) {
         for (const method of shippingMethods) {
             await this.shippingMethodService.create(ctx, {
+                fulfillmentHandler: manualFulfillmentHandler.code,
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
                     arguments: [{ name: 'orderMinimum', value: '0' }],

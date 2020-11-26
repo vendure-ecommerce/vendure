@@ -68,6 +68,7 @@ export type Query = {
   shippingMethod?: Maybe<ShippingMethod>;
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   shippingCalculators: Array<ConfigurableOperationDefinition>;
+  fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
   testShippingMethod: TestShippingMethodResult;
   testEligibleShippingMethods: Array<ShippingMethodQuote>;
   taxCategories: Array<TaxCategory>;
@@ -1368,8 +1369,7 @@ export type UpdateOrderInput = {
 
 export type FulfillOrderInput = {
   lines: Array<OrderLineInput>;
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
+  handler: ConfigurableOperationInput;
 };
 
 export type CancelOrderInput = {
@@ -1430,6 +1430,21 @@ export type ItemsAlreadyFulfilledError = ErrorResult & {
   __typename?: 'ItemsAlreadyFulfilledError';
   errorCode: ErrorCode;
   message: Scalars['String'];
+};
+
+/** Returned if the specified FulfillmentHandler code is not valid */
+export type InvalidFulfillmentHandlerError = ErrorResult & {
+  __typename?: 'InvalidFulfillmentHandlerError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned if an error is thrown in a FulfillmentHandler's createFulfillment method */
+export type CreateFulfillmentError = ErrorResult & {
+  __typename?: 'CreateFulfillmentError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+  fulfillmentHandlerError: Scalars['String'];
 };
 
 /**
@@ -1531,7 +1546,7 @@ export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
 
-export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError | InsufficientStockOnHandError;
+export type AddFulfillmentToOrderResult = Fulfillment | EmptyOrderLineSelectionError | ItemsAlreadyFulfilledError | InsufficientStockOnHandError | InvalidFulfillmentHandlerError | FulfillmentStateTransitionError | CreateFulfillmentError;
 
 export type CancelOrderResult = Order | EmptyOrderLineSelectionError | QuantityTooGreatError | MultipleOrderError | CancelActiveOrderError | OrderStateTransitionError;
 
@@ -1859,6 +1874,7 @@ export type ShippingMethodTranslationInput = {
 
 export type CreateShippingMethodInput = {
   code: Scalars['String'];
+  fulfillmentHandler: Scalars['String'];
   checker: ConfigurableOperationInput;
   calculator: ConfigurableOperationInput;
   translations: Array<ShippingMethodTranslationInput>;
@@ -1868,6 +1884,7 @@ export type CreateShippingMethodInput = {
 export type UpdateShippingMethodInput = {
   id: Scalars['ID'];
   code?: Maybe<Scalars['String']>;
+  fulfillmentHandler?: Maybe<Scalars['String']>;
   checker?: Maybe<ConfigurableOperationInput>;
   calculator?: Maybe<ConfigurableOperationInput>;
   translations: Array<ShippingMethodTranslationInput>;
@@ -2109,6 +2126,8 @@ export enum ErrorCode {
   SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
   EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
   ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+  INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
+  CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
   INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
   MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
   CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
@@ -3615,6 +3634,7 @@ export type ShippingMethod = Node & {
   code: Scalars['String'];
   name: Scalars['String'];
   description: Scalars['String'];
+  fulfillmentHandlerCode: Scalars['String'];
   checker: ConfigurableOperation;
   calculator: ConfigurableOperation;
   translations: Array<ShippingMethodTranslation>;
@@ -4166,6 +4186,7 @@ export type ShippingMethodFilterParameter = {
   code?: Maybe<StringOperators>;
   name?: Maybe<StringOperators>;
   description?: Maybe<StringOperators>;
+  fulfillmentHandlerCode?: Maybe<StringOperators>;
 };
 
 export type ShippingMethodSortParameter = {
@@ -4175,6 +4196,7 @@ export type ShippingMethodSortParameter = {
   code?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
+  fulfillmentHandlerCode?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {

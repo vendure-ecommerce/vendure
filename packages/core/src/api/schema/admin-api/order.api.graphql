@@ -31,8 +31,7 @@ input UpdateOrderInput {
 
 input FulfillOrderInput {
     lines: [OrderLineInput!]!
-    method: String!
-    trackingCode: String
+    handler: ConfigurableOperationInput!
 }
 
 input CancelOrderInput {
@@ -90,6 +89,19 @@ type EmptyOrderLineSelectionError implements ErrorResult {
 type ItemsAlreadyFulfilledError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+}
+
+"Returned if the specified FulfillmentHandler code is not valid"
+type InvalidFulfillmentHandlerError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned if an error is thrown in a FulfillmentHandler's createFulfillment method"
+type CreateFulfillmentError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    fulfillmentHandlerError: String!
 }
 
 """
@@ -187,6 +199,9 @@ union AddFulfillmentToOrderResult =
     | EmptyOrderLineSelectionError
     | ItemsAlreadyFulfilledError
     | InsufficientStockOnHandError
+    | InvalidFulfillmentHandlerError
+    | FulfillmentStateTransitionError
+    | CreateFulfillmentError
 union CancelOrderResult =
       Order
     | EmptyOrderLineSelectionError

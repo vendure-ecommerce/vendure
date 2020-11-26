@@ -58,6 +58,12 @@ export class ShippingMethodResolver {
         return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
+    @Query()
+    @Allow(Permission.ReadSettings)
+    fulfillmentHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingMethodService.getFulfillmentHandlers(ctx);
+    }
+
     @Transaction()
     @Mutation()
     @Allow(Permission.CreateSettings)

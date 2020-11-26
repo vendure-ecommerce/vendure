@@ -1,6 +1,7 @@
 import {
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
+    manualFulfillmentHandler,
     ShippingCalculator,
     ShippingEligibilityChecker,
 } from '@vendure/core';
@@ -120,6 +121,7 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'single-line',
+                fulfillmentHandler: manualFulfillmentHandler.code,
                 checker: {
                     code: checker1.code,
                     arguments: [],
@@ -141,6 +143,7 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'multi-line',
+                fulfillmentHandler: manualFulfillmentHandler.code,
                 checker: {
                     code: checker2.code,
                     arguments: [],
@@ -162,6 +165,7 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'optimized',
+                fulfillmentHandler: manualFulfillmentHandler.code,
                 checker: {
                     code: checker3.code,
                     arguments: [],

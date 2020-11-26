@@ -4,14 +4,9 @@ import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { RequestHandler } from 'express';
-import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
-import { RequestContext } from '../api/common/request-context';
-import { Transitions } from '../common/finite-state-machine/types';
 import { PermissionDefinition } from '../common/permission-definition';
-import { Order } from '../entity/order/order.entity';
-import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
@@ -21,6 +16,7 @@ import { CollectionFilter } from './collection/collection-filter';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
+import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
@@ -539,6 +535,12 @@ export interface ShippingOptions {
      * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
      */
     customFulfillmentProcess?: Array<CustomFulfillmentProcess<any>>;
+
+    /**
+     * @description
+     * An array of available FulfillmentHandlers.
+     */
+    fulfillmentHandlers?: Array<FulfillmentHandler<any>>;
 }
 
 /**
@@ -832,9 +834,11 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     authOptions: Required<AuthOptions>;
     customFields: Required<CustomFields>;
     importExportOptions: Required<ImportExportOptions>;
-    orderOptions: Required<OrderOptions>;
-    workerOptions: Required<WorkerOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    orderOptions: Required<OrderOptions>;
+    promotionOptions: Required<PromotionOptions>;
+    shippingOptions: Required<ShippingOptions>;
+    workerOptions: Required<WorkerOptions>;
 }
 
 type DeepPartialSimple<T> = {

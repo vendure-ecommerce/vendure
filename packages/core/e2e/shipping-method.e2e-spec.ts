@@ -10,6 +10,7 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
 
 import { SHIPPING_METHOD_FRAGMENT } from './graphql/fragments';
 import {
@@ -154,6 +155,7 @@ describe('ShippingMethod resolver', () => {
         >(CREATE_SHIPPING_METHOD, {
             input: {
                 code: 'new-method',
+                fulfillmentHandler: manualFulfillmentHandler.code,
                 checker: {
                     code: defaultShippingEligibilityChecker.code,
                     arguments: [

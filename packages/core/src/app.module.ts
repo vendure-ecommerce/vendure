@@ -153,7 +153,11 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
         const { paymentMethodHandlers } = this.configService.paymentOptions;
         const { collectionFilters } = this.configService.catalogOptions;
         const { promotionActions, promotionConditions } = this.configService.promotionOptions;
-        const { shippingCalculators, shippingEligibilityCheckers } = this.configService.shippingOptions;
+        const {
+            shippingCalculators,
+            shippingEligibilityCheckers,
+            fulfillmentHandlers,
+        } = this.configService.shippingOptions;
         return [
             ...paymentMethodHandlers,
             ...collectionFilters,
@@ -161,6 +165,7 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             ...(promotionConditions || []),
             ...(shippingCalculators || []),
             ...(shippingEligibilityCheckers || []),
+            ...(fulfillmentHandlers || []),
         ];
     }
 }

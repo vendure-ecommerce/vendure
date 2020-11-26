@@ -2322,6 +2322,7 @@ export type ShippingMethod = Node & {
     code: Scalars['String'];
     name: Scalars['String'];
     description: Scalars['String'];
+    fulfillmentHandlerCode: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
     translations: Array<ShippingMethodTranslation>;

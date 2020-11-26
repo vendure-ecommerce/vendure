@@ -3,6 +3,7 @@ type Query {
     shippingMethod(id: ID!): ShippingMethod
     shippingEligibilityCheckers: [ConfigurableOperationDefinition!]!
     shippingCalculators: [ConfigurableOperationDefinition!]!
+    fulfillmentHandlers: [ConfigurableOperationDefinition!]!
     testShippingMethod(input: TestShippingMethodInput!): TestShippingMethodResult!
     testEligibleShippingMethods(input: TestEligibleShippingMethodsInput!): [ShippingMethodQuote!]!
 }
@@ -28,6 +29,7 @@ input ShippingMethodTranslationInput {
 
 input CreateShippingMethodInput {
     code: String!
+    fulfillmentHandler: String!
     checker: ConfigurableOperationInput!
     calculator: ConfigurableOperationInput!
     translations: [ShippingMethodTranslationInput!]!
@@ -36,6 +38,7 @@ input CreateShippingMethodInput {
 input UpdateShippingMethodInput {
     id: ID!
     code: String
+    fulfillmentHandler: String
     checker: ConfigurableOperationInput
     calculator: ConfigurableOperationInput
     translations: [ShippingMethodTranslationInput!]!

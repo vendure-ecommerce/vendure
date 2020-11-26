@@ -14,6 +14,7 @@ import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
@@ -40,7 +41,12 @@ export class ShippingMethodService {
     ) {}
 
     async initShippingMethods() {
-        await this.updateActiveShippingMethods(RequestContext.empty());
+        if (this.configService.shippingOptions.fulfillmentHandlers.length === 0) {
+            throw new Error(
+                `No FulfillmentHandlers were found. Please ensure the VendureConfig.shippingOptions.fulfillmentHandlers array contains at least one FulfillmentHandler.`,
+            );
+        }
+        await this.verifyShippingMethods();
     }
 
     findAll(
@@ -82,6 +88,10 @@ export class ShippingMethodService {
             entityType: ShippingMethod,
             translationType: ShippingMethodTranslation,
             beforeSave: method => {
+                method.fulfillmentHandlerCode = this.ensureValidFulfillmentHandlerCode(
+                    method.code,
+                    input.fulfillmentHandler,
+                );
                 method.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
                 method.calculator = this.shippingConfiguration.parseCalculatorInput(input.calculator);
             },
@@ -113,6 +123,12 @@ export class ShippingMethodService {
                 input.calculator,
             );
         }
+        if (input.fulfillmentHandler) {
+            updatedShippingMethod.fulfillmentHandlerCode = this.ensureValidFulfillmentHandlerCode(
+                updatedShippingMethod.code,
+                input.fulfillmentHandler,
+            );
+        }
         await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(updatedShippingMethod, { reload: false });
@@ -141,8 +157,27 @@ export class ShippingMethodService {
         return this.shippingConfiguration.shippingCalculators.map(x => x.toGraphQlType(ctx));
     }
 
+    getFulfillmentHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingConfiguration.fulfillmentHandlers.map(x => x.toGraphQlType(ctx));
+    }
+
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
         return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
+    }
+
+    /**
+     * Ensures that all ShippingMethods have a valid fulfillmentHandlerCode
+     */
+    private async verifyShippingMethods() {
+        await this.updateActiveShippingMethods(RequestContext.empty());
+        for (const method of this.activeShippingMethods) {
+            const handlerCode = method.fulfillmentHandlerCode;
+            const verifiedHandlerCode = this.ensureValidFulfillmentHandlerCode(method.code, handlerCode);
+            if (handlerCode !== verifiedHandlerCode) {
+                method.fulfillmentHandlerCode = verifiedHandlerCode;
+                await this.connection.getRepository(ShippingMethod).save(method);
+            }
+        }
     }
 
     private async updateActiveShippingMethods(ctx: RequestContext) {
@@ -151,5 +186,21 @@ export class ShippingMethodService {
             where: { deletedAt: null },
         });
         this.activeShippingMethods = activeShippingMethods.map(m => translateDeep(m, ctx.languageCode));
+    }
+
+    private ensureValidFulfillmentHandlerCode(
+        shippingMethodCode: string,
+        fulfillmentHandlerCode: string,
+    ): string {
+        const { fulfillmentHandlers } = this.configService.shippingOptions;
+        let handler = fulfillmentHandlers.find(h => h.code === fulfillmentHandlerCode);
+        if (!handler) {
+            handler = fulfillmentHandlers[0];
+            Logger.error(
+                `The ShippingMethod "${shippingMethodCode}" references an invalid FulfillmentHandler.\n` +
+                    `The FulfillmentHandler with code "${fulfillmentHandlerCode}" was not found. Using "${handler.code}" instead.`,
+            );
+        }
+        return handler.code;
     }
 }

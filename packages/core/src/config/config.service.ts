@@ -75,7 +75,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.promotionOptions;
     }
 
-    get shippingOptions(): ShippingOptions {
+    get shippingOptions(): Required<ShippingOptions> {
         return this.activeConfig.shippingOptions;
     }
 

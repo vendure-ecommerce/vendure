@@ -28,6 +28,9 @@ export class Fulfillment extends VendureEntity implements HasCustomFields {
     @Column()
     method: string;
 
+    @Column()
+    handlerCode: string;
+
     @ManyToMany(type => OrderItem, orderItem => orderItem.fulfillments)
     orderItems: OrderItem[];
 

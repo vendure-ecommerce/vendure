@@ -461,6 +461,9 @@ export const CREATE_FULFILLMENT = gql`
                 errorCode
                 message
             }
+            ... on CreateFulfillmentError {
+                fulfillmentHandlerError
+            }
         }
     }
     ${FULFILLMENT_FRAGMENT}

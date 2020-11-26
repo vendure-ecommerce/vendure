@@ -57,6 +57,9 @@ export class ShippingMethod
 
     @Column('simple-json') calculator: ConfigurableOperation;
 
+    @Column()
+    fulfillmentHandlerCode: string;
+
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];

@@ -60,7 +60,16 @@ export class FulfillmentStateMachine {
         toState: FulfillmentState,
         data: FulfillmentTransitionData,
     ) {
-        /**/
+        const { fulfillmentHandlers } = this.configService.shippingOptions;
+        const fulfillmentHandler = fulfillmentHandlers.find(h => h.code === data.fulfillment.handlerCode);
+        if (fulfillmentHandler) {
+            const result = await awaitPromiseOrObservable(
+                fulfillmentHandler.onFulfillmentTransition(fromState, toState, data),
+            );
+            if (result === false || typeof result === 'string') {
+                return result;
+            }
+        }
     }
 
     /**

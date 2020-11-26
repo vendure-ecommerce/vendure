@@ -67,6 +67,7 @@ export type Query = {
     shippingMethod?: Maybe<ShippingMethod>;
     shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
     shippingCalculators: Array<ConfigurableOperationDefinition>;
+    fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
     testEligibleShippingMethods: Array<ShippingMethodQuote>;
     taxCategories: Array<TaxCategory>;
@@ -1218,8 +1219,7 @@ export type UpdateOrderInput = {
 
 export type FulfillOrderInput = {
     lines: Array<OrderLineInput>;
-    method: Scalars['String'];
-    trackingCode?: Maybe<Scalars['String']>;
+    handler: ConfigurableOperationInput;
 };
 
 export type CancelOrderInput = {
@@ -1277,6 +1277,19 @@ export type EmptyOrderLineSelectionError = ErrorResult & {
 export type ItemsAlreadyFulfilledError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Returned if the specified FulfillmentHandler code is not valid */
+export type InvalidFulfillmentHandlerError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if an error is thrown in a FulfillmentHandler's createFulfillment method */
+export type CreateFulfillmentError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    fulfillmentHandlerError: Scalars['String'];
 };
 
 /**
@@ -1375,7 +1388,10 @@ export type AddFulfillmentToOrderResult =
     | Fulfillment
     | EmptyOrderLineSelectionError
     | ItemsAlreadyFulfilledError
-    | InsufficientStockOnHandError;
+    | InsufficientStockOnHandError
+    | InvalidFulfillmentHandlerError
+    | FulfillmentStateTransitionError
+    | CreateFulfillmentError;
 
 export type CancelOrderResult =
     | Order
@@ -1711,6 +1727,7 @@ export type ShippingMethodTranslationInput = {
 
 export type CreateShippingMethodInput = {
     code: Scalars['String'];
+    fulfillmentHandler: Scalars['String'];
     checker: ConfigurableOperationInput;
     calculator: ConfigurableOperationInput;
     translations: Array<ShippingMethodTranslationInput>;
@@ -1720,6 +1737,7 @@ export type CreateShippingMethodInput = {
 export type UpdateShippingMethodInput = {
     id: Scalars['ID'];
     code?: Maybe<Scalars['String']>;
+    fulfillmentHandler?: Maybe<Scalars['String']>;
     checker?: Maybe<ConfigurableOperationInput>;
     calculator?: Maybe<ConfigurableOperationInput>;
     translations: Array<ShippingMethodTranslationInput>;
@@ -1950,6 +1968,8 @@ export enum ErrorCode {
     SETTLE_PAYMENT_ERROR = 'SETTLE_PAYMENT_ERROR',
     EMPTY_ORDER_LINE_SELECTION_ERROR = 'EMPTY_ORDER_LINE_SELECTION_ERROR',
     ITEMS_ALREADY_FULFILLED_ERROR = 'ITEMS_ALREADY_FULFILLED_ERROR',
+    INVALID_FULFILLMENT_HANDLER_ERROR = 'INVALID_FULFILLMENT_HANDLER_ERROR',
+    CREATE_FULFILLMENT_ERROR = 'CREATE_FULFILLMENT_ERROR',
     INSUFFICIENT_STOCK_ON_HAND_ERROR = 'INSUFFICIENT_STOCK_ON_HAND_ERROR',
     MULTIPLE_ORDER_ERROR = 'MULTIPLE_ORDER_ERROR',
     CANCEL_ACTIVE_ORDER_ERROR = 'CANCEL_ACTIVE_ORDER_ERROR',
@@ -3392,6 +3412,7 @@ export type ShippingMethod = Node & {
     code: Scalars['String'];
     name: Scalars['String'];
     description: Scalars['String'];
+    fulfillmentHandlerCode: Scalars['String'];
     checker: ConfigurableOperation;
     calculator: ConfigurableOperation;
     translations: Array<ShippingMethodTranslation>;
@@ -3934,6 +3955,7 @@ export type ShippingMethodFilterParameter = {
     code?: Maybe<StringOperators>;
     name?: Maybe<StringOperators>;
     description?: Maybe<StringOperators>;
+    fulfillmentHandlerCode?: Maybe<StringOperators>;
 };
 
 export type ShippingMethodSortParameter = {
@@ -3943,6 +3965,7 @@ export type ShippingMethodSortParameter = {
     code?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
+    fulfillmentHandlerCode?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {
@@ -5083,7 +5106,10 @@ export type CreateFulfillmentMutation = {
         | FulfillmentFragment
         | Pick<EmptyOrderLineSelectionError, 'errorCode' | 'message'>
         | Pick<ItemsAlreadyFulfilledError, 'errorCode' | 'message'>
-        | Pick<InsufficientStockOnHandError, 'errorCode' | 'message'>;
+        | Pick<InsufficientStockOnHandError, 'errorCode' | 'message'>
+        | Pick<InvalidFulfillmentHandlerError, 'errorCode' | 'message'>
+        | Pick<FulfillmentStateTransitionError, 'errorCode' | 'message'>
+        | Pick<CreateFulfillmentError, 'errorCode' | 'message' | 'fulfillmentHandlerError'>;
 };
 
 export type TransitFulfillmentMutationVariables = Exact<{
@@ -5340,6 +5366,16 @@ export type UpdateOptionGroupMutationVariables = Exact<{
 }>;
 
 export type UpdateOptionGroupMutation = { updateProductOptionGroup: Pick<ProductOptionGroup, 'id'> };
+
+export type GetFulfillmentHandlersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetFulfillmentHandlersQuery = {
+    fulfillmentHandlers: Array<
+        Pick<ConfigurableOperationDefinition, 'code' | 'description'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type' | 'description' | 'label' | 'ui'>>;
+        }
+    >;
+};
 
 export type DeletePromotionAdHoc1MutationVariables = Exact<{ [key: string]: never }>;
 
@@ -6990,6 +7026,10 @@ export namespace CreateFulfillment {
         NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>,
         { __typename?: 'ErrorResult' }
     >;
+    export type CreateFulfillmentErrorInlineFragment = DiscriminateUnion<
+        NonNullable<CreateFulfillmentMutation['addFulfillmentToOrder']>,
+        { __typename?: 'CreateFulfillmentError' }
+    >;
 }
 
 export namespace TransitFulfillment {
@@ -7237,6 +7277,19 @@ export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
     export type UpdateProductOptionGroup = NonNullable<UpdateOptionGroupMutation['updateProductOptionGroup']>;
+}
+
+export namespace GetFulfillmentHandlers {
+    export type Variables = GetFulfillmentHandlersQueryVariables;
+    export type Query = GetFulfillmentHandlersQuery;
+    export type FulfillmentHandlers = NonNullable<
+        NonNullable<GetFulfillmentHandlersQuery['fulfillmentHandlers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GetFulfillmentHandlersQuery['fulfillmentHandlers']>[number]>['args']
+        >[number]
+    >;
 }
 
 export namespace DeletePromotionAdHoc1 {

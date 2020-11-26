@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig, OrderState } from '@vendure/core';
+import { manualFulfillmentHandler, mergeConfig, OrderState } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -324,8 +324,13 @@ describe('Stock control', () => {
                 {
                     input: {
                         lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
-                        method: 'test method',
-                        trackingCode: 'ABC123',
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [
+                                { name: 'method', value: 'test method' },
+                                { name: 'trackingCode', value: 'ABC123' },
+                            ],
+                        },
                     },
                 },
             );
@@ -602,8 +607,13 @@ describe('Stock control', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -624,8 +634,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_1')
                         .map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -647,8 +662,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_2')
                         .map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -670,8 +690,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_4')
                         .map(l => ({ orderLineId: l.id, quantity: 3 })), // we know there are only 3 on hand
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -707,8 +732,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_4')
                         .map(l => ({ orderLineId: l.id, quantity: 5 })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 

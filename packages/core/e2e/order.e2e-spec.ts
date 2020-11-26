@@ -1,5 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
+import { manualFulfillmentHandler } from '@vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -353,7 +354,10 @@ describe('Orders resolver', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: [],
-                    method: 'Test',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [{ name: 'method', value: 'Test' }],
+                    },
                 },
             });
             fulfillmentGuard.assertErrorResult(addFulfillmentToOrder);
@@ -373,7 +377,10 @@ describe('Orders resolver', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order!.lines.map(l => ({ orderLineId: l.id, quantity: 0 })),
-                    method: 'Test',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [{ name: 'method', value: 'Test' }],
+                    },
                 },
             });
             fulfillmentGuard.assertErrorResult(addFulfillmentToOrder);
@@ -395,8 +402,13 @@ describe('Orders resolver', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: [{ orderLineId: lines[0].id, quantity: lines[0].quantity }],
-                    method: 'Test1',
-                    trackingCode: '111',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'Test1' },
+                            { name: 'trackingCode', value: '111' },
+                        ],
+                    },
                 },
             });
             fulfillmentGuard.assertSuccess(addFulfillmentToOrder);
@@ -430,8 +442,13 @@ describe('Orders resolver', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines,
-                    method: 'Test2',
-                    trackingCode: '222',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'Test2' },
+                            { name: 'trackingCode', value: '222' },
+                        ],
+                    },
                 },
             });
             fulfillmentGuard.assertSuccess(addFulfillmentToOrder);
@@ -479,8 +496,13 @@ describe('Orders resolver', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines,
-                    method: 'Test3',
-                    trackingCode: '333',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'Test3' },
+                            { name: 'trackingCode', value: '333' },
+                        ],
+                    },
                 },
             });
             fulfillmentGuard.assertSuccess(addFulfillmentToOrder);
@@ -501,13 +523,16 @@ describe('Orders resolver', () => {
                 CreateFulfillment.Variables
             >(CREATE_FULFILLMENT, {
                 input: {
-                    method: 'Test',
                     lines: [
                         {
                             orderLineId: order!.lines[0].id,
                             quantity: 1,
                         },
                     ],
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [{ name: 'method', value: 'Test' }],
+                    },
                 },
             });
             fulfillmentGuard.assertErrorResult(addFulfillmentToOrder);

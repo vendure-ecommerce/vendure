@@ -7,7 +7,11 @@ import {
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
+    FulfillmentHandler,
+    LanguageCode,
+    Logger,
     LogLevel,
+    manualFulfillmentHandler,
     PermissionDefinition,
     VendureConfig,
 } from '@vendure/core';
@@ -15,6 +19,32 @@ import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
+
+const customFulfillmentHandler = new FulfillmentHandler({
+    code: 'ship-o-matic',
+    description: [
+        {
+            languageCode: LanguageCode.en,
+            value: 'Generate tracking codes via the Ship-o-matic API',
+        },
+    ],
+    args: {
+        preferredService: {
+            type: 'string',
+            config: {
+                options: [{ value: 'first_class' }, { value: 'priority' }, { value: 'standard' }],
+            },
+        },
+    },
+    createFulfillment: async (ctx, orders, orderItems, args) => {
+        return {
+            trackingCode: 'SHIP-' + Math.random().toString(36).substr(3),
+        };
+    },
+    onFulfillmentTransition: async (fromState, toState, { fulfillment }) => {
+        Logger.info(`Transitioned Fulfillment ${fulfillment.trackingCode} to state ${toState}`);
+    },
+});
 
 /**
  * Config settings used during development
@@ -57,6 +87,9 @@ export const devConfig: VendureConfig = {
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
+    },
+    shippingOptions: {
+        fulfillmentHandlers: [manualFulfillmentHandler, customFulfillmentHandler],
     },
     plugins: [
         AssetServerPlugin.init({

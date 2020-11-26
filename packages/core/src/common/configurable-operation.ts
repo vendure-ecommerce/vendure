@@ -153,26 +153,62 @@ export type ConfigArgs = {
  * in business logic.
  */
 export type ConfigArgValues<T extends ConfigArgs> = {
-    [K in keyof T]: T[K] extends ConfigArgListDef<'int' | 'float'>
-        ? number[]
-        : T[K] extends ConfigArgDef<'int' | 'float'>
-        ? number
-        : T[K] extends ConfigArgListDef<'datetime'>
-        ? Date[]
-        : T[K] extends ConfigArgDef<'datetime'>
-        ? Date
-        : T[K] extends ConfigArgListDef<'boolean'>
-        ? boolean[]
-        : T[K] extends ConfigArgDef<'boolean'>
-        ? boolean
-        : T[K] extends ConfigArgListDef<'ID'>
-        ? ID[]
-        : T[K] extends ConfigArgDef<'ID'>
-        ? ID
-        : T[K] extends ConfigArgListDef<'string'>
-        ? string[]
-        : string;
+    [K in keyof T]: ConfigArgDefToType<T[K]>;
 };
+
+/**
+ * Converts a ConfigArgDef to a TS type, e.g:
+ *
+ * ConfigArgListDef<'datetime'> -> Date[]
+ * ConfigArgDef<'boolean'> -> boolean
+ */
+export type ConfigArgDefToType<D extends ConfigArgDef<ConfigArgType>> = D extends ConfigArgListDef<
+    'int' | 'float'
+>
+    ? number[]
+    : D extends ConfigArgDef<'int' | 'float'>
+    ? number
+    : D extends ConfigArgListDef<'datetime'>
+    ? Date[]
+    : D extends ConfigArgDef<'datetime'>
+    ? Date
+    : D extends ConfigArgListDef<'boolean'>
+    ? boolean[]
+    : D extends ConfigArgDef<'boolean'>
+    ? boolean
+    : D extends ConfigArgListDef<'ID'>
+    ? ID[]
+    : D extends ConfigArgDef<'ID'>
+    ? ID
+    : D extends ConfigArgListDef<'string'>
+    ? string[]
+    : string;
+
+/**
+ * Converts a TS type to a ConfigArgDef, e.g:
+ *
+ * Date[] -> ConfigArgListDef<'datetime'>
+ * boolean -> ConfigArgDef<'boolean'>
+ */
+export type TypeToConfigArgDef<T extends ConfigArgDefToType<any>> = T extends number
+    ? ConfigArgDef<'int' | 'float'>
+    : T extends number[]
+    ? ConfigArgListDef<'int' | 'float'>
+    : T extends Date[]
+    ? ConfigArgListDef<'datetime'>
+    : T extends Date
+    ? ConfigArgDef<'datetime'>
+    : T extends boolean[]
+    ? ConfigArgListDef<'boolean'>
+    : T extends boolean
+    ? ConfigArgDef<'boolean'>
+    : T extends string[]
+    ? ConfigArgListDef<'string'>
+    : T extends string
+    ? ConfigArgDef<'string'>
+    : T extends ID[]
+    ? ConfigArgListDef<'ID'>
+    : ConfigArgDef<'ID'>;
 
 /**
  * @description

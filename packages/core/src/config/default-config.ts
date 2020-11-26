@@ -6,7 +6,6 @@ import {
     SUPER_ADMIN_USER_PASSWORD,
 } from '@vendure/common/lib/shared-constants';
 
-import { generatePublicId } from '../common/generate-public-id';
 import { InMemoryJobQueueStrategy } from '../job-queue/in-memory-job-queue-strategy';
 
 import { DefaultAssetNamingStrategy } from './asset-naming-strategy/default-asset-naming-strategy';
@@ -15,8 +14,8 @@ import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storag
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './collection/default-collection-filters';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
+import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
-import { TypeOrmLogger } from './logger/typeorm-logger';
 import { DefaultPriceCalculationStrategy } from './order/default-price-calculation-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
@@ -101,6 +100,8 @@ export const defaultConfig: RuntimeVendureConfig = {
     shippingOptions: {
         shippingEligibilityCheckers: [defaultShippingEligibilityChecker],
         shippingCalculators: [defaultShippingCalculator],
+        customFulfillmentProcess: [],
+        fulfillmentHandlers: [manualFulfillmentHandler],
     },
     orderOptions: {
         orderItemsLimit: 999,

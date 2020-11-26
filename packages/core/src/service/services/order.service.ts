@@ -38,6 +38,7 @@ import {
     AlreadyRefundedError,
     CancelActiveOrderError,
     EmptyOrderLineSelectionError,
+    FulfillmentStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
     MultipleOrderError,
@@ -575,12 +576,12 @@ export class OrderService {
         ctx: RequestContext,
         fulfillmentId: ID,
         state: FulfillmentState,
-    ): Promise<Fulfillment> {
-        const { fulfillment, fromState, toState, orders } = await this.fulfillmentService.transitionToState(
-            ctx,
-            fulfillmentId,
-            state,
-        );
+    ): Promise<Fulfillment | FulfillmentStateTransitionError> {
+        const result = await this.fulfillmentService.transitionToState(ctx, fulfillmentId, state);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        const { fulfillment, fromState, toState, orders } = result;
         await Promise.all(
             orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
         );
@@ -726,11 +727,15 @@ export class OrderService {
             return stockCheckResult;
         }
 
-        const fulfillment = await this.fulfillmentService.create(ctx, {
-            trackingCode: input.trackingCode,
-            method: input.method,
-            orderItems: ordersAndItems.items,
-        });
+        const fulfillment = await this.fulfillmentService.create(
+            ctx,
+            ordersAndItems.orders,
+            ordersAndItems.items,
+            input.handler,
+        );
+        if (isGraphQlErrorResult(fulfillment)) {
+            return fulfillment;
+        }
 
         await this.stockMovementService.createSalesForOrder(ctx, ordersAndItems.items);
 
@@ -744,12 +749,11 @@ export class OrderService {
                 },
             });
         }
-        const { fulfillment: pendingFulfillment } = await this.fulfillmentService.transitionToState(
-            ctx,
-            fulfillment.id,
-            'Pending',
-        );
-        return pendingFulfillment;
+        const result = await this.fulfillmentService.transitionToState(ctx, fulfillment.id, 'Pending');
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        return result.fulfillment;
     }
 
     private async ensureSufficientStockForFulfillment(

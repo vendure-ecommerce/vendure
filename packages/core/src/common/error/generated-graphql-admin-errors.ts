@@ -84,6 +84,27 @@ export class ItemsAlreadyFulfilledError extends ErrorResult {
   }
 }
 
+export class InvalidFulfillmentHandlerError extends ErrorResult {
+  readonly __typename = 'InvalidFulfillmentHandlerError';
+  readonly errorCode = 'INVALID_FULFILLMENT_HANDLER_ERROR' as any;
+  readonly message = 'INVALID_FULFILLMENT_HANDLER_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class CreateFulfillmentError extends ErrorResult {
+  readonly __typename = 'CreateFulfillmentError';
+  readonly errorCode = 'CREATE_FULFILLMENT_ERROR' as any;
+  readonly message = 'CREATE_FULFILLMENT_ERROR';
+  constructor(
+    public fulfillmentHandlerError: Scalars['String'],
+  ) {
+    super();
+  }
+}
+
 export class InsufficientStockOnHandError extends ErrorResult {
   readonly __typename = 'InsufficientStockOnHandError';
   readonly errorCode = 'INSUFFICIENT_STOCK_ON_HAND_ERROR' as any;
@@ -276,7 +297,7 @@ export class EmailAddressConflictError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError']);
+const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
