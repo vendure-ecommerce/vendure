@@ -25,9 +25,9 @@ describe('GlobalSettings resolver', () => {
     });
     let globalSettings: GlobalSettingsFragment;
 
-    const globalSettingsGuard: ErrorResultGuard<GlobalSettingsFragment> = createErrorResultGuard<
-        GlobalSettingsFragment
-    >(input => !!input.availableLanguages);
+    const globalSettingsGuard: ErrorResultGuard<GlobalSettingsFragment> = createErrorResultGuard(
+        input => !!input.availableLanguages,
+    );
 
     beforeAll(async () => {
         await server.init({

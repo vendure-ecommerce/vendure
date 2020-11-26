@@ -14,7 +14,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { CUSTOMER_FRAGMENT } from './graphql/fragments';
 import {
@@ -80,7 +80,7 @@ describe('Customer resolver', () => {
     let secondCustomer: GetCustomerList.Items;
     let thirdCustomer: GetCustomerList.Items;
 
-    const customerErrorGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard<CustomerFragment>(
+    const customerErrorGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard(
         input => !!input.emailAddress,
     );
 
@@ -366,9 +366,9 @@ describe('Customer resolver', () => {
     });
 
     describe('orders', () => {
-        const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
-            UpdatedOrderFragment
-        >(input => !!input.lines);
+        const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard(
+            input => !!input.lines,
+        );
 
         it(`lists that user\'s orders`, async () => {
             // log in as first customer

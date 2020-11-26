@@ -86,13 +86,13 @@ class TestEmailPlugin implements OnModuleInit {
     }
 }
 
-const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard<{
-    success: boolean;
-}>(input => input.success != null);
+const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard(
+    input => input.success != null,
+);
 
-const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createErrorResultGuard<
-    CurrentUserShopFragment
->(input => input.identifier != null);
+const currentUserErrorGuard: ErrorResultGuard<CurrentUserShopFragment> = createErrorResultGuard(
+    input => input.identifier != null,
+);
 
 describe('Shop auth & accounts', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(

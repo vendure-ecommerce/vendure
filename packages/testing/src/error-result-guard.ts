@@ -1,6 +1,7 @@
 declare function fail(error?: any): never;
 
 /**
+ * @description
  * Convenience method for creating an {@link ErrorResultGuard}. Takes a predicate function which
  * tests whether the input is considered successful (true) or an error result (false).
  *
@@ -10,7 +11,7 @@ declare function fail(error?: any): never;
  * @example
  * ```TypeScript
  * const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
- *   = createErrorResultGuard<AddItemToOrderResult>(order => !!order.lines);
+ *   = createErrorResultGuard(order => !!order.lines);
  * ```
  * @docsCategory testing
  */
@@ -29,7 +30,7 @@ export function createErrorResultGuard<T>(testFn: (input: T) => boolean): ErrorR
  * @example
  * ```TypeScript
  * const orderResultGuard: ErrorResultGuard<AddItemToOrderResult>
- *   = createErrorResultGuard<AddItemToOrderResult>(order => !!order.lines);
+ *   = createErrorResultGuard(order => !!order.lines);
  *
  * it('errors when quantity is negative', async () => {
  *    const { addItemToOrder } = await shopClient.query<AddItemToOrder.Query, AddItemToOrder.Mutation>(ADD_ITEM_TO_ORDER, {

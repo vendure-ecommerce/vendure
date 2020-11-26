@@ -82,7 +82,7 @@ describe('Promotions applied to Orders', () => {
     });
 
     type OrderSuccessResult = UpdatedOrderFragment | TestOrderFragmentFragment;
-    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard<OrderSuccessResult>(
+    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
 
@@ -719,9 +719,9 @@ describe('Promotions applied to Orders', () => {
 
     describe('per-customer usage limit', () => {
         const TEST_COUPON_CODE = 'TESTCOUPON';
-        const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard<
-            TestOrderWithPaymentsFragment
-        >(input => !!input.lines);
+        const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard(
+            input => !!input.lines,
+        );
         let promoWithUsageLimit: PromotionFragment;
 
         beforeAll(async () => {

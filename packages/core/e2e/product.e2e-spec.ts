@@ -52,9 +52,9 @@ import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
-    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard<
-        ProductWithOptionsFragment
-    >(input => !!input.optionGroups);
+    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
+        input => !!input.optionGroups,
+    );
 
     beforeAll(async () => {
         await server.init({

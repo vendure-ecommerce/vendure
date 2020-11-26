@@ -98,7 +98,7 @@ describe('ShippingMethod resolver', () => {
 
     const orderGuard: ErrorResultGuard<
         UpdatedOrderFragment | TestOrderFragmentFragment
-    > = createErrorResultGuard<UpdatedOrderFragment>(input => !!input.lines);
+    > = createErrorResultGuard(input => !!input.lines);
 
     let singleLineShippingMethod: ShippingMethodFragment;
     let multiLineShippingMethod: ShippingMethodFragment;

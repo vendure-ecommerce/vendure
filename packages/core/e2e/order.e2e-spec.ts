@@ -97,16 +97,12 @@ describe('Orders resolver', () => {
 
     const orderGuard: ErrorResultGuard<
         TestOrderFragmentFragment | CanceledOrderFragment
-    > = createErrorResultGuard<TestOrderFragmentFragment | CanceledOrderFragment>(input => !!input.lines);
-    const paymentGuard: ErrorResultGuard<PaymentFragment> = createErrorResultGuard<PaymentFragment>(
-        input => !!input.state,
+    > = createErrorResultGuard(input => !!input.lines);
+    const paymentGuard: ErrorResultGuard<PaymentFragment> = createErrorResultGuard(input => !!input.state);
+    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
+        input => !!input.method,
     );
-    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard<
-        FulfillmentFragment
-    >(input => !!input.method);
-    const refundGuard: ErrorResultGuard<RefundFragment> = createErrorResultGuard<RefundFragment>(
-        input => !!input.items,
-    );
+    const refundGuard: ErrorResultGuard<RefundFragment> = createErrorResultGuard(input => !!input.items);
 
     beforeAll(async () => {
         await server.init({

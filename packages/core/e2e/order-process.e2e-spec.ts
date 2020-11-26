@@ -85,7 +85,7 @@ describe('Order process', () => {
 
     const orderErrorGuard: ErrorResultGuard<
         TestOrderFragmentFragment | OrderFragment
-    > = createErrorResultGuard<TestOrderFragmentFragment | OrderFragment>(input => !!input.total);
+    > = createErrorResultGuard(input => !!input.total);
 
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {

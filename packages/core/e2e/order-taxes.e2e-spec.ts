@@ -27,7 +27,7 @@ describe('Order taxes', () => {
     });
 
     type OrderSuccessResult = UpdatedOrderFragment | TestOrderFragmentFragment;
-    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard<OrderSuccessResult>(
+    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
     let products: GetProductsWithVariantPrices.Items[];

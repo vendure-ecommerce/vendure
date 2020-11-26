@@ -66,11 +66,11 @@ describe('Stock control', () => {
 
     const orderGuard: ErrorResultGuard<
         TestOrderFragmentFragment | UpdatedOrderFragment
-    > = createErrorResultGuard<TestOrderFragmentFragment>(input => !!input.lines);
+    > = createErrorResultGuard(input => !!input.lines);
 
-    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard<
-        FulfillmentFragment
-    >(input => !!input.state);
+    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
+        input => !!input.state,
+    );
 
     async function getProductWithStockMovement(productId: string) {
         const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(

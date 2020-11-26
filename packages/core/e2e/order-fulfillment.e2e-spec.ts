@@ -60,12 +60,12 @@ const testFulfillmentHandler = new FulfillmentHandler({
 });
 
 describe('Order fulfillments', () => {
-    const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard<
-        TestOrderWithPaymentsFragment
-    >(input => !!input.lines);
-    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard<
-        FulfillmentFragment
-    >(input => !!input.id);
+    const orderGuard: ErrorResultGuard<TestOrderWithPaymentsFragment> = createErrorResultGuard(
+        input => !!input.lines,
+    );
+    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
+        input => !!input.id,
+    );
 
     let order: TestOrderWithPaymentsFragment;
     let f1Id: string;

@@ -103,7 +103,7 @@ describe('Shop orders', () => {
         | TestOrderFragmentFragment
         | TestOrderWithPaymentsFragment
         | ActiveOrderCustomerFragment;
-    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard<OrderSuccessResult>(
+    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
 
