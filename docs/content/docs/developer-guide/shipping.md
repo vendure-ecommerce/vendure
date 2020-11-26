@@ -133,7 +133,17 @@ If your ShippingEligibilityChecker or ShippingCalculator needs access to the dat
 
 ## Fulfillments
 
-Fulfillments represent the actual shipping status of items in an order. Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):
+Fulfillments represent the actual shipping status of items in an order. When an order is placed and payment has been settled, the order items are then delivered to the customer in one or more Fulfillments.
+
+### FulfillmentHandlers
+
+It is often required to integrate your fulfillment process, e.g. with an external shipping API which provides shipping labels or tracking codes. This is done by defining [FulfillmentHandlers]({{< relref "fulfillment-handler" >}}) (click the link for full documentation) and passing them in to the `shippingOptions.fulfillmentHandlers` array in your config.
+
+By default, Vendure uses a manual fulfillment handler, which requires the Administrator to manually enter the method and tracking code of the Fulfillment.
+
+### Fulfillment state machine
+
+Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):
 
 * `Pending` The Fulfillment has been created
 * `Shipped` The Fulfillment has been shipped

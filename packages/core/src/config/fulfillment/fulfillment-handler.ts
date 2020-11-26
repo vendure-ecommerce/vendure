@@ -17,6 +17,11 @@ import {
 } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { CalculateShippingFnResult } from '../shipping-method/shipping-calculator';
 
+/**
+ * @docsCategory fulfillment
+ * @docsPage FulfillmentHandler
+ * @docsWeight 3
+ */
 export type CreateFulfillmentResult = Partial<Pick<Fulfillment, 'trackingCode' | 'method' | 'customFields'>>;
 
 /**
@@ -25,6 +30,7 @@ export type CreateFulfillmentResult = Partial<Pick<Fulfillment, 'trackingCode' |
  *
  * @docsCategory fulfillment
  * @docsPage FulfillmentHandler
+ * @docsWeight 2
  */
 export type CreateFulfillmentFn<T extends ConfigArgs> = (
     ctx: RequestContext,
@@ -39,9 +45,27 @@ export type CreateFulfillmentFn<T extends ConfigArgs> = (
  *
  * @docsCategory fulfillment
  * @docsPage FulfillmentHandler
+ * @docsWeight 1
  */
 export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends ConfigurableOperationDefOptions<T> {
+    /**
+     * @description
+     * Invoked when the `addFulfillmentToOrder` mutation is executed with this handler selected.
+     *
+     * If an Error is thrown from within this function, no Fulfillment is created and the `CreateFulfillmentError`
+     * result will be returned.
+     */
     createFulfillment: CreateFulfillmentFn<T>;
+    /**
+     * @description
+     * This allows the handler to intercept state transitions of the created Fulfillment. This works much in the
+     * same way as the {@link CustomFulfillmentProcess} `onTransitionStart` method (i.e. returning `false` or
+     * `string` will be interpreted as an error and prevent the state transition), except that it is only invoked
+     * on Fulfillments which were created with this particular FulfillmentHandler.
+     *
+     * It can be useful e.g. to intercept Fulfillment cancellations and relay that information to a 3rd-party
+     * shipping API.
+     */
     onFulfillmentTransition?: OnTransitionStartFn<FulfillmentState, FulfillmentTransitionData>;
 }
 
@@ -69,7 +93,8 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *   args: {
  *     preferredService: {
  *       type: 'string',
- *       config: {
+ *       ui: {
+           component: 'select-form-input',
  *         options: [
  *           { value: 'first_class' },
  *           { value: 'priority'},
@@ -85,16 +110,22 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *   },
  *
  *   createFulfillment: async (ctx, orders, orderItems, args) => {
+ *
  *      const shipment = getShipmentFromOrders(orders, orderItems);
+ *
  *      try {
  *        const transaction = await shipomatic.transaction.create({
  *          shipment,
  *          service_level: args.preferredService,
  *          label_file_type: 'png',
  *        })
+ *
  *        return {
- *          method: args.method,
- *          trackingCode: args.trackingCode,
+ *          method: `Ship-o-matic ${args.preferredService}`,
+ *          trackingCode: transaction.tracking_code,
+ *          customFields: {
+ *            shippingTransactionId: transaction.id,
+ *          }
  *        };
  *      } catch (e) {
  *        // Errors thrown from within this function will
@@ -106,7 +137,7 @@ export interface FulfillmentHandlerConfig<T extends ConfigArgs> extends Configur
  *   onFulfillmentTransition: async (fromState, toState, { fulfillment }) => {
  *     if (toState === 'Cancelled') {
  *       await shipomatic.transaction.cancel({
- *         tracking_code: fulfillment.trackingCode,
+ *         transaction_id: fulfillment.customFields.shippingTransactionId,
  *       });
  *     }
  *   }
