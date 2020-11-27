@@ -102,7 +102,6 @@ const shopResolvers = [
 ];
 
 export const entityResolvers = [
-    AdministratorEntityResolver,
     CollectionEntityResolver,
     CustomerEntityResolver,
     CustomerGroupEntityResolver,
@@ -112,7 +111,6 @@ export const entityResolvers = [
     OrderEntityResolver,
     OrderLineEntityResolver,
     PaymentEntityResolver,
-    PaymentMethodEntityResolver,
     ProductEntityResolver,
     ProductOptionEntityResolver,
     ProductOptionGroupEntityResolver,
@@ -123,8 +121,10 @@ export const entityResolvers = [
 ];
 
 export const adminEntityResolvers = [
+    AdministratorEntityResolver,
     CustomerAdminEntityResolver,
     OrderAdminEntityResolver,
+    PaymentMethodEntityResolver,
     FulfillmentAdminEntityResolver,
     ProductVariantAdminEntityResolver,
     ProductAdminEntityResolver,

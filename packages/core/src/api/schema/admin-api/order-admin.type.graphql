@@ -1,3 +1,7 @@
+type Order {
+    nextStates: [String!]!
+}
+
 type Fulfillment {
     nextStates: [String!]!
 }

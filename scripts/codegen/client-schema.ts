@@ -4,7 +4,7 @@ import path from 'path';
 
 const CLIENT_SCHEMA_FILE = '../../packages/admin-ui/src/lib/core/src/data/client-state/client-types.graphql';
 const LANGUAGE_CODE_FILE = '../../packages/core/src/api/schema/common/language-code.graphql';
-const AUTH_TYPE_FILE = '../../packages/core/src/api/schema/type/auth.type.graphql';
+const AUTH_TYPE_FILE = '../../packages/core/src/api/schema/common/auth.type.graphql';
 
 function loadGraphQL(file: string): string {
     const filePath = path.join(__dirname, file);

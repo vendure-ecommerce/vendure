@@ -20,6 +20,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
+import { ApiType } from '../common/get-api-type';
 import { IdCodecService } from '../common/id-codec.service';
 import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
@@ -79,6 +80,67 @@ async function createGraphQLOptions(
     typesLoader: GraphQLTypesLoader,
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
+    return {
+        path: '/' + options.apiPath,
+        typeDefs: await createTypeDefs(options.apiType),
+        include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
+        resolvers: createResolvers(options.apiType),
+        uploads: {
+            maxFileSize: configService.assetOptions.uploadMaxFileSize,
+        },
+        playground: options.playground || false,
+        debug: options.debug || false,
+        context: (req: any) => req,
+        // This is handled by the Express cors plugin
+        cors: false,
+        plugins: [
+            new IdCodecPlugin(idCodecService),
+            new TranslateErrorsPlugin(i18nService),
+            new AssetInterceptorPlugin(configService),
+            ...configService.apiOptions.apolloServerPlugins,
+        ],
+    } as GqlModuleOptions;
+
+    /**
+     * Generates the server's GraphQL schema by combining:
+     * 1. the default schema as defined in the source .graphql files specified by `typePaths`
+     * 2. any custom fields defined in the config
+     * 3. any schema extensions defined by plugins
+     */
+    async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
+        const customFields = configService.customFields;
+        // Paths must be normalized to use forward-slash separators.
+        // See https://github.com/nestjs/graphql/issues/336
+        const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
+        const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
+        const authStrategies =
+            apiType === 'shop'
+                ? configService.authOptions.shopAuthenticationStrategy
+                : configService.authOptions.adminAuthenticationStrategy;
+        let schema = buildSchema(typeDefs);
+
+        getPluginAPIExtensions(configService.plugins, apiType)
+            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
+            .filter(notNullOrUndefined)
+            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
+        schema = generateListOptions(schema);
+        schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
+        schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        schema = generateAuthenticationTypes(schema, authStrategies);
+        schema = generateErrorCodeEnum(schema);
+        if (apiType === 'admin') {
+            schema = addServerConfigCustomFields(schema, customFields);
+        }
+        if (apiType === 'shop') {
+            schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
+        }
+
+        return printSchema(schema);
+    }
+}
+
+function createResolvers(apiType: ApiType) {
     // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
     // See https://github.com/apollographql/apollo-server/issues/1075
     const dummyResolveType = {
@@ -125,83 +187,39 @@ async function createGraphQLOptions(
         },
     };
 
-    return {
-        path: '/' + options.apiPath,
-        typeDefs: await createTypeDefs(options.apiType),
-        include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
-        resolvers: {
-            JSON: GraphQLJSON,
-            DateTime: GraphQLDateTime,
-            Node: dummyResolveType,
-            PaginatedList: dummyResolveType,
-            Upload: GraphQLUpload || dummyResolveType,
-            SearchResultPrice: {
-                __resolveType(value: any) {
-                    return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
-                },
+    const commonResolvers = {
+        JSON: GraphQLJSON,
+        DateTime: GraphQLDateTime,
+        Node: dummyResolveType,
+        PaginatedList: dummyResolveType,
+        Upload: GraphQLUpload || dummyResolveType,
+        SearchResultPrice: {
+            __resolveType(value: any) {
+                return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
             },
-            StockMovementItem: stockMovementResolveType,
-            StockMovement: stockMovementResolveType,
-            CustomFieldConfig: customFieldsConfigResolveType,
-            CustomField: customFieldsConfigResolveType,
-            ErrorResult: {
-                __resolveType(value: ErrorResult) {
-                    return value.__typename;
-                },
+        },
+        CustomFieldConfig: customFieldsConfigResolveType,
+        CustomField: customFieldsConfigResolveType,
+        ErrorResult: {
+            __resolveType(value: ErrorResult) {
+                return value.__typename;
             },
-            ...(options.apiType === 'admin'
-                ? adminErrorOperationTypeResolvers
-                : shopErrorOperationTypeResolvers),
         },
-        uploads: {
-            maxFileSize: configService.assetOptions.uploadMaxFileSize,
-        },
-        playground: options.playground || false,
-        debug: options.debug || false,
-        context: (req: any) => req,
-        // This is handled by the Express cors plugin
-        cors: false,
-        plugins: [
-            new IdCodecPlugin(idCodecService),
-            new TranslateErrorsPlugin(i18nService),
-            new AssetInterceptorPlugin(configService),
-            ...configService.apiOptions.apolloServerPlugins,
-        ],
-    } as GqlModuleOptions;
+    };
 
-    /**
-     * Generates the server's GraphQL schema by combining:
-     * 1. the default schema as defined in the source .graphql files specified by `typePaths`
-     * 2. any custom fields defined in the config
-     * 3. any schema extensions defined by plugins
-     */
-    async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
-        const customFields = configService.customFields;
-        // Paths must be normalized to use forward-slash separators.
-        // See https://github.com/nestjs/graphql/issues/336
-        const normalizedPaths = options.typePaths.map(p => p.split(path.sep).join('/'));
-        const typeDefs = await typesLoader.mergeTypesByPaths(normalizedPaths);
-        const authStrategies =
-            apiType === 'shop'
-                ? configService.authOptions.shopAuthenticationStrategy
-                : configService.authOptions.adminAuthenticationStrategy;
-        let schema = buildSchema(typeDefs);
+    const adminResolvers = {
+        StockMovementItem: stockMovementResolveType,
+        StockMovement: stockMovementResolveType,
+        ...adminErrorOperationTypeResolvers,
+    };
 
-        getPluginAPIExtensions(configService.plugins, apiType)
-            .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
-            .filter(notNullOrUndefined)
-            .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
-        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
-        schema = generateListOptions(schema);
-        schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
-        schema = addServerConfigCustomFields(schema, customFields);
-        schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
-        schema = generateAuthenticationTypes(schema, authStrategies);
-        schema = generateErrorCodeEnum(schema);
-        if (apiType === 'shop') {
-            schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
-        }
+    const shopResolvers = {
+        ...shopErrorOperationTypeResolvers,
+    };
 
-        return printSchema(schema);
-    }
+    const resolvers =
+        apiType === 'admin'
+            ? { ...commonResolvers, ...adminResolvers }
+            : { ...commonResolvers, ...shopResolvers };
+    return resolvers;
 }
