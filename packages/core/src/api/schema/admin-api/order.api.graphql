@@ -15,6 +15,7 @@ type Mutation {
     transitionOrderToState(id: ID!, state: String!): TransitionOrderToStateResult
     transitionFulfillmentToState(id: ID!, state: String!): TransitionFulfillmentToStateResult!
     setOrderCustomFields(input: UpdateOrderInput!): Order
+    # modifyOrder(input: ModifyOrderInput!): ModifyOrderResult!
 }
 
 type Order {
@@ -71,6 +72,30 @@ input UpdateOrderNoteInput {
     note: String
     isPublic: Boolean
 }
+
+#input ModifyOrderInput {
+#    id: ID!
+#    addItems: [AddItemInput!]
+#    adjustOrderLines: [OrderLineInput!]
+#    surcharges: [SurchargeInput!]
+#    recalculatePromotions: Boolean!
+#    note: String
+#}
+#
+#input AddItemInput {
+#    productVariantId: ID!
+#    quantity: Int!
+#}
+#
+#input OrderLineInput {
+#    orderLineId: ID!
+#    quantity: Int!
+#}
+#
+#input SurchargeInput {
+#    description: String!
+#    amount: Int!
+#}
 
 "Returned if the Payment settlement fails"
 type SettlePaymentError implements ErrorResult {
@@ -188,6 +213,12 @@ type FulfillmentStateTransitionError implements ErrorResult {
     toState: String!
 }
 
+#"Returned when attempting to modify the contents of an Order that is not in the `Modifying` state."
+#type OrderModificationStateError implements ErrorResult {
+#    errorCode: ErrorCode!
+#    message: String!
+#}
+
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SettlePaymentResult =
       Payment
@@ -221,3 +252,9 @@ union RefundOrderResult =
     | RefundStateTransitionError
 union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
+#union ModifyOrderResult =
+#      Order
+#    | OrderModificationStateError
+#    | OrderLimitError
+#    | NegativeQuantityError
+#    | InsufficientStockError

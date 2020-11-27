@@ -296,8 +296,41 @@ export class EmailAddressConflictError extends ErrorResult {
   }
 }
 
+export class OrderLimitError extends ErrorResult {
+  readonly __typename = 'OrderLimitError';
+  readonly errorCode = 'ORDER_LIMIT_ERROR' as any;
+  readonly message = 'ORDER_LIMIT_ERROR';
+  constructor(
+    public maxItems: Scalars['Int'],
+  ) {
+    super();
+  }
+}
 
-const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError']);
+export class NegativeQuantityError extends ErrorResult {
+  readonly __typename = 'NegativeQuantityError';
+  readonly errorCode = 'NEGATIVE_QUANTITY_ERROR' as any;
+  readonly message = 'NEGATIVE_QUANTITY_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class InsufficientStockError extends ErrorResult {
+  readonly __typename = 'InsufficientStockError';
+  readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
+  readonly message = 'INSUFFICIENT_STOCK_ERROR';
+  constructor(
+    public quantityAvailable: Scalars['Int'],
+    public order: any,
+  ) {
+    super();
+  }
+}
+
+
+const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

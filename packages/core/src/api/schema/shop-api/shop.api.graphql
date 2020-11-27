@@ -184,27 +184,6 @@ type OrderModificationError implements ErrorResult {
     message: String!
 }
 
-"Retured when the maximum order size limit has been reached."
-type OrderLimitError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    maxItems: Int!
-}
-
-"Retured when attemting to set a negative OrderLine quantity."
-type NegativeQuantityError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
-"Returned when attempting to add more items to the Order than are available"
-type InsufficientStockError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    quantityAvailable: Int!
-    order: Order!
-}
-
 "Returned when attempting to set a ShippingMethod for which the order is not eligible"
 type IneligibleShippingMethodError implements ErrorResult {
     errorCode: ErrorCode!

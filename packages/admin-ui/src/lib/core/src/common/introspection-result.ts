@@ -139,6 +139,9 @@ const result: PossibleTypesResultData = {
             'InvalidCredentialsError',
             'OrderStateTransitionError',
             'EmailAddressConflictError',
+            'OrderLimitError',
+            'NegativeQuantityError',
+            'InsufficientStockError',
         ],
         CustomField: [
             'StringCustomFieldConfig',
