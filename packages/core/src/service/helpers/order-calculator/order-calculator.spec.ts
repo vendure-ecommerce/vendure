@@ -74,6 +74,8 @@ describe('OrderCalculator', () => {
                         () =>
                             new OrderItem({
                                 unitPrice,
+                                taxLines: [],
+                                adjustments: [],
                             }),
                     ),
                 }),
@@ -224,7 +226,7 @@ describe('OrderCalculator', () => {
 
             // increase the quantity to 2, which will take the total over the minimum set by the
             // condition.
-            order.lines[0].items.push(new OrderItem({ unitPrice: 50 }));
+            order.lines[0].items.push(new OrderItem({ unitPrice: 50, taxLines: [], adjustments: [] }));
 
             await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
 
@@ -365,7 +367,7 @@ describe('OrderCalculator', () => {
 
                 // increase the quantity to 3, which will trigger the first promotion and thus
                 // bring the order total below the threshold for the second promotion.
-                order.lines[0].items.push(new OrderItem({ unitPrice: 50 }));
+                order.lines[0].items.push(new OrderItem({ unitPrice: 50, taxLines: [], adjustments: [] }));
 
                 await orderCalculator.applyPriceAdjustments(
                     ctx,
@@ -398,7 +400,7 @@ describe('OrderCalculator', () => {
 
                 // increase the quantity to 3, which will trigger the first promotion and thus
                 // bring the order total below the threshold for the second promotion.
-                order.lines[0].items.push(new OrderItem({ unitPrice: 42 }));
+                order.lines[0].items.push(new OrderItem({ unitPrice: 42, taxLines: [], adjustments: [] }));
 
                 await orderCalculator.applyPriceAdjustments(
                     ctx,

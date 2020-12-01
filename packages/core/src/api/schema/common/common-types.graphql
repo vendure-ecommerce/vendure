@@ -10,13 +10,7 @@ enum GlobalFlag {
 }
 
 enum AdjustmentType {
-    TAX
     PROMOTION
-    SHIPPING
-    REFUND
-    TAX_REFUND
-    PROMOTION_REFUND
-    SHIPPING_REFUND
 }
 
 type Adjustment {
@@ -24,6 +18,12 @@ type Adjustment {
     type: AdjustmentType!
     description: String!
     amount: Int!
+}
+
+type TaxLine {
+    description: String!
+    amount: Int!
+    taxRate: Float!
 }
 
 type ConfigArg {

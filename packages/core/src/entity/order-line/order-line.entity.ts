@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -72,6 +72,11 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
             (adjustments, item) => [...adjustments, ...item.adjustments],
             [] as Adjustment[],
         );
+    }
+
+    @Calculated()
+    get taxLines(): TaxLine[] {
+        return this.activeItems.reduce((taxLines, item) => [...taxLines, ...item.taxLines], [] as TaxLine[]);
     }
 
     @Calculated()

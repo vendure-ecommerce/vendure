@@ -81,13 +81,15 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].items[0].unitPrice).toBe(100);
             expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(120);
             expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
-            expect(activeOrder?.lines[0].adjustments).toEqual([
+            expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
-                    type: AdjustmentType.TAX,
+                    description: 'Standard Tax Europe',
+                    taxRate: 20,
                     amount: 20,
                 },
                 {
-                    type: AdjustmentType.TAX,
+                    description: 'Standard Tax Europe',
+                    taxRate: 20,
                     amount: 20,
                 },
             ]);
@@ -126,13 +128,15 @@ describe('Order taxes', () => {
             expect(activeOrder?.lines[0].items[0].unitPrice).toBe(83);
             expect(activeOrder?.lines[0].items[0].unitPriceWithTax).toBe(100);
             expect(activeOrder?.lines[0].items[0].taxRate).toBe(20);
-            expect(activeOrder?.lines[0].adjustments).toEqual([
+            expect(activeOrder?.lines[0].taxLines).toEqual([
                 {
-                    type: AdjustmentType.TAX,
+                    description: 'Standard Tax Europe',
+                    taxRate: 20,
                     amount: 17,
                 },
                 {
-                    type: AdjustmentType.TAX,
+                    description: 'Standard Tax Europe',
+                    taxRate: 20,
                     amount: 17,
                 },
             ]);

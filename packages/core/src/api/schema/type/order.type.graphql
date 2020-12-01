@@ -89,6 +89,7 @@ type OrderItem implements Node {
     unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
+    taxLines: [TaxLine!]!
     fulfillment: Fulfillment
     refundId: ID
 }
@@ -112,6 +113,7 @@ type OrderLine implements Node {
     "The total price of the line including tax"
     linePriceWithTax: Int!
     adjustments: [Adjustment!]!
+    taxLines: [TaxLine!]!
     order: Order!
 }
 

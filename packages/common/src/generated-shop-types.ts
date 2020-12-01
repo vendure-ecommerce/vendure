@@ -298,13 +298,7 @@ export enum GlobalFlag {
 }
 
 export enum AdjustmentType {
-    TAX = 'TAX',
     PROMOTION = 'PROMOTION',
-    SHIPPING = 'SHIPPING',
-    REFUND = 'REFUND',
-    TAX_REFUND = 'TAX_REFUND',
-    PROMOTION_REFUND = 'PROMOTION_REFUND',
-    SHIPPING_REFUND = 'SHIPPING_REFUND',
 }
 
 export type Adjustment = {
@@ -313,6 +307,13 @@ export type Adjustment = {
     type: AdjustmentType;
     description: Scalars['String'];
     amount: Scalars['Int'];
+};
+
+export type TaxLine = {
+    __typename?: 'TaxLine';
+    description: Scalars['String'];
+    amount: Scalars['Int'];
+    taxRate: Scalars['Float'];
 };
 
 export type ConfigArg = {
@@ -2113,6 +2114,7 @@ export type OrderItem = Node & {
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
     adjustments: Array<Adjustment>;
+    taxLines: Array<TaxLine>;
     fulfillment?: Maybe<Fulfillment>;
     refundId?: Maybe<Scalars['ID']>;
 };
@@ -2138,6 +2140,7 @@ export type OrderLine = Node & {
     /** The total price of the line including tax */
     linePriceWithTax: Scalars['Int'];
     adjustments: Array<Adjustment>;
+    taxLines: Array<TaxLine>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
 };

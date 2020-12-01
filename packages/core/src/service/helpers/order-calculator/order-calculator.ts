@@ -107,14 +107,9 @@ export class OrderCalculator {
         activeZone: Zone,
         getTaxRate: (taxCategory: TaxCategory) => TaxRate,
     ) {
-        line.clearAdjustments(AdjustmentType.TAX);
-
         const applicableTaxRate = getTaxRate(line.taxCategory);
         for (const item of line.activeItems) {
-            item.taxRate = applicableTaxRate.value;
-            item.pendingAdjustments = item.pendingAdjustments.concat(
-                applicableTaxRate.apply(item.unitPriceWithPromotions),
-            );
+            item.taxLines = [applicableTaxRate.apply(item.unitPriceWithPromotions)];
         }
     }
 
@@ -170,8 +165,8 @@ export class OrderCalculator {
             const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order));
 
             const lineHasExistingPromotions =
-                line.items[0].pendingAdjustments &&
-                !!line.items[0].pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+                line.items[0].adjustments &&
+                !!line.items[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION);
             const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
 
             if (forceUpdateItems || lineHasExistingPromotions) {
@@ -196,7 +191,7 @@ export class OrderCalculator {
                             orderLine: line,
                         });
                         if (adjustment) {
-                            item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+                            item.adjustments = item.adjustments.concat(adjustment);
                             priceAdjusted = true;
                             updatedOrderItems.add(item);
                         }
@@ -208,8 +203,8 @@ export class OrderCalculator {
                 }
             }
             const lineNoLongerHasPromotions =
-                !line.items[0].pendingAdjustments ||
-                !line.items[0].pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+                !line.items[0].adjustments ||
+                !line.items[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION);
             if (lineHasExistingPromotions && lineNoLongerHasPromotions) {
                 line.items.forEach(i => updatedOrderItems.add(i));
             }

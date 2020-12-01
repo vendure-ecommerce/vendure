@@ -1,4 +1,5 @@
 import { discountOnItemWithFacets } from './actions/facet-values-discount-action';
+import { orderFixedDiscount } from './actions/order-fixed-discount-action';
 import { orderPercentageDiscount } from './actions/order-percentage-discount-action';
 import { productsPercentageDiscount } from './actions/product-discount-action';
 import { containsProducts } from './conditions/contains-products-condition';
@@ -18,6 +19,7 @@ export * from './conditions/customer-group-condition';
 export * from './utils/facet-value-checker';
 
 export const defaultPromotionActions = [
+    orderFixedDiscount,
     orderPercentageDiscount,
     discountOnItemWithFacets,
     productsPercentageDiscount,

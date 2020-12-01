@@ -396,8 +396,8 @@ export class OrderService {
                     const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                         new OrderItem({
                             unitPrice,
-                            pendingAdjustments: [],
-                            taxRate: taxRate.value,
+                            adjustments: [],
+                            taxLines: [],
                         }),
                     );
                     orderLine.items.push(orderItem);

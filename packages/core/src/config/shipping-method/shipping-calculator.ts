@@ -65,6 +65,7 @@ export class ShippingCalculator<T extends ConfigArgs = ConfigArgs> extends Confi
  */
 export interface ShippingCalculationResult {
     /**
+     * @description
      * The shipping price without any taxes.
      */
     price: number;

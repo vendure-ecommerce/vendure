@@ -16,6 +16,7 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import {
@@ -41,6 +42,7 @@ import {
     TestOrderFragment,
     TestOrderFragmentFragment,
     TestOrderWithPaymentsFragment,
+    UpdatedOrder,
     UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
@@ -523,6 +525,46 @@ describe('Promotions applied to Orders', () => {
             await deletePromotion(promotion.id);
         });
 
+        it('orderFixedDiscount', async () => {
+            const couponCode = '10_off_order';
+            const promotion = await createPromotion({
+                enabled: true,
+                name: '$10 discount on order',
+                couponCode,
+                conditions: [],
+                actions: [
+                    {
+                        code: orderFixedDiscount.code,
+                        arguments: [{ name: 'discount', value: '1000' }],
+                    },
+                ],
+            });
+            const item60 = getVariantBySlug('item-60');
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: item60.id,
+                quantity: 1,
+            });
+            orderResultGuard.assertSuccess(addItemToOrder);
+            expect(addItemToOrder!.total).toBe(6000);
+            expect(addItemToOrder!.adjustments.length).toBe(0);
+
+            const { applyCouponCode } = await shopClient.query<
+                ApplyCouponCode.Mutation,
+                ApplyCouponCode.Variables
+            >(APPLY_COUPON_CODE, {
+                couponCode,
+            });
+            orderResultGuard.assertSuccess(applyCouponCode);
+            expect(applyCouponCode!.adjustments.length).toBe(1);
+            expect(applyCouponCode!.adjustments[0].description).toBe('$10 discount on order');
+            expect(applyCouponCode!.total).toBe(5000);
+
+            await deletePromotion(promotion.id);
+        });
+
         it('discountOnItemWithFacets', async () => {
             const { facets } = await adminClient.query<GetFacetList.Query>(GET_FACET_LIST);
             const saleFacetValue = facets.items[0].values[0];
@@ -558,12 +600,12 @@ describe('Promotions applied to Orders', () => {
                 quantity: 2,
             });
 
-            function getItemSale1Line(lines: TestOrderFragment.Lines[]): TestOrderFragment.Lines {
+            function getItemSale1Line(lines: UpdatedOrder.Lines[]): UpdatedOrder.Lines {
                 return lines.find(l => l.productVariant.id === getVariantBySlug('item-sale-1').id)!;
             }
             orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.adjustments.length).toBe(0);
-            expect(getItemSale1Line(addItemToOrder!.lines).adjustments.length).toBe(2); // 2x tax
+            expect(getItemSale1Line(addItemToOrder!.lines).adjustments.length).toBe(0);
             expect(addItemToOrder!.total).toBe(2640);
 
             const { applyCouponCode } = await shopClient.query<
@@ -575,7 +617,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(applyCouponCode);
 
             expect(applyCouponCode!.total).toBe(1920);
-            expect(getItemSale1Line(applyCouponCode!.lines).adjustments.length).toBe(4); // 2x tax, 2x promotion
+            expect(getItemSale1Line(applyCouponCode!.lines).adjustments.length).toBe(2); // 2x promotion
 
             const { removeCouponCode } = await shopClient.query<
                 RemoveCouponCode.Mutation,
@@ -584,11 +626,11 @@ describe('Promotions applied to Orders', () => {
                 couponCode,
             });
 
-            expect(getItemSale1Line(removeCouponCode!.lines).adjustments.length).toBe(2); // 2x tax
+            expect(getItemSale1Line(removeCouponCode!.lines).adjustments.length).toBe(0);
             expect(removeCouponCode!.total).toBe(2640);
 
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
-            expect(getItemSale1Line(activeOrder!.lines).adjustments.length).toBe(2); // 2x tax
+            expect(getItemSale1Line(activeOrder!.lines).adjustments.length).toBe(0);
             expect(activeOrder!.total).toBe(2640);
 
             await deletePromotion(promotion.id);
@@ -621,7 +663,7 @@ describe('Promotions applied to Orders', () => {
             });
             orderResultGuard.assertSuccess(addItemToOrder);
             expect(addItemToOrder!.adjustments.length).toBe(0);
-            expect(addItemToOrder!.lines[0].adjustments.length).toBe(1); // 1x tax
+            expect(addItemToOrder!.lines[0].adjustments.length).toBe(0);
             expect(addItemToOrder!.total).toBe(6000);
 
             const { applyCouponCode } = await shopClient.query<
@@ -633,7 +675,7 @@ describe('Promotions applied to Orders', () => {
             orderResultGuard.assertSuccess(applyCouponCode);
 
             expect(applyCouponCode!.total).toBe(3000);
-            expect(applyCouponCode!.lines[0].adjustments.length).toBe(2); // 1x tax, 1x promotion
+            expect(applyCouponCode!.lines[0].adjustments.length).toBe(1); // 1x promotion
 
             const { removeCouponCode } = await shopClient.query<
                 RemoveCouponCode.Mutation,
@@ -642,7 +684,7 @@ describe('Promotions applied to Orders', () => {
                 couponCode,
             });
 
-            expect(removeCouponCode!.lines[0].adjustments.length).toBe(1); // 1x tax
+            expect(removeCouponCode!.lines[0].adjustments.length).toBe(0);
             expect(removeCouponCode!.total).toBe(6000);
 
             await deletePromotion(promotion.id);
@@ -693,7 +735,7 @@ describe('Promotions applied to Orders', () => {
             });
             orderResultGuard.assertSuccess(apply1);
 
-            expect(apply1?.lines[0].adjustments.length).toBe(2);
+            expect(apply1?.lines[0].adjustments.length).toBe(1); // 1x promotion
             expect(
                 apply1?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
             ).toBe('item promo');
@@ -708,7 +750,7 @@ describe('Promotions applied to Orders', () => {
             });
             orderResultGuard.assertSuccess(apply2);
 
-            expect(apply2?.lines[0].adjustments.length).toBe(2);
+            expect(apply2?.lines[0].adjustments.length).toBe(1);
             expect(
                 apply2?.lines[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION)?.description,
             ).toBe('item promo');

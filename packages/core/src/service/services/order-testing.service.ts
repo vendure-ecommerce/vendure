@@ -120,8 +120,8 @@ export class OrderTestingService {
             for (let i = 0; i < line.quantity; i++) {
                 const orderItem = new OrderItem({
                     unitPrice,
-                    taxRate: taxRate.value,
-                    pendingAdjustments: [],
+                    adjustments: [],
+                    taxLines: [],
                 });
                 orderLine.items.push(orderItem);
             }

@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
@@ -34,10 +34,10 @@ export class OrderItem extends VendureEntity {
      */
     unitPriceIncludesTax = false;
 
-    @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() })
-    taxRate: number;
+    @Column('simple-json') adjustments: Adjustment[];
 
-    @Column('simple-json') pendingAdjustments: Adjustment[];
+    @Column('simple-json')
+    taxLines: TaxLine[];
 
     @ManyToMany(type => Fulfillment, fulfillment => fulfillment.orderItems)
     @JoinTable()
@@ -59,31 +59,19 @@ export class OrderItem extends VendureEntity {
         return this.fulfillments?.find(f => f.state !== 'Cancelled');
     }
 
+    /**
+     * @description
+     * The total applicable tax rate, which is the sum of all taxLines on this
+     * OrderItem.
+     */
+    @Calculated()
+    get taxRate(): number {
+        return this.taxLines.reduce((total, l) => total + l.taxRate, 0);
+    }
+
     @Calculated()
     get unitPriceWithTax(): number {
         return Math.round(this.unitPrice * ((100 + this.taxRate) / 100));
-    }
-
-    /**
-     * Adjustments with promotion values adjusted to include tax.
-     */
-    @Calculated()
-    get adjustments(): Adjustment[] {
-        if (!this.pendingAdjustments) {
-            return [];
-        }
-        return this.pendingAdjustments.map(a => {
-            if (a.type === AdjustmentType.PROMOTION) {
-                // Add the tax that would have been payable on the discount so that the numbers add up
-                // for the end-user.
-                const adjustmentWithTax = Math.round(a.amount * ((100 + this.taxRate) / 100));
-                return {
-                    ...a,
-                    amount: adjustmentWithTax,
-                };
-            }
-            return a;
-        });
     }
 
     /**
@@ -94,15 +82,14 @@ export class OrderItem extends VendureEntity {
     }
 
     get unitTax(): number {
-        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-        return taxAdjustment ? taxAdjustment.amount : 0;
+        return this.taxLines.reduce((total, l) => total + l.amount, 0);
     }
 
     get promotionAdjustmentsTotal(): number {
-        if (!this.pendingAdjustments) {
+        if (!this.adjustments) {
             return 0;
         }
-        return this.pendingAdjustments
+        return this.adjustments
             .filter(a => a.type === AdjustmentType.PROMOTION)
             .reduce((total, a) => total + a.amount, 0);
     }
@@ -113,11 +100,9 @@ export class OrderItem extends VendureEntity {
 
     clearAdjustments(type?: AdjustmentType) {
         if (!type) {
-            this.pendingAdjustments = [];
+            this.adjustments = [];
         } else {
-            this.pendingAdjustments = this.pendingAdjustments
-                ? this.pendingAdjustments.filter(a => a.type !== type)
-                : [];
+            this.adjustments = this.adjustments ? this.adjustments.filter(a => a.type !== type) : [];
         }
     }
 }

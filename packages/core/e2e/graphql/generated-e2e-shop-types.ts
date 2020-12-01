@@ -296,13 +296,7 @@ export enum GlobalFlag {
 }
 
 export enum AdjustmentType {
-    TAX = 'TAX',
     PROMOTION = 'PROMOTION',
-    SHIPPING = 'SHIPPING',
-    REFUND = 'REFUND',
-    TAX_REFUND = 'TAX_REFUND',
-    PROMOTION_REFUND = 'PROMOTION_REFUND',
-    SHIPPING_REFUND = 'SHIPPING_REFUND',
 }
 
 export type Adjustment = {
@@ -310,6 +304,12 @@ export type Adjustment = {
     type: AdjustmentType;
     description: Scalars['String'];
     amount: Scalars['Int'];
+};
+
+export type TaxLine = {
+    description: Scalars['String'];
+    amount: Scalars['Int'];
+    taxRate: Scalars['Float'];
 };
 
 export type ConfigArg = {
@@ -2033,6 +2033,7 @@ export type OrderItem = Node & {
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
     adjustments: Array<Adjustment>;
+    taxLines: Array<TaxLine>;
     fulfillment?: Maybe<Fulfillment>;
     refundId?: Maybe<Scalars['ID']>;
 };
@@ -2057,6 +2058,7 @@ export type OrderLine = Node & {
     /** The total price of the line including tax */
     linePriceWithTax: Scalars['Int'];
     adjustments: Array<Adjustment>;
+    taxLines: Array<TaxLine>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
 };
@@ -2687,11 +2689,11 @@ export type NativeAuthInput = {
 
 export type TestOrderFragmentFragment = Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'total' | 'couponCodes' | 'shipping'
+    'id' | 'code' | 'state' | 'active' | 'totalBeforeTax' | 'total' | 'couponCodes' | 'shipping'
 > & {
     adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
     lines: Array<
-        Pick<OrderLine, 'id' | 'quantity'> & {
+        Pick<OrderLine, 'id' | 'quantity' | 'linePrice' | 'linePriceWithTax'> & {
             productVariant: Pick<ProductVariant, 'id'>;
             adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
         }
@@ -2903,6 +2905,7 @@ export type GetActiveOrderWithPriceDataQuery = {
                 > & {
                     items: Array<Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate'>>;
                     adjustments: Array<Pick<Adjustment, 'amount' | 'type'>>;
+                    taxLines: Array<Pick<TaxLine, 'amount' | 'taxRate' | 'description'>>;
                 }
             >;
             taxSummary: Array<Pick<OrderTaxSummary, 'taxRate' | 'taxBase' | 'taxTotal'>>;
@@ -3388,6 +3391,13 @@ export namespace GetActiveOrderWithPriceData {
             NonNullable<
                 NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
             >['adjustments']
+        >[number]
+    >;
+    export type TaxLines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetActiveOrderWithPriceDataQuery['activeOrder']>['lines']>[number]
+            >['taxLines']
         >[number]
     >;
     export type TaxSummary = NonNullable<

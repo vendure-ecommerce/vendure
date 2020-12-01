@@ -1,9 +1,9 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { AdjustmentSource } from '../../common/types/adjustment-source';
 import { idsAreEqual } from '../../common/utils';
+import { VendureEntity } from '../base/base.entity';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { DecimalTransformer } from '../value-transformers';
@@ -20,9 +20,7 @@ import { Zone } from '../zone/zone.entity';
  * @docsCategory entities
  */
 @Entity()
-export class TaxRate extends AdjustmentSource {
-    readonly type = AdjustmentType.TAX;
-
+export class TaxRate extends VendureEntity {
     constructor(input?: DeepPartial<TaxRate>) {
         super(input);
     }
@@ -70,11 +68,10 @@ export class TaxRate extends AdjustmentSource {
         return netPrice + this.taxPayableOn(netPrice);
     }
 
-    apply(price: number): Adjustment {
+    apply(price: number): TaxLine {
         return {
-            type: this.type,
-            adjustmentSource: this.getSourceId(),
             description: this.name,
+            taxRate: this.value,
             amount: this.taxPayableOn(price),
         };
     }
