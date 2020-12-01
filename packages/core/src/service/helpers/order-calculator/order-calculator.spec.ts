@@ -285,7 +285,7 @@ describe('OrderCalculator', () => {
             await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
 
             expect(order.subTotal).toBe(5000);
-            expect(order.lines[0].adjustments.length).toBe(2);
+            expect(order.lines[0].adjustments.length).toBe(1);
             expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
             expect(order.total).toBe(5000);
         });

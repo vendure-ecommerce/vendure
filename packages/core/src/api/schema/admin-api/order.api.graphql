@@ -217,5 +217,3 @@ union RefundOrderResult =
     | RefundStateTransitionError
 union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
-union ModifyOrderResult =
-      Order

@@ -821,6 +821,21 @@ export type UpdateActiveAdministratorInput = {
     password?: Maybe<Scalars['String']>;
 };
 
+export type Administrator = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    firstName: Scalars['String'];
+    lastName: Scalars['String'];
+    emailAddress: Scalars['String'];
+    user: User;
+};
+
+export type AdministratorList = PaginatedList & {
+    items: Array<Administrator>;
+    totalItems: Scalars['Int'];
+};
+
 export type MimeTypeError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -969,21 +984,6 @@ export type UpdateCountryInput = {
     enabled?: Maybe<Scalars['Boolean']>;
 };
 
-export type CustomerGroupList = PaginatedList & {
-    items: Array<CustomerGroup>;
-    totalItems: Scalars['Int'];
-};
-
-export type CreateCustomerGroupInput = {
-    name: Scalars['String'];
-    customerIds?: Maybe<Array<Scalars['ID']>>;
-};
-
-export type UpdateCustomerGroupInput = {
-    id: Scalars['ID'];
-    name?: Maybe<Scalars['String']>;
-};
-
 export type Customer = Node & {
     groups: Array<CustomerGroup>;
     history: HistoryEntryList;
@@ -1007,6 +1007,21 @@ export type CustomerHistoryArgs = {
 
 export type CustomerOrdersArgs = {
     options?: Maybe<OrderListOptions>;
+};
+
+export type CustomerGroupList = PaginatedList & {
+    items: Array<CustomerGroup>;
+    totalItems: Scalars['Int'];
+};
+
+export type CreateCustomerGroupInput = {
+    name: Scalars['String'];
+    customerIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type UpdateCustomerGroupInput = {
+    id: Scalars['ID'];
+    name?: Maybe<Scalars['String']>;
 };
 
 export type UpdateCustomerInput = {
@@ -1127,6 +1142,51 @@ export type ChannelDefaultLanguageError = ErrorResult & {
 };
 
 export type UpdateGlobalSettingsResult = GlobalSettings | ChannelDefaultLanguageError;
+
+export type GlobalSettings = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    availableLanguages: Array<LanguageCode>;
+    trackInventory: Scalars['Boolean'];
+    outOfStockThreshold: Scalars['Int'];
+    serverConfig: ServerConfig;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderProcessState = {
+    name: Scalars['String'];
+    to: Array<Scalars['String']>;
+};
+
+export type PermissionDefinition = {
+    name: Scalars['String'];
+    description: Scalars['String'];
+    assignable: Scalars['Boolean'];
+};
+
+export type ServerConfig = {
+    orderProcess: Array<OrderProcessState>;
+    permittedAssetTypes: Array<Scalars['String']>;
+    permissions: Array<PermissionDefinition>;
+    customFieldConfig: CustomFields;
+};
+
+export type HistoryEntry = Node & {
+    isPublic: Scalars['Boolean'];
+    administrator?: Maybe<Administrator>;
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    type: HistoryEntryType;
+    data: Scalars['JSON'];
+};
+
+export type ImportInfo = {
+    errors?: Maybe<Array<Scalars['String']>>;
+    processed: Scalars['Int'];
+    imported: Scalars['Int'];
+};
 
 /**
  * @description
@@ -1428,79 +1488,14 @@ export type UpdatePaymentMethodInput = {
     configArgs?: Maybe<Array<ConfigArgInput>>;
 };
 
-export type ProductOptionGroupTranslationInput = {
-    id?: Maybe<Scalars['ID']>;
-    languageCode: LanguageCode;
-    name?: Maybe<Scalars['String']>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateProductOptionGroupInput = {
-    code: Scalars['String'];
-    translations: Array<ProductOptionGroupTranslationInput>;
-    options: Array<CreateGroupOptionInput>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateProductOptionGroupInput = {
+export type PaymentMethod = Node & {
     id: Scalars['ID'];
-    code?: Maybe<Scalars['String']>;
-    translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type ProductOptionTranslationInput = {
-    id?: Maybe<Scalars['ID']>;
-    languageCode: LanguageCode;
-    name?: Maybe<Scalars['String']>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type CreateGroupOptionInput = {
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
     code: Scalars['String'];
-    translations: Array<ProductOptionGroupTranslationInput>;
-};
-
-export type CreateProductOptionInput = {
-    productOptionGroupId: Scalars['ID'];
-    code: Scalars['String'];
-    translations: Array<ProductOptionGroupTranslationInput>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type UpdateProductOptionInput = {
-    id: Scalars['ID'];
-    code?: Maybe<Scalars['String']>;
-    translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type SearchResult = {
     enabled: Scalars['Boolean'];
-    /** An array of ids of the Collections in which this result appears */
-    channelIds: Array<Scalars['ID']>;
-    sku: Scalars['String'];
-    slug: Scalars['String'];
-    productId: Scalars['ID'];
-    productName: Scalars['String'];
-    /** @deprecated Use `productAsset.preview` instead */
-    productPreview: Scalars['String'];
-    productAsset?: Maybe<SearchResultAsset>;
-    productVariantId: Scalars['ID'];
-    productVariantName: Scalars['String'];
-    /** @deprecated Use `productVariantAsset.preview` instead */
-    productVariantPreview: Scalars['String'];
-    productVariantAsset?: Maybe<SearchResultAsset>;
-    price: SearchResultPrice;
-    priceWithTax: SearchResultPrice;
-    currencyCode: CurrencyCode;
-    description: Scalars['String'];
-    facetIds: Array<Scalars['ID']>;
-    facetValueIds: Array<Scalars['ID']>;
-    /** An array of ids of the Collections in which this result appears */
-    collectionIds: Array<Scalars['ID']>;
-    /** A relevence score for the result. Differs between database implementations */
-    score: Scalars['Float'];
+    configArgs: Array<ConfigArg>;
+    definition: ConfigurableOperationDefinition;
 };
 
 export type Product = Node & {
@@ -1556,6 +1551,81 @@ export type ProductVariant = Node & {
 
 export type ProductVariantStockMovementsArgs = {
     options?: Maybe<StockMovementListOptions>;
+};
+
+export type ProductOptionGroupTranslationInput = {
+    id?: Maybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateProductOptionGroupInput = {
+    code: Scalars['String'];
+    translations: Array<ProductOptionGroupTranslationInput>;
+    options: Array<CreateGroupOptionInput>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductOptionGroupInput = {
+    id: Scalars['ID'];
+    code?: Maybe<Scalars['String']>;
+    translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type ProductOptionTranslationInput = {
+    id?: Maybe<Scalars['ID']>;
+    languageCode: LanguageCode;
+    name?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type CreateGroupOptionInput = {
+    code: Scalars['String'];
+    translations: Array<ProductOptionGroupTranslationInput>;
+};
+
+export type CreateProductOptionInput = {
+    productOptionGroupId: Scalars['ID'];
+    code: Scalars['String'];
+    translations: Array<ProductOptionGroupTranslationInput>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type UpdateProductOptionInput = {
+    id: Scalars['ID'];
+    code?: Maybe<Scalars['String']>;
+    translations?: Maybe<Array<ProductOptionGroupTranslationInput>>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type SearchResult = {
+    enabled: Scalars['Boolean'];
+    /** An array of ids of the Channels in which this result appears */
+    channelIds: Array<Scalars['ID']>;
+    sku: Scalars['String'];
+    slug: Scalars['String'];
+    productId: Scalars['ID'];
+    productName: Scalars['String'];
+    /** @deprecated Use `productAsset.preview` instead */
+    productPreview: Scalars['String'];
+    productAsset?: Maybe<SearchResultAsset>;
+    productVariantId: Scalars['ID'];
+    productVariantName: Scalars['String'];
+    /** @deprecated Use `productVariantAsset.preview` instead */
+    productVariantPreview: Scalars['String'];
+    productVariantAsset?: Maybe<SearchResultAsset>;
+    price: SearchResultPrice;
+    priceWithTax: SearchResultPrice;
+    currencyCode: CurrencyCode;
+    description: Scalars['String'];
+    facetIds: Array<Scalars['ID']>;
+    facetValueIds: Array<Scalars['ID']>;
+    /** An array of ids of the Collections in which this result appears */
+    collectionIds: Array<Scalars['ID']>;
+    /** A relevence score for the result. Differs between database implementations */
+    score: Scalars['Float'];
 };
 
 export type StockMovementListOptions = {
@@ -1772,6 +1842,96 @@ export type TestShippingMethodQuote = {
     metadata?: Maybe<Scalars['JSON']>;
 };
 
+export enum StockMovementType {
+    ADJUSTMENT = 'ADJUSTMENT',
+    ALLOCATION = 'ALLOCATION',
+    RELEASE = 'RELEASE',
+    SALE = 'SALE',
+    CANCELLATION = 'CANCELLATION',
+    RETURN = 'RETURN',
+}
+
+export type StockMovement = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    productVariant: ProductVariant;
+    type: StockMovementType;
+    quantity: Scalars['Int'];
+};
+
+export type StockAdjustment = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+    };
+
+export type Allocation = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderLine: OrderLine;
+    };
+
+export type Sale = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type Cancellation = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderLine: OrderLine;
+    };
+
+export type Return = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type Release = Node &
+    StockMovement & {
+        id: Scalars['ID'];
+        createdAt: Scalars['DateTime'];
+        updatedAt: Scalars['DateTime'];
+        productVariant: ProductVariant;
+        type: StockMovementType;
+        quantity: Scalars['Int'];
+        orderItem: OrderItem;
+    };
+
+export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
+
+export type StockMovementList = {
+    items: Array<StockMovementItem>;
+    totalItems: Scalars['Int'];
+};
+
 export type CreateTaxCategoryInput = {
     name: Scalars['String'];
 };
@@ -1810,6 +1970,107 @@ export type UpdateZoneInput = {
     name?: Maybe<Scalars['String']>;
 };
 
+export type Address = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    fullName?: Maybe<Scalars['String']>;
+    company?: Maybe<Scalars['String']>;
+    streetLine1: Scalars['String'];
+    streetLine2?: Maybe<Scalars['String']>;
+    city?: Maybe<Scalars['String']>;
+    province?: Maybe<Scalars['String']>;
+    postalCode?: Maybe<Scalars['String']>;
+    country: Country;
+    phoneNumber?: Maybe<Scalars['String']>;
+    defaultShippingAddress?: Maybe<Scalars['Boolean']>;
+    defaultBillingAddress?: Maybe<Scalars['Boolean']>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type Asset = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
+    type: AssetType;
+    fileSize: Scalars['Int'];
+    mimeType: Scalars['String'];
+    width: Scalars['Int'];
+    height: Scalars['Int'];
+    source: Scalars['String'];
+    preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
+};
+
+export type Coordinate = {
+    x: Scalars['Float'];
+    y: Scalars['Float'];
+};
+
+export type AssetList = PaginatedList & {
+    items: Array<Asset>;
+    totalItems: Scalars['Int'];
+};
+
+export enum AssetType {
+    IMAGE = 'IMAGE',
+    VIDEO = 'VIDEO',
+    BINARY = 'BINARY',
+}
+
+export type CurrentUser = {
+    id: Scalars['ID'];
+    identifier: Scalars['String'];
+    channels: Array<CurrentUserChannel>;
+};
+
+export type CurrentUserChannel = {
+    id: Scalars['ID'];
+    token: Scalars['String'];
+    code: Scalars['String'];
+    permissions: Array<Permission>;
+};
+
+export type Channel = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    code: Scalars['String'];
+    token: Scalars['String'];
+    defaultTaxZone?: Maybe<Zone>;
+    defaultShippingZone?: Maybe<Zone>;
+    defaultLanguageCode: LanguageCode;
+    currencyCode: CurrencyCode;
+    pricesIncludeTax: Scalars['Boolean'];
+};
+
+export type CollectionBreadcrumb = {
+    id: Scalars['ID'];
+    name: Scalars['String'];
+    slug: Scalars['String'];
+};
+
+export type CollectionTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+    slug: Scalars['String'];
+    description: Scalars['String'];
+};
+
+export type CollectionList = PaginatedList & {
+    items: Array<Collection>;
+    totalItems: Scalars['Int'];
+};
+
+export type ProductVariantList = PaginatedList & {
+    items: Array<ProductVariant>;
+    totalItems: Scalars['Int'];
+};
+
 export enum GlobalFlag {
     TRUE = 'TRUE',
     FALSE = 'FALSE',
@@ -1819,44 +2080,6 @@ export enum GlobalFlag {
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
 }
-
-export type Adjustment = {
-    adjustmentSource: Scalars['String'];
-    type: AdjustmentType;
-    description: Scalars['String'];
-    amount: Scalars['Int'];
-};
-
-export type TaxLine = {
-    description: Scalars['String'];
-    amount: Scalars['Int'];
-    taxRate: Scalars['Float'];
-};
-
-export type ConfigArg = {
-    name: Scalars['String'];
-    value: Scalars['String'];
-};
-
-export type ConfigArgDefinition = {
-    name: Scalars['String'];
-    type: Scalars['String'];
-    list: Scalars['Boolean'];
-    label?: Maybe<Scalars['String']>;
-    description?: Maybe<Scalars['String']>;
-    ui?: Maybe<Scalars['JSON']>;
-};
-
-export type ConfigurableOperation = {
-    code: Scalars['String'];
-    args: Array<ConfigArg>;
-};
-
-export type ConfigurableOperationDefinition = {
-    code: Scalars['String'];
-    args: Array<ConfigArgDefinition>;
-    description: Scalars['String'];
-};
 
 export enum DeletionResult {
     /** The entity was successfully deleted */
@@ -1931,30 +2154,6 @@ export enum Permission {
     DeleteSettings = 'DeleteSettings',
 }
 
-export type DeletionResponse = {
-    result: DeletionResult;
-    message?: Maybe<Scalars['String']>;
-};
-
-export type ConfigArgInput = {
-    name: Scalars['String'];
-    value: Scalars['String'];
-};
-
-export type ConfigurableOperationInput = {
-    code: Scalars['String'];
-    arguments: Array<ConfigArgInput>;
-};
-
-export type PaginatedList = {
-    items: Array<Node>;
-    totalItems: Scalars['Int'];
-};
-
-export type Node = {
-    id: Scalars['ID'];
-};
-
 export enum SortOrder {
     ASC = 'ASC',
     DESC = 'DESC',
@@ -1987,11 +2186,130 @@ export enum ErrorCode {
     INVALID_CREDENTIALS_ERROR = 'INVALID_CREDENTIALS_ERROR',
     ORDER_STATE_TRANSITION_ERROR = 'ORDER_STATE_TRANSITION_ERROR',
     EMAIL_ADDRESS_CONFLICT_ERROR = 'EMAIL_ADDRESS_CONFLICT_ERROR',
+    ORDER_LIMIT_ERROR = 'ORDER_LIMIT_ERROR',
+    NEGATIVE_QUANTITY_ERROR = 'NEGATIVE_QUANTITY_ERROR',
+    INSUFFICIENT_STOCK_ERROR = 'INSUFFICIENT_STOCK_ERROR',
 }
+
+export enum LogicalOperator {
+    AND = 'AND',
+    OR = 'OR',
+}
+
+/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
+export type NativeAuthStrategyError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned if the user authentication credentials are not valid */
+export type InvalidCredentialsError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    authenticationError: Scalars['String'];
+};
+
+/** Returned if there is an error in transitioning the Order state */
+export type OrderStateTransitionError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    transitionError: Scalars['String'];
+    fromState: Scalars['String'];
+    toState: Scalars['String'];
+};
+
+/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
+export type EmailAddressConflictError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Retured when the maximum order size limit has been reached. */
+export type OrderLimitError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    maxItems: Scalars['Int'];
+};
+
+/** Retured when attemting to set a negative OrderLine quantity. */
+export type NegativeQuantityError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
+/** Returned when attempting to add more items to the Order than are available */
+export type InsufficientStockError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    quantityAvailable: Scalars['Int'];
+    order: Order;
+};
+
+export type PaginatedList = {
+    items: Array<Node>;
+    totalItems: Scalars['Int'];
+};
+
+export type Node = {
+    id: Scalars['ID'];
+};
 
 export type ErrorResult = {
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+export type Adjustment = {
+    adjustmentSource: Scalars['String'];
+    type: AdjustmentType;
+    description: Scalars['String'];
+    amount: Scalars['Int'];
+};
+
+export type TaxLine = {
+    description: Scalars['String'];
+    amount: Scalars['Int'];
+    taxRate: Scalars['Float'];
+};
+
+export type ConfigArg = {
+    name: Scalars['String'];
+    value: Scalars['String'];
+};
+
+export type ConfigArgDefinition = {
+    name: Scalars['String'];
+    type: Scalars['String'];
+    list: Scalars['Boolean'];
+    label?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
+    ui?: Maybe<Scalars['JSON']>;
+};
+
+export type ConfigurableOperation = {
+    code: Scalars['String'];
+    args: Array<ConfigArg>;
+};
+
+export type ConfigurableOperationDefinition = {
+    code: Scalars['String'];
+    args: Array<ConfigArgDefinition>;
+    description: Scalars['String'];
+};
+
+export type DeletionResponse = {
+    result: DeletionResult;
+    message?: Maybe<Scalars['String']>;
+};
+
+export type ConfigArgInput = {
+    name: Scalars['String'];
+    value: Scalars['String'];
+};
+
+export type ConfigurableOperationInput = {
+    code: Scalars['String'];
+    arguments: Array<ConfigArgInput>;
 };
 
 export type StringOperators = {
@@ -2030,11 +2348,6 @@ export type DateOperators = {
     after?: Maybe<Scalars['DateTime']>;
     between?: Maybe<DateRange>;
 };
-
-export enum LogicalOperator {
-    AND = 'AND',
-    OR = 'OR',
-}
 
 export type SearchInput = {
     term?: Maybe<Scalars['String']>;
@@ -2098,32 +2411,28 @@ export type Success = {
     success: Scalars['Boolean'];
 };
 
-/** Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured. */
-export type NativeAuthStrategyError = ErrorResult & {
-    errorCode: ErrorCode;
-    message: Scalars['String'];
+export type Country = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    code: Scalars['String'];
+    name: Scalars['String'];
+    enabled: Scalars['Boolean'];
+    translations: Array<CountryTranslation>;
 };
 
-/** Returned if the user authentication credentials are not valid */
-export type InvalidCredentialsError = ErrorResult & {
-    errorCode: ErrorCode;
-    message: Scalars['String'];
-    authenticationError: Scalars['String'];
+export type CountryTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
 };
 
-/** Returned if there is an error in transitioning the Order state */
-export type OrderStateTransitionError = ErrorResult & {
-    errorCode: ErrorCode;
-    message: Scalars['String'];
-    transitionError: Scalars['String'];
-    fromState: Scalars['String'];
-    toState: Scalars['String'];
-};
-
-/** Retured when attemting to create a Customer with an email address already registered to an existing User. */
-export type EmailAddressConflictError = ErrorResult & {
-    errorCode: ErrorCode;
-    message: Scalars['String'];
+export type CountryList = PaginatedList & {
+    items: Array<Country>;
+    totalItems: Scalars['Int'];
 };
 
 /**
@@ -2555,6 +2864,87 @@ export type CustomFieldConfig =
     | BooleanCustomFieldConfig
     | DateTimeCustomFieldConfig;
 
+export type CustomerGroup = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
+    customers: CustomerList;
+};
+
+export type CustomerGroupCustomersArgs = {
+    options?: Maybe<CustomerListOptions>;
+};
+
+export type CustomerList = PaginatedList & {
+    items: Array<Customer>;
+    totalItems: Scalars['Int'];
+};
+
+export type FacetValue = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    facet: Facet;
+    name: Scalars['String'];
+    code: Scalars['String'];
+    translations: Array<FacetValueTranslation>;
+    customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type FacetValueTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+};
+
+export type FacetTranslation = {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    languageCode: LanguageCode;
+    name: Scalars['String'];
+};
+
+export type FacetList = PaginatedList & {
+    items: Array<Facet>;
+    totalItems: Scalars['Int'];
+};
+
+export enum HistoryEntryType {
+    CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
+    CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
+    CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
+    CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
+    CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
+    CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
+    CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
+    CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
+    CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
+    CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
+    CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
+    CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
+    CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
+    CUSTOMER_NOTE = 'CUSTOMER_NOTE',
+    ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
+    ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
+    ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
+    ORDER_CANCELLATION = 'ORDER_CANCELLATION',
+    ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
+    ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
+    ORDER_NOTE = 'ORDER_NOTE',
+    ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
+    ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
+}
+
+export type HistoryEntryList = PaginatedList & {
+    items: Array<HistoryEntry>;
+    totalItems: Scalars['Int'];
+};
+
 /**
  * @description
  * Languages in the form of a ISO 639-1 language code with optional
@@ -2881,272 +3271,6 @@ export enum LanguageCode {
     zu = 'zu',
 }
 
-export type Address = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    fullName?: Maybe<Scalars['String']>;
-    company?: Maybe<Scalars['String']>;
-    streetLine1: Scalars['String'];
-    streetLine2?: Maybe<Scalars['String']>;
-    city?: Maybe<Scalars['String']>;
-    province?: Maybe<Scalars['String']>;
-    postalCode?: Maybe<Scalars['String']>;
-    country: Country;
-    phoneNumber?: Maybe<Scalars['String']>;
-    defaultShippingAddress?: Maybe<Scalars['Boolean']>;
-    defaultBillingAddress?: Maybe<Scalars['Boolean']>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type Administrator = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    firstName: Scalars['String'];
-    lastName: Scalars['String'];
-    emailAddress: Scalars['String'];
-    user: User;
-};
-
-export type AdministratorList = PaginatedList & {
-    items: Array<Administrator>;
-    totalItems: Scalars['Int'];
-};
-
-export type Asset = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    name: Scalars['String'];
-    type: AssetType;
-    fileSize: Scalars['Int'];
-    mimeType: Scalars['String'];
-    width: Scalars['Int'];
-    height: Scalars['Int'];
-    source: Scalars['String'];
-    preview: Scalars['String'];
-    focalPoint?: Maybe<Coordinate>;
-};
-
-export type Coordinate = {
-    x: Scalars['Float'];
-    y: Scalars['Float'];
-};
-
-export type AssetList = PaginatedList & {
-    items: Array<Asset>;
-    totalItems: Scalars['Int'];
-};
-
-export enum AssetType {
-    IMAGE = 'IMAGE',
-    VIDEO = 'VIDEO',
-    BINARY = 'BINARY',
-}
-
-export type CurrentUser = {
-    id: Scalars['ID'];
-    identifier: Scalars['String'];
-    channels: Array<CurrentUserChannel>;
-};
-
-export type CurrentUserChannel = {
-    id: Scalars['ID'];
-    token: Scalars['String'];
-    code: Scalars['String'];
-    permissions: Array<Permission>;
-};
-
-export type Channel = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    code: Scalars['String'];
-    token: Scalars['String'];
-    defaultTaxZone?: Maybe<Zone>;
-    defaultShippingZone?: Maybe<Zone>;
-    defaultLanguageCode: LanguageCode;
-    currencyCode: CurrencyCode;
-    pricesIncludeTax: Scalars['Boolean'];
-};
-
-export type CollectionBreadcrumb = {
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    slug: Scalars['String'];
-};
-
-export type CollectionTranslation = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-    slug: Scalars['String'];
-    description: Scalars['String'];
-};
-
-export type CollectionList = PaginatedList & {
-    items: Array<Collection>;
-    totalItems: Scalars['Int'];
-};
-
-export type ProductVariantList = PaginatedList & {
-    items: Array<ProductVariant>;
-    totalItems: Scalars['Int'];
-};
-
-export type Country = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    code: Scalars['String'];
-    name: Scalars['String'];
-    enabled: Scalars['Boolean'];
-    translations: Array<CountryTranslation>;
-};
-
-export type CountryTranslation = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-};
-
-export type CountryList = PaginatedList & {
-    items: Array<Country>;
-    totalItems: Scalars['Int'];
-};
-
-export type CustomerGroup = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    name: Scalars['String'];
-    customers: CustomerList;
-};
-
-export type CustomerGroupCustomersArgs = {
-    options?: Maybe<CustomerListOptions>;
-};
-
-export type CustomerList = PaginatedList & {
-    items: Array<Customer>;
-    totalItems: Scalars['Int'];
-};
-
-export type FacetValue = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    facet: Facet;
-    name: Scalars['String'];
-    code: Scalars['String'];
-    translations: Array<FacetValueTranslation>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type FacetValueTranslation = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-};
-
-export type FacetTranslation = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    languageCode: LanguageCode;
-    name: Scalars['String'];
-};
-
-export type FacetList = PaginatedList & {
-    items: Array<Facet>;
-    totalItems: Scalars['Int'];
-};
-
-export type GlobalSettings = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    availableLanguages: Array<LanguageCode>;
-    trackInventory: Scalars['Boolean'];
-    outOfStockThreshold: Scalars['Int'];
-    serverConfig: ServerConfig;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type OrderProcessState = {
-    name: Scalars['String'];
-    to: Array<Scalars['String']>;
-};
-
-export type PermissionDefinition = {
-    name: Scalars['String'];
-    description: Scalars['String'];
-    assignable: Scalars['Boolean'];
-};
-
-export type ServerConfig = {
-    orderProcess: Array<OrderProcessState>;
-    permittedAssetTypes: Array<Scalars['String']>;
-    permissions: Array<PermissionDefinition>;
-    customFieldConfig: CustomFields;
-};
-
-export type HistoryEntry = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    isPublic: Scalars['Boolean'];
-    type: HistoryEntryType;
-    administrator?: Maybe<Administrator>;
-    data: Scalars['JSON'];
-};
-
-export enum HistoryEntryType {
-    CUSTOMER_REGISTERED = 'CUSTOMER_REGISTERED',
-    CUSTOMER_VERIFIED = 'CUSTOMER_VERIFIED',
-    CUSTOMER_DETAIL_UPDATED = 'CUSTOMER_DETAIL_UPDATED',
-    CUSTOMER_ADDED_TO_GROUP = 'CUSTOMER_ADDED_TO_GROUP',
-    CUSTOMER_REMOVED_FROM_GROUP = 'CUSTOMER_REMOVED_FROM_GROUP',
-    CUSTOMER_ADDRESS_CREATED = 'CUSTOMER_ADDRESS_CREATED',
-    CUSTOMER_ADDRESS_UPDATED = 'CUSTOMER_ADDRESS_UPDATED',
-    CUSTOMER_ADDRESS_DELETED = 'CUSTOMER_ADDRESS_DELETED',
-    CUSTOMER_PASSWORD_UPDATED = 'CUSTOMER_PASSWORD_UPDATED',
-    CUSTOMER_PASSWORD_RESET_REQUESTED = 'CUSTOMER_PASSWORD_RESET_REQUESTED',
-    CUSTOMER_PASSWORD_RESET_VERIFIED = 'CUSTOMER_PASSWORD_RESET_VERIFIED',
-    CUSTOMER_EMAIL_UPDATE_REQUESTED = 'CUSTOMER_EMAIL_UPDATE_REQUESTED',
-    CUSTOMER_EMAIL_UPDATE_VERIFIED = 'CUSTOMER_EMAIL_UPDATE_VERIFIED',
-    CUSTOMER_NOTE = 'CUSTOMER_NOTE',
-    ORDER_STATE_TRANSITION = 'ORDER_STATE_TRANSITION',
-    ORDER_PAYMENT_TRANSITION = 'ORDER_PAYMENT_TRANSITION',
-    ORDER_FULFILLMENT = 'ORDER_FULFILLMENT',
-    ORDER_CANCELLATION = 'ORDER_CANCELLATION',
-    ORDER_REFUND_TRANSITION = 'ORDER_REFUND_TRANSITION',
-    ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
-    ORDER_NOTE = 'ORDER_NOTE',
-    ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
-    ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
-}
-
-export type HistoryEntryList = PaginatedList & {
-    items: Array<HistoryEntry>;
-    totalItems: Scalars['Int'];
-};
-
-export type ImportInfo = {
-    errors?: Maybe<Array<Scalars['String']>>;
-    processed: Scalars['Int'];
-    imported: Scalars['Int'];
-};
-
 /**
  * A summary of the taxes being applied to this order, grouped
  * by taxRate.
@@ -3258,16 +3382,6 @@ export type Refund = Node & {
     orderItems: Array<OrderItem>;
     paymentId: Scalars['ID'];
     metadata?: Maybe<Scalars['JSON']>;
-};
-
-export type PaymentMethod = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    code: Scalars['String'];
-    enabled: Scalars['Boolean'];
-    configArgs: Array<ConfigArg>;
-    definition: ConfigurableOperationDefinition;
 };
 
 export type ProductOptionGroup = Node & {
@@ -3432,96 +3546,6 @@ export type ShippingMethodTranslation = {
 
 export type ShippingMethodList = PaginatedList & {
     items: Array<ShippingMethod>;
-    totalItems: Scalars['Int'];
-};
-
-export enum StockMovementType {
-    ADJUSTMENT = 'ADJUSTMENT',
-    ALLOCATION = 'ALLOCATION',
-    RELEASE = 'RELEASE',
-    SALE = 'SALE',
-    CANCELLATION = 'CANCELLATION',
-    RETURN = 'RETURN',
-}
-
-export type StockMovement = {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    productVariant: ProductVariant;
-    type: StockMovementType;
-    quantity: Scalars['Int'];
-};
-
-export type StockAdjustment = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-    };
-
-export type Allocation = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-        orderLine: OrderLine;
-    };
-
-export type Sale = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-        orderItem: OrderItem;
-    };
-
-export type Cancellation = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-        orderLine: OrderLine;
-    };
-
-export type Return = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-        orderItem: OrderItem;
-    };
-
-export type Release = Node &
-    StockMovement & {
-        id: Scalars['ID'];
-        createdAt: Scalars['DateTime'];
-        updatedAt: Scalars['DateTime'];
-        productVariant: ProductVariant;
-        type: StockMovementType;
-        quantity: Scalars['Int'];
-        orderItem: OrderItem;
-    };
-
-export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellation | Return | Release;
-
-export type StockMovementList = {
-    items: Array<StockMovementItem>;
     totalItems: Scalars['Int'];
 };
 
@@ -4019,9 +4043,9 @@ export type ProductVariantSortParameter = {
 };
 
 export type HistoryEntryFilterParameter = {
+    isPublic?: Maybe<BooleanOperators>;
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
-    isPublic?: Maybe<BooleanOperators>;
     type?: Maybe<StringOperators>;
 };
 
@@ -4029,6 +4053,15 @@ export type HistoryEntrySortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+};
+
+export type AuthenticationInput = {
+    native?: Maybe<NativeAuthInput>;
+};
+
+export type NativeAuthInput = {
+    username: Scalars['String'];
+    password: Scalars['String'];
 };
 
 export type CustomFields = {
@@ -4047,15 +4080,6 @@ export type CustomFields = {
     ProductVariant: Array<CustomFieldConfig>;
     User: Array<CustomFieldConfig>;
     ShippingMethod: Array<CustomFieldConfig>;
-};
-
-export type AuthenticationInput = {
-    native?: Maybe<NativeAuthInput>;
-};
-
-export type NativeAuthInput = {
-    username: Scalars['String'];
-    password: Scalars['String'];
 };
 
 export type ReindexMutationVariables = Exact<{ [key: string]: never }>;
