@@ -52,7 +52,7 @@ describe('TaxCalculator', () => {
 
     describe('with prices which do not include tax', () => {
         it('standard tax, default zone', () => {
-            const ctx = createRequestContext(false);
+            const ctx = createRequestContext({ pricesIncludeTax: false });
             const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, zoneDefault, ctx);
 
             expect(result).toEqual({
@@ -64,7 +64,7 @@ describe('TaxCalculator', () => {
         });
 
         it('reduced tax, default zone', () => {
-            const ctx = createRequestContext(false);
+            const ctx = createRequestContext({ pricesIncludeTax: false });
             const result = taxCalculator.calculate(6543, taxCategoryReduced, zoneDefault, ctx);
 
             expect(result).toEqual({
@@ -76,7 +76,7 @@ describe('TaxCalculator', () => {
         });
 
         it('standard tax, other zone', () => {
-            const ctx = createRequestContext(false);
+            const ctx = createRequestContext({ pricesIncludeTax: false });
             const result = taxCalculator.calculate(6543, taxCategoryStandard, zoneOther, ctx);
 
             expect(result).toEqual({
@@ -88,7 +88,7 @@ describe('TaxCalculator', () => {
         });
 
         it('reduced tax, other zone', () => {
-            const ctx = createRequestContext(false);
+            const ctx = createRequestContext({ pricesIncludeTax: false });
             const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, zoneOther, ctx);
 
             expect(result).toEqual({
@@ -100,7 +100,7 @@ describe('TaxCalculator', () => {
         });
 
         it('standard tax, unconfigured zone', () => {
-            const ctx = createRequestContext(false);
+            const ctx = createRequestContext({ pricesIncludeTax: false });
             const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, zoneWithNoTaxRate, ctx);
 
             expect(result).toEqual({
@@ -114,7 +114,7 @@ describe('TaxCalculator', () => {
 
     describe('with prices which include tax', () => {
         it('standard tax, default zone', () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext({ pricesIncludeTax: true });
             const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, zoneDefault, ctx);
 
             expect(result).toEqual({
@@ -126,7 +126,7 @@ describe('TaxCalculator', () => {
         });
 
         it('reduced tax, default zone', () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext({ pricesIncludeTax: true });
             const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, zoneDefault, ctx);
 
             expect(result).toEqual({
@@ -138,7 +138,7 @@ describe('TaxCalculator', () => {
         });
 
         it('standard tax, other zone', () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext({ pricesIncludeTax: true });
             const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, zoneOther, ctx);
 
             expect(result).toEqual({
@@ -152,7 +152,7 @@ describe('TaxCalculator', () => {
         });
 
         it('reduced tax, other zone', () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext({ pricesIncludeTax: true });
             const result = taxCalculator.calculate(inputPrice, taxCategoryReduced, zoneOther, ctx);
 
             expect(result).toEqual({
@@ -164,7 +164,7 @@ describe('TaxCalculator', () => {
         });
 
         it('standard tax, unconfigured zone', () => {
-            const ctx = createRequestContext(true);
+            const ctx = createRequestContext({ pricesIncludeTax: true });
             const result = taxCalculator.calculate(inputPrice, taxCategoryStandard, zoneWithNoTaxRate, ctx);
 
             expect(result).toEqual({

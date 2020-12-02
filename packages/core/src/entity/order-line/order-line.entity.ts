@@ -3,10 +3,11 @@ import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { grossPriceOf } from '../../common/tax-utils';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
-import { CustomOrderLineFields, CustomProductFields } from '../custom-entity-fields';
+import { CustomOrderLineFields } from '../custom-entity-fields';
 import { OrderItem } from '../order-item/order-item.entity';
 import { Order } from '../order/order.entity';
 import { ProductVariant } from '../product-variant/product-variant.entity';
@@ -57,15 +58,6 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
         return this.activeItems.length;
     }
 
-    /**
-     * @deprecated Use `linePriceWithTax`
-     * TODO: Remove this in a future release
-     */
-    @Calculated()
-    get totalPrice(): number {
-        return this.activeItems.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
-    }
-
     @Calculated()
     get adjustments(): Adjustment[] {
         return this.activeItems.reduce(
@@ -76,7 +68,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get taxLines(): TaxLine[] {
-        return this.activeItems.reduce((taxLines, item) => [...taxLines, ...item.taxLines], [] as TaxLine[]);
+        return this.activeItems.length ? this.activeItems[0].taxLines : [];
     }
 
     @Calculated()
@@ -90,13 +82,46 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     @Calculated()
+    get linePriceWithTax(): number {
+        return this.activeItems.reduce((total, item) => total + item.unitPriceWithTax, 0);
+    }
+
+    @Calculated()
+    get discountedLinePrice(): number {
+        return this.activeItems.reduce((total, item) => total + item.discountedUnitPrice, 0);
+    }
+
+    @Calculated()
+    get discountedLinePriceWithTax(): number {
+        return this.activeItems.reduce((total, item) => total + item.discountedUnitPriceWithTax, 0);
+    }
+
+    @Calculated()
+    get discounts(): Adjustment[] {
+        return this.adjustments.map(adjustment => ({
+            ...adjustment,
+            amount: grossPriceOf(adjustment.amount, this.taxRate),
+        }));
+    }
+
+    @Calculated()
     get lineTax(): number {
         return this.activeItems.reduce((total, item) => total + item.unitTax, 0);
     }
 
     @Calculated()
-    get linePriceWithTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.unitPriceWithPromotionsAndTax, 0);
+    get proratedLinePrice(): number {
+        return this.activeItems.reduce((total, item) => total + item.proratedUnitPrice, 0);
+    }
+
+    @Calculated()
+    get proratedLinePriceWithTax(): number {
+        return this.activeItems.reduce((total, item) => total + item.proratedUnitPriceWithTax, 0);
+    }
+
+    @Calculated()
+    get proratedLineTax(): number {
+        return this.activeItems.reduce((total, item) => total + item.proratedUnitTax, 0);
     }
 
     /**

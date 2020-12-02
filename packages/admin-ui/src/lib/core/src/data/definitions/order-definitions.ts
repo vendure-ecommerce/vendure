@@ -132,8 +132,9 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             couponCode
         }
         subTotal
-        subTotalBeforeTax
-        totalBeforeTax
+        subTotalWithTax
+        total
+        totalWithTax
         currencyCode
         shipping
         shippingWithTax

@@ -6,10 +6,10 @@ export const TEST_ORDER_FRAGMENT = gql`
         code
         state
         active
-        totalBeforeTax
         total
+        totalWithTax
         couponCodes
-        adjustments {
+        discounts {
             adjustmentSource
             amount
             description
@@ -23,7 +23,7 @@ export const TEST_ORDER_FRAGMENT = gql`
             productVariant {
                 id
             }
-            adjustments {
+            discounts {
                 adjustmentSource
                 amount
                 description
@@ -60,20 +60,21 @@ export const UPDATED_ORDER_FRAGMENT = gql`
         state
         active
         total
+        totalWithTax
         lines {
             id
             quantity
             productVariant {
                 id
             }
-            adjustments {
+            discounts {
                 adjustmentSource
                 amount
                 description
                 type
             }
         }
-        adjustments {
+        discounts {
             adjustmentSource
             amount
             description
@@ -303,9 +304,10 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
     query GetActiveOrderWithPriceData {
         activeOrder {
             id
-            subTotalBeforeTax
             subTotal
-            totalBeforeTax
+            subTotalWithTax
+            total
+            totalWithTax
             total
             lines {
                 id
@@ -326,7 +328,6 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                     type
                 }
                 taxLines {
-                    amount
                     taxRate
                     description
                 }

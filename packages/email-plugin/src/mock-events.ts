@@ -43,8 +43,8 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                 items: [
                     new OrderItem({
                         id: '6',
-                        unitPrice: 14374,
-                        unitPriceIncludesTax: true,
+                        listPrice: 14374,
+                        listPriceIncludesTax: true,
                         adjustments: [],
                         taxLines: [],
                     }),
@@ -63,16 +63,16 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                 items: [
                     new OrderItem({
                         id: '7',
-                        unitPrice: 3799,
-                        unitPriceIncludesTax: true,
+                        listPrice: 3799,
+                        listPriceIncludesTax: true,
                         adjustments: [],
                         taxLines: [],
                     }),
                 ],
             }),
         ],
-        subTotal: 18173,
-        subTotalBeforeTax: 15144,
+        subTotal: 15144,
+        subTotalWithTax: 18173,
         shipping: 1000,
         shippingMethod: {
             code: 'express-flat-rate',
@@ -91,7 +91,6 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
             phoneNumber: '',
         },
         payments: [],
-        pendingAdjustments: [],
     }),
 );
 

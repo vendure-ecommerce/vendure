@@ -5,12 +5,10 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
 import { idsAreEqual } from '../../../common/utils';
-import { ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
-import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
@@ -18,6 +16,8 @@ import { ZoneService } from '../../services/zone.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
+
+import { prorate } from './prorate';
 
 @Injectable()
 export class OrderCalculator {
@@ -63,7 +63,6 @@ export class OrderCalculator {
             );
             updatedOrderLine.activeItems.forEach(item => updatedOrderItems.add(item));
         }
-        order.clearAdjustments();
         this.calculateOrderTotals(order);
         if (order.lines.length) {
             if (taxZoneChanged) {
@@ -109,7 +108,7 @@ export class OrderCalculator {
     ) {
         const applicableTaxRate = getTaxRate(line.taxCategory);
         for (const item of line.activeItems) {
-            item.taxLines = [applicableTaxRate.apply(item.unitPriceWithPromotions)];
+            item.taxLines = [applicableTaxRate.apply(item.proratedUnitPrice)];
         }
     }
 
@@ -141,8 +140,12 @@ export class OrderCalculator {
         promotions: Promotion[],
     ): Promise<OrderItem[]> {
         const updatedItems = await this.applyOrderItemPromotions(ctx, order, promotions);
-        await this.applyOrderPromotions(ctx, order, promotions);
-        return updatedItems;
+        const orderUpdatedItems = await this.applyOrderPromotions(ctx, order, promotions);
+        if (orderUpdatedItems.length) {
+            return orderUpdatedItems;
+        } else {
+            return updatedItems;
+        }
     }
 
     /**
@@ -150,7 +153,11 @@ export class OrderCalculator {
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
      */
-    private async applyOrderItemPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
+    private async applyOrderItemPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<OrderItem[]> {
         // The naive implementation updates *every* OrderItem after this function is run.
         // However, on a very large order with hundreds or thousands of OrderItems, this results in
         // very poor performance. E.g. updating a single quantity of an OrderLine results in saving
@@ -170,7 +177,7 @@ export class OrderCalculator {
             const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
 
             if (forceUpdateItems || lineHasExistingPromotions) {
-                line.clearAdjustments(AdjustmentType.PROMOTION);
+                line.clearAdjustments();
             }
             if (forceUpdateItems) {
                 // This OrderLine contains Promotion adjustments for Promotions that are no longer
@@ -241,8 +248,14 @@ export class OrderCalculator {
         return hasPromotionsThatAreNoLongerApplicable;
     }
 
-    private async applyOrderPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
-        order.clearAdjustments(AdjustmentType.PROMOTION);
+    private async applyOrderPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<OrderItem[]> {
+        const updatedItems = new Set<OrderItem>();
+        order.lines.forEach(line => line.clearAdjustments(AdjustmentType.DISTRIBUTED_ORDER_PROMOTION));
+        this.calculateOrderTotals(order);
         const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
@@ -251,12 +264,30 @@ export class OrderCalculator {
                 if (await promotion.test(ctx, order)) {
                     const adjustment = await promotion.apply(ctx, { order });
                     if (adjustment) {
-                        order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
+                        const amount = adjustment.amount;
+                        const weights = order.lines.map(l => l.proratedLinePrice);
+                        const distribution = prorate(weights, amount);
+                        order.lines.forEach((line, i) => {
+                            const shareOfAmount = distribution[i];
+                            const itemWeights = line.items.map(item => item.unitPrice);
+                            const itemDistribution = prorate(itemWeights, shareOfAmount);
+                            line.items.forEach((item, j) => {
+                                updatedItems.add(item);
+                                item.adjustments.push({
+                                    amount: itemDistribution[j],
+                                    adjustmentSource: adjustment.adjustmentSource,
+                                    description: adjustment.description,
+                                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                                });
+                            });
+                        });
+                        this.calculateOrderTotals(order);
                     }
                 }
             }
             this.calculateOrderTotals(order);
         }
+        return Array.from(updatedItems.values());
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
@@ -287,15 +318,14 @@ export class OrderCalculator {
 
     private calculateOrderTotals(order: Order) {
         let totalPrice = 0;
-        let totalTax = 0;
+        let totalPriceWithTax = 0;
 
         for (const line of order.lines) {
-            totalPrice += line.linePriceWithTax;
-            totalTax += line.lineTax;
+            totalPrice += line.proratedLinePrice;
+            totalPriceWithTax += line.proratedLinePriceWithTax;
         }
-        const totalPriceBeforeTax = totalPrice - totalTax;
 
-        order.subTotalBeforeTax = totalPriceBeforeTax;
         order.subTotal = totalPrice;
+        order.subTotalWithTax = totalPriceWithTax;
     }
 }

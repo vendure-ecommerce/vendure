@@ -70,8 +70,8 @@ describe('Order taxes', () => {
             const { activeOrder } = await shopClient.query<GetActiveOrderWithPriceData.Query>(
                 GET_ACTIVE_ORDER_WITH_PRICE_DATA,
             );
-            expect(activeOrder?.total).toBe(240);
-            expect(activeOrder?.totalBeforeTax).toBe(200);
+            expect(activeOrder?.totalWithTax).toBe(240);
+            expect(activeOrder?.total).toBe(200);
             expect(activeOrder?.lines[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].linePrice).toBe(200);
             expect(activeOrder?.lines[0].lineTax).toBe(40);
@@ -85,12 +85,6 @@ describe('Order taxes', () => {
                 {
                     description: 'Standard Tax Europe',
                     taxRate: 20,
-                    amount: 20,
-                },
-                {
-                    description: 'Standard Tax Europe',
-                    taxRate: 20,
-                    amount: 20,
                 },
             ]);
         });
@@ -117,8 +111,8 @@ describe('Order taxes', () => {
             const { activeOrder } = await shopClient.query<GetActiveOrderWithPriceData.Query>(
                 GET_ACTIVE_ORDER_WITH_PRICE_DATA,
             );
-            expect(activeOrder?.total).toBe(200);
-            expect(activeOrder?.totalBeforeTax).toBe(166);
+            expect(activeOrder?.totalWithTax).toBe(200);
+            expect(activeOrder?.total).toBe(166);
             expect(activeOrder?.lines[0].taxRate).toBe(20);
             expect(activeOrder?.lines[0].linePrice).toBe(166);
             expect(activeOrder?.lines[0].lineTax).toBe(34);
@@ -132,12 +126,6 @@ describe('Order taxes', () => {
                 {
                     description: 'Standard Tax Europe',
                     taxRate: 20,
-                    amount: 17,
-                },
-                {
-                    description: 'Standard Tax Europe',
-                    taxRate: 20,
-                    amount: 17,
                 },
             ]);
         });
@@ -190,7 +178,7 @@ describe('Order taxes', () => {
         const taxSummaryBaseTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxBase, 0);
         const taxSummaryTaxTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxTotal, 0);
 
-        expect(taxSummaryBaseTotal).toBe(activeOrder?.totalBeforeTax);
-        expect(taxSummaryBaseTotal + taxSummaryTaxTotal).toBe(activeOrder?.total);
+        expect(taxSummaryBaseTotal).toBe(activeOrder?.total);
+        expect(taxSummaryBaseTotal + taxSummaryTaxTotal).toBe(activeOrder?.totalWithTax);
     });
 });

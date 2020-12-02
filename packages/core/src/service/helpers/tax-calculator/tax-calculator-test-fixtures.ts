@@ -28,6 +28,7 @@ export const zoneWithNoTaxRate = new Zone({
 });
 export const taxRateDefaultStandard = new TaxRate({
     id: 'taxRateDefaultStandard',
+    name: 'Default Standard',
     value: 20,
     enabled: true,
     zone: zoneDefault,
@@ -35,6 +36,7 @@ export const taxRateDefaultStandard = new TaxRate({
 });
 export const taxRateDefaultReduced = new TaxRate({
     id: 'taxRateDefaultReduced',
+    name: 'Default Reduced',
     value: 10,
     enabled: true,
     zone: zoneDefault,
@@ -42,6 +44,7 @@ export const taxRateDefaultReduced = new TaxRate({
 });
 export const taxRateOtherStandard = new TaxRate({
     id: 'taxRateOtherStandard',
+    name: 'Other Standard',
     value: 15,
     enabled: true,
     zone: zoneOther,
@@ -49,6 +52,7 @@ export const taxRateOtherStandard = new TaxRate({
 });
 export const taxRateOtherReduced = new TaxRate({
     id: 'taxRateOtherReduced',
+    name: 'Other Reduced',
     value: 5,
     enabled: true,
     zone: zoneOther,
@@ -70,10 +74,10 @@ export class MockConnection {
     }
 }
 
-export function createRequestContext(pricesIncludeTax: boolean): RequestContext {
+export function createRequestContext(options: { pricesIncludeTax: boolean }): RequestContext {
     const channel = new Channel({
         defaultTaxZone: zoneDefault,
-        pricesIncludeTax,
+        pricesIncludeTax: options.pricesIncludeTax,
     });
     const ctx = new RequestContext({
         apiType: 'admin',

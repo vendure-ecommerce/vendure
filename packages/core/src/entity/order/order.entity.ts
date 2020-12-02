@@ -1,10 +1,4 @@
-import {
-    Adjustment,
-    AdjustmentType,
-    CurrencyCode,
-    OrderAddress,
-    OrderTaxSummary,
-} from '@vendure/common/lib/generated-types';
+import { Adjustment, CurrencyCode, OrderAddress, OrderTaxSummary } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
@@ -63,8 +57,6 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @JoinTable()
     promotions: Promotion[];
 
-    @Column('simple-json') pendingAdjustments: Adjustment[];
-
     @Column('simple-json') shippingAddress: OrderAddress;
 
     @Column('simple-json') billingAddress: OrderAddress;
@@ -74,15 +66,6 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @Column('varchar')
     currencyCode: CurrencyCode;
-
-    @Column() subTotalBeforeTax: number;
-
-    /**
-     * @description
-     * The subTotal is the total of the OrderLines, before order-level promotions
-     * and shipping has been applied.
-     */
-    @Column() subTotal: number;
 
     @EntityId({ nullable: true })
     shippingMethodId: ID | null;
@@ -106,19 +89,39 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @JoinTable()
     channels: Channel[];
 
+    /**
+     * @description
+     * The subTotal is the total of the OrderLines, before order-level promotions
+     * and shipping has been applied.
+     */
+    @Column() subTotal: number;
+
+    @Column() subTotalWithTax: number;
+
     @Calculated()
-    get totalBeforeTax(): number {
-        return this.subTotalBeforeTax + this.promotionAdjustmentsTotal + (this.shipping || 0);
+    get discounts(): Adjustment[] {
+        const groupedAdjustments = new Map<string, Adjustment>();
+        for (const line of this.lines) {
+            for (const discount of line.discounts) {
+                const adjustment = groupedAdjustments.get(discount.adjustmentSource);
+                if (adjustment) {
+                    adjustment.amount += discount.amount;
+                } else {
+                    groupedAdjustments.set(discount.adjustmentSource, { ...discount });
+                }
+            }
+        }
+        return [...groupedAdjustments.values()];
     }
 
     @Calculated()
     get total(): number {
-        return this.subTotal + this.promotionAdjustmentsTotal + (this.shippingWithTax || 0);
+        return this.subTotal + (this.shipping || 0);
     }
 
     @Calculated()
-    get adjustments(): Adjustment[] {
-        return this.pendingAdjustments || [];
+    get totalWithTax(): number {
+        return this.subTotalWithTax + (this.shippingWithTax || 0);
     }
 
     @Calculated()
@@ -132,12 +135,12 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         for (const line of this.lines) {
             const row = taxRateMap.get(line.taxRate);
             if (row) {
-                row.tax += line.lineTax;
-                row.base += line.linePrice;
+                row.tax += line.proratedLineTax;
+                row.base += line.proratedLinePrice;
             } else {
                 taxRateMap.set(line.taxRate, {
-                    tax: line.lineTax,
-                    base: line.linePrice,
+                    tax: line.proratedLineTax,
+                    base: line.proratedLinePrice,
                 });
             }
         }
@@ -146,24 +149,6 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
             taxBase: row.base,
             taxTotal: row.tax,
         }));
-    }
-
-    get promotionAdjustmentsTotal(): number {
-        return this.adjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
-            .reduce((total, a) => total + a.amount, 0);
-    }
-
-    /**
-     * Clears Adjustments of the given type. If no type
-     * is specified, then all adjustments are removed.
-     */
-    clearAdjustments(type?: AdjustmentType) {
-        if (!type) {
-            this.pendingAdjustments = [];
-        } else {
-            this.pendingAdjustments = this.pendingAdjustments.filter(a => a.type !== type);
-        }
     }
 
     getOrderItems(): OrderItem[] {

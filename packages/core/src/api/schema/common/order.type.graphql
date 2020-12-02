@@ -17,22 +17,39 @@ type Order implements Node {
     billingAddress: OrderAddress
     lines: [OrderLine!]!
     "Order-level adjustments to the order total, such as discounts from promotions"
-    adjustments: [Adjustment!]!
+    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
+    discounts: [Adjustment!]!
+    "An array of all coupon codes applied to the Order"
     couponCodes: [String!]!
     "Promotions applied to the order. Only gets populated after the payment process has completed."
     promotions: [Promotion!]!
     payments: [Payment!]
     fulfillments: [Fulfillment!]
     totalQuantity: Int!
-    subTotalBeforeTax: Int!
-    "The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied."
+    """
+    The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
+    discounts which have been prorated (proportionally distributed) amongst the OrderItems.
+    To get a total of all OrderLines which does not account for prorated discounts, use the
+    sum of `OrderLine.discountedLinePrice` values.
+    """
     subTotal: Int!
+    "Same as subTotal, but inclusive of tax"
+    subTotalWithTax: Int!
     currencyCode: CurrencyCode!
     shipping: Int!
     shippingWithTax: Int!
     shippingMethod: ShippingMethod
-    totalBeforeTax: Int!
+    """
+    Equal to subTotal plus shipping
+    """
     total: Int!
+    """
+    The final payable amount. Equal to subTotalWithTax plus shippingWithTax
+    """
+    totalWithTax: Int!
+    """
+    A summary of the taxes being applied to this Order
+    """
     taxSummary: [OrderTaxSummary!]!
     history(options: HistoryEntryListOptions): HistoryEntryList!
 }
@@ -82,10 +99,29 @@ type OrderItem implements Node {
     createdAt: DateTime!
     updatedAt: DateTime!
     cancelled: Boolean!
-    "The price of a single unit, excluding tax"
+    """
+    The price of a single unit, excluding tax and discounts
+
+    If Order-level discounts have been applied, this will not be the
+    actual taxable unit price, but is generally the correct price to display to customers to avoid confusion
+    about the internal handling of distributed Order-level discounts.
+    """
     unitPrice: Int!
-    "The price of a single unit, including tax"
+    "The price of a single unit, including tax but excluding discounts"
     unitPriceWithTax: Int!
+    "The price of a single unit including discounts, excluding tax"
+    discountedUnitPrice: Int!
+    "The price of a single unit including discounts and tax"
+    discountedUnitPriceWithTax: Int!
+    """
+    The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+    Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+    and refund calculations.
+    """
+    proratedUnitPrice: Int!
+    "The proratedUnitPrice including tax"
+    proratedUnitPriceWithTax: Int!
+    unitTax: Int!
     unitPriceIncludesTax: Boolean! @deprecated(reason: "`unitPrice` is now always without tax")
     taxRate: Float!
     adjustments: [Adjustment!]!
@@ -106,13 +142,30 @@ type OrderLine implements Node {
     items: [OrderItem!]!
     totalPrice: Int! @deprecated(reason: "Use `linePriceWithTax` instead")
     taxRate: Float!
-    "The total price of the line excluding tax"
+    """
+    The total price of the line excluding tax and discounts.
+    """
     linePrice: Int!
+    """
+    The total price of the line including tax bit excluding discounts.
+    """
+    linePriceWithTax: Int!
+    "The price of the line including discounts, excluding tax"
+    discountedLinePrice: Int!
+    "The price of the line including discounts and tax"
+    discountedLinePriceWithTax: Int!
+    """
+    The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+    Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
+    and refund calculations.
+    """
+    proratedLinePrice: Int!
+    "The proratedLinePrice including tax"
+    proratedLinePriceWithTax: Int!
     "The total tax on this line"
     lineTax: Int!
-    "The total price of the line including tax"
-    linePriceWithTax: Int!
-    adjustments: [Adjustment!]!
+    adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
+    discounts: [Adjustment!]!
     taxLines: [TaxLine!]!
     order: Order!
 }

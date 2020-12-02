@@ -1348,8 +1348,8 @@ describe('Orders resolver', () => {
             refundGuard.assertSuccess(refundOrder);
 
             expect(refundOrder.shipping).toBe(order!.shipping);
-            expect(refundOrder.items).toBe(order!.subTotal);
-            expect(refundOrder.total).toBe(order!.total);
+            expect(refundOrder.items).toBe(order!.subTotalWithTax);
+            expect(refundOrder.total).toBe(order!.totalWithTax);
             expect(refundOrder.transactionId).toBe(null);
             expect(refundOrder.state).toBe('Pending');
             refundId = refundOrder.id;

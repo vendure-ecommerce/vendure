@@ -119,7 +119,8 @@ export class OrderTestingService {
 
             for (let i = 0; i < line.quantity; i++) {
                 const orderItem = new OrderItem({
-                    unitPrice,
+                    listPrice: price,
+                    listPriceIncludesTax: priceIncludesTax,
                     adjustments: [],
                     taxLines: [],
                 });

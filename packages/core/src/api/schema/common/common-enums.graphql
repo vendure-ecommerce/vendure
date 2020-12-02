@@ -6,6 +6,7 @@ enum GlobalFlag {
 
 enum AdjustmentType {
     PROMOTION
+    DISTRIBUTED_ORDER_PROMOTION
 }
 
 enum DeletionResult {

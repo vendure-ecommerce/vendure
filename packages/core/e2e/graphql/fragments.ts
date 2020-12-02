@@ -334,7 +334,6 @@ export const ORDER_ITEM_FRAGMENT = gql`
         id
         cancelled
         unitPrice
-        unitPriceIncludesTax
         unitPriceWithTax
         taxRate
         fulfillment {
@@ -372,14 +371,12 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             items {
                 ...OrderItem
             }
-            totalPrice
-        }
-        adjustments {
-            ...Adjustment
+            linePriceWithTax
         }
         subTotal
-        subTotalBeforeTax
-        totalBeforeTax
+        subTotalWithTax
+        total
+        totalWithTax
         currencyCode
         shipping
         shippingMethod {
@@ -400,7 +397,6 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         }
         total
     }
-    ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
     ${ORDER_ITEM_FRAGMENT}
 `;

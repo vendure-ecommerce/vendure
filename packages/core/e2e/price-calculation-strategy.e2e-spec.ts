@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { TestPriceCalculationStrategy } from './fixtures/test-price-calculation-strategy';
 import { AddItemToOrder, SearchProductsShop, SinglePrice } from './graphql/generated-e2e-shop-types';
@@ -71,7 +71,7 @@ describe('custom PriceCalculationStrategy', () => {
         const variantPrice = (variant0.price as SinglePrice).value as number;
         expect(addItemToOrder.lines[0].unitPrice).toEqual(variantPrice);
         expect(addItemToOrder.lines[1].unitPrice).toEqual(variantPrice + 500);
-        expect(addItemToOrder.subTotalBeforeTax).toEqual(variantPrice + variantPrice + 500);
+        expect(addItemToOrder.subTotal).toEqual(variantPrice + variantPrice + 500);
     });
 });
 
@@ -88,10 +88,11 @@ const ADD_ITEM_TO_ORDER_CUSTOM_FIELDS = gql`
         ) {
             ... on Order {
                 id
-                subTotalBeforeTax
                 subTotal
+                subTotalWithTax
                 shipping
                 total
+                totalWithTax
                 lines {
                     id
                     quantity
@@ -100,7 +101,6 @@ const ADD_ITEM_TO_ORDER_CUSTOM_FIELDS = gql`
                     items {
                         unitPrice
                         unitPriceWithTax
-                        unitPriceIncludesTax
                     }
                 }
             }

@@ -2,6 +2,7 @@ import { TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
+import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';
 import { idsAreEqual } from '../../common/utils';
 import { VendureEntity } from '../base/base.entity';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
@@ -44,35 +45,34 @@ export class TaxRate extends VendureEntity {
      * Returns the tax component of a given gross price.
      */
     taxComponentOf(grossPrice: number): number {
-        return Math.round(grossPrice - grossPrice / ((100 + this.value) / 100));
+        return taxComponentOf(grossPrice, this.value);
     }
 
     /**
      * Given a gross (tax-inclusive) price, returns the net price.
      */
     netPriceOf(grossPrice: number): number {
-        return grossPrice - this.taxComponentOf(grossPrice);
+        return netPriceOf(grossPrice, this.value);
     }
 
     /**
      * Returns the tax applicable to the given net price.
      */
     taxPayableOn(netPrice: number): number {
-        return Math.round(netPrice * (this.value / 100));
+        return taxPayableOn(netPrice, this.value);
     }
 
     /**
      * Given a net price, return the gross price (net + tax)
      */
     grossPriceOf(netPrice: number): number {
-        return netPrice + this.taxPayableOn(netPrice);
+        return grossPriceOf(netPrice, this.value);
     }
 
     apply(price: number): TaxLine {
         return {
             description: this.name,
             taxRate: this.value,
-            amount: this.taxPayableOn(price),
         };
     }
 

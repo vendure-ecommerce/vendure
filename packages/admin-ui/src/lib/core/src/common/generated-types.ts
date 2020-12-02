@@ -1434,23 +1434,37 @@ export type Order = Node & {
   shippingAddress?: Maybe<OrderAddress>;
   billingAddress?: Maybe<OrderAddress>;
   lines: Array<OrderLine>;
-  /** Order-level adjustments to the order total, such as discounts from promotions */
+  /**
+   * Order-level adjustments to the order total, such as discounts from promotions
+   * @deprecated Use `discounts` instead
+   */
   adjustments: Array<Adjustment>;
+  discounts: Array<Adjustment>;
+  /** An array of all coupon codes applied to the Order */
   couponCodes: Array<Scalars['String']>;
   /** Promotions applied to the order. Only gets populated after the payment process has completed. */
   promotions: Array<Promotion>;
   payments?: Maybe<Array<Payment>>;
   fulfillments?: Maybe<Array<Fulfillment>>;
   totalQuantity: Scalars['Int'];
-  subTotalBeforeTax: Scalars['Int'];
-  /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
+  /**
+   * The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
+   * discounts which have been prorated (proportionally distributed) amongst the OrderItems.
+   * To get a total of all OrderLines which does not account for prorated discounts, use the
+   * sum of `OrderLine.discountedLinePrice` values.
+   */
   subTotal: Scalars['Int'];
+  /** Same as subTotal, but inclusive of tax */
+  subTotalWithTax: Scalars['Int'];
   currencyCode: CurrencyCode;
   shipping: Scalars['Int'];
   shippingWithTax: Scalars['Int'];
   shippingMethod?: Maybe<ShippingMethod>;
-  totalBeforeTax: Scalars['Int'];
+  /** Equal to subTotal plus shipping */
   total: Scalars['Int'];
+  /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
+  totalWithTax: Scalars['Int'];
+  /** A summary of the taxes being applied to this Order */
   taxSummary: Array<OrderTaxSummary>;
   history: HistoryEntryList;
   customFields?: Maybe<Scalars['JSON']>;
@@ -2279,7 +2293,8 @@ export enum GlobalFlag {
 }
 
 export enum AdjustmentType {
-  PROMOTION = 'PROMOTION'
+  PROMOTION = 'PROMOTION',
+  DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION'
 }
 
 export enum DeletionResult {
@@ -2482,7 +2497,6 @@ export type Adjustment = {
 export type TaxLine = {
   __typename?: 'TaxLine';
   description: Scalars['String'];
-  amount: Scalars['Int'];
   taxRate: Scalars['Float'];
 };
 
@@ -3554,10 +3568,29 @@ export type OrderItem = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   cancelled: Scalars['Boolean'];
-  /** The price of a single unit, excluding tax */
+  /**
+   * The price of a single unit, excluding tax and discounts
+   * 
+   * If Order-level discounts have been applied, this will not be the
+   * actual taxable unit price, but is generally the correct price to display to customers to avoid confusion
+   * about the internal handling of distributed Order-level discounts.
+   */
   unitPrice: Scalars['Int'];
-  /** The price of a single unit, including tax */
+  /** The price of a single unit, including tax but excluding discounts */
   unitPriceWithTax: Scalars['Int'];
+  /** The price of a single unit including discounts, excluding tax */
+  discountedUnitPrice: Scalars['Int'];
+  /** The price of a single unit including discounts and tax */
+  discountedUnitPriceWithTax: Scalars['Int'];
+  /**
+   * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+   * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+   * and refund calculations.
+   */
+  proratedUnitPrice: Scalars['Int'];
+  /** The proratedUnitPrice including tax */
+  proratedUnitPriceWithTax: Scalars['Int'];
+  unitTax: Scalars['Int'];
   /** @deprecated `unitPrice` is now always without tax */
   unitPriceIncludesTax: Scalars['Boolean'];
   taxRate: Scalars['Float'];
@@ -3581,13 +3614,27 @@ export type OrderLine = Node & {
   /** @deprecated Use `linePriceWithTax` instead */
   totalPrice: Scalars['Int'];
   taxRate: Scalars['Float'];
-  /** The total price of the line excluding tax */
+  /** The total price of the line excluding tax and discounts. */
   linePrice: Scalars['Int'];
+  /** The total price of the line including tax bit excluding discounts. */
+  linePriceWithTax: Scalars['Int'];
+  /** The price of the line including discounts, excluding tax */
+  discountedLinePrice: Scalars['Int'];
+  /** The price of the line including discounts and tax */
+  discountedLinePriceWithTax: Scalars['Int'];
+  /**
+   * The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+   * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
+   * and refund calculations.
+   */
+  proratedLinePrice: Scalars['Int'];
+  /** The proratedLinePrice including tax */
+  proratedLinePriceWithTax: Scalars['Int'];
   /** The total tax on this line */
   lineTax: Scalars['Int'];
-  /** The total price of the line including tax */
-  linePriceWithTax: Scalars['Int'];
+  /** @deprecated Use `discounts` instead */
   adjustments: Array<Adjustment>;
+  discounts: Array<Adjustment>;
   taxLines: Array<TaxLine>;
   order: Order;
   customFields?: Maybe<Scalars['JSON']>;
@@ -4147,13 +4194,13 @@ export type OrderFilterParameter = {
   state?: Maybe<StringOperators>;
   active?: Maybe<BooleanOperators>;
   totalQuantity?: Maybe<NumberOperators>;
-  subTotalBeforeTax?: Maybe<NumberOperators>;
   subTotal?: Maybe<NumberOperators>;
+  subTotalWithTax?: Maybe<NumberOperators>;
   currencyCode?: Maybe<StringOperators>;
   shipping?: Maybe<NumberOperators>;
   shippingWithTax?: Maybe<NumberOperators>;
-  totalBeforeTax?: Maybe<NumberOperators>;
   total?: Maybe<NumberOperators>;
+  totalWithTax?: Maybe<NumberOperators>;
 };
 
 export type OrderSortParameter = {
@@ -4164,12 +4211,12 @@ export type OrderSortParameter = {
   code?: Maybe<SortOrder>;
   state?: Maybe<SortOrder>;
   totalQuantity?: Maybe<SortOrder>;
-  subTotalBeforeTax?: Maybe<SortOrder>;
   subTotal?: Maybe<SortOrder>;
+  subTotalWithTax?: Maybe<SortOrder>;
   shipping?: Maybe<SortOrder>;
   shippingWithTax?: Maybe<SortOrder>;
-  totalBeforeTax?: Maybe<SortOrder>;
   total?: Maybe<SortOrder>;
+  totalWithTax?: Maybe<SortOrder>;
 };
 
 export type PaymentMethodFilterParameter = {
@@ -5234,7 +5281,7 @@ export type OrderLineFragment = (
 
 export type OrderDetailFragment = (
   { __typename?: 'Order' }
-  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalBeforeTax' | 'totalBeforeTax' | 'currencyCode' | 'shipping' | 'shippingWithTax' | 'total'>
+  & Pick<Order, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'nextStates' | 'active' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax' | 'currencyCode' | 'shipping' | 'shippingWithTax'>
   & { customer?: Maybe<(
     { __typename?: 'Customer' }
     & Pick<Customer, 'id' | 'firstName' | 'lastName'>

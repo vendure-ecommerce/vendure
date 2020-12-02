@@ -26,7 +26,6 @@ type Adjustment {
 
 type TaxLine {
     description: String!
-    amount: Int!
     taxRate: Float!
 }
 

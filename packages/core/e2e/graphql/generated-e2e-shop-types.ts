@@ -422,6 +422,7 @@ export enum GlobalFlag {
 
 export enum AdjustmentType {
     PROMOTION = 'PROMOTION',
+    DISTRIBUTED_ORDER_PROMOTION = 'DISTRIBUTED_ORDER_PROMOTION',
 }
 
 export enum DeletionResult {
@@ -608,7 +609,6 @@ export type Adjustment = {
 
 export type TaxLine = {
     description: Scalars['String'];
-    amount: Scalars['Int'];
     taxRate: Scalars['Float'];
 };
 
@@ -1668,23 +1668,37 @@ export type Order = Node & {
     shippingAddress?: Maybe<OrderAddress>;
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
-    /** Order-level adjustments to the order total, such as discounts from promotions */
+    /**
+     * Order-level adjustments to the order total, such as discounts from promotions
+     * @deprecated Use `discounts` instead
+     */
     adjustments: Array<Adjustment>;
+    discounts: Array<Adjustment>;
+    /** An array of all coupon codes applied to the Order */
     couponCodes: Array<Scalars['String']>;
     /** Promotions applied to the order. Only gets populated after the payment process has completed. */
     promotions: Array<Promotion>;
     payments?: Maybe<Array<Payment>>;
     fulfillments?: Maybe<Array<Fulfillment>>;
     totalQuantity: Scalars['Int'];
-    subTotalBeforeTax: Scalars['Int'];
-    /** The subTotal is the total of the OrderLines, before order-level promotions and shipping has been applied. */
+    /**
+     * The subTotal is the total of all OrderLines in the Order. This figure also includes any Order-level
+     * discounts which have been prorated (proportionally distributed) amongst the OrderItems.
+     * To get a total of all OrderLines which does not account for prorated discounts, use the
+     * sum of `OrderLine.discountedLinePrice` values.
+     */
     subTotal: Scalars['Int'];
+    /** Same as subTotal, but inclusive of tax */
+    subTotalWithTax: Scalars['Int'];
     currencyCode: CurrencyCode;
     shipping: Scalars['Int'];
     shippingWithTax: Scalars['Int'];
     shippingMethod?: Maybe<ShippingMethod>;
-    totalBeforeTax: Scalars['Int'];
+    /** Equal to subTotal plus shipping */
     total: Scalars['Int'];
+    /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
+    totalWithTax: Scalars['Int'];
+    /** A summary of the taxes being applied to this Order */
     taxSummary: Array<OrderTaxSummary>;
     history: HistoryEntryList;
     customFields?: Maybe<Scalars['JSON']>;
@@ -1739,10 +1753,29 @@ export type OrderItem = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     cancelled: Scalars['Boolean'];
-    /** The price of a single unit, excluding tax */
+    /**
+     * The price of a single unit, excluding tax and discounts
+     *
+     * If Order-level discounts have been applied, this will not be the
+     * actual taxable unit price, but is generally the correct price to display to customers to avoid confusion
+     * about the internal handling of distributed Order-level discounts.
+     */
     unitPrice: Scalars['Int'];
-    /** The price of a single unit, including tax */
+    /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /** The price of a single unit including discounts, excluding tax */
+    discountedUnitPrice: Scalars['Int'];
+    /** The price of a single unit including discounts and tax */
+    discountedUnitPriceWithTax: Scalars['Int'];
+    /**
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+     * and refund calculations.
+     */
+    proratedUnitPrice: Scalars['Int'];
+    /** The proratedUnitPrice including tax */
+    proratedUnitPriceWithTax: Scalars['Int'];
+    unitTax: Scalars['Int'];
     /** @deprecated `unitPrice` is now always without tax */
     unitPriceIncludesTax: Scalars['Boolean'];
     taxRate: Scalars['Float'];
@@ -1765,13 +1798,27 @@ export type OrderLine = Node & {
     /** @deprecated Use `linePriceWithTax` instead */
     totalPrice: Scalars['Int'];
     taxRate: Scalars['Float'];
-    /** The total price of the line excluding tax */
+    /** The total price of the line excluding tax and discounts. */
     linePrice: Scalars['Int'];
+    /** The total price of the line including tax bit excluding discounts. */
+    linePriceWithTax: Scalars['Int'];
+    /** The price of the line including discounts, excluding tax */
+    discountedLinePrice: Scalars['Int'];
+    /** The price of the line including discounts and tax */
+    discountedLinePriceWithTax: Scalars['Int'];
+    /**
+     * The actual line price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderLine, and is used in tax
+     * and refund calculations.
+     */
+    proratedLinePrice: Scalars['Int'];
+    /** The proratedLinePrice including tax */
+    proratedLinePriceWithTax: Scalars['Int'];
     /** The total tax on this line */
     lineTax: Scalars['Int'];
-    /** The total price of the line including tax */
-    linePriceWithTax: Scalars['Int'];
+    /** @deprecated Use `discounts` instead */
     adjustments: Array<Adjustment>;
+    discounts: Array<Adjustment>;
     taxLines: Array<TaxLine>;
     order: Order;
     customFields?: Maybe<Scalars['JSON']>;
@@ -2466,13 +2513,13 @@ export type OrderFilterParameter = {
     state?: Maybe<StringOperators>;
     active?: Maybe<BooleanOperators>;
     totalQuantity?: Maybe<NumberOperators>;
-    subTotalBeforeTax?: Maybe<NumberOperators>;
     subTotal?: Maybe<NumberOperators>;
+    subTotalWithTax?: Maybe<NumberOperators>;
     currencyCode?: Maybe<StringOperators>;
     shipping?: Maybe<NumberOperators>;
     shippingWithTax?: Maybe<NumberOperators>;
-    totalBeforeTax?: Maybe<NumberOperators>;
     total?: Maybe<NumberOperators>;
+    totalWithTax?: Maybe<NumberOperators>;
 };
 
 export type OrderSortParameter = {
@@ -2483,12 +2530,12 @@ export type OrderSortParameter = {
     code?: Maybe<SortOrder>;
     state?: Maybe<SortOrder>;
     totalQuantity?: Maybe<SortOrder>;
-    subTotalBeforeTax?: Maybe<SortOrder>;
     subTotal?: Maybe<SortOrder>;
+    subTotalWithTax?: Maybe<SortOrder>;
     shipping?: Maybe<SortOrder>;
     shippingWithTax?: Maybe<SortOrder>;
-    totalBeforeTax?: Maybe<SortOrder>;
     total?: Maybe<SortOrder>;
+    totalWithTax?: Maybe<SortOrder>;
 };
 
 export type HistoryEntryFilterParameter = {
@@ -2518,13 +2565,13 @@ export type NativeAuthInput = {
 
 export type TestOrderFragmentFragment = Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'totalBeforeTax' | 'total' | 'couponCodes' | 'shipping'
+    'id' | 'code' | 'state' | 'active' | 'total' | 'totalWithTax' | 'couponCodes' | 'shipping'
 > & {
-    adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
+    discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
     lines: Array<
         Pick<OrderLine, 'id' | 'quantity' | 'linePrice' | 'linePriceWithTax'> & {
             productVariant: Pick<ProductVariant, 'id'>;
-            adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
+            discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
         }
     >;
     shippingMethod?: Maybe<Pick<ShippingMethod, 'id' | 'code' | 'description'>>;
@@ -2532,14 +2579,17 @@ export type TestOrderFragmentFragment = Pick<
     history: { items: Array<Pick<HistoryEntry, 'id' | 'type' | 'data'>> };
 };
 
-export type UpdatedOrderFragment = Pick<Order, 'id' | 'code' | 'state' | 'active' | 'total'> & {
+export type UpdatedOrderFragment = Pick<
+    Order,
+    'id' | 'code' | 'state' | 'active' | 'total' | 'totalWithTax'
+> & {
     lines: Array<
         Pick<OrderLine, 'id' | 'quantity'> & {
             productVariant: Pick<ProductVariant, 'id'>;
-            adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
+            discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
         }
     >;
-    adjustments: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
+    discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
 };
 
 export type AddItemToOrderMutationVariables = Exact<{
@@ -2720,7 +2770,7 @@ export type GetActiveOrderWithPriceDataQueryVariables = Exact<{ [key: string]: n
 
 export type GetActiveOrderWithPriceDataQuery = {
     activeOrder?: Maybe<
-        Pick<Order, 'id' | 'subTotalBeforeTax' | 'subTotal' | 'totalBeforeTax' | 'total'> & {
+        Pick<Order, 'id' | 'subTotal' | 'subTotalWithTax' | 'total' | 'totalWithTax'> & {
             lines: Array<
                 Pick<
                     OrderLine,
@@ -2734,7 +2784,7 @@ export type GetActiveOrderWithPriceDataQuery = {
                 > & {
                     items: Array<Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate'>>;
                     adjustments: Array<Pick<Adjustment, 'amount' | 'type'>>;
-                    taxLines: Array<Pick<TaxLine, 'amount' | 'taxRate' | 'description'>>;
+                    taxLines: Array<Pick<TaxLine, 'taxRate' | 'description'>>;
                 }
             >;
             taxSummary: Array<Pick<OrderTaxSummary, 'taxRate' | 'taxBase' | 'taxTotal'>>;
@@ -2969,15 +3019,13 @@ type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 export namespace TestOrderFragment {
     export type Fragment = TestOrderFragmentFragment;
-    export type Adjustments = NonNullable<NonNullable<TestOrderFragmentFragment['adjustments']>[number]>;
+    export type Discounts = NonNullable<NonNullable<TestOrderFragmentFragment['discounts']>[number]>;
     export type Lines = NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>;
     export type ProductVariant = NonNullable<
         NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['productVariant']
     >;
-    export type _Adjustments = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['adjustments']
-        >[number]
+    export type _Discounts = NonNullable<
+        NonNullable<NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['discounts']>[number]
     >;
     export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
@@ -2994,10 +3042,10 @@ export namespace UpdatedOrder {
     export type ProductVariant = NonNullable<
         NonNullable<NonNullable<UpdatedOrderFragment['lines']>[number]>['productVariant']
     >;
-    export type Adjustments = NonNullable<
-        NonNullable<NonNullable<NonNullable<UpdatedOrderFragment['lines']>[number]>['adjustments']>[number]
+    export type Discounts = NonNullable<
+        NonNullable<NonNullable<NonNullable<UpdatedOrderFragment['lines']>[number]>['discounts']>[number]
     >;
-    export type _Adjustments = NonNullable<NonNullable<UpdatedOrderFragment['adjustments']>[number]>;
+    export type _Discounts = NonNullable<NonNullable<UpdatedOrderFragment['discounts']>[number]>;
 }
 
 export namespace AddItemToOrder {

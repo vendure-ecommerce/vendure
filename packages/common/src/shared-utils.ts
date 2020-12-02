@@ -25,6 +25,17 @@ export function isClassInstance(item: any): boolean {
     return isObject(item) && item.constructor.name !== 'Object';
 }
 
+type NumericPropsOf<T> = {
+    [K in keyof T]: T[K] extends number ? K : never;
+}[keyof T];
+
+/**
+ * Adds up all the values of a given property of a list of objects.
+ */
+function summate<T, K extends NumericPropsOf<T>>(items: T[], prop: K): number {
+    return items.reduce((sum, i) => sum + (i[prop] as any), 0);
+}
+
 /**
  * Given an array of option arrays `[['red, 'blue'], ['small', 'large']]`, this method returns a new array
  * containing all the combinations of those options:

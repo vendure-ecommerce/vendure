@@ -282,9 +282,8 @@ export class OrderService {
             couponCodes: [],
             shippingAddress: {},
             billingAddress: {},
-            pendingAdjustments: [],
             subTotal: 0,
-            subTotalBeforeTax: 0,
+            subTotalWithTax: 0,
             currencyCode: ctx.channel.currencyCode,
         });
         if (userId) {
@@ -391,11 +390,11 @@ export class OrderService {
                     orderLine.customFields || {},
                 );
                 const taxRate = productVariant.taxRateApplied;
-                const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;
                 for (let i = currentQuantity; i < correctedQuantity; i++) {
                     const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                         new OrderItem({
-                            unitPrice,
+                            listPrice: price,
+                            listPriceIncludesTax: priceIncludesTax,
                             adjustments: [],
                             taxLines: [],
                         }),
