@@ -1,4 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
+import { summate } from '@vendure/common/lib/shared-utils';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -175,8 +176,8 @@ describe('Order taxes', () => {
         ]);
 
         // ensure that the summary total add up to the overall totals
-        const taxSummaryBaseTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxBase, 0);
-        const taxSummaryTaxTotal = activeOrder!.taxSummary.reduce((total, row) => total + row.taxTotal, 0);
+        const taxSummaryBaseTotal = summate(activeOrder!.taxSummary, 'taxBase');
+        const taxSummaryTaxTotal = summate(activeOrder!.taxSummary, 'taxTotal');
 
         expect(taxSummaryBaseTotal).toBe(activeOrder?.total);
         expect(taxSummaryBaseTotal + taxSummaryTaxTotal).toBe(activeOrder?.totalWithTax);

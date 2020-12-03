@@ -1,5 +1,6 @@
 import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
@@ -77,7 +78,7 @@ export class OrderItem extends VendureEntity {
      */
     @Calculated()
     get taxRate(): number {
-        return (this.taxLines || []).reduce((total, l) => total + l.taxRate, 0);
+        return summate(this.taxLines || [], 'taxRate');
     }
 
     @Calculated()

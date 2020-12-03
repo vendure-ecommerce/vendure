@@ -1,5 +1,6 @@
 import { Adjustment, CurrencyCode, OrderAddress, OrderTaxSummary } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
@@ -126,7 +127,7 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @Calculated()
     get totalQuantity(): number {
-        return (this.lines || []).reduce((total, line) => total + line.quantity, 0);
+        return summate(this.lines, 'quantity');
     }
 
     @Calculated()

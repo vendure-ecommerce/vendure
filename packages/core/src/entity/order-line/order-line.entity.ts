@@ -1,5 +1,6 @@
 import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
@@ -45,12 +46,12 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get unitPrice(): number {
-        return this.activeItems.length ? this.activeItems[0].unitPrice : 0;
+        return this.firstActiveItemPropOr('unitPrice', 0);
     }
 
     @Calculated()
     get unitPriceWithTax(): number {
-        return this.activeItems.length ? this.activeItems[0].unitPriceWithTax : 0;
+        return this.firstActiveItemPropOr('unitPriceWithTax', 0);
     }
 
     @Calculated()
@@ -68,32 +69,32 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get taxLines(): TaxLine[] {
-        return this.activeItems.length ? this.activeItems[0].taxLines : [];
+        return this.firstActiveItemPropOr('taxLines', []);
     }
 
     @Calculated()
     get taxRate(): number {
-        return this.activeItems.length ? this.activeItems[0].taxRate : 0;
+        return this.firstActiveItemPropOr('taxRate', 0);
     }
 
     @Calculated()
     get linePrice(): number {
-        return this.activeItems.reduce((total, item) => total + item.unitPrice, 0);
+        return summate(this.activeItems, 'unitPrice');
     }
 
     @Calculated()
     get linePriceWithTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.unitPriceWithTax, 0);
+        return summate(this.activeItems, 'unitPriceWithTax');
     }
 
     @Calculated()
     get discountedLinePrice(): number {
-        return this.activeItems.reduce((total, item) => total + item.discountedUnitPrice, 0);
+        return summate(this.activeItems, 'discountedUnitPrice');
     }
 
     @Calculated()
     get discountedLinePriceWithTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.discountedUnitPriceWithTax, 0);
+        return summate(this.activeItems, 'discountedUnitPriceWithTax');
     }
 
     @Calculated()
@@ -106,22 +107,22 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get lineTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.unitTax, 0);
+        return summate(this.activeItems, 'unitTax');
     }
 
     @Calculated()
     get proratedLinePrice(): number {
-        return this.activeItems.reduce((total, item) => total + item.proratedUnitPrice, 0);
+        return summate(this.activeItems, 'proratedUnitPrice');
     }
 
     @Calculated()
     get proratedLinePriceWithTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.proratedUnitPriceWithTax, 0);
+        return summate(this.activeItems, 'proratedUnitPriceWithTax');
     }
 
     @Calculated()
     get proratedLineTax(): number {
-        return this.activeItems.reduce((total, item) => total + item.proratedUnitTax, 0);
+        return summate(this.activeItems, 'proratedUnitTax');
     }
 
     /**
@@ -137,5 +138,12 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
      */
     clearAdjustments(type?: AdjustmentType) {
         this.activeItems.forEach(item => item.clearAdjustments(type));
+    }
+
+    private firstActiveItemPropOr<K extends keyof OrderItem>(
+        prop: K,
+        defaultVal: OrderItem[K],
+    ): OrderItem[K] {
+        return this.activeItems.length ? this.activeItems[0][prop] : defaultVal;
     }
 }

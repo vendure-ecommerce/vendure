@@ -1,6 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { AdjustmentType, LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
+import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { PromotionItemAction, PromotionOrderAction } from '../../../config';
@@ -648,16 +649,16 @@ describe('OrderCalculator', () => {
      */
     function assertOrderTotalsAddUp(order: Order) {
         for (const line of order.lines) {
-            const itemUnitPriceSum = line.items.reduce((sum, i) => sum + i.unitPrice, 0);
+            const itemUnitPriceSum = summate(line.items, 'unitPrice');
             expect(line.linePrice).toBe(itemUnitPriceSum);
-            const itemUnitPriceWithTaxSum = line.items.reduce((sum, i) => sum + i.unitPriceWithTax, 0);
+            const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
             expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
         }
-        const taxableLinePriceSum = order.lines.reduce((sum, l) => sum + l.proratedLinePrice, 0);
+        const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
         expect(order.subTotal).toBe(taxableLinePriceSum);
 
         // Make sure the customer-facing totals also add up
-        const displayPriceWithTaxSum = order.lines.reduce((sum, l) => sum + l.discountedLinePriceWithTax, 0);
+        const displayPriceWithTaxSum = summate(order.lines, 'discountedLinePriceWithTax');
         const orderDiscountsSum = order.discounts
             .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
             .reduce((sum, d) => sum + d.amount, 0);

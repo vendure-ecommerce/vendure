@@ -27,7 +27,7 @@ import {
     UpdateOrderNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { notNullOrUndefined, summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 import { doc } from 'prettier';
 
@@ -709,7 +709,7 @@ export class OrderService {
             !input.lines ||
             input.lines.length === 0 ||
             input.lines.length === 0 ||
-            input.lines.reduce((total, line) => total + line.quantity, 0) === 0
+            summate(input.lines, 'quantity') === 0
         ) {
             return new EmptyOrderLineSelectionError();
         }
@@ -842,7 +842,7 @@ export class OrderService {
         input: CancelOrderInput,
         lines: OrderLineInput[],
     ) {
-        if (lines.length === 0 || lines.reduce((total, line) => total + line.quantity, 0) === 0) {
+        if (lines.length === 0 || summate(lines, 'quantity') === 0) {
             return new EmptyOrderLineSelectionError();
         }
         const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, lines, i => !i.cancelled);
@@ -889,9 +889,7 @@ export class OrderService {
         input: RefundOrderInput,
     ): Promise<ErrorResultUnion<RefundOrderResult, Refund>> {
         if (
-            (!input.lines ||
-                input.lines.length === 0 ||
-                input.lines.reduce((total, line) => total + line.quantity, 0) === 0) &&
+            (!input.lines || input.lines.length === 0 || summate(input.lines, 'quantity') === 0) &&
             input.shipping === 0
         ) {
             return new NothingToRefundError();

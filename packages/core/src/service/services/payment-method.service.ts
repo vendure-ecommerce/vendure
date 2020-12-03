@@ -7,7 +7,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
@@ -106,7 +106,7 @@ export class PaymentMethodService {
         payment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
-        const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
+        const itemAmount = summate(items, 'unitPriceWithTax');
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
             payment,

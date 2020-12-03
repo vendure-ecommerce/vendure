@@ -29,11 +29,18 @@ type NumericPropsOf<T> = {
     [K in keyof T]: T[K] extends number ? K : never;
 }[keyof T];
 
+type OnlyNumerics<T> = {
+    [K in NumericPropsOf<T>]: T[K];
+};
+
 /**
- * Adds up all the values of a given property of a list of objects.
+ * Adds up all the values of a given numeric property of a list of objects.
  */
-function summate<T, K extends NumericPropsOf<T>>(items: T[], prop: K): number {
-    return items.reduce((sum, i) => sum + (i[prop] as any), 0);
+export function summate<T extends OnlyNumerics<T>>(
+    items: T[] | undefined | null,
+    prop: keyof OnlyNumerics<T>,
+): number {
+    return (items || []).reduce((sum, i) => sum + i[prop], 0);
 }
 
 /**
