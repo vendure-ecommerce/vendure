@@ -4,6 +4,7 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
+import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
@@ -171,9 +172,9 @@ export class OrderCalculator {
             // which affected the order price.
             const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order));
 
-            const lineHasExistingPromotions =
-                line.items[0].adjustments &&
-                !!line.items[0].adjustments.find(a => a.type === AdjustmentType.PROMOTION);
+            const lineHasExistingPromotions = !!line.items[0].adjustments?.find(
+                a => a.type === AdjustmentType.PROMOTION,
+            );
             const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
 
             if (forceUpdateItems || lineHasExistingPromotions) {
@@ -198,7 +199,7 @@ export class OrderCalculator {
                             orderLine: line,
                         });
                         if (adjustment) {
-                            item.adjustments = item.adjustments.concat(adjustment);
+                            item.addAdjustment(adjustment);
                             priceAdjusted = true;
                             updatedOrderItems.add(item);
                         }
@@ -263,18 +264,30 @@ export class OrderCalculator {
                 // may be modified by a previously-applied promotion
                 if (await promotion.test(ctx, order)) {
                     const adjustment = await promotion.apply(ctx, { order });
-                    if (adjustment) {
+                    if (adjustment && adjustment.amount !== 0) {
                         const amount = adjustment.amount;
-                        const weights = order.lines.map(l => l.proratedLinePrice);
+                        const weights = order.lines.map(l => l.proratedLinePrice * l.taxRate);
                         const distribution = prorate(weights, amount);
                         order.lines.forEach((line, i) => {
                             const shareOfAmount = distribution[i];
                             const itemWeights = line.items.map(item => item.unitPrice);
                             const itemDistribution = prorate(itemWeights, shareOfAmount);
                             line.items.forEach((item, j) => {
+                                const discount = itemDistribution[j];
+                                const adjustedDiscount = item.listPriceIncludesTax
+                                    ? netPriceOf(amount, item.taxRate)
+                                    : amount;
+                                // Note: At this point, any time we have an Order-level discount being applied,
+                                // we are effectively nuking all the performance optimizations we have for updating
+                                // as few OrderItems as possible (see notes in the `applyOrderItemPromotions()` method).
+                                // This is because we are prorating any Order-level discounts over _all_ OrderItems.
+                                // (see https://github.com/vendure-ecommerce/vendure/issues/573 for a detailed discussion
+                                // as to why). The are ways to optimize this, but for now I am leaving the implementation
+                                // as-is, and we can deal with performance issues later. Correctness is more important
+                                // when is comes to price & tax calculations.
                                 updatedItems.add(item);
-                                item.adjustments.push({
-                                    amount: itemDistribution[j],
+                                item.addAdjustment({
+                                    amount: discount,
                                     adjustmentSource: adjustment.adjustmentSource,
                                     description: adjustment.description,
                                     type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,

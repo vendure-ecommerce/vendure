@@ -55,6 +55,16 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     @Calculated()
+    get discountedUnitPrice(): number {
+        return this.firstActiveItemPropOr('discountedUnitPrice', 0);
+    }
+
+    @Calculated()
+    get discountedUnitPriceWithTax(): number {
+        return this.firstActiveItemPropOr('discountedUnitPriceWithTax', 0);
+    }
+
+    @Calculated()
     get quantity(): number {
         return this.activeItems.length;
     }
@@ -99,9 +109,10 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
 
     @Calculated()
     get discounts(): Adjustment[] {
+        const priceIncludesTax = this.items?.[0]?.listPriceIncludesTax ?? false;
         return this.adjustments.map(adjustment => ({
             ...adjustment,
-            amount: grossPriceOf(adjustment.amount, this.taxRate),
+            amount: priceIncludesTax ? adjustment.amount : grossPriceOf(adjustment.amount, this.taxRate),
         }));
     }
 

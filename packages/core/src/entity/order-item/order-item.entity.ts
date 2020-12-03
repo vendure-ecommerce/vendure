@@ -93,22 +93,26 @@ export class OrderItem extends VendureEntity {
 
     @Calculated()
     get discountedUnitPrice(): number {
-        return this.unitPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
     @Calculated()
     get discountedUnitPriceWithTax(): number {
-        return grossPriceOf(this.discountedUnitPrice, this.taxRate);
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
     @Calculated()
     get proratedUnitPrice(): number {
-        return this.unitPrice + this.getAdjustmentsTotal();
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
     @Calculated()
     get proratedUnitPriceWithTax(): number {
-        return grossPriceOf(this.proratedUnitPrice, this.taxRate);
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
     @Calculated()
@@ -127,6 +131,10 @@ export class OrderItem extends VendureEntity {
         return this.adjustments
             .filter(adjustment => (type ? adjustment.type === type : true))
             .reduce((total, a) => total + a.amount, 0);
+    }
+
+    addAdjustment(adjustment: Adjustment) {
+        this.adjustments = this.adjustments.concat(adjustment);
     }
 
     clearAdjustments(type?: AdjustmentType) {

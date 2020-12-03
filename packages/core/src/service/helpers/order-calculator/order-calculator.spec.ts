@@ -27,6 +27,7 @@ import { TaxCalculator } from '../tax-calculator/tax-calculator';
 import {
     createRequestContext,
     MockConnection,
+    taxCategoryReduced,
     taxCategoryStandard,
 } from '../tax-calculator/tax-calculator-test-fixtures';
 
@@ -127,7 +128,8 @@ describe('OrderCalculator', () => {
             code: 'order_total_condition',
             description: [{ languageCode: LanguageCode.en, value: '' }],
             check(ctx, order, args) {
-                return args.minimum <= order.total;
+                const threshold = ctx.channel.pricesIncludeTax ? order.subTotalWithTax : order.subTotal;
+                return args.minimum <= threshold;
             },
         });
 
@@ -145,7 +147,7 @@ describe('OrderCalculator', () => {
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(ctx, order) {
-                return -order.total + 42;
+                return (ctx.channel.pricesIncludeTax ? -order.subTotalWithTax : -order.subTotal) + 420;
             },
         });
 
@@ -154,7 +156,8 @@ describe('OrderCalculator', () => {
             description: [{ languageCode: LanguageCode.en, value: '' }],
             args: {},
             execute(ctx, order) {
-                return -500;
+                const discount = -500;
+                return discount;
             },
         });
 
@@ -166,7 +169,7 @@ describe('OrderCalculator', () => {
                 const unitPrice = ctx.channel.pricesIncludeTax
                     ? orderLine.unitPriceWithTax
                     : orderLine.unitPrice;
-                return -orderLine.unitPrice * (args.discount / 100);
+                return -unitPrice * (args.discount / 100);
             },
         });
 
@@ -180,8 +183,46 @@ describe('OrderCalculator', () => {
             },
         });
 
+        it('empty string couponCode does not prevent promotion being applied', async () => {
+            const hasEmptyStringCouponCode = new Promotion({
+                id: 2,
+                name: 'Has empty string couponCode',
+                couponCode: '',
+                conditions: [
+                    {
+                        code: orderTotalCondition.code,
+                        args: [{ name: 'minimum', value: '10' }],
+                    },
+                ],
+                promotionConditions: [orderTotalCondition],
+                actions: [
+                    {
+                        code: percentageOrderAction.code,
+                        args: [{ name: 'discount', value: '10' }],
+                    },
+                ],
+                promotionActions: [percentageOrderAction],
+            });
+
+            const ctx = createRequestContext({ pricesIncludeTax: false });
+            const order = createOrder({
+                ctx,
+                lines: [
+                    {
+                        listPrice: 100,
+                        taxCategory: taxCategoryStandard,
+                        quantity: 1,
+                    },
+                ],
+            });
+            await orderCalculator.applyPriceAdjustments(ctx, order, [hasEmptyStringCouponCode]);
+
+            expect(order.discounts.length).toBe(1);
+            expect(order.discounts[0].description).toBe(hasEmptyStringCouponCode.name);
+        });
+
         describe('OrderItem-level promotions', () => {
-            it('percentage items discount', async () => {
+            describe('percentage items discount', () => {
                 const promotion = new Promotion({
                     id: 1,
                     name: '50% off each item',
@@ -196,29 +237,59 @@ describe('OrderCalculator', () => {
                     promotionActions: [percentageItemAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
-                            listPrice: 8333,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
-                        },
-                    ],
-                });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 8333,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
 
-                expect(order.subTotal).toBe(4167);
-                expect(order.subTotalWithTax).toBe(5000);
-                expect(order.lines[0].adjustments.length).toBe(1);
-                expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
-                expect(order.totalWithTax).toBe(5000);
+                    expect(order.subTotal).toBe(4167);
+                    expect(order.subTotalWithTax).toBe(5000);
+                    expect(order.lines[0].adjustments.length).toBe(1);
+                    expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
+                    expect(order.totalWithTax).toBe(5000);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1400,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                            {
+                                listPrice: 650,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 2,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+
+                    expect(order.subTotal).toBe(1173);
+                    expect(order.subTotalWithTax).toBe(1350);
+                    expect(order.lines[0].adjustments.length).toBe(1);
+                    expect(order.lines[0].adjustments[0].description).toBe('50% off each item');
+                    expect(order.totalWithTax).toBe(1350);
+                    assertOrderTotalsAddUp(order);
+                });
             });
         });
 
         describe('Order-level discounts', () => {
-            it('single line with order fixed price action', async () => {
+            describe('single line with order fixed price action', () => {
                 const promotion = new Promotion({
                     id: 1,
                     conditions: [{ code: alwaysTrueCondition.code, args: [] }],
@@ -227,25 +298,46 @@ describe('OrderCalculator', () => {
                     promotionActions: [fixedPriceOrderAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
-                            listPrice: 1230,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
-                        },
-                    ],
-                });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1230,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-                expect(order.subTotal).toBe(42);
-                expect(order.totalWithTax).toBe(50);
-                assertOrderTotalsAddUp(order);
+                    expect(order.subTotal).toBe(420);
+                    expect(order.totalWithTax).toBe(504);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1230,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(350);
+                    expect(order.totalWithTax).toBe(420);
+                    assertOrderTotalsAddUp(order);
+                });
             });
 
-            it('single line with order fixed discount action', async () => {
+            describe('single line with order fixed discount action', () => {
                 const promotion = new Promotion({
                     id: 1,
                     conditions: [{ code: alwaysTrueCondition.code, args: [] }],
@@ -254,32 +346,57 @@ describe('OrderCalculator', () => {
                     promotionActions: [fixedDiscountOrderAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
-                            listPrice: 1230,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
-                        },
-                    ],
-                });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1230,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-                expect(order.subTotal).toBe(730);
-                expect(order.totalWithTax).toBe(876);
-                assertOrderTotalsAddUp(order);
+                    expect(order.subTotal).toBe(730);
+                    expect(order.totalWithTax).toBe(876);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 2000,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                            {
+                                listPrice: 1000,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 2,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.totalWithTax).toBe(3500);
+                    assertOrderTotalsAddUp(order);
+                });
             });
 
-            it('condition based on order total', async () => {
+            describe('condition based on order total', () => {
                 const promotion = new Promotion({
                     id: 1,
                     name: 'Test Promotion 1',
                     conditions: [
                         {
                             code: orderTotalCondition.code,
-                            args: [{ name: 'minimum', value: '100' }],
+                            args: [{ name: 'minimum', value: '1000' }],
                         },
                     ],
                     promotionConditions: [orderTotalCondition],
@@ -287,41 +404,82 @@ describe('OrderCalculator', () => {
                     promotionActions: [fixedPriceOrderAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
-                            listPrice: 50,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
-                        },
-                    ],
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 500,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(500);
+                    expect(order.subTotalWithTax).toBe(600);
+                    expect(order.discounts.length).toBe(0);
+
+                    // increase the quantity to 2, which will take the total over the minimum set by the
+                    // condition.
+                    order.lines[0].items.push(
+                        new OrderItem({
+                            listPrice: 500,
+                            taxLines: [],
+                            adjustments: [],
+                        }),
+                    );
+
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+
+                    expect(order.subTotalWithTax).toBe(504);
+                    // Now the fixedPriceOrderAction should be in effect
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.total).toBe(420);
+                    expect(order.totalWithTax).toBe(504);
+                    assertOrderTotalsAddUp(order);
                 });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-                expect(order.subTotalWithTax).toBe(60);
-                expect(order.discounts.length).toBe(0);
-                expect(order.totalWithTax).toBe(60);
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 500,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-                // increase the quantity to 2, which will take the total over the minimum set by the
-                // condition.
-                order.lines[0].items.push(
-                    new OrderItem({
-                        listPrice: 50,
-                        taxLines: [],
-                        adjustments: [],
-                    }),
-                );
+                    expect(order.subTotal).toBe(417);
+                    expect(order.subTotalWithTax).toBe(500);
+                    expect(order.discounts.length).toBe(0);
 
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                    // increase the quantity to 2, which will take the total over the minimum set by the
+                    // condition.
+                    order.lines[0].items.push(
+                        new OrderItem({
+                            listPrice: 500,
+                            listPriceIncludesTax: true,
+                            taxLines: [],
+                            adjustments: [],
+                        }),
+                    );
 
-                expect(order.subTotalWithTax).toBe(50);
-                // Now the fixedPriceOrderAction should be in effect
-                expect(order.discounts.length).toBe(1);
-                expect(order.total).toBe(42);
-                expect(order.totalWithTax).toBe(50);
-                assertOrderTotalsAddUp(order);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+
+                    expect(order.subTotalWithTax).toBe(420);
+                    // Now the fixedPriceOrderAction should be in effect
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.total).toBe(350);
+                    expect(order.totalWithTax).toBe(420);
+                    assertOrderTotalsAddUp(order);
+                });
             });
 
             it('percentage order discount', async () => {
@@ -461,129 +619,89 @@ describe('OrderCalculator', () => {
                 assertOrderTotalsAddUp(order);
             });
 
-            it('two order-level percentage discounts at the same time', async () => {
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
+            describe('two order-level percentage discounts at the same time', () => {
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 800,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 2,
+                            },
+                        ],
+                    });
+
+                    // initially the order is over $10, so the second promotion applies
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [
+                        buy3Get50pcOffOrder,
+                        spend1000Get10pcOffOrder,
+                    ]);
+
+                    expect(order.subTotal).toBe(1440);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe(spend1000Get10pcOffOrder.name);
+                    expect(order.totalWithTax).toBe(1728);
+                    assertOrderTotalsAddUp(order);
+
+                    // increase the quantity to 3, which will trigger both promotions
+                    order.lines[0].items.push(
+                        new OrderItem({
                             listPrice: 800,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 2,
-                        },
-                    ],
+                            listPriceIncludesTax: false,
+                            taxLines: [],
+                            adjustments: [],
+                        }),
+                    );
+
+                    await orderCalculator.applyPriceAdjustments(
+                        ctx,
+                        order,
+                        [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
+                        order.lines[0],
+                    );
+
+                    expect(order.subTotal).toBe(1080);
+                    expect(order.discounts.length).toBe(2);
+                    expect(order.totalWithTax).toBe(1296);
+                    assertOrderTotalsAddUp(order);
                 });
 
-                // initially the order is over $10, so the second promotion applies
-                await orderCalculator.applyPriceAdjustments(ctx, order, [
-                    buy3Get50pcOffOrder,
-                    spend1000Get10pcOffOrder,
-                ]);
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 800,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 3,
+                            },
+                        ],
+                    });
 
-                expect(order.subTotal).toBe(1440);
-                expect(order.discounts.length).toBe(1);
-                expect(order.discounts[0].description).toBe(spend1000Get10pcOffOrder.name);
-                expect(order.totalWithTax).toBe(1728);
-                assertOrderTotalsAddUp(order);
+                    await orderCalculator.applyPriceAdjustments(
+                        ctx,
+                        order,
+                        [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
+                        order.lines[0],
+                    );
 
-                // increase the quantity to 3, which will trigger both promotions
-                order.lines[0].items.push(
-                    new OrderItem({
-                        listPrice: 800,
-                        listPriceIncludesTax: false,
-                        taxLines: [],
-                        adjustments: [],
-                    }),
-                );
-
-                await orderCalculator.applyPriceAdjustments(
-                    ctx,
-                    order,
-                    [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
-                    order.lines[0],
-                );
-
-                expect(order.subTotal).toBe(1080);
-                expect(order.discounts.length).toBe(2);
-                expect(order.totalWithTax).toBe(1296);
-                assertOrderTotalsAddUp(order);
-            });
-
-            const orderPromo = new Promotion({
-                id: 1,
-                name: '10% off order',
-                couponCode: 'ORDER10',
-                conditions: [],
-                promotionConditions: [],
-                actions: [
-                    {
-                        code: percentageOrderAction.code,
-                        args: [{ name: 'discount', value: '10' }],
-                    },
-                ],
-                promotionActions: [percentageOrderAction],
-            });
-
-            const itemPromo = new Promotion({
-                id: 2,
-                name: '10% off item',
-                couponCode: 'ITEM10',
-                conditions: [],
-                promotionConditions: [],
-                actions: [
-                    {
-                        code: percentageItemAction.code,
-                        args: [{ name: 'discount', value: '10' }],
-                    },
-                ],
-                promotionActions: [percentageItemAction],
-            });
-
-            it('item-level & order-level percentage discounts', async () => {
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
-                        {
-                            listPrice: 155880,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
-                        },
-                    ],
+                    expect(order.subTotal).toBe(900);
+                    expect(order.discounts.length).toBe(2);
+                    expect(order.totalWithTax).toBe(1080);
+                    assertOrderTotalsAddUp(order);
                 });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
-
-                expect(order.subTotal).toBe(155880);
-                expect(order.subTotalWithTax).toBe(187056);
-                assertOrderTotalsAddUp(order);
-
-                // Apply the item-level discount
-                order.couponCodes.push('ITEM10');
-                await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
-                expect(order.subTotal).toBe(140292);
-                expect(order.subTotalWithTax).toBe(168350);
-                assertOrderTotalsAddUp(order);
-
-                // Apply the order-level discount
-                order.couponCodes.push('ORDER10');
-                await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
-                expect(order.subTotal).toBe(126263);
-                expect(order.subTotalWithTax).toBe(151516);
-                assertOrderTotalsAddUp(order);
             });
 
-            it('empty string couponCode does not prevent promotion being applied', async () => {
-                const hasEmptyStringCouponCode = new Promotion({
-                    id: 2,
-                    name: 'Has empty string couponCode',
-                    couponCode: '',
-                    conditions: [
-                        {
-                            code: orderTotalCondition.code,
-                            args: [{ name: 'minimum', value: '10' }],
-                        },
-                    ],
-                    promotionConditions: [orderTotalCondition],
+            describe('item-level & order-level percentage discounts', () => {
+                const orderPromo = new Promotion({
+                    id: 1,
+                    name: '10% off order',
+                    couponCode: 'ORDER10',
+                    conditions: [],
+                    promotionConditions: [],
                     actions: [
                         {
                             code: percentageOrderAction.code,
@@ -593,21 +711,192 @@ describe('OrderCalculator', () => {
                     promotionActions: [percentageOrderAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
+                const itemPromo = new Promotion({
+                    id: 2,
+                    name: '10% off item',
+                    couponCode: 'ITEM10',
+                    conditions: [],
+                    promotionConditions: [],
+                    actions: [
                         {
-                            listPrice: 100,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
+                            code: percentageItemAction.code,
+                            args: [{ name: 'discount', value: '10' }],
                         },
                     ],
+                    promotionActions: [percentageItemAction],
                 });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [hasEmptyStringCouponCode]);
 
-                expect(order.discounts.length).toBe(1);
-                expect(order.discounts[0].description).toBe(hasEmptyStringCouponCode.name);
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 155880,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+
+                    // Apply the item-level discount
+                    order.couponCodes.push('ITEM10');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+                    expect(order.subTotal).toBe(140292);
+                    expect(order.subTotalWithTax).toBe(168350);
+                    assertOrderTotalsAddUp(order);
+
+                    // Apply the order-level discount
+                    order.couponCodes.push('ORDER10');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+                    expect(order.subTotal).toBe(126263);
+                    expect(order.subTotalWithTax).toBe(151516);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 155880,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+
+                    // Apply the item-level discount
+                    order.couponCodes.push('ITEM10');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+                    expect(order.subTotal).toBe(116910);
+                    expect(order.subTotalWithTax).toBe(140292);
+                    assertOrderTotalsAddUp(order);
+
+                    // Apply the order-level discount
+                    order.couponCodes.push('ORDER10');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [orderPromo, itemPromo]);
+                    expect(order.subTotal).toBe(105219);
+                    expect(order.subTotalWithTax).toBe(126263);
+                    assertOrderTotalsAddUp(order);
+                });
+            });
+
+            // This is the "final boss" of the tests :D
+            describe('item-level & order-level mixed discounts with multiple tax rates', () => {
+                const fifteenPcOff$10ItemsAction = new PromotionItemAction({
+                    code: 'percentage_item_action',
+                    description: [{ languageCode: LanguageCode.en, value: '' }],
+                    args: { discount: { type: 'int' } },
+                    async execute(ctx, orderItem, orderLine, args) {
+                        if (orderItem.listPrice === 1000) {
+                            const unitPrice = ctx.channel.pricesIncludeTax
+                                ? orderLine.unitPriceWithTax
+                                : orderLine.unitPrice;
+                            return -unitPrice * (15 / 100);
+                        }
+                        return 0;
+                    },
+                });
+
+                const $5OffOrderPromo = new Promotion({
+                    id: 2,
+                    name: '$5 off order',
+                    couponCode: 'PROMO1',
+                    conditions: [],
+                    promotionConditions: [],
+                    actions: [
+                        {
+                            code: fixedDiscountOrderAction.code,
+                            args: [],
+                        },
+                    ],
+                    promotionActions: [fixedDiscountOrderAction],
+                });
+
+                const fifteenPcOff$10Items = new Promotion({
+                    id: 3,
+                    name: '15% off item',
+                    couponCode: 'PROMO2',
+                    conditions: [],
+                    promotionConditions: [],
+                    actions: [
+                        {
+                            code: fifteenPcOff$10ItemsAction.code,
+                            args: [],
+                        },
+                    ],
+                    promotionActions: [fifteenPcOff$10ItemsAction],
+                });
+
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1000,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 2,
+                            },
+                            {
+                                listPrice: 3499,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 1,
+                            },
+                            {
+                                listPrice: 255,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 4,
+                            },
+                        ],
+                    });
+                    order.couponCodes.push('PROMO1', 'PROMO2');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [
+                        fifteenPcOff$10Items,
+                        $5OffOrderPromo,
+                    ]);
+
+                    expect(order.subTotal).toBe(5719);
+                    expect(order.subTotalWithTax).toBe(6440);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 1000,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 2,
+                            },
+                            {
+                                listPrice: 3499,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 1,
+                            },
+                            {
+                                listPrice: 255,
+                                taxCategory: taxCategoryReduced,
+                                quantity: 4,
+                            },
+                        ],
+                    });
+                    order.couponCodes.push('PROMO1', 'PROMO2');
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [
+                        fifteenPcOff$10Items,
+                        $5OffOrderPromo,
+                    ]);
+
+                    expect(order.subTotal).toBe(5084);
+                    expect(order.subTotalWithTax).toBe(5719);
+                    assertOrderTotalsAddUp(order);
+                });
             });
         });
     });
