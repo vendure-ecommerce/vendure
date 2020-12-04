@@ -14,4 +14,5 @@ export const defaultAvailableLanguages = [
     LanguageCode.zh_Hant,
     LanguageCode.pt_BR,
     LanguageCode.cs,
+    LanguageCode.fr,
 ];
