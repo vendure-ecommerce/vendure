@@ -5259,14 +5259,14 @@ export type FulfillmentFragment = (
 
 export type OrderLineFragment = (
   { __typename?: 'OrderLine' }
-  & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'linePrice' | 'lineTax' | 'linePriceWithTax'>
+  & Pick<OrderLine, 'id' | 'unitPrice' | 'unitPriceWithTax' | 'quantity' | 'linePrice' | 'lineTax' | 'linePriceWithTax' | 'discountedLinePrice' | 'discountedLinePriceWithTax'>
   & { featuredAsset?: Maybe<(
     { __typename?: 'Asset' }
     & Pick<Asset, 'preview'>
   )>, productVariant: (
     { __typename?: 'ProductVariant' }
     & Pick<ProductVariant, 'id' | 'name' | 'sku' | 'trackInventory' | 'stockOnHand'>
-  ), adjustments: Array<(
+  ), discounts: Array<(
     { __typename?: 'Adjustment' }
     & AdjustmentFragment
   )>, items: Array<(
@@ -5288,7 +5288,7 @@ export type OrderDetailFragment = (
   )>, lines: Array<(
     { __typename?: 'OrderLine' }
     & OrderLineFragment
-  )>, adjustments: Array<(
+  )>, discounts: Array<(
     { __typename?: 'Adjustment' }
     & AdjustmentFragment
   )>, promotions: Array<(
@@ -5297,6 +5297,9 @@ export type OrderDetailFragment = (
   )>, shippingMethod?: Maybe<(
     { __typename?: 'ShippingMethod' }
     & Pick<ShippingMethod, 'id' | 'code' | 'name' | 'fulfillmentHandlerCode' | 'description'>
+  )>, taxSummary: Array<(
+    { __typename?: 'OrderTaxSummary' }
+    & Pick<OrderTaxSummary, 'taxBase' | 'taxRate' | 'taxTotal'>
   )>, shippingAddress?: Maybe<(
     { __typename?: 'OrderAddress' }
     & OrderAddressFragment
@@ -7838,7 +7841,7 @@ export namespace OrderLine {
   export type Fragment = OrderLineFragment;
   export type FeaturedAsset = (NonNullable<OrderLineFragment['featuredAsset']>);
   export type ProductVariant = (NonNullable<OrderLineFragment['productVariant']>);
-  export type Adjustments = NonNullable<(NonNullable<OrderLineFragment['adjustments']>)[number]>;
+  export type Discounts = NonNullable<(NonNullable<OrderLineFragment['discounts']>)[number]>;
   export type Items = NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>;
   export type Fulfillment = (NonNullable<NonNullable<(NonNullable<OrderLineFragment['items']>)[number]>['fulfillment']>);
 }
@@ -7847,9 +7850,10 @@ export namespace OrderDetail {
   export type Fragment = OrderDetailFragment;
   export type Customer = (NonNullable<OrderDetailFragment['customer']>);
   export type Lines = NonNullable<(NonNullable<OrderDetailFragment['lines']>)[number]>;
-  export type Adjustments = NonNullable<(NonNullable<OrderDetailFragment['adjustments']>)[number]>;
+  export type Discounts = NonNullable<(NonNullable<OrderDetailFragment['discounts']>)[number]>;
   export type Promotions = NonNullable<(NonNullable<OrderDetailFragment['promotions']>)[number]>;
   export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
+  export type TaxSummary = NonNullable<(NonNullable<OrderDetailFragment['taxSummary']>)[number]>;
   export type ShippingAddress = (NonNullable<OrderDetailFragment['shippingAddress']>);
   export type BillingAddress = (NonNullable<OrderDetailFragment['billingAddress']>);
   export type Payments = NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>;

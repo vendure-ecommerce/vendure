@@ -84,7 +84,7 @@ export const ORDER_LINE_FRAGMENT = gql`
             trackInventory
             stockOnHand
         }
-        adjustments {
+        discounts {
             ...Adjustment
         }
         unitPrice
@@ -104,6 +104,8 @@ export const ORDER_LINE_FRAGMENT = gql`
         linePrice
         lineTax
         linePriceWithTax
+        discountedLinePrice
+        discountedLinePriceWithTax
     }
 `;
 
@@ -124,7 +126,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         lines {
             ...OrderLine
         }
-        adjustments {
+        discounts {
             ...Adjustment
         }
         promotions {
@@ -144,6 +146,11 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             name
             fulfillmentHandlerCode
             description
+        }
+        taxSummary {
+            taxBase
+            taxRate
+            taxTotal
         }
         shippingAddress {
             ...OrderAddress
@@ -179,7 +186,6 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         fulfillments {
             ...Fulfillment
         }
-        total
     }
     ${ADJUSTMENT_FRAGMENT}
     ${ORDER_ADDRESS_FRAGMENT}

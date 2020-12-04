@@ -16,11 +16,7 @@
 
     <vdr-ab-right>
         <vdr-action-bar-items locationId="order-detail"></vdr-action-bar-items>
-        <button
-            class="btn btn-primary"
-            (click)="fulfillOrder()"
-            [disabled]="!canAddFulfillment(order)"
-        >
+        <button class="btn btn-primary" (click)="fulfillOrder()" [disabled]="!canAddFulfillment(order)">
             {{ 'order.fulfill-order' | translate }}
         </button>
         <vdr-dropdown>
@@ -36,9 +32,7 @@
                     (click)="cancelOrRefund(order)"
                 >
                     <clr-icon shape="error-standard" class="is-error"></clr-icon>
-                    <ng-container
-                        *ngIf="orderHasSettledPayments(order); else cancelOnly"
-                    >
+                    <ng-container *ngIf="orderHasSettledPayments(order); else cancelOnly">
                         {{ 'order.refund-and-cancel-order' | translate }}
                     </ng-container>
                     <ng-template #cancelOnly>
@@ -49,7 +43,10 @@
                     <div class="dropdown-divider"></div>
                     <button type="button" class="btn" vdrDropdownItem (click)="transitionToState(nextState)">
                         <clr-icon shape="step-forward-2"></clr-icon>
-                        {{ 'order.transition-to-state' | translate: { state: (nextState | stateI18nToken | translate) } }}
+                        {{
+                            'order.transition-to-state'
+                                | translate: { state: (nextState | stateI18nToken | translate) }
+                        }}
                     </button>
                 </ng-container>
             </vdr-dropdown-menu>
@@ -96,6 +93,7 @@
                         <th>{{ 'order.total' | translate }}</th>
                     </tr>
                 </thead>
+                <tbody>
                 <tr
                     *ngFor="let line of order.lines"
                     class="order-line"
@@ -152,28 +150,43 @@
                             {{ line.linePrice / 100 | currency: order.currencyCode }}
                         </div>
 
-                        <ng-container *ngIf="getLinePromotions(line) as promotions">
-                            <vdr-dropdown *ngIf="promotions.length">
+                        <ng-container *ngIf="getLineDiscounts(line) as discounts">
+                            <vdr-dropdown *ngIf="discounts.length">
                                 <div class="promotions-label" vdrDropdownTrigger>
                                     {{ 'order.promotions-applied' | translate }}
                                 </div>
                                 <vdr-dropdown-menu>
                                     <div
                                         class="line-promotion"
-                                        *ngFor="let promotion of getLinePromotions(line)"
+                                        *ngFor="let discount of discounts"
                                     >
                                         <a
                                             class="promotion-name"
-                                            [routerLink]="getPromotionLink(promotion)"
-                                            >{{ promotion.description }}</a
+                                            [routerLink]="getPromotionLink(discount)"
+                                            >{{ discount.description }}</a
                                         >
                                         <div class="promotion-amount">
-                                            {{ promotion.amount / 100 | currency: order.currencyCode }}
+                                            {{ discount.amount / 100 | currency: order.currencyCode }}
                                         </div>
                                     </div>
                                 </vdr-dropdown-menu>
                             </vdr-dropdown>
                         </ng-container>
+                    </td>
+                </tr>
+                <tr class="order-ajustment" *ngFor="let discount of order.discounts">
+                    <td
+                        [attr.colspan]="5 + visibleOrderLineCustomFields.length"
+                        class="left clr-align-middle"
+                    >
+                        <a [routerLink]="getPromotionLink(discount)">{{ discount.description }}</a>
+                        <vdr-chip *ngIf="getCouponCodeForAdjustment(order, discount) as couponCode">{{
+                            couponCode
+                        }}</vdr-chip>
+                    </td>
+                    <ng-container *ngIf="showElided"><td></td></ng-container>
+                    <td class="clr-align-middle">
+                        {{ discount.amount / 100 | currency: order.currencyCode }}
                     </td>
                 </tr>
                 <tr class="sub-total">
@@ -182,25 +195,10 @@
                     <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
-                        {{ order.subTotal / 100 | currency: order.currencyCode }}
+                        {{ order.subTotalWithTax / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">
-                            {{ order.subTotalBeforeTax / 100 | currency: order.currencyCode }}
+                            {{ order.subTotal / 100 | currency: order.currencyCode }}
                         </div>
-                    </td>
-                </tr>
-                <tr class="order-ajustment" *ngFor="let adjustment of order.adjustments">
-                    <td
-                        [attr.colspan]="5 + visibleOrderLineCustomFields.length"
-                        class="left clr-align-middle"
-                    >
-                        <a [routerLink]="getPromotionLink(adjustment)">{{ adjustment.description }}</a>
-                        <vdr-chip *ngIf="getCouponCodeForAdjustment(order, adjustment) as couponCode">{{
-                            couponCode
-                        }}</vdr-chip>
-                    </td>
-                    <ng-container *ngIf="showElided"><td></td></ng-container>
-                    <td class="clr-align-middle">
-                        {{ adjustment.amount / 100 | currency: order.currencyCode }}
                     </td>
                 </tr>
                 <tr class="shipping">
@@ -221,12 +219,31 @@
                     <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
                     <ng-container *ngIf="showElided"><td></td></ng-container>
                     <td class="clr-align-middle">
-                        {{ order.total / 100 | currency: order.currencyCode }}
+                        {{ order.totalWithTax / 100 | currency: order.currencyCode }}
                         <div class="net-price" [title]="'order.net-price' | translate">
-                            {{ order.totalBeforeTax / 100 | currency: order.currencyCode }}
+                            {{ order.total / 100 | currency: order.currencyCode }}
                         </div>
                     </td>
                 </tr>
+                </tbody>
+            </table>
+
+            <h4>{{ 'order.tax-summary' | translate }}</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>{{ 'order.tax-rate' | translate }}</th>
+                    <th>{{ 'order.tax-base' | translate }}</th>
+                    <th>{{ 'order.tax-total' | translate }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let row of order.taxSummary">
+                    <td>{{ row.taxRate / 100 | percent }}</td>
+                    <td>{{ row.taxBase / 100 | currency: order.currencyCode }}</td>
+                    <td>{{ row.taxTotal / 100 | currency: order.currencyCode }}</td>
+                </tr>
+                </tbody>
             </table>
 
             <vdr-order-history

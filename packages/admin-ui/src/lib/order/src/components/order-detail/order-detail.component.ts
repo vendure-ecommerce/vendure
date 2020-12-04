@@ -109,11 +109,11 @@ export class OrderDetailComponent
         this.orderLineCustomFieldsVisible = !this.orderLineCustomFieldsVisible;
     }
 
-    getLinePromotions(line: OrderDetail.Lines) {
-        return line.adjustments.filter(a => a.type === AdjustmentType.PROMOTION);
+    getLineDiscounts(line: OrderDetail.Lines) {
+        return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
     }
 
-    getPromotionLink(promotion: OrderDetail.Adjustments): any[] {
+    getPromotionLink(promotion: OrderDetail.Discounts): any[] {
         const id = promotion.adjustmentSource.split(':')[1];
         return ['/marketing', 'promotions', id];
     }
@@ -160,7 +160,7 @@ export class OrderDetailComponent
 
     getCouponCodeForAdjustment(
         order: OrderDetail.Fragment,
-        promotionAdjustment: OrderDetail.Adjustments,
+        promotionAdjustment: OrderDetail.Discounts,
     ): string | undefined {
         const id = promotionAdjustment.adjustmentSource.split(':')[1];
         const promotion = order.promotions.find(p => p.id === id);
