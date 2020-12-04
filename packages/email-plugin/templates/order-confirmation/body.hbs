@@ -101,7 +101,15 @@
                     </td>
                     <td>{{ quantity }} x {{ productVariant.name }}</td>
                     <td>{{ productVariant.quantity }}</td>
-                    <td>${{ formatMoney totalPrice }}</td>
+                    <td>${{ formatMoney discountedLinePriceWithTax }}</td>
+                </tr>
+            {{/each}}
+            {{#each order.discounts }}
+                <tr class="order-row">
+                    <td colspan="3">
+                        {{ description }}
+                    </td>
+                    <td>${{ formatMoney amount }}</td>
                 </tr>
             {{/each}}
             <tr class="order-row">
@@ -109,7 +117,7 @@
                 <td>${{ formatMoney order.subTotal }}</td>
             </tr>
             <tr class="order-row">
-                <td colspan="3">Shipping ({{ shippingMethod.description }}):</td>
+                <td colspan="3">Shipping ({{ shippingMethod.name }}):</td>
                 <td>${{ formatMoney order.shipping }}</td>
             </tr>
             <tr class="order-row total-row">

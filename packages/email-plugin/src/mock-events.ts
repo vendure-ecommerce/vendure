@@ -1,3 +1,4 @@
+import { AdjustmentType } from '@vendure/common/lib/generated-shop-types';
 import {
     AccountRegistrationEvent,
     Customer,
@@ -18,8 +19,9 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
     {} as any,
     new Order({
         id: '6',
-        createdAt: '2018-10-31T15:18:29.261Z',
+        createdAt: '2018-10-31T11:18:29.261Z',
         updatedAt: '2018-10-31T15:24:17.000Z',
+        orderPlacedAt: '2018-10-31T13:54:17.000Z',
         code: 'T3EPGJKTVZPBD6Z9',
         state: 'ArrangingPayment',
         active: true,
@@ -45,7 +47,14 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                         id: '6',
                         listPrice: 14374,
                         listPriceIncludesTax: true,
-                        adjustments: [],
+                        adjustments: [
+                            {
+                                adjustmentSource: 'Promotion:1',
+                                type: AdjustmentType.PROMOTION,
+                                amount: -1000,
+                                description: '$10 off computer equipment',
+                            },
+                        ],
                         taxLines: [],
                     }),
                 ],
@@ -76,6 +85,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
         shipping: 1000,
         shippingMethod: {
             code: 'express-flat-rate',
+            name: 'Express Shipping',
             description: 'Express Shipping',
             id: '2',
         },
