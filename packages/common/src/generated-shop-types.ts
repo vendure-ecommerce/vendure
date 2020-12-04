@@ -1809,17 +1809,18 @@ export type OrderItem = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     cancelled: Scalars['Boolean'];
-    /**
-     * The price of a single unit, excluding tax and discounts
-     *
-     * If Order-level discounts have been applied, this will not be the
-     * actual taxable unit price, but is generally the correct price to display to customers to avoid confusion
-     * about the internal handling of distributed Order-level discounts.
-     */
+    /** The price of a single unit, excluding tax and discounts */
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
-    /** The price of a single unit including discounts, excluding tax */
+    /**
+     * The price of a single unit including discounts, excluding tax.
+     *
+     * If Order-level discounts have been applied, this will not be the
+     * actual taxable unit price (see `proratedUnitPrice`), but is generally the
+     * correct price to display to customers to avoid confusion
+     * about the internal handling of distributed Order-level discounts.
+     */
     discountedUnitPrice: Scalars['Int'];
     /** The price of a single unit including discounts and tax */
     discountedUnitPriceWithTax: Scalars['Int'];
@@ -1848,8 +1849,29 @@ export type OrderLine = Node & {
     updatedAt: Scalars['DateTime'];
     productVariant: ProductVariant;
     featuredAsset?: Maybe<Asset>;
+    /** The price of a single unit, excluding tax and discounts */
     unitPrice: Scalars['Int'];
+    /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /**
+     * The price of a single unit including discounts, excluding tax.
+     *
+     * If Order-level discounts have been applied, this will not be the
+     * actual taxable unit price (see `proratedUnitPrice`), but is generally the
+     * correct price to display to customers to avoid confusion
+     * about the internal handling of distributed Order-level discounts.
+     */
+    discountedUnitPrice: Scalars['Int'];
+    /** The price of a single unit including discounts and tax */
+    discountedUnitPriceWithTax: Scalars['Int'];
+    /**
+     * The actual unit price, taking into account both item discounts _and_ prorated (proportially-distributed)
+     * Order-level discounts. This value is the true economic value of the OrderItem, and is used in tax
+     * and refund calculations.
+     */
+    proratedUnitPrice: Scalars['Int'];
+    /** The proratedUnitPrice including tax */
+    proratedUnitPriceWithTax: Scalars['Int'];
     quantity: Scalars['Int'];
     items: Array<OrderItem>;
     /** @deprecated Use `linePriceWithTax` instead */

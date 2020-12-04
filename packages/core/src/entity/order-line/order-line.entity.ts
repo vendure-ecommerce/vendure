@@ -65,6 +65,16 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     }
 
     @Calculated()
+    get proratedUnitPrice(): number {
+        return this.firstActiveItemPropOr('proratedUnitPrice', 0);
+    }
+
+    @Calculated()
+    get proratedUnitPriceWithTax(): number {
+        return this.firstActiveItemPropOr('proratedUnitPriceWithTax', 0);
+    }
+
+    @Calculated()
     get quantity(): number {
         return this.activeItems.length;
     }
@@ -110,10 +120,24 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Calculated()
     get discounts(): Adjustment[] {
         const priceIncludesTax = this.items?.[0]?.listPriceIncludesTax ?? false;
-        return this.adjustments.map(adjustment => ({
-            ...adjustment,
-            amount: priceIncludesTax ? adjustment.amount : grossPriceOf(adjustment.amount, this.taxRate),
-        }));
+        // Group discounts together, so that it does not list a new
+        // discount row for each OrderItem in the line
+        const groupedAdjustments = new Map<string, Adjustment>();
+        for (const discount of this.adjustments) {
+            const adjustment = groupedAdjustments.get(discount.adjustmentSource);
+            const amountWithTax = priceIncludesTax
+                ? discount.amount
+                : grossPriceOf(discount.amount, this.taxRate);
+            if (adjustment) {
+                adjustment.amount += amountWithTax;
+            } else {
+                groupedAdjustments.set(discount.adjustmentSource, {
+                    ...discount,
+                    amount: amountWithTax,
+                });
+            }
+        }
+        return [...groupedAdjustments.values()];
     }
 
     @Calculated()

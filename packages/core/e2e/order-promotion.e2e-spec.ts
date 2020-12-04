@@ -745,7 +745,7 @@ describe('Promotions applied to Orders', () => {
 
                 expect(applyCouponCode!.total).toBe(1600);
                 expect(applyCouponCode!.totalWithTax).toBe(1920);
-                expect(getItemSale1Line(applyCouponCode!.lines).discounts.length).toBe(2); // 2x promotion
+                expect(getItemSale1Line(applyCouponCode!.lines).discounts.length).toBe(1); // 1x promotion
 
                 const { removeCouponCode } = await shopClient.query<
                     RemoveCouponCode.Mutation,
@@ -798,7 +798,7 @@ describe('Promotions applied to Orders', () => {
 
                 expect(applyCouponCode!.total).toBe(1334);
                 expect(applyCouponCode!.totalWithTax).toBe(1600);
-                expect(getItemSale1Line(applyCouponCode!.lines).discounts.length).toBe(2); // 2x promotion
+                expect(getItemSale1Line(applyCouponCode!.lines).discounts.length).toBe(1); // 1x promotion
 
                 const { removeCouponCode } = await shopClient.query<
                     RemoveCouponCode.Mutation,
@@ -969,7 +969,7 @@ describe('Promotions applied to Orders', () => {
                 const saleItemLine = apply1.lines.find(
                     l => l.productVariant.id === getVariantBySlug('item-sale-1000').id,
                 )!;
-                expect(saleItemLine.discounts.length).toBe(2); // 1x promotion for each item
+                expect(saleItemLine.discounts.length).toBe(1); // 1x promotion
                 expect(
                     saleItemLine.discounts.find(a => a.type === AdjustmentType.PROMOTION)?.description,
                 ).toBe('item promo');
@@ -1016,7 +1016,7 @@ describe('Promotions applied to Orders', () => {
                 const saleItemLine = apply1.lines.find(
                     l => l.productVariant.id === getVariantBySlug('item-sale-1000').id,
                 )!;
-                expect(saleItemLine.discounts.length).toBe(2); // 1x promotion for each item
+                expect(saleItemLine.discounts.length).toBe(1); // 1x promotion
                 expect(
                     saleItemLine.discounts.find(a => a.type === AdjustmentType.PROMOTION)?.description,
                 ).toBe('item promo');

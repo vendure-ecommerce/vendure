@@ -33,18 +33,18 @@ export const examplePaymentHandler = new PaymentMethodHandler({
         try {
             const result = await gripeSDK.charges.create({
                 apiKey: args.apiKey,
-                amount: order.total,
+                amount: order.totalWithTax,
                 source: metadata.authToken,
             });
             return {
-                amount: order.total,
+                amount: order.totalWithTax,
                 state: args.automaticCapture ? 'Settled' : 'Authorized',
                 transactionId: result.id.toString(),
                 metadata,
             };
         } catch (err) {
             return {
-                amount: order.total,
+                amount: order.totalWithTax,
                 state: 'Declined' as 'Declined',
                 metadata: {
                     errorMessage: err.message,
