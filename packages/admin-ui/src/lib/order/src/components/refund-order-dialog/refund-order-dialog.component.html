@@ -1,6 +1,6 @@
-<ng-template vdrDialogTitle>{{ 'order.refund-order' | translate }}</ng-template>
+<ng-template vdrDialogTitle>{{ 'order.refund-and-cancel-order' | translate }}</ng-template>
 
-<div class="fulfillment-wrapper">
+<div class="refund-wrapper">
     <div class="order-lines">
         <table class="table">
             <thead>
@@ -10,13 +10,15 @@
                     <th>{{ 'order.product-sku' | translate }}</th>
                     <th>{{ 'order.quantity' | translate }}</th>
                     <th>{{ 'order.unit-price' | translate }}</th>
+                    <th>{{ 'order.prorated-unit-price' | translate }}</th>
+                    <th>{{ 'order.quantity' | translate }}</th>
                     <th>{{ 'order.refund' | translate }}</th>
-                    <th>{{ 'order.return-to-stock' | translate }}</th>
+                    <th>{{ 'order.cancel' | translate }}</th>
                 </tr>
             </thead>
             <tr *ngFor="let line of order.lines" class="order-line">
                 <td class="align-middle thumb">
-                    <img [src]="line.featuredAsset | assetPreview:'tiny'" />
+                    <img [src]="line.featuredAsset | assetPreview: 'tiny'" />
                 </td>
                 <td class="align-middle name">{{ line.productVariant.name }}</td>
                 <td class="align-middle sku">{{ line.productVariant.sku }}</td>
@@ -27,20 +29,52 @@
                 <td class="align-middle quantity">
                     {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
                 </td>
+                <td class="align-middle quantity">
+                    <div class="prorated-wrapper">
+                        {{ line.proratedUnitPriceWithTax / 100 | currency: order.currencyCode }}
+                        <ng-container *ngIf="line.discounts as discounts">
+                            <vdr-dropdown *ngIf="discounts.length">
+                                <div class="promotions-label" vdrDropdownTrigger>
+                                    <button class="icon-button"><clr-icon shape="info"></clr-icon></button>
+                                </div>
+                                <vdr-dropdown-menu>
+                                    <div class="line-promotion" *ngFor="let discount of discounts">
+                                        {{ discount.description }}
+                                        <div class="promotion-amount">
+                                            {{ discount.amount / 100 / line.quantity | number: '1.0-2' | currency: order.currencyCode }}
+                                        </div>
+                                    </div>
+                                </vdr-dropdown-menu>
+                            </vdr-dropdown>
+                        </ng-container>
+                    </div>
+                </td>
                 <td class="align-middle fulfil">
                     <input
-                        *ngIf="lineCanBeRefunded(line)"
+                        *ngIf="lineCanBeRefundedOrCancelled(line)"
                         [(ngModel)]="lineQuantities[line.id].quantity"
                         type="number"
                         [max]="line.quantity"
                         min="0"
+                        (input)="handleZeroQuantity(lineQuantities[line.id])"
                     />
                 </td>
                 <td class="align-middle">
                     <div class="cancel-checkbox-wrapper">
                         <input
                             type="checkbox"
-                            *ngIf="lineCanBeRefunded(line)"
+                            *ngIf="lineCanBeRefundedOrCancelled(line)"
+                            clrCheckbox
+                            [disabled]="0 === lineQuantities[line.id].quantity"
+                            [(ngModel)]="lineQuantities[line.id].refund"
+                        />
+                    </div>
+                </td>
+                <td class="align-middle">
+                    <div class="cancel-checkbox-wrapper">
+                        <input
+                            type="checkbox"
+                            *ngIf="lineCanBeRefundedOrCancelled(line)"
                             clrCheckbox
                             [disabled]="0 === lineQuantities[line.id].quantity"
                             [(ngModel)]="lineQuantities[line.id].cancel"
@@ -50,65 +84,75 @@
             </tr>
         </table>
     </div>
-    <div class="refund-details">
-        <label class="clr-control-label">{{ 'order.refund-reason' | translate }}</label>
-        <ng-select
-            [items]="reasons"
-            bindLabel="name"
-            autofocus
-            [placeholder]="'order.refund-reason-required' | translate"
-            bindValue="id"
-            [addTag]="true"
-            [(ngModel)]="reason"
-        ></ng-select>
+    <div class="refund-details mt4">
+        <div>
+            <label class="clr-control-label">{{ 'order.refund-cancellation-reason' | translate }}</label>
+            <ng-select
+                [disabled]="!isRefunding() && !isCancelling()"
+                [items]="reasons"
+                bindLabel="name"
+                autofocus
+                [placeholder]="'order.refund-cancellation-reason-required' | translate"
+                bindValue="id"
+                [addTag]="true"
+                [(ngModel)]="reason"
+            ></ng-select>
+        </div>
 
-        <clr-select-container>
-            <label>{{ 'order.payment-to-refund' | translate }}</label>
-            <select clrSelect name="options" [(ngModel)]="selectedPayment">
-                <option
-                    *ngFor="let payment of settledPayments"
-                    [ngValue]="payment"
-                    [disabled]="payment.state !== 'Settled'"
+        <div>
+            <clr-select-container>
+                <label>{{ 'order.payment-to-refund' | translate }}</label>
+                <select clrSelect name="options" [(ngModel)]="selectedPayment" [disabled]="!isRefunding()">
+                    <option
+                        *ngFor="let payment of settledPayments"
+                        [ngValue]="payment"
+                        [disabled]="payment.state !== 'Settled'"
+                    >
+                        #{{ payment.id }} {{ payment.method }}:
+                        {{ payment.amount / 100 | currency: order.currencyCode }}
+                    </option>
+                </select>
+            </clr-select-container>
+
+            <clr-checkbox-wrapper>
+                <input type="checkbox" clrCheckbox [(ngModel)]="refundShipping" [disabled]="!isRefunding()" />
+                <label>
+                    {{ 'order.refund-shipping' | translate }} ({{
+                        order.shipping / 100 | currency: order.currencyCode
+                    }})
+                </label>
+            </clr-checkbox-wrapper>
+            <clr-input-container>
+                <label>{{ 'order.refund-adjustment' | translate }}</label>
+                <vdr-currency-input
+                    clrInput
+                    [disabled]="!isRefunding()"
+                    [currencyCode]="order.currencyCode"
+                    [(ngModel)]="adjustment"
+                ></vdr-currency-input>
+            </clr-input-container>
+            <div class="totals" [class.disabled]="!isRefunding()">
+                <div class="order-total">
+                    {{ 'order.payment-amount' | translate }}:
+                    {{ selectedPayment.amount / 100 | currency: order.currencyCode }}
+                </div>
+                <div class="refund-total">
+                    {{ 'order.refund-total' | translate }}:
+                    {{ refundTotal / 100 | currency: order.currencyCode }}
+                </div>
+                <div
+                    class="refund-total-error"
+                    *ngIf="refundTotal < 0 || selectedPayment.amount < refundTotal"
                 >
-                    #{{ payment.id }} {{ payment.method }}:
-                    {{ payment.amount / 100 | currency: order.currencyCode }}
-                </option>
-            </select>
-        </clr-select-container>
-
-        <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox [(ngModel)]="refundShipping" />
-            <label>
-                {{ 'order.refund-shipping' | translate }} ({{
-                    order.shipping / 100 | currency: order.currencyCode
-                }})
-            </label>
-        </clr-checkbox-wrapper>
-        <clr-input-container>
-            <label>{{ 'order.refund-adjustment' | translate }}</label>
-            <vdr-currency-input
-                clrInput
-                [currencyCode]="order.currencyCode"
-                [(ngModel)]="adjustment"
-            ></vdr-currency-input>
-        </clr-input-container>
-        <div class="totals">
-            <div class="order-total">
-                {{ 'order.payment-amount' | translate }}:
-                {{ selectedPayment.amount / 100 | currency: order.currencyCode }}
-            </div>
-            <div class="refund-total">
-                {{ 'order.refund-total' | translate }}: {{ refundTotal / 100 | currency: order.currencyCode }}
-            </div>
-            <div class="refund-total-error" *ngIf="refundTotal < 0 || selectedPayment.amount < refundTotal">
-                {{
-                    'order.refund-total-error'
-                        | translate
-                            : {
-                                  min: 0 | currency: order.currencyCode,
-                                  max: selectedPayment.amount / 100 | currency: order.currencyCode
-                              }
-                }}
+                    {{
+                        'order.refund-total-error'
+                            | translate
+                                : {
+                                      min: 0 | currency: order.currencyCode,
+                                      max: selectedPayment.amount / 100 | currency: order.currencyCode
+                                  }
+                    }}
+                </div>
             </div>
         </div>
     </div>
@@ -116,15 +160,15 @@
 
 <ng-template vdrDialogButtons>
     <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
-    <button
-        type="submit"
-        (click)="select()"
-        [disabled]="!selectedPayment || !reason || refundTotal === 0 || refundTotal > selectedPayment.amount"
-        class="btn btn-primary"
-    >
+    <button type="submit" (click)="select()" [disabled]="!canSubmit()" class="btn btn-primary">
+        <ng-container *ngIf="isRefunding(); else cancelling">
         {{
             'order.refund-with-amount'
                 | translate: { amount: refundTotal / 100 | currency: order.currencyCode }
         }}
+        </ng-container>
+        <ng-template #cancelling>
+            {{ 'order.cancel-selected-items' | translate }}
+        </ng-template>
     </button>
 </ng-template>

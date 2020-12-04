@@ -5,6 +5,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     AdjustmentType,
     BaseDetailComponent,
+    CancelOrder,
     CustomFieldConfig,
     DataService,
     EditNoteDialogComponent,
@@ -16,11 +17,11 @@ import {
     Order,
     OrderDetail,
     OrderLineFragment,
+    RefundOrder,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
-import { omit } from '@vendure/common/lib/omit';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
@@ -401,46 +402,37 @@ export class OrderDetailComponent
             })
             .pipe(
                 switchMap(input => {
-                    if (input) {
-                        return this.dataService.order.refundOrder(omit(input, ['cancel'])).pipe(
-                            switchMap(({ refundOrder }) => {
-                                switch (refundOrder.__typename) {
-                                    case 'Refund':
-                                        if (input.cancel.length) {
-                                            return this.dataService.order
-                                                .cancelOrder({
-                                                    orderId: this.id,
-                                                    lines: input.cancel,
-                                                    reason: input.reason,
-                                                })
-                                                .pipe(map(({ cancelOrder }) => cancelOrder));
-                                        } else {
-                                            return of(refundOrder);
-                                        }
-                                    case 'AlreadyRefundedError':
-                                    case 'OrderStateTransitionError':
-                                    case 'MultipleOrderError':
-                                    case 'NothingToRefundError':
-                                    case 'PaymentOrderMismatchError':
-                                    case 'QuantityTooGreatError':
-                                    case 'RefundOrderStateError':
-                                    case 'RefundStateTransitionError':
-                                        this.notificationService.error(refundOrder.message);
-                                    // tslint:disable-next-line:no-switch-case-fall-through
-                                    default:
-                                        return of(undefined);
-                                }
-                            }),
-                        );
-                    } else {
+                    if (!input) {
                         return of(undefined);
                     }
+
+                    const operations: Array<Observable<
+                        RefundOrder.RefundOrder | CancelOrder.CancelOrder
+                    >> = [];
+                    if (input.refund.lines.length) {
+                        operations.push(
+                            this.dataService.order
+                                .refundOrder(input.refund)
+                                .pipe(map(res => res.refundOrder)),
+                        );
+                    }
+                    if (input.cancel.lines?.length) {
+                        operations.push(
+                            this.dataService.order
+                                .cancelOrder(input.cancel)
+                                .pipe(map(res => res.cancelOrder)),
+                        );
+                    }
+                    return merge(...operations);
                 }),
             )
             .subscribe(result => {
                 if (result) {
                     switch (result.__typename) {
                         case 'Order':
+                            this.refetchOrder(result).subscribe();
+                            this.notificationService.success(_('order.cancelled-order-success'));
+                            break;
                         case 'Refund':
                             this.refetchOrder(result).subscribe();
                             this.notificationService.success(_('order.refund-order-success'));
@@ -450,7 +442,13 @@ export class OrderDetailComponent
                         case 'OrderStateTransitionError':
                         case 'CancelActiveOrderError':
                         case 'EmptyOrderLineSelectionError':
+                        case 'AlreadyRefundedError':
+                        case 'NothingToRefundError':
+                        case 'PaymentOrderMismatchError':
+                        case 'RefundOrderStateError':
+                        case 'RefundStateTransitionError':
                             this.notificationService.error(result.message);
+                            break;
                     }
                 }
             });

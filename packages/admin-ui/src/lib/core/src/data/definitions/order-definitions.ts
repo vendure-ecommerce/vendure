@@ -89,6 +89,8 @@ export const ORDER_LINE_FRAGMENT = gql`
         }
         unitPrice
         unitPriceWithTax
+        proratedUnitPrice
+        proratedUnitPriceWithTax
         quantity
         items {
             id

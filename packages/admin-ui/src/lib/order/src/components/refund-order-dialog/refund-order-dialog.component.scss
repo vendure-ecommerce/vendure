@@ -5,23 +5,9 @@
     display: flex;
     min-height: 64vh;
 }
-.fulfillment-wrapper {
+.refund-wrapper {
     flex: 1;
-    @media screen and (min-width: $breakpoint-small) {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .refund-details {
-        @media screen and (min-width: $breakpoint-small) {
-            margin-top: 0;
-            margin-left: 24px;
-            width: 250px;
-        }
-        clr-select-container {
-            margin: 12px 0;
-        }
-    }
+    flex-direction: column;
     .order-lines {
         flex: 1;
         overflow-y: auto;
@@ -43,6 +29,10 @@ clr-checkbox-wrapper {
     margin-bottom: 12px;
     display: block;
 }
+.refund-details {
+    display: flex;
+    justify-content: space-between;
+}
 .totals {
     margin-top: 48px;
     .refund-total {
@@ -50,5 +40,21 @@ clr-checkbox-wrapper {
     }
     .refund-total-error {
         color: $color-error-500;
+    }
+    &.disabled {
+        color: $color-grey-300;
+    }
+}
+.prorated-wrapper {
+    display: flex;
+    justify-content: center;
+}
+.line-promotion {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 3px 6px;
+    .promotion-amount {
+        margin-left: 12px;
     }
 }
