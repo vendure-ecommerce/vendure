@@ -7,7 +7,8 @@ import { PaymentState } from '../payment-state-machine/payment-state';
  */
 export function orderTotalIsCovered(order: Order, state: PaymentState): boolean {
     return (
-        order.payments.filter(p => p.state === state).reduce((sum, p) => sum + p.amount, 0) === order.total
+        order.payments.filter(p => p.state === state).reduce((sum, p) => sum + p.amount, 0) ===
+        order.totalWithTax
     );
 }
 

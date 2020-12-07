@@ -31,10 +31,12 @@ export const TEST_ORDER_FRAGMENT = gql`
             }
         }
         shipping
-        shippingMethod {
-            id
-            code
-            description
+        shippingLines {
+            shippingMethod {
+                id
+                code
+                description
+            }
         }
         customer {
             id

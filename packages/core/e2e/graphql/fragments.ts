@@ -379,10 +379,13 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         totalWithTax
         currencyCode
         shipping
-        shippingMethod {
-            id
-            code
-            description
+        shippingWithTax
+        shippingLines {
+            shippingMethod {
+                id
+                code
+                description
+            }
         }
         shippingAddress {
             ...ShippingAddress

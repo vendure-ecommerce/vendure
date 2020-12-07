@@ -28,18 +28,6 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
-    async shippingMethod(@Ctx() ctx: RequestContext, @Parent() order: Order) {
-        if (order.shippingMethodId) {
-            // Does not need to be decoded because it is an internal property
-            // which is never exposed to the outside world.
-            const shippingMethodId = order.shippingMethodId;
-            return this.shippingMethodService.findOne(ctx, shippingMethodId);
-        } else {
-            return null;
-        }
-    }
-
-    @ResolveField()
     async fulfillments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
         return this.orderService.getOrderFulfillments(ctx, order);
     }

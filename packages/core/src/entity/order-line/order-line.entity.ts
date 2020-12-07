@@ -82,7 +82,7 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Calculated()
     get adjustments(): Adjustment[] {
         return this.activeItems.reduce(
-            (adjustments, item) => [...adjustments, ...item.adjustments],
+            (adjustments, item) => [...adjustments, ...(item.adjustments || [])],
             [] as Adjustment[],
         );
     }

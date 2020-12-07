@@ -1111,18 +1111,6 @@ export type UpdateFacetValueInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Fulfillment = Node & {
-    nextStates: Array<Scalars['String']>;
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    orderItems: Array<OrderItem>;
-    state: Scalars['String'];
-    method: Scalars['String'];
-    trackingCode?: Maybe<Scalars['String']>;
-    customFields?: Maybe<Scalars['JSON']>;
-};
-
 export type UpdateGlobalSettingsInput = {
     availableLanguages?: Maybe<Array<LanguageCode>>;
     trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1269,9 +1257,9 @@ export type Order = Node & {
     /** Same as subTotal, but inclusive of tax */
     subTotalWithTax: Scalars['Int'];
     currencyCode: CurrencyCode;
+    shippingLines: Array<ShippingLine>;
     shipping: Scalars['Int'];
     shippingWithTax: Scalars['Int'];
-    shippingMethod?: Maybe<ShippingMethod>;
     /** Equal to subTotal plus shipping */
     total: Scalars['Int'];
     /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
@@ -1284,6 +1272,18 @@ export type Order = Node & {
 
 export type OrderHistoryArgs = {
     options?: Maybe<HistoryEntryListOptions>;
+};
+
+export type Fulfillment = Node & {
+    nextStates: Array<Scalars['String']>;
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    orderItems: Array<OrderItem>;
+    state: Scalars['String'];
+    method: Scalars['String'];
+    trackingCode?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderInput = {
@@ -3323,6 +3323,13 @@ export type ShippingMethodQuote = {
     name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingLine = {
+    shippingMethod: ShippingMethod;
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    discounts: Array<Adjustment>;
 };
 
 export type OrderItem = Node & {

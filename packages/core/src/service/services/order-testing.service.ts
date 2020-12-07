@@ -14,6 +14,7 @@ import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
@@ -127,6 +128,13 @@ export class OrderTestingService {
                 orderLine.items.push(orderItem);
             }
         }
+        mockOrder.shippingLines = [
+            new ShippingLine({
+                price: 0,
+                priceWithTax: 0,
+                adjustments: [],
+            }),
+        ];
         await this.orderCalculator.applyPriceAdjustments(ctx, mockOrder, []);
         return mockOrder;
     }

@@ -10,11 +10,11 @@ import { ConfigService } from '../../../config/config.service';
 import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
+import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
@@ -23,7 +23,6 @@ import { prorate } from './prorate';
 @Injectable()
 export class OrderCalculator {
     constructor(
-        private connection: TransactionalConnection,
         private configService: ConfigService,
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,
@@ -72,11 +71,11 @@ export class OrderCalculator {
             }
 
             // Then test and apply promotions
-            const totalBeforePromotions = order.total;
+            const totalBeforePromotions = order.subTotal;
             const itemsModifiedByPromotions = await this.applyPromotions(ctx, order, promotions);
             itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
 
-            if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
+            if (order.subTotal !== totalBeforePromotions || itemsModifiedByPromotions.length) {
                 // Finally, re-calculate taxes because the promotions may have
                 // altered the unit prices, which in turn will alter the tax payable.
                 this.applyTaxes(ctx, order, activeTaxZone);
@@ -304,8 +303,10 @@ export class OrderCalculator {
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
+        const shippingLine: ShippingLine | undefined = order.shippingLines[0];
         const currentShippingMethod =
-            order.shippingMethodId && (await this.shippingMethodService.findOne(ctx, order.shippingMethodId));
+            shippingLine?.shippingMethodId &&
+            (await this.shippingMethodService.findOne(ctx, shippingLine.shippingMethodId));
         if (!currentShippingMethod) {
             return;
         }
@@ -313,8 +314,8 @@ export class OrderCalculator {
         if (currentMethodStillEligible) {
             const result = await currentShippingMethod.apply(ctx, order);
             if (result) {
-                order.shipping = result.price;
-                order.shippingWithTax = result.priceWithTax;
+                shippingLine.price = result.price;
+                shippingLine.priceWithTax = result.priceWithTax;
             }
             return;
         }
@@ -323,9 +324,9 @@ export class OrderCalculator {
         ]);
         if (results && results.length) {
             const cheapest = results[0];
-            order.shipping = cheapest.result.price;
-            order.shippingWithTax = cheapest.result.priceWithTax;
-            order.shippingMethod = cheapest.method;
+            shippingLine.price = cheapest.result.price;
+            shippingLine.priceWithTax = cheapest.result.priceWithTax;
+            shippingLine.shippingMethod = cheapest.method;
         }
     }
 
@@ -340,5 +341,15 @@ export class OrderCalculator {
 
         order.subTotal = totalPrice;
         order.subTotalWithTax = totalPriceWithTax;
+
+        let shippingPrice = 0;
+        let shippingPriceWithTax = 0;
+        for (const shippingLine of order.shippingLines) {
+            shippingPrice += shippingLine.price;
+            shippingPriceWithTax += shippingLine.priceWithTax;
+        }
+
+        order.shipping = shippingPrice;
+        order.shippingWithTax = shippingPriceWithTax;
     }
 }

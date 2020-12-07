@@ -36,9 +36,9 @@ type Order implements Node {
     "Same as subTotal, but inclusive of tax"
     subTotalWithTax: Int!
     currencyCode: CurrencyCode!
+    shippingLines: [ShippingLine!]!
     shipping: Int!
     shippingWithTax: Int!
-    shippingMethod: ShippingMethod
     """
     Equal to subTotal plus shipping
     """
@@ -92,6 +92,13 @@ type ShippingMethodQuote {
     name: String!
     description: String!
     metadata: JSON
+}
+
+type ShippingLine {
+    shippingMethod: ShippingMethod!
+    price: Int!
+    priceWithTax: Int!
+    discounts: [Adjustment!]!
 }
 
 type OrderItem implements Node {

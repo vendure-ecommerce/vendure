@@ -853,7 +853,7 @@ describe('Shop orders', () => {
                 const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
                 expect(result.activeOrder!.shipping).toEqual(0);
-                expect(result.activeOrder!.shippingMethod).toEqual(null);
+                expect(result.activeOrder!.shippingLines).toEqual([]);
             });
 
             it('setOrderShippingMethod sets the shipping method', async () => {
@@ -869,8 +869,10 @@ describe('Shop orders', () => {
                 const order = activeOrderResult.activeOrder!;
 
                 expect(order.shipping).toBe(shippingMethods[1].price);
-                expect(order.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(order.shippingMethod!.description).toBe(shippingMethods[1].description);
+                expect(order.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
+                expect(order.shippingLines[0].shippingMethod!.description).toBe(
+                    shippingMethods[1].description,
+                );
             });
 
             it('shipping method is preserved after adjustOrderLine', async () => {
@@ -885,8 +887,10 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertSuccess(adjustOrderLine);
                 expect(adjustOrderLine!.shipping).toBe(shippingMethods[1].price);
-                expect(adjustOrderLine!.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(adjustOrderLine!.shippingMethod!.description).toBe(shippingMethods[1].description);
+                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
+                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.description).toBe(
+                    shippingMethods[1].description,
+                );
             });
         });
 

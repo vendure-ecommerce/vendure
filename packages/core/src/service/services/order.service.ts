@@ -73,6 +73,7 @@ import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
@@ -160,6 +161,7 @@ export class OrderService {
             .createQueryBuilder('order')
             .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('order.shippingLines', 'shippingLines')
             .leftJoinAndSelect('customer.user', 'user')
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
@@ -210,6 +212,7 @@ export class OrderService {
                     'lines.productVariant.options',
                     'customer',
                     'channels',
+                    'shippingLines',
                 ],
                 channelId: ctx.channelId,
                 ctx,
@@ -264,6 +267,7 @@ export class OrderService {
                     channelId: ctx.channelId,
                 })
                 .leftJoinAndSelect('order.customer', 'customer')
+                .leftJoinAndSelect('order.shippingLines', 'shippingLines')
                 .where('active = :active', { active: true })
                 .andWhere('order.customer.id = :customerId', { customerId: customer.id })
                 .orderBy('order.createdAt', 'DESC')
@@ -546,7 +550,22 @@ export class OrderService {
         if (!shippingMethod) {
             return new IneligibleShippingMethodError();
         }
-        order.shippingMethod = shippingMethod;
+        let shippingLine: ShippingLine | undefined = order.shippingLines[0];
+        if (shippingLine) {
+            shippingLine.shippingMethod = shippingMethod;
+        } else {
+            shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                new ShippingLine({
+                    shippingMethod,
+                    order,
+                    adjustments: [],
+                    price: 0,
+                    priceWithTax: 0,
+                }),
+            );
+            order.shippingLines = [shippingLine];
+        }
+        await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);
@@ -678,7 +697,7 @@ export class OrderService {
             this.eventBus.publish(
                 new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
             );
-            const orderTotalSettled = payment.amount === payment.order.total;
+            const orderTotalSettled = payment.amount === payment.order.totalWithTax;
             if (
                 orderTotalSettled &&
                 this.orderStateMachine.canTransition(payment.order.state, 'PaymentSettled')
@@ -1132,6 +1151,7 @@ export class OrderService {
         );
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
+        await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return order;
     }
 

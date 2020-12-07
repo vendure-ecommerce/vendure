@@ -1691,9 +1691,9 @@ export type Order = Node & {
     /** Same as subTotal, but inclusive of tax */
     subTotalWithTax: Scalars['Int'];
     currencyCode: CurrencyCode;
+    shippingLines: Array<ShippingLine>;
     shipping: Scalars['Int'];
     shippingWithTax: Scalars['Int'];
-    shippingMethod?: Maybe<ShippingMethod>;
     /** Equal to subTotal plus shipping */
     total: Scalars['Int'];
     /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
@@ -1746,6 +1746,13 @@ export type ShippingMethodQuote = {
     name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingLine = {
+    shippingMethod: ShippingMethod;
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    discounts: Array<Adjustment>;
 };
 
 export type OrderItem = Node & {
@@ -2596,7 +2603,7 @@ export type TestOrderFragmentFragment = Pick<
             discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
         }
     >;
-    shippingMethod?: Maybe<Pick<ShippingMethod, 'id' | 'code' | 'description'>>;
+    shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;
     customer?: Maybe<Pick<Customer, 'id'> & { user?: Maybe<Pick<User, 'id' | 'identifier'>> }>;
     history: { items: Array<Pick<HistoryEntry, 'id' | 'type' | 'data'>> };
 };
@@ -3049,7 +3056,10 @@ export namespace TestOrderFragment {
     export type _Discounts = NonNullable<
         NonNullable<NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['discounts']>[number]
     >;
-    export type ShippingMethod = NonNullable<TestOrderFragmentFragment['shippingMethod']>;
+    export type ShippingLines = NonNullable<NonNullable<TestOrderFragmentFragment['shippingLines']>[number]>;
+    export type ShippingMethod = NonNullable<
+        NonNullable<NonNullable<TestOrderFragmentFragment['shippingLines']>[number]>['shippingMethod']
+    >;
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
     export type User = NonNullable<NonNullable<TestOrderFragmentFragment['customer']>['user']>;
     export type History = NonNullable<TestOrderFragmentFragment['history']>;

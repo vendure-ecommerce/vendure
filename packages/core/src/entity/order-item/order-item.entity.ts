@@ -32,16 +32,19 @@ export class OrderItem extends VendureEntity {
      * This is the price as listed by the ProductVariant, which, depending on the
      * current Channel, may or may not include tax.
      */
-    @Column() readonly listPrice: number;
+    @Column()
+    readonly listPrice: number;
 
     /**
      * @description
      * Whether or not the listPrice includes tax, which depends on the settings
      * of the current Channel.
      */
-    @Column() readonly listPriceIncludesTax: boolean;
+    @Column()
+    readonly listPriceIncludesTax: boolean;
 
-    @Column('simple-json') adjustments: Adjustment[];
+    @Column('simple-json')
+    adjustments: Adjustment[];
 
     @Column('simple-json')
     taxLines: TaxLine[];

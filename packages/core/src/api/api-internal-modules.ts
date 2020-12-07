@@ -60,6 +60,7 @@ import {
 } from './resolvers/entity/product-variant-entity.resolver';
 import { RefundEntityResolver } from './resolvers/entity/refund-entity.resolver';
 import { RoleEntityResolver } from './resolvers/entity/role-entity.resolver';
+import { ShippingLineEntityResolver } from './resolvers/entity/shipping-line-entity.resolver';
 import { UserEntityResolver } from './resolvers/entity/user-entity.resolver';
 import { ShopAuthResolver } from './resolvers/shop/shop-auth.resolver';
 import { ShopCustomerResolver } from './resolvers/shop/shop-customer.resolver';
@@ -117,6 +118,7 @@ export const entityResolvers = [
     ProductVariantEntityResolver,
     RefundEntityResolver,
     RoleEntityResolver,
+    ShippingLineEntityResolver,
     UserEntityResolver,
 ];
 

@@ -48,8 +48,9 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
             .mapSingle(data => data.fulfillmentHandlers)
             .subscribe(handlers => {
                 this.fulfillmentHandlerDef =
-                    handlers.find(h => h.code === this.order.shippingMethod?.fulfillmentHandlerCode) ||
-                    handlers[0];
+                    handlers.find(
+                        h => h.code === this.order.shippingLines[0]?.shippingMethod?.fulfillmentHandlerCode,
+                    ) || handlers[0];
                 this.fulfillmentHandler = configurableDefinitionToInstance(this.fulfillmentHandlerDef);
                 this.fulfillmentHandlerControl.patchValue(this.fulfillmentHandler);
                 this.changeDetector.markForCheck();

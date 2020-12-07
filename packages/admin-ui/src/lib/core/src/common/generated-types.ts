@@ -1287,19 +1287,6 @@ export type UpdateFacetValueInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1457,9 +1444,9 @@ export type Order = Node & {
   /** Same as subTotal, but inclusive of tax */
   subTotalWithTax: Scalars['Int'];
   currencyCode: CurrencyCode;
+  shippingLines: Array<ShippingLine>;
   shipping: Scalars['Int'];
   shippingWithTax: Scalars['Int'];
-  shippingMethod?: Maybe<ShippingMethod>;
   /** Equal to subTotal plus shipping */
   total: Scalars['Int'];
   /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
@@ -1473,6 +1460,19 @@ export type Order = Node & {
 
 export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
+};
+
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderInput = {
@@ -3562,6 +3562,14 @@ export type ShippingMethodQuote = {
   metadata?: Maybe<Scalars['JSON']>;
 };
 
+export type ShippingLine = {
+  __typename?: 'ShippingLine';
+  shippingMethod: ShippingMethod;
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  discounts: Array<Adjustment>;
+};
+
 export type OrderItem = Node & {
   __typename?: 'OrderItem';
   id: Scalars['ID'];
@@ -5316,9 +5324,12 @@ export type OrderDetailFragment = (
   )>, promotions: Array<(
     { __typename?: 'Promotion' }
     & Pick<Promotion, 'id' | 'couponCode'>
-  )>, shippingMethod?: Maybe<(
-    { __typename?: 'ShippingMethod' }
-    & Pick<ShippingMethod, 'id' | 'code' | 'name' | 'fulfillmentHandlerCode' | 'description'>
+  )>, shippingLines: Array<(
+    { __typename?: 'ShippingLine' }
+    & { shippingMethod: (
+      { __typename?: 'ShippingMethod' }
+      & Pick<ShippingMethod, 'id' | 'code' | 'name' | 'fulfillmentHandlerCode' | 'description'>
+    ) }
   )>, taxSummary: Array<(
     { __typename?: 'OrderTaxSummary' }
     & Pick<OrderTaxSummary, 'taxBase' | 'taxRate' | 'taxTotal'>
@@ -7874,7 +7885,8 @@ export namespace OrderDetail {
   export type Lines = NonNullable<(NonNullable<OrderDetailFragment['lines']>)[number]>;
   export type Discounts = NonNullable<(NonNullable<OrderDetailFragment['discounts']>)[number]>;
   export type Promotions = NonNullable<(NonNullable<OrderDetailFragment['promotions']>)[number]>;
-  export type ShippingMethod = (NonNullable<OrderDetailFragment['shippingMethod']>);
+  export type ShippingLines = NonNullable<(NonNullable<OrderDetailFragment['shippingLines']>)[number]>;
+  export type ShippingMethod = (NonNullable<NonNullable<(NonNullable<OrderDetailFragment['shippingLines']>)[number]>['shippingMethod']>);
   export type TaxSummary = NonNullable<(NonNullable<OrderDetailFragment['taxSummary']>)[number]>;
   export type ShippingAddress = (NonNullable<OrderDetailFragment['shippingAddress']>);
   export type BillingAddress = (NonNullable<OrderDetailFragment['billingAddress']>);

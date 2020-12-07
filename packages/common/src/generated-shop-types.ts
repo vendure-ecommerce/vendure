@@ -1742,9 +1742,9 @@ export type Order = Node & {
     /** Same as subTotal, but inclusive of tax */
     subTotalWithTax: Scalars['Int'];
     currencyCode: CurrencyCode;
+    shippingLines: Array<ShippingLine>;
     shipping: Scalars['Int'];
     shippingWithTax: Scalars['Int'];
-    shippingMethod?: Maybe<ShippingMethod>;
     /** Equal to subTotal plus shipping */
     total: Scalars['Int'];
     /** The final payable amount. Equal to subTotalWithTax plus shippingWithTax */
@@ -1801,6 +1801,14 @@ export type ShippingMethodQuote = {
     name: Scalars['String'];
     description: Scalars['String'];
     metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type ShippingLine = {
+    __typename?: 'ShippingLine';
+    shippingMethod: ShippingMethod;
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    discounts: Array<Adjustment>;
 };
 
 export type OrderItem = Node & {

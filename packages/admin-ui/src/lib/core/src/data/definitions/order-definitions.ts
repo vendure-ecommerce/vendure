@@ -142,12 +142,14 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         currencyCode
         shipping
         shippingWithTax
-        shippingMethod {
-            id
-            code
-            name
-            fulfillmentHandlerCode
-            description
+        shippingLines {
+            shippingMethod {
+                id
+                code
+                name
+                fulfillmentHandlerCode
+                description
+            }
         }
         taxSummary {
             taxBase

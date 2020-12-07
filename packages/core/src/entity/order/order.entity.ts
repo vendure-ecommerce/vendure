@@ -16,6 +16,7 @@ import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
+import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
 
 /**
@@ -68,18 +69,6 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @Column('varchar')
     currencyCode: CurrencyCode;
 
-    @EntityId({ nullable: true })
-    shippingMethodId: ID | null;
-
-    @ManyToOne(type => ShippingMethod)
-    shippingMethod: ShippingMethod | null;
-
-    @Column({ default: 0 })
-    shipping: number;
-
-    @Column({ default: 0 })
-    shippingWithTax: number;
-
     @Column(type => CustomOrderFields)
     customFields: CustomOrderFields;
 
@@ -90,14 +79,20 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @JoinTable()
     channels: Channel[];
 
-    /**
-     * @description
-     * The subTotal is the total of the OrderLines, before order-level promotions
-     * and shipping has been applied.
-     */
-    @Column() subTotal: number;
+    @Column()
+    subTotal: number;
 
-    @Column() subTotalWithTax: number;
+    @Column()
+    subTotalWithTax: number;
+
+    @OneToMany(type => ShippingLine, shippingLine => shippingLine.order)
+    shippingLines: ShippingLine[];
+
+    @Column({ default: 0 })
+    shipping: number;
+
+    @Column({ default: 0 })
+    shippingWithTax: number;
 
     @Calculated()
     get discounts(): Adjustment[] {

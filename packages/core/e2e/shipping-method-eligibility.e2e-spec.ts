@@ -87,7 +87,7 @@ const calculator = new ShippingCalculator({
     },
 });
 
-describe('ShippingMethod resolver', () => {
+describe('ShippingMethod eligibility', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig,
         shippingOptions: {
@@ -310,7 +310,7 @@ describe('ShippingMethod resolver', () => {
 
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
             // multiLineShippingMethod assigned as a fallback
-            expect(activeOrder?.shippingMethod?.id).toBe(multiLineShippingMethod.id);
+            expect(activeOrder?.shippingLines?.[0]?.shippingMethod?.id).toBe(multiLineShippingMethod.id);
 
             await shopClient.query<AdjustItemQuantity.Mutation, AdjustItemQuantity.Variables>(
                 ADJUST_ITEM_QUANTITY,
@@ -340,7 +340,7 @@ describe('ShippingMethod resolver', () => {
             expect(check2Spy).toHaveBeenCalledTimes(3);
 
             // Falls back to the first eligible shipping method
-            expect(removeOrderLine.shippingMethod?.id).toBe(singleLineShippingMethod.id);
+            expect(removeOrderLine.shippingLines[0].shippingMethod?.id).toBe(singleLineShippingMethod.id);
         });
     });
 
