@@ -49,6 +49,8 @@ export class ExceptionLoggerFilter implements ExceptionFilter {
                 stack = undefined;
             }
             Logger.error(message, undefined, stack);
+        } else {
+            Logger.error(exception.message, undefined, exception.stack);
         }
 
         if (exception instanceof HttpException && req.path.startsWith('/' + HEALTH_CHECK_ROUTE)) {
