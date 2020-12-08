@@ -1,6 +1,6 @@
 // tslint:disable:no-shadowed-variable
 // prettier-ignore
-import { LanguageCode } from './generated-types';
+import { LanguageCode, LocalizedString } from './generated-types';
 
 /**
  * A recursive implementation of the Partial<T> type.
@@ -136,7 +136,9 @@ export type DefaultFormComponentId =
 type DefaultFormConfigHash = {
     'date-form-input': { min?: string; max?: string; yearRange?: number };
     'number-form-input': { min?: number; max?: number; step?: number; prefix?: string; suffix?: string };
-    'select-form-input': { options?: Array<{ value: string; label?: string }> };
+    'select-form-input': {
+        options?: Array<{ value: string; label?: Array<Omit<LocalizedString, '__typename'>> }>;
+    };
     'boolean-form-input': {};
     'currency-form-input': {};
     'facet-value-form-input': {};

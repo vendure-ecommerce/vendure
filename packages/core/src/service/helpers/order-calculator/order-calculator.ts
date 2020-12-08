@@ -334,8 +334,14 @@ export class OrderCalculator {
         if (currentMethodStillEligible) {
             const result = await currentShippingMethod.apply(ctx, order);
             if (result) {
-                shippingLine.price = result.price;
-                shippingLine.priceWithTax = result.priceWithTax;
+                shippingLine.listPrice = result.price;
+                shippingLine.listPriceIncludesTax = result.priceIncludesTax;
+                shippingLine.taxLines = [
+                    {
+                        description: 'shipping tax',
+                        taxRate: result.taxRate,
+                    },
+                ];
             }
             return;
         }
@@ -344,9 +350,15 @@ export class OrderCalculator {
         ]);
         if (results && results.length) {
             const cheapest = results[0];
-            shippingLine.price = cheapest.result.price;
-            shippingLine.priceWithTax = cheapest.result.priceWithTax;
+            shippingLine.listPrice = cheapest.result.price;
+            shippingLine.listPriceIncludesTax = cheapest.result.priceIncludesTax;
             shippingLine.shippingMethod = cheapest.method;
+            shippingLine.taxLines = [
+                {
+                    description: 'shipping tax',
+                    taxRate: cheapest.result.taxRate,
+                },
+            ];
         }
     }
 

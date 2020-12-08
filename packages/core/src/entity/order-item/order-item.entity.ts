@@ -74,6 +74,11 @@ export class OrderItem extends VendureEntity {
         return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
     }
 
+    @Calculated()
+    get unitPriceWithTax(): number {
+        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
+    }
+
     /**
      * @description
      * The total applicable tax rate, which is the sum of all taxLines on this
@@ -81,12 +86,7 @@ export class OrderItem extends VendureEntity {
      */
     @Calculated()
     get taxRate(): number {
-        return summate(this.taxLines || [], 'taxRate');
-    }
-
-    @Calculated()
-    get unitPriceWithTax(): number {
-        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
+        return summate(this.taxLines, 'taxRate');
     }
 
     @Calculated()

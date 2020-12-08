@@ -75,10 +75,11 @@ export class ShippingMethod
         if (calculator) {
             const response = await calculator.calculate(ctx, order, this.calculator.args);
             if (response) {
-                const { price, priceWithTax, metadata } = response;
+                const { price, priceIncludesTax, taxRate, metadata } = response;
                 return {
                     price: Math.round(price),
-                    priceWithTax: Math.round(priceWithTax),
+                    priceIncludesTax,
+                    taxRate,
                     metadata,
                 };
             }

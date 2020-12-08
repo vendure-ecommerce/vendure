@@ -60,6 +60,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -522,14 +523,17 @@ export class OrderService {
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        return eligibleMethods.map(eligible => ({
-            id: eligible.method.id,
-            price: eligible.result.price,
-            priceWithTax: eligible.result.priceWithTax,
-            description: eligible.method.description,
-            name: eligible.method.name,
-            metadata: eligible.result.metadata,
-        }));
+        return eligibleMethods.map(eligible => {
+            const { price, taxRate, priceIncludesTax, metadata } = eligible.result;
+            return {
+                id: eligible.method.id,
+                price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
+                priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
+                description: eligible.method.description,
+                name: eligible.method.name,
+                metadata,
+            };
+        });
     }
 
     async setShippingMethod(
@@ -559,8 +563,9 @@ export class OrderService {
                     shippingMethod,
                     order,
                     adjustments: [],
-                    price: 0,
-                    priceWithTax: 0,
+                    listPrice: 0,
+                    listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                    taxLines: [],
                 }),
             );
             order.shippingLines = [shippingLine];

@@ -4,8 +4,11 @@ import { pick } from '@vendure/common/lib/pick';
 import {
     containsProducts,
     customerGroup,
+    defaultShippingCalculator,
+    defaultShippingEligibilityChecker,
     discountOnItemWithFacets,
     hasFacetValues,
+    manualFulfillmentHandler,
     minimumOrderAmount,
     orderPercentageDiscount,
     productsPercentageDiscount,
@@ -32,6 +35,7 @@ import {
     CreateCustomerGroup,
     CreatePromotion,
     CreatePromotionInput,
+    CreateShippingMethod,
     CurrencyCode,
     GetFacetList,
     GetProductsWithVariantPrices,
@@ -60,6 +64,7 @@ import {
     CREATE_CHANNEL,
     CREATE_CUSTOMER_GROUP,
     CREATE_PROMOTION,
+    CREATE_SHIPPING_METHOD,
     GET_FACET_LIST,
     GET_PRODUCTS_WITH_VARIANT_PRICES,
     REMOVE_CUSTOMERS_FROM_GROUP,
@@ -911,6 +916,43 @@ describe('Promotions applied to Orders', () => {
             const couponCode = 'FREE_SHIPPING';
             let promotion: PromotionFragment;
 
+            // The test shipping method needs to be created in each Channel, since ShippingMethods
+            // are ChannelAware
+            async function createTestShippingMethod(channelToken: string) {
+                adminClient.setChannelToken(channelToken);
+                const result = await adminClient.query<
+                    CreateShippingMethod.Mutation,
+                    CreateShippingMethod.Variables
+                >(CREATE_SHIPPING_METHOD, {
+                    input: {
+                        code: 'test-method',
+                        fulfillmentHandler: manualFulfillmentHandler.code,
+                        checker: {
+                            code: defaultShippingEligibilityChecker.code,
+                            arguments: [
+                                {
+                                    name: 'orderMinimum',
+                                    value: '0',
+                                },
+                            ],
+                        },
+                        calculator: {
+                            code: defaultShippingCalculator.code,
+                            arguments: [
+                                { name: 'rate', value: '345' },
+                                { name: 'includesTax', value: 'auto' },
+                                { name: 'taxRate', value: '20' },
+                            ],
+                        },
+                        translations: [
+                            { languageCode: LanguageCode.en, name: 'test method', description: '' },
+                        ],
+                    },
+                });
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                return result.createShippingMethod;
+            }
+
             beforeAll(async () => {
                 promotion = await createPromotion({
                     enabled: true,
@@ -939,18 +981,19 @@ describe('Promotions applied to Orders', () => {
                     productVariantId: getVariantBySlug('item-5000').id,
                     quantity: 1,
                 });
+                const method = await createTestShippingMethod(E2E_DEFAULT_CHANNEL_TOKEN);
                 const { setOrderShippingMethod } = await shopClient.query<
                     SetShippingMethod.Mutation,
                     SetShippingMethod.Variables
                 >(SET_SHIPPING_METHOD, {
-                    id: 'T_1',
+                    id: method.id,
                 });
                 orderResultGuard.assertSuccess(setOrderShippingMethod);
                 expect(setOrderShippingMethod.discounts).toEqual([]);
-                expect(setOrderShippingMethod.shipping).toBe(500);
-                expect(setOrderShippingMethod.shippingWithTax).toBe(500);
-                expect(setOrderShippingMethod.total).toBe(5500);
-                expect(setOrderShippingMethod.totalWithTax).toBe(6500);
+                expect(setOrderShippingMethod.shipping).toBe(345);
+                expect(setOrderShippingMethod.shippingWithTax).toBe(414);
+                expect(setOrderShippingMethod.total).toBe(5345);
+                expect(setOrderShippingMethod.totalWithTax).toBe(6414);
 
                 const { applyCouponCode } = await shopClient.query<
                     ApplyCouponCode.Mutation,
@@ -966,6 +1009,45 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode.shippingWithTax).toBe(0);
                 expect(applyCouponCode.total).toBe(5000);
                 expect(applyCouponCode.totalWithTax).toBe(6000);
+            });
+
+            it('prices include tax', async () => {
+                shopClient.setChannelToken(TAX_INCLUDED_CHANNEL_TOKEN);
+                const { addItemToOrder } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-5000').id,
+                    quantity: 1,
+                });
+                const method = await createTestShippingMethod(TAX_INCLUDED_CHANNEL_TOKEN);
+                const { setOrderShippingMethod } = await shopClient.query<
+                    SetShippingMethod.Mutation,
+                    SetShippingMethod.Variables
+                >(SET_SHIPPING_METHOD, {
+                    id: method.id,
+                });
+                orderResultGuard.assertSuccess(setOrderShippingMethod);
+                expect(setOrderShippingMethod.discounts).toEqual([]);
+                expect(setOrderShippingMethod.shipping).toBe(287);
+                expect(setOrderShippingMethod.shippingWithTax).toBe(345);
+                expect(setOrderShippingMethod.total).toBe(4454);
+                expect(setOrderShippingMethod.totalWithTax).toBe(5345);
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, {
+                    couponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.discounts.length).toBe(1);
+                expect(applyCouponCode.discounts[0].description).toBe('Free shipping');
+                expect(applyCouponCode.shipping).toBe(0);
+                expect(applyCouponCode.shippingWithTax).toBe(0);
+                expect(applyCouponCode.total).toBe(4167);
+                expect(applyCouponCode.totalWithTax).toBe(5000);
             });
         });
 

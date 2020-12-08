@@ -1,6 +1,14 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
+import { RequestContext } from '../../api/common/request-context';
+
 import { ShippingCalculator } from './shipping-calculator';
+
+enum TaxSetting {
+    include = 'include',
+    exclude = 'exclude',
+    auto = 'auto',
+}
 
 export const defaultShippingCalculator = new ShippingCalculator({
     code: 'default-shipping-calculator',
@@ -11,6 +19,27 @@ export const defaultShippingCalculator = new ShippingCalculator({
             ui: { component: 'currency-form-input' },
             label: [{ languageCode: LanguageCode.en, value: 'Shipping price' }],
         },
+        includesTax: {
+            type: 'string',
+            ui: {
+                component: 'select-form-input',
+                options: [
+                    {
+                        label: [{ languageCode: LanguageCode.en, value: 'Includes tax' }],
+                        value: TaxSetting.include,
+                    },
+                    {
+                        label: [{ languageCode: LanguageCode.en, value: 'Excludes tax' }],
+                        value: TaxSetting.exclude,
+                    },
+                    {
+                        label: [{ languageCode: LanguageCode.en, value: 'Auto (based on Channel)' }],
+                        value: TaxSetting.auto,
+                    },
+                ],
+            },
+            label: [{ languageCode: LanguageCode.en, value: 'Price includes tax' }],
+        },
         taxRate: {
             type: 'int',
             ui: { component: 'number-form-input', suffix: '%' },
@@ -18,6 +47,21 @@ export const defaultShippingCalculator = new ShippingCalculator({
         },
     },
     calculate: (ctx, order, args) => {
-        return { price: args.rate, priceWithTax: args.rate * ((100 + args.taxRate) / 100) };
+        return {
+            price: args.rate,
+            taxRate: args.taxRate,
+            priceIncludesTax: getPriceIncludesTax(ctx, args.includesTax as any),
+        };
     },
 });
+
+function getPriceIncludesTax(ctx: RequestContext, setting: TaxSetting): boolean {
+    switch (setting) {
+        case TaxSetting.auto:
+            return ctx.channel.pricesIncludeTax;
+        case TaxSetting.exclude:
+            return false;
+        case TaxSetting.include:
+            return true;
+    }
+}

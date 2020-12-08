@@ -82,7 +82,8 @@ const calculator = new ShippingCalculator({
     calculate: ctx => {
         return {
             price: 10,
-            priceWithTax: 12,
+            priceIncludesTax: false,
+            taxRate: 20,
         };
     },
 });

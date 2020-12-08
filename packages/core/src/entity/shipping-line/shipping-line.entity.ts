@@ -1,4 +1,4 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, ManyToOne } from 'typeorm';
@@ -26,23 +26,43 @@ export class ShippingLine extends VendureEntity {
     order: Order;
 
     @Column()
-    price: number;
+    listPrice: number;
 
     @Column()
-    priceWithTax: number;
+    listPriceIncludesTax: boolean;
+
+    @Column('simple-json')
+    adjustments: Adjustment[];
+
+    @Column('simple-json')
+    taxLines: TaxLine[];
+
+    @Calculated()
+    get price(): number {
+        return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
+    }
+
+    @Calculated()
+    get priceWithTax(): number {
+        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
+    }
 
     @Calculated()
     get discountedPrice(): number {
-        return this.price + this.getAdjustmentsTotal();
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
     }
 
     @Calculated()
     get discountedPriceWithTax(): number {
-        return this.priceWithTax + this.getAdjustmentsTotal();
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
     }
 
-    @Column('simple-json')
-    adjustments: Adjustment[];
+    @Calculated()
+    get taxRate(): number {
+        return summate(this.taxLines, 'taxRate');
+    }
 
     @Calculated()
     get discounts(): Adjustment[] {

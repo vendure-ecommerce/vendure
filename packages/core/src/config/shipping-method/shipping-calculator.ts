@@ -71,9 +71,14 @@ export interface ShippingCalculationResult {
     price: number;
     /**
      * @description
-     * The shipping price including taxes.
+     * Whether or not the given price already includes taxes.
      */
-    priceWithTax: number;
+    priceIncludesTax: boolean;
+    /**
+     * @description
+     * The tax rate applied to the shipping price.
+     */
+    taxRate: number;
     /**
      * @description
      * Arbitrary metadata may be returned from the calculation function. This can be used

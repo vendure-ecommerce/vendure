@@ -4,11 +4,13 @@ import {
     ShippingMethodQuote,
     TestEligibleShippingMethodsInput,
     TestShippingMethodInput,
+    TestShippingMethodQuote,
     TestShippingMethodResult,
 } from '@vendure/common/lib/generated-types';
 
 import { ID } from '../../../../common/lib/shared-types';
 import { RequestContext } from '../../api/common/request-context';
+import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ConfigService } from '../../config/config.service';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
@@ -54,9 +56,18 @@ export class OrderTestingService {
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligible = await shippingMethod.test(ctx, mockOrder);
         const result = eligible ? await shippingMethod.apply(ctx, mockOrder) : undefined;
+        let quote: TestShippingMethodQuote | undefined;
+        if (result) {
+            const { price, priceIncludesTax, taxRate, metadata } = result;
+            quote = {
+                price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
+                priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
+                metadata,
+            };
+        }
         return {
             eligible,
-            quote: result,
+            quote,
         };
     }
 
@@ -75,14 +86,17 @@ export class OrderTestingService {
                 translateDeep(result.method, ctx.languageCode);
                 return result;
             })
-            .map(result => ({
-                id: result.method.id,
-                price: result.result.price,
-                priceWithTax: result.result.priceWithTax,
-                name: result.method.name,
-                description: result.method.description,
-                metadata: result.result.metadata,
-            }));
+            .map(result => {
+                const { price, taxRate, priceIncludesTax, metadata } = result.result;
+                return {
+                    id: result.method.id,
+                    price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
+                    priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
+                    name: result.method.name,
+                    description: result.method.description,
+                    metadata: result.result.metadata,
+                };
+            });
     }
 
     private async buildMockOrder(
@@ -130,8 +144,9 @@ export class OrderTestingService {
         }
         mockOrder.shippingLines = [
             new ShippingLine({
-                price: 0,
-                priceWithTax: 0,
+                listPrice: 0,
+                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                taxLines: [],
                 adjustments: [],
             }),
         ];

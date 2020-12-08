@@ -40,7 +40,8 @@ const calculatorWithMetadata = new ShippingCalculator({
     calculate: () => {
         return {
             price: 100,
-            priceWithTax: 100,
+            priceIncludesTax: true,
+            taxRate: 0,
             metadata: TEST_METADATA,
         };
     },
@@ -106,6 +107,31 @@ describe('ShippingMethod resolver', () => {
                         label: 'Shipping price',
                         name: 'rate',
                         type: 'int',
+                    },
+                    {
+                        label: 'Price includes tax',
+                        name: 'includesTax',
+                        type: 'string',
+                        description: null,
+                        ui: {
+                            component: 'select-form-input',
+                            options: [
+                                {
+                                    label: [{ languageCode: LanguageCode.en, value: 'Includes tax' }],
+                                    value: 'include',
+                                },
+                                {
+                                    label: [{ languageCode: LanguageCode.en, value: 'Excludes tax' }],
+                                    value: 'exclude',
+                                },
+                                {
+                                    label: [
+                                        { languageCode: LanguageCode.en, value: 'Auto (based on Channel)' },
+                                    ],
+                                    value: 'auto',
+                                },
+                            ],
+                        },
                     },
                     {
                         ui: {
