@@ -83,12 +83,19 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
         subTotal: 15144,
         subTotalWithTax: 18173,
         shipping: 1000,
-        shippingMethod: {
-            code: 'express-flat-rate',
-            name: 'Express Shipping',
-            description: 'Express Shipping',
-            id: '2',
-        },
+        shippingLines: [
+            {
+                listPrice: 1000,
+                listPriceIncludesTax: true,
+                taxLines: [{ taxRate: 20, description: 'shipping tax' }],
+                shippingMethod: {
+                    code: 'express-flat-rate',
+                    name: 'Express Shipping',
+                    description: 'Express Shipping',
+                    id: '2',
+                },
+            },
+        ],
         shippingAddress: {
             fullName: 'Test Customer',
             company: '',
