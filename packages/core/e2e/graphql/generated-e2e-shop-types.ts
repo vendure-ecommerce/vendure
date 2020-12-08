@@ -1752,6 +1752,8 @@ export type ShippingLine = {
     shippingMethod: ShippingMethod;
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    discountedPrice: Scalars['Int'];
+    discountedPriceWithTax: Scalars['Int'];
     discounts: Array<Adjustment>;
 };
 
@@ -2594,7 +2596,17 @@ export type NativeAuthInput = {
 
 export type TestOrderFragmentFragment = Pick<
     Order,
-    'id' | 'code' | 'state' | 'active' | 'total' | 'totalWithTax' | 'couponCodes' | 'shipping'
+    | 'id'
+    | 'code'
+    | 'state'
+    | 'active'
+    | 'subTotal'
+    | 'subTotalWithTax'
+    | 'shipping'
+    | 'shippingWithTax'
+    | 'total'
+    | 'totalWithTax'
+    | 'couponCodes'
 > & {
     discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
     lines: Array<

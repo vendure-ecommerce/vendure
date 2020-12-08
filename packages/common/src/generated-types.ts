@@ -1256,6 +1256,19 @@ export type UpdateFacetValueInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1429,19 +1442,6 @@ export type Order = Node & {
 
 export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
-};
-
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderInput = {
@@ -3535,6 +3535,8 @@ export type ShippingLine = {
   shippingMethod: ShippingMethod;
   price: Scalars['Int'];
   priceWithTax: Scalars['Int'];
+  discountedPrice: Scalars['Int'];
+  discountedPriceWithTax: Scalars['Int'];
   discounts: Array<Adjustment>;
 };
 

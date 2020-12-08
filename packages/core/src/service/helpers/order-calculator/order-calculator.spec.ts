@@ -4,16 +4,17 @@ import { Omit } from '@vendure/common/lib/omit';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { PromotionItemAction, PromotionOrderAction } from '../../../config';
+import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
 import { DefaultTaxCalculationStrategy } from '../../../config/tax/default-tax-calculation-strategy';
 import { DefaultTaxZoneStrategy } from '../../../config/tax/default-tax-zone-strategy';
-import { Promotion } from '../../../entity';
+import { Promotion, ShippingMethod } from '../../../entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import { WorkerService } from '../../../worker/worker.service';
@@ -36,6 +37,19 @@ import { OrderCalculator } from './order-calculator';
 describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
+    const mockShippingMethod = {
+        price: 500,
+        priceWithTax: 600,
+        id: 'T_1',
+        test: () => true,
+        apply() {
+            return {
+                price: this.price,
+                priceWithTax: this.priceWithTax,
+            };
+        },
+    };
+
     beforeEach(async () => {
         const module = await Test.createTestingModule({
             providers: [
@@ -43,7 +57,7 @@ describe('OrderCalculator', () => {
                 TaxCalculator,
                 TaxRateService,
                 { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
-                { provide: ShippingMethodService, useValue: { findOne: () => undefined } },
+                { provide: ShippingMethodService, useValue: { findOne: () => mockShippingMethod } },
                 { provide: TransactionalConnection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: ConfigService, useClass: MockConfigService },
@@ -110,6 +124,35 @@ describe('OrderCalculator', () => {
             await orderCalculator.applyPriceAdjustments(ctx, order, []);
 
             expect(order.subTotal).toBe(0);
+        });
+    });
+
+    describe('shipping', () => {
+        it('prices exclude tax', async () => {
+            const ctx = createRequestContext({ pricesIncludeTax: false });
+            const order = createOrder({
+                ctx,
+                lines: [
+                    {
+                        listPrice: 100,
+                        taxCategory: taxCategoryStandard,
+                        quantity: 1,
+                    },
+                ],
+            });
+            order.shippingLines = [
+                new ShippingLine({
+                    shippingMethodId: mockShippingMethod.id,
+                }),
+            ];
+            await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+            expect(order.subTotal).toBe(100);
+            expect(order.shipping).toBe(mockShippingMethod.price);
+            expect(order.shippingWithTax).toBe(mockShippingMethod.priceWithTax);
+            expect(order.total).toBe(order.subTotal + mockShippingMethod.price);
+            expect(order.totalWithTax).toBe(order.subTotalWithTax + mockShippingMethod.priceWithTax);
+            assertOrderTotalsAddUp(order);
         });
     });
 
@@ -183,6 +226,15 @@ describe('OrderCalculator', () => {
             },
         });
 
+        const freeShippingAction = new PromotionShippingAction({
+            code: 'free_shipping',
+            description: [{ languageCode: LanguageCode.en, value: 'Free shipping' }],
+            args: {},
+            execute(ctx, shippingLine, order, args) {
+                return -shippingLine.price;
+            },
+        });
+
         it('empty string couponCode does not prevent promotion being applied', async () => {
             const hasEmptyStringCouponCode = new Promotion({
                 id: 2,
@@ -221,7 +273,7 @@ describe('OrderCalculator', () => {
             expect(order.discounts[0].description).toBe(hasEmptyStringCouponCode.name);
         });
 
-        describe('OrderItem-level promotions', () => {
+        describe('OrderItem-level discounts', () => {
             describe('percentage items discount', () => {
                 const promotion = new Promotion({
                     id: 1,
@@ -482,7 +534,7 @@ describe('OrderCalculator', () => {
                 });
             });
 
-            it('percentage order discount', async () => {
+            describe('percentage order discount', () => {
                 const promotion = new Promotion({
                     id: 1,
                     name: '50% off order',
@@ -497,24 +549,102 @@ describe('OrderCalculator', () => {
                     promotionActions: [percentageOrderAction],
                 });
 
-                const ctx = createRequestContext({ pricesIncludeTax: false });
-                const order = createOrder({
-                    ctx,
-                    lines: [
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 100,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(50);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe('50% off order');
+                    expect(order.totalWithTax).toBe(60);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 100,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(42);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe('50% off order');
+                    expect(order.totalWithTax).toBe(50);
+                    assertOrderTotalsAddUp(order);
+                });
+            });
+        });
+
+        describe('Shipping-level discounts', () => {
+            describe('free_shipping', () => {
+                const couponCode = 'FREE_SHIPPING';
+                const promotion = new Promotion({
+                    id: 1,
+                    name: 'Free shipping',
+                    couponCode,
+                    conditions: [],
+                    promotionConditions: [],
+                    actions: [
                         {
-                            listPrice: 100,
-                            taxCategory: taxCategoryStandard,
-                            quantity: 1,
+                            code: freeShippingAction.code,
+                            args: [],
                         },
                     ],
+                    promotionActions: [freeShippingAction],
                 });
-                await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
-                expect(order.subTotal).toBe(50);
-                expect(order.discounts.length).toBe(1);
-                expect(order.discounts[0].description).toBe('50% off order');
-                expect(order.totalWithTax).toBe(60);
-                assertOrderTotalsAddUp(order);
+                it('prices exclude tax', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: false });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 100,
+                                taxCategory: taxCategoryStandard,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    order.shippingLines = [
+                        new ShippingLine({
+                            shippingMethodId: mockShippingMethod.id,
+                            adjustments: [],
+                        }),
+                    ];
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(100);
+                    expect(order.discounts.length).toBe(0);
+                    expect(order.total).toBe(order.subTotal + mockShippingMethod.price);
+                    assertOrderTotalsAddUp(order);
+
+                    order.couponCodes = [couponCode];
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(100);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe('Free shipping');
+                    expect(order.total).toBe(order.subTotal);
+                    assertOrderTotalsAddUp(order);
+                });
             });
         });
 
@@ -930,6 +1060,7 @@ describe('OrderCalculator', () => {
         return new Order({
             couponCodes: [],
             lines,
+            shippingLines: [],
         });
     }
 

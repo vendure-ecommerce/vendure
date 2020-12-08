@@ -81,6 +81,7 @@ export class OrderCalculator {
                 this.applyTaxes(ctx, order, activeTaxZone);
             }
             await this.applyShipping(ctx, order);
+            await this.applyShippingPromotions(ctx, order, promotions);
         }
         this.calculateOrderTotals(order);
         return taxZoneChanged ? order.getOrderItems() : Array.from(updatedOrderItems);
@@ -302,6 +303,25 @@ export class OrderCalculator {
         return Array.from(updatedItems.values());
     }
 
+    private async applyShippingPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
+        if (applicableOrderPromotions.length) {
+            order.shippingLines.forEach(line => (line.adjustments = []));
+            for (const promotion of applicableOrderPromotions) {
+                // re-test the promotion on each iteration, since the order total
+                // may be modified by a previously-applied promotion
+                if (await promotion.test(ctx, order)) {
+                    for (const shippingLine of order.shippingLines) {
+                        const adjustment = await promotion.apply(ctx, { shippingLine, order });
+                        if (adjustment && adjustment.amount !== 0) {
+                            shippingLine.addAdjustment(adjustment);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private async applyShipping(ctx: RequestContext, order: Order) {
         const shippingLine: ShippingLine | undefined = order.shippingLines[0];
         const currentShippingMethod =
@@ -345,8 +365,8 @@ export class OrderCalculator {
         let shippingPrice = 0;
         let shippingPriceWithTax = 0;
         for (const shippingLine of order.shippingLines) {
-            shippingPrice += shippingLine.price;
-            shippingPriceWithTax += shippingLine.priceWithTax;
+            shippingPrice += shippingLine.discountedPrice;
+            shippingPriceWithTax += shippingLine.discountedPriceWithTax;
         }
 
         order.shipping = shippingPrice;

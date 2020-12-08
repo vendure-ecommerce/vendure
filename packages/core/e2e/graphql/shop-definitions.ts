@@ -6,6 +6,10 @@ export const TEST_ORDER_FRAGMENT = gql`
         code
         state
         active
+        subTotal
+        subTotalWithTax
+        shipping
+        shippingWithTax
         total
         totalWithTax
         couponCodes
@@ -30,7 +34,6 @@ export const TEST_ORDER_FRAGMENT = gql`
                 type
             }
         }
-        shipping
         shippingLines {
             shippingMethod {
                 id

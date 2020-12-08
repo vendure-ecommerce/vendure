@@ -98,6 +98,8 @@ type ShippingLine {
     shippingMethod: ShippingMethod!
     price: Int!
     priceWithTax: Int!
+    discountedPrice: Int!
+    discountedPriceWithTax: Int!
     discounts: [Adjustment!]!
 }
 

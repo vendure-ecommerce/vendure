@@ -107,6 +107,16 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
                 }
             }
         }
+        for (const shippingLine of this.shippingLines) {
+            for (const discount of shippingLine.discounts) {
+                const adjustment = groupedAdjustments.get(discount.adjustmentSource);
+                if (adjustment) {
+                    adjustment.amount += discount.amount;
+                } else {
+                    groupedAdjustments.set(discount.adjustmentSource, { ...discount });
+                }
+            }
+        }
         return [...groupedAdjustments.values()];
     }
 

@@ -1808,6 +1808,8 @@ export type ShippingLine = {
     shippingMethod: ShippingMethod;
     price: Scalars['Int'];
     priceWithTax: Scalars['Int'];
+    discountedPrice: Scalars['Int'];
+    discountedPriceWithTax: Scalars['Int'];
     discounts: Array<Adjustment>;
 };
 

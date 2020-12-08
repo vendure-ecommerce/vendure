@@ -10,6 +10,7 @@ import {
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 
 /**
  * @description
@@ -36,6 +37,21 @@ export type ExecutePromotionItemActionFn<T extends ConfigArgs> = (
  */
 export type ExecutePromotionOrderActionFn<T extends ConfigArgs> = (
     ctx: RequestContext,
+    order: Order,
+    args: ConfigArgValues<T>,
+) => number | Promise<number>;
+
+/**
+ * @description
+ * The function which is used by a PromotionOrderAction to calculate the
+ * discount on the Order.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
+export type ExecutePromotionShippingActionFn<T extends ConfigArgs> = (
+    ctx: RequestContext,
+    shippingLine: ShippingLine,
     order: Order,
     args: ConfigArgValues<T>,
 ) => number | Promise<number>;
@@ -71,6 +87,20 @@ export interface PromotionOrderActionConfig<T extends ConfigArgs> extends Promot
      * The function which contains the promotion calculation logic.
      */
     execute: ExecutePromotionOrderActionFn<T>;
+}
+
+/**
+ * @description
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ */
+export interface PromotionShippingActionConfig<T extends ConfigArgs> extends PromotionActionConfig<T> {
+    /**
+     * @description
+     * The function which contains the promotion calculation logic.
+     */
+    execute: ExecutePromotionShippingActionFn<T>;
 }
 
 /**
@@ -163,5 +193,26 @@ export class PromotionOrderAction<T extends ConfigArgs = ConfigArgs> extends Pro
     /** @internal */
     execute(ctx: RequestContext, order: Order, args: ConfigArg[]) {
         return this.executeFn(ctx, order, this.argsArrayToHash(args));
+    }
+}
+
+/**
+ * @description
+ * Represents a PromotionAction which applies to the shipping cost of an Order.
+ *
+ * @docsCategory promotions
+ * @docsPage promotion-action
+ * @docsWeight 3
+ */
+export class PromotionShippingAction<T extends ConfigArgs = ConfigArgs> extends PromotionAction<T> {
+    private readonly executeFn: ExecutePromotionShippingActionFn<T>;
+    constructor(config: PromotionShippingActionConfig<T>) {
+        super(config);
+        this.executeFn = config.execute;
+    }
+
+    /** @internal */
+    execute(ctx: RequestContext, shippingLine: ShippingLine, order: Order, args: ConfigArg[]) {
+        return this.executeFn(ctx, shippingLine, order, this.argsArrayToHash(args));
     }
 }

@@ -21,6 +21,7 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { freeShipping } from '../src/config/promotion/actions/free-shipping-action';
 import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
 import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
@@ -49,6 +50,7 @@ import {
     GetOrderPromotionsByCode,
     RemoveCouponCode,
     SetCustomerForOrder,
+    SetShippingMethod,
     TestOrderFragmentFragment,
     TestOrderWithPaymentsFragment,
     UpdatedOrderFragment,
@@ -70,6 +72,7 @@ import {
     GET_ORDER_PROMOTIONS_BY_CODE,
     REMOVE_COUPON_CODE,
     SET_CUSTOMER,
+    SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
@@ -901,6 +904,68 @@ describe('Promotions applied to Orders', () => {
                 expect(applyCouponCode!.total).toBe(2083);
                 expect(applyCouponCode!.totalWithTax).toBe(2500);
                 expect(applyCouponCode!.lines[0].discounts.length).toBe(1); // 1x promotion
+            });
+        });
+
+        describe('freeShipping', () => {
+            const couponCode = 'FREE_SHIPPING';
+            let promotion: PromotionFragment;
+
+            beforeAll(async () => {
+                promotion = await createPromotion({
+                    enabled: true,
+                    name: 'Free shipping',
+                    couponCode,
+                    conditions: [],
+                    actions: [
+                        {
+                            code: freeShipping.code,
+                            arguments: [],
+                        },
+                    ],
+                });
+            });
+
+            afterAll(async () => {
+                await deletePromotion(promotion.id);
+                shopClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+            });
+
+            it('prices exclude tax', async () => {
+                const { addItemToOrder } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: getVariantBySlug('item-5000').id,
+                    quantity: 1,
+                });
+                const { setOrderShippingMethod } = await shopClient.query<
+                    SetShippingMethod.Mutation,
+                    SetShippingMethod.Variables
+                >(SET_SHIPPING_METHOD, {
+                    id: 'T_1',
+                });
+                orderResultGuard.assertSuccess(setOrderShippingMethod);
+                expect(setOrderShippingMethod.discounts).toEqual([]);
+                expect(setOrderShippingMethod.shipping).toBe(500);
+                expect(setOrderShippingMethod.shippingWithTax).toBe(500);
+                expect(setOrderShippingMethod.total).toBe(5500);
+                expect(setOrderShippingMethod.totalWithTax).toBe(6500);
+
+                const { applyCouponCode } = await shopClient.query<
+                    ApplyCouponCode.Mutation,
+                    ApplyCouponCode.Variables
+                >(APPLY_COUPON_CODE, {
+                    couponCode,
+                });
+                orderResultGuard.assertSuccess(applyCouponCode);
+
+                expect(applyCouponCode.discounts.length).toBe(1);
+                expect(applyCouponCode.discounts[0].description).toBe('Free shipping');
+                expect(applyCouponCode.shipping).toBe(0);
+                expect(applyCouponCode.shippingWithTax).toBe(0);
+                expect(applyCouponCode.total).toBe(5000);
+                expect(applyCouponCode.totalWithTax).toBe(6000);
             });
         });
 
