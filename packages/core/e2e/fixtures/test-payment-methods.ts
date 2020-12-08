@@ -8,7 +8,7 @@ export const testSuccessfulPaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Settled',
             transactionId: '12345',
             metadata: { public: metadata },
@@ -29,7 +29,7 @@ export const twoStagePaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Authorized',
             transactionId: '12345',
             metadata: { public: metadata },
@@ -57,7 +57,7 @@ export const singleStageRefundablePaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Settled',
             transactionId: '12345',
             metadata,
@@ -84,7 +84,7 @@ export const failsToSettlePaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Authorized',
             transactionId: '12345',
             metadata: {
@@ -114,7 +114,7 @@ export const testFailingPaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Declined',
             errorMessage: 'Insufficient funds',
             metadata: { public: metadata },
@@ -130,7 +130,7 @@ export const testErrorPaymentMethod = new PaymentMethodHandler({
     args: {},
     createPayment: (ctx, order, args, metadata) => {
         return {
-            amount: order.total,
+            amount: order.totalWithTax,
             state: 'Error',
             errorMessage: 'Something went horribly wrong',
             metadata,
