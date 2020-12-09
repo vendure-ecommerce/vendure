@@ -16,7 +16,6 @@ import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
-import { TaxCalculator } from '../tax-calculator/tax-calculator';
 
 import { prorate } from './prorate';
 
@@ -26,7 +25,6 @@ export class OrderCalculator {
         private configService: ConfigService,
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,
-        private taxCalculator: TaxCalculator,
         private shippingMethodService: ShippingMethodService,
         private shippingCalculator: ShippingCalculator,
     ) {}

@@ -5,32 +5,30 @@ import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
+import { DefaultProductVariantPriceCalculationStrategy } from '../../../config/catalog/default-product-variant-price-calculation-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
-import { DefaultTaxCalculationStrategy } from '../../../config/tax/default-tax-calculation-strategy';
 import { DefaultTaxZoneStrategy } from '../../../config/tax/default-tax-zone-strategy';
-import { Promotion, ShippingMethod } from '../../../entity';
+import { Promotion } from '../../../entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { EventBus } from '../../../event-bus/event-bus';
+import {
+    createRequestContext,
+    MockTaxRateService,
+    taxCategoryReduced,
+    taxCategoryStandard,
+} from '../../../testing/order-test-utils';
 import { WorkerService } from '../../../worker/worker.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ListQueryBuilder } from '../list-query-builder/list-query-builder';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
-import { TaxCalculator } from '../tax-calculator/tax-calculator';
-import {
-    createRequestContext,
-    MockConnection,
-    taxCategoryReduced,
-    taxCategoryStandard,
-} from '../tax-calculator/tax-calculator-test-fixtures';
 
 import { OrderCalculator } from './order-calculator';
 
@@ -56,14 +54,12 @@ describe('OrderCalculator', () => {
         const module = await Test.createTestingModule({
             providers: [
                 OrderCalculator,
-                TaxCalculator,
-                TaxRateService,
+                { provide: TaxRateService, useClass: MockTaxRateService },
                 { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
                 {
                     provide: ShippingMethodService,
                     useValue: { findOne: (ctx: RequestContext) => createMockShippingMethod(ctx) },
                 },
-                { provide: TransactionalConnection, useClass: MockConnection },
                 { provide: ListQueryBuilder, useValue: {} },
                 { provide: ConfigService, useClass: MockConfigService },
                 { provide: EventBus, useValue: { publish: () => ({}) } },
@@ -76,7 +72,7 @@ describe('OrderCalculator', () => {
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
         mockConfigService.taxOptions = {
             taxZoneStrategy: new DefaultTaxZoneStrategy(),
-            taxCalculationStrategy: new DefaultTaxCalculationStrategy(),
+            taxCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
         };
         const taxRateService = module.get(TaxRateService);
         await taxRateService.initTaxRates();

@@ -104,7 +104,7 @@ export class OrderTestingService {
         shippingAddress: CreateAddressInput,
         lines: Array<{ productVariantId: ID; quantity: number }>,
     ): Promise<Order> {
-        const { priceCalculationStrategy } = this.configService.orderOptions;
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
         const mockOrder = new Order({
             lines: [],
         });
@@ -124,7 +124,7 @@ export class OrderTestingService {
             });
             mockOrder.lines.push(orderLine);
 
-            const { price, priceIncludesTax } = await priceCalculationStrategy.calculateUnitPrice(
+            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
                 ctx,
                 productVariant,
                 orderLine.customFields || {},

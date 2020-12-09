@@ -121,3 +121,15 @@ export type PaymentMetadata = {
 } & {
     public?: any;
 };
+
+/**
+ * @description
+ * The result of the price calculation from the {@link ProductVariantPriceCalculationStrategy} or the
+ * {@link OrderItemPriceCalculationStrategy}.
+ *
+ * @docsCategory Common
+ */
+export type PriceCalculationResult = {
+    price: number;
+    priceIncludesTax: boolean;
+};

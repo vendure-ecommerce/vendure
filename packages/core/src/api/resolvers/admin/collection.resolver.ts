@@ -14,7 +14,7 @@ import { PaginatedList } from '@vendure/common/lib/shared-types';
 
 import { UserInputError } from '../../../common/error/errors';
 import { Translated } from '../../../common/types/locale-types';
-import { CollectionFilter } from '../../../config/collection/collection-filter';
+import { CollectionFilter } from '../../../config/catalog/collection-filter';
 import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';

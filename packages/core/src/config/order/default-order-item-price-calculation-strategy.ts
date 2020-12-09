@@ -1,20 +1,21 @@
 import { RequestContext } from '../../api/common/request-context';
+import { PriceCalculationResult } from '../../common/types/common-types';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
-import { CalculatedPrice, PriceCalculationStrategy } from './price-calculation-strategy';
+import { OrderItemPriceCalculationStrategy } from './order-item-price-calculation-strategy';
 
 /**
  * @description
- * The default {@link PriceCalculationStrategy}, which simply passes through the price of
+ * The default {@link OrderItemPriceCalculationStrategy}, which simply passes through the price of
  * the ProductVariant without performing any calculations
  *
  * @docsCategory orders
  */
-export class DefaultPriceCalculationStrategy implements PriceCalculationStrategy {
+export class DefaultOrderItemPriceCalculationStrategy implements OrderItemPriceCalculationStrategy {
     calculateUnitPrice(
         ctx: RequestContext,
         productVariant: ProductVariant,
-    ): CalculatedPrice | Promise<CalculatedPrice> {
+    ): PriceCalculationResult | Promise<PriceCalculationResult> {
         return {
             price: productVariant.listPrice,
             priceIncludesTax: productVariant.listPriceIncludesTax,

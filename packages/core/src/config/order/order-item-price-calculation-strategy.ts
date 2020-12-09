@@ -1,28 +1,18 @@
 import { RequestContext } from '../../api/common/request-context';
+import { PriceCalculationResult } from '../../common/types/common-types';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 
 /**
  * @description
- * The result of the price calculation from the {@link PriceCalculationStrategy}.
- *
- * @docsCategory Orders
- */
-export type CalculatedPrice = {
-    price: number;
-    priceIncludesTax: boolean;
-};
-
-/**
- * @description
- * The PriceCalculationStrategy defines the price of an OrderItem when a ProductVariant gets added
+ * The OrderItemPriceCalculationStrategy defines the price of an OrderItem when a ProductVariant gets added
  * to an order via the `addItemToOrder` mutation. By default the {@link DefaultPriceCalculationStrategy}
  * is used.
  *
- * ### PriceCalculationStrategy vs Promotions
- * Both the PriceCalculationStrategy and Promotions can be used to alter the price paid for a product.
+ * ### OrderItemPriceCalculationStrategy vs Promotions
+ * Both the OrderItemPriceCalculationStrategy and Promotions can be used to alter the price paid for a product.
  *
- * Use PriceCalculationStrategy if:
+ * Use OrderItemPriceCalculationStrategy if:
  *
  * * The price is not dependent on quantity or on the other contents of the Order.
  * * The price calculation is based on the properties of the ProductVariant and any CustomFields
@@ -39,7 +29,7 @@ export type CalculatedPrice = {
  *
  * ### Example use-cases
  *
- * A custom PriceCalculationStrategy can be used to implement things like:
+ * A custom OrderItemPriceCalculationStrategy can be used to implement things like:
  *
  * * A gift-wrapping service, where a boolean custom field is defined on the OrderLine. If `true`,
  *   a gift-wrapping surcharge would be added to the price.
@@ -48,7 +38,7 @@ export type CalculatedPrice = {
  *
  * @docsCategory Orders
  */
-export interface PriceCalculationStrategy extends InjectableStrategy {
+export interface OrderItemPriceCalculationStrategy extends InjectableStrategy {
     /**
      * @description
      * Receives the ProductVariant to be added to the Order as well as any OrderLine custom fields and returns
@@ -58,5 +48,14 @@ export interface PriceCalculationStrategy extends InjectableStrategy {
         ctx: RequestContext,
         productVariant: ProductVariant,
         orderLineCustomFields: { [key: string]: any },
-    ): CalculatedPrice | Promise<CalculatedPrice>;
+    ): PriceCalculationResult | Promise<PriceCalculationResult>;
 }
+
+/**
+ * @description
+ * This is an alias of {@link OrderItemPriceCalculationStrategy} to preserve compatibility when upgrading.
+ *
+ * @deprecated Use OrderItemPriceCalculationStrategy
+ * @docsCategory Orders
+ */
+export interface PriceCalculationStrategy extends OrderItemPriceCalculationStrategy {}

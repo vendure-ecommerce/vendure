@@ -12,7 +12,8 @@ import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strate
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
-import { CollectionFilter } from './collection/collection-filter';
+import { CollectionFilter } from './catalog/collection-filter';
+import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
@@ -21,8 +22,8 @@ import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
+import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
-import { PriceCalculationStrategy } from './order/price-calculation-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
@@ -30,7 +31,6 @@ import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
-import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
 /**
@@ -386,7 +386,7 @@ export interface OrderOptions {
      *
      * @default DefaultPriceCalculationStrategy
      */
-    priceCalculationStrategy?: PriceCalculationStrategy;
+    orderItemPriceCalculationStrategy?: OrderItemPriceCalculationStrategy;
     /**
      * @description
      * Allows the definition of custom states and transition logic for the order process state machine.
@@ -496,6 +496,14 @@ export interface CatalogOptions {
      * @default defaultCollectionFilters
      */
     collectionFilters: Array<CollectionFilter<any>>;
+    /**
+     * @description
+     * Defines the strategy used for calculating the price of ProductVariants based
+     * on the Channel settings and active tax Zone.
+     *
+     * @default DefaultTaxCalculationStrategy
+     */
+    productVariantPriceCalculationStrategy: ProductVariantPriceCalculationStrategy;
 }
 
 /**
@@ -592,13 +600,6 @@ export interface TaxOptions {
      * @default DefaultTaxZoneStrategy
      */
     taxZoneStrategy: TaxZoneStrategy;
-    /**
-     * @description
-     * Defines the strategy used for calculating taxes.
-     *
-     * @default DefaultTaxCalculationStrategy
-     */
-    taxCalculationStrategy: TaxCalculationStrategy;
 }
 
 /**

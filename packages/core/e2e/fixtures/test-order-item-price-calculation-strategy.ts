@@ -1,9 +1,14 @@
-import { CalculatedPrice, PriceCalculationStrategy, ProductVariant, RequestContext } from '@vendure/core';
+import {
+    CalculatedPrice,
+    OrderItemPriceCalculationStrategy,
+    ProductVariant,
+    RequestContext,
+} from '@vendure/core';
 
 /**
  * Adds $5 for items with gift wrapping.
  */
-export class TestPriceCalculationStrategy implements PriceCalculationStrategy {
+export class TestOrderItemPriceCalculationStrategy implements OrderItemPriceCalculationStrategy {
     calculateUnitPrice(
         ctx: RequestContext,
         productVariant: ProductVariant,

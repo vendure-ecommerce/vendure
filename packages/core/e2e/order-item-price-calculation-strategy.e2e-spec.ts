@@ -6,11 +6,11 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { TestPriceCalculationStrategy } from './fixtures/test-price-calculation-strategy';
+import { TestOrderItemPriceCalculationStrategy } from './fixtures/test-order-item-price-calculation-strategy';
 import { AddItemToOrder, SearchProductsShop, SinglePrice } from './graphql/generated-e2e-shop-types';
 import { ADD_ITEM_TO_ORDER, SEARCH_PRODUCTS_SHOP } from './graphql/shop-definitions';
 
-describe('custom PriceCalculationStrategy', () => {
+describe('custom OrderItemPriceCalculationStrategy', () => {
     let variants: SearchProductsShop.Items[];
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
@@ -18,7 +18,7 @@ describe('custom PriceCalculationStrategy', () => {
                 OrderLine: [{ name: 'giftWrap', type: 'boolean' }],
             },
             orderOptions: {
-                priceCalculationStrategy: new TestPriceCalculationStrategy(),
+                orderItemPriceCalculationStrategy: new TestOrderItemPriceCalculationStrategy(),
             },
             plugins: [DefaultSearchPlugin],
         }),

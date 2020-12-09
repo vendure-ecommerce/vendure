@@ -118,13 +118,14 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             assetPreviewStrategy,
             assetStorageStrategy,
         } = this.configService.assetOptions;
+        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
         const { adminAuthenticationStrategy, shopAuthenticationStrategy } = this.configService.authOptions;
-        const { taxCalculationStrategy, taxZoneStrategy } = this.configService.taxOptions;
+        const { taxZoneStrategy } = this.configService.taxOptions;
         const { jobQueueStrategy } = this.configService.jobQueueOptions;
         const {
             mergeStrategy,
             checkoutMergeStrategy,
-            priceCalculationStrategy,
+            orderItemPriceCalculationStrategy,
             process,
             orderCodeStrategy,
             stockAllocationStrategy,
@@ -136,14 +137,14 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             assetNamingStrategy,
             assetPreviewStrategy,
             assetStorageStrategy,
-            taxCalculationStrategy,
             taxZoneStrategy,
             jobQueueStrategy,
             mergeStrategy,
             checkoutMergeStrategy,
             orderCodeStrategy,
             entityIdStrategy,
-            priceCalculationStrategy,
+            productVariantPriceCalculationStrategy,
+            orderItemPriceCalculationStrategy,
             ...process,
             stockAllocationStrategy,
         ];

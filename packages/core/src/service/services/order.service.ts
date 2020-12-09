@@ -354,7 +354,7 @@ export class OrderService {
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         let correctedQuantity = quantity;
         let quantityWasAdjustedDown = false;
-        const { priceCalculationStrategy } = this.configService.orderOptions;
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
         const order =
             orderIdOrOrder instanceof Order
                 ? orderIdOrOrder
@@ -389,7 +389,10 @@ export class OrderService {
                     orderLine.items = [];
                 }
                 const productVariant = orderLine.productVariant;
-                const { price, priceIncludesTax } = await priceCalculationStrategy.calculateUnitPrice(
+                const {
+                    price,
+                    priceIncludesTax,
+                } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
                     ctx,
                     productVariant,
                     orderLine.customFields || {},

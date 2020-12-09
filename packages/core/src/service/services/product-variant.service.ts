@@ -28,7 +28,6 @@ import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { TaxCalculator } from '../helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { samplesEach } from '../helpers/utils/samples-each';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -52,7 +51,6 @@ export class ProductVariantService {
         private taxCategoryService: TaxCategoryService,
         private facetValueService: FacetValueService,
         private taxRateService: TaxRateService,
-        private taxCalculator: TaxCalculator,
         private assetService: AssetService,
         private zoneService: ZoneService,
         private translatableSaver: TranslatableSaver,
@@ -438,12 +436,13 @@ export class ProductVariantService {
             variant.taxCategory,
         );
 
-        const { price, priceIncludesTax } = this.taxCalculator.calculate(
-            channelPrice.price,
-            variant.taxCategory,
+        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
+        const { price, priceIncludesTax } = productVariantPriceCalculationStrategy.calculate({
+            inputPrice: channelPrice.price,
+            taxCategory: variant.taxCategory,
             activeTaxZone,
             ctx,
-        );
+        });
 
         variant.listPrice = price;
         variant.listPriceIncludesTax = priceIncludesTax;
