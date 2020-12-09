@@ -80,14 +80,15 @@
                                             clrInput
                                             [currencyCode]="variant.currencyCode"
                                             [readonly]="!('UpdateCatalog' | hasPermission)"
-                                            formControlName="price"
+                                            [value]="variantListPrice[variant.id]"
+                                            (valueChange)="updateVariantListPrice($event, variant.id, formGroup)"
                                         ></vdr-currency-input>
                                     </clr-input-container>
                                 </div>
                                 <vdr-variant-price-detail
                                     [price]="formGroup.get('price')!.value"
                                     [currencyCode]="variant.currencyCode"
-                                    [priceIncludesTax]="variant.priceIncludesTax"
+                                    [priceIncludesTax]="channelPriceIncludesTax"
                                     [taxCategoryId]="formGroup.get('taxCategoryId')!.value"
                                 ></vdr-variant-price-detail>
                             </div>
@@ -268,7 +269,9 @@
                                 *ngIf="!isDefaultChannel(channel.code)"
                                 icon="times-circle"
                                 [title]="'catalog.remove-from-channel' | translate"
-                                (iconClick)="removeFromChannel.emit({ channelId: channel.id, variant: variant })"
+                                (iconClick)="
+                                    removeFromChannel.emit({ channelId: channel.id, variant: variant })
+                                "
                             >
                                 <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
                                 {{ channel.code | channelCodeToLabel }}

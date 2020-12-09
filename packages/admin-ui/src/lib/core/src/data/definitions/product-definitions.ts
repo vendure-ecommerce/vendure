@@ -61,7 +61,6 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         name
         price
         currencyCode
-        priceIncludesTax
         priceWithTax
         stockOnHand
         stockAllocated

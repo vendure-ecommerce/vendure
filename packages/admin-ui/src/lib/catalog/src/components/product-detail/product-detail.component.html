@@ -216,6 +216,7 @@
                     <vdr-product-variants-list
                         *ngIf="variantDisplayMode === 'card'"
                         [variants]="variants$ | async"
+                        [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [facets]="facets$ | async"
                         [optionGroups]="product.optionGroups"
                         [productVariantsFormArray]="detailForm.get('variants')"

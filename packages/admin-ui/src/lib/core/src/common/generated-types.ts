@@ -1287,19 +1287,6 @@ export type UpdateFacetValueInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1473,6 +1460,19 @@ export type Order = Node & {
 
 export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
+};
+
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderInput = {
@@ -1736,6 +1736,7 @@ export type ProductVariant = Node & {
   assets: Array<Asset>;
   price: Scalars['Int'];
   currencyCode: CurrencyCode;
+  /** @deprecated price now always excludes tax */
   priceIncludesTax: Scalars['Boolean'];
   priceWithTax: Scalars['Int'];
   taxRateApplied: TaxRate;
@@ -3524,6 +3525,8 @@ export enum LanguageCode {
  */
 export type OrderTaxSummary = {
   __typename?: 'OrderTaxSummary';
+  /** A description of this tax */
+  description: Scalars['String'];
   /** The taxRate as a percentage */
   taxRate: Scalars['Float'];
   /** The total net price or OrderItems to which this taxRate applies */
@@ -5641,7 +5644,7 @@ export type ProductOptionFragment = (
 
 export type ProductVariantFragment = (
   { __typename?: 'ProductVariant' }
-  & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceIncludesTax' | 'priceWithTax' | 'stockOnHand' | 'stockAllocated' | 'trackInventory' | 'outOfStockThreshold' | 'useGlobalOutOfStockThreshold' | 'sku'>
+  & Pick<ProductVariant, 'id' | 'createdAt' | 'updatedAt' | 'enabled' | 'languageCode' | 'name' | 'price' | 'currencyCode' | 'priceWithTax' | 'stockOnHand' | 'stockAllocated' | 'trackInventory' | 'outOfStockThreshold' | 'useGlobalOutOfStockThreshold' | 'sku'>
   & { taxRateApplied: (
     { __typename?: 'TaxRate' }
     & Pick<TaxRate, 'id' | 'name' | 'value'>

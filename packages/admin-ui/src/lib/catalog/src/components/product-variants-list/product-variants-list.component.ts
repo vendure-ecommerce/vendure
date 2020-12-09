@@ -29,7 +29,7 @@ import {
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { PaginationInstance } from 'ngx-pagination';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
 import { AssetChange } from '../product-assets/product-assets.component';
@@ -49,6 +49,7 @@ export interface VariantAssetChange extends AssetChange {
 export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestroy {
     @Input('productVariantsFormArray') formArray: FormArray;
     @Input() variants: ProductWithVariants.Variants[];
+    @Input() channelPriceIncludesTax: boolean;
     @Input() taxCategories: TaxCategory[];
     @Input() facets: FacetWithValues.Fragment[];
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
@@ -73,6 +74,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     GlobalFlag = GlobalFlag;
     globalTrackInventory: boolean;
     globalOutOfStockThreshold: number;
+    variantListPrice: { [variantId: string]: number } = {};
     private facetValues: FacetValue.Fragment[];
     private subscription: Subscription;
 
@@ -114,6 +116,9 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                 this.pagination.currentPage = 1;
             }
         }
+        if ('channelPriceIncludesTax' in changes) {
+            this.buildVariantListPrices(this.variants);
+        }
     }
 
     ngOnDestroy() {
@@ -136,6 +141,21 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             trackInventory === GlobalFlag.FALSE ||
             (trackInventory === GlobalFlag.INHERIT && this.globalTrackInventory === false)
         );
+    }
+
+    updateVariantListPrice(price, variantId: string, group: FormGroup) {
+        // Why do this and not just use a conditional `formControlName` or `formControl`
+        // binding in the template? It breaks down when switching between Channels and
+        // the values no longer get updated. There seem to some lifecycle/memory-clean-up
+        // issues with Angular forms at the moment, which will hopefully be fixed soon.
+        // See https://github.com/angular/angular/issues/20007
+        this.variantListPrice[variantId] = price;
+        const controlName = this.channelPriceIncludesTax ? 'priceWithTax' : 'price';
+        const control = group.get(controlName);
+        if (control) {
+            control.setValue(price);
+            control.markAsDirty();
+        }
     }
 
     getTaxCategoryName(group: FormGroup): string {
@@ -257,6 +277,14 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
                     this.updateProductOption.emit(result);
                 }
             });
+    }
+
+    private buildVariantListPrices(variants?: ProductWithVariants.Variants[]) {
+        if (variants) {
+            this.variantListPrice = variants.reduce((prices, v) => {
+                return { ...prices, [v.id]: this.channelPriceIncludesTax ? v.priceWithTax : v.price };
+            }, {});
+        }
     }
 
     private buildFormGroupMap() {
