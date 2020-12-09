@@ -5337,7 +5337,7 @@ export type OrderDetailFragment = (
     ) }
   )>, taxSummary: Array<(
     { __typename?: 'OrderTaxSummary' }
-    & Pick<OrderTaxSummary, 'taxBase' | 'taxRate' | 'taxTotal'>
+    & Pick<OrderTaxSummary, 'description' | 'taxBase' | 'taxRate' | 'taxTotal'>
   )>, shippingAddress?: Maybe<(
     { __typename?: 'OrderAddress' }
     & OrderAddressFragment

@@ -232,6 +232,7 @@
             <table class="table">
                 <thead>
                 <tr>
+                    <th>{{ 'common.description' | translate }}</th>
                     <th>{{ 'order.tax-rate' | translate }}</th>
                     <th>{{ 'order.tax-base' | translate }}</th>
                     <th>{{ 'order.tax-total' | translate }}</th>
@@ -239,6 +240,7 @@
                 </thead>
                 <tbody>
                 <tr *ngFor="let row of order.taxSummary">
+                    <td>{{ row.description }}</td>
                     <td>{{ row.taxRate / 100 | percent }}</td>
                     <td>{{ row.taxBase / 100 | currency: order.currencyCode }}</td>
                     <td>{{ row.taxTotal / 100 | currency: order.currencyCode }}</td>

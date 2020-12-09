@@ -152,6 +152,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             }
         }
         taxSummary {
+            description
             taxBase
             taxRate
             taxTotal
