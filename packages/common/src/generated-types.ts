@@ -1256,19 +1256,6 @@ export type UpdateFacetValueInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1442,6 +1429,19 @@ export type Order = Node & {
 
 export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
+};
+
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateOrderInput = {
@@ -1705,6 +1705,7 @@ export type ProductVariant = Node & {
   assets: Array<Asset>;
   price: Scalars['Int'];
   currencyCode: CurrencyCode;
+  /** @deprecated price is now always exluding tax */
   priceIncludesTax: Scalars['Boolean'];
   priceWithTax: Scalars['Int'];
   taxRateApplied: TaxRate;

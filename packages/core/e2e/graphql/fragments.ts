@@ -38,9 +38,8 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         enabled
         languageCode
         name
-        price
         currencyCode
-        priceIncludesTax
+        price
         priceWithTax
         stockOnHand
         trackInventory

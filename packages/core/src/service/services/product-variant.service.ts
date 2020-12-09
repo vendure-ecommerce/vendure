@@ -286,10 +286,13 @@ export class ProductVariantService {
             input.price = 0;
         }
         input.taxCategoryId = (await this.getTaxCategoryForNewVariant(ctx, input.taxCategoryId)).id;
-
+        const inputWithoutPrice = {
+            ...input,
+        };
+        delete inputWithoutPrice.price;
         const createdVariant = await this.translatableSaver.create({
             ctx,
-            input,
+            input: inputWithoutPrice,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async variant => {
@@ -323,7 +326,7 @@ export class ProductVariantService {
             );
         }
 
-        await this.createProductVariantPrice(ctx, createdVariant.id, createdVariant.price, ctx.channelId);
+        await this.createProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
         return createdVariant.id;
     }
 
@@ -334,9 +337,13 @@ export class ProductVariantService {
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
         }
+        const inputWithoutPrice = {
+            ...input,
+        };
+        delete inputWithoutPrice.price;
         await this.translatableSaver.update({
             ctx,
-            input,
+            input: inputWithoutPrice,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async updatedVariant => {
@@ -431,16 +438,15 @@ export class ProductVariantService {
             variant.taxCategory,
         );
 
-        const { price, priceIncludesTax, priceWithTax, priceWithoutTax } = this.taxCalculator.calculate(
+        const { price, priceIncludesTax } = this.taxCalculator.calculate(
             channelPrice.price,
             variant.taxCategory,
             activeTaxZone,
             ctx,
         );
 
-        variant.price = price;
-        variant.priceIncludesTax = priceIncludesTax;
-        variant.priceWithTax = priceWithTax;
+        variant.listPrice = price;
+        variant.listPriceIncludesTax = priceIncludesTax;
         variant.taxRateApplied = applicableTaxRate;
         variant.currencyCode = ctx.channel.currencyCode;
         return variant;
@@ -460,9 +466,10 @@ export class ProductVariantService {
         }
         const variants = await this.connection
             .getRepository(ctx, ProductVariant)
-            .findByIds(input.productVariantIds);
+            .findByIds(input.productVariantIds, { relations: ['taxCategory'] });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
+            this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
             await this.createProductVariantPrice(

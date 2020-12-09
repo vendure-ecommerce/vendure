@@ -15,6 +15,9 @@ export class DefaultPriceCalculationStrategy implements PriceCalculationStrategy
         ctx: RequestContext,
         productVariant: ProductVariant,
     ): CalculatedPrice | Promise<CalculatedPrice> {
-        return productVariant;
+        return {
+            price: productVariant.listPrice,
+            priceIncludesTax: productVariant.listPriceIncludesTax,
+        };
     }
 }

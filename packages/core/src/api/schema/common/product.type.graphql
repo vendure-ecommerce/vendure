@@ -43,7 +43,7 @@ type ProductVariant implements Node {
     assets: [Asset!]!
     price: Int!
     currencyCode: CurrencyCode!
-    priceIncludesTax: Boolean!
+    priceIncludesTax: Boolean! @deprecated(reason: "price now always excludes tax")
     priceWithTax: Int!
     taxRateApplied: TaxRate!
     taxCategory: TaxCategory!

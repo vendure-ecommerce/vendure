@@ -19,8 +19,6 @@ import { TaxRateService } from '../../services/tax-rate.service';
 export interface TaxCalculationResult {
     price: number;
     priceIncludesTax: boolean;
-    priceWithoutTax: number;
-    priceWithTax: number;
 }
 
 @Injectable()

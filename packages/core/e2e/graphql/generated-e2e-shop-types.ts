@@ -2047,6 +2047,7 @@ export type ProductVariant = Node & {
     assets: Array<Asset>;
     price: Scalars['Int'];
     currencyCode: CurrencyCode;
+    /** @deprecated price is now always exluding tax */
     priceIncludesTax: Scalars['Boolean'];
     priceWithTax: Scalars['Int'];
     taxRateApplied: TaxRate;

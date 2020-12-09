@@ -138,6 +138,7 @@ describe('ChannelAware Products and ProductVariants', () => {
         );
 
         it('assigns Product to Channel and applies price factor', async () => {
+            adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
             const PRICE_FACTOR = 0.5;
             await adminClient.asSuperAdmin();
             const { assignProductsToChannel } = await adminClient.query<
@@ -161,11 +162,11 @@ describe('ChannelAware Products and ProductVariants', () => {
             });
 
             expect(product!.variants.map(v => v.price)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
+                product1.variants.map(v => Math.round((v.price * PRICE_FACTOR) / 1.2)),
             );
             // Second Channel is configured to include taxes in price, so they should be the same.
             expect(product!.variants.map(v => v.priceWithTax)).toEqual(
-                product1.variants.map(v => v.price * PRICE_FACTOR),
+                product1.variants.map(v => Math.round((v.priceWithTax * PRICE_FACTOR) / 1.2)),
             );
         });
 
@@ -295,7 +296,9 @@ describe('ChannelAware Products and ProductVariants', () => {
                 id: product1.id,
             });
             expect(product!.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_3']);
-            expect(product!.variants.map(v => v.price)).toEqual([product1.variants[0].price * PRICE_FACTOR]);
+            expect(product!.variants.map(v => v.price)).toEqual([
+                Math.round((product1.variants[0].price * PRICE_FACTOR) / 1.2),
+            ]);
             // Third Channel is configured to include taxes in price, so they should be the same.
             expect(product!.variants.map(v => v.priceWithTax)).toEqual([
                 product1.variants[0].price * PRICE_FACTOR,

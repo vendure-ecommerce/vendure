@@ -16,8 +16,6 @@ export class DefaultTaxCalculationStrategy implements TaxCalculationStrategy {
     calculate(args: TaxCalculationArgs): TaxCalculationResult {
         const { inputPrice, activeTaxZone, ctx, taxCategory, taxRateService } = args;
         let price = 0;
-        let priceWithTax = 0;
-        let priceWithoutTax = 0;
         let priceIncludesTax = false;
         const taxRate = taxRateService.getApplicableTaxRate(activeTaxZone, taxCategory);
 
@@ -27,28 +25,20 @@ export class DefaultTaxCalculationStrategy implements TaxCalculationStrategy {
                 ctx.channel.defaultTaxZone,
                 taxCategory,
             );
-            priceWithoutTax = taxRateForDefaultZone.netPriceOf(inputPrice);
 
             if (isDefaultZone) {
                 priceIncludesTax = true;
                 price = inputPrice;
-                priceWithTax = inputPrice;
             } else {
-                price = priceWithoutTax;
-                priceWithTax = taxRate.grossPriceOf(priceWithoutTax);
+                price = taxRateForDefaultZone.netPriceOf(inputPrice);
             }
         } else {
-            const netPrice = inputPrice;
-            price = netPrice;
-            priceWithTax = netPrice + taxRate.taxPayableOn(netPrice);
-            priceWithoutTax = netPrice;
+            price = inputPrice;
         }
 
         return {
             price,
             priceIncludesTax,
-            priceWithTax,
-            priceWithoutTax,
         };
     }
 }
