@@ -53,8 +53,9 @@ export class OrderCalculator {
         }
         const updatedOrderItems = new Set<OrderItem>();
         if (updatedOrderLine) {
-            this.applyTaxesToOrderLine(
+            await this.applyTaxesToOrderLine(
                 ctx,
+                order,
                 updatedOrderLine,
                 activeTaxZone,
                 this.createTaxRateGetter(activeTaxZone),
@@ -65,7 +66,7 @@ export class OrderCalculator {
         if (order.lines.length) {
             if (taxZoneChanged) {
                 // First apply taxes to the non-discounted prices
-                this.applyTaxes(ctx, order, activeTaxZone);
+                await this.applyTaxes(ctx, order, activeTaxZone);
             }
 
             // Then test and apply promotions
@@ -76,7 +77,7 @@ export class OrderCalculator {
             if (order.subTotal !== totalBeforePromotions || itemsModifiedByPromotions.length) {
                 // Finally, re-calculate taxes because the promotions may have
                 // altered the unit prices, which in turn will alter the tax payable.
-                this.applyTaxes(ctx, order, activeTaxZone);
+                await this.applyTaxes(ctx, order, activeTaxZone);
             }
             await this.applyShipping(ctx, order);
             await this.applyShippingPromotions(ctx, order, promotions);
@@ -88,10 +89,10 @@ export class OrderCalculator {
     /**
      * Applies the correct TaxRate to each OrderItem in the order.
      */
-    private applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
+    private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         const getTaxRate = this.createTaxRateGetter(activeZone);
         for (const line of order.lines) {
-            this.applyTaxesToOrderLine(ctx, line, activeZone, getTaxRate);
+            await this.applyTaxesToOrderLine(ctx, order, line, activeZone, getTaxRate);
         }
         this.calculateOrderTotals(order);
     }
@@ -99,15 +100,23 @@ export class OrderCalculator {
     /**
      * Applies the correct TaxRate to an OrderLine
      */
-    private applyTaxesToOrderLine(
+    private async applyTaxesToOrderLine(
         ctx: RequestContext,
+        order: Order,
         line: OrderLine,
         activeZone: Zone,
         getTaxRate: (taxCategory: TaxCategory) => TaxRate,
     ) {
         const applicableTaxRate = getTaxRate(line.taxCategory);
+        const { taxLineCalculationStrategy } = this.configService.taxOptions;
         for (const item of line.activeItems) {
-            item.taxLines = [applicableTaxRate.apply(item.proratedUnitPrice)];
+            item.taxLines = await taxLineCalculationStrategy.calculate({
+                ctx,
+                applicableTaxRate,
+                order,
+                orderItem: item,
+                orderLine: line,
+            });
         }
     }
 

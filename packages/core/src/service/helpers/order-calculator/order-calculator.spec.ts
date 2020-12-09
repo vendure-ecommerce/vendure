@@ -1,23 +1,25 @@
 import { Test } from '@nestjs/testing';
-import { AdjustmentType, LanguageCode } from '@vendure/common/lib/generated-types';
-import { Omit } from '@vendure/common/lib/omit';
+import { AdjustmentType, LanguageCode, TaxLine } from '@vendure/common/lib/generated-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { PromotionItemAction, PromotionOrderAction, PromotionShippingAction } from '../../../config';
-import { DefaultProductVariantPriceCalculationStrategy } from '../../../config/catalog/default-product-variant-price-calculation-strategy';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
+import { DefaultTaxLineCalculationStrategy } from '../../../config/tax/default-tax-line-calculation-strategy';
 import { DefaultTaxZoneStrategy } from '../../../config/tax/default-tax-zone-strategy';
+import {
+    CalculateTaxLinesArgs,
+    TaxLineCalculationStrategy,
+} from '../../../config/tax/tax-line-calculation-strategy';
 import { Promotion } from '../../../entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
-import { OrderLine } from '../../../entity/order-line/order-line.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
-import { TaxCategory } from '../../../entity/tax-category/tax-category.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import {
+    createOrder,
     createRequestContext,
     MockTaxRateService,
     taxCategoryReduced,
@@ -32,50 +34,19 @@ import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
 
 import { OrderCalculator } from './order-calculator';
 
+const mockShippingMethodId = 'T_1';
+
 describe('OrderCalculator', () => {
     let orderCalculator: OrderCalculator;
 
-    const mockShippingMethodId = 'T_1';
-    function createMockShippingMethod(ctx: RequestContext) {
-        return {
-            id: mockShippingMethodId,
-            test: () => true,
-            apply() {
-                return {
-                    price: 500,
-                    priceIncludesTax: ctx.channel.pricesIncludeTax,
-                    taxRate: 20,
-                };
-            },
-        };
-    }
-
-    beforeEach(async () => {
-        const module = await Test.createTestingModule({
-            providers: [
-                OrderCalculator,
-                { provide: TaxRateService, useClass: MockTaxRateService },
-                { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
-                {
-                    provide: ShippingMethodService,
-                    useValue: { findOne: (ctx: RequestContext) => createMockShippingMethod(ctx) },
-                },
-                { provide: ListQueryBuilder, useValue: {} },
-                { provide: ConfigService, useClass: MockConfigService },
-                { provide: EventBus, useValue: { publish: () => ({}) } },
-                { provide: WorkerService, useValue: { send: () => ({}) } },
-                { provide: ZoneService, useValue: { findAll: () => [] } },
-            ],
-        }).compile();
-
+    beforeAll(async () => {
+        const module = await createTestModule();
         orderCalculator = module.get(OrderCalculator);
         const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
         mockConfigService.taxOptions = {
             taxZoneStrategy: new DefaultTaxZoneStrategy(),
-            taxCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
+            taxLineCalculationStrategy: new DefaultTaxLineCalculationStrategy(),
         };
-        const taxRateService = module.get(TaxRateService);
-        await taxRateService.initTaxRates();
     });
 
     describe('taxes', () => {
@@ -1097,65 +1068,216 @@ describe('OrderCalculator', () => {
             });
         });
     });
+});
 
-    function createOrder(
-        orderConfig: Partial<Omit<Order, 'lines'>> & {
-            ctx: RequestContext;
-            lines: Array<{
-                listPrice: number;
-                taxCategory: TaxCategory;
-                quantity: number;
-            }>;
-        },
-    ): Order {
-        const lines = orderConfig.lines.map(
-            ({ listPrice, taxCategory, quantity }) =>
-                new OrderLine({
-                    taxCategory,
-                    items: Array.from({ length: quantity }).map(
-                        () =>
-                            new OrderItem({
-                                listPrice,
-                                listPriceIncludesTax: orderConfig.ctx.channel.pricesIncludeTax,
-                                taxLines: [],
-                                adjustments: [],
-                            }),
-                    ),
-                }),
-        );
-
-        return new Order({
-            couponCodes: [],
-            lines,
-            shippingLines: [],
-        });
-    }
+describe('OrderCalculator with custom TaxLineCalculationStrategy', () => {
+    let orderCalculator: OrderCalculator;
+    const newYorkStateTaxLine: TaxLine = {
+        description: 'New York state sales tax',
+        taxRate: 4,
+    };
+    const nycCityTaxLine: TaxLine = {
+        description: 'NYC sales tax',
+        taxRate: 4.5,
+    };
 
     /**
-     * Make sure that the properties which will be displayed to the customer add up in a consistent way.
+     * This strategy uses a completely custom method of calculation based on the Order
+     * shipping address, potentially adding multiple TaxLines. This is intended to simulate
+     * tax handling as in the US where multiple tax rates can apply based on location data.
      */
-    function assertOrderTotalsAddUp(order: Order) {
-        for (const line of order.lines) {
-            const itemUnitPriceSum = summate(line.items, 'unitPrice');
-            expect(line.linePrice).toBe(itemUnitPriceSum);
-            const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
-            expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
+    class CustomTaxLineCalculationStrategy implements TaxLineCalculationStrategy {
+        calculate(args: CalculateTaxLinesArgs): Promise<TaxLine[]> {
+            const { order } = args;
+            const taxLines: TaxLine[] = [];
+            if (order.shippingAddress?.province === 'New York') {
+                taxLines.push(newYorkStateTaxLine);
+                if (order.shippingAddress?.city === 'New York City') {
+                    taxLines.push(nycCityTaxLine);
+                }
+            }
+
+            // Return a promise to simulate having called out to
+            // and external tax API
+            return Promise.resolve(taxLines);
         }
-        const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
-        expect(order.subTotal).toBe(taxableLinePriceSum);
-
-        // Make sure the customer-facing totals also add up
-        const displayPriceWithTaxSum = summate(order.lines, 'discountedLinePriceWithTax');
-        const orderDiscountsSum = order.discounts
-            .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
-            .reduce((sum, d) => sum + d.amount, 0);
-
-        // The sum of the display prices + order discounts should in theory exactly
-        // equal the subTotalWithTax. In practice, there are occasionally 1cent differences
-        // cause by rounding errors. This should be tolerable.
-        const differenceBetweenSumAndActual = Math.abs(
-            displayPriceWithTaxSum + orderDiscountsSum - order.subTotalWithTax,
-        );
-        expect(differenceBetweenSumAndActual).toBeLessThanOrEqual(1);
     }
+
+    beforeAll(async () => {
+        const module = await createTestModule();
+        orderCalculator = module.get(OrderCalculator);
+        const mockConfigService = module.get<ConfigService, MockConfigService>(ConfigService);
+        mockConfigService.taxOptions = {
+            taxZoneStrategy: new DefaultTaxZoneStrategy(),
+            taxLineCalculationStrategy: new CustomTaxLineCalculationStrategy(),
+        };
+    });
+
+    it('no TaxLines applied', async () => {
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [
+                {
+                    listPrice: 1000,
+                    taxCategory: taxCategoryStandard,
+                    quantity: 2,
+                },
+                {
+                    listPrice: 3499,
+                    taxCategory: taxCategoryReduced,
+                    quantity: 1,
+                },
+            ],
+        });
+        await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+        expect(order.subTotal).toBe(5499);
+        expect(order.subTotalWithTax).toBe(5499);
+        expect(order.taxSummary).toEqual([]);
+        expect(order.lines[0].taxLines).toEqual([]);
+        expect(order.lines[1].taxLines).toEqual([]);
+        assertOrderTotalsAddUp(order);
+    });
+
+    it('single TaxLines applied', async () => {
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [
+                {
+                    listPrice: 1000,
+                    taxCategory: taxCategoryStandard,
+                    quantity: 2,
+                },
+                {
+                    listPrice: 3499,
+                    taxCategory: taxCategoryReduced,
+                    quantity: 1,
+                },
+            ],
+        });
+        order.shippingAddress = {
+            city: 'Rochester',
+            province: 'New York',
+        };
+        await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+        expect(order.subTotal).toBe(5499);
+        expect(order.subTotalWithTax).toBe(5719);
+        expect(order.taxSummary).toEqual([
+            {
+                description: newYorkStateTaxLine.description,
+                taxRate: newYorkStateTaxLine.taxRate,
+                taxBase: 5499,
+                taxTotal: 220,
+            },
+        ]);
+        expect(order.lines[0].taxLines).toEqual([newYorkStateTaxLine]);
+        expect(order.lines[1].taxLines).toEqual([newYorkStateTaxLine]);
+        assertOrderTotalsAddUp(order);
+    });
+
+    it('multiple TaxLines applied', async () => {
+        const ctx = createRequestContext({ pricesIncludeTax: false });
+        const order = createOrder({
+            ctx,
+            lines: [
+                {
+                    listPrice: 1000,
+                    taxCategory: taxCategoryStandard,
+                    quantity: 2,
+                },
+                {
+                    listPrice: 3499,
+                    taxCategory: taxCategoryReduced,
+                    quantity: 1,
+                },
+            ],
+        });
+        order.shippingAddress = {
+            city: 'New York City',
+            province: 'New York',
+        };
+        await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+        expect(order.subTotal).toBe(5499);
+        expect(order.subTotalWithTax).toBe(5966);
+        expect(order.taxSummary).toEqual([
+            {
+                description: newYorkStateTaxLine.description,
+                taxRate: newYorkStateTaxLine.taxRate,
+                taxBase: 5499,
+                taxTotal: 220,
+            },
+            {
+                description: nycCityTaxLine.description,
+                taxRate: nycCityTaxLine.taxRate,
+                taxBase: 5499,
+                taxTotal: 247,
+            },
+        ]);
+        expect(order.lines[0].taxLines).toEqual([newYorkStateTaxLine, nycCityTaxLine]);
+        expect(order.lines[1].taxLines).toEqual([newYorkStateTaxLine, nycCityTaxLine]);
+        assertOrderTotalsAddUp(order);
+    });
 });
+
+function createTestModule() {
+    return Test.createTestingModule({
+        providers: [
+            OrderCalculator,
+            { provide: TaxRateService, useClass: MockTaxRateService },
+            { provide: ShippingCalculator, useValue: { getEligibleShippingMethods: () => [] } },
+            {
+                provide: ShippingMethodService,
+                useValue: {
+                    findOne: (ctx: RequestContext) => ({
+                        id: mockShippingMethodId,
+                        test: () => true,
+                        apply() {
+                            return {
+                                price: 500,
+                                priceIncludesTax: ctx.channel.pricesIncludeTax,
+                                taxRate: 20,
+                            };
+                        },
+                    }),
+                },
+            },
+            { provide: ListQueryBuilder, useValue: {} },
+            { provide: ConfigService, useClass: MockConfigService },
+            { provide: EventBus, useValue: { publish: () => ({}) } },
+            { provide: WorkerService, useValue: { send: () => ({}) } },
+            { provide: ZoneService, useValue: { findAll: () => [] } },
+        ],
+    }).compile();
+}
+
+/**
+ * Make sure that the properties which will be displayed to the customer add up in a consistent way.
+ */
+function assertOrderTotalsAddUp(order: Order) {
+    for (const line of order.lines) {
+        const itemUnitPriceSum = summate(line.items, 'unitPrice');
+        expect(line.linePrice).toBe(itemUnitPriceSum);
+        const itemUnitPriceWithTaxSum = summate(line.items, 'unitPriceWithTax');
+        expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
+    }
+    const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
+    expect(order.subTotal).toBe(taxableLinePriceSum);
+
+    // Make sure the customer-facing totals also add up
+    const displayPriceWithTaxSum = summate(order.lines, 'discountedLinePriceWithTax');
+    const orderDiscountsSum = order.discounts
+        .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+        .reduce((sum, d) => sum + d.amount, 0);
+
+    // The sum of the display prices + order discounts should in theory exactly
+    // equal the subTotalWithTax. In practice, there are occasionally 1cent differences
+    // cause by rounding errors. This should be tolerable.
+    const differenceBetweenSumAndActual = Math.abs(
+        displayPriceWithTaxSum + orderDiscountsSum - order.subTotalWithTax,
+    );
+    expect(differenceBetweenSumAndActual).toBeLessThanOrEqual(1);
+}

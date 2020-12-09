@@ -31,6 +31,7 @@ import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
+import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
 /**
@@ -599,7 +600,14 @@ export interface TaxOptions {
      *
      * @default DefaultTaxZoneStrategy
      */
-    taxZoneStrategy: TaxZoneStrategy;
+    taxZoneStrategy?: TaxZoneStrategy;
+    /**
+     * @description
+     * Defines the strategy used to calculate the TaxLines added to OrderItems.
+     *
+     * @default DefaultTaxLineCalculationStrategy
+     */
+    taxLineCalculationStrategy?: TaxLineCalculationStrategy;
 }
 
 /**
@@ -840,6 +848,7 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;
     workerOptions: Required<WorkerOptions>;
+    taxOptions: Required<TaxOptions>;
 }
 
 type DeepPartialSimple<T> = {

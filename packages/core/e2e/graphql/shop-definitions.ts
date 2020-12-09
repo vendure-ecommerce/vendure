@@ -338,6 +338,7 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                 }
             }
             taxSummary {
+                description
                 taxRate
                 taxBase
                 taxTotal

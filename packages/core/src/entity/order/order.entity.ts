@@ -1,9 +1,16 @@
-import { Adjustment, CurrencyCode, OrderAddress, OrderTaxSummary } from '@vendure/common/lib/generated-types';
+import {
+    Adjustment,
+    CurrencyCode,
+    OrderAddress,
+    OrderTaxSummary,
+    TaxLine,
+} from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { taxPayableOn } from '../../common/tax-utils';
 import { ChannelAware } from '../../common/types/common-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { OrderState } from '../../service/helpers/order-state-machine/order-state';
@@ -137,21 +144,36 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @Calculated()
     get taxSummary(): OrderTaxSummary[] {
-        const taxRateMap = new Map<number, { base: number; tax: number }>();
+        const taxRateMap = new Map<
+            string,
+            { rate: number; base: number; tax: number; description: string }
+        >();
+        const taxId = (taxLine: TaxLine): string => `${taxLine.description}:${taxLine.taxRate}`;
         for (const line of this.lines) {
-            const row = taxRateMap.get(line.taxRate);
-            if (row) {
-                row.tax += line.proratedLineTax;
-                row.base += line.proratedLinePrice;
-            } else {
-                taxRateMap.set(line.taxRate, {
-                    tax: line.proratedLineTax,
-                    base: line.proratedLinePrice,
-                });
+            const taxRateTotal = summate(line.taxLines, 'taxRate');
+            for (const taxLine of line.taxLines) {
+                const id = taxId(taxLine);
+                const row = taxRateMap.get(id);
+                const proportionOfTotalRate = 0 < taxLine.taxRate ? taxLine.taxRate / taxRateTotal : 0;
+                const amount = Math.round(
+                    (line.proratedLinePriceWithTax - line.proratedLinePrice) * proportionOfTotalRate,
+                );
+                if (row) {
+                    row.tax += amount;
+                    row.base += line.proratedLinePrice;
+                } else {
+                    taxRateMap.set(id, {
+                        tax: amount,
+                        base: line.proratedLinePrice,
+                        description: taxLine.description,
+                        rate: taxLine.taxRate,
+                    });
+                }
             }
         }
         return Array.from(taxRateMap.entries()).map(([taxRate, row]) => ({
-            taxRate,
+            taxRate: row.rate,
+            description: row.description,
             taxBase: row.base,
             taxTotal: row.tax,
         }));

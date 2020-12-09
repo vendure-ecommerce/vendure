@@ -1553,7 +1553,7 @@ export type ProductVariant = Node & {
     assets: Array<Asset>;
     price: Scalars['Int'];
     currencyCode: CurrencyCode;
-    /** @deprecated price is now always exluding tax */
+    /** @deprecated price now always excludes tax */
     priceIncludesTax: Scalars['Boolean'];
     priceWithTax: Scalars['Int'];
     taxRateApplied: TaxRate;
@@ -3291,6 +3291,8 @@ export enum LanguageCode {
  * by taxRate.
  */
 export type OrderTaxSummary = {
+    /** A description of this tax */
+    description: Scalars['String'];
     /** The taxRate as a percentage */
     taxRate: Scalars['Float'];
     /** The total net price or OrderItems to which this taxRate applies */

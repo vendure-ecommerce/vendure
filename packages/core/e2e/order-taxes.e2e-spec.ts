@@ -159,16 +159,19 @@ describe('Order taxes', () => {
 
         expect(activeOrder?.taxSummary).toEqual([
             {
+                description: 'Standard Tax Europe',
                 taxRate: 20,
                 taxBase: 200,
                 taxTotal: 40,
             },
             {
+                description: 'Reduced Tax Europe',
                 taxRate: 10,
                 taxBase: 200,
                 taxTotal: 20,
             },
             {
+                description: 'Zero Tax Europe',
                 taxRate: 0,
                 taxBase: 200,
                 taxTotal: 0,

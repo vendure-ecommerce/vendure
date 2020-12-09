@@ -1,4 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { Omit } from '@vendure/common/lib/omit';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { RequestContext } from '../api/common/request-context';
@@ -123,4 +124,37 @@ export class MockTaxRateService {
         const rate = this.activeTaxRates.find(r => r.test(zone, taxCategory));
         return rate || taxRateDefaultStandard;
     }
+}
+
+export function createOrder(
+    orderConfig: Partial<Omit<Order, 'lines'>> & {
+        ctx: RequestContext;
+        lines: Array<{
+            listPrice: number;
+            taxCategory: TaxCategory;
+            quantity: number;
+        }>;
+    },
+): Order {
+    const lines = orderConfig.lines.map(
+        ({ listPrice, taxCategory, quantity }) =>
+            new OrderLine({
+                taxCategory,
+                items: Array.from({ length: quantity }).map(
+                    () =>
+                        new OrderItem({
+                            listPrice,
+                            listPriceIncludesTax: orderConfig.ctx.channel.pricesIncludeTax,
+                            taxLines: [],
+                            adjustments: [],
+                        }),
+                ),
+            }),
+    );
+
+    return new Order({
+        couponCodes: [],
+        lines,
+        shippingLines: [],
+    });
 }

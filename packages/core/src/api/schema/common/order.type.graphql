@@ -59,6 +59,8 @@ A summary of the taxes being applied to this order, grouped
 by taxRate.
 """
 type OrderTaxSummary {
+    "A description of this tax"
+    description: String!
     "The taxRate as a percentage"
     taxRate: Float!
     "The total net price or OrderItems to which this taxRate applies"
