@@ -101,12 +101,12 @@ export const clientResolvers: ResolverDefinition = {
             const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
             const data = {
                 userStatus: {
-                    __typename: 'UserStatus' as const,
+                    ...previous.userStatus,
                     channels: args.channels,
                 },
             };
             cache.writeQuery({ query: GET_USER_STATUS, data });
-            return { ...previous.userStatus, ...data.userStatus };
+            return data.userStatus;
         },
     },
 };
