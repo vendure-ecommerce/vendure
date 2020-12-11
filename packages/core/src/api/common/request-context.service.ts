@@ -39,6 +39,7 @@ export class RequestContextService {
         const authorizedAsOwnerOnly = !isAuthorized && hasOwnerPermission;
         const translationFn = (req as any).t;
         return new RequestContext({
+            req,
             apiType,
             channel,
             languageCode,
