@@ -76,15 +76,33 @@ function buildWhereCondition(
                 clause: `${fieldName} = :arg${argIndex}`,
                 parameters: { [`arg${argIndex}`]: convertDate(operand) },
             };
-        case 'contains':
+        case 'notEq':
+            return {
+                clause: `${fieldName} != :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: convertDate(operand) },
+            };
+        case 'contains': {
             const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
             return {
                 clause: `${fieldName} ${LIKE} :arg${argIndex}`,
                 parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
             };
+        }
+        case 'notContains': {
+            const LIKE = dbType === 'postgres' ? 'ILIKE' : 'LIKE';
+            return {
+                clause: `${fieldName} NOT ${LIKE} :arg${argIndex}`,
+                parameters: { [`arg${argIndex}`]: `%${operand.trim()}%` },
+            };
+        }
         case 'in':
             return {
                 clause: `${fieldName} IN (:...arg${argIndex})`,
+                parameters: { [`arg${argIndex}`]: operand },
+            };
+        case 'notIn':
+            return {
+                clause: `${fieldName} NOT IN (:...arg${argIndex})`,
                 parameters: { [`arg${argIndex}`]: operand },
             };
         case 'regex':

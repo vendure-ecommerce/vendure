@@ -50,6 +50,20 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['B']);
         });
 
+        it('notEq', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            notEq: 'B',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'D', 'E']);
+        });
+
         it('contains', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -64,6 +78,20 @@ describe('ListQueryBuilder', () => {
             expect(getItemLabels(testEntities.items)).toEqual(['C']);
         });
 
+        it('notContains', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            notContains: 'te',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
         it('in', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -76,6 +104,20 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['A', 'C']);
+        });
+
+        it('notIn', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            notIn: ['A', 'C'],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E']);
         });
 
         describe('regex', () => {
