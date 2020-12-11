@@ -10,4 +10,5 @@ export * from './initializers/test-db-initializer';
 export * from './initializers/mysql-initializer';
 export * from './initializers/postgres-initializer';
 export * from './initializers/sqljs-initializer';
+export * from './testing-logger';
 export * from './types';
