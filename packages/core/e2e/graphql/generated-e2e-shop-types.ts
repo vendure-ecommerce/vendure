@@ -475,8 +475,11 @@ export type ErrorResult = {
 
 export type StringOperators = {
     eq?: Maybe<Scalars['String']>;
+    notEq?: Maybe<Scalars['String']>;
     contains?: Maybe<Scalars['String']>;
+    notContains?: Maybe<Scalars['String']>;
     in?: Maybe<Array<Scalars['String']>>;
+    notIn?: Maybe<Array<Scalars['String']>>;
     regex?: Maybe<Scalars['String']>;
 };
 

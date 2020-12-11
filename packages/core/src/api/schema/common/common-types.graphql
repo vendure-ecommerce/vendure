@@ -103,8 +103,11 @@ interface ErrorResult {
 
 input StringOperators {
     eq: String
+    notEq: String
     contains: String
+    notContains: String
     in: [String!]
+    notIn: [String!]
     regex: String
 }
 

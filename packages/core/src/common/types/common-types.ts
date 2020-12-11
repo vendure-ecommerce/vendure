@@ -81,8 +81,11 @@ export type FilterParameter<T extends VendureEntity> = {
 
 export interface StringOperators {
     eq?: string;
+    notEq?: string;
     contains?: string;
+    notContains?: string;
     in?: string[];
+    notIn?: string[];
     regex?: string;
 }
 
