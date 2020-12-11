@@ -1,7 +1,8 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
-import { Injector } from '@vendure/core';
+import { Injector, Logger } from '@vendure/core';
 
+import { loggerCtx } from './constants';
 import { EmailEventListener, EmailTemplateConfig, SetTemplateVarsFn } from './event-listener';
 import { EventWithAsyncData, EventWithContext, IntermediateEmailDetails, LoadDataFn } from './types';
 
@@ -178,10 +179,19 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             }
         }
         if (this instanceof EmailEventHandlerWithAsyncData) {
-            (event as EventWithAsyncData<Event, any>).data = await this._loadDataFn({
-                event,
-                injector,
-            });
+            try {
+                (event as EventWithAsyncData<Event, any>).data = await this._loadDataFn({
+                    event,
+                    injector,
+                });
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    Logger.error(err.message, loggerCtx, err.stack);
+                } else {
+                    Logger.error(String(err), loggerCtx);
+                }
+                return;
+            }
         }
         if (!this.setRecipientFn) {
             throw new Error(

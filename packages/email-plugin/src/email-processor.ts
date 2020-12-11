@@ -1,7 +1,8 @@
-import { InternalServerError } from '@vendure/core';
+import { InternalServerError, Logger } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { isDevModeOptions } from './common';
+import { loggerCtx } from './constants';
 import { EmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { TemplateLoader } from './template-loader';
@@ -50,15 +51,24 @@ export class EmailProcessor {
     }
 
     async process(data: IntermediateEmailDetails) {
-        const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
-        const generated = await this.generator.generate(
-            data.from,
-            data.subject,
-            bodySource,
-            data.templateVars,
-        );
-        const emailDetails = { ...generated, recipient: data.recipient };
-        await this.emailSender.send(emailDetails, this.transport);
-        return true;
+        try {
+            const bodySource = await this.templateLoader.loadTemplate(data.type, data.templateFile);
+            const generated = await this.generator.generate(
+                data.from,
+                data.subject,
+                bodySource,
+                data.templateVars,
+            );
+            const emailDetails = { ...generated, recipient: data.recipient };
+            await this.emailSender.send(emailDetails, this.transport);
+            return true;
+        } catch (err: unknown) {
+            if (err instanceof Error) {
+                Logger.error(err.message, loggerCtx, err.stack);
+            } else {
+                Logger.error(String(err), loggerCtx);
+            }
+            return false;
+        }
     }
 }

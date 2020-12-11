@@ -265,7 +265,7 @@ export interface TestingTransportOptions {
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     /**
      * @description
-     * Any neccesary setup can be performed here.
+     * Any necessary setup can be performed here.
      */
     onInit?(options: EmailPluginOptions): void | Promise<void>;
 
