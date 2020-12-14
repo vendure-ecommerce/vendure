@@ -402,7 +402,7 @@ export interface OrderOptions {
      *
      * @default DefaultStockAllocationStrategy
      */
-    stockAllocationStrategy: StockAllocationStrategy;
+    stockAllocationStrategy?: StockAllocationStrategy;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when

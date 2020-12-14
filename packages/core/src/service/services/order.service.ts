@@ -457,6 +457,39 @@ export class OrderService {
         return updatedOrder;
     }
 
+    async addSurchargeToOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        surchargeInput: Partial<Omit<Surcharge, 'id' | 'createdAt' | 'updatedAt' | 'order'>>,
+    ): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const surcharge = await this.connection.getRepository(ctx, Surcharge).save(
+            new Surcharge({
+                taxLines: [],
+                sku: '',
+                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                order,
+                ...surchargeInput,
+            }),
+        );
+        order.surcharges.push(surcharge);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        return updatedOrder;
+    }
+
+    async removeSurchargeFromOrder(ctx: RequestContext, orderId: ID, surchargeId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const surcharge = await this.connection.getEntityOrThrow(ctx, Surcharge, surchargeId);
+        if (order.surcharges.find(s => idsAreEqual(s.id, surcharge.id))) {
+            order.surcharges = order.surcharges.filter(s => !idsAreEqual(s.id, surchargeId));
+            const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+            await this.connection.getRepository(ctx, Surcharge).remove(surcharge);
+            return updatedOrder;
+        } else {
+            return order;
+        }
+    }
+
     async applyCouponCode(
         ctx: RequestContext,
         orderId: ID,

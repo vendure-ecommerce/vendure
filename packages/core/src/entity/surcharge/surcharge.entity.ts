@@ -36,7 +36,7 @@ export class Surcharge extends VendureEntity {
     @Column('simple-json')
     taxLines: TaxLine[];
 
-    @ManyToOne(type => Order, order => order.surcharges)
+    @ManyToOne(type => Order, order => order.surcharges, { onDelete: 'CASCADE' })
     order: Order;
 
     @Calculated()
