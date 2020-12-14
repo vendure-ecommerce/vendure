@@ -1723,6 +1723,13 @@ export type Order = Node & {
     billingAddress?: Maybe<OrderAddress>;
     lines: Array<OrderLine>;
     /**
+     * Surcharges are arbitrary modifications to the Order total which are neither
+     * ProductVariants nor discounts resulting from applied Promotions. For example,
+     * one-off discounts based on customer interaction, or surcharges based on payment
+     * methods.
+     */
+    surcharges: Array<Surcharge>;
+    /**
      * Order-level adjustments to the order total, such as discounts from promotions
      * @deprecated Use `discounts` instead
      */
@@ -1960,6 +1967,19 @@ export type Fulfillment = Node & {
     method: Scalars['String'];
     trackingCode?: Maybe<Scalars['String']>;
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type Surcharge = Node & {
+    __typename?: 'Surcharge';
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    description: Scalars['String'];
+    sku?: Maybe<Scalars['String']>;
+    taxLines: Array<TaxLine>;
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    taxRate: Scalars['Float'];
 };
 
 export type ProductOptionGroup = Node & {

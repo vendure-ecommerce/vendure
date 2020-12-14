@@ -33,6 +33,14 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
+    async surcharges(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.surcharges) {
+            return order.surcharges;
+        }
+        return this.orderService.getOrderSurcharges(ctx, order.id);
+    }
+
+    @ResolveField()
     async history(
         @Ctx() ctx: RequestContext,
         @Api() apiType: ApiType,

@@ -25,6 +25,7 @@ import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../shipping-method/shipping-method.entity';
+import { Surcharge } from '../surcharge/surcharge.entity';
 
 /**
  * @description
@@ -58,6 +59,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
 
     @OneToMany(type => OrderLine, line => line.order)
     lines: OrderLine[];
+
+    @OneToMany(type => Surcharge, surcharge => surcharge.order)
+    surcharges: Surcharge[];
 
     @Column('simple-array')
     couponCodes: string[];

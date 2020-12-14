@@ -104,6 +104,7 @@ const result: PossibleTypesResultData = {
             'OrderLine',
             'Payment',
             'Refund',
+            'Surcharge',
             'ProductOptionGroup',
             'ProductOption',
             'Promotion',

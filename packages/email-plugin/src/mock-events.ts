@@ -96,6 +96,7 @@ export const mockOrderStateTransitionEvent = new OrderStateTransitionEvent(
                 },
             },
         ],
+        surcharges: [],
         shippingAddress: {
             fullName: 'Test Customer',
             company: '',

@@ -16,6 +16,13 @@ type Order implements Node {
     shippingAddress: OrderAddress
     billingAddress: OrderAddress
     lines: [OrderLine!]!
+    """
+    Surcharges are arbitrary modifications to the Order total which are neither
+    ProductVariants nor discounts resulting from applied Promotions. For example,
+    one-off discounts based on customer interaction, or surcharges based on payment
+    methods.
+    """
+    surcharges: [Surcharge!]!
     "Order-level adjustments to the order total, such as discounts from promotions"
     adjustments: [Adjustment!]! @deprecated(reason: "Use `discounts` instead")
     discounts: [Adjustment!]!
@@ -241,4 +248,16 @@ type Fulfillment implements Node {
     state: String!
     method: String!
     trackingCode: String
+}
+
+type Surcharge implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    description: String!
+    sku: String
+    taxLines: [TaxLine!]!
+    price: Int!
+    priceWithTax: Int!
+    taxRate: Float!
 }

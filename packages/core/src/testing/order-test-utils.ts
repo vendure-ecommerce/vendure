@@ -156,5 +156,6 @@ export function createOrder(
         couponCodes: [],
         lines,
         shippingLines: [],
+        surcharges: [],
     });
 }

@@ -75,6 +75,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
+import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
@@ -163,6 +164,7 @@ export class OrderService {
             .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
             .leftJoinAndSelect('order.shippingLines', 'shippingLines')
+            .leftJoinAndSelect('order.surcharges', 'surcharges')
             .leftJoinAndSelect('customer.user', 'user')
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
@@ -284,6 +286,7 @@ export class OrderService {
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
+            surcharges: [],
             couponCodes: [],
             shippingAddress: {},
             billingAddress: {},
@@ -824,6 +827,14 @@ export class OrderService {
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
         const fulfillments = items.reduce((acc, i) => [...acc, ...i.fulfillments], [] as Fulfillment[]);
         return unique(fulfillments, 'id');
+    }
+
+    async getOrderSurcharges(ctx: RequestContext, orderId: ID): Promise<Surcharge[]> {
+        const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
+            channelId: ctx.channelId,
+            relations: ['surcharges'],
+        });
+        return order.surcharges || [];
     }
 
     async cancelOrder(

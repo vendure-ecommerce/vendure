@@ -107,6 +107,7 @@ export class OrderTestingService {
         const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
         const mockOrder = new Order({
             lines: [],
+            surcharges: [],
         });
         mockOrder.shippingAddress = shippingAddress;
         for (const line of lines) {

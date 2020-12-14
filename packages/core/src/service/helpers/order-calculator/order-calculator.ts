@@ -377,6 +377,10 @@ export class OrderCalculator {
             totalPrice += line.proratedLinePrice;
             totalPriceWithTax += line.proratedLinePriceWithTax;
         }
+        for (const surcharge of order.surcharges) {
+            totalPrice += surcharge.price;
+            totalPriceWithTax += surcharge.priceWithTax;
+        }
 
         order.subTotal = totalPrice;
         order.subTotalWithTax = totalPriceWithTax;

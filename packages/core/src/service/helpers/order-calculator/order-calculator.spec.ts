@@ -17,6 +17,7 @@ import { Promotion } from '../../../entity';
 import { OrderItem } from '../../../entity/order-item/order-item.entity';
 import { Order } from '../../../entity/order/order.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
+import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { EventBus } from '../../../event-bus/event-bus';
 import {
     createOrder,
@@ -1068,6 +1069,252 @@ describe('OrderCalculator', () => {
             });
         });
     });
+
+    describe('surcharges', () => {
+        describe('positive surcharge without tax', () => {
+            it('prices exclude tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: false });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 2,
+                        },
+                        {
+                            listPrice: 3499,
+                            taxCategory: taxCategoryReduced,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'payment surcharge',
+                        listPrice: 240,
+                        listPriceIncludesTax: false,
+                        taxLines: [],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(5739);
+                expect(order.subTotalWithTax).toBe(6489);
+                assertOrderTotalsAddUp(order);
+            });
+
+            it('prices include tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: true });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 2,
+                        },
+                        {
+                            listPrice: 3499,
+                            taxCategory: taxCategoryReduced,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'payment surcharge',
+                        listPrice: 240,
+                        listPriceIncludesTax: true,
+                        taxLines: [],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(5087);
+                expect(order.subTotalWithTax).toBe(5739);
+                assertOrderTotalsAddUp(order);
+            });
+        });
+
+        describe('positive surcharge with tax', () => {
+            it('prices exclude tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: false });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'payment surcharge',
+                        listPrice: 240,
+                        listPriceIncludesTax: false,
+                        taxLines: [
+                            {
+                                description: 'standard tax',
+                                taxRate: 20,
+                            },
+                        ],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(1240);
+                expect(order.subTotalWithTax).toBe(1488);
+                assertOrderTotalsAddUp(order);
+            });
+
+            it('prices include tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: true });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'payment surcharge',
+                        listPrice: 240,
+                        listPriceIncludesTax: true,
+                        taxLines: [
+                            {
+                                description: 'standard tax',
+                                taxRate: 20,
+                            },
+                        ],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(1033);
+                expect(order.subTotalWithTax).toBe(1240);
+                assertOrderTotalsAddUp(order);
+            });
+        });
+
+        describe('negative surcharge with tax', () => {
+            it('prices exclude tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: false });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'custom discount',
+                        listPrice: -240,
+                        listPriceIncludesTax: false,
+                        taxLines: [
+                            {
+                                description: 'standard tax',
+                                taxRate: 20,
+                            },
+                        ],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(760);
+                expect(order.subTotalWithTax).toBe(912);
+                assertOrderTotalsAddUp(order);
+            });
+
+            it('prices include tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: true });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'custom discount',
+                        listPrice: -240,
+                        listPriceIncludesTax: true,
+                        taxLines: [
+                            {
+                                description: 'standard tax',
+                                taxRate: 20,
+                            },
+                        ],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(633);
+                expect(order.subTotalWithTax).toBe(760);
+                assertOrderTotalsAddUp(order);
+            });
+
+            it('prices exclude tax but surcharge includes tax', async () => {
+                const ctx = createRequestContext({ pricesIncludeTax: false });
+                const order = createOrder({
+                    ctx,
+                    lines: [
+                        {
+                            listPrice: 1000,
+                            taxCategory: taxCategoryStandard,
+                            quantity: 1,
+                        },
+                    ],
+                });
+                order.surcharges = [
+                    new Surcharge({
+                        description: 'custom discount',
+                        listPrice: -240,
+                        listPriceIncludesTax: true,
+                        taxLines: [
+                            {
+                                description: 'standard tax',
+                                taxRate: 20,
+                            },
+                        ],
+                        sku: 'PSC',
+                    }),
+                ];
+
+                await orderCalculator.applyPriceAdjustments(ctx, order, []);
+
+                expect(order.subTotal).toBe(800);
+                expect(order.subTotalWithTax).toBe(960);
+                assertOrderTotalsAddUp(order);
+            });
+        });
+    });
 });
 
 describe('OrderCalculator with custom TaxLineCalculationStrategy', () => {
@@ -1265,10 +1512,12 @@ function assertOrderTotalsAddUp(order: Order) {
         expect(line.linePriceWithTax).toBe(itemUnitPriceWithTaxSum);
     }
     const taxableLinePriceSum = summate(order.lines, 'proratedLinePrice');
-    expect(order.subTotal).toBe(taxableLinePriceSum);
+    const surchargeSum = summate(order.surcharges, 'price');
+    expect(order.subTotal).toBe(taxableLinePriceSum + surchargeSum);
 
     // Make sure the customer-facing totals also add up
     const displayPriceWithTaxSum = summate(order.lines, 'discountedLinePriceWithTax');
+    const surchargeWithTaxSum = summate(order.surcharges, 'priceWithTax');
     const orderDiscountsSum = order.discounts
         .filter(d => d.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
         .reduce((sum, d) => sum + d.amount, 0);
@@ -1277,7 +1526,7 @@ function assertOrderTotalsAddUp(order: Order) {
     // equal the subTotalWithTax. In practice, there are occasionally 1cent differences
     // cause by rounding errors. This should be tolerable.
     const differenceBetweenSumAndActual = Math.abs(
-        displayPriceWithTaxSum + orderDiscountsSum - order.subTotalWithTax,
+        displayPriceWithTaxSum + orderDiscountsSum + surchargeWithTaxSum - order.subTotalWithTax,
     );
     expect(differenceBetweenSumAndActual).toBeLessThanOrEqual(1);
 }
