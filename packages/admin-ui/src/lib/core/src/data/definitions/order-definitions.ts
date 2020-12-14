@@ -128,6 +128,14 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         lines {
             ...OrderLine
         }
+        surcharges {
+            id
+            sku
+            description
+            price
+            priceWithTax
+            taxRate
+        }
         discounts {
             ...Adjustment
         }

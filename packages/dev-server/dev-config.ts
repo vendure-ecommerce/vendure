@@ -2,7 +2,9 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
+import { Order, OrderService, OrderState, TransactionalConnection } from '@vendure/core';
 import {
+    CustomOrderProcess,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
@@ -13,6 +15,7 @@ import {
     LogLevel,
     manualFulfillmentHandler,
     PermissionDefinition,
+    Surcharge,
     VendureConfig,
 } from '@vendure/core';
 import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
@@ -20,49 +23,29 @@ import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
 
-const customFulfillmentHandler = new FulfillmentHandler({
-    code: 'ship-o-matic',
-    description: [
-        {
-            languageCode: LanguageCode.en,
-            value: 'Generate tracking codes via the Ship-o-matic API',
-        },
-    ],
-    args: {
-        preferredService: {
-            type: 'string',
-            ui: {
-                component: 'select-form-input',
-                options: [{ value: 'first_class' }, { value: 'priority' }, { value: 'standard' }],
-            },
-        },
+let connection: TransactionalConnection;
+let orderService: OrderService;
+const customerValidationProcess: CustomOrderProcess<OrderState> = {
+    // The init method allows us to inject services
+    // and other providers
+    init(injector) {
+        connection = injector.get(TransactionalConnection);
+        orderService = injector.get(OrderService);
     },
-    createFulfillment: async (ctx, orders, orderItems, args) => {
-        return {
-            method: `Ship-o-matic ${args.preferredService}`,
-            trackingCode: 'SHIP-' + Math.random().toString(36).substr(3),
-        };
-    },
-    onFulfillmentTransition: async (fromState, toState, { fulfillment }) => {
-        Logger.info(`Transitioned Fulfillment ${fulfillment.trackingCode} to state ${toState}`);
-    },
-});
 
-const pickupFulfillmentHandler = new FulfillmentHandler({
-    code: 'customer-collect',
-    description: [
-        {
-            languageCode: LanguageCode.en,
-            value: 'Customer collect fulfillment',
-        },
-    ],
-    args: {},
-    createFulfillment: async (ctx, orders, orderItems, args) => {
-        return {
-            method: `Customer collect`,
-        };
+    // The logic for enforcing our validation goes here
+    async onTransitionStart(fromState, toState, data) {
+        if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
+            const { ctx, order } = data;
+            await orderService.addSurchargeToOrder(ctx, order.id, {
+                description: '3% payment surcharge',
+                sku: 'PAYMENT_SURCHARGE',
+                listPrice: Math.round(order.subTotal * 0.03),
+                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+            });
+        }
     },
-});
+};
 
 /**
  * Config settings used during development
@@ -92,6 +75,9 @@ export const devConfig: VendureConfig = {
         requireVerification: true,
         customPermissions: [],
     },
+    orderOptions: {
+        process: [customerValidationProcess],
+    },
     dbConnectionOptions: {
         synchronize: false,
         logging: false,
@@ -101,13 +87,18 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {},
+    customFields: {
+        OrderLine: [
+            { name: 'test', type: 'string', nullable: true },
+            { name: 'test2', type: 'string', nullable: true },
+        ],
+    },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
     shippingOptions: {
-        fulfillmentHandlers: [manualFulfillmentHandler, customFulfillmentHandler, pickupFulfillmentHandler],
+        fulfillmentHandlers: [manualFulfillmentHandler],
     },
     plugins: [
         AssetServerPlugin.init({
