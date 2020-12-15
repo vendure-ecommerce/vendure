@@ -27,9 +27,8 @@ import {
     UpdateOrderNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined, summate } from '@vendure/common/lib/shared-utils';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { doc } from 'prettier';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
@@ -316,6 +315,10 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
+    /**
+     * Adds an OrderItem to the Order, either creating a new OrderLine or
+     * incrementing an existing one.
+     */
     async addItemToOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -331,94 +334,61 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        let orderLine = order.lines.find(line => {
-            return (
-                idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
-
-        if (!orderLine) {
-            const newLine = this.createOrderLineFromVariant(productVariant, customFields);
-            orderLine = await this.connection.getRepository(ctx, OrderLine).save(newLine);
-            order.lines.push(orderLine);
-            await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId, customFields);
+        const correctedQuantity = await this.constrainQuantityToSaleable(
+            ctx,
+            orderLine.productVariant,
+            quantity,
+        );
+        if (correctedQuantity === 0) {
+            return new InsufficientStockError(correctedQuantity, order);
         }
-        return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
+        await this.updateOrderLineQuantity(ctx, orderLine, orderLine.quantity + correctedQuantity, order);
+        const quantityWasAdjustedDown = correctedQuantity < quantity;
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
+        if (quantityWasAdjustedDown) {
+            return new InsufficientStockError(correctedQuantity, updatedOrder);
+        } else {
+            return updatedOrder;
+        }
     }
 
+    /**
+     * Adjusts the quantity of an existing OrderLine
+     */
     async adjustOrderLine(
         ctx: RequestContext,
-        orderIdOrOrder: ID | Order,
+        orderId: ID,
         orderLineId: ID,
-        quantity?: number | null,
+        quantity: number,
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        let correctedQuantity = quantity;
-        let quantityWasAdjustedDown = false;
-        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
-        const order =
-            orderIdOrOrder instanceof Order
-                ? orderIdOrOrder
-                : await this.getOrderOrThrow(ctx, orderIdOrOrder);
+        const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+        const validationError =
+            this.assertAddingItemsState(order) ||
+            this.assertQuantityIsPositive(quantity) ||
+            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity);
+        if (validationError) {
+            return validationError;
+        }
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        if (correctedQuantity != null) {
-            const currentQuantity = orderLine.quantity;
-            const validationError =
-                this.assertAddingItemsState(order) ||
-                this.assertQuantityIsPositive(correctedQuantity) ||
-                this.assertNotOverOrderItemsLimit(order, correctedQuantity - currentQuantity);
-            if (validationError) {
-                return validationError;
-            }
-            const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(
-                ctx,
-                orderLine.productVariant,
-            );
-            if (saleableStockLevel < correctedQuantity) {
-                correctedQuantity = Math.max(saleableStockLevel, 0);
-                quantityWasAdjustedDown = true;
-            }
-            if (correctedQuantity === 0) {
-                order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLineId));
-                await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-                return new InsufficientStockError(correctedQuantity, order);
-            } else if (currentQuantity < correctedQuantity) {
-                if (!orderLine.items) {
-                    orderLine.items = [];
-                }
-                const productVariant = orderLine.productVariant;
-                const {
-                    price,
-                    priceIncludesTax,
-                } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
-                    ctx,
-                    productVariant,
-                    orderLine.customFields || {},
-                );
-                const taxRate = productVariant.taxRateApplied;
-                for (let i = currentQuantity; i < correctedQuantity; i++) {
-                    const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
-                        new OrderItem({
-                            listPrice: price,
-                            listPriceIncludesTax: priceIncludesTax,
-                            adjustments: [],
-                            taxLines: [],
-                        }),
-                    );
-                    orderLine.items.push(orderItem);
-                }
-            } else if (correctedQuantity < currentQuantity) {
-                orderLine.items = orderLine.items.slice(0, correctedQuantity);
-            }
+        const correctedQuantity = await this.constrainQuantityToSaleable(
+            ctx,
+            orderLine.productVariant,
+            quantity,
+        );
+        if (correctedQuantity === 0) {
+            order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+            await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+        } else {
+            await this.updateOrderLineQuantity(ctx, orderLine, quantity, order);
         }
-        await this.connection.getRepository(ctx, OrderLine).save(orderLine, { reload: false });
+        const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
-        if (correctedQuantity && quantityWasAdjustedDown) {
+        if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {
             return updatedOrder;
@@ -677,6 +647,115 @@ export class OrderService {
                 await transitionOrderIfStateAvailable('PartiallyDelivered');
             }
         }
+    }
+    /**
+     * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
+     * if no existing line is found.
+     */
+    private async getOrCreateItemOrderLine(
+        ctx: RequestContext,
+        order: Order,
+        productVariantId: ID,
+        customFields?: { [key: string]: any },
+    ) {
+        const existingOrderLine = order.lines.find(line => {
+            return (
+                idsAreEqual(line.productVariant.id, productVariantId) &&
+                this.customFieldsAreEqual(customFields, line.customFields)
+            );
+        });
+        if (existingOrderLine) {
+            return existingOrderLine;
+        }
+
+        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
+        const orderLine = await this.connection.getRepository(ctx, OrderLine).save(
+            new OrderLine({
+                productVariant,
+                taxCategory: productVariant.taxCategory,
+                featuredAsset: productVariant.product.featuredAsset,
+                customFields,
+            }),
+        );
+        const lineWithRelations = await this.connection.getEntityOrThrow(ctx, OrderLine, orderLine.id, {
+            relations: [
+                'items',
+                'taxCategory',
+                'productVariant',
+                'productVariant.productVariantPrices',
+                'productVariant.taxCategory',
+            ],
+        });
+        lineWithRelations.productVariant = this.productVariantService.applyChannelPriceAndTax(
+            lineWithRelations.productVariant,
+            ctx,
+        );
+        order.lines.push(lineWithRelations);
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        return lineWithRelations;
+    }
+
+    /**
+     * Updates the quantity of an OrderLine, taking into account the available saleable stock level.
+     * Returns the actual quantity that the OrderLine was updated to (which may be less than the
+     * `quantity` argument if insufficient stock was available.
+     */
+    private async updateOrderLineQuantity(
+        ctx: RequestContext,
+        orderLine: OrderLine,
+        quantity: number,
+        order: Order,
+    ): Promise<OrderLine> {
+        const currentQuantity = orderLine.quantity;
+        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+
+        if (currentQuantity < quantity) {
+            if (!orderLine.items) {
+                orderLine.items = [];
+            }
+            const productVariant = orderLine.productVariant;
+            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                productVariant,
+                orderLine.customFields || {},
+            );
+            const taxRate = productVariant.taxRateApplied;
+            for (let i = currentQuantity; i < quantity; i++) {
+                const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
+                    new OrderItem({
+                        listPrice: price,
+                        listPriceIncludesTax: priceIncludesTax,
+                        adjustments: [],
+                        taxLines: [],
+                    }),
+                );
+                orderLine.items.push(orderItem);
+            }
+        } else if (quantity < currentQuantity) {
+            const keepItems = orderLine.items.slice(0, quantity);
+            const removeItems = orderLine.items.slice(quantity);
+            orderLine.items = keepItems;
+            await this.connection.getRepository(ctx, OrderItem).remove(removeItems);
+        }
+        await this.connection.getRepository(ctx, OrderLine).save(orderLine);
+        return orderLine;
+    }
+
+    /**
+     * Ensure that the ProductVariant has sufficient saleable stock to add the given
+     * quantity to an Order.
+     */
+    private async constrainQuantityToSaleable(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        quantity: number,
+    ) {
+        let correctedQuantity = quantity;
+        const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
+        if (saleableStockLevel < correctedQuantity) {
+            correctedQuantity = Math.max(saleableStockLevel, 0);
+        }
+        return correctedQuantity;
     }
 
     async addPaymentToOrder(
@@ -1139,18 +1218,6 @@ export class OrderService {
             throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
         return orderItem;
-    }
-
-    private createOrderLineFromVariant(
-        productVariant: ProductVariant,
-        customFields?: { [key: string]: any },
-    ): OrderLine {
-        return new OrderLine({
-            productVariant,
-            taxCategory: productVariant.taxCategory,
-            featuredAsset: productVariant.product.featuredAsset,
-            customFields,
-        });
     }
 
     /**

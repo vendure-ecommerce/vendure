@@ -49,7 +49,7 @@ type Mutation {
     "Remove all OrderLine from the Order"
     removeAllOrderLines: RemoveOrderItemsResult!
     "Adjusts an OrderLine. If custom fields are defined on the OrderLine entity, a third argument 'customFields' of type `OrderLineCustomFieldsInput` will be available."
-    adjustOrderLine(orderLineId: ID!, quantity: Int): UpdateOrderItemsResult!
+    adjustOrderLine(orderLineId: ID!, quantity: Int!): UpdateOrderItemsResult!
     "Applies the given coupon code to the active Order"
     applyCouponCode(couponCode: String!): ApplyCouponCodeResult!
     "Removes the given coupon code from the active Order"
