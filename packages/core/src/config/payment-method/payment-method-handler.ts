@@ -124,6 +124,7 @@ export interface SettlePaymentResult {
 export type CreatePaymentFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     order: Order,
+    amount: number,
     args: ConfigArgValues<T>,
     metadata: PaymentMetadata,
 ) => CreatePaymentResult | CreatePaymentErrorResult | Promise<CreatePaymentResult | CreatePaymentErrorResult>;
@@ -152,7 +153,7 @@ export type SettlePaymentFn<T extends ConfigArgs> = (
 export type CreateRefundFn<T extends ConfigArgs> = (
     ctx: RequestContext,
     input: RefundOrderInput,
-    total: number,
+    amount: number,
     order: Order,
     payment: Payment,
     args: ConfigArgValues<T>,
@@ -213,40 +214,40 @@ export interface PaymentMethodConfigOptions<T extends ConfigArgs> extends Config
  * import gripeSDK from 'gripe';
  *
  * export const examplePaymentHandler = new PaymentMethodHandler({
- *     code: 'example-payment-provider',
- *     description: [{
- *         languageCode: LanguageCode.en,
- *         value: 'Example Payment Provider',
- *     }],
- *     args: {
- *         apiKey: { type: 'string' },
- *     },
- *     createPayment: async (ctx, order, args, metadata): Promise<CreatePaymentResult> => {
- *         try {
- *             const result = await gripeSDK.charges.create({
- *                 apiKey: args.apiKey,
- *                 amount: order.total,
- *                 source: metadata.authToken,
- *             });
- *             return {
- *                 amount: order.total,
- *                 state: 'Settled' as const,
- *                 transactionId: result.id.toString(),
- *                 metadata: result.outcome,
- *             };
- *         } catch (err) {
- *             return {
- *                 amount: order.total,
- *                 state: 'Declined' as const,
- *                 metadata: {
- *                     errorMessage: err.message,
- *                 },
- *             };
- *         }
- *     },
- *     settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
- *         return { success: true };
+ *   code: 'example-payment-provider',
+ *   description: [{
+ *     languageCode: LanguageCode.en,
+ *     value: 'Example Payment Provider',
+ *   }],
+ *   args: {
+ *     apiKey: { type: 'string' },
+ *   },
+ *   createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
+ *     try {
+ *       const result = await gripeSDK.charges.create({
+ *         amount,
+ *         apiKey: args.apiKey,
+ *         source: metadata.authToken,
+ *       });
+ *       return {
+ *         amount: order.total,
+ *         state: 'Settled' as const,
+ *         transactionId: result.id.toString(),
+ *         metadata: result.outcome,
+ *       };
+ *     } catch (err) {
+ *       return {
+ *         amount: order.total,
+ *         state: 'Declined' as const,
+ *         metadata: {
+ *           errorMessage: err.message,
+ *         },
+ *       };
  *     }
+ *   },
+ *   settlePayment: async (ctx, order, payment, args): Promise<SettlePaymentResult> => {
+ *     return { success: true };
+ *   }
  * });
  * ```
  *
@@ -273,8 +274,20 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
      *
      * @internal
      */
-    async createPayment(ctx: RequestContext, order: Order, args: ConfigArg[], metadata: PaymentMetadata) {
-        const paymentConfig = await this.createPaymentFn(ctx, order, this.argsArrayToHash(args), metadata);
+    async createPayment(
+        ctx: RequestContext,
+        order: Order,
+        amount: number,
+        args: ConfigArg[],
+        metadata: PaymentMetadata,
+    ) {
+        const paymentConfig = await this.createPaymentFn(
+            ctx,
+            order,
+            amount,
+            this.argsArrayToHash(args),
+            metadata,
+        );
         return {
             method: this.code,
             ...paymentConfig,
@@ -300,13 +313,13 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
     async createRefund(
         ctx: RequestContext,
         input: RefundOrderInput,
-        total: number,
+        amount: number,
         order: Order,
         payment: Payment,
         args: ConfigArg[],
     ) {
         return this.createRefundFn
-            ? this.createRefundFn(ctx, input, total, order, payment, this.argsArrayToHash(args))
+            ? this.createRefundFn(ctx, input, amount, order, payment, this.argsArrayToHash(args))
             : false;
     }
 

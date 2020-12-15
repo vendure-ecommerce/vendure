@@ -131,6 +131,7 @@ export class OrderService {
         private promotionService: PromotionService,
         private eventBus: EventBus,
         private channelService: ChannelService,
+        private orderModifier: OrderModifier,
     ) {}
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -249,6 +250,15 @@ export class OrderService {
             relations: ['orderItems'],
         });
         return refund.orderItems;
+    }
+
+    getOrderModifications(ctx: RequestContext, orderId: ID): Promise<OrderModification[]> {
+        return this.connection.getRepository(ctx, OrderModification).find({
+            where: {
+                order: orderId,
+            },
+            relations: ['orderItems', 'payment', 'refund'],
+        });
     }
 
     getPaymentRefunds(ctx: RequestContext, paymentId: ID): Promise<Refund[]> {
@@ -770,6 +780,7 @@ export class OrderService {
         const payment = await this.paymentMethodService.createPayment(
             ctx,
             order,
+            order.totalWithTax,
             input.method,
             input.metadata,
         );

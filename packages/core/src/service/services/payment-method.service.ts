@@ -78,9 +78,21 @@ export class PaymentMethodService {
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: any): Promise<Payment> {
+    async createPayment(
+        ctx: RequestContext,
+        order: Order,
+        amount: number,
+        method: string,
+        metadata: any,
+    ): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
-        const result = await handler.createPayment(ctx, order, paymentMethod.configArgs, metadata || {});
+        const result = await handler.createPayment(
+            ctx,
+            order,
+            amount,
+            paymentMethod.configArgs,
+            metadata || {},
+        );
         const initialState = 'Created';
         const payment = await this.connection
             .getRepository(ctx, Payment)
