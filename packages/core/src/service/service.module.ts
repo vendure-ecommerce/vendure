@@ -16,6 +16,7 @@ import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/ful
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
+import { OrderModifier } from './helpers/order-modifier/order-modifier';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
@@ -98,6 +99,7 @@ const helpers = [
     OrderStateMachine,
     FulfillmentStateMachine,
     OrderMerger,
+    OrderModifier,
     PaymentStateMachine,
     ListQueryBuilder,
     ShippingCalculator,

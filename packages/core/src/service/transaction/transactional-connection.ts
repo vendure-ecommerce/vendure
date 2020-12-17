@@ -114,6 +114,19 @@ export class TransactionalConnection {
 
     /**
      * @description
+     * Manually rolls back any open transaction. Should be very rarely needed, since the {@link Transaction} decorator
+     * and the internal TransactionInterceptor take care of this automatically. Use-cases include when using the
+     * Transaction decorator in manual mode.
+     */
+    async rollBackTransaction(ctx: RequestContext) {
+        const transactionManager = this.getTransactionManager(ctx);
+        if (transactionManager?.queryRunner?.isTransactionActive) {
+            await transactionManager.queryRunner.rollbackTransaction();
+        }
+    }
+
+    /**
+     * @description
      * Finds an entity of the given type by ID, or throws an `EntityNotFoundError` if none
      * is found.
      */

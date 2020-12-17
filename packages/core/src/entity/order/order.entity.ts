@@ -21,6 +21,7 @@ import { Customer } from '../customer/customer.entity';
 import { EntityId } from '../entity-id.decorator';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
+import { OrderModification } from '../order-modification/order-modification.entity';
 import { Payment } from '../payment/payment.entity';
 import { Promotion } from '../promotion/promotion.entity';
 import { ShippingLine } from '../shipping-line/shipping-line.entity';
@@ -89,6 +90,9 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
     @ManyToMany(type => Channel)
     @JoinTable()
     channels: Channel[];
+
+    @OneToMany(type => OrderModification, modification => modification.order)
+    modifications: OrderModification[];
 
     @Column()
     subTotal: number;

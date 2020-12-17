@@ -6,6 +6,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 import { Calculated } from '../../common/calculated-decorator';
 import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { VendureEntity } from '../base/base.entity';
+import { OrderModification } from '../order-modification/order-modification.entity';
 import { Order } from '../order/order.entity';
 
 /**
@@ -38,6 +39,9 @@ export class Surcharge extends VendureEntity {
 
     @ManyToOne(type => Order, order => order.surcharges, { onDelete: 'CASCADE' })
     order: Order;
+
+    @ManyToOne(type => OrderModification, orderModification => orderModification.surcharges)
+    orderModification: OrderModification;
 
     @Calculated()
     get price(): number {

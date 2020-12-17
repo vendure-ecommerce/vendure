@@ -24,6 +24,8 @@ export const TEST_ORDER_FRAGMENT = gql`
             quantity
             linePrice
             linePriceWithTax
+            unitPrice
+            unitPriceWithTax
             productVariant {
                 id
             }
@@ -32,6 +34,9 @@ export const TEST_ORDER_FRAGMENT = gql`
                 amount
                 description
                 type
+            }
+            items {
+                id
             }
         }
         shippingLines {

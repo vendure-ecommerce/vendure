@@ -108,6 +108,7 @@ export class OrderTestingService {
         const mockOrder = new Order({
             lines: [],
             surcharges: [],
+            modifications: [],
         });
         mockOrder.shippingAddress = shippingAddress;
         for (const line of lines) {

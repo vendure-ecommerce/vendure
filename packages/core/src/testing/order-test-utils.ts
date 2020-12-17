@@ -157,5 +157,6 @@ export function createOrder(
         lines,
         shippingLines: [],
         surcharges: [],
+        modifications: [],
     });
 }

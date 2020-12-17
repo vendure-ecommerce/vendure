@@ -9,6 +9,7 @@ import {
 } from '@vendure/common/lib/generated-shop-types';
 import {
     AddFulfillmentToOrderResult,
+    AddManualPaymentToOrderResult,
     AddNoteToOrderInput,
     CancelOrderInput,
     CancelOrderResult,
@@ -17,6 +18,9 @@ import {
     DeletionResult,
     FulfillOrderInput,
     HistoryEntryType,
+    ManualPaymentInput,
+    ModifyOrderInput,
+    ModifyOrderResult,
     OrderLineInput,
     OrderProcessState,
     RefundOrderInput,
@@ -32,7 +36,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
     AlreadyRefundedError,
     CancelActiveOrderError,
@@ -40,12 +44,17 @@ import {
     FulfillmentStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
+    ManualPaymentStateError,
     MultipleOrderError,
+    NoChangesSpecifiedError,
     NothingToRefundError,
+    OrderModificationStateError,
+    PaymentMethodMissingError,
     PaymentOrderMismatchError,
     PaymentStateTransitionError,
     QuantityTooGreatError,
     RefundOrderStateError,
+    RefundPaymentIdMissingError,
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
@@ -68,6 +77,7 @@ import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
@@ -84,6 +94,7 @@ import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillme
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
+import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
@@ -94,6 +105,7 @@ import {
     orderItemsAreDelivered,
     orderItemsAreShipped,
     orderTotalIsCovered,
+    totalCoveredByPayments,
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -239,6 +251,7 @@ export class OrderService {
 
     getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {
         return this.connection.getRepository(ctx, Payment).find({
+            relations: ['refunds'],
             where: {
                 order: { id: orderId } as any,
             },
@@ -257,7 +270,7 @@ export class OrderService {
             where: {
                 order: orderId,
             },
-            relations: ['orderItems', 'payment', 'refund'],
+            relations: ['orderItems', 'payment', 'refund', 'surcharges'],
         });
     }
 
@@ -297,6 +310,7 @@ export class OrderService {
             lines: [],
             surcharges: [],
             couponCodes: [],
+            modifications: [],
             shippingAddress: {},
             billingAddress: {},
             subTotal: 0,
@@ -630,6 +644,210 @@ export class OrderService {
         return fulfillment;
     }
 
+    async modifyOrder(
+        ctx: RequestContext,
+        input: ModifyOrderInput,
+    ): Promise<ErrorResultUnion<ModifyOrderResult, Order>> {
+        await this.connection.startTransaction(ctx);
+        const { dryRun } = input;
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        const modification = new OrderModification({
+            order,
+            note: input.note || '',
+            orderItems: [],
+            surcharges: [],
+        });
+        const initialTotalWithTax = order.totalWithTax;
+        if (order.state !== 'Modifying') {
+            return new OrderModificationStateError();
+        }
+        if (this.orderModifier.noChangesSpecified(input)) {
+            return new NoChangesSpecifiedError();
+        }
+        const { orderItemsLimit } = this.configService.orderOptions;
+        let currentItemsCount = summate(order.lines, 'quantity');
+        const updatedOrderLineIds: ID[] = [];
+        const refundInput: RefundOrderInput & { orderItems: OrderItem[] } = {
+            lines: [],
+            adjustment: 0,
+            shipping: 0,
+            paymentId: input.refund?.paymentId || '',
+            reason: input.refund?.reason || input.note,
+            orderItems: [],
+        };
+
+        for (const { productVariantId, quantity } of input.addItems ?? []) {
+            if (quantity < 0) {
+                return new NegativeQuantityError();
+            }
+            // TODO: add support for OrderLine customFields
+            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId);
+            const correctedQuantity = await this.constrainQuantityToSaleable(
+                ctx,
+                orderLine.productVariant,
+                quantity,
+            );
+            if (orderItemsLimit < currentItemsCount + correctedQuantity) {
+                return new OrderLimitError(orderItemsLimit);
+            } else {
+                currentItemsCount += correctedQuantity;
+            }
+            if (correctedQuantity < quantity) {
+                await this.connection.rollBackTransaction(ctx);
+                return new InsufficientStockError(correctedQuantity, order);
+            }
+            updatedOrderLineIds.push(orderLine.id);
+            const initialQuantity = orderLine.quantity;
+            await this.updateOrderLineQuantity(ctx, orderLine, initialQuantity + correctedQuantity, order);
+            modification.orderItems.push(...orderLine.items.slice(initialQuantity));
+        }
+
+        for (const { orderLineId, quantity } of input.adjustOrderLines ?? []) {
+            if (quantity < 0) {
+                return new NegativeQuantityError();
+            }
+            const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+            const correctedQuantity = await this.constrainQuantityToSaleable(
+                ctx,
+                orderLine.productVariant,
+                quantity,
+            );
+            const resultingOrderTotalQuantity = currentItemsCount + correctedQuantity - orderLine.quantity;
+            if (orderItemsLimit < resultingOrderTotalQuantity) {
+                return new OrderLimitError(orderItemsLimit);
+            } else {
+                currentItemsCount += correctedQuantity;
+            }
+            if (correctedQuantity < quantity) {
+                await this.connection.rollBackTransaction(ctx);
+                return new InsufficientStockError(correctedQuantity, order);
+            } else {
+                const initialLineQuantity = orderLine.quantity;
+                await this.updateOrderLineQuantity(ctx, orderLine, quantity, order);
+                if (correctedQuantity < initialLineQuantity) {
+                    const qtyDelta = initialLineQuantity - correctedQuantity;
+                    refundInput.lines.push({
+                        orderLineId: orderLine.id,
+                        quantity,
+                    });
+                    const cancelledOrderItems = orderLine.items.filter(i => i.cancelled).slice(0, qtyDelta);
+                    refundInput.orderItems.push(...cancelledOrderItems);
+                    modification.orderItems.push(...cancelledOrderItems);
+                } else {
+                    const addedOrderItems = orderLine.items
+                        .filter(i => !i.cancelled)
+                        .slice(initialLineQuantity);
+                    modification.orderItems.push(...addedOrderItems);
+                }
+            }
+            updatedOrderLineIds.push(orderLine.id);
+        }
+
+        for (const surchargeInput of input.surcharges ?? []) {
+            const taxLines =
+                surchargeInput.taxRate != null
+                    ? [
+                          {
+                              taxRate: surchargeInput.taxRate,
+                              description: surchargeInput.taxDescription || '',
+                          },
+                      ]
+                    : [];
+            const surcharge = await this.connection.getRepository(ctx, Surcharge).save(
+                new Surcharge({
+                    sku: surchargeInput.sku || '',
+                    description: surchargeInput.description,
+                    listPrice: surchargeInput.price,
+                    listPriceIncludesTax: surchargeInput.priceIncludesTax,
+                    taxLines,
+                    order,
+                }),
+            );
+            order.surcharges.push(surcharge);
+            modification.surcharges.push(surcharge);
+            if (surcharge.priceWithTax < 0) {
+                refundInput.adjustment += Math.abs(surcharge.priceWithTax);
+            }
+        }
+        if (input.surcharges?.length) {
+            await this.connection.getRepository(ctx, Order).save(order);
+        }
+
+        if (input.updateShippingAddress) {
+            order.shippingAddress = {
+                ...order.shippingAddress,
+                ...input.updateShippingAddress,
+            };
+            if (input.updateShippingAddress.countryCode) {
+                const country = await this.countryService.findOneByCode(
+                    ctx,
+                    input.updateShippingAddress.countryCode,
+                );
+                order.shippingAddress.country = country.name;
+            }
+            await this.connection.getRepository(ctx, Order).save(order);
+            modification.shippingAddressChange = input.updateShippingAddress;
+        }
+
+        if (input.updateBillingAddress) {
+            order.billingAddress = {
+                ...order.billingAddress,
+                ...input.updateShippingAddress,
+            };
+            if (input.updateBillingAddress.countryCode) {
+                const country = await this.countryService.findOneByCode(
+                    ctx,
+                    input.updateBillingAddress.countryCode,
+                );
+                order.billingAddress.country = country.name;
+            }
+            await this.connection.getRepository(ctx, Order).save(order);
+            modification.billingAddressChange = input.updateBillingAddress;
+        }
+
+        const resultingOrder = await this.getOrderOrThrow(ctx, order.id);
+        const updatedOrderLines = resultingOrder.lines.filter(l => updatedOrderLineIds.includes(l.id));
+        await this.orderCalculator.applyPriceAdjustments(ctx, resultingOrder, [], updatedOrderLines, {
+            recalculateShipping: input.options?.recalculateShipping,
+        });
+        const newTotalWithTax = resultingOrder.totalWithTax;
+        const delta = newTotalWithTax - initialTotalWithTax;
+        if (dryRun) {
+            await this.connection.rollBackTransaction(ctx);
+            return resultingOrder;
+        }
+        if (delta < 0) {
+            if (!input.refund) {
+                await this.connection.rollBackTransaction(ctx);
+                return new RefundPaymentIdMissingError();
+            }
+            const existingPayments = await this.getOrderPayments(ctx, order.id);
+            const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
+            if (payment) {
+                const refund = await this.paymentMethodService.createRefund(
+                    ctx,
+                    refundInput,
+                    order,
+                    refundInput.orderItems,
+                    payment,
+                );
+                if (!isGraphQlErrorResult(refund)) {
+                    modification.refund = refund;
+                } else {
+                    throw new InternalServerError(refund.message);
+                }
+            }
+        }
+
+        modification.priceChange = delta;
+        const createdModification = await this.connection
+            .getRepository(ctx, OrderModification)
+            .save(modification);
+        await this.connection.getRepository(ctx, Order).save(resultingOrder);
+        await this.connection.commitOpenTransaction(ctx);
+        return this.getOrderOrThrow(ctx, order.id);
+    }
+
     private async handleFulfillmentStateTransitByOrder(
         ctx: RequestContext,
         order: Order,
@@ -737,15 +955,30 @@ export class OrderService {
                         listPriceIncludesTax: priceIncludesTax,
                         adjustments: [],
                         taxLines: [],
+                        line: orderLine,
                     }),
                 );
                 orderLine.items.push(orderItem);
             }
         } else if (quantity < currentQuantity) {
-            const keepItems = orderLine.items.slice(0, quantity);
-            const removeItems = orderLine.items.slice(quantity);
-            orderLine.items = keepItems;
-            await this.connection.getRepository(ctx, OrderItem).remove(removeItems);
+            if (order.active) {
+                // When an Order is still active, it is fine to just delete
+                // any OrderItems that are no longer needed
+                const keepItems = orderLine.items.slice(0, quantity);
+                const removeItems = orderLine.items.slice(quantity);
+                orderLine.items = keepItems;
+                await this.connection.getRepository(ctx, OrderItem).remove(removeItems);
+            } else {
+                // When an Order is not active (i.e. Customer checked out), then we don't want to just
+                // delete the OrderItems - instead we will cancel them
+                const toSetAsCancelled = orderLine.items.filter(i => !i.cancelled).slice(quantity);
+                const soldItems = toSetAsCancelled.filter(i => !!i.fulfillment);
+                const allocatedItems = toSetAsCancelled.filter(i => !i.fulfillment);
+                await this.stockMovementService.createCancellationsForOrderItems(ctx, soldItems);
+                await this.stockMovementService.createReleasesForOrderItems(ctx, allocatedItems);
+                toSetAsCancelled.forEach(i => (i.cancelled = true));
+                await this.connection.getRepository(ctx, OrderItem).save(toSetAsCancelled, { reload: false });
+            }
         }
         await this.connection.getRepository(ctx, OrderLine).save(orderLine);
         return orderLine;
@@ -802,6 +1035,23 @@ export class OrderService {
         if (orderTotalIsCovered(order, 'Authorized')) {
             return this.transitionToState(ctx, orderId, 'PaymentAuthorized');
         }
+        return order;
+    }
+
+    async addManualPaymentToOrder(
+        ctx: RequestContext,
+        input: ManualPaymentInput,
+    ): Promise<ErrorResultUnion<AddManualPaymentToOrderResult, Order>> {
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        if (order.state !== 'ArrangingAdditionalPayment') {
+            return new ManualPaymentStateError();
+        }
+        const existingPayments = await this.getOrderPayments(ctx, order.id);
+        order.payments = existingPayments;
+        const amount = order.totalWithTax - totalCoveredByPayments(order);
+        const payment = await this.paymentMethodService.createManualPayment(ctx, order, amount, input);
+        order.payments.push(payment);
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         return order;
     }
 
@@ -1254,7 +1504,7 @@ export class OrderService {
      * maximum limit specified in the config.
      */
     private assertNotOverOrderItemsLimit(order: Order, quantityToAdd: number) {
-        const currentItemsCount = order.lines.reduce((count, line) => count + line.quantity, 0);
+        const currentItemsCount = summate(order.lines, 'quantity');
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
             return new OrderLimitError(orderItemsLimit);
@@ -1277,7 +1527,7 @@ export class OrderService {
             ctx,
             order,
             promotions,
-            updatedOrderLine,
+            updatedOrderLine ? [updatedOrderLine] : [],
         );
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });

@@ -3,9 +3,11 @@ import {
     AddFulfillmentToOrderResult,
     CancelOrderResult,
     MutationAddFulfillmentToOrderArgs,
+    MutationAddManualPaymentToOrderArgs,
     MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
     MutationDeleteOrderNoteArgs,
+    MutationModifyOrderArgs,
     MutationRefundOrderArgs,
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
@@ -144,5 +146,22 @@ export class OrderResolver {
         @Args() args: MutationTransitionFulfillmentToStateArgs,
     ) {
         return this.orderService.transitionFulfillmentToState(ctx, args.id, args.state as FulfillmentState);
+    }
+
+    @Transaction('manual')
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async modifyOrder(@Ctx() ctx: RequestContext, @Args() args: MutationModifyOrderArgs) {
+        return this.orderService.modifyOrder(ctx, args.input);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async addManualPaymentToOrder(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationAddManualPaymentToOrderArgs,
+    ) {
+        return this.orderService.addManualPaymentToOrder(ctx, args.input);
     }
 }

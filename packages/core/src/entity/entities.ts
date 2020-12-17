@@ -23,6 +23,7 @@ import { HistoryEntry } from './history-entry/history-entry.entity';
 import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
 import { OrderItem } from './order-item/order-item.entity';
 import { OrderLine } from './order-line/order-line.entity';
+import { OrderModification } from './order-modification/order-modification.entity';
 import { Order } from './order/order.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
@@ -92,6 +93,7 @@ export const coreEntitiesMap = {
     OrderHistoryEntry,
     OrderItem,
     OrderLine,
+    OrderModification,
     Payment,
     PaymentMethod,
     Product,

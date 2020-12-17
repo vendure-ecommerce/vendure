@@ -38,7 +38,8 @@ export class OrderCalculator {
         ctx: RequestContext,
         order: Order,
         promotions: Promotion[],
-        updatedOrderLine?: OrderLine,
+        updatedOrderLines: OrderLine[] = [],
+        options?: { recalculateShipping?: boolean },
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
@@ -52,7 +53,7 @@ export class OrderCalculator {
             taxZoneChanged = true;
         }
         const updatedOrderItems = new Set<OrderItem>();
-        if (updatedOrderLine) {
+        for (const updatedOrderLine of updatedOrderLines) {
             await this.applyTaxesToOrderLine(
                 ctx,
                 order,
@@ -79,8 +80,10 @@ export class OrderCalculator {
                 // altered the unit prices, which in turn will alter the tax payable.
                 await this.applyTaxes(ctx, order, activeTaxZone);
             }
-            await this.applyShipping(ctx, order);
-            await this.applyShippingPromotions(ctx, order, promotions);
+            if (options?.recalculateShipping !== false) {
+                await this.applyShipping(ctx, order);
+                await this.applyShippingPromotions(ctx, order, promotions);
+            }
         }
         this.calculateOrderTotals(order);
         return taxZoneChanged ? order.getOrderItems() : Array.from(updatedOrderItems);

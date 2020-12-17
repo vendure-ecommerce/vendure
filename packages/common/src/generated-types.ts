@@ -378,6 +378,18 @@ export type Mutation = {
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
   setOrderCustomFields?: Maybe<Order>;
+  /**
+   * Allows an Order to be modified after it has been completed by the Customer. The Order must first
+   * be in the `Modifying` state.
+   */
+  modifyOrder: ModifyOrderResult;
+  /**
+   * Used to manually create a new Payment against an Order. This is used when a completed Order
+   * has been modified (using `modifyOrder`) and the price has increased. The extra payment
+   * can then be manually arranged by the administrator, and the details used to create a new
+   * Payment.
+   */
+  addManualPaymentToOrder: AddManualPaymentToOrderResult;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Create a new ProductOptionGroup */
@@ -740,6 +752,16 @@ export type MutationTransitionFulfillmentToStateArgs = {
 
 export type MutationSetOrderCustomFieldsArgs = {
   input: UpdateOrderInput;
+};
+
+
+export type MutationModifyOrderArgs = {
+  input: ModifyOrderInput;
+};
+
+
+export type MutationAddManualPaymentToOrderArgs = {
+  input: ManualPaymentInput;
 };
 
 
@@ -1256,19 +1278,6 @@ export type UpdateFacetValueInput = {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Fulfillment = Node & {
-  __typename?: 'Fulfillment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  orderItems: Array<OrderItem>;
-  state: Scalars['String'];
-  method: Scalars['String'];
-  trackingCode?: Maybe<Scalars['String']>;
-  customFields?: Maybe<Scalars['JSON']>;
-};
-
 export type UpdateGlobalSettingsInput = {
   availableLanguages?: Maybe<Array<LanguageCode>>;
   trackInventory?: Maybe<Scalars['Boolean']>;
@@ -1386,6 +1395,7 @@ export type JobQueue = {
 export type Order = Node & {
   __typename?: 'Order';
   nextStates: Array<Scalars['String']>;
+  modifications: Array<OrderModification>;
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
@@ -1451,6 +1461,33 @@ export type OrderHistoryArgs = {
   options?: Maybe<HistoryEntryListOptions>;
 };
 
+export type Fulfillment = Node & {
+  __typename?: 'Fulfillment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  orderItems: Array<OrderItem>;
+  state: Scalars['String'];
+  method: Scalars['String'];
+  trackingCode?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderModification = Node & {
+  __typename?: 'OrderModification';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  priceChange: Scalars['Int'];
+  note: Scalars['String'];
+  orderItems?: Maybe<Array<OrderItem>>;
+  surcharges?: Maybe<Array<Surcharge>>;
+  payment?: Maybe<Payment>;
+  refund?: Maybe<Refund>;
+  isSettled: Scalars['Boolean'];
+};
+
 export type UpdateOrderInput = {
   id: Scalars['ID'];
   customFields?: Maybe<Scalars['JSON']>;
@@ -1497,6 +1534,67 @@ export type UpdateOrderNoteInput = {
   noteId: Scalars['ID'];
   note?: Maybe<Scalars['String']>;
   isPublic?: Maybe<Scalars['Boolean']>;
+};
+
+export type AdministratorPaymentInput = {
+  paymentMethod?: Maybe<Scalars['String']>;
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type AdministratorRefundInput = {
+  paymentId: Scalars['ID'];
+  reason?: Maybe<Scalars['String']>;
+};
+
+export type ModifyOrderOptions = {
+  freezePromotions?: Maybe<Scalars['Boolean']>;
+  recalculateShipping?: Maybe<Scalars['Boolean']>;
+};
+
+export type UpdateOrderAddressInput = {
+  fullName?: Maybe<Scalars['String']>;
+  company?: Maybe<Scalars['String']>;
+  streetLine1?: Maybe<Scalars['String']>;
+  streetLine2?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  province?: Maybe<Scalars['String']>;
+  postalCode?: Maybe<Scalars['String']>;
+  countryCode?: Maybe<Scalars['String']>;
+  phoneNumber?: Maybe<Scalars['String']>;
+};
+
+export type ModifyOrderInput = {
+  dryRun: Scalars['Boolean'];
+  orderId: Scalars['ID'];
+  addItems?: Maybe<Array<AddItemInput>>;
+  adjustOrderLines?: Maybe<Array<OrderLineInput>>;
+  surcharges?: Maybe<Array<SurchargeInput>>;
+  updateShippingAddress?: Maybe<UpdateOrderAddressInput>;
+  updateBillingAddress?: Maybe<UpdateOrderAddressInput>;
+  note?: Maybe<Scalars['String']>;
+  refund?: Maybe<AdministratorRefundInput>;
+  options?: Maybe<ModifyOrderOptions>;
+};
+
+export type AddItemInput = {
+  productVariantId: Scalars['ID'];
+  quantity: Scalars['Int'];
+};
+
+export type SurchargeInput = {
+  description: Scalars['String'];
+  sku?: Maybe<Scalars['String']>;
+  price: Scalars['Int'];
+  priceIncludesTax: Scalars['Boolean'];
+  taxRate?: Maybe<Scalars['Float']>;
+  taxDescription?: Maybe<Scalars['String']>;
+};
+
+export type ManualPaymentInput = {
+  orderId: Scalars['ID'];
+  method: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if the Payment settlement fails */
@@ -1631,6 +1729,50 @@ export type FulfillmentStateTransitionError = ErrorResult & {
   toState: Scalars['String'];
 };
 
+/** Returned when attempting to modify the contents of an Order that is not in the `Modifying` state. */
+export type OrderModificationStateError = ErrorResult & {
+  __typename?: 'OrderModificationStateError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/** Returned when a call to modifyOrder fails to specify any changes */
+export type NoChangesSpecifiedError = ErrorResult & {
+  __typename?: 'NoChangesSpecifiedError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/**
+ * Returned when a call to modifyOrder fails to include a paymentMethod even
+ * though the price has increased as a result of the changes.
+ */
+export type PaymentMethodMissingError = ErrorResult & {
+  __typename?: 'PaymentMethodMissingError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/**
+ * Returned when a call to modifyOrder fails to include a refundPaymentId even
+ * though the price has decreased as a result of the changes.
+ */
+export type RefundPaymentIdMissingError = ErrorResult & {
+  __typename?: 'RefundPaymentIdMissingError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
+/**
+ * Returned when a call to addManualPaymentToOrder is made but the Order
+ * is not in the required state.
+ */
+export type ManualPaymentStateError = ErrorResult & {
+  __typename?: 'ManualPaymentStateError';
+  errorCode: ErrorCode;
+  message: Scalars['String'];
+};
+
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
 export type SettlePaymentResult = Payment | SettlePaymentError | PaymentStateTransitionError | OrderStateTransitionError;
@@ -1644,6 +1786,10 @@ export type RefundOrderResult = Refund | QuantityTooGreatError | NothingToRefund
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
+
+export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
+
+export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
 
 export type PaymentMethodList = PaginatedList & {
   __typename?: 'PaymentMethodList';
@@ -2373,6 +2519,11 @@ export enum ErrorCode {
   REFUND_STATE_TRANSITION_ERROR = 'REFUND_STATE_TRANSITION_ERROR',
   PAYMENT_STATE_TRANSITION_ERROR = 'PAYMENT_STATE_TRANSITION_ERROR',
   FULFILLMENT_STATE_TRANSITION_ERROR = 'FULFILLMENT_STATE_TRANSITION_ERROR',
+  ORDER_MODIFICATION_STATE_ERROR = 'ORDER_MODIFICATION_STATE_ERROR',
+  NO_CHANGES_SPECIFIED_ERROR = 'NO_CHANGES_SPECIFIED_ERROR',
+  PAYMENT_METHOD_MISSING_ERROR = 'PAYMENT_METHOD_MISSING_ERROR',
+  REFUND_PAYMENT_ID_MISSING_ERROR = 'REFUND_PAYMENT_ID_MISSING_ERROR',
+  MANUAL_PAYMENT_STATE_ERROR = 'MANUAL_PAYMENT_STATE_ERROR',
   PRODUCT_OPTION_IN_USE_ERROR = 'PRODUCT_OPTION_IN_USE_ERROR',
   MISSING_CONDITIONS_ERROR = 'MISSING_CONDITIONS_ERROR',
   NATIVE_AUTH_STRATEGY_ERROR = 'NATIVE_AUTH_STRATEGY_ERROR',
@@ -3650,7 +3801,7 @@ export type OrderLine = Node & {
   discounts: Array<Adjustment>;
   taxLines: Array<TaxLine>;
   order: Order;
-  customFields?: Maybe<Scalars['JSON']>;
+  customFields?: Maybe<OrderLineCustomFields>;
 };
 
 export type Payment = Node & {
@@ -4393,6 +4544,12 @@ export type HistoryEntrySortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+};
+
+export type OrderLineCustomFields = {
+  __typename?: 'OrderLineCustomFields';
+  test?: Maybe<Scalars['String']>;
+  test2?: Maybe<Scalars['String']>;
 };
 
 export type AuthenticationInput = {

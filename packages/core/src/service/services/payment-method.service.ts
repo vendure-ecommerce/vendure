@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
     ConfigArg,
     ConfigArgInput,
+    ManualPaymentInput,
     RefundOrderInput,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
@@ -105,6 +106,28 @@ export class PaymentMethodService {
         return payment;
     }
 
+    /**
+     * Creates a Payment from the manual payment mutation in the Admin API
+     */
+    async createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) {
+        const initialState = 'Created';
+        const endState = 'Settled';
+        const payment = await this.connection.getRepository(ctx, Payment).save(
+            new Payment({
+                amount,
+                order,
+                transactionId: input.transactionId,
+                metadata: input.metadata,
+                method: input.method,
+                state: initialState,
+            }),
+        );
+        await this.paymentStateMachine.transition(ctx, order, payment, endState);
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        this.eventBus.publish(new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order));
+        return payment;
+    }
+
     async settlePayment(ctx: RequestContext, payment: Payment, order: Order) {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
         return handler.settlePayment(ctx, order, payment, paymentMethod.configArgs);
@@ -118,7 +141,7 @@ export class PaymentMethodService {
         payment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
-        const itemAmount = summate(items, 'unitPriceWithTax');
+        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
             payment,

@@ -230,6 +230,56 @@ export class FulfillmentStateTransitionError extends ErrorResult {
   }
 }
 
+export class OrderModificationStateError extends ErrorResult {
+  readonly __typename = 'OrderModificationStateError';
+  readonly errorCode = 'ORDER_MODIFICATION_STATE_ERROR' as any;
+  readonly message = 'ORDER_MODIFICATION_STATE_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class NoChangesSpecifiedError extends ErrorResult {
+  readonly __typename = 'NoChangesSpecifiedError';
+  readonly errorCode = 'NO_CHANGES_SPECIFIED_ERROR' as any;
+  readonly message = 'NO_CHANGES_SPECIFIED_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class PaymentMethodMissingError extends ErrorResult {
+  readonly __typename = 'PaymentMethodMissingError';
+  readonly errorCode = 'PAYMENT_METHOD_MISSING_ERROR' as any;
+  readonly message = 'PAYMENT_METHOD_MISSING_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class RefundPaymentIdMissingError extends ErrorResult {
+  readonly __typename = 'RefundPaymentIdMissingError';
+  readonly errorCode = 'REFUND_PAYMENT_ID_MISSING_ERROR' as any;
+  readonly message = 'REFUND_PAYMENT_ID_MISSING_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class ManualPaymentStateError extends ErrorResult {
+  readonly __typename = 'ManualPaymentStateError';
+  readonly errorCode = 'MANUAL_PAYMENT_STATE_ERROR' as any;
+  readonly message = 'MANUAL_PAYMENT_STATE_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
 export class ProductOptionInUseError extends ErrorResult {
   readonly __typename = 'ProductOptionInUseError';
   readonly errorCode = 'PRODUCT_OPTION_IN_USE_ERROR' as any;
@@ -330,7 +380,7 @@ export class InsufficientStockError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError']);
+const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'OrderModificationStateError', 'NoChangesSpecifiedError', 'PaymentMethodMissingError', 'RefundPaymentIdMissingError', 'ManualPaymentStateError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
@@ -409,6 +459,16 @@ export const adminErrorOperationTypeResolvers = {
   TransitionFulfillmentToStateResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
+    },
+  },
+  ModifyOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AddManualPaymentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
   RemoveOptionGroupFromProductResult: {

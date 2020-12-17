@@ -372,10 +372,18 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             }
             linePriceWithTax
         }
+        surcharges {
+            id
+            description
+            sku
+            price
+            priceWithTax
+        }
         subTotal
         subTotalWithTax
         total
         totalWithTax
+        totalQuantity
         currencyCode
         shipping
         shippingWithTax
@@ -396,6 +404,11 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             method
             state
             metadata
+            refunds {
+                id
+                total
+                reason
+            }
         }
         total
     }

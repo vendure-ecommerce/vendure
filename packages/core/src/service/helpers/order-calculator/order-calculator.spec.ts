@@ -301,7 +301,7 @@ describe('OrderCalculator', () => {
                             },
                         ],
                     });
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
                     expect(order.subTotal).toBe(4167);
                     expect(order.subTotalWithTax).toBe(5000);
@@ -328,7 +328,7 @@ describe('OrderCalculator', () => {
                             },
                         ],
                     });
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
                     expect(order.subTotal).toBe(1173);
                     expect(order.subTotalWithTax).toBe(1350);
@@ -484,7 +484,7 @@ describe('OrderCalculator', () => {
                         }),
                     );
 
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
                     expect(order.subTotalWithTax).toBe(504);
                     // Now the fixedPriceOrderAction should be in effect
@@ -523,7 +523,7 @@ describe('OrderCalculator', () => {
                         }),
                     );
 
-                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], order.lines[0]);
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion], [order.lines[0]]);
 
                     expect(order.subTotalWithTax).toBe(420);
                     // Now the fixedPriceOrderAction should be in effect
@@ -778,7 +778,7 @@ describe('OrderCalculator', () => {
                     ctx,
                     order,
                     [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
-                    order.lines[0],
+                    [order.lines[0]],
                 );
 
                 expect(order.discounts.length).toBe(1);
@@ -828,7 +828,7 @@ describe('OrderCalculator', () => {
                         ctx,
                         order,
                         [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
-                        order.lines[0],
+                        [order.lines[0]],
                     );
 
                     expect(order.subTotal).toBe(1080);
@@ -854,7 +854,7 @@ describe('OrderCalculator', () => {
                         ctx,
                         order,
                         [buy3Get50pcOffOrder, spend1000Get10pcOffOrder],
-                        order.lines[0],
+                        [order.lines[0]],
                     );
 
                     expect(order.subTotal).toBe(900);

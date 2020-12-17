@@ -1,6 +1,7 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
+import { assertFound } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { HistoryService } from '../../../service/services/history.service';
@@ -41,6 +42,15 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
+    async lines(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.lines) {
+            return order.lines;
+        }
+        const { lines } = await assertFound(this.orderService.findOne(ctx, order.id));
+        return lines;
+    }
+
+    @ResolveField()
     async history(
         @Ctx() ctx: RequestContext,
         @Api() apiType: ApiType,
@@ -67,6 +77,14 @@ export class OrderEntityResolver {
 @Resolver('Order')
 export class OrderAdminEntityResolver {
     constructor(private orderService: OrderService) {}
+
+    @ResolveField()
+    async modifications(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.modifications) {
+            return order.modifications;
+        }
+        return this.orderService.getOrderModifications(ctx, order.id);
+    }
 
     @ResolveField()
     async nextStates(@Parent() order: Order) {

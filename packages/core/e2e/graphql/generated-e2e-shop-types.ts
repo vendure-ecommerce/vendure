@@ -179,6 +179,7 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type MutationRemoveOrderLineArgs = {
@@ -187,7 +188,8 @@ export type MutationRemoveOrderLineArgs = {
 
 export type MutationAdjustOrderLineArgs = {
     orderLineId: Scalars['ID'];
-    quantity?: Maybe<Scalars['Int']>;
+    quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type MutationApplyCouponCodeArgs = {
@@ -1864,7 +1866,7 @@ export type OrderLine = Node & {
     discounts: Array<Adjustment>;
     taxLines: Array<TaxLine>;
     order: Order;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<OrderLineCustomFields>;
 };
 
 export type Payment = Node & {
@@ -2610,6 +2612,16 @@ export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type OrderLineCustomFields = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
+};
+
 export type AuthenticationInput = {
     native?: Maybe<NativeAuthInput>;
 };
@@ -2635,9 +2647,13 @@ export type TestOrderFragmentFragment = Pick<
 > & {
     discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
     lines: Array<
-        Pick<OrderLine, 'id' | 'quantity' | 'linePrice' | 'linePriceWithTax'> & {
+        Pick<
+            OrderLine,
+            'id' | 'quantity' | 'linePrice' | 'linePriceWithTax' | 'unitPrice' | 'unitPriceWithTax'
+        > & {
             productVariant: Pick<ProductVariant, 'id'>;
             discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
+            items: Array<Pick<OrderItem, 'id'>>;
         }
     >;
     shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;
@@ -3093,6 +3109,9 @@ export namespace TestOrderFragment {
     export type _Discounts = NonNullable<
         NonNullable<NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['discounts']>[number]
     >;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<NonNullable<TestOrderFragmentFragment['lines']>[number]>['items']>[number]
+    >;
     export type ShippingLines = NonNullable<NonNullable<TestOrderFragmentFragment['shippingLines']>[number]>;
     export type ShippingMethod = NonNullable<
         NonNullable<NonNullable<TestOrderFragmentFragment['shippingLines']>[number]>['shippingMethod']
@@ -3100,7 +3119,7 @@ export namespace TestOrderFragment {
     export type Customer = NonNullable<TestOrderFragmentFragment['customer']>;
     export type User = NonNullable<NonNullable<TestOrderFragmentFragment['customer']>['user']>;
     export type History = NonNullable<TestOrderFragmentFragment['history']>;
-    export type Items = NonNullable<
+    export type _Items = NonNullable<
         NonNullable<NonNullable<TestOrderFragmentFragment['history']>['items']>[number]
     >;
 }
