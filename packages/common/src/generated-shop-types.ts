@@ -1371,6 +1371,7 @@ export enum HistoryEntryType {
     ORDER_NOTE = 'ORDER_NOTE',
     ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
+    ORDER_MODIFIED = 'ORDER_MODIFIED',
 }
 
 export type HistoryEntryList = PaginatedList & {

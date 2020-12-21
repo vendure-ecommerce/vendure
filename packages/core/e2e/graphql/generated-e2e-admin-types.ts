@@ -3114,6 +3114,7 @@ export enum HistoryEntryType {
     ORDER_NOTE = 'ORDER_NOTE',
     ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
     ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
+    ORDER_MODIFIED = 'ORDER_MODIFIED',
 }
 
 export type HistoryEntryList = PaginatedList & {
@@ -5651,6 +5652,25 @@ export type SettlePaymentMutation = {
 
 export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
 
+export type GetOrderHistoryQueryVariables = Exact<{
+    id: Scalars['ID'];
+    options?: Maybe<HistoryEntryListOptions>;
+}>;
+
+export type GetOrderHistoryQuery = {
+    order?: Maybe<
+        Pick<Order, 'id'> & {
+            history: Pick<HistoryEntryList, 'totalItems'> & {
+                items: Array<
+                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
+                        administrator?: Maybe<Pick<Administrator, 'id'>>;
+                    }
+                >;
+            };
+        }
+    >;
+};
+
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5697,6 +5717,12 @@ export type OrderWithModificationsFragment = Pick<Order, 'id' | 'state' | 'total
         Pick<OrderAddress, 'streetLine1' | 'city' | 'postalCode' | 'province' | 'countryCode' | 'country'>
     >;
 };
+
+export type GetOrderWithModificationsQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderWithModificationsQuery = { order?: Maybe<OrderWithModificationsFragment> };
 
 export type ModifyOrderMutationVariables = Exact<{
     input: ModifyOrderInput;
@@ -5776,25 +5802,6 @@ export type SettleRefundMutationVariables = Exact<{
 
 export type SettleRefundMutation = {
     settleRefund: RefundFragment | Pick<RefundStateTransitionError, 'errorCode' | 'message'>;
-};
-
-export type GetOrderHistoryQueryVariables = Exact<{
-    id: Scalars['ID'];
-    options?: Maybe<HistoryEntryListOptions>;
-}>;
-
-export type GetOrderHistoryQuery = {
-    order?: Maybe<
-        Pick<Order, 'id'> & {
-            history: Pick<HistoryEntryList, 'totalItems'> & {
-                items: Array<
-                    Pick<HistoryEntry, 'id' | 'type' | 'data'> & {
-                        administrator?: Maybe<Pick<Administrator, 'id'>>;
-                    }
-                >;
-            };
-        }
-    >;
 };
 
 export type AddNoteToOrderMutationVariables = Exact<{
@@ -7626,6 +7633,21 @@ export namespace Payment {
     export type Fragment = PaymentFragment;
 }
 
+export namespace GetOrderHistory {
+    export type Variables = GetOrderHistoryQueryVariables;
+    export type Query = GetOrderHistoryQuery;
+    export type Order = NonNullable<GetOrderHistoryQuery['order']>;
+    export type History = NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
+    >;
+    export type Administrator = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
+        >['administrator']
+    >;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -7684,6 +7706,12 @@ export namespace OrderWithModifications {
     >;
     export type ShippingAddress = NonNullable<OrderWithModificationsFragment['shippingAddress']>;
     export type BillingAddress = NonNullable<OrderWithModificationsFragment['billingAddress']>;
+}
+
+export namespace GetOrderWithModifications {
+    export type Variables = GetOrderWithModificationsQueryVariables;
+    export type Query = GetOrderWithModificationsQuery;
+    export type Order = NonNullable<GetOrderWithModificationsQuery['order']>;
 }
 
 export namespace ModifyOrder {
@@ -7758,21 +7786,6 @@ export namespace SettleRefund {
     export type ErrorResultInlineFragment = DiscriminateUnion<
         NonNullable<SettleRefundMutation['settleRefund']>,
         { __typename?: 'ErrorResult' }
-    >;
-}
-
-export namespace GetOrderHistory {
-    export type Variables = GetOrderHistoryQueryVariables;
-    export type Query = GetOrderHistoryQuery;
-    export type Order = NonNullable<GetOrderHistoryQuery['order']>;
-    export type History = NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>;
-    export type Items = NonNullable<
-        NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
-    >;
-    export type Administrator = NonNullable<
-        NonNullable<
-            NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
-        >['administrator']
     >;
 }
 

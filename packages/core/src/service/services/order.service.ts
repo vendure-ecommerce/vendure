@@ -36,7 +36,7 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
     AlreadyRefundedError,
     CancelActiveOrderError,
@@ -653,9 +653,27 @@ export class OrderService {
         ctx: RequestContext,
         input: ModifyOrderInput,
     ): Promise<ErrorResultUnion<ModifyOrderResult, Order>> {
-        return this.orderModifier.modifyOrder(ctx, input, (ctx1, orderId) =>
-            this.getOrderOrThrow(ctx1, orderId),
-        );
+        await this.connection.startTransaction(ctx);
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        const result = await this.orderModifier.modifyOrder(ctx, input, order);
+        if (input.dryRun) {
+            await this.connection.rollBackTransaction(ctx);
+            return isGraphQlErrorResult(result) ? result : result.order;
+        }
+        if (isGraphQlErrorResult(result)) {
+            await this.connection.rollBackTransaction(ctx);
+            return result;
+        }
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: input.orderId,
+            type: HistoryEntryType.ORDER_MODIFIED,
+            data: {
+                modificationId: result.modification.id,
+            },
+        });
+        await this.connection.commitOpenTransaction(ctx);
+        return this.getOrderOrThrow(ctx, input.orderId);
     }
 
     private async handleFulfillmentStateTransitByOrder(
@@ -735,9 +753,22 @@ export class OrderService {
         const existingPayments = await this.getOrderPayments(ctx, order.id);
         order.payments = existingPayments;
         const amount = order.totalWithTax - totalCoveredByPayments(order);
+        const modifications = await this.getOrderModifications(ctx, order.id);
+        const unsettledModifications = modifications.filter(m => !m.isSettled);
+        const outstandingModificationsTotal = summate(unsettledModifications, 'priceChange');
+        if (outstandingModificationsTotal !== amount) {
+            throw new InternalServerError(
+                `The outstanding order amount (${amount}) should equal the unsettled OrderModifications total (${outstandingModificationsTotal})`,
+            );
+        }
+
         const payment = await this.paymentMethodService.createManualPayment(ctx, order, amount, input);
         order.payments.push(payment);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        for (const modification of unsettledModifications) {
+            modification.payment = payment;
+            await this.connection.getRepository(ctx, OrderModification).save(modification);
+        }
         return order;
     }
 
@@ -884,7 +915,10 @@ export class OrderService {
             });
         }
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        const fulfillments = items.reduce((acc, i) => [...acc, ...i.fulfillments], [] as Fulfillment[]);
+        const fulfillments = items.reduce(
+            (acc, i) => [...acc, ...(i.fulfillments || [])],
+            [] as Fulfillment[],
+        );
         return unique(fulfillments, 'id');
     }
 

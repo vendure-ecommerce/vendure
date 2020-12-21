@@ -56,6 +56,7 @@
     "INVALID_CREDENTIALS_ERROR": "The provided credentials are invalid",
     "ITEMS_ALREADY_FULFILLED_ERROR": "One or more OrderItems are already part of a Fulfillment",
     "LANGUAGE_NOT_AVAILABLE_ERROR": "Language \"{languageCode}\" is not available. First enable it via GlobalSettings and try again",
+    "MANUAL_PAYMENT_STATE_ERROR": "A manual payment may only be added when in the \"ArrangingAdditionalPayment\" state",
     "MIME_TYPE_ERROR": "The MIME type '{ mimeType }' is not permitted.",
     "MISSING_CONDITIONS_ERROR": "A Promotion must have either at least one condition or a coupon code set",
     "MISSING_PASSWORD_ERROR": "A password must be provided.",

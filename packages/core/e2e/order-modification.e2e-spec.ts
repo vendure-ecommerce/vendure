@@ -23,7 +23,10 @@ import {
     CreateShippingMethod,
     ErrorCode,
     GetOrder,
+    GetOrderHistory,
+    GetOrderWithModifications,
     GlobalFlag,
+    HistoryEntryType,
     LanguageCode,
     ModifyOrder,
     OrderFragment,
@@ -44,6 +47,7 @@ import {
     ADMIN_TRANSITION_TO_STATE,
     CREATE_SHIPPING_METHOD,
     GET_ORDER,
+    GET_ORDER_HISTORY,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import {
@@ -529,6 +533,34 @@ describe('Order modification', () => {
             ]);
             await assertOrderIsUnchanged(order!);
         });
+
+        it('does not add a history entry', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: true,
+                        orderId,
+                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const { order: history } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, {
+                id: orderId,
+                options: { filter: { type: { eq: HistoryEntryType.ORDER_MODIFIED } } },
+            });
+            orderGuard.assertSuccess(history);
+
+            expect(history.history.totalItems).toBe(0);
+        });
     });
 
     describe('wet run', () => {
@@ -816,6 +848,37 @@ describe('Order modification', () => {
             expect(modifyOrder.modifications[0].priceChange).toBe(priceDelta);
             await assertModifiedOrderIsPersisted(modifyOrder);
         });
+
+        it('adds a history entry', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order!.id,
+                        addItems: [{ productVariantId: 'T_5', quantity: 1 }],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const { order: history } = await adminClient.query<
+                GetOrderHistory.Query,
+                GetOrderHistory.Variables
+            >(GET_ORDER_HISTORY, {
+                id: orderId,
+                options: { filter: { type: { eq: HistoryEntryType.ORDER_MODIFIED } } },
+            });
+            orderGuard.assertSuccess(history);
+
+            expect(history.history.totalItems).toBe(1);
+            expect(history.history.items[0].data).toEqual({
+                modificationId: 'T_8',
+            });
+        });
     });
 
     describe('additional payment handling', () => {
@@ -921,6 +984,10 @@ describe('Order modification', () => {
                 },
                 refunds: [],
             });
+            expect(addManualPaymentToOrder.modifications[0].isSettled).toBe(true);
+            expect(addManualPaymentToOrder.modifications[0].payment?.id).toBe(
+                addManualPaymentToOrder.payments![1].id,
+            );
         });
 
         it('transition back to original state', async () => {
@@ -972,6 +1039,16 @@ describe('Order modification', () => {
             );
             orderGuard.assertSuccess(modifyOrder);
             orderId3 = modifyOrder.id;
+        });
+
+        it('modification is settled', async () => {
+            const { order } = await adminClient.query<
+                GetOrderWithModifications.Query,
+                GetOrderWithModifications.Variables
+            >(GET_ORDER_WITH_MODIFICATIONS, { id: orderId3 });
+
+            expect(order?.modifications.length).toBe(1);
+            expect(order?.modifications[0].isSettled).toBe(true);
         });
 
         it('cannot transition to ArrangingAdditionalPayment state if no payment is needed', async () => {
@@ -1151,6 +1228,15 @@ export const ORDER_WITH_MODIFICATION_FRAGMENT = gql`
             country
         }
     }
+`;
+
+export const GET_ORDER_WITH_MODIFICATIONS = gql`
+    query GetOrderWithModifications($id: ID!) {
+        order(id: $id) {
+            ...OrderWithModifications
+        }
+    }
+    ${ORDER_WITH_MODIFICATION_FRAGMENT}
 `;
 
 export const MODIFY_ORDER = gql`

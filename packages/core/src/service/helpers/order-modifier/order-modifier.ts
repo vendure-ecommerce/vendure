@@ -4,7 +4,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
+import { ErrorResultUnion, isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../../common/error/errors';
 import {
     NoChangesSpecifiedError,
@@ -32,6 +32,7 @@ import { ProductVariantService } from '../../services/product-variant.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { OrderCalculator } from '../order-calculator/order-calculator';
+import { translateDeep } from '../utils/translate-entity';
 
 /**
  * @description
@@ -107,9 +108,9 @@ export class OrderModifier {
                 'productVariant.taxCategory',
             ],
         });
-        lineWithRelations.productVariant = this.productVariantService.applyChannelPriceAndTax(
-            lineWithRelations.productVariant,
-            ctx,
+        lineWithRelations.productVariant = translateDeep(
+            this.productVariantService.applyChannelPriceAndTax(lineWithRelations.productVariant, ctx),
+            ctx.languageCode,
         );
         order.lines.push(lineWithRelations);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
@@ -180,10 +181,8 @@ export class OrderModifier {
     async modifyOrder(
         ctx: RequestContext,
         input: ModifyOrderInput,
-        getOrderFn: (ctx: RequestContext, orderId: ID) => Promise<Order>,
-    ): Promise<ErrorResultUnion<ModifyOrderResult, Order>> {
-        await this.connection.startTransaction(ctx);
-        const order = await getOrderFn(ctx, input.orderId);
+        order: Order,
+    ): Promise<JustErrorResults<ModifyOrderResult> | { order: Order; modification: OrderModification }> {
         const { dryRun } = input;
         const modification = new OrderModification({
             order,
@@ -227,7 +226,6 @@ export class OrderModifier {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                await this.connection.rollBackTransaction(ctx);
                 return new InsufficientStockError(correctedQuantity, order);
             }
             updatedOrderLineIds.push(orderLine.id);
@@ -256,7 +254,6 @@ export class OrderModifier {
                 currentItemsCount += correctedQuantity;
             }
             if (correctedQuantity < quantity) {
-                await this.connection.rollBackTransaction(ctx);
                 return new InsufficientStockError(correctedQuantity, order);
             } else {
                 const initialLineQuantity = orderLine.quantity;
@@ -342,20 +339,20 @@ export class OrderModifier {
             modification.billingAddressChange = input.updateBillingAddress;
         }
 
-        const resultingOrder = await getOrderFn(ctx, order.id);
-        const updatedOrderLines = resultingOrder.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        await this.orderCalculator.applyPriceAdjustments(ctx, resultingOrder, [], updatedOrderLines, {
+        const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
+        await this.orderCalculator.applyPriceAdjustments(ctx, order, [], updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
-        const newTotalWithTax = resultingOrder.totalWithTax;
-        const delta = newTotalWithTax - initialTotalWithTax;
+
         if (dryRun) {
-            await this.connection.rollBackTransaction(ctx);
-            return resultingOrder;
+            return { order, modification };
         }
+
+        // Create the actual modification and commit all changes
+        const newTotalWithTax = order.totalWithTax;
+        const delta = newTotalWithTax - initialTotalWithTax;
         if (delta < 0) {
             if (!input.refund) {
-                await this.connection.rollBackTransaction(ctx);
                 return new RefundPaymentIdMissingError();
             }
             const existingPayments = await this.getOrderPayments(ctx, order.id);
@@ -380,11 +377,10 @@ export class OrderModifier {
         const createdModification = await this.connection
             .getRepository(ctx, OrderModification)
             .save(modification);
-        await this.connection.getRepository(ctx, Order).save(resultingOrder);
+        await this.connection.getRepository(ctx, Order).save(order);
         await this.connection.getRepository(ctx, OrderItem).save(modification.orderItems, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
-        await this.connection.commitOpenTransaction(ctx);
-        return getOrderFn(ctx, order.id);
+        return { order, modification: createdModification };
     }
 
     private noChangesSpecified(input: ModifyOrderInput): boolean {

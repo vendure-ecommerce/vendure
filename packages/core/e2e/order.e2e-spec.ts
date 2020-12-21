@@ -67,6 +67,7 @@ import {
     GET_ORDER,
     GET_ORDERS_LIST,
     GET_ORDER_FULFILLMENTS,
+    GET_ORDER_HISTORY,
     GET_PRODUCT_WITH_VARIANTS,
     GET_STOCK_MOVEMENT,
     SETTLE_PAYMENT,
@@ -1741,25 +1742,6 @@ export const SETTLE_REFUND = gql`
         }
     }
     ${REFUND_FRAGMENT}
-`;
-
-export const GET_ORDER_HISTORY = gql`
-    query GetOrderHistory($id: ID!, $options: HistoryEntryListOptions) {
-        order(id: $id) {
-            id
-            history(options: $options) {
-                totalItems
-                items {
-                    id
-                    type
-                    administrator {
-                        id
-                    }
-                    data
-                }
-            }
-        }
-    }
 `;
 
 export const ADD_NOTE_TO_ORDER = gql`

@@ -794,3 +794,22 @@ export const SETTLE_PAYMENT = gql`
         metadata
     }
 `;
+
+export const GET_ORDER_HISTORY = gql`
+    query GetOrderHistory($id: ID!, $options: HistoryEntryListOptions) {
+        order(id: $id) {
+            id
+            history(options: $options) {
+                totalItems
+                items {
+                    id
+                    type
+                    administrator {
+                        id
+                    }
+                    data
+                }
+            }
+        }
+    }
+`;
