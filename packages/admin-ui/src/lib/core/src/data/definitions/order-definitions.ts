@@ -33,6 +33,7 @@ export const ORDER_ADDRESS_FRAGMENT = gql`
         province
         postalCode
         country
+        countryCode
         phoneNumber
     }
 `;
@@ -198,6 +199,28 @@ export const ORDER_DETAIL_FRAGMENT = gql`
         }
         fulfillments {
             ...Fulfillment
+        }
+        modifications {
+            id
+            createdAt
+            isSettled
+            priceChange
+            note
+            payment {
+                id
+                amount
+            }
+            orderItems {
+                id
+            }
+            refund {
+                id
+                paymentId
+                total
+            }
+            surcharges {
+                id
+            }
         }
     }
     ${ADJUSTMENT_FRAGMENT}
@@ -395,4 +418,26 @@ export const GET_ORDER_SUMMARY = gql`
             }
         }
     }
+`;
+
+export const MODIFY_ORDER = gql`
+    mutation ModifyOrder($input: ModifyOrderInput!) {
+        modifyOrder(input: $input) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const ADD_MANUAL_PAYMENT_TO_ORDER = gql`
+    mutation AddManualPayment($input: ManualPaymentInput!) {
+        addManualPaymentToOrder(input: $input) {
+            ...OrderDetail
+            ...ErrorResult
+        }
+    }
+    ${ORDER_DETAIL_FRAGMENT}
+    ${ERROR_RESULT_FRAGMENT}
 `;

@@ -68,6 +68,9 @@ export class OrderHistoryComponent {
         if (entry.type === HistoryEntryType.ORDER_NOTE) {
             return 'note';
         }
+        if (entry.type === HistoryEntryType.ORDER_MODIFIED) {
+            return 'pencil';
+        }
         if (entry.type === HistoryEntryType.ORDER_FULFILLMENT_TRANSITION) {
             if (entry.data.to === 'Shipped') {
                 return 'truck';
@@ -92,6 +95,7 @@ export class OrderHistoryComponent {
             case HistoryEntryType.ORDER_FULFILLMENT_TRANSITION:
                 return entry.data.to === 'Delivered' || entry.data.to === 'Shipped';
             case HistoryEntryType.ORDER_NOTE:
+            case HistoryEntryType.ORDER_MODIFIED:
                 return true;
             default:
                 return false;
@@ -130,6 +134,10 @@ export class OrderHistoryComponent {
             }
         }
         return Array.from(itemMap.entries()).map(([name, quantity]) => ({ name, quantity }));
+    }
+
+    getModification(id: string) {
+        return this.order.modifications.find(m => m.id === id);
     }
 
     getName(entry: GetOrderHistory.Items): string {

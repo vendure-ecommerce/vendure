@@ -1,64 +1,10 @@
 @import "variables";
 @import "mixins";
+@import "../order-table/order-table-mixin";
 
 .shipping-address {
     list-style-type: none;
     line-height: 1.3em;
-}
-
-.order-lines {
-
-    .is-cancelled td {
-        text-decoration: line-through;
-        background-color: $color-grey-200;
-    }
-
-    .sub-total td {
-        border-top: 1px dashed $color-grey-300;
-    }
-
-    .total td {
-        font-weight: bold;
-        border-top: 1px dashed $color-grey-300;
-    }
-}
-
-.custom-field-header-button {
-    background: none;
-    margin: 0;
-    padding: 0;
-    border: none;
-    cursor: pointer;
-    color: $color-primary-600;
-}
-
-.order-line-custom-field {
-    background-color: $color-grey-100;
-
-    .custom-field-ellipsis {
-        color: $color-grey-300;
-    }
-}
-
-.net-price {
-    font-size: 11px;
-    color: $color-grey-400;
-}
-.promotions-label {
-    text-decoration: underline dotted $color-grey-300;
-    font-size: 11px;
-    margin-top: 6px;
-    cursor: pointer;
-    text-transform: lowercase;
-}
-
-.line-promotion {
-    display: flex;
-    justify-content: space-between;
-    padding: 6px 12px;
-    .promotion-amount {
-        margin-left: 12px;
-    }
 }
 
 .order-cards {

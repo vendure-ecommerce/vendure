@@ -93,6 +93,7 @@ select {
 
 .ng-select .ng-select-container .ng-value-container {
     padding-top: 0;
+    min-width: 60px;
     .ng-value {
         margin: 0 6px 0 0;
     }

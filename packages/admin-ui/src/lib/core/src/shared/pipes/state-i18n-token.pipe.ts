@@ -22,6 +22,8 @@ export class StateI18nTokenPipe implements PipeTransform {
         Failed: _('state.failed'),
         Error: _('state.error'),
         Declined: _('state.declined'),
+        Modifying: _('state.modifying'),
+        ArrangingAdditionalPayment: _('state.arranging-additional-payment'),
     };
     transform<T extends unknown>(value: T): T {
         if (typeof value === 'string') {

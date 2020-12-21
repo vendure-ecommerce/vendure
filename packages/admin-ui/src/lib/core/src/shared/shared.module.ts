@@ -20,6 +20,7 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
+import { AddressFormComponent } from './components/address-form/address-form.component';
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
@@ -191,6 +192,7 @@ const DECLARATIONS = [
     ProductSelectorComponent,
     HelpTooltipComponent,
     CustomerGroupFormInputComponent,
+    AddressFormComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

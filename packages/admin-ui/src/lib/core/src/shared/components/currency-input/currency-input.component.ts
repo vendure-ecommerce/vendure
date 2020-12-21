@@ -3,7 +3,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
  * A form input control which displays currency in decimal format, whilst working
- * with the intege cent value in the background.
+ * with the integer cent value in the background.
  */
 @Component({
     selector: 'vdr-currency-input',

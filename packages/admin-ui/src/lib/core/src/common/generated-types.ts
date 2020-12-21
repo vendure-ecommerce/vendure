@@ -3345,7 +3345,8 @@ export enum HistoryEntryType {
   ORDER_FULFILLMENT_TRANSITION = 'ORDER_FULFILLMENT_TRANSITION',
   ORDER_NOTE = 'ORDER_NOTE',
   ORDER_COUPON_APPLIED = 'ORDER_COUPON_APPLIED',
-  ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED'
+  ORDER_COUPON_REMOVED = 'ORDER_COUPON_REMOVED',
+  ORDER_MODIFIED = 'ORDER_MODIFIED'
 }
 
 export type HistoryEntryList = PaginatedList & {
@@ -5451,7 +5452,7 @@ export type RefundFragment = (
 
 export type OrderAddressFragment = (
   { __typename?: 'OrderAddress' }
-  & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'phoneNumber'>
+  & Pick<OrderAddress, 'fullName' | 'company' | 'streetLine1' | 'streetLine2' | 'city' | 'province' | 'postalCode' | 'country' | 'countryCode' | 'phoneNumber'>
 );
 
 export type OrderFragment = (
@@ -5541,7 +5542,23 @@ export type OrderDetailFragment = (
   )>>, fulfillments?: Maybe<Array<(
     { __typename?: 'Fulfillment' }
     & FulfillmentFragment
-  )>> }
+  )>>, modifications: Array<(
+    { __typename?: 'OrderModification' }
+    & Pick<OrderModification, 'id' | 'createdAt' | 'isSettled' | 'priceChange' | 'note'>
+    & { payment?: Maybe<(
+      { __typename?: 'Payment' }
+      & Pick<Payment, 'id' | 'amount'>
+    )>, orderItems?: Maybe<Array<(
+      { __typename?: 'OrderItem' }
+      & Pick<OrderItem, 'id'>
+    )>>, refund?: Maybe<(
+      { __typename?: 'Refund' }
+      & Pick<Refund, 'id' | 'paymentId' | 'total'>
+    )>, surcharges?: Maybe<Array<(
+      { __typename?: 'Surcharge' }
+      & Pick<Surcharge, 'id'>
+    )>> }
+  )> }
 );
 
 export type GetOrderListQueryVariables = Exact<{
@@ -5796,6 +5813,50 @@ export type GetOrderSummaryQuery = { orders: (
       { __typename?: 'Order' }
       & Pick<Order, 'id' | 'total' | 'currencyCode'>
     )> }
+  ) };
+
+export type ModifyOrderMutationVariables = Exact<{
+  input: ModifyOrderInput;
+}>;
+
+
+export type ModifyOrderMutation = { modifyOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'NoChangesSpecifiedError' }
+    & ErrorResult_NoChangesSpecifiedError_Fragment
+  ) | (
+    { __typename?: 'OrderModificationStateError' }
+    & ErrorResult_OrderModificationStateError_Fragment
+  ) | (
+    { __typename?: 'PaymentMethodMissingError' }
+    & ErrorResult_PaymentMethodMissingError_Fragment
+  ) | (
+    { __typename?: 'RefundPaymentIdMissingError' }
+    & ErrorResult_RefundPaymentIdMissingError_Fragment
+  ) | (
+    { __typename?: 'OrderLimitError' }
+    & ErrorResult_OrderLimitError_Fragment
+  ) | (
+    { __typename?: 'NegativeQuantityError' }
+    & ErrorResult_NegativeQuantityError_Fragment
+  ) | (
+    { __typename?: 'InsufficientStockError' }
+    & ErrorResult_InsufficientStockError_Fragment
+  ) };
+
+export type AddManualPaymentMutationVariables = Exact<{
+  input: ManualPaymentInput;
+}>;
+
+
+export type AddManualPaymentMutation = { addManualPaymentToOrder: (
+    { __typename?: 'Order' }
+    & OrderDetailFragment
+  ) | (
+    { __typename?: 'ManualPaymentStateError' }
+    & ErrorResult_ManualPaymentStateError_Fragment
   ) };
 
 export type AssetFragment = (
@@ -8108,6 +8169,11 @@ export namespace OrderDetail {
   export type Refunds = NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>['refunds']>)[number]>;
   export type OrderItems = NonNullable<(NonNullable<NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['payments']>)[number]>['refunds']>)[number]>['orderItems']>)[number]>;
   export type Fulfillments = NonNullable<(NonNullable<OrderDetailFragment['fulfillments']>)[number]>;
+  export type Modifications = NonNullable<(NonNullable<OrderDetailFragment['modifications']>)[number]>;
+  export type Payment = (NonNullable<NonNullable<(NonNullable<OrderDetailFragment['modifications']>)[number]>['payment']>);
+  export type _OrderItems = NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['modifications']>)[number]>['orderItems']>)[number]>;
+  export type Refund = (NonNullable<NonNullable<(NonNullable<OrderDetailFragment['modifications']>)[number]>['refund']>);
+  export type _Surcharges = NonNullable<(NonNullable<NonNullable<(NonNullable<OrderDetailFragment['modifications']>)[number]>['surcharges']>)[number]>;
 }
 
 export namespace GetOrderList {
@@ -8209,6 +8275,18 @@ export namespace GetOrderSummary {
   export type Query = GetOrderSummaryQuery;
   export type Orders = (NonNullable<GetOrderSummaryQuery['orders']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetOrderSummaryQuery['orders']>)['items']>)[number]>;
+}
+
+export namespace ModifyOrder {
+  export type Variables = ModifyOrderMutationVariables;
+  export type Mutation = ModifyOrderMutation;
+  export type ModifyOrder = (NonNullable<ModifyOrderMutation['modifyOrder']>);
+}
+
+export namespace AddManualPayment {
+  export type Variables = AddManualPaymentMutationVariables;
+  export type Mutation = AddManualPaymentMutation;
+  export type AddManualPaymentToOrder = (NonNullable<AddManualPaymentMutation['addManualPaymentToOrder']>);
 }
 
 export namespace Asset {

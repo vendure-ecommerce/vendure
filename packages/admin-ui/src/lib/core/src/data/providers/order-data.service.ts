@@ -1,4 +1,5 @@
 import {
+    AddManualPayment,
     AddNoteToOrder,
     AddNoteToOrderInput,
     CancelOrder,
@@ -11,6 +12,9 @@ import {
     GetOrderList,
     GetOrderSummary,
     HistoryEntryListOptions,
+    ManualPaymentInput,
+    ModifyOrder,
+    ModifyOrderInput,
     OrderListOptions,
     RefundOrder,
     RefundOrderInput,
@@ -25,6 +29,7 @@ import {
     UpdateOrderNoteInput,
 } from '../../common/generated-types';
 import {
+    ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
@@ -33,6 +38,7 @@ import {
     GET_ORDERS_LIST,
     GET_ORDER_HISTORY,
     GET_ORDER_SUMMARY,
+    MODIFY_ORDER,
     REFUND_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
@@ -163,6 +169,19 @@ export class OrderDataService {
                 start: start.toISOString(),
                 end: end.toISOString(),
             },
+        );
+    }
+
+    modifyOrder(input: ModifyOrderInput) {
+        return this.baseDataService.mutate<ModifyOrder.Mutation, ModifyOrder.Variables>(MODIFY_ORDER, {
+            input,
+        });
+    }
+
+    addManualPaymentToOrder(input: ManualPaymentInput) {
+        return this.baseDataService.mutate<AddManualPayment.Mutation, AddManualPayment.Variables>(
+            ADD_MANUAL_PAYMENT_TO_ORDER,
+            { input },
         );
     }
 }

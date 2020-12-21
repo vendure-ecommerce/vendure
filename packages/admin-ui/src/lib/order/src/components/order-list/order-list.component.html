@@ -104,7 +104,7 @@
             <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
-                [linkTo]="['./', order.id]"
+                [linkTo]="order.state === 'Modifying' ? ['./', order.id, 'modify'] : ['./', order.id]"
             ></vdr-table-row-action>
         </td>
     </ng-template>

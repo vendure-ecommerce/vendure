@@ -1,0 +1,15 @@
+@import "variables";
+@import "order-table-mixin";
+
+.order-table {
+    @include order-table;
+}
+
+.custom-field-header-button {
+    background: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    color: $color-primary-600;
+}

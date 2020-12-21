@@ -1,0 +1,10 @@
+@import "variables";
+@import "../order-table/order-table-mixin";
+
+.order-table {
+    @include order-table;
+
+    tr.modified td {
+        background-color: $color-warning-100;
+    }
+}

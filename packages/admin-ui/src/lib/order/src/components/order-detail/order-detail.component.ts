@@ -3,7 +3,6 @@ import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
-    AdjustmentType,
     BaseDetailComponent,
     CancelOrder,
     CustomFieldConfig,
@@ -12,23 +11,29 @@ import {
     GetOrderHistory,
     GetOrderQuery,
     HistoryEntry,
+    HistoryEntryType,
     ModalService,
     NotificationService,
     Order,
     OrderDetail,
+    OrderDetailFragment,
     OrderLineFragment,
     RefundOrder,
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
+import { AddManualPaymentDialogComponent } from '../add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/order-process-graph-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
+
+import { transitionToPreModifyingState } from './transition-to-pre-modifying-state';
 
 @Component({
     selector: 'vdr-order-detail',
@@ -45,7 +50,6 @@ export class OrderDetailComponent
     fetchHistory = new Subject<void>();
     customFields: CustomFieldConfig[];
     orderLineCustomFields: CustomFieldConfig[];
-    orderLineCustomFieldsVisible = false;
     private readonly defaultStates = [
         'AddingItems',
         'ArrangingPayment',
@@ -54,6 +58,8 @@ export class OrderDetailComponent
         'PartiallyDelivered',
         'Delivered',
         'Cancelled',
+        'Modifying',
+        'ArrangingAdditionalPayment',
     ];
     constructor(
         router: Router,
@@ -67,19 +73,15 @@ export class OrderDetailComponent
         super(route, router, serverConfigService, dataService);
     }
 
-    get visibleOrderLineCustomFields(): CustomFieldConfig[] {
-        return this.orderLineCustomFieldsVisible ? this.orderLineCustomFields : [];
-    }
-
-    get showElided(): boolean {
-        return !this.orderLineCustomFieldsVisible && 0 < this.orderLineCustomFields.length;
-    }
-
     ngOnInit() {
         this.init();
+        this.entity$.pipe(take(1)).subscribe(order => {
+            if (order.state === 'Modifying') {
+                this.router.navigate(['./', 'modify'], { relativeTo: this.route });
+            }
+        });
         this.customFields = this.getCustomFieldConfig('Order');
         this.orderLineCustomFields = this.getCustomFieldConfig('OrderLine');
-        this.orderLineCustomFieldsVisible = this.orderLineCustomFields.length < 2;
         this.history$ = this.fetchHistory.pipe(
             startWith(null),
             switchMap(() => {
@@ -104,19 +106,6 @@ export class OrderDetailComponent
 
     ngOnDestroy() {
         this.destroy();
-    }
-
-    toggleOrderLineCustomFields() {
-        this.orderLineCustomFieldsVisible = !this.orderLineCustomFieldsVisible;
-    }
-
-    getLineDiscounts(line: OrderDetail.Lines) {
-        return line.discounts.filter(a => a.type === AdjustmentType.PROMOTION);
-    }
-
-    getPromotionLink(promotion: OrderDetail.Discounts): any[] {
-        const id = promotion.adjustmentSource.split(':')[1];
-        return ['/marketing', 'promotions', id];
     }
 
     openStateDiagram() {
@@ -148,6 +137,20 @@ export class OrderDetailComponent
         });
     }
 
+    transitionToModifying() {
+        this.dataService.order
+            .transitionToState(this.id, 'Modifying')
+            .subscribe(({ transitionOrderToState }) => {
+                switch (transitionOrderToState?.__typename) {
+                    case 'Order':
+                        this.router.navigate(['./modify'], { relativeTo: this.route });
+                        break;
+                    case 'OrderStateTransitionError':
+                        this.notificationService.error(transitionOrderToState.transitionError);
+                }
+            });
+    }
+
     updateCustomFields(customFieldsValue: any) {
         this.dataService.order
             .updateOrderCustomFields({
@@ -157,17 +160,6 @@ export class OrderDetailComponent
             .subscribe(() => {
                 this.notificationService.success(_('common.notify-update-success'), { entity: 'Order' });
             });
-    }
-
-    getCouponCodeForAdjustment(
-        order: OrderDetail.Fragment,
-        promotionAdjustment: OrderDetail.Discounts,
-    ): string | undefined {
-        const id = promotionAdjustment.adjustmentSource.split(':')[1];
-        const promotion = order.promotions.find(p => p.id === id);
-        if (promotion) {
-            return promotion.couponCode || undefined;
-        }
     }
 
     getOrderAddressLines(orderAddress?: { [key: string]: string }): string[] {
@@ -205,10 +197,68 @@ export class OrderDetailComponent
             .every(item => !!item.fulfillment);
         return (
             !allItemsFulfilled &&
+            !this.hasUnsettledModifications(order) &&
             (order.nextStates.includes('Shipped') ||
                 order.nextStates.includes('PartiallyShipped') ||
                 order.nextStates.includes('Delivered'))
         );
+    }
+
+    hasUnsettledModifications(order: OrderDetailFragment): boolean {
+        return 0 < order.modifications.filter(m => !m.isSettled).length;
+    }
+
+    getOutstandingModificationAmount(order: OrderDetailFragment): number {
+        return summate(
+            order.modifications.filter(m => !m.isSettled),
+            'priceChange',
+        );
+    }
+
+    addManualPayment(order: OrderDetailFragment) {
+        this.modalService
+            .fromComponent(AddManualPaymentDialogComponent, {
+                closable: true,
+                locals: {
+                    outstandingAmount: this.getOutstandingModificationAmount(order),
+                    currencyCode: order.currencyCode,
+                },
+            })
+            .pipe(
+                switchMap(result => {
+                    if (result) {
+                        return this.dataService.order.addManualPaymentToOrder({
+                            orderId: this.id,
+                            transactionId: result.transactionId,
+                            method: result.method,
+                            metadata: result.metadata || {},
+                        });
+                    } else {
+                        return EMPTY;
+                    }
+                }),
+                switchMap(({ addManualPaymentToOrder }) => {
+                    switch (addManualPaymentToOrder.__typename) {
+                        case 'Order':
+                            this.notificationService.success('order.add-payment-to-order-success');
+                            return transitionToPreModifyingState(this.dataService, order.id);
+                        case 'ManualPaymentStateError':
+                            this.notificationService.error(addManualPaymentToOrder.message);
+                            return EMPTY;
+                        default:
+                            return EMPTY;
+                    }
+                }),
+            )
+            .subscribe(({ transitionOrderToState }) => {
+                switch (transitionOrderToState?.__typename) {
+                    case 'Order':
+                        this.refetchOrder(transitionOrderToState);
+                        break;
+                    case 'OrderStateTransitionError':
+                        this.notificationService.error(transitionOrderToState.message);
+                }
+            });
     }
 
     fulfillOrder() {
