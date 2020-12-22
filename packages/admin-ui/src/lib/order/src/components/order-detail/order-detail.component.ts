@@ -55,6 +55,8 @@ export class OrderDetailComponent
         'ArrangingPayment',
         'PaymentAuthorized',
         'PaymentSettled',
+        'PartiallyShipped',
+        'Shipped',
         'PartiallyDelivered',
         'Delivered',
         'Cancelled',

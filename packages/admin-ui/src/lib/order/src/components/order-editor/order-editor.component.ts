@@ -57,7 +57,10 @@ export class OrderEditorComponent
     availableCountries$: Observable<GetAvailableCountries.Items[]>;
     addressCustomFields: CustomFieldConfig[];
     detailForm = new FormGroup({});
-    orderLineCustomFieldsForm: FormArray;
+    orderLineCustomFieldsFormArray: FormArray;
+    addItemCustomFieldsFormArray: FormArray;
+    addItemCustomFieldsForm: FormGroup;
+    addItemSelectedVariant: ProductSelectorSearch.Items | undefined;
     orderLineCustomFields: CustomFieldConfig[];
     modifyOrderInput: ModifyOrderData = {
         dryRun: true,
@@ -143,7 +146,7 @@ export class OrderEditorComponent
                 countryCode: new FormControl(order.billingAddress?.countryCode),
                 phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
             });
-            this.orderLineCustomFieldsForm = new FormArray([]);
+            this.orderLineCustomFieldsFormArray = new FormArray([]);
             for (const line of order.lines) {
                 const formGroup = new FormGroup({});
                 for (const { name } of this.orderLineCustomFields) {
@@ -162,9 +165,14 @@ export class OrderEditorComponent
                     }
                     modifyRow.customFields = value;
                 });
-                this.orderLineCustomFieldsForm.push(formGroup);
+                this.orderLineCustomFieldsFormArray.push(formGroup);
             }
         });
+        this.addItemCustomFieldsFormArray = new FormArray([]);
+        this.addItemCustomFieldsForm = new FormGroup({});
+        for (const customField of this.orderLineCustomFields) {
+            this.addItemCustomFieldsForm.addControl(customField.name, new FormControl());
+        }
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()
             .mapSingle(result => result.countries.items)
@@ -243,20 +251,49 @@ export class OrderEditorComponent
     }
 
     addItemToOrder(result: ProductSelectorSearch.Items) {
-        let row = this.modifyOrderInput.addItems?.find(l => l.productVariantId === result.productVariantId);
+        const customFields = this.addItemCustomFieldsForm.value;
+        let row = this.modifyOrderInput.addItems?.find(l =>
+            this.isMatchingAddItemRow(l, result, customFields),
+        );
         if (!row) {
-            row = { productVariantId: result.productVariantId, quantity: 1 };
+            row = { productVariantId: result.productVariantId, quantity: 1, customFields };
             this.modifyOrderInput.addItems?.push(row);
         } else {
             row.quantity++;
         }
+        if (customFields) {
+            const formGroup = new FormGroup({});
+            for (const [key, value] of Object.entries(customFields)) {
+                formGroup.addControl(key, new FormControl(value));
+            }
+            this.addItemCustomFieldsFormArray.push(formGroup);
+            formGroup.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
+                if (row) {
+                    row.customFields = value;
+                }
+            });
+        }
+        this.addItemCustomFieldsForm.reset({});
+        this.addItemSelectedVariant = undefined;
         this.addedVariants.set(result.productVariantId, result);
     }
 
-    removeAddedItem(productVariantId: string) {
-        this.modifyOrderInput.addItems = this.modifyOrderInput.addItems?.filter(
-            l => l.productVariantId !== productVariantId,
+    private isMatchingAddItemRow(
+        row: ModifyOrderData['addItems'][number],
+        result: ProductSelectorSearch.Items,
+        customFields: any,
+    ): boolean {
+        return (
+            row.productVariantId === result.productVariantId &&
+            JSON.stringify(row.customFields) === JSON.stringify(customFields)
         );
+    }
+
+    removeAddedItem(index: number) {
+        this.modifyOrderInput.addItems.splice(index, 1);
+        if (-1 < index) {
+            this.addItemCustomFieldsFormArray.removeAt(index);
+        }
     }
 
     getSurchargePrices(surcharge: SurchargeInput) {
