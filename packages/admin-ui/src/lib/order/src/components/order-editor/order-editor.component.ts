@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+    AddItemInput,
+    AdjustOrderLineInput,
     BaseDetailComponent,
     CustomFieldConfig,
     DataService,
@@ -38,6 +40,11 @@ interface AddedLine {
     quantity: number;
 }
 
+type ModifyOrderData = Omit<ModifyOrderInput, 'addItems' | 'adjustOrderLines'> & {
+    addItems: Array<AddItemInput & { customFields?: any }>;
+    adjustOrderLines: Array<AdjustOrderLineInput & { customFields?: any }>;
+};
+
 @Component({
     selector: 'vdr-order-editor',
     templateUrl: './order-editor.component.html',
@@ -50,8 +57,9 @@ export class OrderEditorComponent
     availableCountries$: Observable<GetAvailableCountries.Items[]>;
     addressCustomFields: CustomFieldConfig[];
     detailForm = new FormGroup({});
+    orderLineCustomFieldsForm: FormArray;
     orderLineCustomFields: CustomFieldConfig[];
-    modifyOrderInput: ModifyOrderInput = {
+    modifyOrderInput: ModifyOrderData = {
         dryRun: true,
         orderId: '',
         addItems: [],
@@ -135,6 +143,27 @@ export class OrderEditorComponent
                 countryCode: new FormControl(order.billingAddress?.countryCode),
                 phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
             });
+            this.orderLineCustomFieldsForm = new FormArray([]);
+            for (const line of order.lines) {
+                const formGroup = new FormGroup({});
+                for (const { name } of this.orderLineCustomFields) {
+                    formGroup.addControl(name, new FormControl((line as any).customFields[name]));
+                }
+                formGroup.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value => {
+                    let modifyRow = this.modifyOrderInput.adjustOrderLines.find(
+                        l => l.orderLineId === line.id,
+                    );
+                    if (!modifyRow) {
+                        modifyRow = {
+                            orderLineId: line.id,
+                            quantity: line.quantity,
+                        };
+                        this.modifyOrderInput.adjustOrderLines.push(modifyRow);
+                    }
+                    modifyRow.customFields = value;
+                });
+                this.orderLineCustomFieldsForm.push(formGroup);
+            }
         });
         this.availableCountries$ = this.dataService.settings
             .getAvailableCountries()

@@ -30,7 +30,7 @@
                 </thead>
                 <tbody>
                     <tr
-                        *ngFor="let line of order.lines"
+                        *ngFor="let line of order.lines; let i = index"
                         class="order-line"
                         [class.is-cancelled]="line.quantity === 0"
                         [class.modified]="isLineModified(line)"
@@ -65,9 +65,11 @@
                         </td>
                         <td *ngIf="orderLineCustomFields.length" class="order-line-custom-field align-middle">
                             <ng-container *ngFor="let customField of orderLineCustomFields">
-                                <vdr-labeled-data [label]="customField | customFieldLabel">{{
-                                    line.customFields[customField.name] || '-'
-                                }}</vdr-labeled-data>
+                                <vdr-custom-field-control [customField]="customField"
+                                                          [customFieldsFormGroup]="orderLineCustomFieldsForm.get([i])"
+                                                          entityName="OrderLine"
+                                                          [compact]="true"
+                                ></vdr-custom-field-control>
                             </ng-container>
                         </td>
                         <td class="align-middle total">
