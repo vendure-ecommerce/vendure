@@ -32,6 +32,7 @@ import { generateListOptions } from './generate-list-options';
 import { generatePermissionEnum } from './generate-permissions';
 import {
     addGraphQLCustomFields,
+    addModifyOrderCustomFields,
     addOrderLineCustomFieldsInput,
     addRegisterCustomerCustomFieldsInput,
     addServerConfigCustomFields,
@@ -127,6 +128,7 @@ async function createGraphQLOptions(
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        schema = addModifyOrderCustomFields(schema, customFields.Order || []);
         schema = generateAuthenticationTypes(schema, authStrategies);
         schema = generateErrorCodeEnum(schema);
         if (apiType === 'admin') {

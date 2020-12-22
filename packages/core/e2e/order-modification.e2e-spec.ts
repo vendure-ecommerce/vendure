@@ -35,7 +35,6 @@ import {
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
-    AddItemToOrder,
     AddItemToOrderMutationVariables,
     SetShippingAddress,
     SetShippingMethod,
@@ -50,12 +49,7 @@ import {
     GET_ORDER_HISTORY,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import {
-    ADD_ITEM_TO_ORDER,
-    SET_SHIPPING_ADDRESS,
-    SET_SHIPPING_METHOD,
-    TRANSITION_TO_STATE,
-} from './graphql/shop-definitions';
+import { SET_SHIPPING_ADDRESS, SET_SHIPPING_METHOD, TRANSITION_TO_STATE } from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 const SHIPPING_GB = 500;
@@ -88,11 +82,16 @@ const testCalculator = new ShippingCalculator({
 describe('Order modification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
+            logger: new DefaultLogger(),
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
             },
             shippingOptions: {
                 shippingCalculators: [defaultShippingCalculator, testCalculator],
+            },
+            customFields: {
+                Order: [{ name: 'points', type: 'int', defaultValue: 0 }],
+                OrderLine: [{ name: 'color', type: 'string', nullable: true }],
             },
         }),
     );
@@ -158,11 +157,14 @@ describe('Order modification', () => {
 
         // create an order and check out
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
-        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+        await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
             productVariantId: 'T_1',
             quantity: 1,
-        });
-        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            customFields: {
+                color: 'green',
+            },
+        } as any);
+        await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
             productVariantId: 'T_4',
             quantity: 2,
         });
@@ -386,6 +388,60 @@ describe('Order modification', () => {
             const expectedTotal = order!.totalWithTax + Math.round(14374 * 1.2); // price of variant T_5
             expect(modifyOrder.totalWithTax).toBe(expectedTotal);
             expect(modifyOrder.lines.length).toBe(order!.lines.length + 1);
+            await assertOrderIsUnchanged(order!);
+        });
+
+        it('addItems with existing variant id increments existing OrderLine', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: true,
+                        orderId,
+                        addItems: [
+                            { productVariantId: 'T_1', quantity: 1, customFields: { color: 'green' } } as any,
+                        ],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const lineT1 = modifyOrder.lines.find(l => l.productVariant.id === 'T_1');
+            expect(modifyOrder.lines.length).toBe(2);
+            expect(lineT1?.quantity).toBe(2);
+            await assertOrderIsUnchanged(order!);
+        });
+
+        it('addItems with existing variant id but different customFields adds new OrderLine', async () => {
+            const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: orderId,
+            });
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: true,
+                        orderId,
+                        addItems: [
+                            { productVariantId: 'T_1', quantity: 1, customFields: { color: 'blue' } } as any,
+                        ],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const lineT1 = modifyOrder.lines.find(l => l.productVariant.id === 'T_1');
+            expect(modifyOrder.lines.length).toBe(3);
+            expect(
+                modifyOrder.lines.map(l => ({ variantId: l.productVariant.id, quantity: l.quantity })),
+            ).toEqual([
+                { variantId: 'T_1', quantity: 1 },
+                { variantId: 'T_4', quantity: 2 },
+                { variantId: 'T_1', quantity: 1 },
+            ]);
             await assertOrderIsUnchanged(order!);
         });
 
@@ -688,6 +744,84 @@ describe('Order modification', () => {
             await assertModifiedOrderIsPersisted(modifyOrder);
         });
 
+        it('adjustOrderLines with changed customField value', async () => {
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                    customFields: {
+                        color: 'green',
+                    },
+                },
+            ]);
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        adjustOrderLines: [
+                            {
+                                orderLineId: order!.lines[0].id,
+                                quantity: 1,
+                                customFields: { color: 'black' },
+                            } as any,
+                        ],
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+            expect(modifyOrder.lines.length).toBe(1);
+
+            const { order: orderWithLines } = await adminClient.query(gql(GET_ORDER_WITH_CUSTOM_FIELDS), {
+                id: order.id,
+            });
+            expect(orderWithLines.lines[0]).toEqual({
+                id: order!.lines[0].id,
+                customFields: { color: 'black' },
+            });
+        });
+
+        it('adjustOrderLines handles quantity correctly', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [
+                        {
+                            id: 'T_6',
+                            stockOnHand: 1,
+                            trackInventory: GlobalFlag.TRUE,
+                        },
+                    ],
+                },
+            );
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_6',
+                    quantity: 1,
+                },
+            ]);
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        adjustOrderLines: [
+                            {
+                                orderLineId: order.lines[0].id,
+                                quantity: 1,
+                            },
+                        ],
+                        updateShippingAddress: {
+                            fullName: 'Jim',
+                        },
+                    },
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+        });
+
         it('surcharge positive', async () => {
             const order = await createOrderAndTransitionToModifyingState([
                 {
@@ -849,6 +983,36 @@ describe('Order modification', () => {
             await assertModifiedOrderIsPersisted(modifyOrder);
         });
 
+        it('update Order customFields', async () => {
+            const order = await createOrderAndTransitionToModifyingState([
+                {
+                    productVariantId: 'T_1',
+                    quantity: 1,
+                },
+            ]);
+            const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+                MODIFY_ORDER,
+                {
+                    input: {
+                        dryRun: false,
+                        orderId: order.id,
+                        customFields: {
+                            points: 42,
+                        },
+                    } as any,
+                },
+            );
+            orderGuard.assertSuccess(modifyOrder);
+
+            const { order: orderWithCustomFields } = await adminClient.query(
+                gql(GET_ORDER_WITH_CUSTOM_FIELDS),
+                { id: order.id },
+            );
+            expect(orderWithCustomFields.customFields).toEqual({
+                points: 42,
+            });
+        });
+
         it('adds a history entry', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
                 id: orderId,
@@ -876,7 +1040,7 @@ describe('Order modification', () => {
 
             expect(history.history.totalItems).toBe(1);
             expect(history.history.items[0].data).toEqual({
-                modificationId: 'T_8',
+                modificationId: modifyOrder.modifications[0].id,
             });
         });
     });
@@ -973,8 +1137,7 @@ describe('Order modification', () => {
             orderGuard.assertSuccess(addManualPaymentToOrder);
 
             expect(addManualPaymentToOrder.payments?.length).toBe(2);
-            expect(addManualPaymentToOrder.payments![1]).toEqual({
-                id: 'T_10',
+            expect(omit(addManualPaymentToOrder.payments![1], ['id'])).toEqual({
                 transactionId: 'ABC123',
                 state: 'Settled',
                 amount: 300,
@@ -1097,14 +1260,11 @@ describe('Order modification', () => {
     }
 
     async function createOrderAndTransitionToModifyingState(
-        items: AddItemToOrderMutationVariables[],
+        items: Array<AddItemToOrderMutationVariables & { customFields?: any }>,
     ): Promise<TestOrderWithPaymentsFragment> {
         await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
         for (const itemInput of items) {
-            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
-                ADD_ITEM_TO_ORDER,
-                itemInput,
-            );
+            await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), itemInput);
         }
 
         await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
@@ -1263,4 +1423,22 @@ export const ADD_MANUAL_PAYMENT = gql`
         }
     }
     ${ORDER_WITH_MODIFICATION_FRAGMENT}
+`;
+
+// Note, we don't use the gql tag around these due to the customFields which
+// would cause a codegen error.
+const ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS = `
+    mutation AddItemToOrder($productVariantId: ID!, $quantity: Int!, $customFields: OrderLineCustomFieldsInput) {
+        addItemToOrder(productVariantId: $productVariantId, quantity: $quantity, customFields: $customFields) {
+            ...on Order { id }
+        }
+    }
+`;
+const GET_ORDER_WITH_CUSTOM_FIELDS = `
+    query GetOrderCustomFields($id: ID!) {
+        order(id: $id) {
+            customFields { points }
+            lines { id, customFields { color } }
+        }
+    }
 `;

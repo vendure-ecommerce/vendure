@@ -1,6 +1,14 @@
 import { CustomFieldType } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, GraphQLInputObjectType, GraphQLSchema, parse } from 'graphql';
+import {
+    buildSchema,
+    extendSchema,
+    GraphQLInputObjectType,
+    GraphQLSchema,
+    InputObjectTypeDefinitionNode,
+    ObjectTypeDefinitionNode,
+    parse,
+} from 'graphql';
 
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 
@@ -226,8 +234,33 @@ export function addRegisterCustomerCustomFieldsInput(
 }
 
 /**
+ * If CustomFields are defined on the Order entity, we add a `customFields` field to the ModifyOrderInput
+ * type.
+ */
+export function addModifyOrderCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    orderCustomFields: CustomFieldConfig[],
+): GraphQLSchema {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    if (!orderCustomFields || orderCustomFields.length === 0) {
+        return schema;
+    }
+    if (schema.getType('ModifyOrderInput') && schema.getType('UpdateOrderCustomFieldsInput')) {
+        const customFieldTypeDefs = `
+                extend input ModifyOrderInput {
+                    customFields: UpdateOrderCustomFieldsInput
+                }
+            `;
+
+        return extendSchema(schema, parse(customFieldTypeDefs));
+    }
+    return schema;
+}
+
+/**
  * If CustomFields are defined on the OrderLine entity, then an extra `customFields` argument
- * must be added to the `addItemToOrder` and `adjustOrderLine` mutations.
+ * must be added to the `addItemToOrder` and `adjustOrderLine` mutations, as well as the related
+ * fields in the `ModifyOrderInput` type.
  */
 export function addOrderLineCustomFieldsInput(
     typeDefsOrSchema: string | GraphQLSchema,
@@ -242,37 +275,58 @@ export function addOrderLineCustomFieldsInput(
     if (!mutationType) {
         return schema;
     }
-    const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
-    const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
-    if (!addItemToOrderMutation || !adjustOrderLineMutation) {
-        return schema;
-    }
     const input = new GraphQLInputObjectType({
         name: 'OrderLineCustomFieldsInput',
         fields: orderLineCustomFields.reduce((fields, field) => {
             return { ...fields, [field.name]: { type: schema.getType(getGraphQlType(field.type)) } };
         }, {}),
     });
-
     schemaConfig.types.push(input);
-    addItemToOrderMutation.args.push({
-        name: 'customFields',
-        type: input,
-        description: null,
-        defaultValue: null,
-        extensions: null,
-        astNode: null,
-    });
-    adjustOrderLineMutation.args.push({
-        name: 'customFields',
-        type: input,
-        description: null,
-        defaultValue: null,
-        extensions: null,
-        astNode: null,
-    });
 
-    return new GraphQLSchema(schemaConfig);
+    const addItemToOrderMutation = mutationType.getFields().addItemToOrder;
+    const adjustOrderLineMutation = mutationType.getFields().adjustOrderLine;
+    if (addItemToOrderMutation) {
+        addItemToOrderMutation.args.push({
+            name: 'customFields',
+            type: input,
+            description: null,
+            defaultValue: null,
+            extensions: null,
+            astNode: null,
+        });
+    }
+    if (adjustOrderLineMutation) {
+        adjustOrderLineMutation.args.push({
+            name: 'customFields',
+            type: input,
+            description: null,
+            defaultValue: null,
+            extensions: null,
+            astNode: null,
+        });
+    }
+
+    let extendedSchema = new GraphQLSchema(schemaConfig);
+    if (schema.getType('AddItemInput')) {
+        const customFieldTypeDefs = `
+            extend input AddItemInput {
+                customFields: OrderLineCustomFieldsInput
+            }
+        `;
+
+        extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
+    }
+    if (schema.getType('AdjustOrderLineInput')) {
+        const customFieldTypeDefs = `
+            extend input AdjustOrderLineInput {
+                customFields: OrderLineCustomFieldsInput
+            }
+        `;
+
+        extendedSchema = extendSchema(extendedSchema, parse(customFieldTypeDefs));
+    }
+
+    return extendedSchema;
 }
 
 type GraphQLFieldType = 'DateTime' | 'String' | 'Int' | 'Float' | 'Boolean' | 'ID';

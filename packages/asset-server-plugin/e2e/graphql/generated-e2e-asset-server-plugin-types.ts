@@ -1406,7 +1406,7 @@ export type ModifyOrderInput = {
     dryRun: Scalars['Boolean'];
     orderId: Scalars['ID'];
     addItems?: Maybe<Array<AddItemInput>>;
-    adjustOrderLines?: Maybe<Array<OrderLineInput>>;
+    adjustOrderLines?: Maybe<Array<AdjustOrderLineInput>>;
     surcharges?: Maybe<Array<SurchargeInput>>;
     updateShippingAddress?: Maybe<UpdateOrderAddressInput>;
     updateBillingAddress?: Maybe<UpdateOrderAddressInput>;
@@ -1417,6 +1417,11 @@ export type ModifyOrderInput = {
 
 export type AddItemInput = {
     productVariantId: Scalars['ID'];
+    quantity: Scalars['Int'];
+};
+
+export type AdjustOrderLineInput = {
+    orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
 };
 
@@ -3594,7 +3599,7 @@ export type OrderLine = Node & {
     discounts: Array<Adjustment>;
     taxLines: Array<TaxLine>;
     order: Order;
-    customFields?: Maybe<OrderLineCustomFields>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Payment = Node & {
@@ -4308,11 +4313,6 @@ export type HistoryEntrySortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
-};
-
-export type OrderLineCustomFields = {
-    test?: Maybe<Scalars['String']>;
-    test2?: Maybe<Scalars['String']>;
 };
 
 export type AuthenticationInput = {

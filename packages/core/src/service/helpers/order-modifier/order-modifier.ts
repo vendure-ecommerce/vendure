@@ -4,7 +4,7 @@ import { ID } from '@vendure/common/lib/shared-types';
 import { summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../../api/common/request-context';
-import { ErrorResultUnion, isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
+import { isGraphQlErrorResult, JustErrorResults } from '../../../common/error/error-result';
 import { EntityNotFoundError, InternalServerError, UserInputError } from '../../../common/error/errors';
 import {
     NoChangesSpecifiedError,
@@ -32,6 +32,7 @@ import { ProductVariantService } from '../../services/product-variant.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { OrderCalculator } from '../order-calculator/order-calculator';
+import { patchEntity } from '../utils/patch-entity';
 import { translateDeep } from '../utils/translate-entity';
 
 /**
@@ -209,12 +210,14 @@ export class OrderModifier {
             orderItems: [],
         };
 
-        for (const { productVariantId, quantity } of input.addItems ?? []) {
+        for (const row of input.addItems ?? []) {
+            const { productVariantId, quantity } = row;
             if (quantity < 0) {
                 return new NegativeQuantityError();
             }
-            // TODO: add support for OrderLine customFields
-            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId);
+
+            const customFields = (row as any).customFields || {};
+            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId, customFields);
             const correctedQuantity = await this.constrainQuantityToSaleable(
                 ctx,
                 orderLine.productVariant,
@@ -234,7 +237,8 @@ export class OrderModifier {
             modification.orderItems.push(...orderLine.items.slice(initialQuantity));
         }
 
-        for (const { orderLineId, quantity } of input.adjustOrderLines ?? []) {
+        for (const row of input.adjustOrderLines ?? []) {
+            const { orderLineId, quantity } = row;
             if (quantity < 0) {
                 return new NegativeQuantityError();
             }
@@ -242,11 +246,16 @@ export class OrderModifier {
             if (!orderLine) {
                 throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
             }
-            const correctedQuantity = await this.constrainQuantityToSaleable(
-                ctx,
-                orderLine.productVariant,
-                quantity,
-            );
+            const initialLineQuantity = orderLine.quantity;
+            let correctedQuantity = quantity;
+            if (initialLineQuantity < quantity) {
+                const additionalQuantity = await this.constrainQuantityToSaleable(
+                    ctx,
+                    orderLine.productVariant,
+                    quantity - initialLineQuantity,
+                );
+                correctedQuantity = initialLineQuantity + additionalQuantity;
+            }
             const resultingOrderTotalQuantity = currentItemsCount + correctedQuantity - orderLine.quantity;
             if (orderItemsLimit < resultingOrderTotalQuantity) {
                 return new OrderLimitError(orderItemsLimit);
@@ -256,7 +265,10 @@ export class OrderModifier {
             if (correctedQuantity < quantity) {
                 return new InsufficientStockError(correctedQuantity, order);
             } else {
-                const initialLineQuantity = orderLine.quantity;
+                const customFields = (row as any).customFields;
+                if (customFields) {
+                    patchEntity(orderLine, { customFields });
+                }
                 await this.updateOrderLineQuantity(ctx, orderLine, quantity, order);
                 if (correctedQuantity < initialLineQuantity) {
                     const qtyDelta = initialLineQuantity - correctedQuantity;
@@ -344,6 +356,11 @@ export class OrderModifier {
             recalculateShipping: input.options?.recalculateShipping,
         });
 
+        const orderCustomFields = (input as any).customFields;
+        if (orderCustomFields) {
+            patchEntity(order, { customFields: orderCustomFields });
+        }
+
         if (dryRun) {
             return { order, modification };
         }
@@ -389,7 +406,8 @@ export class OrderModifier {
             !input.addItems?.length &&
             !input.surcharges?.length &&
             !input.updateShippingAddress &&
-            !input.updateBillingAddress;
+            !input.updateBillingAddress &&
+            !(input as any).customFields;
         return noChanges;
     }
 
