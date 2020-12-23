@@ -1,17 +1,7 @@
-import {
-    MiddlewareConsumer,
-    Module,
-    NestModule,
-    OnApplicationBootstrap,
-    OnApplicationShutdown,
-} from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
+import { MiddlewareConsumer, Module, NestModule, OnApplicationShutdown } from '@nestjs/common';
 import { RequestHandler } from 'express';
 
 import { ApiModule } from './api/api.module';
-import { ConfigurableOperationDef } from './common/configurable-operation';
-import { Injector } from './common/injector';
-import { InjectableStrategy } from './common/types/injectable-strategy';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
 import { Logger } from './config/logger/vendure-logger';
@@ -31,17 +21,8 @@ import { ProcessContextModule } from './process-context/process-context.module';
         HealthCheckModule,
     ],
 })
-export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicationShutdown {
-    constructor(
-        private configService: ConfigService,
-        private i18nService: I18nService,
-        private moduleRef: ModuleRef,
-    ) {}
-
-    async onApplicationBootstrap() {
-        await this.initInjectableStrategies();
-        await this.initConfigurableOperations();
-    }
+export class AppModule implements NestModule, OnApplicationShutdown {
+    constructor(private configService: ConfigService, private i18nService: I18nService) {}
 
     configure(consumer: MiddlewareConsumer) {
         const { adminApiPath, shopApiPath, middleware } = this.configService.apiOptions;
@@ -58,8 +39,6 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
     }
 
     async onApplicationShutdown(signal?: string) {
-        await this.destroyInjectableStrategies();
-        await this.destroyConfigurableOperations();
         if (signal) {
             Logger.info('Received shutdown signal:' + signal);
         }
@@ -80,93 +59,5 @@ export class AppModule implements NestModule, OnApplicationBootstrap, OnApplicat
             result[route].push(middleware.handler);
         }
         return result;
-    }
-
-    private async initInjectableStrategies() {
-        const injector = new Injector(this.moduleRef);
-        for (const strategy of this.getInjectableStrategies()) {
-            if (typeof strategy.init === 'function') {
-                await strategy.init(injector);
-            }
-        }
-    }
-
-    private async destroyInjectableStrategies() {
-        for (const strategy of this.getInjectableStrategies()) {
-            if (typeof strategy.destroy === 'function') {
-                await strategy.destroy();
-            }
-        }
-    }
-
-    private async initConfigurableOperations() {
-        const injector = new Injector(this.moduleRef);
-        for (const operation of this.getConfigurableOperations()) {
-            await operation.init(injector);
-        }
-    }
-
-    private async destroyConfigurableOperations() {
-        for (const operation of this.getConfigurableOperations()) {
-            await operation.destroy();
-        }
-    }
-
-    private getInjectableStrategies(): InjectableStrategy[] {
-        const {
-            assetNamingStrategy,
-            assetPreviewStrategy,
-            assetStorageStrategy,
-        } = this.configService.assetOptions;
-        const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
-        const { adminAuthenticationStrategy, shopAuthenticationStrategy } = this.configService.authOptions;
-        const { taxZoneStrategy } = this.configService.taxOptions;
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        const {
-            mergeStrategy,
-            checkoutMergeStrategy,
-            orderItemPriceCalculationStrategy,
-            process,
-            orderCodeStrategy,
-            stockAllocationStrategy,
-        } = this.configService.orderOptions;
-        const { entityIdStrategy } = this.configService;
-        return [
-            ...adminAuthenticationStrategy,
-            ...shopAuthenticationStrategy,
-            assetNamingStrategy,
-            assetPreviewStrategy,
-            assetStorageStrategy,
-            taxZoneStrategy,
-            jobQueueStrategy,
-            mergeStrategy,
-            checkoutMergeStrategy,
-            orderCodeStrategy,
-            entityIdStrategy,
-            productVariantPriceCalculationStrategy,
-            orderItemPriceCalculationStrategy,
-            ...process,
-            stockAllocationStrategy,
-        ];
-    }
-
-    private getConfigurableOperations(): Array<ConfigurableOperationDef<any>> {
-        const { paymentMethodHandlers } = this.configService.paymentOptions;
-        const { collectionFilters } = this.configService.catalogOptions;
-        const { promotionActions, promotionConditions } = this.configService.promotionOptions;
-        const {
-            shippingCalculators,
-            shippingEligibilityCheckers,
-            fulfillmentHandlers,
-        } = this.configService.shippingOptions;
-        return [
-            ...paymentMethodHandlers,
-            ...collectionFilters,
-            ...(promotionActions || []),
-            ...(promotionConditions || []),
-            ...(shippingCalculators || []),
-            ...(shippingEligibilityCheckers || []),
-            ...(fulfillmentHandlers || []),
-        ];
     }
 }
