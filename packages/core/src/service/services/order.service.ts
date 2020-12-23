@@ -76,6 +76,7 @@ import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
+import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
@@ -353,20 +354,21 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
+        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
+        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+            ctx,
+            variant,
+            quantity,
+        );
+        if (correctedQuantity === 0) {
+            return new InsufficientStockError(correctedQuantity, order);
+        }
         const orderLine = await this.orderModifier.getOrCreateItemOrderLine(
             ctx,
             order,
             productVariantId,
             customFields,
         );
-        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
-            ctx,
-            orderLine.productVariant,
-            quantity,
-        );
-        if (correctedQuantity === 0) {
-            return new InsufficientStockError(correctedQuantity, order);
-        }
         await this.orderModifier.updateOrderLineQuantity(
             ctx,
             orderLine,

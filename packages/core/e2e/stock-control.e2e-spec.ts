@@ -443,11 +443,36 @@ describe('Stock control', () => {
                             trackInventory: GlobalFlag.TRUE,
                             useGlobalOutOfStockThreshold: true,
                         },
+                        {
+                            id: 'T_5',
+                            stockOnHand: 0,
+                            outOfStockThreshold: 0,
+                            trackInventory: GlobalFlag.TRUE,
+                            useGlobalOutOfStockThreshold: false,
+                        },
                     ],
                 },
             );
 
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+        });
+
+        it('does not add an empty OrderLine if zero saleable stock', async () => {
+            const variantId = 'T_5';
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantId,
+                quantity: 1,
+            });
+
+            orderGuard.assertErrorResult(addItemToOrder);
+
+            expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+            expect(addItemToOrder.message).toBe(`No items were added to the order due to insufficient stock`);
+            expect((addItemToOrder as any).quantityAvailable).toBe(0);
+            expect((addItemToOrder as any).order.lines.length).toBe(0);
         });
 
         it('returns InsufficientStockError when tracking inventory', async () => {
