@@ -1073,7 +1073,7 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertSuccess(addPaymentToOrder);
 
-                const payment = addPaymentToOrder!.payments![2];
+                const payment = addPaymentToOrder!.payments!.find(p => p.transactionId === '12345')!;
                 expect(addPaymentToOrder!.state).toBe('PaymentSettled');
                 expect(addPaymentToOrder!.active).toBe(false);
                 expect(addPaymentToOrder!.payments!.length).toBe(3);
