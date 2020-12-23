@@ -164,7 +164,9 @@ export class OrderEditorComponent
                         };
                         this.modifyOrderInput.adjustOrderLines.push(modifyRow);
                     }
-                    modifyRow.customFields = value;
+                    if (this.orderLineCustomFields.length) {
+                        modifyRow.customFields = value;
+                    }
                 });
                 this.orderLineCustomFieldsFormArray.push(formGroup);
             }
@@ -260,12 +262,17 @@ export class OrderEditorComponent
         if (!result) {
             return;
         }
-        const customFields = this.addItemCustomFieldsForm.value;
+        const customFields = this.orderLineCustomFields.length
+            ? this.addItemCustomFieldsForm.value
+            : undefined;
         let row = this.modifyOrderInput.addItems?.find(l =>
             this.isMatchingAddItemRow(l, result, customFields),
         );
         if (!row) {
-            row = { productVariantId: result.productVariantId, quantity: 1, customFields };
+            row = { productVariantId: result.productVariantId, quantity: 1 };
+            if (customFields) {
+                row.customFields = customFields;
+            }
             this.modifyOrderInput.addItems?.push(row);
         } else {
             row.quantity++;
