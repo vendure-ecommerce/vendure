@@ -281,8 +281,18 @@ export class NotVerifiedError extends ErrorResult {
   }
 }
 
+export class NoActiveOrderError extends ErrorResult {
+  readonly __typename = 'NoActiveOrderError';
+  readonly errorCode = 'NO_ACTIVE_ORDER_ERROR' as any;
+  readonly message = 'NO_ACTIVE_ORDER_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderModificationError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
+
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderModificationError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError', 'NoActiveOrderError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
@@ -304,6 +314,11 @@ export const shopErrorOperationTypeResolvers = {
     },
   },
   TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ActiveOrderResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },

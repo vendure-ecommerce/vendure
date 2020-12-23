@@ -57,17 +57,17 @@ type Mutation {
     "Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates`"
     transitionOrderToState(state: String!): TransitionOrderToStateResult
     "Sets the shipping address for this order"
-    setOrderShippingAddress(input: CreateAddressInput!): Order
+    setOrderShippingAddress(input: CreateAddressInput!): ActiveOrderResult!
     "Sets the billing address for this order"
-    setOrderBillingAddress(input: CreateAddressInput!): Order
+    setOrderBillingAddress(input: CreateAddressInput!): ActiveOrderResult!
     "Allows any custom fields to be set for the active order"
-    setOrderCustomFields(input: UpdateOrderInput!): Order
+    setOrderCustomFields(input: UpdateOrderInput!): ActiveOrderResult!
     "Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query"
     setOrderShippingMethod(shippingMethodId: ID!): SetOrderShippingMethodResult!
     "Add a Payment to the Order"
-    addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult
+    addPaymentToOrder(input: PaymentInput!): AddPaymentToOrderResult!
     "Set the Customer for the Order. Required only if the Customer is not currently logged in"
-    setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult
+    setCustomerForOrder(input: CreateCustomerInput!): SetCustomerForOrderResult!
     "Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})`"
     login(username: String!, password: String!, rememberMe: Boolean): NativeAuthenticationResult!
     "Authenticates the user using a named authentication strategy"
@@ -185,7 +185,11 @@ union UpdateOrderItemsResult =
     | NegativeQuantityError
     | InsufficientStockError
 union RemoveOrderItemsResult = Order | OrderModificationError
-union SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError
+union SetOrderShippingMethodResult =
+      Order
+    | OrderModificationError
+    | IneligibleShippingMethodError
+    | NoActiveOrderError
 union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalidError | CouponCodeLimitError
 union AddPaymentToOrderResult =
       Order
@@ -193,8 +197,9 @@ union AddPaymentToOrderResult =
     | PaymentFailedError
     | PaymentDeclinedError
     | OrderStateTransitionError
+    | NoActiveOrderError
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
-union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError
+union SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError | NoActiveOrderError
 union RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError
 union RefreshCustomerVerificationResult = Success | NativeAuthStrategyError
 union VerifyCustomerAccountResult =
@@ -227,3 +232,4 @@ union NativeAuthenticationResult =
     | NotVerifiedError
     | NativeAuthStrategyError
 union AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError
+union ActiveOrderResult = Order | NoActiveOrderError

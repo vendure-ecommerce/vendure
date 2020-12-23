@@ -1394,9 +1394,15 @@ const GET_ORDER_CUSTOM_FIELDS = gql`
 const SET_ORDER_CUSTOM_FIELDS = gql`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
         setOrderCustomFields(input: $input) {
-            id
-            customFields {
-                giftWrap
+            ... on Order {
+                id
+                customFields {
+                    giftWrap
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }

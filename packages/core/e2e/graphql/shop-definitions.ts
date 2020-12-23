@@ -1,5 +1,7 @@
 import gql from 'graphql-tag';
 
+import { ERROR_RESULT_FRAGMENT } from '../../../admin-ui/src/lib/core/src/data/definitions/shared-definitions';
+
 export const TEST_ORDER_FRAGMENT = gql`
     fragment TestOrderFragment on Order {
         id
@@ -480,16 +482,22 @@ export const TRANSITION_TO_STATE = gql`
 export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
-            shippingAddress {
-                fullName
-                company
-                streetLine1
-                streetLine2
-                city
-                province
-                postalCode
-                country
-                phoneNumber
+            ... on Order {
+                shippingAddress {
+                    fullName
+                    company
+                    streetLine1
+                    streetLine2
+                    city
+                    province
+                    postalCode
+                    country
+                    phoneNumber
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }
@@ -498,16 +506,22 @@ export const SET_SHIPPING_ADDRESS = gql`
 export const SET_BILLING_ADDRESS = gql`
     mutation SetBillingAddress($input: CreateAddressInput!) {
         setOrderBillingAddress(input: $input) {
-            billingAddress {
-                fullName
-                company
-                streetLine1
-                streetLine2
-                city
-                province
-                postalCode
-                country
-                phoneNumber
+            ... on Order {
+                billingAddress {
+                    fullName
+                    company
+                    streetLine1
+                    streetLine2
+                    city
+                    province
+                    postalCode
+                    country
+                    phoneNumber
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }

@@ -139,3 +139,12 @@ type NotVerifiedError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
 }
+
+"""
+Returned when invoking a mutation which depends on there being an active Order on the
+current session.
+"""
+type NoActiveOrderError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}

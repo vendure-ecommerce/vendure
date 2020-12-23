@@ -61,6 +61,7 @@
     "MISSING_CONDITIONS_ERROR": "A Promotion must have either at least one condition or a coupon code set",
     "MISSING_PASSWORD_ERROR": "A password must be provided.",
     "NEGATIVE_QUANTITY_ERROR": "The quantity for an OrderItem cannot be negative",
+    "NO_ACTIVE_ORDER_ERROR": "There is no active Order associated with the current session",
     "NOTHING_TO_REFUND_ERROR": "Nothing to refund",
     "NOT_VERIFIED_ERROR": "Please verify this email address before logging in",
     "ORDER_LIMIT_ERROR": "Cannot add items. An order may consist of a maximum of { maxItems } items",

@@ -105,17 +105,17 @@ export type Mutation = {
     /** Transitions an Order to a new state. Valid next states can be found by querying `nextOrderStates` */
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     /** Sets the shipping address for this order */
-    setOrderShippingAddress?: Maybe<Order>;
+    setOrderShippingAddress: ActiveOrderResult;
     /** Sets the billing address for this order */
-    setOrderBillingAddress?: Maybe<Order>;
+    setOrderBillingAddress: ActiveOrderResult;
     /** Allows any custom fields to be set for the active order */
-    setOrderCustomFields?: Maybe<Order>;
+    setOrderCustomFields: ActiveOrderResult;
     /** Sets the shipping method by id, which can be obtained with the `eligibleShippingMethods` query */
     setOrderShippingMethod: SetOrderShippingMethodResult;
     /** Add a Payment to the Order */
-    addPaymentToOrder?: Maybe<AddPaymentToOrderResult>;
+    addPaymentToOrder: AddPaymentToOrderResult;
     /** Set the Customer for the Order. Required only if the Customer is not currently logged in */
-    setCustomerForOrder?: Maybe<SetCustomerForOrderResult>;
+    setCustomerForOrder: SetCustomerForOrderResult;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
     login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
@@ -530,6 +530,7 @@ export enum ErrorCode {
     PASSWORD_RESET_TOKEN_INVALID_ERROR = 'PASSWORD_RESET_TOKEN_INVALID_ERROR',
     PASSWORD_RESET_TOKEN_EXPIRED_ERROR = 'PASSWORD_RESET_TOKEN_EXPIRED_ERROR',
     NOT_VERIFIED_ERROR = 'NOT_VERIFIED_ERROR',
+    NO_ACTIVE_ORDER_ERROR = 'NO_ACTIVE_ORDER_ERROR',
 }
 
 export enum LogicalOperator {
@@ -2339,6 +2340,15 @@ export type NotVerifiedError = ErrorResult & {
     message: Scalars['String'];
 };
 
+/**
+ * Returned when invoking a mutation which depends on there being an active Order on the
+ * current session.
+ */
+export type NoActiveOrderError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+};
+
 export type RegisterCustomerInput = {
     emailAddress: Scalars['String'];
     title?: Maybe<Scalars['String']>;
@@ -2377,7 +2387,11 @@ export type UpdateOrderItemsResult =
 
 export type RemoveOrderItemsResult = Order | OrderModificationError;
 
-export type SetOrderShippingMethodResult = Order | OrderModificationError | IneligibleShippingMethodError;
+export type SetOrderShippingMethodResult =
+    | Order
+    | OrderModificationError
+    | IneligibleShippingMethodError
+    | NoActiveOrderError;
 
 export type ApplyCouponCodeResult =
     | Order
@@ -2390,11 +2404,16 @@ export type AddPaymentToOrderResult =
     | OrderPaymentStateError
     | PaymentFailedError
     | PaymentDeclinedError
-    | OrderStateTransitionError;
+    | OrderStateTransitionError
+    | NoActiveOrderError;
 
 export type TransitionOrderToStateResult = Order | OrderStateTransitionError;
 
-export type SetCustomerForOrderResult = Order | AlreadyLoggedInError | EmailAddressConflictError;
+export type SetCustomerForOrderResult =
+    | Order
+    | AlreadyLoggedInError
+    | EmailAddressConflictError
+    | NoActiveOrderError;
 
 export type RegisterCustomerAccountResult = Success | MissingPasswordError | NativeAuthStrategyError;
 
@@ -2437,6 +2456,8 @@ export type NativeAuthenticationResult =
     | NativeAuthStrategyError;
 
 export type AuthenticationResult = CurrentUser | InvalidCredentialsError | NotVerifiedError;
+
+export type ActiveOrderResult = Order | NoActiveOrderError;
 
 export type CollectionListOptions = {
     skip?: Maybe<Scalars['Int']>;
@@ -2899,7 +2920,8 @@ export type SetShippingMethodMutation = {
     setOrderShippingMethod:
         | TestOrderFragmentFragment
         | Pick<OrderModificationError, 'errorCode' | 'message'>
-        | Pick<IneligibleShippingMethodError, 'errorCode' | 'message'>;
+        | Pick<IneligibleShippingMethodError, 'errorCode' | 'message'>
+        | Pick<NoActiveOrderError, 'errorCode' | 'message'>;
 };
 
 export type ActiveOrderCustomerFragment = Pick<Order, 'id'> & {
@@ -2912,11 +2934,11 @@ export type SetCustomerForOrderMutationVariables = Exact<{
 }>;
 
 export type SetCustomerForOrderMutation = {
-    setCustomerForOrder?: Maybe<
+    setCustomerForOrder:
         | ActiveOrderCustomerFragment
         | Pick<AlreadyLoggedInError, 'errorCode' | 'message'>
         | Pick<EmailAddressConflictError, 'errorCode' | 'message'>
-    >;
+        | Pick<NoActiveOrderError, 'errorCode' | 'message'>;
 };
 
 export type GetOrderByCodeQueryVariables = Exact<{
@@ -2956,22 +2978,24 @@ export type SetShippingAddressMutationVariables = Exact<{
 }>;
 
 export type SetShippingAddressMutation = {
-    setOrderShippingAddress?: Maybe<{
-        shippingAddress?: Maybe<
-            Pick<
-                OrderAddress,
-                | 'fullName'
-                | 'company'
-                | 'streetLine1'
-                | 'streetLine2'
-                | 'city'
-                | 'province'
-                | 'postalCode'
-                | 'country'
-                | 'phoneNumber'
-            >
-        >;
-    }>;
+    setOrderShippingAddress:
+        | {
+              shippingAddress?: Maybe<
+                  Pick<
+                      OrderAddress,
+                      | 'fullName'
+                      | 'company'
+                      | 'streetLine1'
+                      | 'streetLine2'
+                      | 'city'
+                      | 'province'
+                      | 'postalCode'
+                      | 'country'
+                      | 'phoneNumber'
+                  >
+              >;
+          }
+        | Pick<NoActiveOrderError, 'errorCode' | 'message'>;
 };
 
 export type SetBillingAddressMutationVariables = Exact<{
@@ -2979,22 +3003,24 @@ export type SetBillingAddressMutationVariables = Exact<{
 }>;
 
 export type SetBillingAddressMutation = {
-    setOrderBillingAddress?: Maybe<{
-        billingAddress?: Maybe<
-            Pick<
-                OrderAddress,
-                | 'fullName'
-                | 'company'
-                | 'streetLine1'
-                | 'streetLine2'
-                | 'city'
-                | 'province'
-                | 'postalCode'
-                | 'country'
-                | 'phoneNumber'
-            >
-        >;
-    }>;
+    setOrderBillingAddress:
+        | {
+              billingAddress?: Maybe<
+                  Pick<
+                      OrderAddress,
+                      | 'fullName'
+                      | 'company'
+                      | 'streetLine1'
+                      | 'streetLine2'
+                      | 'city'
+                      | 'province'
+                      | 'postalCode'
+                      | 'country'
+                      | 'phoneNumber'
+                  >
+              >;
+          }
+        | Pick<NoActiveOrderError, 'errorCode' | 'message'>;
 };
 
 export type TestOrderWithPaymentsFragment = {
@@ -3012,13 +3038,13 @@ export type AddPaymentToOrderMutationVariables = Exact<{
 }>;
 
 export type AddPaymentToOrderMutation = {
-    addPaymentToOrder?: Maybe<
+    addPaymentToOrder:
         | TestOrderWithPaymentsFragment
         | Pick<OrderPaymentStateError, 'errorCode' | 'message'>
         | Pick<PaymentFailedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
         | Pick<PaymentDeclinedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
         | Pick<OrderStateTransitionError, 'errorCode' | 'message' | 'transitionError'>
-    >;
+        | Pick<NoActiveOrderError, 'errorCode' | 'message'>;
 };
 
 export type GetActiveOrderPaymentsQueryVariables = Exact<{ [key: string]: never }>;
@@ -3450,8 +3476,19 @@ export namespace SetShippingAddress {
     export type Variables = SetShippingAddressMutationVariables;
     export type Mutation = SetShippingAddressMutation;
     export type SetOrderShippingAddress = NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>;
+    export type OrderInlineFragment = DiscriminateUnion<
+        NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>,
+        { __typename?: 'Order' }
+    >;
     export type ShippingAddress = NonNullable<
-        NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>['shippingAddress']
+        DiscriminateUnion<
+            NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>,
+            { __typename?: 'Order' }
+        >['shippingAddress']
+    >;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SetShippingAddressMutation['setOrderShippingAddress']>,
+        { __typename?: 'ErrorResult' }
     >;
 }
 
@@ -3459,8 +3496,19 @@ export namespace SetBillingAddress {
     export type Variables = SetBillingAddressMutationVariables;
     export type Mutation = SetBillingAddressMutation;
     export type SetOrderBillingAddress = NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>;
+    export type OrderInlineFragment = DiscriminateUnion<
+        NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>,
+        { __typename?: 'Order' }
+    >;
     export type BillingAddress = NonNullable<
-        NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>['billingAddress']
+        DiscriminateUnion<
+            NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>,
+            { __typename?: 'Order' }
+        >['billingAddress']
+    >;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<SetBillingAddressMutation['setOrderBillingAddress']>,
+        { __typename?: 'ErrorResult' }
     >;
 }
 
