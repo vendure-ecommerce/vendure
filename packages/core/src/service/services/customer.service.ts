@@ -239,7 +239,7 @@ export class CustomerService {
         input: UpdateCustomerInput | (UpdateCustomerShopInput & { id: ID }),
     ): Promise<ErrorResultUnion<UpdateCustomerResult, Customer>> {
         const hasEmailAddress = (i: any): i is UpdateCustomerInput & { emailAddress: string } =>
-            i.hasOwnProperty('emailAddress');
+            Object.hasOwnProperty.call(i, 'emailAddress');
 
         if (hasEmailAddress(input)) {
             const existingCustomerInChannel = await this.connection
