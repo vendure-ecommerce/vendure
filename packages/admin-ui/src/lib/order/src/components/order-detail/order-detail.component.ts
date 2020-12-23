@@ -254,7 +254,7 @@ export class OrderDetailComponent
                 switchMap(({ addManualPaymentToOrder }) => {
                     switch (addManualPaymentToOrder.__typename) {
                         case 'Order':
-                            this.notificationService.success('order.add-payment-to-order-success');
+                            this.notificationService.success(_('order.add-payment-to-order-success'));
                             return this.orderTransitionService.transitionToPreModifyingState(
                                 order.id,
                                 order.nextStates,
