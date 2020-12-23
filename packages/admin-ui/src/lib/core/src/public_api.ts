@@ -85,6 +85,7 @@ export * from './providers/notification/notification.service';
 export * from './providers/overlay-host/overlay-host.service';
 export * from './shared/components/action-bar/action-bar.component';
 export * from './shared/components/action-bar-items/action-bar-items.component';
+export * from './shared/components/address-form/address-form.component';
 export * from './shared/components/affixed-input/affixed-input.component';
 export * from './shared/components/affixed-input/percentage-suffix-input.component';
 export * from './shared/components/asset-file-input/asset-file-input.component';

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { CustomFieldConfig, GetAvailableCountries } from '@vendure/admin-ui/core';
+
+import { CustomFieldConfig, GetAvailableCountries } from '../../../common/generated-types';
 
 @Component({
     selector: 'vdr-address-form',
