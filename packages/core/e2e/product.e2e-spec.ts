@@ -1166,6 +1166,26 @@ describe('Product resolver', () => {
                 `No Product with the id '1' could be found`,
             ),
         );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/558
+        it('slug of a deleted product can be re-used', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Product reusing deleted slug',
+                                slug: productToDelete.slug,
+                                description: 'stuff',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.slug).toBe(productToDelete.slug);
+        });
     });
 });
 

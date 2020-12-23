@@ -2,7 +2,6 @@
 import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import {
-    DefaultLogger,
     defaultShippingCalculator,
     defaultShippingEligibilityChecker,
     mergeConfig,
@@ -82,7 +81,6 @@ const testCalculator = new ShippingCalculator({
 describe('Order modification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
-            logger: new DefaultLogger(),
             paymentOptions: {
                 paymentMethodHandlers: [testSuccessfulPaymentMethod],
             },

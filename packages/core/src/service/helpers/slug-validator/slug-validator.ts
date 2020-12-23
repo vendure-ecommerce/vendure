@@ -21,6 +21,7 @@ export type TranslationEntity = VendureEntity & {
     id: ID;
     languageCode: LanguageCode;
     slug: string;
+    base: any;
 };
 
 @Injectable()
@@ -47,6 +48,7 @@ export class SlugValidator {
                         const qb = this.connection
                             .getRepository(ctx, translationEntity)
                             .createQueryBuilder('translation')
+                            .innerJoinAndSelect('translation.base', 'base')
                             .where(`translation.slug = :slug`, { slug: t.slug })
                             .andWhere(`translation.languageCode = :languageCode`, {
                                 languageCode: t.languageCode,
@@ -55,7 +57,7 @@ export class SlugValidator {
                             qb.andWhere(`translation.base != :id`, { id: input.id });
                         }
                         match = await qb.getOne();
-                        if (match) {
+                        if (match && !match.base.deletedAt) {
                             suffix++;
                             if (alreadySuffixed.test(t.slug)) {
                                 t.slug = t.slug.replace(alreadySuffixed, `-${suffix}`);
@@ -63,7 +65,7 @@ export class SlugValidator {
                                 t.slug = `${t.slug}-${suffix}`;
                             }
                         }
-                    } while (match);
+                    } while (match && !match.base.deletedAt);
                 }
             }
         }
