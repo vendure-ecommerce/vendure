@@ -24,7 +24,7 @@ describe('FSM validateTransitionDefinition()', () => {
                 to: ['ArrangingPayment', 'Cancelled'],
             },
             ArrangingPayment: {
-                to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems', 'Cancelled'],
+                to: ['PaymentAuthorized', 'PaymentSettled', 'AddingItems', 'Cancelled', 'Modifying'],
             },
             PaymentAuthorized: {
                 to: ['PaymentSettled', 'Cancelled'],
@@ -43,6 +43,12 @@ describe('FSM validateTransitionDefinition()', () => {
             },
             Delivered: {
                 to: ['Cancelled'],
+            },
+            ArrangingAdditionalPayment: {
+                to: ['ArrangingPayment'],
+            },
+            Modifying: {
+                to: ['ArrangingAdditionalPayment'],
             },
             Cancelled: {
                 to: [],
