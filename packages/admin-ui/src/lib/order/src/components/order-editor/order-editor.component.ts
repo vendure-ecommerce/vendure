@@ -24,7 +24,7 @@ import { assertNever, notNullOrUndefined } from '@vendure/common/lib/shared-util
 import { EMPTY, Observable, of } from 'rxjs';
 import { mapTo, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 
-import { transitionToPreModifyingState } from '../order-detail/transition-to-pre-modifying-state';
+import { OrderTransitionService } from '../../providers/order-transition.service';
 import {
     OrderEditResultType,
     OrderEditsPreviewDialogComponent,
@@ -88,6 +88,7 @@ export class OrderEditorComponent
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
+        private orderTransitionService: OrderTransitionService,
     ) {
         super(route, router, serverConfigService, dataService);
     }
@@ -195,15 +196,11 @@ export class OrderEditorComponent
     }
 
     transitionToPriorState(order: OrderDetail.Fragment) {
-        transitionToPreModifyingState(this.dataService, order.id).subscribe(({ transitionOrderToState }) => {
-            switch (transitionOrderToState?.__typename) {
-                case 'Order':
-                    this.router.navigate(['..'], { relativeTo: this.route });
-                    break;
-                case 'OrderStateTransitionError':
-                    this.notificationService.error(transitionOrderToState?.transitionError);
-            }
-        });
+        this.orderTransitionService
+            .transitionToPreModifyingState(order.id, order.nextStates)
+            .subscribe(result => {
+                this.router.navigate(['..'], { relativeTo: this.route });
+            });
     }
 
     canPreviewChanges(): boolean {
@@ -250,7 +247,19 @@ export class OrderEditorComponent
         return item.productVariantId;
     }
 
-    addItemToOrder(result: ProductSelectorSearch.Items) {
+    getSelectedItemPrice(result: ProductSelectorSearch.Items | undefined): number {
+        switch (result?.priceWithTax.__typename) {
+            case 'SinglePrice':
+                return result.priceWithTax.value;
+            default:
+                return 0;
+        }
+    }
+
+    addItemToOrder(result: ProductSelectorSearch.Items | undefined) {
+        if (!result) {
+            return;
+        }
         const customFields = this.addItemCustomFieldsForm.value;
         let row = this.modifyOrderInput.addItems?.find(l =>
             this.isMatchingAddItemRow(l, result, customFields),

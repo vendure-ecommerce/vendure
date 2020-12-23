@@ -54,9 +54,16 @@
                         {{ 'order.cancel-order' | translate }}
                     </ng-template>
                 </button>
-                <ng-container *ngFor="let nextState of nextStates$ | async">
+
+                <ng-container *ngIf="(nextStates$ | async)?.length">
                     <div class="dropdown-divider"></div>
-                    <button type="button" class="btn" vdrDropdownItem (click)="transitionToState(nextState)">
+                    <button
+                        *ngFor="let nextState of nextStates$ | async"
+                        type="button"
+                        class="btn"
+                        vdrDropdownItem
+                        (click)="transitionToState(nextState)"
+                    >
                         <clr-icon shape="step-forward-2"></clr-icon>
                         {{
                             'order.transition-to-state'
@@ -64,6 +71,11 @@
                         }}
                     </button>
                 </ng-container>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="btn" vdrDropdownItem (click)="manuallyTransitionToState(order)">
+                    <clr-icon shape="step-forward-2" class="is-warning"></clr-icon>
+                    {{ 'order.manually-transition-to-state' | translate }}
+                </button>
             </vdr-dropdown-menu>
         </vdr-dropdown>
     </vdr-ab-right>

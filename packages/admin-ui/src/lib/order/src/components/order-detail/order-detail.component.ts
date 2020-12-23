@@ -26,14 +26,13 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { EMPTY, merge, Observable, of, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take } from 'rxjs/operators';
 
+import { OrderTransitionService } from '../../providers/order-transition.service';
 import { AddManualPaymentDialogComponent } from '../add-manual-payment-dialog/add-manual-payment-dialog.component';
 import { CancelOrderDialogComponent } from '../cancel-order-dialog/cancel-order-dialog.component';
 import { FulfillOrderDialogComponent } from '../fulfill-order-dialog/fulfill-order-dialog.component';
 import { OrderProcessGraphDialogComponent } from '../order-process-graph-dialog/order-process-graph-dialog.component';
 import { RefundOrderDialogComponent } from '../refund-order-dialog/refund-order-dialog.component';
 import { SettleRefundDialogComponent } from '../settle-refund-dialog/settle-refund-dialog.component';
-
-import { transitionToPreModifyingState } from './transition-to-pre-modifying-state';
 
 @Component({
     selector: 'vdr-order-detail',
@@ -71,6 +70,7 @@ export class OrderDetailComponent
         protected dataService: DataService,
         private notificationService: NotificationService,
         private modalService: ModalService,
+        private orderTransitionService: OrderTransitionService,
     ) {
         super(route, router, serverConfigService, dataService);
     }
@@ -137,6 +137,18 @@ export class OrderDetailComponent
                     this.notificationService.error(transitionOrderToState.transitionError);
             }
         });
+    }
+
+    manuallyTransitionToState(order: OrderDetailFragment) {
+        this.orderTransitionService
+            .manuallyTransitionToState({
+                orderId: order.id,
+                nextStates: order.nextStates,
+                cancellable: true,
+                message: _('order.manually-transition-to-state-message'),
+                retry: 0,
+            })
+            .subscribe();
     }
 
     transitionToModifying() {
@@ -243,7 +255,10 @@ export class OrderDetailComponent
                     switch (addManualPaymentToOrder.__typename) {
                         case 'Order':
                             this.notificationService.success('order.add-payment-to-order-success');
-                            return transitionToPreModifyingState(this.dataService, order.id);
+                            return this.orderTransitionService.transitionToPreModifyingState(
+                                order.id,
+                                order.nextStates,
+                            );
                         case 'ManualPaymentStateError':
                             this.notificationService.error(addManualPaymentToOrder.message);
                             return EMPTY;
@@ -252,13 +267,9 @@ export class OrderDetailComponent
                     }
                 }),
             )
-            .subscribe(({ transitionOrderToState }) => {
-                switch (transitionOrderToState?.__typename) {
-                    case 'Order':
-                        this.refetchOrder(transitionOrderToState);
-                        break;
-                    case 'OrderStateTransitionError':
-                        this.notificationService.error(transitionOrderToState.message);
+            .subscribe(result => {
+                if (result) {
+                    this.refetchOrder({ result });
                 }
             });
     }

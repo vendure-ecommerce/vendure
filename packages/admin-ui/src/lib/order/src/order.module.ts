@@ -22,6 +22,7 @@ import { OrderProcessGraphDialogComponent } from './components/order-process-gra
 import { OrderProcessEdgeComponent } from './components/order-process-graph/order-process-edge.component';
 import { OrderProcessGraphComponent } from './components/order-process-graph/order-process-graph.component';
 import { OrderProcessNodeComponent } from './components/order-process-graph/order-process-node.component';
+import { OrderStateSelectDialogComponent } from './components/order-state-select-dialog/order-state-select-dialog.component';
 import { OrderTableComponent } from './components/order-table/order-table.component';
 import { PaymentDetailComponent } from './components/payment-detail/payment-detail.component';
 import { PaymentStateLabelComponent } from './components/payment-state-label/payment-state-label.component';
@@ -61,6 +62,7 @@ import { orderRoutes } from './order.routes';
         OrderEditsPreviewDialogComponent,
         ModificationDetailComponent,
         AddManualPaymentDialogComponent,
+        OrderStateSelectDialogComponent,
     ],
 })
 export class OrderModule {}

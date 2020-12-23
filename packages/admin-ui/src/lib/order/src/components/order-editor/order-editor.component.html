@@ -195,11 +195,11 @@
                         <vdr-product-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
                         </vdr-product-selector>
                         <div *ngIf="addItemSelectedVariant" class="flex mb4">
-                            <img [src]="addItemSelectedVariant.productAsset | assetPreview: 'tiny'" class="mr4" />
+                            <img *ngIf="addItemSelectedVariant.productAsset as asset" [src]="asset | assetPreview: 'tiny'" class="mr4" />
                             <div>
                                 <strong class="mr4">{{ addItemSelectedVariant.productVariantName }}</strong>
                                 <small>{{ addItemSelectedVariant.sku }}</small>
-                                <div>{{ (addItemSelectedVariant.priceWithTax.value / 100) | currency: order.currencyCode }}</div>
+                                <div>{{ getSelectedItemPrice(addItemSelectedVariant) / 100 | currency: order.currencyCode }}</div>
                             </div>
 
                         </div>
