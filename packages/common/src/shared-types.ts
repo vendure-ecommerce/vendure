@@ -245,6 +245,13 @@ export interface AdminUiAppConfig {
     path: string;
     /**
      * @description
+     * Specifies the url route to the Admin UI app.
+     *
+     * @default 'admin'
+     */
+    route?: string;
+    /**
+     * @description
      * The function which will be invoked to start the app compilation process.
      */
     compile?: () => Promise<void>;
@@ -267,6 +274,13 @@ export interface AdminUiAppDevModeConfig {
      * The port on which the dev server is listening. Overrides the value set by `AdminUiOptions.port`.
      */
     port: number;
+    /**
+     * @description
+     * Specifies the url route to the Admin UI app.
+     *
+     * @default 'admin'
+     */
+    route?: string;
     /**
      * @description
      * The function which will be invoked to start the app compilation process.

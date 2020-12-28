@@ -171,6 +171,15 @@ export interface UiExtensionCompilerOptions {
     devMode?: boolean;
     /**
      * @description
+     * Allows the baseHref of the compiled Admin UI app to be set. This determines the prefix
+     * of the app, for example with the default value of `'/admin/'`, the Admin UI app
+     * will be configured to be served from `http://<host>/admin/`.
+     *
+     * @default '/admin/'
+     */
+    baseHref?: string;
+    /**
+     * @description
      * In watch mode, allows the port of the dev server to be specified. Defaults to the Angular CLI default
      * of `4200`.
      *

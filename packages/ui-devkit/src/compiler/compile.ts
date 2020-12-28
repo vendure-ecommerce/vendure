@@ -6,7 +6,7 @@ import { FSWatcher, watch as chokidarWatch } from 'chokidar';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { MODULES_OUTPUT_DIR } from './constants';
+import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
 import { setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions } from './types';
@@ -28,26 +28,30 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, devMode, watchPort, extensions } = options;
+    const { outputPath, baseHref, devMode, watchPort, extensions } = options;
     if (devMode) {
-        return runWatchMode(outputPath, watchPort || 4200, extensions);
+        return runWatchMode(outputPath, baseHref || DEFAULT_BASE_HREF, watchPort || 4200, extensions);
     } else {
-        return runCompileMode(outputPath, extensions);
+        return runCompileMode(outputPath, baseHref || DEFAULT_BASE_HREF, extensions);
     }
 }
 
-function runCompileMode(outputPath: string, extensions: Extension[]): AdminUiAppConfig {
+function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[]): AdminUiAppConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const buildProcess = spawn(cmd, ['run', 'build', `--outputPath=${distPath}`], {
-                cwd: outputPath,
-                shell: true,
-                stdio: 'inherit',
-            });
+            const buildProcess = spawn(
+                cmd,
+                ['run', 'build', `--outputPath=${distPath}`, `--base-href=${baseHref}`],
+                {
+                    cwd: outputPath,
+                    shell: true,
+                    stdio: 'inherit',
+                },
+            );
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
@@ -61,10 +65,16 @@ function runCompileMode(outputPath: string, extensions: Extension[]): AdminUiApp
     return {
         path: distPath,
         compile,
+        route: baseHrefToRoute(baseHref),
     };
 }
 
-function runWatchMode(outputPath: string, port: number, extensions: Extension[]): AdminUiAppDevModeConfig {
+function runWatchMode(
+    outputPath: string,
+    baseHref: string,
+    port: number,
+    extensions: Extension[],
+): AdminUiAppDevModeConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
@@ -78,7 +88,7 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
             const allTranslationFiles = getAllTranslationFiles(extensions);
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`], {
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`], {
                 cwd: outputPath,
                 shell: true,
                 stdio: 'inherit',
@@ -177,5 +187,9 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
     };
 
     process.on('SIGINT', close);
-    return { sourcePath: outputPath, port, compile };
+    return { sourcePath: outputPath, port, compile, route: baseHrefToRoute(baseHref) };
+}
+
+function baseHrefToRoute(baseHref: string): string {
+    return baseHref.replace(/^\//, '').replace(/\/$/, '');
 }
