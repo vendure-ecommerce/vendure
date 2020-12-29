@@ -136,6 +136,7 @@ export class DashboardComponent implements OnInit {
                 width: item.width,
             }));
             this.widgetLayout = this.dashboardWidgetService.getWidgetLayout(newLayoutDef);
+            this.localStorageService.set('dashboardWidgetLayout', newLayoutDef);
             setTimeout(() => this.changedDetectorRef.markForCheck());
         }
     }
