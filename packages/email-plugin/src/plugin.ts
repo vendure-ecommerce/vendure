@@ -10,7 +10,6 @@ import {
     OnVendureClose,
     PluginCommonModule,
     RuntimeVendureConfig,
-    TransactionalConnection,
     Type,
     VendurePlugin,
     WorkerService,
@@ -26,7 +25,6 @@ import {
     EmailPluginDevModeOptions,
     EmailPluginOptions,
     EmailWorkerMessage,
-    EventWithAsyncData,
     EventWithContext,
     IntermediateEmailDetails,
 } from './types';
@@ -183,7 +181,6 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     /** @internal */
     constructor(
         private eventBus: EventBus,
-        private connection: TransactionalConnection,
         private moduleRef: ModuleRef,
         private workerService: WorkerService,
         private jobQueueService: JobQueueService,
