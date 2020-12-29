@@ -9,7 +9,7 @@ import { CustomerGroupEvent } from '../../../event-bus/events/customer-group-eve
 import { PromotionCondition } from '../promotion-condition';
 
 let customerService: import('../../../service/services/customer.service').CustomerService;
-let subscription: Subscription;
+let subscription: Subscription | undefined;
 
 const fiveMinutes = 5 * 60 * 1000;
 const cache = new TtlCache<ID, ID[]>({ ttl: fiveMinutes });
@@ -40,7 +40,7 @@ export const customerGroup = new PromotionCondition({
             });
     },
     destroy() {
-        subscription.unsubscribe();
+        subscription?.unsubscribe();
     },
     async check(ctx, order, args) {
         if (!order.customer) {
