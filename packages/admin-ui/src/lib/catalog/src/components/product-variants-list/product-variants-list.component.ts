@@ -115,6 +115,9 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
             if (changes['variants'].currentValue?.length !== changes['variants'].previousValue?.length) {
                 this.pagination.currentPage = 1;
             }
+            if (this.channelPriceIncludesTax != null && Object.keys(this.variantListPrice).length === 0) {
+                this.buildVariantListPrices(this.variants);
+            }
         }
         if ('channelPriceIncludesTax' in changes) {
             this.buildVariantListPrices(this.variants);

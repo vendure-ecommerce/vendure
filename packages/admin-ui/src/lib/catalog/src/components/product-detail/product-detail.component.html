@@ -211,6 +211,7 @@
                         *ngIf="variantDisplayMode === 'table'"
                         [variants]="variants$ | async"
                         [optionGroups]="product.optionGroups"
+                        [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [productVariantsFormArray]="detailForm.get('variants')"
                     ></vdr-product-variants-table>
                     <vdr-product-variants-list
