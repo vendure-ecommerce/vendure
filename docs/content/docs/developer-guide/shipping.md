@@ -99,7 +99,8 @@ export const externalShippingCalculator = new ShippingCalculator({
 
     return { 
       price: rate, 
-      priceWithTax: rate * ((100 + args.taxRate) / 100),
+      priceIncludesTax: ctx.channel.pricesIncludeTax,
+      taxRate: args.taxRate,
       // metadata is optional but can be used to pass arbitrary
       // data about the shipping estimate to the storefront.
       metadata: { courier, deliveryDate },

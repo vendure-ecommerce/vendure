@@ -20,17 +20,25 @@ export interface ShippingCalculatorConfig<T extends ConfigArgs> extends Configur
  * @example
  * ```ts
  * const flatRateCalculator = new ShippingCalculator({
- *     code: 'flat-rate-calculator',
- *     description: [{ languageCode: LanguageCode.en, value: 'Default Flat-Rate Shipping Calculator' }],
- *     args: {
- *         rate: { type: 'int', config: { inputType: 'money' } },
+ *   code: 'flat-rate-calculator',
+ *   description: [{ languageCode: LanguageCode.en, value: 'Default Flat-Rate Shipping Calculator' }],
+ *   args: {
+ *     rate: {
+ *       type: 'int',
+ *       ui: { component: 'currency-form-input' },
  *     },
- *     calculate: (order, args) => {
- *         return {
- *             price: args.rate,
- *             priceWithTax: args.rate * ((100 + args.taxRate) / 100),
- *         };
- *     },
+ *     taxRate: {
+         type: 'int',
+         ui: { component: 'number-form-input', suffix: '%' },
+       },
+ *   },
+ *   calculate: (order, args) => {
+ *     return {
+ *       price: args.rate,
+ *       taxRate: args.taxRate,
+ *       priceIncludesTax: ctx.channel.pricesIncludeTax,
+ *     };
+ *   },
  * });
  * ```
  *

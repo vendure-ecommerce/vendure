@@ -6,7 +6,7 @@ import { ProductVariant } from '../../entity/product-variant/product-variant.ent
 /**
  * @description
  * The OrderItemPriceCalculationStrategy defines the price of an OrderItem when a ProductVariant gets added
- * to an order via the `addItemToOrder` mutation. By default the {@link DefaultPriceCalculationStrategy}
+ * to an order via the `addItemToOrder` mutation. By default the {@link DefaultOrderItemPriceCalculationStrategy}
  * is used.
  *
  * ### OrderItemPriceCalculationStrategy vs Promotions

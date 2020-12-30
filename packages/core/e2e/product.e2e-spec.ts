@@ -955,7 +955,7 @@ describe('Product resolver', () => {
                 expect(updatedVariant.featuredAsset!.id).toBe('T_4');
             });
 
-            it('updateProductVariants updates taxCategory and priceBeforeTax', async () => {
+            it('updateProductVariants updates taxCategory and price', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
                     UpdateProductVariants.Mutation,
