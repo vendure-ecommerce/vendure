@@ -91,14 +91,13 @@ it instead of `order.total` when creating a new payment.
     }
     ```
 * The `TaxCalculationStrategy` has been renamed to
-`ProductVariantPriceCalculationStrategy` and moved in the VendureCofig from `taxOptions` to
+`ProductVariantPriceCalculationStrategy` and moved in the VendureConfig from `taxOptions` to
 `catalogOptions` and its API has been simplified.
 The `PriceCalculationStrategy` has been renamed to `OrderItemPriceCalculationStrategy`.
 * The Fulfillment and ShippingMethod entities have new fields relating to
 FulfillmentHandlers. This will require a DB migration, though no custom data migration will be
-needed for this particular change.
-
-The `addFulfillmentToOrder` mutation input has changed: the `method` & `trackingCode` fields
+needed for this particular change. 
+* The `addFulfillmentToOrder` mutation input has changed: the `method` & `trackingCode` fields
 have been replaced by a `handler` field which accepts a FulfillmentHandler code, and any
 expected arguments defined by that handler.
 * The ProductTranslation entity has had a constraint removed, requiring a schema
@@ -132,7 +131,14 @@ will require a DB migration. See release blog post for details.
 now contains multiple ShippingLine entities, each of which has a reference to a ShippingMethod.
 This will require a database migration with manual queries to preserve existing order data. See
 release blog post for details.
-* There have been some major changes to the way that Order taxes and discounts are
+* There have been some major changes to the way that Order taxes and discounts are handled. For a full discussion of the issues behind these changes see #573. These changes will
+require a DB migration as well as possible custom scripts to port existing Orders to the new
+format. See the release blog post for details.
+* The following GraphQL `Order` type properties have changed:
+    * `subTotalBeforeTax` has been removed, `subTotal` now excludes tax, and
+`subTotalWithTax` has been added.
+    * `totalBeforeTax` has been removed, `total` now excludes tax, and
+`totalWithTax` has been added.
 ## <small>0.17.3 (2020-12-14)</small>
 
 This release fixes an error in publishing the last release. No changes have been made.
