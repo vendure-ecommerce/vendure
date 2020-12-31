@@ -1,3 +1,138 @@
+## 0.18.0 (2020-12-31)
+
+
+#### Fixes
+
+* **admin-ui** Correctly handle order modification with no custom fields ([c0b699b](https://github.com/vendure-ecommerce/vendure/commit/c0b699b))
+* **admin-ui** Correctly handle widget permissions ([e3d7855](https://github.com/vendure-ecommerce/vendure/commit/e3d7855))
+* **admin-ui** Fix error when creating new Channel ([58db345](https://github.com/vendure-ecommerce/vendure/commit/58db345))
+* **admin-ui** Fix memory leak with refetchOnChannelChange usage ([1bad22a](https://github.com/vendure-ecommerce/vendure/commit/1bad22a))
+* **admin-ui** Fix variant price display issues ([f62f569](https://github.com/vendure-ecommerce/vendure/commit/f62f569))
+* **core** Correct handling of discounts & taxes when prices include tax ([c04b1c7](https://github.com/vendure-ecommerce/vendure/commit/c04b1c7)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **core** Correctly handle addItemToOrder when 0 stock available ([187cf3d](https://github.com/vendure-ecommerce/vendure/commit/187cf3d))
+* **core** Fix ChannelAware ProductVariant performance issues ([275cd62](https://github.com/vendure-ecommerce/vendure/commit/275cd62))
+* **core** Fix default PromotionActions when Channel prices include tax ([efe640c](https://github.com/vendure-ecommerce/vendure/commit/efe640c)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **core** Fix error on updateCustomer mutation ([bb1878f](https://github.com/vendure-ecommerce/vendure/commit/bb1878f)), closes [#590](https://github.com/vendure-ecommerce/vendure/issues/590)
+* **core** Fix failing e2e tests ([36b6dab](https://github.com/vendure-ecommerce/vendure/commit/36b6dab))
+* **core** Fix Postgres search with multiple terms ([5ece0d5](https://github.com/vendure-ecommerce/vendure/commit/5ece0d5))
+* **core** Handle undefined reference in customerGroup condition ([0eaffc1](https://github.com/vendure-ecommerce/vendure/commit/0eaffc1))
+* **core** Ignore deleted products when checking slug uniqueness ([844a12d](https://github.com/vendure-ecommerce/vendure/commit/844a12d)), closes [#558](https://github.com/vendure-ecommerce/vendure/issues/558)
+* **core** Return all ProductVariant.channels from default Channel ([799f306](https://github.com/vendure-ecommerce/vendure/commit/799f306))
+
+#### Features
+
+* **admin-ui** Add support for dashboard widgets ([aa835e8](https://github.com/vendure-ecommerce/vendure/commit/aa835e8)), closes [#334](https://github.com/vendure-ecommerce/vendure/issues/334)
+* **admin-ui** Allow cancellation of OrderItems without refunding ([df55d2d](https://github.com/vendure-ecommerce/vendure/commit/df55d2d)), closes [#569](https://github.com/vendure-ecommerce/vendure/issues/569)
+* **admin-ui** Allow default dashboard widget widths to be set ([3e33bbc](https://github.com/vendure-ecommerce/vendure/commit/3e33bbc)), closes [#334](https://github.com/vendure-ecommerce/vendure/issues/334)
+* **admin-ui** Allow OrderLine customFields to be modified ([e89845e](https://github.com/vendure-ecommerce/vendure/commit/e89845e)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **admin-ui** Allow OrderLine customFields to be modified ([5a4811f](https://github.com/vendure-ecommerce/vendure/commit/5a4811f)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **admin-ui** Allow overriding built-in nav menu items ([9d862c6](https://github.com/vendure-ecommerce/vendure/commit/9d862c6)), closes [#562](https://github.com/vendure-ecommerce/vendure/issues/562)
+* **admin-ui** Allow setting FulfillmentHandler in ShippingDetail page ([8207c84](https://github.com/vendure-ecommerce/vendure/commit/8207c84)), closes [#529](https://github.com/vendure-ecommerce/vendure/issues/529)
+* **admin-ui** Correctly display cancelled Fulfillments ([7efe800](https://github.com/vendure-ecommerce/vendure/commit/7efe800)), closes [#565](https://github.com/vendure-ecommerce/vendure/issues/565)
+* **admin-ui** Display order tax summary, update to latest Order API ([9b8e7d4](https://github.com/vendure-ecommerce/vendure/commit/9b8e7d4)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **admin-ui** Display surcharges in OrderDetail ([bbcc6d8](https://github.com/vendure-ecommerce/vendure/commit/bbcc6d8)), closes [#583](https://github.com/vendure-ecommerce/vendure/issues/583)
+* **admin-ui** Display tax description in OrderDetail tax summary ([843bec2](https://github.com/vendure-ecommerce/vendure/commit/843bec2))
+* **admin-ui** Enable manual order state transitions ([0868b4c](https://github.com/vendure-ecommerce/vendure/commit/0868b4c))
+* **admin-ui** Fulfillment dialog accepts handler-defined arguments ([c787241](https://github.com/vendure-ecommerce/vendure/commit/c787241)), closes [#529](https://github.com/vendure-ecommerce/vendure/issues/529)
+* **admin-ui** Implement order modification flow ([d3e3a88](https://github.com/vendure-ecommerce/vendure/commit/d3e3a88)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **admin-ui** Implement reordering, resize, add, remove of widgets ([9a52bdf](https://github.com/vendure-ecommerce/vendure/commit/9a52bdf)), closes [#334](https://github.com/vendure-ecommerce/vendure/issues/334)
+* **admin-ui** Implement variant channel assignment controls ([83a33b5](https://github.com/vendure-ecommerce/vendure/commit/83a33b5)), closes [#519](https://github.com/vendure-ecommerce/vendure/issues/519)
+* **admin-ui** Persist dashboard layout to localStorage ([ace115d](https://github.com/vendure-ecommerce/vendure/commit/ace115d))
+* **admin-ui** Persist dashboard layout to localStorage ([15cae77](https://github.com/vendure-ecommerce/vendure/commit/15cae77)), closes [#334](https://github.com/vendure-ecommerce/vendure/issues/334)
+* **core** Add Order history entry for modifications ([894f95b](https://github.com/vendure-ecommerce/vendure/commit/894f95b)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **core** Allow multiple Fulfillments per OrderItem ([3245e00](https://github.com/vendure-ecommerce/vendure/commit/3245e00)), closes [#565](https://github.com/vendure-ecommerce/vendure/issues/565)
+* **core** Allow Order/OrderLine customFields to be modified ([ce656c4](https://github.com/vendure-ecommerce/vendure/commit/ce656c4)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **core** ChannelAware ProductVariants ([4c1a2be](https://github.com/vendure-ecommerce/vendure/commit/4c1a2be))
+* **core** Extend OrderLine type with more discount & tax info ([aa5513f](https://github.com/vendure-ecommerce/vendure/commit/aa5513f)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **core** Implement add/remove Surcharge methods in OrderService ([6cf6984](https://github.com/vendure-ecommerce/vendure/commit/6cf6984)), closes [#583](https://github.com/vendure-ecommerce/vendure/issues/583)
+* **core** Implement FulfillmentHandlers ([4e53d08](https://github.com/vendure-ecommerce/vendure/commit/4e53d08)), closes [#529](https://github.com/vendure-ecommerce/vendure/issues/529)
+* **core** Implement order modification ([9cd3e24](https://github.com/vendure-ecommerce/vendure/commit/9cd3e24)), closes [#314](https://github.com/vendure-ecommerce/vendure/issues/314)
+* **core** Implement Order surcharges ([b608e14](https://github.com/vendure-ecommerce/vendure/commit/b608e14)), closes [#583](https://github.com/vendure-ecommerce/vendure/issues/583)
+* **core** Implement Shipping promotion actions ([69b12e3](https://github.com/vendure-ecommerce/vendure/commit/69b12e3)), closes [#580](https://github.com/vendure-ecommerce/vendure/issues/580)
+* **core** Implement TaxLineCalculationStrategy ([95663b4](https://github.com/vendure-ecommerce/vendure/commit/95663b4)), closes [#307](https://github.com/vendure-ecommerce/vendure/issues/307)
+* **core** Improve naming of price calculation strategies ([ccbebc9](https://github.com/vendure-ecommerce/vendure/commit/ccbebc9)), closes [#307](https://github.com/vendure-ecommerce/vendure/issues/307)
+* **core** Improved handling of ShopAPI activeOrder mutations ([958af1a](https://github.com/vendure-ecommerce/vendure/commit/958af1a)), closes [#557](https://github.com/vendure-ecommerce/vendure/issues/557)
+* **core** Log unhandled errors ([4dbb974](https://github.com/vendure-ecommerce/vendure/commit/4dbb974))
+* **core** Modify ShippingCalculator API to enable correct tax handling ([1ab1c81](https://github.com/vendure-ecommerce/vendure/commit/1ab1c81)), closes [#580](https://github.com/vendure-ecommerce/vendure/issues/580) [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **core** Pass `amount` argument into createPayment method ([0c85c76](https://github.com/vendure-ecommerce/vendure/commit/0c85c76))
+* **core** Re-work handling of taxes, order-level discounts ([9e39af3](https://github.com/vendure-ecommerce/vendure/commit/9e39af3)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573) [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **core** Rework Order shipping to support multiple shipping lines ([a711780](https://github.com/vendure-ecommerce/vendure/commit/a711780)), closes [#580](https://github.com/vendure-ecommerce/vendure/issues/580)
+* **core** Simplify TaxCalculationStrategy API ([9544dd4](https://github.com/vendure-ecommerce/vendure/commit/9544dd4)), closes [#307](https://github.com/vendure-ecommerce/vendure/issues/307)
+* **core** Split taxes from adjustments ([2c71a82](https://github.com/vendure-ecommerce/vendure/commit/2c71a82)), closes [#573](https://github.com/vendure-ecommerce/vendure/issues/573)
+* **ui-devkit** Make baseUrl configurable ([54700d2](https://github.com/vendure-ecommerce/vendure/commit/54700d2)), closes [#552](https://github.com/vendure-ecommerce/vendure/issues/552)
+
+
+### BREAKING CHANGE
+
+* A change to the relation between OrderItems and Fulfillments means a database
+migration will be required to preserve fulfillment data of existing Orders.
+See the release blog post for details.
+* In order to support order modification, a couple of new default order states
+have been created - `Modifying` and `ArrangingAdditionalPayment`. Also a new DB entity,
+`OrderModification` has been created.
+* The `OrderLine.pendingAdjustments` field has been renamed to `adjustments`, tax
+adjustments are now stored in a new field, `taxLines`. This will require a DB migration to
+preserve data from existing Orders (see guide in release blog post)
+* The `PaymentMethodHandler.createPayment()` method now takes a new `amount`
+argument. Update any custom PaymentMethodHandlers to use account for this new parameter and use
+it instead of `order.total` when creating a new payment.
+
+    ```ts
+    // before
+    createPayment: async (ctx, order, args, metadata) {
+      const transactionAmount = order.total;
+      // ...
+    }
+
+    // after
+    createPayment: async (ctx, order, amount, args, metadata) {
+      const transactionAmount = amount;
+      // ...
+    }
+    ```
+* The `TaxCalculationStrategy` has been renamed to
+`ProductVariantPriceCalculationStrategy` and moved in the VendureCofig from `taxOptions` to
+`catalogOptions` and its API has been simplified.
+The `PriceCalculationStrategy` has been renamed to `OrderItemPriceCalculationStrategy`.
+* The Fulfillment and ShippingMethod entities have new fields relating to
+FulfillmentHandlers. This will require a DB migration, though no custom data migration will be
+needed for this particular change.
+
+The `addFulfillmentToOrder` mutation input has changed: the `method` & `trackingCode` fields
+have been replaced by a `handler` field which accepts a FulfillmentHandler code, and any
+expected arguments defined by that handler.
+* The ProductTranslation entity has had a constraint removed, requiring a schema
+migration.
+* The return object of the ShippingCalculator class has changed:
+    ```ts
+    // before
+    return {
+      price: 500,
+      priceWithTax: 600,
+    };
+
+    // after
+    return {
+      price: 500,
+      taxRate: 20,
+      priceIncludesTax: false,
+    };
+    ```
+    This change will require you to update any custom ShippingCalculator implementations, and also
+    to update any ShippingMethods by removing and re-selecting the ShippingCalculator.
+* The Shop API mutations `setOrderShippingAddress`, `setOrderBillingAddress`
+`setOrderCustomFields` now return a union type which includes a new `NoActiveOrderError`.
+Code which refers to these mutations will need to be updated to account for the union
+with the fragment spread syntax `...on Order {...}`.
+* The TaxCalculationStrategy return value has been simplified - it now only need
+return the `price` and `priceIncludesTax` properties. The `ProductVariant` entity has also been
+refactored to bring it into line with the corrected tax handling of the OrderItem entity. This
+will require a DB migration. See release blog post for details.
+* The way shipping charges on Orders are represented has been changed - an Order
+now contains multiple ShippingLine entities, each of which has a reference to a ShippingMethod.
+This will require a database migration with manual queries to preserve existing order data. See
+release blog post for details.
+* There have been some major changes to the way that Order taxes and discounts are
 ## <small>0.17.3 (2020-12-14)</small>
 
 This release fixes an error in publishing the last release. No changes have been made.
