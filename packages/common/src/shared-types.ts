@@ -227,6 +227,45 @@ export interface AdminUiConfig {
      * screen.
      */
     loginUrl?: string;
+    /**
+     * @description
+     * The custom brand name.
+     */
+    brand?: string;
+    /**
+     * @description
+     * The path to the custom favicon.
+     */
+    faviconPath?: string;
+    /**
+     * @description
+     * The path to the custom small logo.
+     */
+    smallLogoPath?: string;
+    /**
+     * @description
+     * The path to the custom big logo.
+     */
+    bigLogoPath?: string;
+    /**
+     * @description
+     * The path to the custom stylesheet.
+     */
+    stylePath?: string;
+    /**
+     * @description
+     * Option to hide vendure branding.
+     *
+     * @default false
+     */
+    hideVendureBranding?: boolean;
+    /**
+     * @description
+     * Option to hide version.
+     *
+     * @default false
+     */
+    hideVersion?: boolean;
 }
 
 /**
