@@ -17,6 +17,10 @@
     align-items: flex-end;
     justify-content: center;
     color: $color-grey-300;
+
+    span + span {
+        margin-left: 5px;
+    }
 }
 
 .login-error {

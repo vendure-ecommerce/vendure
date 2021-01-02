@@ -21,6 +21,7 @@ export class AppShellComponent implements OnInit {
     userName$: Observable<string>;
     uiLanguage$: Observable<LanguageCode>;
     availableLanguages: LanguageCode[] = [];
+    smallLogoPath = getAppConfig().smallLogoPath;
 
     constructor(
         private authService: AuthService,
