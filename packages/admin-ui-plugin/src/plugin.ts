@@ -261,9 +261,9 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
             brand: AdminUiPlugin.options.adminUiConfig?.brand,
             faviconPath: AdminUiPlugin.options.adminUiConfig?.faviconPath,
-            smallLogoPath: AdminUiPlugin.options.adminUiConfig?.smallLogoPath,
-            bigLogoPath: AdminUiPlugin.options.adminUiConfig?.bigLogoPath,
-            stylePath: AdminUiPlugin.options.adminUiConfig?.stylePath,
+            smallLogoUrl: AdminUiPlugin.options.adminUiConfig?.smallLogoUrl,
+            bigLogoUrl: AdminUiPlugin.options.adminUiConfig?.bigLogoUrl,
+            styleUrl: AdminUiPlugin.options.adminUiConfig?.styleUrl,
             hideVendureBranding: propOrDefault(
                 'hideVendureBranding',
                 AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,

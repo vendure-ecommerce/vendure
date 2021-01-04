@@ -66,7 +66,7 @@ export class CoreModule {
         private lazyLoadStylesheetService: LazyLoadStylesheetService,
     ) {
         this.initUiLanguages();
-        this.initUiCustomTitle();
+        this.initUiTitle();
         this.initUiCustomStylesheet();
     }
 
@@ -90,16 +90,16 @@ export class CoreModule {
         this.i18nService.setAvailableLanguages(availableLanguages || [defaultLanguage]);
     }
 
-    private initUiCustomTitle() {
-        const brand = getAppConfig().brand;
+    private initUiTitle() {
+        const title = getAppConfig().brand || 'VendureAdmin';
 
-        if (brand) this.titleService.setTitle(brand);
+        this.titleService.setTitle(title);
     }
 
     private initUiCustomStylesheet() {
-        const stylePath = getAppConfig().stylePath;
+        const styleUrl = getAppConfig().styleUrl;
 
-        if (stylePath) this.lazyLoadStylesheetService.loadStylesheet(stylePath);
+        if (styleUrl) this.lazyLoadStylesheetService.loadStylesheet(styleUrl);
     }
 }
 

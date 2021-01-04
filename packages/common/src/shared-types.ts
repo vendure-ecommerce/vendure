@@ -239,19 +239,19 @@ export interface AdminUiConfig {
     faviconPath?: string;
     /**
      * @description
-     * The path to the custom small logo.
+     * The url to the custom small logo.
      */
-    smallLogoPath?: string;
+    smallLogoUrl?: string;
     /**
      * @description
-     * The path to the custom big logo.
+     * The url to the custom big logo.
      */
-    bigLogoPath?: string;
+    bigLogoUrl?: string;
     /**
      * @description
-     * The path to the custom stylesheet.
+     * The url to the custom stylesheet.
      */
-    stylePath?: string;
+    styleUrl?: string;
     /**
      * @description
      * Option to hide vendure branding.

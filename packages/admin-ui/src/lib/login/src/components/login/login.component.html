@@ -1,6 +1,6 @@
 <div class="login-wrapper">
     <form class="login">
-        <label class="title"><img src="{{ bigLogoPath || 'assets/cube-logo-300px.png' }}"/></label>
+        <label class="title"><img src="{{ bigLogoUrl || 'assets/cube-logo-300px.png' }}"/></label>
         <div class="login-group">
             <input
                 class="username"
@@ -46,9 +46,10 @@
             </button>
         </div>
         <div class="version">
-            <span *ngIf="brand">{{ brand }} - </span>
+            <span *ngIf="brand">{{ brand }}</span>
+            <span *ngIf="!hideVendureBranding || !hideVersion">-</span>
             <span *ngIf="!hideVendureBranding">vendure</span>
-            <span>v{{ version }}</span>
+            <span *ngIf="!hideVersion">v{{ version }}</span>
         </div>
     </form>
 </div>

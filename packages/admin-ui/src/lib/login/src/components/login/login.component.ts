@@ -13,9 +13,10 @@ export class LoginComponent {
     rememberMe = false;
     version = ADMIN_UI_VERSION;
     errorMessage: string | undefined;
-    bigLogoPath = getAppConfig().bigLogoPath;
+    bigLogoUrl = getAppConfig().bigLogoUrl;
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
+    hideVersion = getAppConfig().hideVersion;
 
     constructor(private authService: AuthService, private router: Router) {}
 

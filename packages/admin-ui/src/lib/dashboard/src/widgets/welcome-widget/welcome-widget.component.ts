@@ -18,7 +18,7 @@ import { Observable } from 'rxjs';
 export class WelcomeWidgetComponent implements OnInit {
     version = ADMIN_UI_VERSION;
     administrator$: Observable<GetActiveAdministrator.ActiveAdministrator | null>;
-    bigLogoPath = getAppConfig().bigLogoPath;
+    bigLogoUrl = getAppConfig().bigLogoUrl;
     brand = getAppConfig().brand;
     hideVendureBranding = getAppConfig().hideVendureBranding;
     hideVersion = getAppConfig().hideVersion;
