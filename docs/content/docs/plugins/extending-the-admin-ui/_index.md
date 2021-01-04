@@ -89,3 +89,8 @@ plugins: [
   }),
 ],
 ```
+
+## Avaliable custom settings
+
+* [Adding UI Translations]({{< relref "adding-ui-translations" >}})
+* [Customize Admin UI]({{< relref "customize-admin-ui" >}})
