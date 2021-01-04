@@ -70,7 +70,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
             const { pollInterval } = this.configService.jobQueueOptions;
             if (pollInterval < 100) {
                 Logger.warn(
-                    `jobQueueOptions.pollInterval is set to ${pollInterval}ms. It is not receommended to set this lower than 100ms`,
+                    `jobQueueOptions.pollInterval is set to ${pollInterval}ms. It is not recommended to set this lower than 100ms`,
                 );
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -148,5 +148,14 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
      */
     removeSettledJobs(queueNames: string[], olderThan?: Date) {
         return this.jobQueueStrategy.removeSettledJobs(queueNames, olderThan);
+    }
+
+    async cancelJob(jobId: ID) {
+        const job = await this.jobQueueStrategy.findOne(jobId);
+        if (job) {
+            job.cancel();
+            await this.jobQueueStrategy.update(job);
+            return job;
+        }
     }
 }

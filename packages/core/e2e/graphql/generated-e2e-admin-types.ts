@@ -325,6 +325,7 @@ export type Mutation = {
     importProducts?: Maybe<ImportInfo>;
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
     removeSettledJobs: Scalars['Int'];
+    cancelJob: Job;
     settlePayment: SettlePaymentResult;
     addFulfillmentToOrder: AddFulfillmentToOrderResult;
     cancelOrder: CancelOrderResult;
@@ -609,6 +610,10 @@ export type MutationImportProductsArgs = {
 export type MutationRemoveSettledJobsArgs = {
     queueNames?: Maybe<Array<Scalars['String']>>;
     olderThan?: Maybe<Scalars['DateTime']>;
+};
+
+export type MutationCancelJobArgs = {
+    jobId: Scalars['ID'];
 };
 
 export type MutationSettlePaymentArgs = {
@@ -1208,6 +1213,7 @@ export enum JobState {
     COMPLETED = 'COMPLETED',
     RETRYING = 'RETRYING',
     FAILED = 'FAILED',
+    CANCELLED = 'CANCELLED',
 }
 
 export type JobList = PaginatedList & {
@@ -5683,6 +5689,12 @@ export type GetOrderHistoryQuery = {
     >;
 };
 
+export type CancelJobMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type CancelJobMutation = { cancelJob: Pick<Job, 'id' | 'state' | 'isSettled' | 'settledAt'> };
+
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -7658,6 +7670,12 @@ export namespace GetOrderHistory {
             NonNullable<NonNullable<NonNullable<GetOrderHistoryQuery['order']>['history']>['items']>[number]
         >['administrator']
     >;
+}
+
+export namespace CancelJob {
+    export type Variables = CancelJobMutationVariables;
+    export type Mutation = CancelJobMutation;
+    export type CancelJob = NonNullable<CancelJobMutation['cancelJob']>;
 }
 
 export namespace UpdateOptionGroup {

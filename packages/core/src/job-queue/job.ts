@@ -11,7 +11,7 @@ import { JobConfig, JobData } from './types';
  * @docsCategory JobQueue
  * @docsPage Job
  */
-export type JobEventType = 'start' | 'progress' | 'complete' | 'fail';
+export type JobEventType = 'start' | 'progress' | 'complete' | 'fail' | 'cancel';
 
 /**
  * @description
@@ -51,6 +51,7 @@ export class Job<T extends JobData<T> = any> {
         progress: [],
         complete: [],
         fail: [],
+        cancel: [],
     };
 
     get name(): string {
@@ -163,6 +164,13 @@ export class Job<T extends JobData<T> = any> {
             this._settledAt = new Date();
         }
         this.fireEvent('fail');
+    }
+
+    cancel() {
+        this._progress = 0;
+        this._settledAt = new Date();
+        this._state = JobState.CANCELLED;
+        this.fireEvent('cancel');
     }
 
     /**

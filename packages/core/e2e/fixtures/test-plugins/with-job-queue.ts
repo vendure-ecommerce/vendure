@@ -12,13 +12,13 @@ class TestController implements OnModuleInit {
         this.queue = this.jobQueueService.createQueue({
             name: 'test',
             concurrency: 1,
-            process: (job) => {
+            process: job => {
                 PluginWithJobQueue.jobSubject.subscribe({
-                    complete: () => {
+                    next: () => {
                         PluginWithJobQueue.jobHasDoneWork = true;
                         job.complete();
                     },
-                    error: (err) => job.fail(err),
+                    error: err => job.fail(err),
                 });
             },
         });
