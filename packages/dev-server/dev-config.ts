@@ -131,7 +131,7 @@ export const devConfig: VendureConfig = {
 };
 
 function getDbConfig(): ConnectionOptions {
-    const dbType = process.env.DB || 'mysql';
+    const dbType = process.env.DB || 'sqlite';
     switch (dbType) {
         case 'postgres':
             console.log('Using postgres connection');

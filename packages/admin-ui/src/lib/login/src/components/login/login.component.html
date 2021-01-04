@@ -1,6 +1,6 @@
 <div class="login-wrapper">
     <form class="login">
-        <label class="title"><img src="{{ bigLogoUrl || 'assets/cube-logo-300px.png' }}"/></label>
+        <label class="title"><img src="assets/cube-logo-300px.png" /></label>
         <div class="login-group">
             <input
                 class="username"
@@ -18,8 +18,7 @@
                 [(ngModel)]="password"
                 [placeholder]="'common.password' | translate"
             />
-            <clr-alert [clrAlertType]="'danger'" [clrAlertClosable]="false" [class.visible]="errorMessage"
-                       class="login-error">
+            <clr-alert [clrAlertType]="'danger'"  [clrAlertClosable]="false" [class.visible]="errorMessage" class="login-error">
                 <clr-alert-item>
                     <span class="alert-text">
                         {{ errorMessage }}

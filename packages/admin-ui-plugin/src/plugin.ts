@@ -180,10 +180,11 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
         const adminUiConfigPath = path.join(adminUiAppPath, 'vendure-ui-config.json');
-        const uiConfig = this.getAdminUiConfig(adminUiConfig);
 
-        const overwriteConfig = () => this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
-        const overwriteFavicon = () => this.overwriteAdminUiFavicon(adminUiAppPath, uiConfig.faviconPath);
+        const overwriteConfig = () => {
+            const uiConfig = this.getAdminUiConfig(adminUiConfig);
+            return this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
+        };
 
         if (!AdminUiPlugin.isDevModeApp(app)) {
             // If not in dev mode, start a static server for the compiled app
@@ -196,10 +197,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             if (app && typeof app.compile === 'function') {
                 Logger.info(`Compiling Admin UI app in production mode...`, loggerCtx);
                 app.compile()
-                    .then(async () => {
-                        await overwriteConfig();
-                        await overwriteFavicon();
-                    })
+                    .then(overwriteConfig)
                     .then(
                         () => {
                             Logger.info(`Admin UI successfully compiled`, loggerCtx);
@@ -210,7 +208,6 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
                     );
             } else {
                 await overwriteConfig();
-                await overwriteFavicon();
             }
         } else {
             Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
@@ -223,7 +220,6 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
                 },
             );
             await overwriteConfig();
-            await overwriteFavicon();
         }
     }
 
@@ -260,10 +256,6 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
             loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
             brand: AdminUiPlugin.options.adminUiConfig?.brand,
-            faviconPath: AdminUiPlugin.options.adminUiConfig?.faviconPath,
-            smallLogoUrl: AdminUiPlugin.options.adminUiConfig?.smallLogoUrl,
-            bigLogoUrl: AdminUiPlugin.options.adminUiConfig?.bigLogoUrl,
-            styleUrl: AdminUiPlugin.options.adminUiConfig?.styleUrl,
             hideVendureBranding: propOrDefault(
                 'hideVendureBranding',
                 AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,
@@ -281,7 +273,7 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
      */
     private async overwriteAdminUiConfig(adminUiConfigPath: string, config: AdminUiConfig) {
         try {
-            await this.pollForFile(adminUiConfigPath, 'config');
+            const content = await this.pollForConfigFile(adminUiConfigPath);
         } catch (e) {
             Logger.error(e.message, loggerCtx);
             throw e;
@@ -295,35 +287,11 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /**
-     * Overwrites admin-ui favicon.
-     */
-    private async overwriteAdminUiFavicon(adminUiAppPath: string, newFaviconPath?: string) {
-        if (!newFaviconPath) {
-            Logger.verbose(`Favicon not informed, keeping original.`, loggerCtx);
-            return;
-        }
-
-        const adminUiFaviconPath = path.join(adminUiAppPath, 'favicon.ico');
-        try {
-            await this.pollForFile(adminUiFaviconPath, 'favicon');
-        } catch (e) {
-            Logger.error(e.message, loggerCtx);
-            throw e;
-        }
-        try {
-            await fs.copyFileSync(newFaviconPath, adminUiFaviconPath);
-        } catch (e) {
-            throw new Error('[AdminUiPlugin] Could not write favicon.ico file:\n' + e.message);
-        }
-        Logger.verbose(`Favicon file was replaced`, loggerCtx);
-    }
-
-    /**
-     * It might be that the ui-devkit compiler has not yet copied the file
-     * to the expected location (particularly when running in watch mode),
+     * It might be that the ui-devkit compiler has not yet copied the config
+     * file to the expected location (particularly when running in watch mode),
      * so polling is used to check multiple times with a delay.
      */
-    private async pollForFile(adminUiConfigPath: string, loggerFileName: string) {
+    private async pollForConfigFile(adminUiConfigPath: string) {
         const maxRetries = 10;
         const retryDelay = 200;
         let attempts = 0;
@@ -331,20 +299,20 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         const pause = () => new Promise(resolve => setTimeout(resolve, retryDelay));
 
         while (attempts < maxRetries) {
-            Logger.verbose(`Checking for ${loggerFileName} file: ${adminUiConfigPath}`, loggerCtx);
-
-            if (fs.existsSync(adminUiConfigPath)) {
-                return true;
-            } else {
+            try {
+                Logger.verbose(`Checking for config file: ${adminUiConfigPath}`, loggerCtx);
+                const configFileContent = await fs.readFile(adminUiConfigPath, 'utf-8');
+                return configFileContent;
+            } catch (e) {
                 attempts++;
                 Logger.verbose(
-                    `Unable to locate ${loggerFileName} file: ${adminUiConfigPath} (attempt ${attempts})`,
+                    `Unable to locate config file: ${adminUiConfigPath} (attempt ${attempts})`,
                     loggerCtx,
                 );
             }
             await pause();
         }
-        throw new Error(`Unable to locate ${loggerFileName} file: ${adminUiConfigPath}`);
+        throw new Error(`Unable to locate config file: ${adminUiConfigPath}`);
     }
 
     private static isDevModeApp(

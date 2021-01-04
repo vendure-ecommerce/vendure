@@ -20,7 +20,6 @@ import { DataModule } from './data/data.module';
 import { CustomHttpTranslationLoader } from './providers/i18n/custom-http-loader';
 import { InjectableTranslateMessageFormatCompiler } from './providers/i18n/custom-message-format-compiler';
 import { I18nService } from './providers/i18n/i18n.service';
-import { LazyLoadStylesheetService } from './providers/lazy-load-stylesheet/lazy-load-stylesheet-service';
 import { LocalStorageService } from './providers/local-storage/local-storage.service';
 import { registerDefaultFormInputs } from './shared/dynamic-form-inputs/register-dynamic-input-components';
 import { SharedModule } from './shared/shared.module';
@@ -44,7 +43,6 @@ import { SharedModule } from './shared/shared.module';
         { provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales },
         registerDefaultFormInputs(),
         Title,
-        LazyLoadStylesheetService,
     ],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
@@ -63,11 +61,9 @@ export class CoreModule {
         private i18nService: I18nService,
         private localStorageService: LocalStorageService,
         private titleService: Title,
-        private lazyLoadStylesheetService: LazyLoadStylesheetService,
     ) {
         this.initUiLanguages();
         this.initUiTitle();
-        this.initUiCustomStylesheet();
     }
 
     private initUiLanguages() {
@@ -94,12 +90,6 @@ export class CoreModule {
         const title = getAppConfig().brand || 'VendureAdmin';
 
         this.titleService.setTitle(title);
-    }
-
-    private initUiCustomStylesheet() {
-        const styleUrl = getAppConfig().styleUrl;
-
-        if (styleUrl) this.lazyLoadStylesheetService.loadStylesheet(styleUrl);
     }
 }
 
