@@ -311,6 +311,7 @@ export type Mutation = {
   assignRoleToAdministrator: Administrator;
   /** Authenticates the user using a named authentication strategy */
   authenticate: AuthenticationResult;
+  cancelJob: Job;
   cancelOrder: CancelOrderResult;
   /** Create a new Administrator */
   createAdministrator: Administrator;
@@ -533,6 +534,11 @@ export type MutationAssignRoleToAdministratorArgs = {
 export type MutationAuthenticateArgs = {
   input: AuthenticationInput;
   rememberMe?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type MutationCancelJobArgs = {
+  jobId: Scalars['ID'];
 };
 
 
@@ -1392,7 +1398,8 @@ export enum JobState {
   RUNNING = 'RUNNING',
   COMPLETED = 'COMPLETED',
   RETRYING = 'RETRYING',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED'
 }
 
 export type JobList = PaginatedList & {
@@ -7400,6 +7407,16 @@ export type GetJobQueueListQuery = { jobQueues: Array<(
     & Pick<JobQueue, 'name' | 'running'>
   )> };
 
+export type CancelJobMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type CancelJobMutation = { cancelJob: (
+    { __typename?: 'Job' }
+    & JobInfoFragment
+  ) };
+
 export type ReindexMutationVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -8947,6 +8964,12 @@ export namespace GetJobQueueList {
   export type Variables = GetJobQueueListQueryVariables;
   export type Query = GetJobQueueListQuery;
   export type JobQueues = NonNullable<(NonNullable<GetJobQueueListQuery['jobQueues']>)[number]>;
+}
+
+export namespace CancelJob {
+  export type Variables = CancelJobMutationVariables;
+  export type Mutation = CancelJobMutation;
+  export type CancelJob = (NonNullable<CancelJobMutation['cancelJob']>);
 }
 
 export namespace Reindex {
