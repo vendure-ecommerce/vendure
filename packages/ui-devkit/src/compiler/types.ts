@@ -225,3 +225,9 @@ export type Translations = {
         [token: string]: string;
     };
 };
+
+export interface BrandingOptions {
+    smallLogoPath?: string;
+    largeLogoPath?: string;
+    faviconPath?: string;
+}

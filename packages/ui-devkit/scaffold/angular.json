@@ -39,7 +39,12 @@
               "src/vendure-ui-config.json",
               "src/theme.min.css",
               "src/assets",
-              "src/i18n-messages"
+              "src/i18n-messages",
+              {
+                "glob": "logo-*.png",
+                "input": "static-assets",
+                "output": "assets"
+              }
             ],
             "styles": [
               "src/global-styles.scss"
