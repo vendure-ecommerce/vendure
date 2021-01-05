@@ -3,19 +3,27 @@ import { spawn } from 'child_process';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { EXTENSION_ROUTES_FILE, MODULES_OUTPUT_DIR, SHARED_EXTENSIONS_FILE } from './constants';
+import {
+    EXTENSION_ROUTES_FILE,
+    GLOBAL_STYLES_OUTPUT_DIR,
+    MODULES_OUTPUT_DIR,
+    SHARED_EXTENSIONS_FILE,
+    STATIC_ASSETS_OUTPUT_DIR,
+} from './constants';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import {
     AdminUiExtension,
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
     Extension,
+    GlobalStylesExtension,
     StaticAssetExtension,
 } from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
     isAdminUiExtension,
+    isGlobalStylesExtension,
     isStaticAssetExtension,
     isTranslationExtension,
     logger,
@@ -25,7 +33,7 @@ import {
 
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
-    copySourceIfNotExists(outputPath);
+    copyAdminUiSource(outputPath);
 
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
@@ -33,6 +41,9 @@ export async function setupScaffold(outputPath: string, extensions: Extension[])
 
     const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
     await copyStaticAssets(outputPath, staticAssetExtensions);
+
+    const globalStyleExtensions = extensions.filter(isGlobalStylesExtension);
+    await addGlobalStyles(outputPath, globalStyleExtensions);
 
     const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
     await mergeExtensionTranslations(outputPath, allTranslationFiles);
@@ -80,6 +91,35 @@ async function copyStaticAssets(outputPath: string, extensions: Array<Partial<St
             }
         }
     }
+}
+
+async function addGlobalStyles(outputPath: string, extensions: GlobalStylesExtension[]) {
+    const globalStylesDir = path.join(outputPath, 'src', GLOBAL_STYLES_OUTPUT_DIR);
+    await fs.remove(globalStylesDir);
+    await fs.ensureDir(globalStylesDir);
+    const imports: string[] = [];
+    for (const extension of extensions) {
+        const styleFiles = Array.isArray(extension.globalStyles)
+            ? extension.globalStyles
+            : [extension.globalStyles];
+        for (const styleFile of styleFiles) {
+            await copyGlobalStyleFile(outputPath, styleFile);
+            imports.push(path.basename(styleFile, path.extname(styleFile)));
+        }
+    }
+    const globalStylesSource =
+        `@import "./styles/styles";\n` +
+        imports.map(file => `@import "./${GLOBAL_STYLES_OUTPUT_DIR}/${file}";`).join('\n');
+
+    const globalStylesFile = path.join(outputPath, 'src', 'global-styles.scss');
+    await fs.writeFile(globalStylesFile, globalStylesSource, 'utf-8');
+}
+
+export async function copyGlobalStyleFile(outputPath: string, stylePath: string) {
+    const globalStylesDir = path.join(outputPath, 'src', GLOBAL_STYLES_OUTPUT_DIR);
+    const fileBasename = path.basename(stylePath);
+    const styleOutputPath = path.join(globalStylesDir, fileBasename);
+    await fs.copyFile(stylePath, styleOutputPath);
 }
 
 function generateLazyExtensionRoutes(extensions: Array<Required<AdminUiExtension>>): string {
@@ -136,7 +176,7 @@ function getModuleFilePath(
  * Copy the Admin UI sources & static assets to the outputPath if it does not already
  * exists there.
  */
-function copySourceIfNotExists(outputPath: string) {
+function copyAdminUiSource(outputPath: string) {
     const angularJsonFile = path.join(outputPath, 'angular.json');
     const indexFile = path.join(outputPath, '/src/index.html');
     if (fs.existsSync(angularJsonFile) && fs.existsSync(indexFile)) {

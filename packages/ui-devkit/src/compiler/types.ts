@@ -1,6 +1,10 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-export type Extension = AdminUiExtension | TranslationExtension | StaticAssetExtension;
+export type Extension =
+    | AdminUiExtension
+    | TranslationExtension
+    | StaticAssetExtension
+    | GlobalStylesExtension;
 
 /**
  * @description
@@ -32,6 +36,9 @@ export interface TranslationExtension {
 /**
  * @description
  * Defines extensions which copy static assets to the custom Admin UI application source asset directory.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
  */
 export interface StaticAssetExtension {
     /**
@@ -40,6 +47,22 @@ export interface StaticAssetExtension {
      * directory.
      */
     staticAssets: StaticAssetDefinition[];
+}
+
+/**
+ * @description
+ * Defines extensions which add global styles to the custom Admin UI application.
+ *
+ * @docsCategory UiDevkit
+ * @docsPage AdminUiExtension
+ */
+export interface GlobalStylesExtension {
+    /**
+     * @description
+     * Specifies a path (or array of paths) to global style files (css or Sass) which will be
+     * incorporated into the Admin UI app global stylesheet.
+     */
+    globalStyles: string[] | string;
 }
 
 /**
@@ -55,7 +78,10 @@ export interface StaticAssetExtension {
  * @docsPage AdminUiExtension
  * @docsWeight 0
  */
-export interface AdminUiExtension extends Partial<TranslationExtension>, Partial<StaticAssetExtension> {
+export interface AdminUiExtension
+    extends Partial<TranslationExtension>,
+        Partial<StaticAssetExtension>,
+        Partial<GlobalStylesExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -164,7 +190,7 @@ export interface UiExtensionCompilerOptions {
      * An array of objects which configure Angular modules and/or
      * translations with which to extend the Admin UI.
      */
-    extensions: Array<AdminUiExtension | TranslationExtension | StaticAssetExtension>;
+    extensions: Extension[];
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI

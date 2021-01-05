@@ -7,7 +7,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
-import { setupScaffold } from './scaffold';
+import { copyGlobalStyleFile, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions } from './types';
 import {
@@ -15,6 +15,7 @@ import {
     copyUiDevkit,
     getStaticAssetPath,
     isAdminUiExtension,
+    isGlobalStylesExtension,
     isStaticAssetExtension,
     isTranslationExtension,
     normalizeExtensions,
@@ -89,6 +90,7 @@ function runWatchMode(
             await setupScaffold(outputPath, extensions);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
+            const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
             const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
             const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
             buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`], {
@@ -126,6 +128,18 @@ function runWatchMode(
                     }
                 }
             }
+            for (const extension of globalStylesExtensions) {
+                const globalStylePaths = Array.isArray(extension.globalStyles)
+                    ? extension.globalStyles
+                    : [extension.globalStyles];
+                for (const stylePath of globalStylePaths) {
+                    if (!watcher) {
+                        watcher = chokidarWatch(stylePath);
+                    } else {
+                        watcher.add(stylePath);
+                    }
+                }
+            }
             for (const translationFiles of Object.values(allTranslationFiles)) {
                 if (!translationFiles) {
                     continue;
@@ -145,9 +159,16 @@ function runWatchMode(
             }
 
             if (watcher) {
-                const allStaticAssetDefs = adminUiExtensions.reduce(
+                const allStaticAssetDefs = staticAssetExtensions.reduce(
                     (defs, e) => [...defs, ...(e.staticAssets || [])],
                     [] as StaticAssetDefinition[],
+                );
+                const allGlobalStyles = globalStylesExtensions.reduce(
+                    (defs, e) => [
+                        ...defs,
+                        ...(Array.isArray(e.globalStyles) ? e.globalStyles : [e.globalStyles]),
+                    ],
+                    [] as string[],
                 );
 
                 watcher.on('change', async filePath => {
@@ -165,6 +186,12 @@ function runWatchMode(
                         const assetPath = getStaticAssetPath(staticAssetDef);
                         if (filePath.includes(assetPath)) {
                             await copyStaticAsset(outputPath, staticAssetDef);
+                            return;
+                        }
+                    }
+                    for (const stylePath of allGlobalStyles) {
+                        if (filePath.includes(stylePath)) {
+                            await copyGlobalStyleFile(outputPath, stylePath);
                             return;
                         }
                     }

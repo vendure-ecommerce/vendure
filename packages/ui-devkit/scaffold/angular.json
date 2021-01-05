@@ -42,7 +42,7 @@
               "src/i18n-messages"
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/global-styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

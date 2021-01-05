@@ -9,6 +9,7 @@ import { STATIC_ASSETS_OUTPUT_DIR } from './constants';
 import {
     AdminUiExtension,
     Extension,
+    GlobalStylesExtension,
     StaticAssetDefinition,
     StaticAssetExtension,
     TranslationExtension,
@@ -86,7 +87,7 @@ export function normalizeExtensions(extensions?: AdminUiExtension[]): Array<Requ
             id = hash.digest('hex');
         }
 
-        return { staticAssets: [], translations: {}, ...e, id };
+        return { staticAssets: [], translations: {}, globalStyles: [], ...e, id };
     });
 }
 
@@ -100,4 +101,8 @@ export function isTranslationExtension(input: Extension): input is TranslationEx
 
 export function isStaticAssetExtension(input: Extension): input is StaticAssetExtension {
     return input.hasOwnProperty('staticAssets');
+}
+
+export function isGlobalStylesExtension(input: Extension): input is GlobalStylesExtension {
+    return input.hasOwnProperty('globalStyles');
 }
