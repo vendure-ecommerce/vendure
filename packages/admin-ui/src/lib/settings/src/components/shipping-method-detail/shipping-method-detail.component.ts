@@ -80,10 +80,10 @@ export class ShippingMethodDetailComponent
 
     ngOnInit() {
         this.init();
-        combineLatest(
+        combineLatest([
             this.dataService.shippingMethod.getShippingMethodOperations().single$,
             this.entity$.pipe(take(1)),
-        ).subscribe(([data, entity]) => {
+        ]).subscribe(([data, entity]) => {
             this.checkers = data.shippingEligibilityCheckers;
             this.calculators = data.shippingCalculators;
             this.fulfillmentHandlers = data.fulfillmentHandlers;
@@ -150,6 +150,8 @@ export class ShippingMethodDetailComponent
         this.selectedChecker = configurableDefinitionToInstance(checker);
         const formControl = this.detailForm.get('checker');
         if (formControl) {
+            formControl.clearValidators();
+            formControl.updateValueAndValidity({ onlySelf: true });
             formControl.patchValue(this.selectedChecker);
         }
         this.detailForm.markAsDirty();
@@ -160,6 +162,8 @@ export class ShippingMethodDetailComponent
         this.selectedCalculator = configurableDefinitionToInstance(calculator);
         const formControl = this.detailForm.get('calculator');
         if (formControl) {
+            formControl.clearValidators();
+            formControl.updateValueAndValidity({ onlySelf: true });
             formControl.patchValue(this.selectedCalculator);
         }
         this.detailForm.markAsDirty();
@@ -171,7 +175,7 @@ export class ShippingMethodDetailComponent
         if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
+        combineLatest([this.entity$, this.languageCode$])
             .pipe(
                 take(1),
                 mergeMap(([shippingMethod, languageCode]) => {
@@ -211,7 +215,7 @@ export class ShippingMethodDetailComponent
         if (!selectedChecker || !selectedCalculator) {
             return;
         }
-        combineLatest(this.entity$, this.languageCode$)
+        combineLatest([this.entity$, this.languageCode$])
             .pipe(
                 take(1),
                 mergeMap(([shippingMethod, languageCode]) => {
