@@ -227,6 +227,25 @@ export interface AdminUiConfig {
      * screen.
      */
     loginUrl?: string;
+    /**
+     * @description
+     * The custom brand name.
+     */
+    brand?: string;
+    /**
+     * @description
+     * Option to hide vendure branding.
+     *
+     * @default false
+     */
+    hideVendureBranding?: boolean;
+    /**
+     * @description
+     * Option to hide version.
+     *
+     * @default false
+     */
+    hideVersion?: boolean;
 }
 
 /**

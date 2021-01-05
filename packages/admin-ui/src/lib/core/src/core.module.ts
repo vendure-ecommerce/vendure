@@ -1,7 +1,7 @@
 import { PlatformLocation } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TranslateCompiler, TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { MessageFormatConfig, MESSAGE_FORMAT_CONFIG } from 'ngx-translate-messageformat-compiler';
@@ -39,7 +39,11 @@ import { SharedModule } from './shared/shared.module';
             compiler: { provide: TranslateCompiler, useClass: InjectableTranslateMessageFormatCompiler },
         }),
     ],
-    providers: [{ provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales }, registerDefaultFormInputs()],
+    providers: [
+        { provide: MESSAGE_FORMAT_CONFIG, useFactory: getLocales },
+        registerDefaultFormInputs(),
+        Title,
+    ],
     exports: [SharedModule, OverlayHostComponent],
     declarations: [
         AppShellComponent,
@@ -53,8 +57,13 @@ import { SharedModule } from './shared/shared.module';
     ],
 })
 export class CoreModule {
-    constructor(private i18nService: I18nService, private localStorageService: LocalStorageService) {
+    constructor(
+        private i18nService: I18nService,
+        private localStorageService: LocalStorageService,
+        private titleService: Title,
+    ) {
         this.initUiLanguages();
+        this.initUiTitle();
     }
 
     private initUiLanguages() {
@@ -75,6 +84,12 @@ export class CoreModule {
         this.i18nService.setLanguage(uiLanguage);
         this.i18nService.setDefaultLanguage(defaultLanguage);
         this.i18nService.setAvailableLanguages(availableLanguages || [defaultLanguage]);
+    }
+
+    private initUiTitle() {
+        const title = getAppConfig().brand || 'VendureAdmin';
+
+        this.titleService.setTitle(title);
     }
 }
 

@@ -44,6 +44,11 @@
                 {{ 'common.login' | translate }}
             </button>
         </div>
-        <div class="version">vendure {{ version }}</div>
+        <div class="version">
+            <span *ngIf="brand">{{ brand }}</span>
+            <span *ngIf="!hideVendureBranding || !hideVersion">-</span>
+            <span *ngIf="!hideVendureBranding">vendure</span>
+            <span *ngIf="!hideVersion">v{{ version }}</span>
+        </div>
     </form>
 </div>
