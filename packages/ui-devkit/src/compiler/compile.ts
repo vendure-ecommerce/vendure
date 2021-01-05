@@ -15,6 +15,8 @@ import {
     copyUiDevkit,
     getStaticAssetPath,
     isAdminUiExtension,
+    isStaticAssetExtension,
+    isTranslationExtension,
     normalizeExtensions,
     shouldUseYarn,
 } from './utils';
@@ -87,7 +89,8 @@ function runWatchMode(
             await setupScaffold(outputPath, extensions);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
-            const allTranslationFiles = getAllTranslationFiles(extensions);
+            const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
+            const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
             buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`], {
                 cwd: outputPath,
                 shell: true,
@@ -112,9 +115,13 @@ function runWatchMode(
                 } else {
                     watcher.add(extension.extensionPath);
                 }
-                if (extension.staticAssets) {
-                    for (const staticAssetDef of extension.staticAssets) {
-                        const assetPath = getStaticAssetPath(staticAssetDef);
+            }
+            for (const extension of staticAssetExtensions) {
+                for (const staticAssetDef of extension.staticAssets) {
+                    const assetPath = getStaticAssetPath(staticAssetDef);
+                    if (!watcher) {
+                        watcher = chokidarWatch(assetPath);
+                    } else {
                         watcher.add(assetPath);
                     }
                 }

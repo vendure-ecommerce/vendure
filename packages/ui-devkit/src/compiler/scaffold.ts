@@ -10,11 +10,14 @@ import {
     AdminUiExtensionLazyModule,
     AdminUiExtensionSharedModule,
     Extension,
+    StaticAssetExtension,
 } from './types';
 import {
     copyStaticAsset,
     copyUiDevkit,
     isAdminUiExtension,
+    isStaticAssetExtension,
+    isTranslationExtension,
     logger,
     normalizeExtensions,
     shouldUseYarn,
@@ -23,11 +26,17 @@ import {
 export async function setupScaffold(outputPath: string, extensions: Extension[]) {
     deleteExistingExtensionModules(outputPath);
     copySourceIfNotExists(outputPath);
+
     const adminUiExtensions = extensions.filter(isAdminUiExtension);
     const normalizedExtensions = normalizeExtensions(adminUiExtensions);
     await copyExtensionModules(outputPath, normalizedExtensions);
-    const allTranslationFiles = getAllTranslationFiles(extensions);
+
+    const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
+    await copyStaticAssets(outputPath, staticAssetExtensions);
+
+    const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
     await mergeExtensionTranslations(outputPath, allTranslationFiles);
+
     copyUiDevkit(outputPath);
     try {
         await checkIfNgccWasRun();
@@ -58,9 +67,13 @@ async function copyExtensionModules(outputPath: string, extensions: Array<Requir
     fs.writeFileSync(path.join(outputPath, SHARED_EXTENSIONS_FILE), sharedExtensionModulesSource, 'utf8');
 
     for (const extension of extensions) {
-        const dirName = path.basename(path.dirname(extension.extensionPath));
         const dest = path.join(outputPath, MODULES_OUTPUT_DIR, extension.id);
         fs.copySync(extension.extensionPath, dest);
+    }
+}
+
+async function copyStaticAssets(outputPath: string, extensions: Array<Partial<StaticAssetExtension>>) {
+    for (const extension of extensions) {
         if (Array.isArray(extension.staticAssets)) {
             for (const asset of extension.staticAssets) {
                 await copyStaticAsset(outputPath, asset);
@@ -94,7 +107,7 @@ ${extensions
         e.ngModules
             .filter(m => m.type === 'shared')
             .map(m => `import { ${m.ngModuleName} } from '${getModuleFilePath(e.id, m)}';\n`)
-			.join(''),
+            .join(''),
     )
     .join('')}
 

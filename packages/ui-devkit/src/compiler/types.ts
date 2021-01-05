@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-export type Extension = AdminUiExtension | TranslationExtension;
+export type Extension = AdminUiExtension | TranslationExtension | StaticAssetExtension;
 
 /**
  * @description
@@ -31,6 +31,19 @@ export interface TranslationExtension {
 
 /**
  * @description
+ * Defines extensions which copy static assets to the custom Admin UI application source asset directory.
+ */
+export interface StaticAssetExtension {
+    /**
+     * @description
+     * Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
+     * directory.
+     */
+    staticAssets: StaticAssetDefinition[];
+}
+
+/**
+ * @description
  * Defines extensions to the Admin UI application by specifying additional
  * Angular [NgModules](https://angular.io/guide/ngmodules) which are compiled
  * into the application.
@@ -42,7 +55,7 @@ export interface TranslationExtension {
  * @docsPage AdminUiExtension
  * @docsWeight 0
  */
-export interface AdminUiExtension extends Partial<TranslationExtension> {
+export interface AdminUiExtension extends Partial<TranslationExtension>, Partial<StaticAssetExtension> {
     /**
      * @description
      * An optional ID for the extension module. Only used internally for generating
@@ -62,13 +75,6 @@ export interface AdminUiExtension extends Partial<TranslationExtension> {
      * One or more Angular modules which extend the default Admin UI.
      */
     ngModules: Array<AdminUiExtensionSharedModule | AdminUiExtensionLazyModule>;
-
-    /**
-     * @description
-     * Optional array of paths to static assets which will be copied over to the Admin UI app's `/static`
-     * directory.
-     */
-    staticAssets?: StaticAssetDefinition[];
 }
 
 /**
@@ -158,7 +164,7 @@ export interface UiExtensionCompilerOptions {
      * An array of objects which configure Angular modules and/or
      * translations with which to extend the Admin UI.
      */
-    extensions: Array<AdminUiExtension | TranslationExtension>;
+    extensions: Array<AdminUiExtension | TranslationExtension | StaticAssetExtension>;
     /**
      * @description
      * Set to `true` in order to compile the Admin UI in development mode (using the Angular CLI
