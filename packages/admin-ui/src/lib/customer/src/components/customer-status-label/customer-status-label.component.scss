@@ -1,8 +1,8 @@
 @import "variables";
 
 .registered-user-icon {
-    color: $color-grey-300;
+    color: var(--color-grey-300);
 }
 .verified-user-icon {
-    color: $color-success-500;
+    color: var(--color-success-500);
 }

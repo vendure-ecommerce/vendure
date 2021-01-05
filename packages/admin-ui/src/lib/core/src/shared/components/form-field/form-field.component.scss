@@ -34,7 +34,7 @@
         ::ng-deep input {
             flex: 1;
             &[disabled] {
-                background-color: $color-grey-200;
+                background-color: var(--color-grey-200);
             }
         }
         button.edit-button {

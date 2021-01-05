@@ -13,7 +13,7 @@
     transition: border-left-color 0.2s;
 
     &.private {
-        background-color: $color-grey-200;
+        background-color: var(--color-grey-200);
     }
 
     .collection-detail {
@@ -21,10 +21,10 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid $color-grey-200;
+        border-bottom: 1px solid var(--color-grey-200);
 
         &.active {
-            background-color: $color-grey-200;
+            background-color: var(--color-grey-200);
         }
 
         &.depth-1 { padding-left: 12px + 24px; }
@@ -45,14 +45,14 @@
     overflow: hidden;
     &.cdk-drop-list-dragging {
         > .collection {
-            border-left-color: $color-primary-300;
+            border-left-color: var(--color-primary-300);
         }
     }
 }
 
 .drag-placeholder {
     min-height: 120px;
-    background-color: $color-grey-300;
+    background-color: var(--color-grey-300);
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 

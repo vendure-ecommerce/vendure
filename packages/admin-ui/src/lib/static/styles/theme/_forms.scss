@@ -33,7 +33,7 @@
 
 input, select {
     border-radius: 3px !important;
-    border: 1px solid $color-grey-300 !important;
+    border: 1px solid var(--color-grey-300) !important;
     padding: 5px !important;
     height: initial !important;
     transition: background-color 0.2s, box-shadow 0.2s !important;
@@ -41,8 +41,8 @@ input, select {
         background: white !important;
     }
     &:focus {
-        border-color: $color-primary-500 !important;
-        box-shadow: 0 0 1px 1px $color-primary-100;
+        border-color: var(--color-primary-500) !important;
+        box-shadow: 0 0 1px 1px var(--color-primary-100);
     }
 }
 
@@ -110,10 +110,10 @@ select {
     padding-top: 9px;
 }
 .ng-select.ng-select-focused>.ng-select-container {
-    border-color: $color-primary-500 !important;
-    box-shadow: 0 0 1px 1px $color-primary-100;
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 1px 1px var(--color-primary-100);
     border-radius: 3px;
 }
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
-    background-color: $color-grey-200;
+    background-color: var(--color-grey-200);
 }

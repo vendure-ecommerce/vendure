@@ -24,11 +24,11 @@ textarea.note {
     margin-right: 6px;
 }
 .note-text {
-    color: $color-grey-800;
+    color: var(--color-grey-800);
     white-space: pre-wrap;
 }
 
 .address-string {
     font-size: smaller;
-    color: $color-grey-500;
+    color: var(--color-grey-500);
 }

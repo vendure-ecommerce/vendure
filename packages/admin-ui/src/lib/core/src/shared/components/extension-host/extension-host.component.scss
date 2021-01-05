@@ -27,7 +27,7 @@ iframe {
     transition: background-color 0.3s;
     text-align: center;
     &.launched {
-        background-color: $color-grey-300;
+        background-color: var(--color-grey-300);
     }
 }
 

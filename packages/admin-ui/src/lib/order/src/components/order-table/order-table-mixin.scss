@@ -4,32 +4,32 @@
 
     .is-cancelled td {
         text-decoration: line-through;
-        background-color: $color-grey-200;
+        background-color: var(--color-grey-200);
     }
 
     .sub-total td {
-        border-top: 1px dashed $color-grey-300;
+        border-top: 1px dashed var(--color-grey-300);
     }
 
     .total td {
         font-weight: bold;
-        border-top: 1px dashed $color-grey-300;
+        border-top: 1px dashed var(--color-grey-300);
     }
 
     .order-line-custom-field {
-        background-color: $color-grey-100;
+        background-color: var(--color-grey-100);
 
         .custom-field-ellipsis {
-            color: $color-grey-300;
+            color: var(--color-grey-300);
         }
     }
 
     .net-price {
         font-size: 11px;
-        color: $color-grey-400;
+        color: var(--color-grey-400);
     }
     .promotions-label {
-        text-decoration: underline dotted $color-grey-300;
+        text-decoration: underline dotted var(--color-grey-300);
         font-size: 11px;
         margin-top: 6px;
         cursor: pointer;

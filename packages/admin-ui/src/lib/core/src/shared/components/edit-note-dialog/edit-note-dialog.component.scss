@@ -5,10 +5,10 @@
     justify-content: space-between;
     align-items: baseline;
     .public {
-        color: $color-warning-500;
+        color: var(--color-warning-500);
     }
     .private {
-        color: $color-success-500;
+        color: var(--color-success-500);
     }
 }
 textarea.note {

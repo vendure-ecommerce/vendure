@@ -1,5 +1,5 @@
 @import "variables";
 
 :host {
-    color: $color-error-500;
+    color: var(--color-error-500);
 }

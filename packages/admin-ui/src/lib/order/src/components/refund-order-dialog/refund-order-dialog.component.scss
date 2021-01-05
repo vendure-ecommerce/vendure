@@ -16,7 +16,7 @@
         }
     }
     tr.ignore {
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 }
 .cancel-checkbox-wrapper {
@@ -39,10 +39,10 @@ clr-checkbox-wrapper {
         font-size: 18px;
     }
     .refund-total-error {
-        color: $color-error-500;
+        color: var(--color-error-500);
     }
     &.disabled {
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 }
 .prorated-wrapper {

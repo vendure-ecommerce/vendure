@@ -18,8 +18,8 @@
     padding-bottom: 12px;
 
     .card:hover {
-        box-shadow: 0 0.125rem 0 0 $color-primary-500;
-        border: 1px solid $color-primary-500;
+        box-shadow: 0 0.125rem 0 0 var(--color-primary-500);
+        border: 1px solid var(--color-primary-500);
     }
 }
 
@@ -31,7 +31,7 @@
 .selected-checkbox {
     opacity: 0;
     position: absolute;
-    color: $color-success-500;
+    color: var(--color-success-500);
     background-color: white;
     border-radius: 50%;
     top: -12px;
@@ -41,8 +41,8 @@
 }
 
 .card.selected {
-    box-shadow: 0 0.125rem 0 0 $color-primary-500;
-    border: 1px solid $color-primary-500;
+    box-shadow: 0 0.125rem 0 0 var(--color-primary-500);
+    border: 1px solid var(--color-primary-500);
 
     .selected-checkbox {
         opacity: 1;
@@ -80,7 +80,7 @@
         &.visible {
             opacity: 1;
             transform: perspective(500px) translateZ(-44px) translateY(0px);
-            background-color: $color-grey-100;
+            background-color: var(--color-grey-100);
             transition: transform 0.3s, color 0.3s;
         }
     }
@@ -108,7 +108,7 @@
 
     .placeholder {
         text-align: center;
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 
     .preview {

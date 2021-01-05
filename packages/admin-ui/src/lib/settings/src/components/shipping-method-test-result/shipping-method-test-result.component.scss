@@ -1,13 +1,13 @@
 @import "variables";
 .test-result {
     &.success .card-block {
-        background-color: $color-success-100;
+        background-color: var(--color-success-100);
     }
     &.error .card-block {
-        background-color: $color-error-100;
+        background-color: var(--color-error-100);
     }
     &.unknown .card-block {
-        background-color: $color-grey-100;
+        background-color: var(--color-grey-100);
     }
 }
 .result-details {
@@ -20,10 +20,10 @@
 .eligible-icon {
     display: inline-block;
     .success {
-        color: $color-success-500;
+        color: var(--color-success-500);
     }
     .error {
-        color: $color-error-500;
+        color: var(--color-error-500);
     }
 }
 .price-row {

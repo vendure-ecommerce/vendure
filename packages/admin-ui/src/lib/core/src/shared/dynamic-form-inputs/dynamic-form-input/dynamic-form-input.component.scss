@@ -1,7 +1,7 @@
 @import 'variables';
 
 .list-container {
-    border: 1px solid $color-grey-300;
+    border: 1px solid var(--color-grey-300);
     border-radius: 3px;
     padding: 12px;
 }
@@ -19,7 +19,7 @@
 
 .cdk-drag-preview {
     font-size: 13px;
-    background-color: $color-grey-100;
+    background-color: var(--color-grey-100);
     opacity: 0.8;
     border-radius: 4px;
     box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14),

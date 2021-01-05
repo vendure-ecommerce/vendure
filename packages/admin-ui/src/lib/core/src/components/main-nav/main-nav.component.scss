@@ -3,7 +3,7 @@
 :host {
     // flex: 0 0 auto;
     order: -1;
-    background-color: $color-grey-200;
+    background-color: var(--color-grey-200);
 }
 
 nav.sidenav {
@@ -25,19 +25,19 @@ nav.sidenav {
     height: 10px;
     position: absolute;
     border-radius: 50%;
-    border: 1px solid $color-grey-200;
+    border: 1px solid var(--color-grey-200);
 
     &.info {
-        background-color: $color-primary-600;
+        background-color: var(--color-primary-600);
     }
     &.success {
-        background-color: $color-success-500;
+        background-color: var(--color-success-500);
     }
     &.warning {
-        background-color: $color-warning-500;
+        background-color: var(--color-warning-500);
     }
     &.error {
-        background-color: $color-error-400;
+        background-color: var(--color-error-400);
     }
 }
 

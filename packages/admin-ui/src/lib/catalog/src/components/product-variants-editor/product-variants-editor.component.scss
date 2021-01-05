@@ -15,8 +15,8 @@
 .variants-preview {
     tr.disabled {
         td {
-            background-color: $color-grey-100;
-            color: $color-grey-400;
+            background-color: var(--color-grey-100);
+            color: var(--color-grey-400);
         }
     }
 }

@@ -16,7 +16,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    color: $color-grey-300;
+    color: var(--color-grey-300);
 
     span + span {
         margin-left: 5px;

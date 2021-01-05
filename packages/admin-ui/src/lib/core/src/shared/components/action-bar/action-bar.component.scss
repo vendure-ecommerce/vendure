@@ -4,11 +4,11 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background-color: $color-grey-100;
+    background-color: var(--color-grey-100);
     position: sticky;
     top: -24px;
     z-index: 25;
-    border-bottom: 1px solid $color-grey-300;
+    border-bottom: 1px solid var(--color-grey-300);
 
     > .grow {
         flex: 1;

@@ -17,23 +17,23 @@
     position: sticky;
     top: 24px;
     margin-top: 6px;
-    border: 1px solid $color-grey-300;
+    border: 1px solid var(--color-grey-300);
     border-bottom: none;
-    background-color: $color-grey-200;
+    background-color: var(--color-grey-200);
     padding: 6px 12px;
 }
 
 ::ng-deep .vdr-prosemirror {
     background-color: white;
     min-height: 128px;
-    border: 1px solid $color-grey-300;
+    border: 1px solid var(--color-grey-300);
     border-radius: 0 0 3px 3px;
     transition: border-color 0.2s;
     overflow: auto;
 
     &:focus {
-        border-color: $color-primary-500 !important;
-        box-shadow: 0 0 1px 1px $color-primary-100;
+        border-color: var(--color-primary-500) !important;
+        box-shadow: 0 0 1px 1px var(--color-primary-100);
     }
 
     /* Add space around the hr to make clicking it easier */

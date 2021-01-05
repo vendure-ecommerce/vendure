@@ -19,22 +19,22 @@
         max-width: 98vw;
         word-wrap: break-word;
         padding: 10px;
-        background-color: $color-grey-500;
+        background-color: var(--color-grey-500);
         color: white;
         transition: opacity 1s, top 0.3s;
         opacity: 0;
 
         &.success {
-            background-color: $color-success-500;
+            background-color: var(--color-success-500);
         }
         &.error {
-            background-color: $color-error-500;
+            background-color: var(--color-error-500);
         }
         &.warning {
-            background-color: $color-warning-500;
+            background-color: var(--color-warning-500);
         }
         &.info {
-            background-color: $color-secondary-500;
+            background-color: var(--color-secondary-500);
         }
 
         &.visible {

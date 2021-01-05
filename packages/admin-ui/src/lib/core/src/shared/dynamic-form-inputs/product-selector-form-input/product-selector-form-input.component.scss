@@ -6,14 +6,14 @@
     align-items: center;
     transition: background-color 0.2s;
     &:hover {
-        background-color: $color-grey-200;
+        background-color: var(--color-grey-200);
     }
 }
 .thumb {
     margin-right: 6px;
 }
 .sku {
-    color: $color-grey-400;
+    color: var(--color-grey-400);
     font-size: smaller;
     line-height: 1em;
 }

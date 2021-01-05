@@ -10,7 +10,7 @@
         margin-top: 0;
 
         tr.active {
-            background-color: $color-grey-200;
+            background-color: var(--color-grey-200);
         }
         &.expanded {
             // Fix for Firefox layout https://github.com/vendure-ecommerce/vendure/issues/531

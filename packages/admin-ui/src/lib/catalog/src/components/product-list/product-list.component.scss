@@ -3,10 +3,10 @@
 .image-placeholder {
     width: 50px;
     height: 50px;
-    background-color: $color-grey-200;
+    background-color: var(--color-grey-200);
     .placeholder {
         text-align: center;
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 }
 .search-form {
@@ -25,5 +25,5 @@
     margin: 0 12px;
 }
 td.disabled {
-    background-color: $color-grey-200;
+    background-color: var(--color-grey-200);
 }

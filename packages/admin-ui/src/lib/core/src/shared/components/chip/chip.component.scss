@@ -6,35 +6,38 @@
 
 .wrapper {
     display: flex;
-    border: 1px solid $color-grey-400;
+    border: 1px solid var(--color-grey-400);
     border-radius: 3px;
     margin: 6px;
     &.with-background {
-        color: transparentize($color-grey-100, 0.2);
+        color: var(--color-grey-100);
         border-color: transparent;
+        .chip-label {
+            opacity: 0.9;
+        }
     }
 
     &.warning {
-        border-color: $color-warning-200;
+        border-color: var(--color-warning-200);
         .chip-label {
-            color: $color-warning-600;
-            background-color: $color-warning-100;
+            color: var(--color-warning-600);
+            background-color: var(--color-warning-100);
         }
     }
 
     &.success {
-        border-color: $color-success-200;
+        border-color: var(--color-success-200);
         .chip-label {
-            color: $color-success-600;
-            background-color: $color-success-100;
+            color: var(--color-success-600);
+            background-color: var(--color-success-100);
         }
     }
 
     &.error {
-        border-color: $color-error-200;
+        border-color: var(--color-error-200);
         .chip-label {
-            color: $color-error-600;
-            background-color: $color-error-100;
+            color: var(--color-error-600);
+            background-color: var(--color-error-100);
         }
     }
 
@@ -50,7 +53,7 @@
 }
 
 .chip-icon {
-    border-left: 1px solid transparentize($color-grey-100, 0.5);
+    border-left: 1px solid var(--color-grey-300);
     padding: 0 3px;
     line-height: 1em;
     display: flex;

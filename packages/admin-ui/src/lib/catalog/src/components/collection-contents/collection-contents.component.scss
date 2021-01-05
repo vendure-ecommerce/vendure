@@ -1,12 +1,12 @@
 @import "variables";
 
 .contents-header {
-    background-color: $color-grey-100;
+    background-color: var(--color-grey-100);
     position: sticky;
     top: 0;
     padding: 6px;
     z-index: 1;
-    border-bottom: 1px solid $color-grey-300;
+    border-bottom: 1px solid var(--color-grey-300);
 
     .header-title-row {
         display: flex;
