@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core';
 
 @Component({
     selector: 'vdr-dropdown',
@@ -10,6 +10,13 @@ export class DropdownComponent {
     private isOpen = false;
     private onOpenChangeCallbacks: Array<(isOpen: boolean) => void> = [];
     public trigger: ElementRef;
+    @Input() manualToggle = false;
+
+    onClick() {
+        if (!this.manualToggle) {
+            this.toggleOpen();
+        }
+    }
 
     toggleOpen() {
         this.isOpen = !this.isOpen;
