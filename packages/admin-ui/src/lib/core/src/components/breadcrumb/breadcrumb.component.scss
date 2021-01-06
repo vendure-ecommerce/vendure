@@ -14,7 +14,7 @@
     li:not(:last-child)::after {
         content: '›';
         top: 0;
-        color: #7e7e7e;
+        color: var(--color-grey-400);
         margin-left: 10px;
     }
 }

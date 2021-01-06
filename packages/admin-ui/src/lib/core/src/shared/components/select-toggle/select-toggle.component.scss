@@ -47,7 +47,7 @@
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 2px 2px #6bc1e3;
+        box-shadow: 0 0 2px 2px var(--color-primary-500);
     }
 
     &.disabled {

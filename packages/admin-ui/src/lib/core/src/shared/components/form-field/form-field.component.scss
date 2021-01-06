@@ -75,25 +75,6 @@ element.style {
 .tooltip.tooltip-sm > .tooltip-content, .tooltip .tooltip-content.tooltip-sm {
     width: 5rem;
 }
-.tooltip.tooltip-top-left > .tooltip-content, .tooltip .tooltip-content.tooltip-top-left {
-    color: #fff;
-    font-size: 0.541667rem;
-    font-weight: 400;
-    letter-spacing: normal;
-    background: #000;
-    border-radius: 0.125rem;
-    line-height: 0.75rem;
-    margin: 0;
-    padding: 0.375rem 0.5rem;
-    width: 10rem;
-    position: absolute;
-    top: auto;
-    bottom: 100%;
-    right: 50%;
-    left: auto;
-    border-bottom-right-radius: 0;
-    margin-bottom: 0.666667rem;
-}
 
 .tooltip:hover > .tooltip-content {
     right: 12px;
