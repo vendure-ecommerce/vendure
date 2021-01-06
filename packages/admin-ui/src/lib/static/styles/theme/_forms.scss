@@ -43,6 +43,15 @@ input, select {
     &:focus {
         border-color: var(--color-primary-500) !important;
         box-shadow: 0 0 1px 1px var(--color-primary-100);
+        outline: none;
+    }
+}
+
+textarea {
+    border-color: var(--clr-forms-border-color);
+    &:focus {
+        border-color: var(--color-primary-500) !important;
+        outline: none;
     }
 }
 

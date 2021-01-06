@@ -25,7 +25,7 @@
                 name="searchTerm"
                 [formControl]="searchTerm"
                 [placeholder]="'order.search-by-order-code' | translate"
-                class="clr-input search-input"
+                class="search-input"
             />
         </div>
         <div class="custom-filters" [class.expanded]="(activePreset$ | async) === 'custom'">

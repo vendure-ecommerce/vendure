@@ -51,7 +51,6 @@
                         </td>
                         <td class="align-middle quantity">
                             <input
-                                class="clr-input"
                                 type="number"
                                 min="0"
                                 [value]="line.quantity"
@@ -100,7 +99,6 @@
                         </td>
                         <td class="align-middle quantity">
                             <input
-                                class="clr-input"
                                 type="number"
                                 min="0"
                                 [value]="addedLine.quantity"
@@ -228,13 +226,12 @@
                         <form [formGroup]="surchargeForm" (submit)="addSurcharge(surchargeForm.value)">
                             <vdr-form-field [label]="'common.description' | translate" for="description"
                                 ><input
-                                    class="clr-input"
                                     id="description"
                                     type="text"
                                     formControlName="description"
                             /></vdr-form-field>
                             <vdr-form-field [label]="'order.product-sku' | translate" for="sku"
-                                ><input class="clr-input" id="sku" type="text" formControlName="sku"
+                                ><input id="sku" type="text" formControlName="sku"
                             /></vdr-form-field>
                             <vdr-form-field [label]="'common.price' | translate" for="price"
                                 ><vdr-currency-input
@@ -258,7 +255,6 @@
                             <vdr-form-field [label]="'order.tax-rate' | translate" for="taxRate"
                                 ><vdr-affixed-input suffix="%"
                                     ><input
-                                        class="clr-input"
                                         id="taxRate"
                                         type="number"
                                         min="0"
@@ -267,7 +263,6 @@
                             ></vdr-form-field>
                             <vdr-form-field [label]="'order.tax-description' | translate" for="taxDescription"
                                 ><input
-                                    class="clr-input"
                                     id="taxDescription"
                                     type="text"
                                     formControlName="taxDescription"
