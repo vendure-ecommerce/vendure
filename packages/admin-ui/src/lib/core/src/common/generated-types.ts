@@ -1623,13 +1623,11 @@ export type ModifyOrderInput = {
 export type AddItemInput = {
   productVariantId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AdjustOrderLineInput = {
   orderLineId: Scalars['ID'];
   quantity: Scalars['Int'];
-  customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type SurchargeInput = {
@@ -3854,7 +3852,7 @@ export type OrderLine = Node & {
   discounts: Array<Adjustment>;
   taxLines: Array<TaxLine>;
   order: Order;
-  customFields?: Maybe<OrderLineCustomFields>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Payment = Node & {
@@ -4599,17 +4597,6 @@ export type HistoryEntrySortParameter = {
   updatedAt?: Maybe<SortOrder>;
 };
 
-export type OrderLineCustomFields = {
-  __typename?: 'OrderLineCustomFields';
-  test?: Maybe<Scalars['String']>;
-  test2?: Maybe<Scalars['String']>;
-};
-
-export type OrderLineCustomFieldsInput = {
-  test?: Maybe<Scalars['String']>;
-  test2?: Maybe<Scalars['String']>;
-};
-
 export type AuthenticationInput = {
   native?: Maybe<NativeAuthInput>;
 };
@@ -4961,7 +4948,7 @@ export type GetClientStateQuery = { networkStatus: (
     & UserStatusFragment
   ), uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language'>
+    & Pick<UiState, 'language' | 'theme'>
   ) };
 
 export type SetActiveChannelMutationVariables = Exact<{

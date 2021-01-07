@@ -2,50 +2,18 @@
 import { AdminUiPlugin } from '@vendure/admin-ui-plugin';
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { ADMIN_API_PATH, API_PORT, SHOP_API_PATH } from '@vendure/common/lib/shared-constants';
-import { Order, OrderService, OrderState, TransactionalConnection } from '@vendure/core';
 import {
-    CustomOrderProcess,
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
     examplePaymentHandler,
-    FulfillmentHandler,
-    LanguageCode,
-    Logger,
     LogLevel,
     manualFulfillmentHandler,
-    PermissionDefinition,
-    Surcharge,
     VendureConfig,
 } from '@vendure/core';
-import { ElasticsearchPlugin } from '@vendure/elasticsearch-plugin';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
 import path from 'path';
 import { ConnectionOptions } from 'typeorm';
-
-let connection: TransactionalConnection;
-let orderService: OrderService;
-const customerValidationProcess: CustomOrderProcess<OrderState> = {
-    // The init method allows us to inject services
-    // and other providers
-    init(injector) {
-        connection = injector.get(TransactionalConnection);
-        orderService = injector.get(OrderService);
-    },
-
-    // The logic for enforcing our validation goes here
-    async onTransitionStart(fromState, toState, data) {
-        if (fromState === 'AddingItems' && toState === 'ArrangingPayment') {
-            const { ctx, order } = data;
-            await orderService.addSurchargeToOrder(ctx, order.id, {
-                description: '3% payment surcharge',
-                sku: 'PAYMENT_SURCHARGE',
-                listPrice: Math.round(order.subTotal * 0.03),
-                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
-            });
-        }
-    },
-};
 
 /**
  * Config settings used during development
@@ -75,9 +43,6 @@ export const devConfig: VendureConfig = {
         requireVerification: true,
         customPermissions: [],
     },
-    orderOptions: {
-        process: [customerValidationProcess],
-    },
     dbConnectionOptions: {
         synchronize: false,
         logging: false,
@@ -87,12 +52,7 @@ export const devConfig: VendureConfig = {
     paymentOptions: {
         paymentMethodHandlers: [examplePaymentHandler],
     },
-    customFields: {
-        OrderLine: [
-            { name: 'test', type: 'string', nullable: true },
-            { name: 'test2', type: 'string', nullable: true },
-        ],
-    },
+    customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
