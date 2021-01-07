@@ -52,6 +52,12 @@ export const SET_UI_LANGUAGE = gql`
     }
 `;
 
+export const SET_UI_THEME = gql`
+    mutation SetUiTheme($theme: String!) {
+        setUiTheme(theme: $theme) @client
+    }
+`;
+
 export const GET_NEWTORK_STATUS = gql`
     query GetNetworkStatus {
         networkStatus @client {
@@ -73,6 +79,7 @@ export const GET_UI_STATE = gql`
     query GetUiState {
         uiState @client {
             language
+            theme
         }
     }
 `;
@@ -87,6 +94,7 @@ export const GET_CLIENT_STATE = gql`
         }
         uiState @client {
             language
+            theme
         }
     }
     ${USER_STATUS_FRAGMENT}

@@ -422,7 +422,8 @@ export type Mutation = {
   setAsLoggedIn: UserStatus;
   setAsLoggedOut: UserStatus;
   setOrderCustomFields?: Maybe<Order>;
-  setUiLanguage?: Maybe<LanguageCode>;
+  setUiLanguage: LanguageCode;
+  setUiTheme: Scalars['String'];
   settlePayment: SettlePaymentResult;
   settleRefund: SettleRefundResult;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
@@ -835,7 +836,12 @@ export type MutationSetOrderCustomFieldsArgs = {
 
 
 export type MutationSetUiLanguageArgs = {
-  languageCode?: Maybe<LanguageCode>;
+  languageCode: LanguageCode;
+};
+
+
+export type MutationSetUiThemeArgs = {
+  theme: Scalars['String'];
 };
 
 
@@ -4650,6 +4656,7 @@ export type UserStatus = {
 export type UiState = {
   __typename?: 'UiState';
   language: LanguageCode;
+  theme: Scalars['String'];
 };
 
 export type CurrentUserChannelInput = {
@@ -4912,6 +4919,13 @@ export type SetUiLanguageMutationVariables = Exact<{
 
 export type SetUiLanguageMutation = Pick<Mutation, 'setUiLanguage'>;
 
+export type SetUiThemeMutationVariables = Exact<{
+  theme: Scalars['String'];
+}>;
+
+
+export type SetUiThemeMutation = Pick<Mutation, 'setUiTheme'>;
+
 export type GetNetworkStatusQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4933,7 +4947,7 @@ export type GetUiStateQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetUiStateQuery = { uiState: (
     { __typename?: 'UiState' }
-    & Pick<UiState, 'language'>
+    & Pick<UiState, 'language' | 'theme'>
   ) };
 
 export type GetClientStateQueryVariables = Exact<{ [key: string]: never; }>;
@@ -7863,6 +7877,11 @@ export namespace SetAsLoggedOut {
 export namespace SetUiLanguage {
   export type Variables = SetUiLanguageMutationVariables;
   export type Mutation = SetUiLanguageMutation;
+}
+
+export namespace SetUiTheme {
+  export type Variables = SetUiThemeMutationVariables;
+  export type Mutation = SetUiThemeMutation;
 }
 
 export namespace GetNetworkStatus {

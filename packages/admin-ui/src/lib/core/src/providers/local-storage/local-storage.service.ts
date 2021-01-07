@@ -10,6 +10,7 @@ export type LocalStorageTypeMap = {
     uiLanguageCode: LanguageCode;
     orderListLastCustomFilters: any;
     dashboardWidgetLayout: WidgetLayoutDefinition;
+    activeTheme: string;
 };
 
 export type LocalStorageLocationBasedTypeMap = {

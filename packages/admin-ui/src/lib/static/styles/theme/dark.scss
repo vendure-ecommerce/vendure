@@ -16,6 +16,8 @@
     --color-component-border-100: var(--color-grey-700);
     --color-component-border-200: var(--color-grey-600);
     --color-component-border-300: var(--color-grey-500);
+    --color-text-100: hsl(210, 16%, 93%);
+    --color-text-200: hsl(203, 16%, 72%);
     --color-text-300: var(--color-grey-300);
 
     --color-chip-warning-border: var(--color-warning-700);
@@ -539,8 +541,8 @@
     /**********
     * Typography
     */
-    --clr-global-font-color: hsl(210, 16%, 93%);
-    --clr-global-font-color-secondary: hsl(203, 16%, 72%);
+    --clr-global-font-color: var(--color-text-100);
+    --clr-global-font-color-secondary: var(--color-text-200);
 
     --clr-h1-color: var(--clr-global-font-color);
     --clr-h2-color: var(--clr-global-font-color);

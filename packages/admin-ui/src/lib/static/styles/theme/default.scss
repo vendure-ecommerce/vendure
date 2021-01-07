@@ -1,6 +1,7 @@
 @import "variables";
 
-// Default Vendure light theme
+// Default Vendure light theme. The Clarity component custom properties
+// are left as their defaults.
 :root {
     // Colors
     --color-primary-100: #{$color-primary-100};

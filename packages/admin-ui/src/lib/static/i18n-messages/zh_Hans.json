@@ -218,6 +218,7 @@
     "select": "选择...",
     "select-display-language": "选择显示语言",
     "select-today": "选择今天",
+    "theme": "",
     "there-are-unsaved-changes": "修改尚未被保存，现在离开会导致您的修改会被删除",
     "toggle-all": "",
     "update": "确认修改",

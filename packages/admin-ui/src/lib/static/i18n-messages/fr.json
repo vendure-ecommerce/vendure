@@ -218,6 +218,7 @@
     "select": "Selectionner...",
     "select-display-language": "Choisir la langue d'affichage",
     "select-today": "Choisir aujourd'hui",
+    "theme": "",
     "there-are-unsaved-changes": "Il y a des changements non enregistrés. Naviguer ailleurs fera perdre ces changements.",
     "toggle-all": "Cocher/décocher Tout",
     "update": "Mettre à jour",

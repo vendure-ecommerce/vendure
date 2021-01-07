@@ -25,6 +25,7 @@ export * from './components/channel-switcher/channel-switcher.component';
 export * from './components/main-nav/main-nav.component';
 export * from './components/notification/notification.component';
 export * from './components/overlay-host/overlay-host.component';
+export * from './components/theme-switcher/theme-switcher.component';
 export * from './components/ui-language-switcher-dialog/ui-language-switcher-dialog.component';
 export * from './components/user-menu/user-menu.component';
 export * from './core.module';

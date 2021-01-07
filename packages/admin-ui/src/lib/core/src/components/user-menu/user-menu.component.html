@@ -17,8 +17,11 @@
             >
                 <clr-icon shape="language"></clr-icon> {{ 'lang.' + uiLanguage | translate }}
             </button>
-            <div class="dropdown-divider"></div>
         </ng-container>
+        <div class="dropdown-item">
+            <vdr-theme-switcher></vdr-theme-switcher>
+        </div>
+        <div class="dropdown-divider"></div>
         <button type="button" vdrDropdownItem (click)="logOut.emit()">
             <clr-icon shape="logout"></clr-icon> {{ 'common.log-out' | translate }}
         </button>
