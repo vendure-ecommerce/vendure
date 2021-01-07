@@ -3,12 +3,13 @@
 :host {
     // flex: 0 0 auto;
     order: -1;
-    background-color: var(--color-grey-200);
+    background-color: var(--clr-nav-background-color);
 }
 
 nav.sidenav {
     height: 100%;
     width: 10.8rem;
+    border-right-color: var(--clr-sidenav-border-color);
 }
 
 .nav-list clr-icon {
@@ -25,7 +26,7 @@ nav.sidenav {
     height: 10px;
     position: absolute;
     border-radius: 50%;
-    border: 1px solid var(--color-grey-200);
+    border: 1px solid var(--color-component-border-100);
 
     &.info {
         background-color: var(--color-primary-600);

@@ -10,11 +10,11 @@
 }
 .node {
     display: inline-block;
-    border: 2px solid var(--color-grey-300);
+    border: 2px solid var(--color-component-border-200);
     border-radius: 3px;
     padding: 3px 6px;
     z-index: 1;
-    background-color: var(--color-grey-100);
+    background-color: var(--color-component-bg-100);
     opacity: 0.7;
     transition: opacity 0.2s, background-color 0.2s, color 0.2s;
     cursor: default;
@@ -33,7 +33,7 @@
 .cancelled-edge {
     width: 48px;
     height: 2px;
-    background-color: var(--color-grey-300);
+    background-color: var(--color-component-bg-300);
     transition: background-color 0.2s;
 }
 clr-icon {

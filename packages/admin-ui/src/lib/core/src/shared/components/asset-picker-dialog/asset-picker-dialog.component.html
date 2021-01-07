@@ -2,6 +2,7 @@
     <div class="title-row">
         {{ 'asset.select-assets' | translate }}
         <vdr-asset-file-input
+            class="ml3"
             (selectFiles)="createAssets($event)"
             [uploading]="uploading"
             dropZoneTarget=".modal-content"

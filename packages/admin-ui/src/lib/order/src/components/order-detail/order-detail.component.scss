@@ -1,4 +1,3 @@
-@import "variables";
 @import "mixins";
 @import "../order-table/order-table-mixin";
 
@@ -10,6 +9,6 @@
 .order-cards {
     h6 {
         margin-top: 6px;
-        color: var(--color-grey-500);
+        color: var(--color-text-200);
     }
 }

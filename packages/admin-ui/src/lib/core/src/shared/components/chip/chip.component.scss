@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 :host {
     display: inline-block;
@@ -6,7 +6,7 @@
 
 .wrapper {
     display: flex;
-    border: 1px solid var(--color-grey-400);
+    border: 1px solid var(--color-component-border-300);
     border-radius: 3px;
     margin: 6px;
     &.with-background {
@@ -18,29 +18,28 @@
     }
 
     &.warning {
-        border-color: var(--color-warning-200);
+        border-color: var(--color-chip-warning-border);
         .chip-label {
-            color: var(--color-warning-600);
-            background-color: var(--color-warning-100);
+            color: var(--color-chip-warning-text);
+            background-color: var(--color-chip-warning-bg);
         }
     }
 
     &.success {
-        border-color: var(--color-success-200);
+        border-color: var(--color-chip-success-border);
         .chip-label {
-            color: var(--color-success-600);
-            background-color: var(--color-success-100);
+            color: var(--color-chip-success-text);
+            background-color: var(--color-chip-success-bg);
         }
     }
 
     &.error {
-        border-color: var(--color-error-200);
+        border-color: var(--color-chip-error-border);
         .chip-label {
-            color: var(--color-error-600);
-            background-color: var(--color-error-100);
+            color: var(--color-chip-error-text);
+            background-color: var(--color-chip-error-bg);
         }
     }
-
 }
 
 .chip-label {
@@ -53,7 +52,7 @@
 }
 
 .chip-icon {
-    border-left: 1px solid var(--color-grey-300);
+    border-left: 1px solid var(--color-component-border-200);
     padding: 0 3px;
     line-height: 1em;
     display: flex;

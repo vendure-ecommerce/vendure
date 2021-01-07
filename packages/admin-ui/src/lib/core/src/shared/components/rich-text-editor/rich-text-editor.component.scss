@@ -17,16 +17,17 @@
     position: sticky;
     top: 24px;
     margin-top: 6px;
-    border: 1px solid var(--color-grey-300);
+    border: 1px solid var(--color-component-border-200);
     border-bottom: none;
-    background-color: var(--color-grey-200);
+    background-color: var(--color-component-bg-200);
+    color: var(--color-icon-button);
     padding: 6px 12px;
 }
 
 ::ng-deep .vdr-prosemirror {
-    background-color: white;
+    background: var(--color-form-input-bg);
     min-height: 128px;
-    border: 1px solid var(--color-grey-300);
+    border: 1px solid var(--color-component-border-200);
     border-radius: 0 0 3px 3px;
     transition: border-color 0.2s;
     overflow: auto;

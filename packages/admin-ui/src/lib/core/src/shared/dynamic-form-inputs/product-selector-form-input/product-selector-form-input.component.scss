@@ -1,4 +1,3 @@
-@import "variables";
 
 .variant {
     margin-bottom: 6px;
@@ -6,7 +5,7 @@
     align-items: center;
     transition: background-color 0.2s;
     &:hover {
-        background-color: var(--color-grey-200);
+        background-color: var(--color-component-bg-200);
     }
 }
 .thumb {

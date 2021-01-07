@@ -1,14 +1,13 @@
-@import "variables";
 
 :host {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    background-color: var(--color-grey-100);
+    background-color: var(--color-component-bg-100);
     position: sticky;
     top: -24px;
     z-index: 25;
-    border-bottom: 1px solid var(--color-grey-300);
+    border-bottom: 1px solid var(--color-component-border-200);
 
     > .grow {
         flex: 1;

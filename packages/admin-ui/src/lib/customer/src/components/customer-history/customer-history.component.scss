@@ -1,4 +1,3 @@
-@import "variables";
 
 .entry-list {
     margin-top: 24px;
@@ -24,11 +23,11 @@ textarea.note {
     margin-right: 6px;
 }
 .note-text {
-    color: var(--color-grey-800);
+    color: var(--color-text-100);
     white-space: pre-wrap;
 }
 
 .address-string {
     font-size: smaller;
-    color: var(--color-grey-500);
+    color: var(--color-text-200);
 }

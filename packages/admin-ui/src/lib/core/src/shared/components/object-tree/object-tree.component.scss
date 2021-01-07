@@ -1,4 +1,3 @@
-@import "variables";
 
 :host {}
 
@@ -36,6 +35,6 @@
 }
 
 .key {
-    color: var(--color-grey-400);
+    color: var(--color-text-300);
 }
 

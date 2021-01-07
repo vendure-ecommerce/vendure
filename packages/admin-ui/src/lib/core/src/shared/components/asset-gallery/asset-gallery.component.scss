@@ -80,7 +80,7 @@
         &.visible {
             opacity: 1;
             transform: perspective(500px) translateZ(-44px) translateY(0px);
-            background-color: var(--color-grey-100);
+            background-color: var(--color-component-bg-100);
             transition: transform 0.3s, color 0.3s;
         }
     }

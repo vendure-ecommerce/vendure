@@ -43,7 +43,7 @@ vdr-dashboard-widget {
 }
 
 .dashboard-row.cdk-drop-list-dragging, .dashboard-row.cdk-drop-list-receiving  {
-    border: 1px dashed var(--color-grey-300);
+    border: 1px dashed var(--color-component-border-200);
     padding: 6px;
 }
 .dashboard-row.cdk-drop-list-dragging .dashboard-item:not(.cdk-drag-placeholder) {

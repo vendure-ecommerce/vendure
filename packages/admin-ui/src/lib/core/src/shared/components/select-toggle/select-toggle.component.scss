@@ -10,8 +10,8 @@
 .toggle {
     @include no-select();
     cursor: pointer;
-    background-color: var(--color-grey-100);
-    border: 2px solid var(--color-grey-400);
+    background-color: var(--color-component-bg-100);
+    border: 2px solid var(--color-component-border-300);
     padding: 0 6px;
     border-radius: 50%;
     width: 32px;

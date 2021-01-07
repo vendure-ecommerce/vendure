@@ -1,4 +1,3 @@
-@import "variables";
 
 iframe {
     position: absolute;
@@ -27,7 +26,7 @@ iframe {
     transition: background-color 0.3s;
     text-align: center;
     &.launched {
-        background-color: var(--color-grey-300);
+        background-color: var(--color-component-bg-300);
     }
 }
 

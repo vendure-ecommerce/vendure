@@ -1,4 +1,3 @@
-@import "variables";
 
 :host {
     display: block;
@@ -34,7 +33,7 @@
         ::ng-deep input {
             flex: 1;
             &[disabled] {
-                background-color: var(--color-grey-200);
+                background-color: var(--color-component-bg-200);
             }
         }
         button.edit-button {

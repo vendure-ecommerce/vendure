@@ -2,11 +2,11 @@
 @import "forms";
 
 .main-container {
-    background-color: var(--color-grey-100);
+    background-color: var(--clr-global-app-background);
 }
 
 a:link, a:visited {
-    color: var(--color-primary-600);
+    color: var(--clr-btn-link-color);
 }
 
 a:focus, button:focus {
@@ -26,7 +26,7 @@ a:focus, button:focus {
 }
 
 .table {
-    border-color: var(--color-grey-200);
+    border-color: var(--color-component-border-100);
 
     td.align-middle {
         vertical-align: middle!important;
@@ -46,7 +46,7 @@ button.icon-button {
     border: none;
     background: none;
     cursor: pointer;
-    color: var(--color-grey-500);
+    color: var(--color-icon-button);
 }
 @media screen and (min-width: $breakpoint-small) {
     .full-label {
