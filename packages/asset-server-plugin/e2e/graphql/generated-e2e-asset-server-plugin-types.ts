@@ -1418,11 +1418,13 @@ export type ModifyOrderInput = {
 export type AddItemInput = {
     productVariantId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type AdjustOrderLineInput = {
     orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type SurchargeInput = {
@@ -3599,7 +3601,7 @@ export type OrderLine = Node & {
     discounts: Array<Adjustment>;
     taxLines: Array<TaxLine>;
     order: Order;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<OrderLineCustomFields>;
 };
 
 export type Payment = Node & {
@@ -4313,6 +4315,16 @@ export type HistoryEntrySortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+};
+
+export type OrderLineCustomFields = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
 };
 
 export type AuthenticationInput = {

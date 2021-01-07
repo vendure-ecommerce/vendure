@@ -54,6 +54,11 @@ export const ORDER_FRAGMENT = gql`
             firstName
             lastName
         }
+        shippingLines {
+            shippingMethod {
+                name
+            }
+        }
     }
 `;
 

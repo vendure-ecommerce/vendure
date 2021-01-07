@@ -88,6 +88,7 @@
     <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-order="item">
         <td class="left align-middle">{{ order.code }}</td>
@@ -100,6 +101,7 @@
         <td class="left align-middle">{{ order.total / 100 | currency: order.currencyCode }}</td>
         <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
         <td class="left align-middle">{{ order.orderPlacedAt | date: 'medium' }}</td>
+        <td class="left align-middle">{{ getShippingNames(order) }}</td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="shopping-cart"

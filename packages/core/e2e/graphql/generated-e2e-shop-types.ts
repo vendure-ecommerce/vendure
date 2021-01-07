@@ -179,6 +179,7 @@ export type Mutation = {
 export type MutationAddItemToOrderArgs = {
     productVariantId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type MutationRemoveOrderLineArgs = {
@@ -188,6 +189,7 @@ export type MutationRemoveOrderLineArgs = {
 export type MutationAdjustOrderLineArgs = {
     orderLineId: Scalars['ID'];
     quantity: Scalars['Int'];
+    customFields?: Maybe<OrderLineCustomFieldsInput>;
 };
 
 export type MutationApplyCouponCodeArgs = {
@@ -1866,7 +1868,7 @@ export type OrderLine = Node & {
     discounts: Array<Adjustment>;
     taxLines: Array<TaxLine>;
     order: Order;
-    customFields?: Maybe<Scalars['JSON']>;
+    customFields?: Maybe<OrderLineCustomFields>;
 };
 
 export type Payment = Node & {
@@ -2630,6 +2632,16 @@ export type HistoryEntrySortParameter = {
 
 export type UpdateOrderInput = {
     customFields?: Maybe<Scalars['JSON']>;
+};
+
+export type OrderLineCustomFields = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
+};
+
+export type OrderLineCustomFieldsInput = {
+    test?: Maybe<Scalars['String']>;
+    test2?: Maybe<Scalars['String']>;
 };
 
 export type AuthenticationInput = {

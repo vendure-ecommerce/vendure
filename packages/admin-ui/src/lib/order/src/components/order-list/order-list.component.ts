@@ -10,6 +10,7 @@ import {
     ServerConfigService,
     SortOrder,
 } from '@vendure/admin-ui/core';
+import { Order } from '@vendure/common/lib/generated-types';
 import { merge, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, skip, takeUntil, tap } from 'rxjs/operators';
 
@@ -206,5 +207,13 @@ export class OrderListComponent
                 },
             },
         };
+    }
+
+    getShippingNames(order: Order) {
+        if (order.shippingLines.length) {
+            return order.shippingLines.map(shippingLine => shippingLine.shippingMethod.name).join(', ');
+        } else {
+            return '';
+        }
     }
 }
