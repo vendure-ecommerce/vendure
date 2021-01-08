@@ -73,9 +73,13 @@ Vendure uses [TypeORM](http://typeorm.io), and officially supports **MySQL**, **
 ### 5. Run the dev server
 
 ```
+cd packages/dev-server
+DB=<mysql|postgres|sqlite> yarn start
+```
+Or if you are in the root package 
+```
 DB=<mysql|postgres|sqlite> yarn dev-server:start
 ```
-
 If you do not specify the `DB` argument, it will default to "mysql".
 
 ### 6. Launch the admin ui
