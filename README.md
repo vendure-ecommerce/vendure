@@ -84,7 +84,7 @@ If you do not specify the `DB` argument, it will default to "mysql".
 
 ### 6. Launch the admin ui
 
-1. `cd admin-ui`
+1. `cd packages/admin-ui`
 2. `yarn start`
 3. Go to http://localhost:4200 and log in with "superadmin", "superadmin"
 
