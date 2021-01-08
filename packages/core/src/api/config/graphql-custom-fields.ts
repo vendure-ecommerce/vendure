@@ -179,11 +179,13 @@ export function addGraphQLCustomFields(
             `;
         }
     } else {
-        customFieldTypeDefs += `
-            extend type OrderAddress {
-                customFields: JSON
-            }
+        if (schema.getType('OrderAddress')) {
+            customFieldTypeDefs += `
+                extend type OrderAddress {
+                    customFields: JSON
+                }
         `;
+        }
     }
 
     return extendSchema(schema, parse(customFieldTypeDefs));
