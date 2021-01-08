@@ -267,6 +267,7 @@ describe('ShippingMethod resolver', () => {
         expect(testEligibleShippingMethods).toEqual([
             {
                 id: 'T_3',
+                code: 'new-method',
                 name: 'new method',
                 description: '',
                 price: 100,
@@ -276,6 +277,7 @@ describe('ShippingMethod resolver', () => {
 
             {
                 id: 'T_1',
+                code: 'standard-shipping',
                 name: 'Standard Shipping',
                 description: '',
                 price: 500,
@@ -284,6 +286,7 @@ describe('ShippingMethod resolver', () => {
             },
             {
                 id: 'T_2',
+                code: 'express-shipping',
                 name: 'Express Shipping',
                 description: '',
                 price: 1000,
@@ -417,6 +420,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
         testEligibleShippingMethods(input: $input) {
             id
             name
+            code
             description
             price
             priceWithTax

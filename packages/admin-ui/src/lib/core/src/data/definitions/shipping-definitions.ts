@@ -107,6 +107,7 @@ export const TEST_ELIGIBLE_SHIPPING_METHODS = gql`
     query TestEligibleShippingMethods($input: TestEligibleShippingMethodsInput!) {
         testEligibleShippingMethods(input: $input) {
             id
+            code
             name
             description
             price

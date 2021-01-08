@@ -565,12 +565,14 @@ export class OrderService {
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
         return eligibleMethods.map(eligible => {
             const { price, taxRate, priceIncludesTax, metadata } = eligible.result;
+            const { id, name, description, code } = eligible.method;
             return {
-                id: eligible.method.id,
+                id,
+                code,
                 price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
                 priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
-                description: eligible.method.description,
-                name: eligible.method.name,
+                description,
+                name,
                 metadata,
             };
         });

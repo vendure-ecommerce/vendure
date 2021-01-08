@@ -88,13 +88,15 @@ export class OrderTestingService {
             })
             .map(result => {
                 const { price, taxRate, priceIncludesTax, metadata } = result.result;
+                const { id, name, description, code } = result.method;
                 return {
-                    id: result.method.id,
+                    id,
+                    code,
                     price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
                     priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
-                    name: result.method.name,
-                    description: result.method.description,
-                    metadata: result.result.metadata,
+                    name,
+                    description,
+                    metadata,
                 };
             });
     }
