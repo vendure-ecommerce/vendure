@@ -2016,6 +2016,7 @@ export type ProductTranslationInput = {
 
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
+  enabled?: Maybe<Scalars['Boolean']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   translations: Array<ProductTranslationInput>;

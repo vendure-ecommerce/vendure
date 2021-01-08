@@ -408,6 +408,27 @@ describe('Product resolver', () => {
             newProductWithAssets = result.createProduct;
         });
 
+        it('createProduct creates a disabled Product', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        enabled: false,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Small apple',
+                                slug: 'en-small-apple',
+                                description: 'A small apple',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.enabled).toBe(false);
+            newProduct = result.createProduct;
+        });
+
         it('updateProduct updates a Product', async () => {
             const result = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
                 UPDATE_PRODUCT,
