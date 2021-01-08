@@ -149,7 +149,7 @@ describe('Orders resolver', () => {
 
     it('orders', async () => {
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map(o => o.id)).toEqual(['T_1', 'T_2']);
+        expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
     });
 
     it('order', async () => {
