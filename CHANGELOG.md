@@ -1,3 +1,27 @@
+## <small>0.18.1 (2021-01-08)</small>
+
+
+#### Fixes
+
+* **admin-ui** Refresh ShippingMethodList on channel change ([6811ca8](https://github.com/vendure-ecommerce/vendure/commit/6811ca8)), closes [#595](https://github.com/vendure-ecommerce/vendure/issues/595)
+* **admin-ui** Shipping method validators fix ([bbdd5be](https://github.com/vendure-ecommerce/vendure/commit/bbdd5be))
+* **admin-ui** Translate to Spanish all languages available ([b56e45d](https://github.com/vendure-ecommerce/vendure/commit/b56e45d))
+* **core** Always include customFields on OrderAddress type ([c5e3c6d](https://github.com/vendure-ecommerce/vendure/commit/c5e3c6d)), closes [#616](https://github.com/vendure-ecommerce/vendure/issues/616)
+* **core** Fix error when creating Product in sub-channel ([96c5103](https://github.com/vendure-ecommerce/vendure/commit/96c5103)), closes [#556](https://github.com/vendure-ecommerce/vendure/issues/556) [#613](https://github.com/vendure-ecommerce/vendure/issues/613)
+
+#### Features
+
+* **admin-ui** Add dark mode theme & switcher component ([76f80f6](https://github.com/vendure-ecommerce/vendure/commit/76f80f6)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391)
+* **admin-ui** Add default branding values to vendure-ui-config ([50aeb2b](https://github.com/vendure-ecommerce/vendure/commit/50aeb2b)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391)
+* **admin-ui** Add support for job cancellation ([c6004c1](https://github.com/vendure-ecommerce/vendure/commit/c6004c1)), closes [#614](https://github.com/vendure-ecommerce/vendure/issues/614)
+* **admin-ui** Allow "enabled" state to be set when creating products ([3e006ce](https://github.com/vendure-ecommerce/vendure/commit/3e006ce)), closes [#608](https://github.com/vendure-ecommerce/vendure/issues/608)
+* **admin-ui** Enable theming by use of css custom properties ([68107d2](https://github.com/vendure-ecommerce/vendure/commit/68107d2)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391)
+* **core** Add `cancelJob` mutation ([2d099cf](https://github.com/vendure-ecommerce/vendure/commit/2d099cf)), closes [#614](https://github.com/vendure-ecommerce/vendure/issues/614)
+* **core** Allow "enabled" state to be set when creating products ([02eb9f7](https://github.com/vendure-ecommerce/vendure/commit/02eb9f7)), closes [#608](https://github.com/vendure-ecommerce/vendure/issues/608)
+* **ui-devkit** Allow custom global styles to be specified ([2081a15](https://github.com/vendure-ecommerce/vendure/commit/2081a15)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391)
+* **ui-devkit** Allow extensions consisting of only static assets ([5ea3422](https://github.com/vendure-ecommerce/vendure/commit/5ea3422)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391) [#309](https://github.com/vendure-ecommerce/vendure/issues/309)
+* **ui-devkit** Export helper function to set brand images ([6cde0d8](https://github.com/vendure-ecommerce/vendure/commit/6cde0d8)), closes [#391](https://github.com/vendure-ecommerce/vendure/issues/391)
+
 ## 0.18.0 (2020-12-31)
 
 
