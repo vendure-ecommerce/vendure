@@ -103,16 +103,7 @@ export class ProductVariantAdminEntityResolver {
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<Channel[]> {
         const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
-        if (!isDefaultChannel && productVariant.channels) {
-            return productVariant.channels;
-        } else {
-            const channels = await this.productVariantService.getProductVariantChannels(
-                ctx,
-                productVariant.id,
-            );
-            return channels.filter(channel =>
-                isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId),
-            );
-        }
+        const channels = await this.productVariantService.getProductVariantChannels(ctx, productVariant.id);
+        return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
     }
 }

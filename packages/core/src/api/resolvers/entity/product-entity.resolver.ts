@@ -1,6 +1,8 @@
 import { Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
+import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 
 import { Translated } from '../../../common/types/locale-types';
+import { idsAreEqual } from '../../../common/utils';
 import { Asset } from '../../../entity/asset/asset.entity';
 import { Channel } from '../../../entity/channel/channel.entity';
 import { Collection } from '../../../entity/collection/collection.entity';
@@ -88,10 +90,8 @@ export class ProductAdminEntityResolver {
 
     @ResolveField()
     async channels(@Ctx() ctx: RequestContext, @Parent() product: Product): Promise<Channel[]> {
-        if (product.channels) {
-            return product.channels;
-        } else {
-            return this.productService.getProductChannels(ctx, product.id);
-        }
+        const isDefaultChannel = ctx.channel.code === DEFAULT_CHANNEL_CODE;
+        const channels = product.channels || (await this.productService.getProductChannels(ctx, product.id));
+        return channels.filter(channel => (isDefaultChannel ? true : idsAreEqual(channel.id, ctx.channelId)));
     }
 }
