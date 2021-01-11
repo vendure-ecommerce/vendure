@@ -185,6 +185,7 @@
     "enabled": "启用",
     "expand-entries": "",
     "extension-running-in-separate-window": "扩展已在另一个窗口启动",
+    "filter": "",
     "guest": "游客",
     "hide-custom-fields": "隐藏客户化字段",
     "items-per-page-option": "每页显示 { count } 条",

@@ -185,6 +185,7 @@
     "enabled": "Enabled",
     "expand-entries": "Expand entries",
     "extension-running-in-separate-window": "Extension is running in a separate window",
+    "filter": "Filter",
     "guest": "Guest",
     "hide-custom-fields": "Hide custom fields",
     "items-per-page-option": "{ count } per page",

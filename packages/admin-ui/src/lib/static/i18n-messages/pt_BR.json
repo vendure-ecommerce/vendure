@@ -185,6 +185,7 @@
     "enabled": "Habilitado",
     "expand-entries": "",
     "extension-running-in-separate-window": "A extensão está sendo executada em uma janela separada",
+    "filter": "",
     "guest": "Convidado",
     "hide-custom-fields": "Ocultar campos personalizados",
     "items-per-page-option": "{ count } por página",

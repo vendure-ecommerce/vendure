@@ -185,6 +185,7 @@
     "enabled": "Zapnuto",
     "expand-entries": "Otevřít vstupy",
     "extension-running-in-separate-window": "Rozšíření běží v novém okně",
+    "filter": "",
     "guest": "Host",
     "hide-custom-fields": "Skrýt extra pole",
     "items-per-page-option": "{ count } na stránku",

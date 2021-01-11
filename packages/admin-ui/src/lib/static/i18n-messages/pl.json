@@ -185,6 +185,7 @@
     "enabled": "Aktywny",
     "expand-entries": "",
     "extension-running-in-separate-window": "Rozszerzenie jest włączone w innym oknie",
+    "filter": "",
     "guest": "Gość",
     "hide-custom-fields": "Ukryj pola dodatkowe",
     "items-per-page-option": "{ count } na stronę",

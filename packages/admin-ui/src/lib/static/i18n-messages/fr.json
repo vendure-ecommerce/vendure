@@ -185,6 +185,7 @@
     "enabled": "Activé",
     "expand-entries": "Développer les éléments",
     "extension-running-in-separate-window": "Extension fonctionne dans une fenêtre à part",
+    "filter": "",
     "guest": "Invité",
     "hide-custom-fields": "Cacher les champs personnalisés",
     "items-per-page-option": "{ count } par page",

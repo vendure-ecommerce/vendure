@@ -185,6 +185,7 @@
     "enabled": "Aktiviert",
     "expand-entries": "",
     "extension-running-in-separate-window": "Die Erweiterung läuft in einem separaten Fenster",
+    "filter": "",
     "guest": "Gast",
     "hide-custom-fields": "Benutzerdefinierte Felder ausblenden",
     "items-per-page-option": "{ count } pro Seite",
