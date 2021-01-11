@@ -906,7 +906,7 @@ export class OrderService {
 
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
-        if (order.lines?.[0].items?.[0]?.fulfillments !== undefined) {
+        if (order.lines?.[0]?.items?.[0]?.fulfillments !== undefined) {
             lines = order.lines;
         } else {
             lines = await this.connection.getRepository(ctx, OrderLine).find({

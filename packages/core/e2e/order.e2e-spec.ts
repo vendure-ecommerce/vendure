@@ -54,6 +54,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
+    ApplyCouponCode,
     DeletionResult,
     GetActiveOrder,
     GetOrderByCodeWithPayments,
@@ -76,6 +77,7 @@ import {
 } from './graphql/shared-definitions';
 import {
     ADD_ITEM_TO_ORDER,
+    APPLY_COUPON_CODE,
     GET_ACTIVE_ORDER,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
 } from './graphql/shop-definitions';
@@ -339,6 +341,23 @@ describe('Orders resolver', () => {
         let f1Id: string;
         let f2Id: string;
         let f3Id: string;
+
+        // https://github.com/vendure-ecommerce/vendure/issues/639
+        it('returns fulfillments for Order with no lines', async () => {
+            // Apply a coupon code just to create an active order with no OrderLines
+            await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+                couponCode: 'TEST',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const { order } = await adminClient.query<
+                GetOrderFulfillments.Query,
+                GetOrderFulfillments.Variables
+            >(GET_ORDER_FULFILLMENTS, {
+                id: activeOrder!.id,
+            });
+
+            expect(order?.fulfillments).toEqual([]);
+        });
 
         it('return error result if lines is empty', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
