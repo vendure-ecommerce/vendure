@@ -26,6 +26,7 @@ export * from './components/product-variants-table/product-variants-table.compon
 export * from './components/update-product-option-dialog/update-product-option-dialog.component';
 export * from './components/variant-price-detail/variant-price-detail.component';
 export * from './providers/product-detail/product-detail.service';
+export * from './providers/product-detail/replace-last';
 export * from './providers/routing/asset-resolver';
 export * from './providers/routing/collection-resolver';
 export * from './providers/routing/facet-resolver';
