@@ -152,7 +152,14 @@ export class OrderService {
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: ['lines', 'customer', 'lines.productVariant', 'channels', 'shippingLines'],
+                relations: [
+                    'lines',
+                    'customer',
+                    'lines.productVariant',
+                    'lines.items',
+                    'channels',
+                    'shippingLines',
+                ],
                 channelId: ctx.channelId,
                 ctx,
             })

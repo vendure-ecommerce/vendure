@@ -5845,6 +5845,20 @@ export type GetOrderWithPaymentsQuery = {
     >;
 };
 
+export type GetOrderListWithQtyQueryVariables = Exact<{
+    options?: Maybe<OrderListOptions>;
+}>;
+
+export type GetOrderListWithQtyQuery = {
+    orders: {
+        items: Array<
+            Pick<Order, 'id' | 'code' | 'totalQuantity'> & {
+                lines: Array<Pick<OrderLine, 'id' | 'quantity'> & { items: Array<Pick<OrderItem, 'id'>> }>;
+            }
+        >;
+    };
+};
+
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -7832,6 +7846,33 @@ export namespace GetOrderWithPayments {
     export type Order = NonNullable<GetOrderWithPaymentsQuery['order']>;
     export type Payments = NonNullable<
         NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
+    >;
+}
+
+export namespace GetOrderListWithQty {
+    export type Variables = GetOrderListWithQtyQueryVariables;
+    export type Query = GetOrderListWithQtyQuery;
+    export type Orders = NonNullable<GetOrderListWithQtyQuery['orders']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+    >;
+    export type Lines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+            >['lines']
+        >[number]
+    >;
+    export type _Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+                    >['lines']
+                >[number]
+            >['items']
+        >[number]
     >;
 }
 

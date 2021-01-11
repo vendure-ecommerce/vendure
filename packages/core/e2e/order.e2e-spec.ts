@@ -35,6 +35,7 @@ import {
     GetOrderHistory,
     GetOrderList,
     GetOrderListFulfillments,
+    GetOrderListWithQty,
     GetOrderWithPayments,
     GetProductWithVariants,
     GetStockMovement,
@@ -60,6 +61,7 @@ import {
     GetOrderByCodeWithPayments,
     TestOrderFragmentFragment,
     UpdatedOrder,
+    UpdatedOrderFragment,
 } from './graphql/generated-e2e-shop-types';
 import {
     CANCEL_ORDER,
@@ -99,7 +101,7 @@ describe('Orders resolver', () => {
     const password = 'test';
 
     const orderGuard: ErrorResultGuard<
-        TestOrderFragmentFragment | CanceledOrderFragment
+        TestOrderFragmentFragment | CanceledOrderFragment | UpdatedOrderFragment
     > = createErrorResultGuard(input => !!input.lines);
     const paymentGuard: ErrorResultGuard<PaymentFragment> = createErrorResultGuard(input => !!input.state);
     const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
@@ -341,23 +343,6 @@ describe('Orders resolver', () => {
         let f1Id: string;
         let f2Id: string;
         let f3Id: string;
-
-        // https://github.com/vendure-ecommerce/vendure/issues/639
-        it('returns fulfillments for Order with no lines', async () => {
-            // Apply a coupon code just to create an active order with no OrderLines
-            await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
-                couponCode: 'TEST',
-            });
-            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
-            const { order } = await adminClient.query<
-                GetOrderFulfillments.Query,
-                GetOrderFulfillments.Variables
-            >(GET_ORDER_FULFILLMENTS, {
-                id: activeOrder!.id,
-            });
-
-            expect(order?.fulfillments).toEqual([]);
-        });
 
         it('return error result if lines is empty', async () => {
             const { order } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
@@ -1628,6 +1613,52 @@ describe('Orders resolver', () => {
             expect(after?.history.totalItems).toBe(2);
         });
     });
+
+    describe('issues', () => {
+        // https://github.com/vendure-ecommerce/vendure/issues/639
+        it('returns fulfillments for Order with no lines', async () => {
+            // Apply a coupon code just to create an active order with no OrderLines
+            await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+                couponCode: 'TEST',
+            });
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+            const { order } = await adminClient.query<
+                GetOrderFulfillments.Query,
+                GetOrderFulfillments.Variables
+            >(GET_ORDER_FULFILLMENTS, {
+                id: activeOrder!.id,
+            });
+
+            expect(order?.fulfillments).toEqual([]);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/603
+        it('orders correctly resolves quantities and OrderItems', async () => {
+            await shopClient.asAnonymousUser();
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            orderGuard.assertSuccess(addItemToOrder);
+
+            const { orders } = await adminClient.query<
+                GetOrderListWithQty.Query,
+                GetOrderListWithQty.Variables
+            >(GET_ORDERS_LIST_WITH_QUANTITIES, {
+                options: {
+                    filter: {
+                        code: { eq: addItemToOrder.code },
+                    },
+                },
+            });
+
+            expect(orders.items[0].totalQuantity).toBe(2);
+            expect(orders.items[0].lines[0].quantity).toBe(2);
+        });
+    });
 });
 
 async function createTestOrder(
@@ -1798,6 +1829,22 @@ const GET_ORDER_WITH_PAYMENTS = gql`
                 id
                 errorMessage
                 metadata
+            }
+        }
+    }
+`;
+
+const GET_ORDERS_LIST_WITH_QUANTITIES = gql`
+    query GetOrderListWithQty($options: OrderListOptions) {
+        orders(options: $options) {
+            items {
+                id
+                code
+                totalQuantity
+                lines {
+                    id
+                    quantity
+                }
             }
         }
     }
