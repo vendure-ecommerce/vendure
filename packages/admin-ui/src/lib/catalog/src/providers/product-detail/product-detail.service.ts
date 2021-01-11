@@ -5,6 +5,7 @@ import {
     DataService,
     DeletionResult,
     FacetWithValues,
+    findTranslation,
     LanguageCode,
     ProductWithVariants,
     UpdateProductInput,
@@ -162,13 +163,11 @@ export class ProductDetailService {
         if (productInput) {
             updateOperations.push(this.dataService.product.updateProduct(productInput));
 
-            const productOldName = product.translations?.find(t => t.languageCode === languageCode)?.name;
-            const productNewName = productInput.translations?.find(t => t.languageCode === languageCode)
-                ?.name;
+            const productOldName = findTranslation(product, languageCode)?.name;
+            const productNewName = findTranslation(productInput, languageCode)?.name;
             if (productOldName && productNewName && autoUpdate) {
                 for (const variant of product.variants) {
-                    const currentVariantName =
-                        variant.translations.find(t => t.languageCode === languageCode)?.name || '';
+                    const currentVariantName = findTranslation(variant, languageCode)?.name || '';
                     let variantInput: UpdateProductVariantInput;
                     const existingVariantInput = updateVariantsInput.find(i => i.id === variant.id);
                     if (existingVariantInput) {
@@ -180,9 +179,7 @@ export class ProductDetailService {
                         };
                         updateVariantsInput.push(variantInput);
                     }
-                    const variantTranslation = variantInput.translations?.find(
-                        t => t.languageCode === languageCode,
-                    );
+                    const variantTranslation = findTranslation(variantInput, languageCode);
                     if (variantTranslation) {
                         variantTranslation.name = replaceLast(
                             variantTranslation.name,
@@ -208,7 +205,7 @@ export class ProductDetailService {
         if (input.autoUpdate) {
             // Update any ProductVariants' names which include the option name
             let oldOptionName: string | undefined;
-            const newOptionName = input.translations?.find(t => t.languageCode === languageCode)?.name;
+            const newOptionName = findTranslation(input, languageCode)?.name;
             if (!newOptionName) {
                 updateProductVariantNames$ = of([]);
             }
@@ -216,12 +213,12 @@ export class ProductDetailService {
             for (const variant of product.variants) {
                 if (variant.options.map(o => o.id).includes(input.id)) {
                     if (!oldOptionName) {
-                        oldOptionName = variant.options
-                            .find(o => o.id === input.id)
-                            ?.translations.find(t => t.languageCode === languageCode)?.name;
+                        oldOptionName = findTranslation(
+                            variant.options.find(o => o.id === input.id),
+                            languageCode,
+                        )?.name;
                     }
-                    const variantName =
-                        variant.translations.find(t => t.languageCode === languageCode)?.name || '';
+                    const variantName = findTranslation(variant, languageCode)?.name || '';
                     if (oldOptionName && newOptionName && variantName.includes(oldOptionName)) {
                         variantsToUpdate.push({
                             id: variant.id,

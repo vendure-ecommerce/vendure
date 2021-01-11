@@ -21,6 +21,7 @@ import {
     CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
+    findTranslation,
     getConfigArgValue,
     LanguageCode,
     ModalService,
@@ -105,7 +106,7 @@ export class CollectionDetailComponent
             .pipe(take(1))
             .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['slug']);
-                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentTranslation = findTranslation(entity, languageCode);
                 const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
                 if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
@@ -223,7 +224,7 @@ export class CollectionDetailComponent
      * Sets the values of the form on changes to the category or current language.
      */
     protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',

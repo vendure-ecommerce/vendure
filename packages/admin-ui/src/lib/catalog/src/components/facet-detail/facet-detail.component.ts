@@ -11,6 +11,7 @@ import {
     DataService,
     DeletionResult,
     FacetWithValues,
+    findTranslation,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -269,7 +270,7 @@ export class FacetDetailComponent
      * Sets the values of the form on changes to the facet or current language.
      */
     protected setFormValues(facet: FacetWithValues.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = facet.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(facet, languageCode);
 
         this.detailForm.patchValue({
             facet: {
@@ -299,8 +300,7 @@ export class FacetDetailComponent
         currentValuesFormArray.clear();
         this.values = [...facet.values];
         facet.values.forEach((value, i) => {
-            const valueTranslation =
-                value.translations && value.translations.find(t => t.languageCode === languageCode);
+            const valueTranslation = findTranslation(value, languageCode);
             const group = {
                 id: value.id,
                 code: value.code,

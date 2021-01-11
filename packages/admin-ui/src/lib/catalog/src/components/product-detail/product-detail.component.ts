@@ -10,6 +10,7 @@ import {
     CustomFieldConfig,
     DataService,
     FacetWithValues,
+    findTranslation,
     flattenFacetValues,
     GlobalFlag,
     IGNORE_CAN_DEACTIVATE_GUARD,
@@ -327,7 +328,7 @@ export class ProductDetailComponent
             .pipe(take(1))
             .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['product', 'slug']);
-                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentTranslation = findTranslation(entity, languageCode);
                 const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
                 if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
@@ -530,7 +531,7 @@ export class ProductDetailComponent
      * Sets the values of the form on changes to the product or current language.
      */
     protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(product, languageCode);
         this.detailForm.patchValue({
             product: {
                 enabled: product.enabled,
@@ -559,7 +560,7 @@ export class ProductDetailComponent
 
         const variantsFormArray = this.detailForm.get('variants') as FormArray;
         product.variants.forEach((variant, i) => {
-            const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
+            const variantTranslation = findTranslation(variant, languageCode);
             const facetValueIds = variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
                 id: variant.id,

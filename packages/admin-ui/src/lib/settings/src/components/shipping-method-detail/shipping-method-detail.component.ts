@@ -11,6 +11,7 @@ import {
     createUpdatedTranslatable,
     CustomFieldConfig,
     DataService,
+    findTranslation,
     GetActiveChannel,
     getConfigArgValue,
     LanguageCode,
@@ -298,7 +299,7 @@ export class ShippingMethodDetailComponent
     }
 
     protected setFormValues(shippingMethod: ShippingMethod.Fragment, languageCode: LanguageCode): void {
-        const currentTranslation = shippingMethod.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(shippingMethod, languageCode);
         this.detailForm.patchValue({
             name: currentTranslation?.name ?? '',
             description: currentTranslation?.description ?? '',

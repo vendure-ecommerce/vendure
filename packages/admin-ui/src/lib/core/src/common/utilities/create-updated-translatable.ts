@@ -3,6 +3,8 @@ import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { CustomFieldConfig, LanguageCode } from '../generated-types';
 
+import { findTranslation } from './find-translation';
+
 export interface TranslatableUpdateOptions<T extends { translations: any[] } & MayHaveCustomFields> {
     translatable: T;
     updatedFields: { [key: string]: any };
@@ -25,7 +27,7 @@ export function createUpdatedTranslatable<T extends { translations: any[] } & Ma
 ): T {
     const { translatable, updatedFields, languageCode, customFieldConfig, defaultTranslation } = options;
     const currentTranslation =
-        translatable.translations.find(t => t.languageCode === languageCode) || defaultTranslation;
+        findTranslation(translatable, languageCode) || defaultTranslation || ({} as any);
     const index = translatable.translations.indexOf(currentTranslation);
     const newTranslation = patchObject(currentTranslation, updatedFields);
     const newCustomFields: CustomFieldsObject = {};
