@@ -60,6 +60,7 @@
     "assign-to-named-channel": "分配到{ channelCode }",
     "assign-variant-to-channel-success": "",
     "assign-variants-to-channel": "",
+    "auto-update-product-variant-name": "",
     "channel-price-preview": "渠道价格预览",
     "collection-contents": "系列产品",
     "confirm-adding-options-delete-default-body": "添加新规格到此产品会导致含此规格的产品被删除，确认继续吗?",

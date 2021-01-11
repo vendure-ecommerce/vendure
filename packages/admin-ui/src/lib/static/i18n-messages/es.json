@@ -60,6 +60,7 @@
     "assign-to-named-channel": "Asignar a { channelCode }",
     "assign-variant-to-channel-success": "",
     "assign-variants-to-channel": "",
+    "auto-update-product-variant-name": "",
     "channel-price-preview": "Vista previa de precio para el canal de ventas",
     "collection-contents": "Contenidos de la colección",
     "confirm-adding-options-delete-default-body": "Añadir optiones a este producto eliminará la variante por defecto. ¿Desea continuar?",

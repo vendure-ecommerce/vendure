@@ -64,7 +64,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Output() assetChange = new EventEmitter<VariantAssetChange>();
     @Output() selectionChange = new EventEmitter<string[]>();
     @Output() selectFacetValueClick = new EventEmitter<string[]>();
-    @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput>();
+    @Output() updateProductOption = new EventEmitter<UpdateProductOptionInput & { autoUpdate: boolean }>();
     selectedVariantIds: string[] = [];
     pagination: PaginationInstance = {
         currentPage: 1,

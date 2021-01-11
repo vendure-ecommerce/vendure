@@ -60,6 +60,7 @@
     "assign-to-named-channel": "Attribuer à { channelCode }",
     "assign-variant-to-channel-success": "",
     "assign-variants-to-channel": "",
+    "auto-update-product-variant-name": "",
     "channel-price-preview": "Prévisualisation du prix du canal",
     "collection-contents": "Contenu de la Collection",
     "confirm-adding-options-delete-default-body": "L'ajout d'options à ce produit supprimera les variations existantes par défaut. Voulez-vous continuer ?",

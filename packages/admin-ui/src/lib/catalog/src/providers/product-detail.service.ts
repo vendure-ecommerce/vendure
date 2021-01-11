@@ -6,6 +6,7 @@ import {
     DeletionResult,
     FacetWithValues,
     LanguageCode,
+    ProductWithVariants,
     UpdateProductInput,
     UpdateProductMutation,
     UpdateProductOptionInput,
@@ -30,13 +31,13 @@ export class ProductDetailService {
     constructor(private dataService: DataService) {}
 
     getFacets(): Observable<FacetWithValues.Fragment[]> {
-        return this.dataService.facet.getAllFacets().mapSingle((data) => data.facets.items);
+        return this.dataService.facet.getAllFacets().mapSingle(data => data.facets.items);
     }
 
     getTaxCategories() {
         return this.dataService.settings
             .getTaxCategories()
-            .mapSingle((data) => data.taxCategories)
+            .mapSingle(data => data.taxCategories)
             .pipe(shareReplay(1));
     }
 
@@ -46,14 +47,14 @@ export class ProductDetailService {
         languageCode: LanguageCode,
     ) {
         const createProduct$ = this.dataService.product.createProduct(input);
-        const nonEmptyOptionGroups = createVariantsConfig.groups.filter((g) => 0 < g.values.length);
+        const nonEmptyOptionGroups = createVariantsConfig.groups.filter(g => 0 < g.values.length);
         const createOptionGroups$ = this.createProductOptionGroups(nonEmptyOptionGroups, languageCode);
 
         return forkJoin(createProduct$, createOptionGroups$).pipe(
             mergeMap(([{ createProduct }, optionGroups]) => {
                 const addOptionsToProduct$ = optionGroups.length
                     ? forkJoin(
-                          optionGroups.map((optionGroup) => {
+                          optionGroups.map(optionGroup => {
                               return this.dataService.product.addOptionGroupToProduct({
                                   productId: createProduct.id,
                                   optionGroupId: optionGroup.id,
@@ -68,10 +69,10 @@ export class ProductDetailService {
                 );
             }),
             mergeMap(({ createProduct, optionGroups }) => {
-                const variants = createVariantsConfig.variants.map((v) => {
+                const variants = createVariantsConfig.variants.map(v => {
                     const optionIds = optionGroups.length
                         ? v.optionValues.map((optionName, index) => {
-                              const option = optionGroups[index].options.find((o) => o.name === optionName);
+                              const option = optionGroups[index].options.find(o => o.name === optionName);
                               if (!option) {
                                   throw new Error(
                                       `Could not find a matching ProductOption "${optionName}" when creating variant`,
@@ -85,7 +86,7 @@ export class ProductDetailService {
                         optionIds,
                     };
                 });
-                const options = optionGroups.map((og) => og.options).reduce((flat, o) => [...flat, ...o], []);
+                const options = optionGroups.map(og => og.options).reduce((flat, o) => [...flat, ...o], []);
                 return this.createProductVariants(createProduct, variants, options, languageCode);
             }),
         );
@@ -94,17 +95,17 @@ export class ProductDetailService {
     createProductOptionGroups(groups: Array<{ name: string; values: string[] }>, languageCode: LanguageCode) {
         return groups.length
             ? forkJoin(
-                  groups.map((c) => {
+                  groups.map(c => {
                       return this.dataService.product
                           .createProductOptionGroups({
                               code: normalizeString(c.name, '-'),
                               translations: [{ languageCode, name: c.name }],
-                              options: c.values.map((v) => ({
+                              options: c.values.map(v => ({
                                   code: normalizeString(v, '-'),
                                   translations: [{ languageCode, name: v }],
                               })),
                           })
-                          .pipe(map((data) => data.createProductOptionGroup));
+                          .pipe(map(data => data.createProductOptionGroup));
                   }),
               )
             : of([]);
@@ -116,12 +117,12 @@ export class ProductDetailService {
         options: Array<{ id: string; name: string }>,
         languageCode: LanguageCode,
     ) {
-        const variants: CreateProductVariantInput[] = variantData.map((v) => {
+        const variants: CreateProductVariantInput[] = variantData.map(v => {
             const name = options.length
                 ? `${product.name} ${v.optionIds
-                      .map((id) => options.find((o) => o.id === id))
+                      .map(id => options.find(o => o.id === id))
                       .filter(notNullOrUndefined)
-                      .map((o) => o.name)
+                      .map(o => o.name)
                       .join(' ')}`
                 : product.name;
             return {
@@ -157,13 +158,54 @@ export class ProductDetailService {
         return forkJoin(updateOperations);
     }
 
-    updateProductOption(input: UpdateProductOptionInput) {
-        return this.dataService.product.updateProductOption(input);
+    updateProductOption(
+        input: UpdateProductOptionInput & { autoUpdate: boolean },
+        product: ProductWithVariants.Fragment,
+        languageCode: LanguageCode,
+    ) {
+        let updateProductVariantNames$: Observable<any> = of([]);
+        if (input.autoUpdate) {
+            // Update any ProductVariants' names which include the option name
+            let oldOptionName: string | undefined;
+            const newOptionName = input.translations?.find(t => t.languageCode === languageCode)?.name;
+            if (!newOptionName) {
+                updateProductVariantNames$ = of([]);
+            }
+            const variantsToUpdate: UpdateProductVariantInput[] = [];
+            for (const variant of product.variants) {
+                if (variant.options.map(o => o.id).includes(input.id)) {
+                    if (!oldOptionName) {
+                        oldOptionName = variant.options
+                            .find(o => o.id === input.id)
+                            ?.translations.find(t => t.languageCode === languageCode)?.name;
+                    }
+                    const variantName =
+                        variant.translations.find(t => t.languageCode === languageCode)?.name || '';
+                    if (oldOptionName && newOptionName && variantName.includes(oldOptionName)) {
+                        variantsToUpdate.push({
+                            id: variant.id,
+                            translations: [
+                                {
+                                    languageCode,
+                                    name: variantName.replace(oldOptionName, newOptionName),
+                                },
+                            ],
+                        });
+                    }
+                }
+            }
+            if (variantsToUpdate.length) {
+                updateProductVariantNames$ = this.dataService.product.updateProductVariants(variantsToUpdate);
+            }
+        }
+        return this.dataService.product
+            .updateProductOption(input)
+            .pipe(mergeMap(() => updateProductVariantNames$));
     }
 
     deleteProductVariant(id: string, productId: string) {
         return this.dataService.product.deleteProductVariant(id).pipe(
-            switchMap((result) => {
+            switchMap(result => {
                 if (result.deleteProductVariant.result === DeletionResult.DELETED) {
                     return this.dataService.product.getProduct(productId).single$;
                 } else {

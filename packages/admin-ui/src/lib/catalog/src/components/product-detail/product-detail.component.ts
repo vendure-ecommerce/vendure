@@ -29,7 +29,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
+import { combineLatest, EMPTY, merge, Observable, of } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -347,19 +347,26 @@ export class ProductDetailComponent
         });
     }
 
-    updateProductOption(input: UpdateProductOptionInput) {
-        this.productDetailService.updateProductOption(input).subscribe(
-            () => {
-                this.notificationService.success(_('common.notify-update-success'), {
-                    entity: 'ProductOption',
-                });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-update-error'), {
-                    entity: 'ProductOption',
-                });
-            },
-        );
+    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) =>
+                    this.productDetailService.updateProductOption(input, product, languageCode),
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'ProductOption',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'ProductOption',
+                    });
+                },
+            );
     }
 
     removeProductFacetValue(facetValueId: string) {

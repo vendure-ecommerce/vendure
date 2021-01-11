@@ -60,6 +60,7 @@
     "assign-to-named-channel": "Assign to { channelCode }",
     "assign-variant-to-channel-success": "Successfully assigned product variant to \"{ channel }\"",
     "assign-variants-to-channel": "Assign product variants to channel",
+    "auto-update-product-variant-name": "Automatically update the names of ProductVariants using this option",
     "channel-price-preview": "Channel price preview",
     "collection-contents": "Collection contents",
     "confirm-adding-options-delete-default-body": "Adding options to this product will cause the existing default variant to be deleted. Do you wish to proceed?",
