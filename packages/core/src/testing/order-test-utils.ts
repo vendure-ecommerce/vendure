@@ -63,6 +63,10 @@ export const taxCategoryReduced = new TaxCategory({
     id: 'taxCategoryReduced',
     name: 'Reduced Tax',
 });
+export const taxCategoryZero = new TaxCategory({
+    id: 'taxCategoryZero',
+    name: 'Zero Tax',
+});
 export const zoneDefault = new Zone({
     id: 'zoneDefault',
     name: 'Default Zone',
@@ -91,6 +95,14 @@ export const taxRateDefaultReduced = new TaxRate({
     zone: zoneDefault,
     category: taxCategoryReduced,
 });
+export const taxRateDefaultZero = new TaxRate({
+    id: 'taxRateDefaultZero',
+    name: 'Default Zero Tax',
+    value: 0,
+    enabled: true,
+    zone: zoneDefault,
+    category: taxCategoryZero,
+});
 export const taxRateOtherStandard = new TaxRate({
     id: 'taxRateOtherStandard',
     name: 'Other Standard',
@@ -112,6 +124,7 @@ export class MockTaxRateService {
     private activeTaxRates = [
         taxRateDefaultStandard,
         taxRateDefaultReduced,
+        taxRateDefaultZero,
         taxRateOtherStandard,
         taxRateOtherReduced,
     ];

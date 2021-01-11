@@ -25,6 +25,7 @@ import {
     MockTaxRateService,
     taxCategoryReduced,
     taxCategoryStandard,
+    taxCategoryZero,
 } from '../../../testing/order-test-utils';
 import { WorkerService } from '../../../worker/worker.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
@@ -585,6 +586,27 @@ describe('OrderCalculator', () => {
                     await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
 
                     expect(order.subTotal).toBe(42);
+                    expect(order.discounts.length).toBe(1);
+                    expect(order.discounts[0].description).toBe('50% off order');
+                    expect(order.totalWithTax).toBe(50);
+                    assertOrderTotalsAddUp(order);
+                });
+
+                it('prices include tax at 0%', async () => {
+                    const ctx = createRequestContext({ pricesIncludeTax: true });
+                    const order = createOrder({
+                        ctx,
+                        lines: [
+                            {
+                                listPrice: 100,
+                                taxCategory: taxCategoryZero,
+                                quantity: 1,
+                            },
+                        ],
+                    });
+                    await orderCalculator.applyPriceAdjustments(ctx, order, [promotion]);
+
+                    expect(order.subTotal).toBe(50);
                     expect(order.discounts.length).toBe(1);
                     expect(order.discounts[0].description).toBe('50% off order');
                     expect(order.totalWithTax).toBe(50);
