@@ -18,7 +18,9 @@ import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { forkJoin, Observable, of, throwError } from 'rxjs';
 import { map, mergeMap, shareReplay, switchMap } from 'rxjs/operators';
 
-import { CreateProductVariantsConfig } from '../components/generate-product-variants/generate-product-variants.component';
+import { CreateProductVariantsConfig } from '../../components/generate-product-variants/generate-product-variants.component';
+
+import { replaceLast } from './replace-last';
 
 /**
  * Handles the logic for making the API calls to perform CRUD operations on a Product and its related
@@ -147,13 +149,52 @@ export class ProductDetailService {
         );
     }
 
-    updateProduct(productInput?: UpdateProductInput, variantInput?: UpdateProductVariantInput[]) {
+    updateProduct(updateOptions: {
+        product: ProductWithVariants.Fragment;
+        languageCode: LanguageCode;
+        autoUpdate: boolean;
+        productInput?: UpdateProductInput;
+        variantsInput?: UpdateProductVariantInput[];
+    }) {
+        const { product, languageCode, autoUpdate, productInput, variantsInput } = updateOptions;
         const updateOperations: Array<Observable<UpdateProductMutation | UpdateProductVariantsMutation>> = [];
+        const updateVariantsInput = variantsInput || [];
         if (productInput) {
             updateOperations.push(this.dataService.product.updateProduct(productInput));
+
+            const productOldName = product.translations?.find(t => t.languageCode === languageCode)?.name;
+            const productNewName = productInput.translations?.find(t => t.languageCode === languageCode)
+                ?.name;
+            if (productOldName && productNewName && autoUpdate) {
+                for (const variant of product.variants) {
+                    const currentVariantName =
+                        variant.translations.find(t => t.languageCode === languageCode)?.name || '';
+                    let variantInput: UpdateProductVariantInput;
+                    const existingVariantInput = updateVariantsInput.find(i => i.id === variant.id);
+                    if (existingVariantInput) {
+                        variantInput = existingVariantInput;
+                    } else {
+                        variantInput = {
+                            id: variant.id,
+                            translations: [{ languageCode, name: currentVariantName }],
+                        };
+                        updateVariantsInput.push(variantInput);
+                    }
+                    const variantTranslation = variantInput.translations?.find(
+                        t => t.languageCode === languageCode,
+                    );
+                    if (variantTranslation) {
+                        variantTranslation.name = replaceLast(
+                            variantTranslation.name,
+                            productOldName,
+                            productNewName,
+                        );
+                    }
+                }
+            }
         }
-        if (variantInput) {
-            updateOperations.push(this.dataService.product.updateProductVariants(variantInput));
+        if (updateVariantsInput.length) {
+            updateOperations.push(this.dataService.product.updateProductVariants(updateVariantsInput));
         }
         return forkJoin(updateOperations);
     }
@@ -187,7 +228,7 @@ export class ProductDetailService {
                             translations: [
                                 {
                                     languageCode,
-                                    name: variantName.replace(oldOptionName, newOptionName),
+                                    name: replaceLast(variantName, oldOptionName, newOptionName),
                                 },
                             ],
                         });

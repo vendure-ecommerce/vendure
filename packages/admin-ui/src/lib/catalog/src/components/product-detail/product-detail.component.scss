@@ -44,3 +44,15 @@ vdr-action-bar clr-toggle-wrapper {
 .channel-assignment {
     flex-wrap: wrap;
 }
+
+.auto-rename-wrapper {
+    overflow: hidden;
+    max-height: 0;
+    padding-left: 9.5rem;
+    margin-bottom: 0;
+    transition: max-height 0.2s, margin-bottom 0.2s;
+    &.visible {
+        max-height: 24px;
+        margin-bottom: 12px;
+    }
+}

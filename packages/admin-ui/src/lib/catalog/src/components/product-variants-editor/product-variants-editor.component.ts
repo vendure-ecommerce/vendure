@@ -19,7 +19,7 @@ import { generateAllCombinations, notNullOrUndefined } from '@vendure/common/lib
 import { EMPTY, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take } from 'rxjs/operators';
 
-import { ProductDetailService } from '../../providers/product-detail.service';
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 
 export interface VariantInfo {
     productVariantId?: string;

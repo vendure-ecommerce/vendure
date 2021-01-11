@@ -43,7 +43,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { ProductDetailService } from '../../providers/product-detail.service';
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
@@ -121,6 +121,7 @@ export class ProductDetailComponent
             product: this.formBuilder.group({
                 enabled: true,
                 name: ['', Validators.required],
+                autoUpdateVariantNames: true,
                 slug: '',
                 description: '',
                 facetValueIds: [[]],
@@ -492,7 +493,14 @@ export class ProductDetailComponent
                         );
                     }
 
-                    return this.productDetailService.updateProduct(productInput, variantsInput);
+                    return this.productDetailService.updateProduct({
+                        product,
+                        languageCode,
+                        autoUpdate:
+                            this.detailForm.get(['product', 'autoUpdateVariantNames'])?.value ?? false,
+                        productInput,
+                        variantsInput,
+                    });
                 }),
             )
             .subscribe(
