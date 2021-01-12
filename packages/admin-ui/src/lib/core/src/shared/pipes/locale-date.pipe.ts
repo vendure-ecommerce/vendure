@@ -1,8 +1,6 @@
-import { ChangeDetectorRef, OnDestroy, Optional, Pipe, PipeTransform } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Pipe, PipeTransform } from '@angular/core';
 
-import { LanguageCode } from '../../common/generated-types';
-import { DataService } from '../../data/providers/data.service';
+import { LocaleBasePipe } from './locale-base.pipe';
 
 /**
  * @description
@@ -13,31 +11,7 @@ import { DataService } from '../../data/providers/data.service';
     name: 'localeDate',
     pure: false,
 })
-export class LocaleDatePipe implements PipeTransform, OnDestroy {
-    private locale: string;
-    private readonly subscription: Subscription;
-
-    constructor(
-        @Optional() private dataService?: DataService,
-        @Optional() changeDetectorRef?: ChangeDetectorRef,
-    ) {
-        if (this.dataService && changeDetectorRef) {
-            this.subscription = this.dataService.client
-                .uiState()
-                .mapStream(data => data.uiState.language)
-                .subscribe(languageCode => {
-                    this.locale = languageCode.replace(/_/g, '-');
-                    changeDetectorRef.markForCheck();
-                });
-        }
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
+export class LocaleDatePipe extends LocaleBasePipe implements PipeTransform {
     transform(value: unknown, ...args: unknown[]): unknown {
         const [format, locale] = args;
         if (this.locale || typeof locale === 'string') {

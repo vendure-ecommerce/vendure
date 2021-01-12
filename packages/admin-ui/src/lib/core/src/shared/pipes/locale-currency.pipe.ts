@@ -1,37 +1,12 @@
-import { ChangeDetectorRef, OnDestroy, Optional, Pipe, PipeTransform } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Pipe, PipeTransform } from '@angular/core';
 
-import { DataService } from '../../data/providers/data.service';
+import { LocaleBasePipe } from './locale-base.pipe';
 
 @Pipe({
     name: 'localeCurrency',
     pure: false,
 })
-export class LocaleCurrencyPipe implements PipeTransform, OnDestroy {
-    private locale: string;
-    private readonly subscription: Subscription;
-
-    constructor(
-        @Optional() private dataService?: DataService,
-        @Optional() changeDetectorRef?: ChangeDetectorRef,
-    ) {
-        if (this.dataService && changeDetectorRef) {
-            this.subscription = this.dataService.client
-                .uiState()
-                .mapStream(data => data.uiState.language)
-                .subscribe(languageCode => {
-                    this.locale = languageCode.replace(/_/g, '-');
-                    changeDetectorRef.markForCheck();
-                });
-        }
-    }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
+export class LocaleCurrencyPipe extends LocaleBasePipe implements PipeTransform {
     transform(value: unknown, ...args: unknown[]): string | unknown {
         const [currencyCode, locale] = args;
         if (typeof value === 'number' && typeof currencyCode === 'string') {
