@@ -98,7 +98,7 @@
         <td class="left align-middle">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </td>
-        <td class="left align-middle">{{ order.total / 100 | currency: order.currencyCode }}</td>
+        <td class="left align-middle">{{ order.total | localeCurrency: order.currencyCode }}</td>
         <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
         <td class="left align-middle">{{ order.orderPlacedAt | localeDate: 'medium' }}</td>
         <td class="left align-middle">{{ getShippingNames(order) }}</td>

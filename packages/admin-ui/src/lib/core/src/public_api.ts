@@ -176,7 +176,7 @@ export * from './shared/dynamic-form-inputs/select-form-input/select-form-input.
 export * from './shared/dynamic-form-inputs/text-form-input/text-form-input.component';
 export * from './shared/pipes/asset-preview.pipe';
 export * from './shared/pipes/channel-label.pipe';
-export * from './shared/pipes/currency-name.pipe';
+export * from './shared/pipes/locale-currency-name.pipe';
 export * from './shared/pipes/custom-field-label.pipe';
 export * from './shared/pipes/duration.pipe';
 export * from './shared/pipes/file-size.pipe';

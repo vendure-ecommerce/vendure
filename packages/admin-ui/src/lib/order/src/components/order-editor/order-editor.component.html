@@ -44,9 +44,9 @@
                         <td class="align-middle name">{{ line.productVariant.name }}</td>
                         <td class="align-middle sku">{{ line.productVariant.sku }}</td>
                         <td class="align-middle unit-price">
-                            {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                            {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ line.unitPrice / 100 | currency: order.currencyCode }}
+                                {{ line.unitPrice | localeCurrency: order.currencyCode }}
                             </div>
                         </td>
                         <td class="align-middle quantity">
@@ -73,9 +73,9 @@
                             </ng-container>
                         </td>
                         <td class="align-middle total">
-                            {{ line.linePriceWithTax / 100 | currency: order.currencyCode }}
+                            {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ line.linePrice / 100 | currency: order.currencyCode }}
+                                {{ line.linePrice | localeCurrency: order.currencyCode }}
                             </div>
                         </td>
                     </tr>
@@ -92,9 +92,9 @@
                         <td class="align-middle name">{{ addedLine.productVariantName }}</td>
                         <td class="align-middle sku">{{ addedLine.sku }}</td>
                         <td class="align-middle unit-price">
-                            {{ addedLine.priceWithTax / 100 | currency: order.currencyCode }}
+                            {{ addedLine.priceWithTax | localeCurrency: order.currencyCode }}
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ addedLine.price / 100 | currency: order.currencyCode }}
+                                {{ addedLine.price | localeCurrency: order.currencyCode }}
                             </div>
                         </td>
                         <td class="align-middle quantity">
@@ -141,9 +141,9 @@
                         <td></td>
                         <td *ngIf="orderLineCustomFields.length"></td>
                         <td class="align-middle total">
-                            {{ surcharge.priceWithTax / 100 | currency: order.currencyCode }}
+                            {{ surcharge.priceWithTax | localeCurrency: order.currencyCode }}
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ surcharge.price / 100 | currency: order.currencyCode }}
+                                {{ surcharge.price | localeCurrency: order.currencyCode }}
                             </div>
                         </td>
                     </tr>
@@ -163,9 +163,9 @@
                         <td *ngIf="orderLineCustomFields.length"></td>
                         <td class="align-middle total">
                             <ng-container *ngIf="getSurchargePrices(surcharge) as surchargePrice">
-                                {{ surchargePrice.priceWithTax / 100 | currency: order.currencyCode }}
+                                {{ surchargePrice.priceWithTax | localeCurrency: order.currencyCode }}
                                 <div class="net-price" [title]="'order.net-price' | translate">
-                                    {{ surchargePrice.price / 100 | currency: order.currencyCode }}
+                                    {{ surchargePrice.price | localeCurrency: order.currencyCode }}
                                 </div>
                             </ng-container>
                         </td>
@@ -176,9 +176,9 @@
                         <td colspan="3"></td>
                         <td *ngIf="orderLineCustomFields.length"></td>
                         <td class="clr-align-middle">
-                            {{ order.shippingWithTax / 100 | currency: order.currencyCode }}
+                            {{ order.shippingWithTax | localeCurrency: order.currencyCode }}
                             <div class="net-price" [title]="'order.net-price' | translate">
-                                {{ order.shipping / 100 | currency: order.currencyCode }}
+                                {{ order.shipping | localeCurrency: order.currencyCode }}
                             </div>
                         </td>
                     </tr>
@@ -197,7 +197,7 @@
                             <div>
                                 <strong class="mr4">{{ addItemSelectedVariant.productVariantName }}</strong>
                                 <small>{{ addItemSelectedVariant.sku }}</small>
-                                <div>{{ getSelectedItemPrice(addItemSelectedVariant) / 100 | currency: order.currencyCode }}</div>
+                                <div>{{ getSelectedItemPrice(addItemSelectedVariant) | localeCurrency: order.currencyCode }}</div>
                             </div>
 
                         </div>

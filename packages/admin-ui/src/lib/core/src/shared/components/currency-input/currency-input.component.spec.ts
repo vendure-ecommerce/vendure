@@ -1,10 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Type } from '@vendure/common/lib/shared-types';
+import { of } from 'rxjs';
 
-import { CurrencyNamePipe } from '../../pipes/currency-name.pipe';
+import { LanguageCode } from '../../../common/generated-types';
+import { DataService } from '../../../data/providers/data.service';
+import { LocaleCurrencyNamePipe } from '../../pipes/locale-currency-name.pipe';
 import { AffixedInputComponent } from '../affixed-input/affixed-input.component';
 
 import { CurrencyInputComponent } from './currency-input.component';
@@ -13,12 +16,13 @@ describe('CurrencyInputComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             imports: [FormsModule],
+            providers: [{ provide: DataService, useClass: MockDataService }],
             declarations: [
                 TestControlValueAccessorComponent,
                 TestSimpleComponent,
                 CurrencyInputComponent,
                 AffixedInputComponent,
-                CurrencyNamePipe,
+                LocaleCurrencyNamePipe,
             ],
         }).compileComponents();
     }));
@@ -66,11 +70,35 @@ describe('CurrencyInputComponent', () => {
         expect(fixture.componentInstance.price).toBe(157);
     }));
 
+    describe('currencyCode display', () => {
+        it('displays currency code in correct position (prefix)', fakeAsync(() => {
+            MockDataService.language = LanguageCode.en;
+            const fixture = createAndRunChangeDetection(TestSimpleComponent, 4299, 'GBP');
+            const prefix = fixture.debugElement.query(By.css('.prefix'));
+            const suffix = fixture.debugElement.query(By.css('.suffix'));
+            expect(prefix.nativeElement.innerHTML).toBe('£');
+            expect(suffix).toBeNull();
+        }));
+
+        it('displays currency code in correct position (suffix)', fakeAsync(() => {
+            MockDataService.language = LanguageCode.fr;
+            const fixture = createAndRunChangeDetection(TestSimpleComponent, 4299, 'GBP');
+            const prefix = fixture.debugElement.query(By.css('.prefix'));
+            const suffix = fixture.debugElement.query(By.css('.suffix'));
+            expect(prefix).toBeNull();
+            expect(suffix.nativeElement.innerHTML).toBe('£GB');
+        }));
+    });
+
     function createAndRunChangeDetection<T extends TestControlValueAccessorComponent | TestSimpleComponent>(
         component: Type<T>,
         priceValue = 123,
+        currencyCode: string = '',
     ): ComponentFixture<T> {
         const fixture = TestBed.createComponent(component);
+        if (fixture.componentInstance instanceof TestSimpleComponent && currencyCode) {
+            fixture.componentInstance.currencyCode = currencyCode;
+        }
         fixture.componentInstance.price = priceValue;
         fixture.detectChanges();
         tick();
@@ -96,9 +124,30 @@ class TestControlValueAccessorComponent {
 @Component({
     selector: 'vdr-test-component',
     template: `
-        <vdr-currency-input [value]="price"></vdr-currency-input>
+        <vdr-currency-input [value]="price" [currencyCode]="currencyCode"></vdr-currency-input>
     `,
 })
 class TestSimpleComponent {
+    currencyCode = '';
     price = 123;
+}
+
+@Injectable()
+class MockDataService {
+    static language: LanguageCode = LanguageCode.en;
+    client = {
+        uiState() {
+            return {
+                mapStream(mapFn: any) {
+                    return of(
+                        mapFn({
+                            uiState: {
+                                language: MockDataService.language,
+                            },
+                        }),
+                    );
+                },
+            };
+        },
+    };
 }

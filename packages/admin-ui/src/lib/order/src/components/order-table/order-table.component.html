@@ -39,9 +39,9 @@
             <td class="align-middle name">{{ line.productVariant.name }}</td>
             <td class="align-middle sku">{{ line.productVariant.sku }}</td>
             <td class="align-middle unit-price">
-                {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ line.unitPrice / 100 | currency: order.currencyCode }}
+                    {{ line.unitPrice | localeCurrency: order.currencyCode }}
                 </div>
             </td>
             <td class="align-middle quantity">
@@ -76,9 +76,9 @@
                     <clr-icon shape="ellipsis-horizontal" class="custom-field-ellipsis"></clr-icon></td
             ></ng-container>
             <td class="align-middle total">
-                {{ line.linePriceWithTax / 100 | currency: order.currencyCode }}
+                {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ line.linePrice / 100 | currency: order.currencyCode }}
+                    {{ line.linePrice | localeCurrency: order.currencyCode }}
                 </div>
 
                 <ng-container *ngIf="getLineDiscounts(line) as discounts">
@@ -92,7 +92,7 @@
                                     discount.description
                                 }}</a>
                                 <div class="promotion-amount">
-                                    {{ discount.amount / 100 | currency: order.currencyCode }}
+                                    {{ discount.amount | localeCurrency: order.currencyCode }}
                                 </div>
                             </div>
                         </vdr-dropdown-menu>
@@ -107,9 +107,9 @@
             <td [attr.colspan]="1 + visibleOrderLineCustomFields.length"></td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="align-middle total">
-                {{ surcharge.priceWithTax / 100 | currency: order.currencyCode }}
+                {{ surcharge.priceWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ surcharge.price / 100 | currency: order.currencyCode }}
+                    {{ surcharge.price | localeCurrency: order.currencyCode }}
                 </div>
             </td>
         </tr>
@@ -122,7 +122,7 @@
             </td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="clr-align-middle">
-                {{ discount.amount / 100 | currency: order.currencyCode }}
+                {{ discount.amount | localeCurrency: order.currencyCode }}
             </td>
         </tr>
         <tr class="sub-total">
@@ -131,9 +131,9 @@
             <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="clr-align-middle">
-                {{ order.subTotalWithTax / 100 | currency: order.currencyCode }}
+                {{ order.subTotalWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ order.subTotal / 100 | currency: order.currencyCode }}
+                    {{ order.subTotal | localeCurrency: order.currencyCode }}
                 </div>
             </td>
         </tr>
@@ -143,9 +143,9 @@
             <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="clr-align-middle">
-                {{ order.shippingWithTax / 100 | currency: order.currencyCode }}
+                {{ order.shippingWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ order.shipping / 100 | currency: order.currencyCode }}
+                    {{ order.shipping | localeCurrency: order.currencyCode }}
                 </div>
             </td>
         </tr>
@@ -155,9 +155,9 @@
             <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
             <ng-container *ngIf="showElided"><td></td></ng-container>
             <td class="clr-align-middle">
-                {{ order.totalWithTax / 100 | currency: order.currencyCode }}
+                {{ order.totalWithTax | localeCurrency: order.currencyCode }}
                 <div class="net-price" [title]="'order.net-price' | translate">
-                    {{ order.total / 100 | currency: order.currencyCode }}
+                    {{ order.total | localeCurrency: order.currencyCode }}
                 </div>
             </td>
         </tr>

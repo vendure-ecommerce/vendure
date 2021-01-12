@@ -1,8 +1,8 @@
 import { ChangeDetectorRef, OnDestroy, Optional, Pipe, PipeTransform } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/core';
 import { Subscription } from 'rxjs';
 
 import { LanguageCode } from '../../common/generated-types';
+import { DataService } from '../../data/providers/data.service';
 
 /**
  * @description

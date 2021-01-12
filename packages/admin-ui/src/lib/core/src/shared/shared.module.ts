@@ -91,11 +91,12 @@ import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-inpu
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
-import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
+import { LocaleCurrencyNamePipe } from './pipes/locale-currency-name.pipe';
+import { LocaleCurrencyPipe } from './pipes/locale-currency.pipe';
 import { LocaleDatePipe } from './pipes/locale-date.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
@@ -127,7 +128,7 @@ const DECLARATIONS = [
     AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,
-    CurrencyNamePipe,
+    LocaleCurrencyNamePipe,
     CustomerLabelComponent,
     CustomFieldControlComponent,
     DataTableComponent,
@@ -195,6 +196,7 @@ const DECLARATIONS = [
     CustomerGroupFormInputComponent,
     AddressFormComponent,
     LocaleDatePipe,
+    LocaleCurrencyPipe,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

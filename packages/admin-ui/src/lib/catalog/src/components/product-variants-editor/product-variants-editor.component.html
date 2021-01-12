@@ -89,7 +89,7 @@
                         (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
                     ></vdr-currency-input>
                 </clr-input-container>
-                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].price / 100 | currency: currencyCode }}</span>
+                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].price | localeCurrency: currencyCode }}</span>
             </td>
             <td>
                 <clr-input-container *ngIf="!variantFormValues[variant.id].existing">

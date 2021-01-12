@@ -22,7 +22,7 @@
             (click)="addManualPayment(order)"
         >
             {{ 'order.add-payment-to-order' | translate }}
-            ({{ getOutstandingModificationAmount(order) / 100 | currency: order.currencyCode }})
+            ({{ getOutstandingModificationAmount(order) | localeCurrency: order.currencyCode }})
         </button>
         <button class="btn btn-primary" (click)="fulfillOrder()" [disabled]="!canAddFulfillment(order)">
             {{ 'order.fulfill-order' | translate }}
@@ -102,8 +102,8 @@
                     <tr *ngFor="let row of order.taxSummary">
                         <td>{{ row.description }}</td>
                         <td>{{ row.taxRate / 100 | percent }}</td>
-                        <td>{{ row.taxBase / 100 | currency: order.currencyCode }}</td>
-                        <td>{{ row.taxTotal / 100 | currency: order.currencyCode }}</td>
+                        <td>{{ row.taxBase | localeCurrency: order.currencyCode }}</td>
+                        <td>{{ row.taxTotal | localeCurrency: order.currencyCode }}</td>
                     </tr>
                 </tbody>
             </table>

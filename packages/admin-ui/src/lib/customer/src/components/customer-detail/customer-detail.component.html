@@ -139,7 +139,7 @@
             <ng-template let-order="item">
                 <td class="left">{{ order.code }}</td>
                 <td class="left">{{ order.state }}</td>
-                <td class="left">{{ order.total / 100 | currency: order.currencyCode }}</td>
+                <td class="left">{{ order.total | localeCurrency: order.currencyCode }}</td>
                 <td class="left">{{ order.updatedAt | localeDate: 'medium' }}</td>
                 <td class="right">
                     <vdr-table-row-action
