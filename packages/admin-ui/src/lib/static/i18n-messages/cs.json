@@ -302,10 +302,14 @@
     "latest-orders": "Poslední objednávky",
     "orders-summary": "Souhrn objednávek",
     "remove-widget": "Odebrat widget",
+    "thisMonth": "Tento měsíc",
+    "thisWeek": "Tento týden",
+    "today": "Dnes",
     "total-order-value": "Celkem",
     "total-orders": "Celkem objednávek",
     "widget-resize": "Změnit velikost",
-    "widget-width": "Šířka: {width}"
+    "widget-width": "Šířka: {width}",
+    "yesterday": "Včera"
   },
   "datetime": {
     "ago-days": "před {count, plural, one {1 dnem} other {{count} dny}}",

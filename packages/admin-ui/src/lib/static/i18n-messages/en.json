@@ -302,10 +302,14 @@
     "latest-orders": "Latest orders",
     "orders-summary": "Orders summary",
     "remove-widget": "Remove widget",
+    "thisMonth": "This month",
+    "thisWeek": "This week",
+    "today": "Today",
     "total-order-value": "Total value",
     "total-orders": "Total orders",
     "widget-resize": "Resize",
-    "widget-width": "Width: {width}"
+    "widget-width": "Width: {width}",
+    "yesterday": "Yesterday"
   },
   "datetime": {
     "ago-days": "{count, plural, one {1 day} other {{count} days}} ago",
