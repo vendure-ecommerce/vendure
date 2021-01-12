@@ -54,7 +54,7 @@
                     <ng-container [ngSwitch]="customField.type">
                         <ng-template [ngSwitchCase]="'datetime'">
                             <span [title]="line.customFields[customField.name]">{{
-                                line.customFields[customField.name] | date: 'short'
+                                line.customFields[customField.name] | localeDate: 'short'
                             }}</span>
                         </ng-template>
                         <ng-template [ngSwitchCase]="'boolean'">

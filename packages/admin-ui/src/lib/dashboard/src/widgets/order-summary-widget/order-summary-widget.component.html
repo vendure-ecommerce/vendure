@@ -27,6 +27,6 @@
     </div>
 
     <div class="date-range p5" *ngIf="dateRange$ | async as range">
-        {{ range.start | date }} - {{ range.end | date }}
+        {{ range.start | localeDate }} - {{ range.end | localeDate }}
     </div>
 </div>

@@ -1,7 +1,7 @@
 <div class="input-wrapper">
     <input
         readonly
-        [ngModel]="selected$ | async | date: 'medium'"
+        [ngModel]="selected$ | async | localeDate: 'medium'"
         class="selected-datetime"
         (keydown.enter)="dropdownComponent.toggleOpen()"
         (keydown.space)="dropdownComponent.toggleOpen()"

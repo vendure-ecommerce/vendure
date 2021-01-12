@@ -1,5 +1,5 @@
 <vdr-labeled-data [label]="'common.created-at' | translate">
-    {{ fulfillment?.createdAt | date: 'medium' }}
+    {{ fulfillment?.createdAt | localeDate: 'medium' }}
 </vdr-labeled-data>
 <vdr-labeled-data [label]="'order.fulfillment-method' | translate">
     {{ fulfillment?.method }}

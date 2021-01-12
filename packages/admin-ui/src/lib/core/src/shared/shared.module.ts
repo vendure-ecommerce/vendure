@@ -96,6 +96,7 @@ import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
+import { LocaleDatePipe } from './pipes/locale-date.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
 import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
@@ -193,6 +194,7 @@ const DECLARATIONS = [
     HelpTooltipComponent,
     CustomerGroupFormInputComponent,
     AddressFormComponent,
+    LocaleDatePipe,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

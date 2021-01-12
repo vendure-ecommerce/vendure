@@ -3,7 +3,7 @@
         <div class="flex clr-align-items-center">
             <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
             <vdr-customer-status-label [customer]="entity$ | async"></vdr-customer-status-label>
-            <div class="last-login" *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin" [title]="lastLogin | date:'medium'">
+            <div class="last-login" *ngIf="(entity$ | async)?.user?.lastLogin as lastLogin" [title]="lastLogin | localeDate:'medium'">
                 {{ 'customer.last-login' | translate }}: {{ lastLogin | timeAgo }}
             </div>
         </div>
@@ -140,7 +140,7 @@
                 <td class="left">{{ order.code }}</td>
                 <td class="left">{{ order.state }}</td>
                 <td class="left">{{ order.total / 100 | currency: order.currencyCode }}</td>
-                <td class="left">{{ order.updatedAt | date: 'medium' }}</td>
+                <td class="left">{{ order.updatedAt | localeDate: 'medium' }}</td>
                 <td class="right">
                     <vdr-table-row-action
                         iconShape="shopping-cart"
