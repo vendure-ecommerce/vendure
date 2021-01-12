@@ -302,10 +302,14 @@
     "latest-orders": "",
     "orders-summary": "",
     "remove-widget": "",
+    "thisMonth": "Tento měsíc",
+    "thisWeek": "Tento týden",
+    "today": "Dnes",
     "total-order-value": "",
     "total-orders": "",
     "widget-resize": "",
-    "widget-width": ""
+    "widget-width": "",
+    "yesterday": "Včera"
   },
   "datetime": {
     "ago-days": "před {count, plural, one {1 dnem} other {{count} dny}}",
