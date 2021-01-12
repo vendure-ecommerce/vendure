@@ -60,6 +60,8 @@
     "assign-to-named-channel": "Přiřadit do { channelCode }",
     "assign-variant-to-channel-success": "Varianta byla úspěšně přiřazena do kanálu \"{ channel }\"",
     "assign-variants-to-channel": "Přiřadit varianty do kanálu",
+    "auto-update-option-variant-name": "Automaticky aktualizovat jména variant pomocí této",
+    "auto-update-product-variant-name": "Automaticky aktualizovat jména variant",
     "channel-price-preview": "Náhled ceny v kanálu",
     "collection-contents": "Obsah kolekce",
     "confirm-adding-options-delete-default-body": "Přidáním vlastností k tomuto produktu způsobí vymazání nýnější výchozí varianty. Chcete pokračovat?",
@@ -300,14 +302,10 @@
     "latest-orders": "Poslední objednávky",
     "orders-summary": "Souhrn objednávek",
     "remove-widget": "Odebrat widget",
-    "thisMonth": "Tento měsíc",
-    "thisWeek": "Tento týden",
-    "today": "Dnes",
     "total-order-value": "Celkem",
     "total-orders": "Celkem objednávek",
     "widget-resize": "Změnit velikost",
-    "widget-width": "Šířka: {width}",
-    "yesterday": "Včera"
+    "widget-width": "Šířka: {width}"
   },
   "datetime": {
     "ago-days": "před {count, plural, one {1 dnem} other {{count} dny}}",
