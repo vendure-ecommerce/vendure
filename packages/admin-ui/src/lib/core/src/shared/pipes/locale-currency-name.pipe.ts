@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, OnDestroy, Optional, Pipe, PipeTransform } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { ChangeDetectorRef, Optional, Pipe, PipeTransform } from '@angular/core';
 
 import { DataService } from '../../data/providers/data.service';
+
+import { LocaleBasePipe } from './locale-base.pipe';
 
 /**
  * Displays a human-readable name for a given ISO 4217 currency code.
@@ -10,31 +11,10 @@ import { DataService } from '../../data/providers/data.service';
     name: 'localeCurrencyName',
     pure: false,
 })
-export class LocaleCurrencyNamePipe implements PipeTransform, OnDestroy {
-    private locale: string;
-    private readonly subscription: Subscription;
-
-    constructor(
-        @Optional() private dataService?: DataService,
-        @Optional() changeDetectorRef?: ChangeDetectorRef,
-    ) {
-        if (this.dataService && changeDetectorRef) {
-            this.subscription = this.dataService.client
-                .uiState()
-                .mapStream(data => data.uiState.language)
-                .subscribe(languageCode => {
-                    this.locale = languageCode.replace(/_/g, '-');
-                    changeDetectorRef.markForCheck();
-                });
-        }
+export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
+    constructor(@Optional() dataService?: DataService, @Optional() changeDetectorRef?: ChangeDetectorRef) {
+        super(dataService, changeDetectorRef);
     }
-
-    ngOnDestroy() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-    }
-
     transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown): any {
         if (value == null || value === '') {
             return '';
