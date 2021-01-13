@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { EMPTY, Observable, of, Subject } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-
 import { BaseListComponent } from '@vendure/admin-ui/core';
 import {
     GetActiveChannel,
@@ -15,6 +12,9 @@ import {
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { ModalService } from '@vendure/admin-ui/core';
+import { EMPTY, Observable, of, Subject } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
 import { TestAddress } from '../test-address-form/test-address-form.component';
 import { TestOrderLine } from '../test-order-builder/test-order-builder.component';
 
@@ -43,7 +43,8 @@ export class ShippingMethodListComponent
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.shippingMethod.getShippingMethods(...args),
+            (...args: any[]) =>
+                this.dataService.shippingMethod.getShippingMethods(...args).refetchOnChannelChange(),
             data => data.shippingMethods,
         );
     }

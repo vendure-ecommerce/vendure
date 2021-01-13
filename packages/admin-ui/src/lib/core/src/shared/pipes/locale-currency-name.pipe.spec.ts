@@ -1,7 +1,7 @@
-import { CurrencyNamePipe } from './currency-name.pipe';
+import { LocaleCurrencyNamePipe } from './locale-currency-name.pipe';
 
-describe('CurrencyNamePipe', () => {
-    const pipe = new CurrencyNamePipe();
+describe('LocaleCurrencyNamePipe', () => {
+    const pipe = new LocaleCurrencyNamePipe();
     it('full output', () => {
         expect(pipe.transform('usd')).toBe('US dollars ($)');
         expect(pipe.transform('gbp')).toBe('British pounds (£)');
@@ -18,6 +18,11 @@ describe('CurrencyNamePipe', () => {
         expect(pipe.transform('usd', 'symbol')).toBe('$');
         expect(pipe.transform('gbp', 'symbol')).toBe('£');
         expect(pipe.transform('CNY', 'symbol')).toBe('CN¥');
+    });
+
+    it('uses locale', () => {
+        expect(pipe.transform('usd', 'symbol', 'fr')).toBe('$US');
+        expect(pipe.transform('usd', 'name', 'de')).toBe('US-Dollar');
     });
 
     it('returns code for unknown codes', () => {

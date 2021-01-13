@@ -7,7 +7,7 @@
         <td class="left align-middle">
             <vdr-customer-label [customer]="order.customer"></vdr-customer-label>
         </td>
-        <td class="left align-middle">{{ order.total / 100 | currency: order.currencyCode }}</td>
+        <td class="left align-middle">{{ order.total | localeCurrency: order.currencyCode }}</td>
         <td class="left align-middle">{{ order.orderPlacedAt | timeAgo }}</td>
         <td class="right align-middle">
             <vdr-table-row-action

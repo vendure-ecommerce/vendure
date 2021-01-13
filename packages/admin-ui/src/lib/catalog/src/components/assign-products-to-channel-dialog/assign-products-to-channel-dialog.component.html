@@ -48,10 +48,10 @@
         <tbody>
             <tr *ngFor="let row of variantsPreview$ | async">
                 <td>{{ row.name }}</td>
-                <td>{{ row.price / 100 | currency: currentChannel?.currencyCode }}</td>
+                <td>{{ row.price | localeCurrency: currentChannel?.currencyCode }}</td>
                 <td>
                     <ng-template [ngIf]="selectedChannel" [ngIfElse]="noChannelSelected">
-                        {{ row.pricePreview / 100 | currency: selectedChannel?.currencyCode }}
+                        {{ row.pricePreview | localeCurrency: selectedChannel?.currencyCode }}
                     </ng-template>
                     <ng-template #noChannelSelected> - </ng-template>
                 </td>

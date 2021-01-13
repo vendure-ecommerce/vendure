@@ -4,7 +4,7 @@
 }}</vdr-labeled-data>
 <vdr-labeled-data *ngFor="let surcharge of modification.surcharges" [label]="'order.surcharges' | translate">
     {{ getSurcharge(surcharge.id)?.description }}
-    {{ getSurcharge(surcharge.id)?.priceWithTax / 100 | currency: order.currencyCode }}</vdr-labeled-data
+    {{ getSurcharge(surcharge.id)?.priceWithTax | localeCurrency: order.currencyCode }}</vdr-labeled-data
 >
 <vdr-labeled-data *ngIf="getAddedItems().length" [label]="'order.added-items' | translate">
     <vdr-simple-item-list [items]="getAddedItems()"></vdr-simple-item-list>

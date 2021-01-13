@@ -13,21 +13,26 @@ export type Timeframe = 'day' | 'week' | 'month';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderSummaryWidgetComponent implements OnInit {
+    today = new Date();
+    yesterday = new Date(new Date().setDate(this.today.getDate() - 1));
     totalOrderCount$: Observable<number>;
     totalOrderValue$: Observable<number>;
     currencyCode$: Observable<string | undefined>;
-    timeframe$ = new BehaviorSubject<Timeframe>('day');
+    selection$ = new BehaviorSubject<{ timeframe: Timeframe; date?: Date }>({
+        timeframe: 'day',
+        date: this.today,
+    });
     dateRange$: Observable<{ start: Date; end: Date }>;
 
     constructor(private dataService: DataService) {}
 
     ngOnInit(): void {
-        this.dateRange$ = this.timeframe$.pipe(
+        this.dateRange$ = this.selection$.pipe(
             distinctUntilChanged(),
-            map(timeframe => {
+            map(selection => {
                 return {
-                    start: dayjs().startOf(timeframe).toDate(),
-                    end: dayjs().endOf(timeframe).toDate(),
+                    start: dayjs(selection.date).startOf(selection.timeframe).toDate(),
+                    end: dayjs(selection.date).endOf(selection.timeframe).toDate(),
                 };
             }),
             shareReplay(1),

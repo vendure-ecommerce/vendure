@@ -325,6 +325,7 @@ export type Mutation = {
     importProducts?: Maybe<ImportInfo>;
     /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
     removeSettledJobs: Scalars['Int'];
+    cancelJob: Job;
     settlePayment: SettlePaymentResult;
     addFulfillmentToOrder: AddFulfillmentToOrderResult;
     cancelOrder: CancelOrderResult;
@@ -609,6 +610,10 @@ export type MutationImportProductsArgs = {
 export type MutationRemoveSettledJobsArgs = {
     queueNames?: Maybe<Array<Scalars['String']>>;
     olderThan?: Maybe<Scalars['DateTime']>;
+};
+
+export type MutationCancelJobArgs = {
+    jobId: Scalars['ID'];
 };
 
 export type MutationSettlePaymentArgs = {
@@ -1208,6 +1213,7 @@ export enum JobState {
     COMPLETED = 'COMPLETED',
     RETRYING = 'RETRYING',
     FAILED = 'FAILED',
+    CANCELLED = 'CANCELLED',
 }
 
 export type JobList = PaginatedList & {
@@ -1818,6 +1824,7 @@ export type ProductTranslationInput = {
 
 export type CreateProductInput = {
     featuredAssetId?: Maybe<Scalars['ID']>;
+    enabled?: Maybe<Scalars['Boolean']>;
     assetIds?: Maybe<Array<Scalars['ID']>>;
     facetValueIds?: Maybe<Array<Scalars['ID']>>;
     translations: Array<ProductTranslationInput>;
@@ -5671,6 +5678,12 @@ export type GetOrderHistoryQuery = {
     >;
 };
 
+export type CancelJobMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type CancelJobMutation = { cancelJob: Pick<Job, 'id' | 'state' | 'isSettled' | 'settledAt'> };
+
 export type UpdateOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5830,6 +5843,20 @@ export type GetOrderWithPaymentsQuery = {
     order?: Maybe<
         Pick<Order, 'id'> & { payments?: Maybe<Array<Pick<Payment, 'id' | 'errorMessage' | 'metadata'>>> }
     >;
+};
+
+export type GetOrderListWithQtyQueryVariables = Exact<{
+    options?: Maybe<OrderListOptions>;
+}>;
+
+export type GetOrderListWithQtyQuery = {
+    orders: {
+        items: Array<
+            Pick<Order, 'id' | 'code' | 'totalQuantity'> & {
+                lines: Array<Pick<OrderLine, 'id' | 'quantity'> & { items: Array<Pick<OrderItem, 'id'>> }>;
+            }
+        >;
+    };
 };
 
 export type UpdateProductOptionGroupMutationVariables = Exact<{
@@ -7648,6 +7675,12 @@ export namespace GetOrderHistory {
     >;
 }
 
+export namespace CancelJob {
+    export type Variables = CancelJobMutationVariables;
+    export type Mutation = CancelJobMutation;
+    export type CancelJob = NonNullable<CancelJobMutation['cancelJob']>;
+}
+
 export namespace UpdateOptionGroup {
     export type Variables = UpdateOptionGroupMutationVariables;
     export type Mutation = UpdateOptionGroupMutation;
@@ -7813,6 +7846,33 @@ export namespace GetOrderWithPayments {
     export type Order = NonNullable<GetOrderWithPaymentsQuery['order']>;
     export type Payments = NonNullable<
         NonNullable<NonNullable<GetOrderWithPaymentsQuery['order']>['payments']>[number]
+    >;
+}
+
+export namespace GetOrderListWithQty {
+    export type Variables = GetOrderListWithQtyQueryVariables;
+    export type Query = GetOrderListWithQtyQuery;
+    export type Orders = NonNullable<GetOrderListWithQtyQuery['orders']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+    >;
+    export type Lines = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+            >['lines']
+        >[number]
+    >;
+    export type _Items = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<
+                    NonNullable<
+                        NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
+                    >['lines']
+                >[number]
+            >['items']
+        >[number]
     >;
 }
 

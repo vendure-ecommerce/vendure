@@ -150,6 +150,7 @@ export class ProductDataService {
     createProduct(product: CreateProductInput) {
         const input: CreateProduct.Variables = {
             input: pick(product, [
+                'enabled',
                 'translations',
                 'customFields',
                 'assetIds',

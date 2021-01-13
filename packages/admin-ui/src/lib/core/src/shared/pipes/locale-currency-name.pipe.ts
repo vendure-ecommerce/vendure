@@ -1,13 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
+import { LocaleBasePipe } from './locale-base.pipe';
+
 /**
  * Displays a human-readable name for a given ISO 4217 currency code.
  */
 @Pipe({
-    name: 'currencyName',
+    name: 'localeCurrencyName',
+    pure: false,
 })
-export class CurrencyNamePipe implements PipeTransform {
-    transform(value: any, display: 'full' | 'symbol' | 'name' = 'full'): any {
+export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
+    transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown): any {
         if (value == null || value === '') {
             return '';
         }
@@ -16,9 +19,10 @@ export class CurrencyNamePipe implements PipeTransform {
         }
         let name = '';
         let symbol = '';
+        const activeLocale = typeof locale === 'string' ? locale : this.locale ?? 'en';
 
         if (display === 'full' || display === 'name') {
-            name = new Intl.NumberFormat('en', {
+            name = new Intl.NumberFormat(activeLocale, {
                 style: 'currency',
                 currency: value,
                 currencyDisplay: 'name',
@@ -27,7 +31,7 @@ export class CurrencyNamePipe implements PipeTransform {
                 .replace(/\s*NaN\s*/, '');
         }
         if (display === 'full' || display === 'symbol') {
-            symbol = new Intl.NumberFormat('en', {
+            symbol = new Intl.NumberFormat(activeLocale, {
                 style: 'currency',
                 currency: value,
                 currencyDisplay: 'symbol',

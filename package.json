@@ -7,6 +7,7 @@
   },
   "scripts": {
     "watch": "lerna run watch --parallel",
+    "watch:core-common": "lerna run --scope @vendure/common --scope @vendure/core watch --parallel",
     "lint": "yarn tslint --fix",
     "format": "prettier --write --html-whitespace-sensitivity ignore",
     "bootstrap": "lerna bootstrap",

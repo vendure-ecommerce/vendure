@@ -5,6 +5,7 @@ import {
     CoreModule,
     DataService,
     GetActiveAdministrator,
+    getAppConfig,
 } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
 
@@ -17,6 +18,9 @@ import { Observable } from 'rxjs';
 export class WelcomeWidgetComponent implements OnInit {
     version = ADMIN_UI_VERSION;
     administrator$: Observable<GetActiveAdministrator.ActiveAdministrator | null>;
+    brand = getAppConfig().brand;
+    hideVendureBranding = getAppConfig().hideVendureBranding;
+    hideVersion = getAppConfig().hideVersion;
 
     constructor(private dataService: DataService) {}
 

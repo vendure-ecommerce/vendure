@@ -3,5 +3,8 @@
 
 // Clarity Component SCSS
 @import "~@clr/ui/src/main";
-@import "theme/theme";
-@import "theme/utilities";
+@import "global/overrides";
+@import "global/utilities";
+
+@import 'theme/default';
+@import 'theme/dark';

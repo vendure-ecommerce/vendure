@@ -3,6 +3,7 @@ import { pick } from '@vendure/common/lib/pick';
 
 import {
     AddMembersToZone,
+    CancelJob,
     CreateChannel,
     CreateChannelInput,
     CreateCountry,
@@ -57,6 +58,7 @@ import {
 } from '../../common/generated-types';
 import {
     ADD_MEMBERS_TO_ZONE,
+    CANCEL_JOB,
     CREATE_CHANNEL,
     CREATE_COUNTRY,
     CREATE_TAX_CATEGORY,
@@ -370,6 +372,12 @@ export class SettingsDataService {
                     },
                 },
             },
+        });
+    }
+
+    cancelJob(id: string) {
+        return this.baseDataService.mutate<CancelJob.Mutation, CancelJob.Variables>(CANCEL_JOB, {
+            id,
         });
     }
 }

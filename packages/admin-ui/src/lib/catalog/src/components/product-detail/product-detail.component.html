@@ -94,6 +94,22 @@
                                     (input)="updateSlug($event.target.value)"
                                 />
                             </vdr-form-field>
+                            <div
+                                class="auto-rename-wrapper"
+                                [class.visible]="(isNew$ | async) === false && detailForm.get(['product', 'name'])?.dirty"
+                            >
+                                <clr-checkbox-wrapper>
+                                    <input
+                                        clrCheckbox
+                                        type="checkbox"
+                                        id="auto-update"
+                                        formControlName="autoUpdateVariantNames"
+                                    />
+                                    <label>{{
+                                        'catalog.auto-update-product-variant-name' | translate
+                                    }}</label>
+                                </clr-checkbox-wrapper>
+                            </div>
                             <vdr-form-field
                                 [label]="'catalog.slug' | translate"
                                 for="slug"
@@ -189,7 +205,6 @@
                         <div class="variant-filter">
                             <input
                                 [formControl]="filterInput"
-                                class="clr-input"
                                 [placeholder]="'catalog.filter-by-name-or-sku' | translate"
                             />
                             <button class="icon-button" (click)="filterInput.setValue('')">

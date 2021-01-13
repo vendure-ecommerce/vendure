@@ -31,7 +31,7 @@
                 }})
             </div>
             <vdr-labeled-data [label]="'common.created-at' | translate">
-                {{ item.fulfillment.createdAt | date: 'medium' }}
+                {{ item.fulfillment.createdAt | localeDate: 'medium' }}
             </vdr-labeled-data>
             <vdr-labeled-data [label]="'order.fulfillment-method' | translate">
                 {{ item.fulfillment.method }}

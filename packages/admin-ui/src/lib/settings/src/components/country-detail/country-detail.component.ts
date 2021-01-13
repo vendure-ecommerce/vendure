@@ -8,6 +8,7 @@ import {
     CreateCountryInput,
     createUpdatedTranslatable,
     DataService,
+    findTranslation,
     LanguageCode,
     NotificationService,
     ServerConfigService,
@@ -126,7 +127,7 @@ export class CountryDetailComponent
     }
 
     protected setFormValues(country: Country, languageCode: LanguageCode): void {
-        const currentTranslation = country.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(country, languageCode);
 
         this.detailForm.patchValue({
             code: country.code,

@@ -6,7 +6,7 @@
 }
 
 .placeholder {
-    color: $color-grey-300;
+    color: var(--color-grey-300);
     text-align: center;
     .version {
         font-size: 3em;
@@ -14,7 +14,7 @@
         line-height: 1em;
     }
     ::ng-deep .clr-i-outline {
-        fill: $color-grey-200;
+        fill: var(--color-grey-200);
     }
 }
 
@@ -43,7 +43,7 @@ vdr-dashboard-widget {
 }
 
 .dashboard-row.cdk-drop-list-dragging, .dashboard-row.cdk-drop-list-receiving  {
-    border: 1px dashed $color-grey-300;
+    border: 1px dashed var(--color-component-border-200);
     padding: 6px;
 }
 .dashboard-row.cdk-drop-list-dragging .dashboard-item:not(.cdk-drag-placeholder) {

@@ -152,7 +152,14 @@ export class OrderService {
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: ['lines', 'customer', 'lines.productVariant', 'channels'],
+                relations: [
+                    'lines',
+                    'customer',
+                    'lines.productVariant',
+                    'lines.items',
+                    'channels',
+                    'shippingLines',
+                ],
                 channelId: ctx.channelId,
                 ctx,
             })
@@ -906,7 +913,7 @@ export class OrderService {
 
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
-        if (order.lines?.[0].items?.[0]?.fulfillments !== undefined) {
+        if (order.lines?.[0]?.items?.[0]?.fulfillments !== undefined) {
             lines = order.lines;
         } else {
             lines = await this.connection.getRepository(ctx, OrderLine).find({

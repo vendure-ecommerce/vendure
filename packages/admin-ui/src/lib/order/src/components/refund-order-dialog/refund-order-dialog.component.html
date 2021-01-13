@@ -27,11 +27,11 @@
                     <vdr-line-refunds [line]="line"></vdr-line-refunds>
                 </td>
                 <td class="align-middle quantity">
-                    {{ line.unitPriceWithTax / 100 | currency: order.currencyCode }}
+                    {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
                 </td>
                 <td class="align-middle quantity">
                     <div class="prorated-wrapper">
-                        {{ line.proratedUnitPriceWithTax / 100 | currency: order.currencyCode }}
+                        {{ line.proratedUnitPriceWithTax | localeCurrency: order.currencyCode }}
                         <ng-container *ngIf="line.discounts as discounts">
                             <vdr-dropdown *ngIf="discounts.length">
                                 <div class="promotions-label" vdrDropdownTrigger>
@@ -109,7 +109,7 @@
                         [disabled]="payment.state !== 'Settled'"
                     >
                         #{{ payment.id }} {{ payment.method }}:
-                        {{ payment.amount / 100 | currency: order.currencyCode }}
+                        {{ payment.amount | localeCurrency: order.currencyCode }}
                     </option>
                 </select>
             </clr-select-container>
@@ -118,7 +118,7 @@
                 <input type="checkbox" clrCheckbox [(ngModel)]="refundShipping" [disabled]="!isRefunding()" />
                 <label>
                     {{ 'order.refund-shipping' | translate }} ({{
-                        order.shipping / 100 | currency: order.currencyCode
+                        order.shipping | localeCurrency: order.currencyCode
                     }})
                 </label>
             </clr-checkbox-wrapper>
@@ -134,11 +134,11 @@
             <div class="totals" [class.disabled]="!isRefunding()">
                 <div class="order-total">
                     {{ 'order.payment-amount' | translate }}:
-                    {{ selectedPayment.amount / 100 | currency: order.currencyCode }}
+                    {{ selectedPayment.amount | localeCurrency: order.currencyCode }}
                 </div>
                 <div class="refund-total">
                     {{ 'order.refund-total' | translate }}:
-                    {{ refundTotal / 100 | currency: order.currencyCode }}
+                    {{ refundTotal | localeCurrency: order.currencyCode }}
                 </div>
                 <div
                     class="refund-total-error"
@@ -149,7 +149,7 @@
                             | translate
                                 : {
                                       min: 0 | currency: order.currencyCode,
-                                      max: selectedPayment.amount / 100 | currency: order.currencyCode
+                                      max: selectedPayment.amount | localeCurrency: order.currencyCode
                                   }
                     }}
                 </div>
@@ -164,7 +164,7 @@
         <ng-container *ngIf="isRefunding(); else cancelling">
         {{
             'order.refund-with-amount'
-                | translate: { amount: refundTotal / 100 | currency: order.currencyCode }
+                | translate: { amount: refundTotal | localeCurrency: order.currencyCode }
         }}
         </ng-container>
         <ng-template #cancelling>

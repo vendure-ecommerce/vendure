@@ -367,6 +367,7 @@ export type Mutation = {
   importProducts?: Maybe<ImportInfo>;
   /** Remove all settled jobs in the given queues olfer than the given date. Returns the number of jobs deleted. */
   removeSettledJobs: Scalars['Int'];
+  cancelJob: Job;
   settlePayment: SettlePaymentResult;
   addFulfillmentToOrder: AddFulfillmentToOrderResult;
   cancelOrder: CancelOrderResult;
@@ -695,6 +696,11 @@ export type MutationImportProductsArgs = {
 export type MutationRemoveSettledJobsArgs = {
   queueNames?: Maybe<Array<Scalars['String']>>;
   olderThan?: Maybe<Scalars['DateTime']>;
+};
+
+
+export type MutationCancelJobArgs = {
+  jobId: Scalars['ID'];
 };
 
 
@@ -1361,7 +1367,8 @@ export enum JobState {
   RUNNING = 'RUNNING',
   COMPLETED = 'COMPLETED',
   RETRYING = 'RETRYING',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
+  CANCELLED = 'CANCELLED'
 }
 
 export type JobList = PaginatedList & {
@@ -1972,6 +1979,7 @@ export type ProductTranslationInput = {
 
 export type CreateProductInput = {
   featuredAssetId?: Maybe<Scalars['ID']>;
+  enabled?: Maybe<Scalars['Boolean']>;
   assetIds?: Maybe<Array<Scalars['ID']>>;
   facetValueIds?: Maybe<Array<Scalars['ID']>>;
   translations: Array<ProductTranslationInput>;

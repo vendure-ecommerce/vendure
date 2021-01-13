@@ -1,4 +1,5 @@
-// colors
+// DEPRECATED: These Sass color variables are deprecated in favour of
+// css custom properties (see below). To be removed in a later release.
 $color-primary-100: #e3f6fc;
 $color-primary-200: #afdaf3;
 $color-primary-300: #9adbf3;
@@ -62,9 +63,5 @@ $color-grey-700: #303233;
 $color-grey-800: #202223;
 $color-grey-900: #0f1011;
 
-
 // breakpoints
 $breakpoint-small: 768px;
-
-// spacing
-$space-unit: 6px;

@@ -276,7 +276,7 @@ export class OrderCalculator {
                     const adjustment = await promotion.apply(ctx, { order });
                     if (adjustment && adjustment.amount !== 0) {
                         const amount = adjustment.amount;
-                        const weights = order.lines.map(l => l.proratedLinePrice * l.taxRate);
+                        const weights = order.lines.map(l => l.proratedLinePrice * Math.max(l.taxRate, 1));
                         const distribution = prorate(weights, amount);
                         order.lines.forEach((line, i) => {
                             const shareOfAmount = distribution[i];

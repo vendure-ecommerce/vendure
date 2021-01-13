@@ -51,7 +51,7 @@
                 </div>
                 <ng-container *ngIf="getModification(entry.data.modificationId) as modification">
                     {{ 'order.modify-order-price-difference' | translate }}:
-                    <strong>{{ modification.priceChange / 100 | currency: order.currencyCode }}</strong>
+                    <strong>{{ modification.priceChange | localeCurrency: order.currencyCode }}</strong>
                     <vdr-chip colorType="success" *ngIf="modification.isSettled">{{
                         'order.modification-settled' | translate
                     }}</vdr-chip>

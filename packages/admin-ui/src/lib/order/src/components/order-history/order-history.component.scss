@@ -27,10 +27,10 @@
     justify-content: space-between;
     align-items: baseline;
     .public {
-        color: $color-warning-500;
+        color: var(--color-warning-500);
     }
     .private {
-        color: $color-success-500;
+        color: var(--color-success-500);
     }
 }
 textarea.note {
@@ -40,7 +40,7 @@ textarea.note {
     margin-right: 6px;
 }
 .note-text {
-    color: $color-grey-800;
+    color: var(--color-grey-800);
     white-space: pre-wrap;
 }
 
@@ -50,9 +50,9 @@ textarea.note {
 .note-visibility {
     text-transform: lowercase;
     &.public {
-        color: $color-warning-500;
+        color: var(--color-warning-500);
     }
     &.private {
-        color: $color-success-500;
+        color: var(--color-success-500);
     }
 }

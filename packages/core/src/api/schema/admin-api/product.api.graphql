@@ -63,6 +63,7 @@ input ProductTranslationInput {
 
 input CreateProductInput {
     featuredAssetId: ID
+    enabled: Boolean
     assetIds: [ID!]
     facetValueIds: [ID!]
     translations: [ProductTranslationInput!]!

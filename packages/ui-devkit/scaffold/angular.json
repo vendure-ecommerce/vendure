@@ -25,19 +25,29 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
+              {
+                "glob": "**/*.*",
+                "input": "static-assets",
+                "output": "assets"
+              },
               "src/favicon.ico",
+              {
+                "glob": "favicon.ico",
+                "input": "static-assets",
+                "output": "/"
+              },
               "src/vendure-ui-config.json",
               "src/theme.min.css",
               "src/assets",
               "src/i18n-messages",
               {
-                "glob": "**/*.*",
+                "glob": "logo-*.png",
                 "input": "static-assets",
                 "output": "assets"
               }
             ],
             "styles": [
-              "src/styles/styles.scss"
+              "src/global-styles.scss"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [

@@ -32,8 +32,8 @@
                 {{ promotion.couponCode }}
             </vdr-chip>
         </td>
-        <td class="left align-middle">{{ promotion.startsAt | date: 'longDate' }}</td>
-        <td class="left align-middle">{{ promotion.endsAt | date: 'longDate' }}</td>
+        <td class="left align-middle">{{ promotion.startsAt | localeDate: 'longDate' }}</td>
+        <td class="left align-middle">{{ promotion.endsAt | localeDate: 'longDate' }}</td>
         <td class="align-middle">
             <vdr-chip *ngIf="!promotion.enabled">{{ 'common.disabled' | translate }}</vdr-chip>
         </td>

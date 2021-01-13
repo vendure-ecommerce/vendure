@@ -1,4 +1,7 @@
-<vdr-affixed-input [prefix]="currencyCode | currencyName: 'symbol'">
+<vdr-affixed-input
+    [prefix]="prefix$ | async | localeCurrencyName: 'symbol'"
+    [suffix]="suffix$ | async | localeCurrencyName: 'symbol'"
+>
     <input
         type="number"
         step="0.01"

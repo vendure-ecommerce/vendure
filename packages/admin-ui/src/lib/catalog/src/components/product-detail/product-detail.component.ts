@@ -10,6 +10,7 @@ import {
     CustomFieldConfig,
     DataService,
     FacetWithValues,
+    findTranslation,
     flattenFacetValues,
     GlobalFlag,
     IGNORE_CAN_DEACTIVATE_GUARD,
@@ -29,7 +30,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
+import { combineLatest, EMPTY, merge, Observable, of } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -43,7 +44,7 @@ import {
     withLatestFrom,
 } from 'rxjs/operators';
 
-import { ProductDetailService } from '../../providers/product-detail.service';
+import { ProductDetailService } from '../../providers/product-detail/product-detail.service';
 import { ApplyFacetDialogComponent } from '../apply-facet-dialog/apply-facet-dialog.component';
 import { AssignProductsToChannelDialogComponent } from '../assign-products-to-channel-dialog/assign-products-to-channel-dialog.component';
 import { CreateProductVariantsConfig } from '../generate-product-variants/generate-product-variants.component';
@@ -121,6 +122,7 @@ export class ProductDetailComponent
             product: this.formBuilder.group({
                 enabled: true,
                 name: ['', Validators.required],
+                autoUpdateVariantNames: true,
                 slug: '',
                 description: '',
                 facetValueIds: [[]],
@@ -326,7 +328,7 @@ export class ProductDetailComponent
             .pipe(take(1))
             .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['product', 'slug']);
-                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentTranslation = findTranslation(entity, languageCode);
                 const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
                 if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
@@ -347,19 +349,26 @@ export class ProductDetailComponent
         });
     }
 
-    updateProductOption(input: UpdateProductOptionInput) {
-        this.productDetailService.updateProductOption(input).subscribe(
-            () => {
-                this.notificationService.success(_('common.notify-update-success'), {
-                    entity: 'ProductOption',
-                });
-            },
-            err => {
-                this.notificationService.error(_('common.notify-update-error'), {
-                    entity: 'ProductOption',
-                });
-            },
-        );
+    updateProductOption(input: UpdateProductOptionInput & { autoUpdate: boolean }) {
+        combineLatest(this.product$, this.languageCode$)
+            .pipe(
+                take(1),
+                mergeMap(([product, languageCode]) =>
+                    this.productDetailService.updateProductOption(input, product, languageCode),
+                ),
+            )
+            .subscribe(
+                () => {
+                    this.notificationService.success(_('common.notify-update-success'), {
+                        entity: 'ProductOption',
+                    });
+                },
+                err => {
+                    this.notificationService.error(_('common.notify-update-error'), {
+                        entity: 'ProductOption',
+                    });
+                },
+            );
     }
 
     removeProductFacetValue(facetValueId: string) {
@@ -485,7 +494,14 @@ export class ProductDetailComponent
                         );
                     }
 
-                    return this.productDetailService.updateProduct(productInput, variantsInput);
+                    return this.productDetailService.updateProduct({
+                        product,
+                        languageCode,
+                        autoUpdate:
+                            this.detailForm.get(['product', 'autoUpdateVariantNames'])?.value ?? false,
+                        productInput,
+                        variantsInput,
+                    });
                 }),
             )
             .subscribe(
@@ -515,7 +531,7 @@ export class ProductDetailComponent
      * Sets the values of the form on changes to the product or current language.
      */
     protected setFormValues(product: ProductWithVariants.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = product.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(product, languageCode);
         this.detailForm.patchValue({
             product: {
                 enabled: product.enabled,
@@ -544,7 +560,7 @@ export class ProductDetailComponent
 
         const variantsFormArray = this.detailForm.get('variants') as FormArray;
         product.variants.forEach((variant, i) => {
-            const variantTranslation = variant.translations.find(t => t.languageCode === languageCode);
+            const variantTranslation = findTranslation(variant, languageCode);
             const facetValueIds = variant.facetValues.map(fv => fv.id);
             const group: VariantFormValue = {
                 id: variant.id,

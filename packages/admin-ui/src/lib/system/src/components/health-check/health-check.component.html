@@ -17,7 +17,7 @@
                 </ng-template>
                 <div class="last-checked">
                     {{ 'system.health-last-checked' | translate }}:
-                    {{ healthCheckService.lastCheck$ | async | date: 'mediumTime' }}
+                    {{ healthCheckService.lastCheck$ | async | localeDate: 'mediumTime' }}
                 </div>
             </div>
         </div>

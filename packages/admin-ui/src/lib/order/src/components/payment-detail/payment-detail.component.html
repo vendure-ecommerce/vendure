@@ -2,7 +2,7 @@
     {{ payment.method }}
 </vdr-labeled-data>
 <vdr-labeled-data [label]="'order.amount' | translate">
-    {{ payment.amount / 100 | currency: currencyCode }}
+    {{ payment.amount | localeCurrency: currencyCode }}
 </vdr-labeled-data>
 <vdr-labeled-data [label]="'order.transaction-id' | translate">
     {{ payment.transactionId }}
