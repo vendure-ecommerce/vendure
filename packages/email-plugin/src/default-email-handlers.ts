@@ -20,7 +20,10 @@ import {
 
 export const orderConfirmationHandler = new EmailEventListener('order-confirmation')
     .on(OrderStateTransitionEvent)
-    .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
+    .filter(
+        event =>
+            event.toState === 'PaymentSettled' && event.fromState !== 'Modifying' && !!event.order.customer,
+    )
     .loadData(async context => {
         const shippingMethods: ShippingMethod[] = [];
 
