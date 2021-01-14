@@ -318,7 +318,7 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].body).toContain('Date: Wed Jan 01 2020 10:00:00');
         });
 
-        it('formateMoney', async () => {
+        it('formatMoney', async () => {
             const handler = new EmailEventListener('test-helpers')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
@@ -445,6 +445,66 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(callCount).toBe(1);
+        });
+    });
+
+    describe('attachments', () => {
+        const ctx = RequestContext.deserialize({
+            _channel: { code: DEFAULT_CHANNEL_CODE },
+            _languageCode: LanguageCode.en,
+        } as any);
+        const TEST_IMAGE_PATH = path.join(__dirname, '../test-fixtures/test.jpg');
+
+        it('attachments are empty by default', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}');
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].attachments).toEqual([]);
+        });
+
+        it('sync attachment', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        path: TEST_IMAGE_PATH,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
+        });
+
+        it('async attachment', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(async () => [
+                    {
+                        path: TEST_IMAGE_PATH,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
         });
     });
 
