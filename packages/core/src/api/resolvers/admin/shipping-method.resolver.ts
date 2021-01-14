@@ -47,19 +47,19 @@ export class ShippingMethodResolver {
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder)
     shippingEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingEligibilityCheckers(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder)
     shippingCalculators(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getShippingCalculators(ctx);
     }
 
     @Query()
-    @Allow(Permission.ReadSettings)
+    @Allow(Permission.ReadSettings, Permission.ReadOrder)
     fulfillmentHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.shippingMethodService.getFulfillmentHandlers(ctx);
     }
