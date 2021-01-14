@@ -4497,11 +4497,14 @@ export type GetProductsWithVariantIdsQuery = {
 export type GetCollectionQueryVariables = Exact<{
     id?: Maybe<Scalars['ID']>;
     slug?: Maybe<Scalars['String']>;
+    variantListOptions?: Maybe<ProductVariantListOptions>;
 }>;
 
 export type GetCollectionQuery = {
     collection?: Maybe<
-        { productVariants: { items: Array<Pick<ProductVariant, 'id' | 'name'>> } } & CollectionFragment
+        {
+            productVariants: { items: Array<Pick<ProductVariant, 'id' | 'name' | 'price'>> };
+        } & CollectionFragment
     >;
 };
 
@@ -4962,7 +4965,15 @@ export type ShippingAddressFragment = Pick<
 
 export type OrderFragment = Pick<
     Order,
-    'id' | 'createdAt' | 'updatedAt' | 'code' | 'state' | 'total' | 'currencyCode'
+    | 'id'
+    | 'createdAt'
+    | 'updatedAt'
+    | 'code'
+    | 'state'
+    | 'total'
+    | 'totalWithTax'
+    | 'totalQuantity'
+    | 'currencyCode'
 > & { customer?: Maybe<Pick<Customer, 'id' | 'firstName' | 'lastName'>> };
 
 export type OrderItemFragment = Pick<
@@ -5853,7 +5864,7 @@ export type GetOrderListWithQtyQuery = {
     orders: {
         items: Array<
             Pick<Order, 'id' | 'code' | 'totalQuantity'> & {
-                lines: Array<Pick<OrderLine, 'id' | 'quantity'> & { items: Array<Pick<OrderItem, 'id'>> }>;
+                lines: Array<Pick<OrderLine, 'id' | 'quantity'>>;
             }
         >;
     };
@@ -7861,17 +7872,6 @@ export namespace GetOrderListWithQty {
             NonNullable<
                 NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
             >['lines']
-        >[number]
-    >;
-    export type _Items = NonNullable<
-        NonNullable<
-            NonNullable<
-                NonNullable<
-                    NonNullable<
-                        NonNullable<NonNullable<GetOrderListWithQtyQuery['orders']>['items']>[number]
-                    >['lines']
-                >[number]
-            >['items']
         >[number]
     >;
 }

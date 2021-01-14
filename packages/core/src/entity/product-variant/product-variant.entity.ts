@@ -69,7 +69,10 @@ export class ProductVariant
      */
     currencyCode: CurrencyCode;
 
-    @Calculated()
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
     get price(): number {
         if (this.listPrice == null) {
             return 0;
@@ -77,7 +80,10 @@ export class ProductVariant
         return this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice;
     }
 
-    @Calculated()
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
     get priceWithTax(): number {
         if (this.listPrice == null) {
             return 0;

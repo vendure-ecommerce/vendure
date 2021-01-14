@@ -7,6 +7,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
+import { SortOrder } from './graphql/generated-e2e-admin-types';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
@@ -370,6 +371,103 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['B']);
+        });
+    });
+
+    describe('sorting', () => {
+        it('sort by string', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        label: SortOrder.DESC,
+                    },
+                },
+            });
+
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by number', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        order: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by date', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        date: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by ID', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        id: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+    });
+
+    describe('calculated fields', () => {
+        it('filter by simple calculated property', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        descriptionLength: {
+                            lt: 12,
+                        },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
+        it('filter by calculated property with join', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        price: {
+                            lt: 14,
+                        },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
+        it('sort by simple calculated property', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        descriptionLength: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
+        });
+
+        it('sort by calculated property with join', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
         });
     });
 });

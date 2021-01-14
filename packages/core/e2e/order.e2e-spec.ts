@@ -151,16 +151,6 @@ describe('Orders resolver', () => {
         await server.destroy();
     });
 
-    it('orders', async () => {
-        const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
-    });
-
-    it('order', async () => {
-        const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, { id: 'T_2' });
-        expect(result.order!.id).toBe('T_2');
-    });
-
     it('order history initially contains Created -> AddingItems transition', async () => {
         const { order } = await adminClient.query<GetOrderHistory.Query, GetOrderHistory.Variables>(
             GET_ORDER_HISTORY,
@@ -176,6 +166,86 @@ describe('Orders resolver', () => {
                 },
             },
         ]);
+    });
+
+    describe('querying', () => {
+        it('orders', async () => {
+            const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
+            expect(result.orders.items.map(o => o.id).sort()).toEqual(['T_1', 'T_2']);
+        });
+
+        it('order', async () => {
+            const result = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: 'T_2',
+            });
+            expect(result.order!.id).toBe('T_2');
+        });
+
+        it('sort by total', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        sort: {
+                            total: SortOrder.DESC,
+                        },
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'total']))).toEqual([
+                { id: 'T_2', total: 799600 },
+                { id: 'T_1', total: 269800 },
+            ]);
+        });
+
+        it('filter by totalWithTax', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            totalWithTax: { gt: 323760 },
+                        },
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'totalWithTax']))).toEqual([
+                { id: 'T_2', totalWithTax: 959520 },
+            ]);
+        });
+
+        it('sort by totalQuantity', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        sort: {
+                            totalQuantity: SortOrder.DESC,
+                        },
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'totalQuantity']))).toEqual([
+                { id: 'T_2', totalQuantity: 4 },
+                { id: 'T_1', totalQuantity: 2 },
+            ]);
+        });
+
+        it('filter by totalQuantity', async () => {
+            const result = await adminClient.query<GetOrderList.Query, GetOrderList.Variables>(
+                GET_ORDERS_LIST,
+                {
+                    options: {
+                        filter: {
+                            totalQuantity: { eq: 4 },
+                        },
+                    },
+                },
+            );
+            expect(result.orders.items.map(o => pick(o, ['id', 'totalQuantity']))).toEqual([
+                { id: 'T_2', totalQuantity: 4 },
+            ]);
+        });
     });
 
     describe('payments', () => {

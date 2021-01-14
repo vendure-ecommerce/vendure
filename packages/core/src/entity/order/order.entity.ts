@@ -135,17 +135,34 @@ export class Order extends VendureEntity implements ChannelAware, HasCustomField
         return [...groupedAdjustments.values()];
     }
 
-    @Calculated()
+    @Calculated({ expression: 'subTotal + shipping' })
     get total(): number {
         return this.subTotal + (this.shipping || 0);
     }
 
-    @Calculated()
+    @Calculated({ expression: 'subTotalWithTax + shippingWithTax' })
     get totalWithTax(): number {
         return this.subTotalWithTax + (this.shippingWithTax || 0);
     }
 
-    @Calculated()
+    @Calculated({
+        query: qb => {
+            qb.leftJoin(
+                qb1 => {
+                    return qb1
+                        .from(Order, 'order')
+                        .select('COUNT(DISTINCT items.id)', 'qty')
+                        .addSelect('order.id', 'oid')
+                        .leftJoin('order.lines', 'lines')
+                        .leftJoin('lines.items', 'items')
+                        .groupBy('order.id');
+                },
+                't1',
+                't1.oid = order.id',
+            );
+        },
+        expression: 't1.qty',
+    })
     get totalQuantity(): number {
         return summate(this.lines, 'quantity');
     }

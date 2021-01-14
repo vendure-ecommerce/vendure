@@ -1,5 +1,6 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ID, Type } from '@vendure/common/lib/shared-types';
+import { unique } from '@vendure/common/lib/unique';
 import { FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
@@ -10,6 +11,8 @@ import { ListQueryOptions } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
+import { getColumnMetadata, getEntityAlias } from './connection-utils';
+import { getCalculatedColumns } from './get-calculated-columns';
 import { parseChannelParam } from './parse-channel-param';
 import { parseFilterParams } from './parse-filter-params';
 import { parseSortParams } from './parse-sort-params';
@@ -68,6 +71,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
 
+        // join the tables required by calculated columns
+        this.joinCalculatedColumnRelations(qb, entity, options);
+
         filter.forEach(({ clause, parameters }) => {
             qb.andWhere(clause, parameters);
         });
@@ -79,7 +85,42 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             }
         }
 
-        return qb.orderBy(sort);
+        qb.orderBy(sort);
+        return qb;
+    }
+
+    /**
+     * Some calculated columns (those with the `@Calculated()` decorator) require extra joins in order
+     * to derive the data needed for their expressions.
+     */
+    private joinCalculatedColumnRelations<T extends VendureEntity>(
+        qb: SelectQueryBuilder<T>,
+        entity: Type<T>,
+        options: ListQueryOptions<T>,
+    ) {
+        const calculatedColumns = getCalculatedColumns(entity);
+        const filterAndSortFields = unique([
+            ...Object.keys(options.filter || {}),
+            ...Object.keys(options.sort || {}),
+        ]);
+        const alias = getEntityAlias(this.connection.rawConnection, entity);
+        for (const field of filterAndSortFields) {
+            const calculatedColumnDef = calculatedColumns.find(c => c.name === field);
+            const instruction = calculatedColumnDef?.listQuery;
+            if (instruction) {
+                const relations = instruction.relations || [];
+                for (const relation of relations) {
+                    const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
+                    const relationAlias = relation.includes('.')
+                        ? relation.split('.').reverse()[0]
+                        : relation;
+                    qb.innerJoinAndSelect(propertyPath, relationAlias);
+                }
+                if (typeof instruction.query === 'function') {
+                    instruction.query(qb);
+                }
+            }
+        }
     }
 
     /**
