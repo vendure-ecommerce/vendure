@@ -1,3 +1,34 @@
+## <small>0.18.2 (2021-01-15)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix translation of facet values ([a6f3083](https://github.com/vendure-ecommerce/vendure/commit/a6f3083)), closes [#636](https://github.com/vendure-ecommerce/vendure/issues/636)
+* **admin-ui** Order widget i18n fix ([68b8adb](https://github.com/vendure-ecommerce/vendure/commit/68b8adb))
+* **admin-ui** Preserve asset changes between product list/table view ([c83e511](https://github.com/vendure-ecommerce/vendure/commit/c83e511)), closes [#632](https://github.com/vendure-ecommerce/vendure/issues/632)
+* **admin-ui** Preserve changes between product/variant tabs ([242787a](https://github.com/vendure-ecommerce/vendure/commit/242787a)), closes [#632](https://github.com/vendure-ecommerce/vendure/issues/632)
+* **admin-ui** Preserve variant price changes between list/table views ([43bd770](https://github.com/vendure-ecommerce/vendure/commit/43bd770)), closes [#632](https://github.com/vendure-ecommerce/vendure/issues/632)
+* **admin-ui** Update CS translations ([d18dab0](https://github.com/vendure-ecommerce/vendure/commit/d18dab0))
+* **asset-server-plugin** Fix corrupt SVG previews ([3a16d87](https://github.com/vendure-ecommerce/vendure/commit/3a16d87)), closes [#456](https://github.com/vendure-ecommerce/vendure/issues/456)
+* **core** Add ReadOrder perm to fulfillment-related shipping queries ([72ed50c](https://github.com/vendure-ecommerce/vendure/commit/72ed50c)), closes [#644](https://github.com/vendure-ecommerce/vendure/issues/644)
+* **core** Allow list queries to filter/sort on calculated columns ([5325387](https://github.com/vendure-ecommerce/vendure/commit/5325387)), closes [#642](https://github.com/vendure-ecommerce/vendure/issues/642)
+* **core** Clear order discounts after removing coupon code ([e1cce8f](https://github.com/vendure-ecommerce/vendure/commit/e1cce8f)), closes [#649](https://github.com/vendure-ecommerce/vendure/issues/649)
+* **core** Correctly prorate order discounts over differing tax rates ([b128425](https://github.com/vendure-ecommerce/vendure/commit/b128425)), closes [#653](https://github.com/vendure-ecommerce/vendure/issues/653)
+* **core** Correctly return order quantities from list query ([a2e34ec](https://github.com/vendure-ecommerce/vendure/commit/a2e34ec)), closes [#603](https://github.com/vendure-ecommerce/vendure/issues/603)
+* **core** Do not error when querying fulfillment on empty order ([b0c0457](https://github.com/vendure-ecommerce/vendure/commit/b0c0457)), closes [#639](https://github.com/vendure-ecommerce/vendure/issues/639)
+* **core** Fix NaN error when prorating discount over zero-tax line ([51af5a0](https://github.com/vendure-ecommerce/vendure/commit/51af5a0))
+* **core** Gracefully handle errors in JobQueue ([6d1b8c6](https://github.com/vendure-ecommerce/vendure/commit/6d1b8c6)), closes [#635](https://github.com/vendure-ecommerce/vendure/issues/635)
+
+#### Features
+
+* **admin-ui** Auto update ProductVariant name with Product name ([69cd0d0](https://github.com/vendure-ecommerce/vendure/commit/69cd0d0)), closes [#600](https://github.com/vendure-ecommerce/vendure/issues/600)
+* **admin-ui** Auto update ProductVariant name with ProductOption name ([0e98cb5](https://github.com/vendure-ecommerce/vendure/commit/0e98cb5)), closes [#600](https://github.com/vendure-ecommerce/vendure/issues/600)
+* **admin-ui** Currencies respect UI language setting ([5530782](https://github.com/vendure-ecommerce/vendure/commit/5530782)), closes [#568](https://github.com/vendure-ecommerce/vendure/issues/568)
+* **admin-ui** Dates respect UI language setting ([dd0e73a](https://github.com/vendure-ecommerce/vendure/commit/dd0e73a)), closes [#568](https://github.com/vendure-ecommerce/vendure/issues/568)
+* **admin-ui** Display channel filter when more than 10 Channels ([b1b363d](https://github.com/vendure-ecommerce/vendure/commit/b1b363d)), closes [#594](https://github.com/vendure-ecommerce/vendure/issues/594)
+* **email-plugin** Allow attachments to be set on emails ([0082067](https://github.com/vendure-ecommerce/vendure/commit/0082067)), closes [#481](https://github.com/vendure-ecommerce/vendure/issues/481)
+* **email-plugin** Do not re-send order confirmation after modifying ([ddb71df](https://github.com/vendure-ecommerce/vendure/commit/ddb71df)), closes [#650](https://github.com/vendure-ecommerce/vendure/issues/650)
+
 ## <small>0.18.1 (2021-01-08)</small>
 
 
