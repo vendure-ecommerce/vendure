@@ -4,7 +4,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { CurrentUserChannel } from '../../../common/generated-types';
+import { Channel, CurrentUserChannel } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 
 @Component({
@@ -79,5 +79,9 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
         } else {
             this.onChange([value ? value.id : undefined]);
         }
+    }
+
+    compareFn(c1: Channel, c2: Channel): boolean {
+        return c1 && c2 ? c1.id === c2.id : c1 === c2;
     }
 }
