@@ -47,11 +47,11 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
     ngOnChanges(changes: SimpleChanges) {
         if ('variants' in changes) {
             if (this.channelPriceIncludesTax != null && Object.keys(this.variantListPrice).length === 0) {
-                this.buildVariantListPrices(this.variants);
+                this.buildVariantListPrices(this.formArray.value);
             }
         }
         if ('channelPriceIncludesTax' in changes) {
-            this.buildVariantListPrices(this.variants);
+            this.buildVariantListPrices(this.formArray.value);
         }
     }
 
