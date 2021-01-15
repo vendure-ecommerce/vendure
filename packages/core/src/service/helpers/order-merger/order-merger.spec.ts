@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 
+import { RequestContext } from '../../../api/common/request-context';
 import { ConfigService } from '../../../config/config.service';
 import { MockConfigService } from '../../../config/config.service.mock';
 import { MergeOrdersStrategy } from '../../../config/order/merge-orders-strategy';
@@ -10,6 +11,7 @@ import { OrderMerger } from './order-merger';
 
 describe('OrderMerger', () => {
     let orderMerger: OrderMerger;
+    const ctx = RequestContext.empty();
 
     beforeEach(async () => {
         const module = await Test.createTestingModule({
@@ -26,7 +28,7 @@ describe('OrderMerger', () => {
         const guestOrder = new Order({ lines: [] });
         const existingOrder = new Order({ lines: [] });
 
-        const result = orderMerger.merge();
+        const result = orderMerger.merge(ctx);
 
         expect(result.order).toBeUndefined();
         expect(result.linesToInsert).toBeUndefined();
@@ -36,7 +38,7 @@ describe('OrderMerger', () => {
     it('guestOrder undefined', () => {
         const existingOrder = createOrderFromLines([{ lineId: 1, quantity: 2, productVariantId: 100 }]);
 
-        const result = orderMerger.merge(undefined, existingOrder);
+        const result = orderMerger.merge(ctx, undefined, existingOrder);
 
         expect(result.order).toBe(existingOrder);
         expect(result.linesToInsert).toBeUndefined();
@@ -46,7 +48,7 @@ describe('OrderMerger', () => {
     it('existingOrder undefined', () => {
         const guestOrder = createOrderFromLines([{ lineId: 1, quantity: 2, productVariantId: 100 }]);
 
-        const result = orderMerger.merge(guestOrder, undefined);
+        const result = orderMerger.merge(ctx, guestOrder, undefined);
 
         expect(result.order).toBe(guestOrder);
         expect(result.linesToInsert).toBeUndefined();
@@ -58,7 +60,7 @@ describe('OrderMerger', () => {
         guestOrder.id = 42;
         const existingOrder = createOrderFromLines([{ lineId: 1, quantity: 2, productVariantId: 100 }]);
 
-        const result = orderMerger.merge(guestOrder, existingOrder);
+        const result = orderMerger.merge(ctx, guestOrder, existingOrder);
 
         expect(result.order).toBe(existingOrder);
         expect(result.linesToInsert).toBeUndefined();
@@ -70,7 +72,7 @@ describe('OrderMerger', () => {
         const existingOrder = createOrderFromLines([]);
         existingOrder.id = 42;
 
-        const result = orderMerger.merge(guestOrder, existingOrder);
+        const result = orderMerger.merge(ctx, guestOrder, existingOrder);
 
         expect(result.order).toBe(guestOrder);
         expect(result.linesToInsert).toBeUndefined();
@@ -82,7 +84,7 @@ describe('OrderMerger', () => {
         guestOrder.id = 42;
         const existingOrder = createOrderFromLines([{ lineId: 1, quantity: 2, productVariantId: 100 }]);
 
-        const result = orderMerger.merge(guestOrder, existingOrder);
+        const result = orderMerger.merge(ctx, guestOrder, existingOrder);
 
         expect(result.order).toBe(existingOrder);
         expect(result.linesToInsert).toEqual([{ productVariantId: 200, quantity: 2 }]);

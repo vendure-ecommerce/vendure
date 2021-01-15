@@ -10,6 +10,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    Asset,
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
@@ -21,6 +22,7 @@ import {
     CustomFieldConfig,
     DataService,
     encodeConfigArgValue,
+    findTranslation,
     getConfigArgValue,
     LanguageCode,
     ModalService,
@@ -45,7 +47,7 @@ export class CollectionDetailComponent
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
-    assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
@@ -105,7 +107,7 @@ export class CollectionDetailComponent
             .pipe(take(1))
             .subscribe(([entity, languageCode]) => {
                 const slugControl = this.detailForm.get(['slug']);
-                const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+                const currentTranslation = findTranslation(entity, languageCode);
                 const currentSlugIsEmpty = !currentTranslation || !currentTranslation.slug;
                 if (slugControl && slugControl.pristine && currentSlugIsEmpty) {
                     slugControl.setValue(normalizeString(`${nameValue}`, '-'));
@@ -216,14 +218,14 @@ export class CollectionDetailComponent
     }
 
     canDeactivate(): boolean {
-        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+        return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
     }
 
     /**
      * Sets the values of the form on changes to the category or current language.
      */
     protected setFormValues(entity: Collection.Fragment, languageCode: LanguageCode) {
-        const currentTranslation = entity.translations.find(t => t.languageCode === languageCode);
+        const currentTranslation = findTranslation(entity, languageCode);
 
         this.detailForm.patchValue({
             name: currentTranslation ? currentTranslation.name : '',
@@ -274,7 +276,8 @@ export class CollectionDetailComponent
         });
         return {
             ...updatedCategory,
-            ...this.assetChanges,
+            assetIds: this.assetChanges.assets?.map(a => a.id),
+            featuredAssetId: this.assetChanges.featuredAsset?.id,
             isPrivate: !form.value.visible,
             filters: this.mapOperationsToInputs(this.filters, this.detailForm.value.filters),
         };

@@ -1,6 +1,6 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { ChildEntity, OneToOne } from 'typeorm';
+import { ChildEntity, ManyToOne } from 'typeorm';
 
 import { OrderLine } from '../order-line/order-line.entity';
 
@@ -14,6 +14,6 @@ export class Sale extends StockMovement {
         super(input);
     }
 
-    @OneToOne(type => OrderLine)
+    @ManyToOne(type => OrderLine)
     orderLine: OrderLine;
 }

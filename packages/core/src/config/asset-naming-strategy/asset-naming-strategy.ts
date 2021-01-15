@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 
 /**
@@ -19,7 +20,7 @@ export interface AssetNamingStrategy extends InjectableStrategy {
      * file name should then be generated. This process will repeat until a unique file name has
      * been returned.
      */
-    generateSourceFileName(originalFileName: string, conflictFileName?: string): string;
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string;
 
     /**
      * @description
@@ -28,5 +29,5 @@ export interface AssetNamingStrategy extends InjectableStrategy {
      *
      * The same mechanism of checking for conflicts is used as described above.
      */
-    generatePreviewFileName(sourceFileName: string, conflictFileName?: string): string;
+    generatePreviewFileName(ctx: RequestContext, sourceFileName: string, conflictFileName?: string): string;
 }

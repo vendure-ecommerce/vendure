@@ -1,5 +1,8 @@
+import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
+import { JsonCompatible } from '@vendure/common/lib/shared-types';
 import { Injector, RequestContext, VendureEvent, WorkerMessage } from '@vendure/core';
+import { Attachment } from 'nodemailer/lib/mailer';
 
 import { EmailEventHandler } from './event-handler';
 
@@ -235,11 +238,12 @@ export interface NoopTransportOptions {
  * @docsCategory EmailPlugin
  * @docsPage Email Plugin Types
  */
-export interface EmailDetails {
+export interface EmailDetails<Type extends 'serialized' | 'unserialized' = 'unserialized'> {
     from: string;
     recipient: string;
     subject: string;
     body: string;
+    attachments: Array<Type extends 'serialized' ? SerializedAttachment : Attachment>;
 }
 
 /**
@@ -265,7 +269,7 @@ export interface TestingTransportOptions {
 export interface EmailGenerator<T extends string = any, E extends VendureEvent = any> {
     /**
      * @description
-     * Any neccesary setup can be performed here.
+     * Any necessary setup can be performed here.
      */
     onInit?(options: EmailPluginOptions): void | Promise<void>;
 
@@ -279,7 +283,7 @@ export interface EmailGenerator<T extends string = any, E extends VendureEvent =
         subject: string,
         body: string,
         templateVars: { [key: string]: any },
-    ): Omit<EmailDetails, 'recipient'>;
+    ): Omit<EmailDetails, 'recipient' | 'attachments'>;
 }
 
 /**
@@ -293,6 +297,24 @@ export type LoadDataFn<Event extends EventWithContext, R> = (context: {
     injector: Injector;
 }) => Promise<R>;
 
+export type OptionalTuNullable<O> = {
+    [K in keyof O]-?: undefined extends O[K] ? NonNullable<O[K]> | null : O[K];
+};
+
+/**
+ * @description
+ * An object defining a file attachment for an email. Based on the object described
+ * [here in the Nodemailer docs](https://nodemailer.com/message/attachments/), but
+ * only uses the `path` property to define a filesystem path or a URL pointing to
+ * the attachment file.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type EmailAttachment = Omit<Attachment, 'content' | 'raw'> & { path: string };
+
+export type SerializedAttachment = OptionalTuNullable<EmailAttachment>;
+
 export type IntermediateEmailDetails = {
     type: string;
     from: string;
@@ -300,8 +322,66 @@ export type IntermediateEmailDetails = {
     templateVars: any;
     subject: string;
     templateFile: string;
+    attachments: SerializedAttachment[];
 };
 
 export class EmailWorkerMessage extends WorkerMessage<IntermediateEmailDetails, boolean> {
     static readonly pattern = 'send-email';
 }
+
+/**
+ * @description
+ * Configures the {@link EmailEventHandler} to handle a particular channel & languageCode
+ * combination.
+ *
+ * @docsCategory EmailPlugin
+ */
+export interface EmailTemplateConfig {
+    /**
+     * @description
+     * Specifies the channel to which this configuration will apply. If set to `'default'`, it will be applied to all
+     * channels.
+     */
+    channelCode: string | 'default';
+    /**
+     * @description
+     * Specifies the languageCode to which this configuration will apply. If set to `'default'`, it will be applied to all
+     * languages.
+     */
+    languageCode: LanguageCode | 'default';
+    /**
+     * @description
+     * Defines the file name of the Handlebars template file to be used to when generating this email.
+     */
+    templateFile: string;
+    /**
+     * @description
+     * A string defining the email subject line. Handlebars variables defined in the `templateVars` object may
+     * be used inside the subject.
+     */
+    subject: string;
+}
+
+/**
+ * @description
+ * A function used to define template variables available to email templates.
+ * See {@link EmailEventHandler}.setTemplateVars().
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetTemplateVarsFn<Event> = (
+    event: Event,
+    globals: { [key: string]: any },
+) => { [key: string]: any };
+
+/**
+ * @description
+ * A function used to define attachments to be sent with the email.
+ * See https://nodemailer.com/message/attachments/ for more information about
+ * how attachments work in Nodemailer.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage Email Plugin Types
+ */
+export type SetAttachmentsFn<Event> = (event: Event) => EmailAttachment[] | Promise<EmailAttachment[]>;

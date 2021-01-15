@@ -12,7 +12,7 @@ Database migrations are needed whenever the database schema changes. This can be
 
 ## Synchronize vs migrate
 
-TypeORM (which Vendure uses to interact with the database layer) has a `synchronize` option which, when set to `true`, will automatically update your database schema to reflect the current Vendure configuration.
+TypeORM (which Vendure uses to interact with the database) has a `synchronize` option which, when set to `true`, will automatically update your database schema to reflect the current Vendure configuration.
 
 This is convenient while developing, but should not be used in production, since a misconfiguration could potentially delete production data. In this case, migrations should be used.
 
@@ -34,11 +34,17 @@ export const config: VendureConfig = {
 
 ### Generate a migration
 
-The [`generateMigration` function]({{< relref "generate-migration" >}}) will compare the provided VendureCofig against the current database schema and generate a new migration file containing SQL statements which, when applied to the current database, will modify the schema to fit with the configuration. It will also contain statements to revert these changes.
+The [`generateMigration` function]({{< relref "generate-migration" >}}) will compare the provided VendureConfig against the current database schema and generate a new migration file containing SQL statements which, when applied to the current database, will modify the schema to fit with the configuration. It will also contain statements to revert these changes.
 
 ### Run migrations
 
 The [`runMigrations` function]({{< relref "run-migrations" >}}) will apply any migrations files found according to the pattern provided to `dbConnectionOptions.migrations` to the database. TypeORM keeps a track of which migrations have already been applied, so running this function multiple times will not apply the same migration more than once.
+
+{{% alert "warning" %}}
+⚠ TypeORM will attempt to run each migration inside a transaction. This means that if one of the migration commands fails, then the entire transaction will be rolled back to its original state.
+
+_However_ this is **not supported by MySQL / MariaDB**. This means that when using MySQL or MariaDB, errors in your migration script could leave your database in a broken or inconsistent state. Therefore it is **critical** that you first create a backup of your database before running a migration.
+{{< /alert >}}
 
 ### Revert a migration
 

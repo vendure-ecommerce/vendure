@@ -1,0 +1,354 @@
+<vdr-action-bar *ngIf="entity$ | async as order">
+    <vdr-ab-left>
+        <div class="flex clr-align-items-center">
+            <vdr-entity-info [entity]="entity$ | async"></vdr-entity-info>
+            <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
+        </div>
+    </vdr-ab-left>
+
+    <vdr-ab-right>
+        <button class="btn btn-secondary" (click)="transitionToPriorState(order)">
+            {{ 'order.cancel-modification' | translate }}
+        </button>
+    </vdr-ab-right>
+</vdr-action-bar>
+
+<div *ngIf="entity$ | async as order">
+    <div class="clr-row">
+        <div class="clr-col-lg-8">
+            <table class="order-table table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>{{ 'order.product-name' | translate }}</th>
+                        <th>{{ 'order.product-sku' | translate }}</th>
+                        <th>{{ 'order.unit-price' | translate }}</th>
+                        <th>{{ 'order.quantity' | translate }}</th>
+                        <th *ngIf="orderLineCustomFields.length">{{ 'common.custom-fields' | translate }}</th>
+                        <th>{{ 'order.total' | translate }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr
+                        *ngFor="let line of order.lines; let i = index"
+                        class="order-line"
+                        [class.is-cancelled]="line.quantity === 0"
+                        [class.modified]="isLineModified(line)"
+                    >
+                        <td class="align-middle thumb">
+                            <img
+                                *ngIf="line.featuredAsset"
+                                [src]="line.featuredAsset | assetPreview: 'tiny'"
+                            />
+                        </td>
+                        <td class="align-middle name">{{ line.productVariant.name }}</td>
+                        <td class="align-middle sku">{{ line.productVariant.sku }}</td>
+                        <td class="align-middle unit-price">
+                            {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{ line.unitPrice | localeCurrency: order.currencyCode }}
+                            </div>
+                        </td>
+                        <td class="align-middle quantity">
+                            <input
+                                type="number"
+                                min="0"
+                                [value]="line.quantity"
+                                (input)="updateLineQuantity(line, $event.target.value)"
+                            />
+                            <vdr-line-refunds [line]="line"></vdr-line-refunds>
+                            <vdr-line-fulfillment
+                                [line]="line"
+                                [orderState]="order.state"
+                            ></vdr-line-fulfillment>
+                        </td>
+                        <td *ngIf="orderLineCustomFields.length" class="order-line-custom-field align-middle">
+                            <ng-container *ngFor="let customField of orderLineCustomFields">
+                                <vdr-custom-field-control
+                                    [customField]="customField"
+                                    [customFieldsFormGroup]="orderLineCustomFieldsFormArray.get([i])"
+                                    entityName="OrderLine"
+                                    [compact]="true"
+                                ></vdr-custom-field-control>
+                            </ng-container>
+                        </td>
+                        <td class="align-middle total">
+                            {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{ line.linePrice | localeCurrency: order.currencyCode }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr
+                        *ngFor="let addedLine of addedLines; trackBy: trackByProductVariantId; let i = index"
+                        class="modified"
+                    >
+                        <td class="align-middle thumb">
+                            <img
+                                *ngIf="addedLine.productAsset"
+                                [src]="addedLine.productAsset | assetPreview: 'tiny'"
+                            />
+                        </td>
+                        <td class="align-middle name">{{ addedLine.productVariantName }}</td>
+                        <td class="align-middle sku">{{ addedLine.sku }}</td>
+                        <td class="align-middle unit-price">
+                            {{ addedLine.priceWithTax | localeCurrency: order.currencyCode }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{ addedLine.price | localeCurrency: order.currencyCode }}
+                            </div>
+                        </td>
+                        <td class="align-middle quantity">
+                            <input
+                                type="number"
+                                min="0"
+                                [value]="addedLine.quantity"
+                                (input)="updateAddedItemQuantity(addedLine, $event.target.value)"
+                            />
+                            <button class="icon-button" (click)="removeAddedItem(i)">
+                                <clr-icon shape="trash"></clr-icon>
+                            </button>
+                        </td>
+                        <td
+                            *ngIf="orderLineCustomFields.length"
+                            class="order-line-custom-field align-middle"
+                        >
+                            <ng-container *ngFor="let customField of orderLineCustomFields">
+                                <vdr-custom-field-control
+                                    [customField]="customField"
+                                    [customFieldsFormGroup]="addItemCustomFieldsFormArray.get([i])"
+                                    entityName="OrderLine"
+                                    [compact]="true"
+                                ></vdr-custom-field-control>
+                            </ng-container>
+                        </td>
+                        <td class="align-middle total">
+                            {{
+                                (addedLine.priceWithTax * addedLine.quantity) / 100
+                                    | currency: order.currencyCode
+                            }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{
+                                    (addedLine.price * addedLine.quantity) / 100
+                                        | currency: order.currencyCode
+                                }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="surcharge" *ngFor="let surcharge of order.surcharges">
+                        <td class="align-middle name left" colspan="2">{{ surcharge.description }}</td>
+                        <td class="align-middle sku">{{ surcharge.sku }}</td>
+                        <td class="align-middle"></td>
+                        <td></td>
+                        <td *ngIf="orderLineCustomFields.length"></td>
+                        <td class="align-middle total">
+                            {{ surcharge.priceWithTax | localeCurrency: order.currencyCode }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{ surcharge.price | localeCurrency: order.currencyCode }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr
+                        class="surcharge modified"
+                        *ngFor="let surcharge of modifyOrderInput.surcharges; let i = index"
+                    >
+                        <td class="align-middle name left" colspan="2">
+                            {{ surcharge.description }}
+                            <button class="icon-button" (click)="removeSurcharge(i)">
+                                <clr-icon shape="trash"></clr-icon>
+                            </button>
+                        </td>
+                        <td class="align-middle sku">{{ surcharge.sku }}</td>
+                        <td class="align-middle"></td>
+                        <td></td>
+                        <td *ngIf="orderLineCustomFields.length"></td>
+                        <td class="align-middle total">
+                            <ng-container *ngIf="getSurchargePrices(surcharge) as surchargePrice">
+                                {{ surchargePrice.priceWithTax | localeCurrency: order.currencyCode }}
+                                <div class="net-price" [title]="'order.net-price' | translate">
+                                    {{ surchargePrice.price | localeCurrency: order.currencyCode }}
+                                </div>
+                            </ng-container>
+                        </td>
+                    </tr>
+                    <tr class="shipping">
+                        <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
+                        <td class="clr-align-middle">{{ order.shippingLines[0]?.shippingMethod?.name }}</td>
+                        <td colspan="3"></td>
+                        <td *ngIf="orderLineCustomFields.length"></td>
+                        <td class="clr-align-middle">
+                            {{ order.shippingWithTax | localeCurrency: order.currencyCode }}
+                            <div class="net-price" [title]="'order.net-price' | translate">
+                                {{ order.shipping | localeCurrency: order.currencyCode }}
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="mb2">{{ 'order.modifications' | translate }}</h4>
+            <clr-accordion>
+                <clr-accordion-panel>
+                    <clr-accordion-title>{{ 'order.add-item-to-order' | translate }}</clr-accordion-title>
+                    <clr-accordion-content *clrIfExpanded>
+                        <vdr-product-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
+                        </vdr-product-selector>
+                        <div *ngIf="addItemSelectedVariant" class="flex mb4">
+                            <img *ngIf="addItemSelectedVariant.productAsset as asset" [src]="asset | assetPreview: 'tiny'" class="mr4" />
+                            <div>
+                                <strong class="mr4">{{ addItemSelectedVariant.productVariantName }}</strong>
+                                <small>{{ addItemSelectedVariant.sku }}</small>
+                                <div>{{ getSelectedItemPrice(addItemSelectedVariant) | localeCurrency: order.currencyCode }}</div>
+                            </div>
+
+                        </div>
+                        <ng-container *ngFor="let customField of orderLineCustomFields">
+                            <vdr-custom-field-control
+                                [readonly]="!addItemSelectedVariant"
+                                [customField]="customField"
+                                [customFieldsFormGroup]="addItemCustomFieldsForm"
+                                entityName="OrderLine"
+                                [compact]="true"
+                            ></vdr-custom-field-control>
+                        </ng-container>
+                        <button
+                            class="btn btn-secondary"
+                            [disabled]="!addItemSelectedVariant || addItemCustomFieldsForm.invalid"
+                            (click)="addItemToOrder(addItemSelectedVariant)"
+                        >
+                            {{ 'order.add-item-to-order' | translate }}
+                        </button>
+                    </clr-accordion-content>
+                </clr-accordion-panel>
+
+                <clr-accordion-panel>
+                    <clr-accordion-title>{{ 'order.add-surcharge' | translate }}</clr-accordion-title>
+                    <clr-accordion-content *clrIfExpanded>
+                        <form [formGroup]="surchargeForm" (submit)="addSurcharge(surchargeForm.value)">
+                            <vdr-form-field [label]="'common.description' | translate" for="description"
+                                ><input
+                                    id="description"
+                                    type="text"
+                                    formControlName="description"
+                            /></vdr-form-field>
+                            <vdr-form-field [label]="'order.product-sku' | translate" for="sku"
+                                ><input id="sku" type="text" formControlName="sku"
+                            /></vdr-form-field>
+                            <vdr-form-field [label]="'common.price' | translate" for="price"
+                                ><vdr-currency-input
+                                    [currencyCode]="order.currencyCode"
+                                    id="price"
+                                    formControlName="price"
+                                ></vdr-currency-input
+                            ></vdr-form-field>
+                            <vdr-form-field
+                                [label]="
+                                    'catalog.price-includes-tax-at'
+                                        | translate: { rate: surchargeForm.get('taxRate')?.value }
+                                "
+                                for="priceIncludesTax"
+                                ><input
+                                    id="priceIncludesTax"
+                                    type="checkbox"
+                                    clrCheckbox
+                                    formControlName="priceIncludesTax"
+                            /></vdr-form-field>
+                            <vdr-form-field [label]="'order.tax-rate' | translate" for="taxRate"
+                                ><vdr-affixed-input suffix="%"
+                                    ><input
+                                        id="taxRate"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        formControlName="taxRate" /></vdr-affixed-input
+                            ></vdr-form-field>
+                            <vdr-form-field [label]="'order.tax-description' | translate" for="taxDescription"
+                                ><input
+                                    id="taxDescription"
+                                    type="text"
+                                    formControlName="taxDescription"
+                            /></vdr-form-field>
+                            <button
+                                class="btn btn-secondary"
+                                [disabled]="surchargeForm.invalid || surchargeForm.pristine || surchargeForm.get('price')?.value === 0"
+                            >
+                                {{ 'order.add-surcharge' | translate }}
+                            </button>
+                        </form>
+                    </clr-accordion-content>
+                </clr-accordion-panel>
+                <clr-accordion-panel>
+                    <clr-accordion-title>{{ 'order.edit-shipping-address' | translate }}</clr-accordion-title>
+                    <clr-accordion-content *clrIfExpanded>
+                        <vdr-address-form
+                            [formGroup]="shippingAddressForm"
+                            [availableCountries]="availableCountries$ | async"
+                            [customFields]="addressCustomFields"
+                        ></vdr-address-form>
+                    </clr-accordion-content>
+                </clr-accordion-panel>
+                <clr-accordion-panel>
+                    <clr-accordion-title>{{ 'order.edit-billing-address' | translate }}</clr-accordion-title>
+                    <clr-accordion-content *clrIfExpanded>
+                        <vdr-address-form
+                            [formGroup]="billingAddressForm"
+                            [availableCountries]="availableCountries$ | async"
+                            [customFields]="addressCustomFields"
+                        ></vdr-address-form>
+                    </clr-accordion-content>
+                </clr-accordion-panel>
+            </clr-accordion>
+        </div>
+        <div class="clr-col-lg-4 order-cards">
+            <div class="card">
+                <div class="card-header">
+                    {{ 'order.modification-summary' | translate }}
+                </div>
+                <div class="card-block">
+                    <ul>
+                        <li *ngIf="modifyOrderInput.addItems?.length">
+                            {{
+                                'order.modification-adding-items'
+                                    | translate: { count: modifyOrderInput.addItems?.length }
+                            }}
+                        </li>
+                        <li *ngIf="modifyOrderInput.adjustOrderLines?.length">
+                            {{
+                                'order.modification-adjusting-lines'
+                                    | translate: { count: modifyOrderInput.adjustOrderLines?.length }
+                            }}
+                        </li>
+                        <li *ngIf="modifyOrderInput.surcharges?.length">
+                            {{
+                                'order.modification-adding-surcharges'
+                                    | translate: { count: modifyOrderInput.surcharges?.length }
+                            }}
+                        </li>
+                        <li *ngIf="shippingAddressForm.dirty">
+                            {{ 'order.modification-updating-shipping-address' | translate }}
+                        </li>
+                        <li *ngIf="billingAddressForm.dirty">
+                            {{ 'order.modification-updating-billing-address' | translate }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-block">
+                    <label class="clr-control-label">{{ 'order.note' | translate }}</label>
+                    <textarea [(ngModel)]="note" name="note" clrTextarea required></textarea>
+                    <clr-checkbox-wrapper class="">
+                        <input type="checkbox" clrCheckbox [(ngModel)]="recalculateShipping" />
+                        <label>{{ 'order.modification-recalculate-shipping' | translate }}</label>
+                    </clr-checkbox-wrapper>
+                </div>
+                <div class="card-footer">
+                    <button
+                        class="btn btn-primary"
+                        [disabled]="!canPreviewChanges()"
+                        (click)="previewAndModify(order)"
+                    >
+                        {{ 'order.preview-changes' | translate }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

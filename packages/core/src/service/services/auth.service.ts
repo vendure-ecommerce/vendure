@@ -134,7 +134,7 @@ export class AuthService {
                 session.authenticationStrategy,
             );
             if (typeof authenticationStrategy.onLogOut === 'function') {
-                await authenticationStrategy.onLogOut(session.user);
+                await authenticationStrategy.onLogOut(ctx, session.user);
             }
             this.eventBus.publish(new LogoutEvent(ctx));
             return this.sessionService.deleteSessionsByUser(ctx, session.user);

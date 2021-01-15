@@ -22,7 +22,7 @@ import {
 @Injectable()
 export class FulfillmentStateMachine {
     readonly config: StateMachineConfig<FulfillmentState, FulfillmentTransitionData>;
-    private readonly initialState: FulfillmentState = 'Pending';
+    private readonly initialState: FulfillmentState = 'Created';
 
     constructor(private configService: ConfigService, private historyService: HistoryService) {
         this.config = this.initConfig();
@@ -60,7 +60,16 @@ export class FulfillmentStateMachine {
         toState: FulfillmentState,
         data: FulfillmentTransitionData,
     ) {
-        /**/
+        const { fulfillmentHandlers } = this.configService.shippingOptions;
+        const fulfillmentHandler = fulfillmentHandlers.find(h => h.code === data.fulfillment.handlerCode);
+        if (fulfillmentHandler) {
+            const result = await awaitPromiseOrObservable(
+                fulfillmentHandler.onFulfillmentTransition(fromState, toState, data),
+            );
+            if (result === false || typeof result === 'string') {
+                return result;
+            }
+        }
     }
 
     /**

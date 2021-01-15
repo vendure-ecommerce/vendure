@@ -169,6 +169,7 @@ export interface CustomFields {
     Customer?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];
     FacetValue?: CustomFieldConfig[];
+    Fulfillment?: CustomFieldConfig[];
     GlobalSettings?: CustomFieldConfig[];
     Order?: CustomFieldConfig[];
     OrderLine?: CustomFieldConfig[];

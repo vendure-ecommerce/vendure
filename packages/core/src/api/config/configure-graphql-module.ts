@@ -20,6 +20,7 @@ import { I18nService } from '../../i18n/i18n.service';
 import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
 import { ApiSharedModule } from '../api-internal-modules';
+import { ApiType } from '../common/get-api-type';
 import { IdCodecService } from '../common/id-codec.service';
 import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
@@ -28,8 +29,10 @@ import { TranslateErrorsPlugin } from '../middleware/translate-errors-plugin';
 import { generateAuthenticationTypes } from './generate-auth-types';
 import { generateErrorCodeEnum } from './generate-error-code-enum';
 import { generateListOptions } from './generate-list-options';
+import { generatePermissionEnum } from './generate-permissions';
 import {
     addGraphQLCustomFields,
+    addModifyOrderCustomFields,
     addOrderLineCustomFieldsInput,
     addRegisterCustomerCustomFieldsInput,
     addServerConfigCustomFields,
@@ -78,76 +81,11 @@ async function createGraphQLOptions(
     typesLoader: GraphQLTypesLoader,
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
-    // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
-    // See https://github.com/apollographql/apollo-server/issues/1075
-    const dummyResolveType = {
-        __resolveType() {
-            return null;
-        },
-    };
-
-    const stockMovementResolveType = {
-        __resolveType(value: any) {
-            switch (value.type) {
-                case StockMovementType.ADJUSTMENT:
-                    return 'StockAdjustment';
-                case StockMovementType.SALE:
-                    return 'Sale';
-                case StockMovementType.CANCELLATION:
-                    return 'Cancellation';
-                case StockMovementType.RETURN:
-                    return 'Return';
-            }
-        },
-    };
-
-    const customFieldsConfigResolveType = {
-        __resolveType(value: any) {
-            switch (value.type) {
-                case 'string':
-                    return 'StringCustomFieldConfig';
-                case 'localeString':
-                    return 'LocaleStringCustomFieldConfig';
-                case 'int':
-                    return 'IntCustomFieldConfig';
-                case 'float':
-                    return 'FloatCustomFieldConfig';
-                case 'boolean':
-                    return 'BooleanCustomFieldConfig';
-                case 'datetime':
-                    return 'DateTimeCustomFieldConfig';
-            }
-        },
-    };
-
     return {
         path: '/' + options.apiPath,
         typeDefs: await createTypeDefs(options.apiType),
         include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
-        resolvers: {
-            JSON: GraphQLJSON,
-            DateTime: GraphQLDateTime,
-            Node: dummyResolveType,
-            PaginatedList: dummyResolveType,
-            Upload: GraphQLUpload || dummyResolveType,
-            SearchResultPrice: {
-                __resolveType(value: any) {
-                    return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
-                },
-            },
-            StockMovementItem: stockMovementResolveType,
-            StockMovement: stockMovementResolveType,
-            CustomFieldConfig: customFieldsConfigResolveType,
-            CustomField: customFieldsConfigResolveType,
-            ErrorResult: {
-                __resolveType(value: ErrorResult) {
-                    return value.__typename;
-                },
-            },
-            ...(options.apiType === 'admin'
-                ? adminErrorOperationTypeResolvers
-                : shopErrorOperationTypeResolvers),
-        },
+        resolvers: createResolvers(options.apiType),
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
         },
@@ -186,16 +124,104 @@ async function createGraphQLOptions(
             .map(e => (typeof e.schema === 'function' ? e.schema() : e.schema))
             .filter(notNullOrUndefined)
             .forEach(documentNode => (schema = extendSchema(schema, documentNode)));
+        schema = generatePermissionEnum(schema, configService.authOptions.customPermissions);
         schema = generateListOptions(schema);
         schema = addGraphQLCustomFields(schema, customFields, apiType === 'shop');
-        schema = addServerConfigCustomFields(schema, customFields);
         schema = addOrderLineCustomFieldsInput(schema, customFields.OrderLine || []);
+        schema = addModifyOrderCustomFields(schema, customFields.Order || []);
         schema = generateAuthenticationTypes(schema, authStrategies);
         schema = generateErrorCodeEnum(schema);
+        if (apiType === 'admin') {
+            schema = addServerConfigCustomFields(schema, customFields);
+        }
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }
 
         return printSchema(schema);
     }
+}
+
+function createResolvers(apiType: ApiType) {
+    // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
+    // See https://github.com/apollographql/apollo-server/issues/1075
+    const dummyResolveType = {
+        __resolveType() {
+            return null;
+        },
+    };
+
+    const stockMovementResolveType = {
+        __resolveType(value: any) {
+            switch (value.type) {
+                case StockMovementType.ADJUSTMENT:
+                    return 'StockAdjustment';
+                case StockMovementType.ALLOCATION:
+                    return 'Allocation';
+                case StockMovementType.SALE:
+                    return 'Sale';
+                case StockMovementType.CANCELLATION:
+                    return 'Cancellation';
+                case StockMovementType.RETURN:
+                    return 'Return';
+                case StockMovementType.RELEASE:
+                    return 'Release';
+            }
+        },
+    };
+
+    const customFieldsConfigResolveType = {
+        __resolveType(value: any) {
+            switch (value.type) {
+                case 'string':
+                    return 'StringCustomFieldConfig';
+                case 'localeString':
+                    return 'LocaleStringCustomFieldConfig';
+                case 'int':
+                    return 'IntCustomFieldConfig';
+                case 'float':
+                    return 'FloatCustomFieldConfig';
+                case 'boolean':
+                    return 'BooleanCustomFieldConfig';
+                case 'datetime':
+                    return 'DateTimeCustomFieldConfig';
+            }
+        },
+    };
+
+    const commonResolvers = {
+        JSON: GraphQLJSON,
+        DateTime: GraphQLDateTime,
+        Node: dummyResolveType,
+        PaginatedList: dummyResolveType,
+        Upload: GraphQLUpload || dummyResolveType,
+        SearchResultPrice: {
+            __resolveType(value: any) {
+                return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
+            },
+        },
+        CustomFieldConfig: customFieldsConfigResolveType,
+        CustomField: customFieldsConfigResolveType,
+        ErrorResult: {
+            __resolveType(value: ErrorResult) {
+                return value.__typename;
+            },
+        },
+    };
+
+    const adminResolvers = {
+        StockMovementItem: stockMovementResolveType,
+        StockMovement: stockMovementResolveType,
+        ...adminErrorOperationTypeResolvers,
+    };
+
+    const shopResolvers = {
+        ...shopErrorOperationTypeResolvers,
+    };
+
+    const resolvers =
+        apiType === 'admin'
+            ? { ...commonResolvers, ...adminResolvers }
+            : { ...commonResolvers, ...shopResolvers };
+    return resolvers;
 }

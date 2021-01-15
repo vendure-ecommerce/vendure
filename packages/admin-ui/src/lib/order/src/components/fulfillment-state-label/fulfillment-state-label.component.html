@@ -1,4 +1,4 @@
 <vdr-chip [title]="'order.payment-state' | translate" [colorType]="chipColorType">
     <clr-icon shape="check-circle" *ngIf="state === 'Delivered'"></clr-icon>
-    {{ state }}
+    {{ state | stateI18nToken | translate }}
 </vdr-chip>

@@ -14,11 +14,15 @@ import { EntityNotFoundError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
+import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
+import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
+import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { patchEntity } from '../helpers/utils/patch-entity';
+import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 import { ChannelService } from './channel.service';
@@ -33,10 +37,16 @@ export class ShippingMethodService {
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
         private shippingConfiguration: ShippingConfiguration,
+        private translatableSaver: TranslatableSaver,
     ) {}
 
     async initShippingMethods() {
-        await this.updateActiveShippingMethods(RequestContext.empty());
+        if (this.configService.shippingOptions.fulfillmentHandlers.length === 0) {
+            throw new Error(
+                `No FulfillmentHandlers were found. Please ensure the VendureConfig.shippingOptions.fulfillmentHandlers array contains at least one FulfillmentHandler.`,
+            );
+        }
+        await this.verifyShippingMethods();
     }
 
     findAll(
@@ -52,24 +62,39 @@ export class ShippingMethodService {
             })
             .getManyAndCount()
             .then(([items, totalItems]) => ({
-                items,
+                items: items.map(i => translateDeep(i, ctx.languageCode)),
                 totalItems,
             }));
     }
 
-    findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
-        return this.connection.findOneInChannel(ctx, ShippingMethod, shippingMethodId, ctx.channelId, {
-            relations: ['channels'],
-            where: { deletedAt: null },
-        });
+    async findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
+        const shippingMethod = await this.connection.findOneInChannel(
+            ctx,
+            ShippingMethod,
+            shippingMethodId,
+            ctx.channelId,
+            {
+                relations: ['channels'],
+                where: { deletedAt: null },
+            },
+        );
+        return shippingMethod && translateDeep(shippingMethod, ctx.languageCode);
     }
 
     async create(ctx: RequestContext, input: CreateShippingMethodInput): Promise<ShippingMethod> {
-        const shippingMethod = new ShippingMethod({
-            code: input.code,
-            description: input.description,
-            checker: this.shippingConfiguration.parseCheckerInput(input.checker),
-            calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
+        const shippingMethod = await this.translatableSaver.create({
+            ctx,
+            input,
+            entityType: ShippingMethod,
+            translationType: ShippingMethodTranslation,
+            beforeSave: method => {
+                method.fulfillmentHandlerCode = this.ensureValidFulfillmentHandlerCode(
+                    method.code,
+                    input.fulfillmentHandler,
+                );
+                method.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
+                method.calculator = this.shippingConfiguration.parseCalculatorInput(input.calculator);
+            },
         });
         this.channelService.assignToCurrentChannel(shippingMethod, ctx);
         const newShippingMethod = await this.connection
@@ -84,13 +109,24 @@ export class ShippingMethodService {
         if (!shippingMethod) {
             throw new EntityNotFoundError('ShippingMethod', input.id);
         }
-        const updatedShippingMethod = patchEntity(shippingMethod, omit(input, ['checker', 'calculator']));
+        const updatedShippingMethod = await this.translatableSaver.update({
+            ctx,
+            input: omit(input, ['checker', 'calculator']),
+            entityType: ShippingMethod,
+            translationType: ShippingMethodTranslation,
+        });
         if (input.checker) {
             updatedShippingMethod.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
         }
         if (input.calculator) {
             updatedShippingMethod.calculator = this.shippingConfiguration.parseCalculatorInput(
                 input.calculator,
+            );
+        }
+        if (input.fulfillmentHandler) {
+            updatedShippingMethod.fulfillmentHandlerCode = this.ensureValidFulfillmentHandlerCode(
+                updatedShippingMethod.code,
+                input.fulfillmentHandler,
             );
         }
         await this.connection
@@ -121,14 +157,50 @@ export class ShippingMethodService {
         return this.shippingConfiguration.shippingCalculators.map(x => x.toGraphQlType(ctx));
     }
 
+    getFulfillmentHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.shippingConfiguration.fulfillmentHandlers.map(x => x.toGraphQlType(ctx));
+    }
+
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {
         return this.activeShippingMethods.filter(sm => sm.channels.find(c => c.id === channel.id));
     }
 
+    /**
+     * Ensures that all ShippingMethods have a valid fulfillmentHandlerCode
+     */
+    private async verifyShippingMethods() {
+        await this.updateActiveShippingMethods(RequestContext.empty());
+        for (const method of this.activeShippingMethods) {
+            const handlerCode = method.fulfillmentHandlerCode;
+            const verifiedHandlerCode = this.ensureValidFulfillmentHandlerCode(method.code, handlerCode);
+            if (handlerCode !== verifiedHandlerCode) {
+                method.fulfillmentHandlerCode = verifiedHandlerCode;
+                await this.connection.getRepository(ShippingMethod).save(method);
+            }
+        }
+    }
+
     private async updateActiveShippingMethods(ctx: RequestContext) {
-        this.activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
+        const activeShippingMethods = await this.connection.getRepository(ctx, ShippingMethod).find({
             relations: ['channels'],
             where: { deletedAt: null },
         });
+        this.activeShippingMethods = activeShippingMethods.map(m => translateDeep(m, ctx.languageCode));
+    }
+
+    private ensureValidFulfillmentHandlerCode(
+        shippingMethodCode: string,
+        fulfillmentHandlerCode: string,
+    ): string {
+        const { fulfillmentHandlers } = this.configService.shippingOptions;
+        let handler = fulfillmentHandlers.find(h => h.code === fulfillmentHandlerCode);
+        if (!handler) {
+            handler = fulfillmentHandlers[0];
+            Logger.error(
+                `The ShippingMethod "${shippingMethodCode}" references an invalid FulfillmentHandler.\n` +
+                    `The FulfillmentHandler with code "${fulfillmentHandlerCode}" was not found. Using "${handler.code}" instead.`,
+            );
+        }
+        return handler.code;
     }
 }

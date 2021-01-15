@@ -23,6 +23,7 @@ import { DataService } from '../../../data/providers/data.service';
 export class ChannelAssignmentControlComponent implements OnInit, ControlValueAccessor {
     @Input() multiple = true;
     @Input() includeDefaultChannel = true;
+    @Input() disableChannelIds: string[] = [];
 
     channels$: Observable<CurrentUserChannel[]>;
     value: string[] = [];
@@ -37,7 +38,7 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
             .userStatus()
             .single$.pipe(
                 map(({ userStatus }) =>
-                    userStatus.channels.filter((c) =>
+                    userStatus.channels.filter(c =>
                         this.includeDefaultChannel ? true : c.code !== DEFAULT_CHANNEL_CODE,
                     ),
                 ),
@@ -68,9 +69,13 @@ export class ChannelAssignmentControlComponent implements OnInit, ControlValueAc
         }
     }
 
+    channelIsDisabled(id: string) {
+        return this.disableChannelIds.includes(id);
+    }
+
     valueChanged(value: CurrentUserChannel[] | CurrentUserChannel | undefined) {
         if (Array.isArray(value)) {
-            this.onChange(value.map((c) => c.id));
+            this.onChange(value.map(c => c.id));
         } else {
             this.onChange([value ? value.id : undefined]);
         }

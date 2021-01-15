@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -18,5 +19,5 @@ export interface OrderMergeStrategy extends InjectableStrategy {
      * Merges the lines of the guest Order with those of the existing Order which is associated
      * with the active customer.
      */
-    merge(guestOrder: Order, existingOrder: Order): OrderLine[];
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): OrderLine[];
 }

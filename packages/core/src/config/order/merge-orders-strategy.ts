@@ -1,3 +1,4 @@
+import { RequestContext } from '../../api/common/request-context';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
@@ -12,7 +13,7 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * @docsPage Merge Strategies
  */
 export class MergeOrdersStrategy implements OrderMergeStrategy {
-    merge(guestOrder: Order, existingOrder: Order): OrderLine[] {
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): OrderLine[] {
         const mergedLines = existingOrder.lines.slice();
         const guestLines = guestOrder.lines.slice();
         for (const guestLine of guestLines.reverse()) {
@@ -25,6 +26,6 @@ export class MergeOrdersStrategy implements OrderMergeStrategy {
     }
 
     private findCorrespondingLine(existingOrder: Order, guestLine: OrderLine): OrderLine | undefined {
-        return existingOrder.lines.find((line) => line.productVariant.id === guestLine.productVariant.id);
+        return existingOrder.lines.find(line => line.productVariant.id === guestLine.productVariant.id);
     }
 }

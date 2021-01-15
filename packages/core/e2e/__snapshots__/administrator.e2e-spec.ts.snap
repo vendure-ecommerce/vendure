@@ -18,7 +18,6 @@ Object {
         "permissions": Array [
           "Authenticated",
           "SuperAdmin",
-          "Public",
           "CreateCatalog",
           "ReadCatalog",
           "UpdateCatalog",
@@ -58,7 +57,7 @@ Object {
   "lastName": "new last",
   "user": Object {
     "id": "T_3",
-    "identifier": "test@test.com",
+    "identifier": "new-email",
     "lastLogin": null,
     "roles": Array [
       Object {

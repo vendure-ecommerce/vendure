@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
-import { combineLatest, from, Observable } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
-
 import { GetChannels, ProductVariantFragment } from '@vendure/admin-ui/core';
 import { NotificationService } from '@vendure/admin-ui/core';
 import { DataService } from '@vendure/admin-ui/core';
 import { Dialog } from '@vendure/admin-ui/core';
+import { combineLatest, from, Observable } from 'rxjs';
+import { map, startWith, switchMap } from 'rxjs/operators';
 
 @Component({
     selector: 'vdr-assign-products-to-channel-dialog',
@@ -26,6 +25,12 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
 
     // assigned by ModalService.fromComponent() call
     productIds: string[];
+    productVariantIds: string[] | undefined;
+    currentChannelIds: string[];
+
+    get isProductVariantMode(): boolean {
+        return this.productVariantIds != null;
+    }
 
     constructor(private dataService: DataService, private notificationService: NotificationService) {}
 
@@ -67,18 +72,33 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
     assign() {
         const selectedChannel = this.selectedChannel;
         if (selectedChannel) {
-            this.dataService.product
-                .assignProductsToChannel({
-                    channelId: selectedChannel.id,
-                    productIds: this.productIds,
-                    priceFactor: +this.priceFactorControl.value,
-                })
-                .subscribe(() => {
-                    this.notificationService.success(_('catalog.assign-product-to-channel-success'), {
-                        channel: selectedChannel.code,
+            if (!this.isProductVariantMode) {
+                this.dataService.product
+                    .assignProductsToChannel({
+                        channelId: selectedChannel.id,
+                        productIds: this.productIds,
+                        priceFactor: +this.priceFactorControl.value,
+                    })
+                    .subscribe(() => {
+                        this.notificationService.success(_('catalog.assign-product-to-channel-success'), {
+                            channel: selectedChannel.code,
+                        });
+                        this.resolveWith(true);
                     });
-                    this.resolveWith(true);
-                });
+            } else if (this.productVariantIds) {
+                this.dataService.product
+                    .assignVariantsToChannel({
+                        channelId: selectedChannel.id,
+                        productVariantIds: this.productVariantIds,
+                        priceFactor: +this.priceFactorControl.value,
+                    })
+                    .subscribe(() => {
+                        this.notificationService.success(_('catalog.assign-variant-to-channel-success'), {
+                            channel: selectedChannel.code,
+                        });
+                        this.resolveWith(true);
+                    });
+            }
         }
     }
 
@@ -92,7 +112,12 @@ export class AssignProductsToChannelDialogComponent implements OnInit, Dialog<an
         for (let i = 0; i < this.productIds.length && variants.length < take; i++) {
             const productVariants = await this.dataService.product
                 .getProduct(this.productIds[i])
-                .mapSingle(({ product }) => product && product.variants)
+                .mapSingle(({ product }) => {
+                    const _variants = product ? product.variants : [];
+                    return _variants.filter(v =>
+                        this.isProductVariantMode ? this.productVariantIds?.includes(v.id) : true,
+                    );
+                })
                 .toPromise();
             variants.push(...(productVariants || []));
         }

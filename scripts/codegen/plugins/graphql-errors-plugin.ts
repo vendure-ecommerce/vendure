@@ -41,9 +41,10 @@ const errorsVisitor: Visitor<any> = {
             : '';
     },
     FieldDefinition(node: FieldDefinitionNode): string {
-        const scalarType = node.type.kind === 'ListType' ? node.type.type : node.type;
+        const type = ((node.type.kind === 'ListType' ? node.type.type : node.type) as unknown) as string;
+        const tsType = isScalar(type) ? `Scalars['${type}']` : 'any';
         const listPart = node.type.kind === 'ListType' ? `[]` : ``;
-        return `  ${node.name.value}: Scalars['${scalarType}']${listPart}`;
+        return `${node.name.value}: ${tsType}${listPart}`;
     },
     ScalarTypeDefinition: empty,
     InputObjectTypeDefinition: empty,
@@ -225,4 +226,8 @@ function isAdminApi(schema: GraphQLSchema): boolean {
 
 function camelToUpperSnakeCase(input: string): string {
     return input.replace(/([a-z])([A-Z])/g, '$1_$2').toUpperCase();
+}
+
+function isScalar(type: string): boolean {
+    return ['ID', 'String', 'Boolean', 'Int', 'Float', 'JSON', 'DateTime', 'Upload'].includes(type);
 }

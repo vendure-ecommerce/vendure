@@ -38,9 +38,8 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
         enabled
         languageCode
         name
-        price
         currencyCode
-        priceIncludesTax
+        price
         priceWithTax
         stockOnHand
         trackInventory
@@ -79,6 +78,10 @@ export const PRODUCT_VARIANT_FRAGMENT = gql`
             id
             languageCode
             name
+        }
+        channels {
+            id
+            code
         }
     }
     ${ASSET_FRAGMENT}
@@ -316,6 +319,8 @@ export const ORDER_FRAGMENT = gql`
         code
         state
         total
+        totalWithTax
+        totalQuantity
         currencyCode
         customer {
             id
@@ -330,7 +335,6 @@ export const ORDER_ITEM_FRAGMENT = gql`
         id
         cancelled
         unitPrice
-        unitPriceIncludesTax
         unitPriceWithTax
         taxRate
         fulfillment {
@@ -368,20 +372,29 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             items {
                 ...OrderItem
             }
-            totalPrice
+            linePriceWithTax
         }
-        adjustments {
-            ...Adjustment
+        surcharges {
+            id
+            description
+            sku
+            price
+            priceWithTax
         }
         subTotal
-        subTotalBeforeTax
-        totalBeforeTax
+        subTotalWithTax
+        total
+        totalWithTax
+        totalQuantity
         currencyCode
         shipping
-        shippingMethod {
-            id
-            code
-            description
+        shippingWithTax
+        shippingLines {
+            shippingMethod {
+                id
+                code
+                description
+            }
         }
         shippingAddress {
             ...ShippingAddress
@@ -393,10 +406,14 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
             method
             state
             metadata
+            refunds {
+                id
+                total
+                reason
+            }
         }
         total
     }
-    ${ADJUSTMENT_FRAGMENT}
     ${SHIPPING_ADDRESS_FRAGMENT}
     ${ORDER_ITEM_FRAGMENT}
 `;
@@ -469,6 +486,7 @@ export const VARIANT_WITH_STOCK_FRAGMENT = gql`
     fragment VariantWithStock on ProductVariant {
         id
         stockOnHand
+        stockAllocated
         stockMovements {
             items {
                 ... on StockMovement {
@@ -509,5 +527,93 @@ export const CHANNEL_FRAGMENT = gql`
             id
         }
         pricesIncludeTax
+    }
+`;
+
+export const GLOBAL_SETTINGS_FRAGMENT = gql`
+    fragment GlobalSettings on GlobalSettings {
+        id
+        availableLanguages
+        trackInventory
+        outOfStockThreshold
+        serverConfig {
+            orderProcess {
+                name
+                to
+            }
+            permittedAssetTypes
+            permissions {
+                name
+                description
+                assignable
+            }
+            customFieldConfig {
+                Customer {
+                    ... on CustomField {
+                        name
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const CUSTOMER_GROUP_FRAGMENT = gql`
+    fragment CustomerGroup on CustomerGroup {
+        id
+        name
+        customers {
+            items {
+                id
+            }
+            totalItems
+        }
+    }
+`;
+
+export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
+    fragment ProductOptionGroup on ProductOptionGroup {
+        id
+        code
+        name
+        options {
+            id
+            code
+            name
+        }
+        translations {
+            id
+            languageCode
+            name
+        }
+    }
+`;
+
+export const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
+    fragment ProductWithOptions on Product {
+        id
+        optionGroups {
+            id
+            code
+            options {
+                id
+                code
+            }
+        }
+    }
+`;
+
+export const SHIPPING_METHOD_FRAGMENT = gql`
+    fragment ShippingMethod on ShippingMethod {
+        id
+        code
+        name
+        description
+        calculator {
+            code
+        }
+        checker {
+            code
+        }
     }
 `;

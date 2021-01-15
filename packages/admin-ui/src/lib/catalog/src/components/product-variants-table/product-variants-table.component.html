@@ -14,12 +14,14 @@
                 <div class="card-img">
                     <div class="featured-asset">
                         <img
-                            *ngIf="variant.featuredAsset"
-                            [src]="variant.featuredAsset | assetPreview:'tiny'"
+                            *ngIf="getFeaturedAsset(variant) as featuredAsset; else placeholder"
+                            [src]="featuredAsset | assetPreview: 'tiny'"
                         />
-                        <div class="placeholder" *ngIf="!variant.featuredAsset">
-                            <clr-icon shape="image" size="48"></clr-icon>
-                        </div>
+                        <ng-template #placeholder>
+                            <div class="placeholder">
+                                <clr-icon shape="image" size="48"></clr-icon>
+                            </div>
+                        </ng-template>
                     </div>
                 </div>
             </td>
@@ -60,7 +62,8 @@
                         clrInput
                         [currencyCode]="variant.currencyCode"
                         [readonly]="!('UpdateCatalog' | hasPermission)"
-                        formControlName="price"
+                        [value]="variantListPrice[variant.id]"
+                        (valueChange)="updateVariantListPrice($event, variant.id, formGroup)"
                     ></vdr-currency-input>
                 </clr-input-container>
             </td>

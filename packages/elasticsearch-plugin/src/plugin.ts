@@ -11,6 +11,7 @@ import {
     PluginCommonModule,
     ProductChannelEvent,
     ProductEvent,
+    ProductVariantChannelEvent,
     ProductVariantEvent,
     TaxRateModificationEvent,
     Type,
@@ -290,6 +291,22 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
                 return this.elasticsearchIndexService.removeProductFromChannel(
                     event.ctx,
                     event.product,
+                    event.channelId,
+                );
+            }
+        });
+
+        this.eventBus.ofType(ProductVariantChannelEvent).subscribe(event => {
+            if (event.type === 'assigned') {
+                return this.elasticsearchIndexService.assignVariantToChannel(
+                    event.ctx,
+                    event.productVariant.id,
+                    event.channelId,
+                );
+            } else {
+                return this.elasticsearchIndexService.removeVariantFromChannel(
+                    event.ctx,
+                    event.productVariant.id,
                     event.channelId,
                 );
             }

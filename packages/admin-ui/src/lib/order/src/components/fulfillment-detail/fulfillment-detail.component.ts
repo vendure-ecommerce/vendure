@@ -17,9 +17,10 @@ export class FulfillmentDetailComponent {
 
     get items(): Array<{ name: string; quantity: number }> {
         const itemMap = new Map<string, number>();
+        const fulfillmentItemIds = this.fulfillment?.orderItems.map(i => i.id);
         for (const line of this.order.lines) {
             for (const item of line.items) {
-                if (item.fulfillment && item.fulfillment.id === this.fulfillmentId) {
+                if (fulfillmentItemIds?.includes(item.id)) {
                     const count = itemMap.get(line.productVariant.name);
                     if (count != null) {
                         itemMap.set(line.productVariant.name, count + 1);
@@ -30,5 +31,16 @@ export class FulfillmentDetailComponent {
             }
         }
         return Array.from(itemMap.entries()).map(([name, quantity]) => ({ name, quantity }));
+    }
+
+    getCustomFields(): Array<{ key: string; value: any }> {
+        const customFields = (this.fulfillment as any).customFields;
+        if (customFields) {
+            return Object.entries(customFields)
+                .filter(([key]) => key !== '__typename')
+                .map(([key, value]) => ({ key, value: (value as any)?.toString() ?? '-' }));
+        } else {
+            return [];
+        }
     }
 }

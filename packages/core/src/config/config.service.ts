@@ -75,7 +75,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.promotionOptions;
     }
 
-    get shippingOptions(): ShippingOptions {
+    get shippingOptions(): Required<ShippingOptions> {
         return this.activeConfig.shippingOptions;
     }
 
@@ -87,7 +87,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.paymentOptions;
     }
 
-    get taxOptions(): TaxOptions {
+    get taxOptions(): Required<TaxOptions> {
         return this.activeConfig.taxOptions;
     }
 

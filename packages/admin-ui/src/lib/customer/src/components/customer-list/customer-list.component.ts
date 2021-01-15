@@ -18,7 +18,8 @@ import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
     templateUrl: './customer-list.component.html',
     styleUrls: ['./customer-list.component.scss'],
 })
-export class CustomerListComponent extends BaseListComponent<GetCustomerList.Query, GetCustomerList.Items>
+export class CustomerListComponent
+    extends BaseListComponent<GetCustomerList.Query, GetCustomerList.Items>
     implements OnInit {
     searchTerm = new FormControl('');
     constructor(
@@ -30,8 +31,8 @@ export class CustomerListComponent extends BaseListComponent<GetCustomerList.Que
     ) {
         super(router, route);
         super.setQueryFn(
-            (...args: any[]) => this.dataService.customer.getCustomerList(...args),
-            (data) => data.customers,
+            (...args: any[]) => this.dataService.customer.getCustomerList(...args).refetchOnChannelChange(),
+            data => data.customers,
             (skip, take) => ({
                 options: {
                     skip,
@@ -66,7 +67,7 @@ export class CustomerListComponent extends BaseListComponent<GetCustomerList.Que
                     { type: 'danger', label: _('common.delete'), returnValue: true },
                 ],
             })
-            .pipe(switchMap((res) => (res ? this.dataService.customer.deleteCustomer(customer.id) : EMPTY)))
+            .pipe(switchMap(res => (res ? this.dataService.customer.deleteCustomer(customer.id) : EMPTY)))
             .subscribe(
                 () => {
                     this.notificationService.success(_('common.notify-delete-success'), {
@@ -74,7 +75,7 @@ export class CustomerListComponent extends BaseListComponent<GetCustomerList.Que
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Customer',
                     });

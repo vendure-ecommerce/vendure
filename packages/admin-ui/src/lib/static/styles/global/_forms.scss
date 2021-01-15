@@ -1,0 +1,147 @@
+.clr-form-control {
+    margin-top: 0;
+}
+
+.form,
+form {
+    padding-top: 0.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+    padding-left: 9.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.65rem;
+    letter-spacing: normal;
+    line-height: 1rem;
+
+    label:first-child {
+        position: absolute;
+        width: 8.5rem;
+        left: 0;
+        top: 0.25rem;
+        margin: 0;
+    }
+}
+
+.form .form-block,
+form .form-block {
+    margin: 0.5rem 0 1.5rem;
+}
+
+input,
+select,
+textarea,
+.clr-input {
+    background-color: var(--color-form-input-bg);
+    &:not([readonly]) {
+        background-color: var(--color-form-input-bg);
+        &:focus {
+            background-size: 0% 100%;
+        }
+    }
+}
+
+input,
+select {
+    border-radius: 3px !important;
+    border: 1px solid var(--color-grey-300) !important;
+    padding: 5px !important;
+    height: initial !important;
+    transition: background-color 0.2s, box-shadow 0.2s !important;
+    &:focus {
+        border-color: var(--color-primary-500) !important;
+        box-shadow: 0 0 1px 1px var(--color-primary-100);
+        outline: none;
+    }
+}
+
+textarea {
+    border-color: var(--clr-forms-border-color);
+    &:focus {
+        border-color: var(--color-primary-500) !important;
+        outline: none;
+    }
+}
+
+// Add the "expand" class to make the input container full width
+clr-input-container.expand {
+    .clr-control-container {
+        width: 100%;
+
+        input {
+            width: 100%;
+        }
+    }
+}
+
+.clr-input {
+    max-height: none !important;
+}
+
+.clr-input-wrapper {
+    max-height: none !important;
+}
+
+.clr-input-group {
+    height: initial !important;
+    border-bottom: none;
+    &:focus,
+    &.clr-focus {
+        background: none;
+        border-bottom: none;
+    }
+}
+
+clr-select-container {
+    margin-bottom: 18px;
+}
+
+.tooltip.tooltip-validation::before {
+    top: 10px !important;
+}
+
+select {
+    padding-right: 24px !important;
+}
+
+.select::after,
+.clr-select-wrapper::after {
+    z-index: 10;
+    top: 13px;
+}
+
+.ng-select .ng-select-container {
+    background: var(--color-form-input-bg) !important;
+}
+.ng-select .ng-select-container .ng-value-container {
+    padding-top: 0;
+    min-width: 60px;
+    .ng-value {
+        margin: 0 6px 0 0;
+    }
+    .ng-input {
+        margin: 0;
+    }
+    input {
+        border: none !important;
+        padding: 0;
+        background: none !important;
+    }
+}
+.ng-select.ng-select-single > .ng-select-container {
+    padding-top: 9px;
+}
+.ng-select.ng-select-focused > .ng-select-container {
+    border-color: var(--color-primary-500) !important;
+    box-shadow: 0 0 1px 1px var(--color-primary-100);
+    border-radius: 3px;
+}
+.ng-dropdown-panel {
+    background: var(--color-form-input-bg) !important;
+}
+.ng-dropdown-panel .ng-dropdown-panel-items .ng-option.ng-option-marked {
+    background-color: var(--color-grey-100);
+}

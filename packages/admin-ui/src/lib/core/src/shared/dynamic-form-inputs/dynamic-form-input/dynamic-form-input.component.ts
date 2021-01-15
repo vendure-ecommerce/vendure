@@ -20,6 +20,7 @@ import {
     ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, FormArray, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { StringCustomFieldConfig } from '@vendure/common/lib/generated-types';
 import { ConfigArgType, CustomFieldType, DefaultFormComponentId } from '@vendure/common/lib/shared-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
@@ -289,12 +290,16 @@ export class DynamicFormInputComponent
         const type = argDef?.type as ConfigArgType | CustomFieldType;
         switch (type) {
             case 'string':
-            case 'localeString':
-                if (this.isConfigArgDef(argDef) && argDef.ui?.options) {
+            case 'localeString': {
+                const hasOptions =
+                    !!(this.isConfigArgDef(argDef) && argDef.ui?.options) ||
+                    !!(argDef as StringCustomFieldConfig).options;
+                if (hasOptions) {
                     return { component: 'select-form-input' };
                 } else {
                     return { component: 'text-form-input' };
                 }
+            }
             case 'int':
             case 'float':
                 return { component: 'number-form-input' };

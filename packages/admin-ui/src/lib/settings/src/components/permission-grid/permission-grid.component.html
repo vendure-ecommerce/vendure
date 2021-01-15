@@ -1,20 +1,20 @@
 <table class="table">
-    <tr>
-        <th>{{ 'settings.section' | translate }}</th>
-        <th>{{ 'settings.create' | translate }}</th>
-        <th>{{ 'settings.read' | translate }}</th>
-        <th>{{ 'settings.update' | translate }}</th>
-        <th>{{ 'settings.delete' | translate }}</th>
-    </tr>
     <tbody>
         <tr *ngFor="let section of gridData">
-            <td>{{ section.label | translate }}</td>
-            <td *ngFor="let permission of section.permissions">
+            <td class="permission-group">
+                <div>{{ section.label | translate }}</div>
+                <button *ngIf="1 < section.permissions.length && !readonly" class="btn btn-sm btn-link" (click)="toggleAll(section.permissions)">
+                    {{ 'common.toggle-all' | translate }}
+                </button>
+            </td>
+            <td *ngFor="let permission of section.permissions" [attr.colspan]="section.permissions.length === 1 ? 4 : 1">
                 <vdr-select-toggle
                     size="small"
+                    [title]="permission.description"
+                    [label]="permission.name"
                     [disabled]="readonly"
-                    [selected]="permissions[permission]"
-                    (selectedChange)="setPermission(permission, $event)"
+                    [selected]="activePermissions?.includes(permission.name)"
+                    (selectedChange)="setPermission(permission.name, $event)"
                 ></vdr-select-toggle>
             </td>
         </tr>

@@ -1,0 +1,10 @@
+// This file is used to compile the theme.min.css file which can be used
+// by ui extensions to get the same styles as the main app.
+
+// Clarity Component SCSS
+@import "~@clr/ui/src/main";
+@import "global/overrides";
+@import "global/utilities";
+
+@import 'theme/default';
+@import 'theme/dark';

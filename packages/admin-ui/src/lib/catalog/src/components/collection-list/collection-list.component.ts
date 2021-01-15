@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
@@ -19,7 +19,7 @@ import { RearrangeEvent } from '../collection-tree/collection-tree.component';
     styleUrls: ['./collection-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CollectionListComponent implements OnInit {
+export class CollectionListComponent implements OnInit, OnDestroy {
     activeCollectionId$: Observable<string | null>;
     activeCollectionTitle$: Observable<string>;
     items$: Observable<GetCollectionList.Items[]>;
@@ -36,21 +36,25 @@ export class CollectionListComponent implements OnInit {
 
     ngOnInit() {
         this.queryResult = this.dataService.collection.getCollections(99999, 0).refetchOnChannelChange();
-        this.items$ = this.queryResult.mapStream((data) => data.collections.items).pipe(shareReplay(1));
+        this.items$ = this.queryResult.mapStream(data => data.collections.items).pipe(shareReplay(1));
         this.activeCollectionId$ = this.route.paramMap.pipe(
-            map((pm) => pm.get('contents')),
+            map(pm => pm.get('contents')),
             distinctUntilChanged(),
         );
 
         this.activeCollectionTitle$ = combineLatest(this.activeCollectionId$, this.items$).pipe(
             map(([id, collections]) => {
                 if (id) {
-                    const match = collections.find((c) => c.id === id);
+                    const match = collections.find(c => c.id === id);
                     return match ? match.name : '';
                 }
                 return '';
             }),
         );
+    }
+
+    ngOnDestroy() {
+        this.queryResult.completed$.next();
     }
 
     onRearrange(event: RearrangeEvent) {
@@ -59,7 +63,7 @@ export class CollectionListComponent implements OnInit {
                 this.notificationService.success(_('common.notify-saved-changes'));
                 this.refresh();
             },
-            error: (err) => {
+            error: err => {
                 this.notificationService.error(_('common.notify-save-changes-error'));
             },
         });
@@ -69,8 +73,8 @@ export class CollectionListComponent implements OnInit {
         this.items$
             .pipe(
                 take(1),
-                map((items) => -1 < items.findIndex((i) => i.parent && i.parent.id === id)),
-                switchMap((hasChildren) => {
+                map(items => -1 < items.findIndex(i => i.parent && i.parent.id === id)),
+                switchMap(hasChildren => {
                     return this.modalService.dialog({
                         title: _('catalog.confirm-delete-collection'),
                         body: hasChildren
@@ -82,9 +86,7 @@ export class CollectionListComponent implements OnInit {
                         ],
                     });
                 }),
-                switchMap((response) =>
-                    response ? this.dataService.collection.deleteCollection(id) : EMPTY,
-                ),
+                switchMap(response => (response ? this.dataService.collection.deleteCollection(id) : EMPTY)),
             )
             .subscribe(
                 () => {
@@ -93,7 +95,7 @@ export class CollectionListComponent implements OnInit {
                     });
                     this.refresh();
                 },
-                (err) => {
+                err => {
                     this.notificationService.error(_('common.notify-delete-error'), {
                         entity: 'Collection',
                     });

@@ -15,6 +15,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import {
     AssignProductsToChannel,
+    AssignProductVariantsToChannel,
     ChannelFragment,
     CreateChannel,
     CreateCollection,
@@ -26,6 +27,7 @@ import {
     LanguageCode,
     Reindex,
     RemoveProductsFromChannel,
+    RemoveProductVariantsFromChannel,
     SearchFacetValues,
     SearchGetAssets,
     SearchGetPrices,
@@ -40,6 +42,7 @@ import {
 } from './graphql/generated-e2e-admin-types';
 import { LogicalOperator, SearchProductsShop } from './graphql/generated-e2e-shop-types';
 import {
+    ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     CREATE_COLLECTION,
@@ -47,6 +50,7 @@ import {
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
     UPDATE_ASSET,
     UPDATE_COLLECTION,
@@ -886,7 +890,7 @@ describe('Default search plugin', () => {
                         defaultShippingZoneId: 'T_1',
                     },
                 });
-                secondChannel = createChannel;
+                secondChannel = createChannel as ChannelFragment;
             });
 
             it('adding product to channel', async () => {
@@ -920,6 +924,56 @@ describe('Default search plugin', () => {
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
                 const { search } = await doAdminSearchQuery({ groupByProduct: true });
                 expect(search.items.map(i => i.productId)).toEqual(['T_1']);
+            }, 10000);
+
+            it('adding product variant to channel', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                await adminClient.query<
+                    AssignProductVariantsToChannel.Mutation,
+                    AssignProductVariantsToChannel.Variables
+                >(ASSIGN_PRODUCTVARIANT_TO_CHANNEL, {
+                    input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
+                });
+                await awaitRunningJobs(adminClient);
+
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3', 'T_4']);
+
+                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
+                    'T_1',
+                    'T_2',
+                    'T_3',
+                    'T_4',
+                    'T_10',
+                    'T_15',
+                ]);
+            }, 10000);
+
+            it('removing product variant to channel', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                await adminClient.query<
+                    RemoveProductVariantsFromChannel.Mutation,
+                    RemoveProductVariantsFromChannel.Variables
+                >(REMOVE_PRODUCTVARIANT_FROM_CHANNEL, {
+                    input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
+                });
+                await awaitRunningJobs(adminClient);
+
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+
+                const { search: searchGrouped } = await doAdminSearchQuery({ groupByProduct: true });
+                expect(searchGrouped.items.map(i => i.productId)).toEqual(['T_1', 'T_3']);
+
+                const { search: searchUngrouped } = await doAdminSearchQuery({ groupByProduct: false });
+                expect(searchUngrouped.items.map(i => i.productVariantId)).toEqual([
+                    'T_2',
+                    'T_3',
+                    'T_4',
+                    'T_10',
+                ]);
             }, 10000);
         });
 

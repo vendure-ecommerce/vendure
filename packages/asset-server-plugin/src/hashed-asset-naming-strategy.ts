@@ -1,4 +1,4 @@
-import { DefaultAssetNamingStrategy } from '@vendure/core';
+import { DefaultAssetNamingStrategy, RequestContext } from '@vendure/core';
 import { createHash } from 'crypto';
 import path from 'path';
 
@@ -18,19 +18,20 @@ import path from 'path';
  * @docsCategory AssetServerPlugin
  */
 export class HashedAssetNamingStrategy extends DefaultAssetNamingStrategy {
-    generateSourceFileName(originalFileName: string, conflictFileName?: string): string {
-        const filename = super.generateSourceFileName(originalFileName, conflictFileName);
+    generateSourceFileName(ctx: RequestContext, originalFileName: string, conflictFileName?: string): string {
+        const filename = super.generateSourceFileName(ctx, originalFileName, conflictFileName);
         return path.join('source', this.getHashedDir(filename), filename);
     }
-    generatePreviewFileName(originalFileName: string, conflictFileName?: string): string {
-        const filename = super.generatePreviewFileName(originalFileName, conflictFileName);
+    generatePreviewFileName(
+        ctx: RequestContext,
+        originalFileName: string,
+        conflictFileName?: string,
+    ): string {
+        const filename = super.generatePreviewFileName(ctx, originalFileName, conflictFileName);
         return path.join('preview', this.getHashedDir(filename), filename);
     }
 
     private getHashedDir(filename: string): string {
-        return createHash('md5')
-            .update(filename)
-            .digest('hex')
-            .slice(0, 2);
+        return createHash('md5').update(filename).digest('hex').slice(0, 2);
     }
 }

@@ -247,14 +247,14 @@ export class AssetService {
             return new MimeTypeError(filename, mimetype);
         }
         const { assetPreviewStrategy, assetStorageStrategy } = assetOptions;
-        const sourceFileName = await this.getSourceFileName(filename);
-        const previewFileName = await this.getPreviewFileName(sourceFileName);
+        const sourceFileName = await this.getSourceFileName(ctx, filename);
+        const previewFileName = await this.getPreviewFileName(ctx, sourceFileName);
 
         const sourceFileIdentifier = await assetStorageStrategy.writeFileFromStream(sourceFileName, stream);
         const sourceFile = await assetStorageStrategy.readFileToBuffer(sourceFileIdentifier);
         let preview: Buffer;
         try {
-            preview = await assetPreviewStrategy.generatePreviewImage(mimetype, sourceFile);
+            preview = await assetPreviewStrategy.generatePreviewImage(ctx, mimetype, sourceFile);
         } catch (e) {
             Logger.error(`Could not create Asset preview image: ${e.message}`);
             throw e;
@@ -280,17 +280,17 @@ export class AssetService {
         return this.connection.getRepository(ctx, Asset).save(asset);
     }
 
-    private async getSourceFileName(fileName: string): Promise<string> {
+    private async getSourceFileName(ctx: RequestContext, fileName: string): Promise<string> {
         const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
-            assetOptions.assetNamingStrategy.generateSourceFileName(name, conflict),
+            assetOptions.assetNamingStrategy.generateSourceFileName(ctx, name, conflict),
         );
     }
 
-    private async getPreviewFileName(fileName: string): Promise<string> {
+    private async getPreviewFileName(ctx: RequestContext, fileName: string): Promise<string> {
         const { assetOptions } = this.configService;
         return this.generateUniqueName(fileName, (name, conflict) =>
-            assetOptions.assetNamingStrategy.generatePreviewFileName(name, conflict),
+            assetOptions.assetNamingStrategy.generatePreviewFileName(ctx, name, conflict),
         );
     }
 

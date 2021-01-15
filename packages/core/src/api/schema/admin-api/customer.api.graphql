@@ -27,11 +27,6 @@ type Mutation {
     deleteCustomerNote(id: ID!): DeletionResponse!
 }
 
-type Customer implements Node {
-    groups: [CustomerGroup!]!
-    history(options: HistoryEntryListOptions): HistoryEntryList!
-}
-
 input UpdateCustomerInput {
     id: ID!
     title: String

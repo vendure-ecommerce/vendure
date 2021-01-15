@@ -8,10 +8,10 @@
                 {{ entity.id }}
             </vdr-labeled-data>
             <vdr-labeled-data *ngIf="entity.createdAt" [label]="'common.created-at' | translate">
-                {{ entity.createdAt | date: 'medium' }}
+                {{ entity.createdAt | localeDate: 'medium' }}
             </vdr-labeled-data>
             <vdr-labeled-data *ngIf="entity.updatedAt" [label]="'common.updated-at' | translate">
-                {{ entity.updatedAt | date: 'medium' }}
+                {{ entity.updatedAt | localeDate: 'medium' }}
             </vdr-labeled-data>
         </div>
     </vdr-dropdown-menu>

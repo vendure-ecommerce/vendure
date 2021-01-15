@@ -11,7 +11,7 @@ import {
     ShippingCalculator,
     ShippingEligibilityChecker,
 } from '../../config';
-import { CollectionFilter } from '../../config/collection/collection-filter';
+import { CollectionFilter } from '../../config/catalog/collection-filter';
 import { ConfigService } from '../../config/config.service';
 import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
 

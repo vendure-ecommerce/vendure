@@ -1,0 +1,9 @@
+@import "../order-table/order-table-mixin";
+
+.order-table {
+    @include order-table;
+
+    tr.modified td {
+        background-color: var(--color-warning-100);
+    }
+}

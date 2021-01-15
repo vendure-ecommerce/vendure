@@ -1,7 +1,5 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { RequestContext } from '../../../api/common/request-context';
-import { Order } from '../../../entity/order/order.entity';
 import { PromotionCondition } from '../promotion-condition';
 
 export const minimumOrderAmount = new PromotionCondition({
@@ -14,11 +12,11 @@ export const minimumOrderAmount = new PromotionCondition({
         },
         taxInclusive: { type: 'boolean' },
     },
-    check(ctx: RequestContext, order: Order, args) {
+    check(ctx, order, args) {
         if (args.taxInclusive) {
-            return order.subTotal >= args.amount;
+            return order.subTotalWithTax >= args.amount;
         } else {
-            return order.subTotalBeforeTax >= args.amount;
+            return order.subTotal >= args.amount;
         }
     },
     priorityValue: 10,

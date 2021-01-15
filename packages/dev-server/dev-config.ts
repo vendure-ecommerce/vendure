@@ -8,6 +8,7 @@ import {
     DefaultSearchPlugin,
     examplePaymentHandler,
     LogLevel,
+    manualFulfillmentHandler,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
@@ -40,6 +41,7 @@ export const devConfig: VendureConfig = {
         tokenMethod: 'cookie',
         sessionSecret: 'some-secret',
         requireVerification: true,
+        customPermissions: [],
     },
     dbConnectionOptions: {
         synchronize: false,
@@ -55,6 +57,9 @@ export const devConfig: VendureConfig = {
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
+    shippingOptions: {
+        fulfillmentHandlers: [manualFulfillmentHandler],
+    },
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
@@ -63,10 +68,10 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        /*ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-        }),*/
+        // ElasticsearchPlugin.init({
+        //     host: 'http://localhost',
+        //     port: 9200,
+        // }),
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,
@@ -118,8 +123,8 @@ function getDbConfig(): ConnectionOptions {
         default:
             console.log('Using mysql connection');
             return {
-                synchronize: false,
-                type: 'mysql',
+                synchronize: true,
+                type: 'mariadb',
                 host: '127.0.0.1',
                 port: 3306,
                 username: 'root',

@@ -5,14 +5,14 @@
     <div class="card-block" *ngFor="let quote of testResult">
         <div class="result-details" [class.stale]="testDataUpdated">
             <vdr-labeled-data [label]="'settings.shipping-method' | translate">
-                {{ quote.description }}
+                {{ quote.name }}
             </vdr-labeled-data>
             <div class="price-row">
                 <vdr-labeled-data [label]="'common.price' | translate">
-                    {{ quote.price / 100 | currency: currencyCode }}
+                    {{ quote.price | localeCurrency: currencyCode }}
                 </vdr-labeled-data>
                 <vdr-labeled-data [label]="'common.price-with-tax' | translate">
-                    {{ quote.priceWithTax / 100 | currency: currencyCode }}
+                    {{ quote.priceWithTax | localeCurrency: currencyCode }}
                 </vdr-labeled-data>
             </div>
             <vdr-object-tree *ngIf="quote.metadata" [value]="quote.metadata"></vdr-object-tree>

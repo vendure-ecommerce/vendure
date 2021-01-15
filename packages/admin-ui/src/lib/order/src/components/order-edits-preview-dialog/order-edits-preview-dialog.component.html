@@ -1,0 +1,29 @@
+<ng-template vdrDialogTitle>{{ 'order.confirm-modifications' | translate }}</ng-template>
+<vdr-order-table [order]="order" [orderLineCustomFields]="orderLineCustomFields"></vdr-order-table>
+
+<h4 class="h4">
+    {{ 'order.modify-order-price-difference' | translate }}:
+    <strong>{{ priceDifference | localeCurrency: order.currencyCode }}</strong>
+</h4>
+<div *ngIf="priceDifference < 0">
+<clr-select-container>
+    <label>{{ 'order.payment-to-refund' | translate }}</label>
+    <select clrSelect name="options" [(ngModel)]="selectedPayment">
+        <option
+            *ngFor="let payment of order.payments"
+            [ngValue]="payment"
+        >
+            #{{ payment.id }} {{ payment.method }}:
+            {{ payment.amount | localeCurrency: order.currencyCode }}
+        </option>
+    </select>
+</clr-select-container>
+    <label class="clr-control-label">{{ 'order.refund-cancellation-reason' | translate }}</label>
+    <textarea [(ngModel)]="refundNote" name="refundNote" clrTextarea required></textarea>
+</div>
+<ng-template vdrDialogButtons>
+    <button type="button" class="btn" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+    <button type="submit" (click)="submit()" [disabled]="priceDifference < 0 && !selectedPayment" class="btn btn-primary">
+        {{ 'common.confirm' | translate }}
+    </button>
+</ng-template>

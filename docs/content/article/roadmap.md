@@ -9,7 +9,7 @@ showtoc: false
 Here is a list of some of the main outstanding tasks that are planned for the v1.0 release, at which point Vendure will come out of beta:
 
 * Complete the Channels implementation
-* Back order handling
+* ~~Back order handling~~ ✅
 * Administrator creation & editing of orders
 * ~~Custom authentication support~~ ✅
 * Improved promotions support
@@ -25,4 +25,4 @@ Once we hit v1.0, Vendure will continue to follow [Semantic Versioning](https://
 
 ## Long-term
 
-Vendure is in this for the long-term. This is not a venture-backed start-up looking for an exit. We plan to grow Vendure into the go-to solution for Node.js e-commerce with a solid, stable core and vibrant community. Post v1.0 we will be introducing a set of commercial plugins covering some more advanced use-cases. 
+Vendure is in this for the long-term. The project is backed by a successful UK-based retailer who have been in e-commerce for over 15 years. We plan to grow Vendure into the go-to solution for Node.js e-commerce with a solid, stable core and vibrant community. Post v1.0 we will be introducing a set of commercial plugins covering some more advanced use-cases. 

@@ -17,10 +17,10 @@
         </div>
         <div class="card-block">
             <vdr-labeled-data [label]="'common.created-at' | translate">
-                {{ refund.createdAt | date: 'medium' }}
+                {{ refund.createdAt | localeDate: 'medium' }}
             </vdr-labeled-data>
             <vdr-labeled-data [label]="'order.refund-total' | translate">
-                {{ refund.total / 100 | currency: currencyCode }}
+                {{ refund.total | localeCurrency: currencyCode }}
             </vdr-labeled-data>
             <vdr-labeled-data [label]="'order.transaction-id' | translate" *ngIf="refund.transactionId">
                 {{ refund.transactionId }}

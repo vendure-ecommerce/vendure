@@ -1,14 +1,17 @@
 import { Args, Mutation, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import {
+    CustomFields as GraphQLCustomFields,
     MutationUpdateGlobalSettingsArgs,
     OrderProcessState,
     Permission,
+    ServerConfig,
     UpdateGlobalSettingsResult,
 } from '@vendure/common/lib/generated-types';
 
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
+import { getAllPermissionsMetadata } from '../../../common/permission-definition';
 import { ConfigService } from '../../../config/config.service';
 import { CustomFields } from '../../../config/custom-field/custom-field-types';
 import { GlobalSettings } from '../../../entity/global-settings/global-settings.entity';
@@ -39,11 +42,7 @@ export class GlobalSettingsResolver {
      * Exposes a subset of the VendureConfig which may be of use to clients.
      */
     @ResolveField()
-    serverConfig(): {
-        customFieldConfig: CustomFields;
-        orderProcess: OrderProcessState[];
-        permittedAssetTypes: string[];
-    } {
+    serverConfig(a: ServerConfig): ServerConfig {
         // Do not expose custom fields marked as "internal".
         const exposedCustomFieldConfig: CustomFields = {};
         for (const [entityType, customFields] of Object.entries(this.configService.customFields)) {
@@ -51,10 +50,14 @@ export class GlobalSettingsResolver {
                 .filter(c => !c.internal)
                 .map(c => ({ ...c, list: !!c.list as any }));
         }
+        const permissions = getAllPermissionsMetadata(
+            this.configService.authOptions.customPermissions,
+        ).filter(p => !p.internal);
         return {
-            customFieldConfig: exposedCustomFieldConfig,
+            customFieldConfig: exposedCustomFieldConfig as GraphQLCustomFields,
             orderProcess: this.orderService.getOrderProcessStates(),
             permittedAssetTypes: this.configService.assetOptions.permittedFileTypes,
+            permissions,
         };
     }
 

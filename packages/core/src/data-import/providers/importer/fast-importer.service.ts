@@ -113,12 +113,18 @@ export class FastImporterService {
             input.price = 0;
         }
 
+        const inputWithoutPrice = {
+            ...input,
+        };
+        delete inputWithoutPrice.price;
+
         const createdVariant = await this.translatableSaver.create({
             ctx: RequestContext.empty(),
-            input,
+            input: inputWithoutPrice,
             entityType: ProductVariant,
             translationType: ProductVariantTranslation,
             beforeSave: async variant => {
+                variant.channels = [this.defaultChannel];
                 const { optionIds } = input;
                 if (optionIds && optionIds.length) {
                     variant.options = optionIds.map(id => ({ id } as any));
@@ -153,7 +159,7 @@ export class FastImporterService {
             );
         }
         const variantPrice = new ProductVariantPrice({
-            price: createdVariant.price,
+            price: input.price,
             channelId: this.defaultChannel.id,
         });
         variantPrice.variant = createdVariant;

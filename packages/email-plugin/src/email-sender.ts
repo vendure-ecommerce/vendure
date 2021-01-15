@@ -82,6 +82,7 @@ export class EmailSender {
             to: email.recipient,
             subject: email.subject,
             html: email.body,
+            attachments: email.attachments,
         });
     }
 

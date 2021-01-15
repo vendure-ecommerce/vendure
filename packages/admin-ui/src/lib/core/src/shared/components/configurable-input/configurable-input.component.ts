@@ -59,6 +59,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
     @Input() operation?: ConfigurableOperation;
     @Input() operationDefinition?: ConfigurableOperationDefinition;
     @Input() readonly = false;
+    @Input() removable = true;
     @Output() remove = new EventEmitter<ConfigurableOperation>();
     argValues: { [name: string]: any } = {};
     onChange: (val: any) => void;
@@ -124,6 +125,7 @@ export class ConfigurableInputComponent implements OnChanges, OnDestroy, Control
             this.subscription.unsubscribe();
         }
         this.form = new FormGroup({});
+        (this.form as any).__id = Math.random().toString(36).substr(10);
 
         if (this.operation.args) {
             for (const arg of this.operationDefinition?.args || []) {

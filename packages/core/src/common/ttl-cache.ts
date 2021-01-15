@@ -19,7 +19,7 @@ export class TtlCache<K, V> {
         const hit = this.cache.get(key);
         const now = new Date().getTime();
         if (hit) {
-            if (hit.expires < now) {
+            if (now < hit.expires) {
                 return hit.value;
             } else {
                 this.cache.delete(key);
@@ -40,6 +40,10 @@ export class TtlCache<K, V> {
             value,
             expires: new Date().getTime() + this.ttl,
         });
+    }
+
+    delete(key: K) {
+        this.cache.delete(key);
     }
 
     private first() {

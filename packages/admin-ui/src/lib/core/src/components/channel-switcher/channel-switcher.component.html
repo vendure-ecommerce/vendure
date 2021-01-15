@@ -1,11 +1,20 @@
-<ng-container >
+<ng-container>
     <vdr-dropdown>
         <button class="btn btn-link active-channel" vdrDropdownTrigger>
             <vdr-channel-badge [channelCode]="activeChannelCode$ | async"></vdr-channel-badge>
-            <span class="active-channel">{{ activeChannelCode$ | async | channelCodeToLabel | translate }}</span>
+            <span class="active-channel">{{
+                activeChannelCode$ | async | channelCodeToLabel | translate
+            }}</span>
             <span class="trigger"><clr-icon shape="caret down"></clr-icon></span>
         </button>
         <vdr-dropdown-menu vdrPosition="bottom-right">
+            <input
+                *ngIf="((channelCount$ | async) || 0) >= displayFilterThreshold"
+                [formControl]="filterControl"
+                type="text"
+                class="ml2 mr2"
+                [placeholder]="'common.filter' | translate"
+            />
             <button
                 *ngFor="let channel of channels$ | async"
                 type="button"

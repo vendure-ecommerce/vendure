@@ -1,0 +1,165 @@
+<table class="order-table table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>{{ 'order.product-name' | translate }}</th>
+            <th>{{ 'order.product-sku' | translate }}</th>
+            <th>{{ 'order.unit-price' | translate }}</th>
+            <th>{{ 'order.quantity' | translate }}</th>
+            <ng-container *ngFor="let customField of visibleOrderLineCustomFields">
+                <th class="order-line-custom-field">
+                    <button
+                        class="custom-field-header-button"
+                        (click)="toggleOrderLineCustomFields()"
+                        [title]="'common.hide-custom-fields' | translate"
+                    >
+                        {{ customField | customFieldLabel }}
+                    </button>
+                </th>
+            </ng-container>
+            <ng-container *ngIf="showElided">
+                <th>
+                    <button
+                        class="custom-field-header-button"
+                        (click)="toggleOrderLineCustomFields()"
+                        [title]="'common.display-custom-fields' | translate"
+                    >
+                        <clr-icon shape="ellipsis-horizontal" class="custom-field-ellipsis"></clr-icon>
+                    </button>
+                </th>
+            </ng-container>
+            <th>{{ 'order.total' | translate }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let line of order.lines" class="order-line" [class.is-cancelled]="line.quantity === 0">
+            <td class="align-middle thumb">
+                <img *ngIf="line.featuredAsset" [src]="line.featuredAsset | assetPreview: 'tiny'" />
+            </td>
+            <td class="align-middle name">{{ line.productVariant.name }}</td>
+            <td class="align-middle sku">{{ line.productVariant.sku }}</td>
+            <td class="align-middle unit-price">
+                {{ line.unitPriceWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ line.unitPrice | localeCurrency: order.currencyCode }}
+                </div>
+            </td>
+            <td class="align-middle quantity">
+                {{ line.quantity }}
+                <vdr-line-refunds [line]="line"></vdr-line-refunds>
+                <vdr-line-fulfillment [line]="line" [orderState]="order.state"></vdr-line-fulfillment>
+            </td>
+            <ng-container *ngFor="let customField of visibleOrderLineCustomFields">
+                <td class="order-line-custom-field align-middle">
+                    <ng-container [ngSwitch]="customField.type">
+                        <ng-template [ngSwitchCase]="'datetime'">
+                            <span [title]="line.customFields[customField.name]">{{
+                                line.customFields[customField.name] | localeDate: 'short'
+                            }}</span>
+                        </ng-template>
+                        <ng-template [ngSwitchCase]="'boolean'">
+                            <ng-template [ngIf]="line.customFields[customField.name] === true">
+                                <clr-icon shape="check"></clr-icon>
+                            </ng-template>
+                            <ng-template [ngIf]="line.customFields[customField.name] === false">
+                                <clr-icon shape="times"></clr-icon>
+                            </ng-template>
+                        </ng-template>
+                        <ng-template ngSwitchDefault>
+                            {{ line.customFields[customField.name] }}
+                        </ng-template>
+                    </ng-container>
+                </td>
+            </ng-container>
+            <ng-container *ngIf="showElided"
+                ><td class="order-line-custom-field align-middle">
+                    <clr-icon shape="ellipsis-horizontal" class="custom-field-ellipsis"></clr-icon></td
+            ></ng-container>
+            <td class="align-middle total">
+                {{ line.linePriceWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ line.linePrice | localeCurrency: order.currencyCode }}
+                </div>
+
+                <ng-container *ngIf="getLineDiscounts(line) as discounts">
+                    <vdr-dropdown *ngIf="discounts.length">
+                        <div class="promotions-label" vdrDropdownTrigger>
+                            {{ 'order.promotions-applied' | translate }}
+                        </div>
+                        <vdr-dropdown-menu>
+                            <div class="line-promotion" *ngFor="let discount of discounts">
+                                <a class="promotion-name" [routerLink]="getPromotionLink(discount)">{{
+                                    discount.description
+                                }}</a>
+                                <div class="promotion-amount">
+                                    {{ discount.amount | localeCurrency: order.currencyCode }}
+                                </div>
+                            </div>
+                        </vdr-dropdown-menu>
+                    </vdr-dropdown>
+                </ng-container>
+            </td>
+        </tr>
+        <tr class="surcharge" *ngFor="let surcharge of order.surcharges">
+            <td class="align-middle name left" colspan="2">{{ surcharge.description }}</td>
+            <td class="align-middle sku">{{ surcharge.sku }}</td>
+            <td class="align-middle"></td>
+            <td [attr.colspan]="1 + visibleOrderLineCustomFields.length"></td>
+            <ng-container *ngIf="showElided"><td></td></ng-container>
+            <td class="align-middle total">
+                {{ surcharge.priceWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ surcharge.price | localeCurrency: order.currencyCode }}
+                </div>
+            </td>
+        </tr>
+        <tr class="order-adjustment" *ngFor="let discount of order.discounts">
+            <td [attr.colspan]="5 + visibleOrderLineCustomFields.length" class="left clr-align-middle">
+                <a [routerLink]="getPromotionLink(discount)">{{ discount.description }}</a>
+                <vdr-chip *ngIf="getCouponCodeForAdjustment(order, discount) as couponCode">{{
+                    couponCode
+                }}</vdr-chip>
+            </td>
+            <ng-container *ngIf="showElided"><td></td></ng-container>
+            <td class="clr-align-middle">
+                {{ discount.amount | localeCurrency: order.currencyCode }}
+            </td>
+        </tr>
+        <tr class="sub-total">
+            <td class="left clr-align-middle">{{ 'order.sub-total' | translate }}</td>
+            <td></td>
+            <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
+            <ng-container *ngIf="showElided"><td></td></ng-container>
+            <td class="clr-align-middle">
+                {{ order.subTotalWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ order.subTotal | localeCurrency: order.currencyCode }}
+                </div>
+            </td>
+        </tr>
+        <tr class="shipping">
+            <td class="left clr-align-middle">{{ 'order.shipping' | translate }}</td>
+            <td class="clr-align-middle">{{ order.shippingLines[0]?.shippingMethod?.name }}</td>
+            <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
+            <ng-container *ngIf="showElided"><td></td></ng-container>
+            <td class="clr-align-middle">
+                {{ order.shippingWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ order.shipping | localeCurrency: order.currencyCode }}
+                </div>
+            </td>
+        </tr>
+        <tr class="total">
+            <td class="left clr-align-middle">{{ 'order.total' | translate }}</td>
+            <td></td>
+            <td [attr.colspan]="3 + visibleOrderLineCustomFields.length"></td>
+            <ng-container *ngIf="showElided"><td></td></ng-container>
+            <td class="clr-align-middle">
+                {{ order.totalWithTax | localeCurrency: order.currencyCode }}
+                <div class="net-price" [title]="'order.net-price' | translate">
+                    {{ order.total | localeCurrency: order.currencyCode }}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

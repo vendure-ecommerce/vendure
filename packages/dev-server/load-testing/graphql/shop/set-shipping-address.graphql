@@ -1,17 +1,21 @@
-mutation SetShippingAddress($address: CreateAddressInput! $customer: CreateCustomerInput!) {
+mutation SetShippingAddress($address: CreateAddressInput!, $customer: CreateCustomerInput!) {
     setOrderShippingAddress(input: $address) {
         ...Cart
-        shippingAddress {
-            ...OrderAddress
+        ... on Order {
+            shippingAddress {
+                ...OrderAddress
+            }
         }
     }
     setCustomerForOrder(input: $customer) {
-        id
-        customer {
+        ... on Order {
             id
-            emailAddress
-            firstName
-            lastName
+            customer {
+                id
+                emailAddress
+                firstName
+                lastName
+            }
         }
     }
 }
@@ -44,13 +48,16 @@ fragment Cart on Order {
         }
     }
     subTotal
-    subTotalBeforeTax
-    totalBeforeTax
+    subTotalWithTax
+    total
+    totalWithTax
     shipping
-    shippingMethod {
-        id
-        code
-        description
+    shippingLines {
+        shippingMethod {
+            id
+            code
+            description
+        }
     }
     total
     adjustments {

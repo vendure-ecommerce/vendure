@@ -10,3 +10,6 @@
 >
     <clr-icon shape="check" [attr.size]="size === 'small' ? 16 : 32"></clr-icon>
 </div>
+<div class="toggle-label" [class.disabled]="disabled" *ngIf="label" (click)="selectedChange.emit(!selected)">
+    {{ label }}
+</div>

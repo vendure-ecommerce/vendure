@@ -1,5 +1,5 @@
-@import "variables";
-@import "mixins";
+@import 'variables';
+@import 'mixins';
 
 :host {
     display: flex;
@@ -10,8 +10,8 @@
 .toggle {
     @include no-select();
     cursor: pointer;
-    background-color: $color-grey-100;
-    border: 2px solid $color-grey-400;
+    background-color: var(--color-component-bg-100);
+    border: 2px solid var(--color-component-border-300);
     padding: 0 6px;
     border-radius: 50%;
     width: 32px;
@@ -19,7 +19,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $color-grey-300;
+    color: var(--color-grey-300);
     transition: background-color 0.2s, border 0.2s;
 
     &.small {
@@ -28,27 +28,38 @@
     }
 
     &:not(.disabled):hover {
-        border-color: $color-success-500;
-        background-color: transparentize($color-success-500, 0.9);
+        border-color: var(--color-success-500);
+        background-color: var(--color-success-400);
+        opacity: 0.9;
     }
 
     &.selected {
-        background-color: $color-success-500;
-        border-color: darken($color-success-500, 5%);
+        background-color: var(--color-success-500);
+        border-color: var(--color-success-600);
         color: white;
 
         &:not(.disabled):hover {
-            background-color: transparentize($color-success-500, 0.2);
-            border-color: $color-success-500;
+            background-color: var(--color-success-500);
+            border-color: var(--color-success-400);
+            opacity: 0.9;
         }
     }
 
     &:focus {
         outline: none;
-        box-shadow: 0 0 2px 2px #6bc1e3
+        box-shadow: 0 0 2px 2px var(--color-primary-500);
     }
 
     &.disabled {
         cursor: default;
+    }
+}
+.toggle-label {
+    flex: 1;
+    margin-left: 6px;
+    text-align: left;
+    font-size: 12px;
+    &:not(.disabled) {
+        cursor: pointer;
     }
 }

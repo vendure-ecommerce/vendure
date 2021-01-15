@@ -1,5 +1,5 @@
 import { Directive, Input, Optional } from '@angular/core';
-import { FormControl, FormControlName } from '@angular/forms';
+import { FormControl, FormControlDirective, FormControlName } from '@angular/forms';
 
 /**
  * Allows declarative binding to the "disabled" property of a reactive form
@@ -10,15 +10,19 @@ import { FormControl, FormControlName } from '@angular/forms';
 })
 export class DisabledDirective {
     @Input('vdrDisabled') set disabled(val: boolean) {
-        if (!this.formControlName || !this.formControlName.control) {
+        const formControl = this.formControlName?.control ?? this.formControl?.form;
+        if (!formControl) {
             return;
         }
         if (!!val === false) {
-            this.formControlName.control.enable({ emitEvent: false });
+            formControl.enable({ emitEvent: false });
         } else {
-            this.formControlName.control.disable({ emitEvent: false });
+            formControl.disable({ emitEvent: false });
         }
     }
 
-    constructor(@Optional() private formControlName: FormControlName) {}
+    constructor(
+        @Optional() private formControlName: FormControlName,
+        @Optional() private formControl: FormControlDirective,
+    ) {}
 }

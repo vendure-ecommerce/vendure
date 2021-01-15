@@ -1,8 +1,10 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 
 import { DeepPartial } from '../../../../common/lib/shared-types';
+import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { FulfillmentState } from '../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { VendureEntity } from '../base/base.entity';
+import { CustomFulfillmentFields } from '../custom-entity-fields';
 import { OrderItem } from '../order-item/order-item.entity';
 
 /**
@@ -13,7 +15,7 @@ import { OrderItem } from '../order-item/order-item.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Fulfillment extends VendureEntity {
+export class Fulfillment extends VendureEntity implements HasCustomFields {
     constructor(input?: DeepPartial<Fulfillment>) {
         super(input);
     }
@@ -26,6 +28,12 @@ export class Fulfillment extends VendureEntity {
     @Column()
     method: string;
 
-    @OneToMany(type => OrderItem, orderItem => orderItem.fulfillment)
+    @Column()
+    handlerCode: string;
+
+    @ManyToMany(type => OrderItem, orderItem => orderItem.fulfillments)
     orderItems: OrderItem[];
+
+    @Column(type => CustomFulfillmentFields)
+    customFields: CustomFulfillmentFields;
 }

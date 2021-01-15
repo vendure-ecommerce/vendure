@@ -41,9 +41,9 @@ export function translateEntity<T extends Translatable & VendureEntity>(
 ): Translated<T> {
     let translation: Translation<VendureEntity> | undefined;
     if (translatable.translations) {
-        translation = translatable.translations.find((t) => t.languageCode === languageCode);
+        translation = translatable.translations.find(t => t.languageCode === languageCode);
         if (!translation && languageCode !== DEFAULT_LANGUAGE_CODE) {
-            translation = translatable.translations.find((t) => t.languageCode === DEFAULT_LANGUAGE_CODE);
+            translation = translatable.translations.find(t => t.languageCode === DEFAULT_LANGUAGE_CODE);
         }
         if (!translation) {
             // If we cannot find any suitable translation, just return the first one to at least
@@ -152,7 +152,7 @@ export function translateTree<T extends TreeNode>(
 ): Translated<T> {
     const output = translateDeep(node, languageCode, translatableRelations);
     if (Array.isArray(output.children)) {
-        output.children = output.children.map((child) =>
+        output.children = output.children.map(child =>
             translateTree(child, languageCode, translatableRelations as any),
         );
     }

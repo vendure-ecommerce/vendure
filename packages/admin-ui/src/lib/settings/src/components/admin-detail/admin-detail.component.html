@@ -17,7 +17,7 @@
                 class="btn btn-primary"
                 (click)="save()"
                 *vdrIfPermissions="'UpdateAdministrator'"
-                [disabled]="(detailForm.invalid || detailForm.pristine)"
+                [disabled]="detailForm.invalid || detailForm.pristine"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -86,7 +86,8 @@
         </li>
     </ul>
     <vdr-permission-grid
-        [permissions]="getPermissionsForSelectedChannel()"
+        [activePermissions]="getPermissionsForSelectedChannel()"
+        [permissionDefinitions]="permissionDefinitions"
         [readonly]="true"
     ></vdr-permission-grid>
 </form>

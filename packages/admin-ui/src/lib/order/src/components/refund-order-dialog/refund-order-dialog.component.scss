@@ -1,28 +1,13 @@
-@import "variables";
 
 :host {
     height: 100%;
     display: flex;
     min-height: 64vh;
 }
-.fulfillment-wrapper {
+.refund-wrapper {
     flex: 1;
-    @media screen and (min-width: $breakpoint-small) {
-        display: flex;
-        flex-direction: row;
-    }
-
-    .refund-details {
-        @media screen and (min-width: $breakpoint-small) {
-            margin-top: 0;
-            margin-left: 24px;
-            width: 250px;
-        }
-        clr-select-container {
-            margin: 12px 0;
-        }
-    }
-    .order-lines {
+    flex-direction: column;
+    .order-table {
         flex: 1;
         overflow-y: auto;
         table {
@@ -30,7 +15,7 @@
         }
     }
     tr.ignore {
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 }
 .cancel-checkbox-wrapper {
@@ -43,12 +28,32 @@ clr-checkbox-wrapper {
     margin-bottom: 12px;
     display: block;
 }
+.refund-details {
+    display: flex;
+    justify-content: space-between;
+}
 .totals {
     margin-top: 48px;
     .refund-total {
         font-size: 18px;
     }
     .refund-total-error {
-        color: $color-error-500;
+        color: var(--color-error-500);
+    }
+    &.disabled {
+        color: var(--color-grey-300);
+    }
+}
+.prorated-wrapper {
+    display: flex;
+    justify-content: center;
+}
+.line-promotion {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 3px 6px;
+    .promotion-amount {
+        margin-left: 12px;
     }
 }

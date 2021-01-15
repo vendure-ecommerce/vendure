@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import glob from 'glob';
 import * as path from 'path';
 
-import { Extension, Translations } from './types';
+import { Extension, TranslationExtension, Translations } from './types';
 import { logger } from './utils';
 
 /**
@@ -11,7 +11,7 @@ import { logger } from './utils';
  * configured globs.
  */
 export function getAllTranslationFiles(
-    extensions: Extension[],
+    extensions: TranslationExtension[],
 ): { [languageCode in LanguageCode]?: string[] } {
     // First collect all globs by language
     const allTranslationsWithGlobs: { [languageCode in LanguageCode]?: string[] } = {};

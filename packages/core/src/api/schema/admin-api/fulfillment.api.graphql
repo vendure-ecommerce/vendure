@@ -1,3 +1,0 @@
-type Fulfillment {
-    nextStates: [String!]!
-}

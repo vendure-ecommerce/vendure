@@ -1,4 +1,5 @@
 import {
+    AddManualPayment,
     AddNoteToOrder,
     AddNoteToOrderInput,
     CancelOrder,
@@ -9,7 +10,12 @@ import {
     GetOrder,
     GetOrderHistory,
     GetOrderList,
+    GetOrderSummary,
     HistoryEntryListOptions,
+    ManualPaymentInput,
+    ModifyOrder,
+    ModifyOrderInput,
+    OrderListOptions,
     RefundOrder,
     RefundOrderInput,
     SettlePayment,
@@ -23,13 +29,16 @@ import {
     UpdateOrderNoteInput,
 } from '../../common/generated-types';
 import {
+    ADD_MANUAL_PAYMENT_TO_ORDER,
     ADD_NOTE_TO_ORDER,
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
     DELETE_ORDER_NOTE,
     GET_ORDER,
-    GET_ORDER_HISTORY,
     GET_ORDERS_LIST,
+    GET_ORDER_HISTORY,
+    GET_ORDER_SUMMARY,
+    MODIFY_ORDER,
     REFUND_ORDER,
     SETTLE_PAYMENT,
     SETTLE_REFUND,
@@ -44,12 +53,9 @@ import { BaseDataService } from './base-data.service';
 export class OrderDataService {
     constructor(private baseDataService: BaseDataService) {}
 
-    getOrders(take: number = 10, skip: number = 0) {
+    getOrders(options: OrderListOptions = { take: 10 }) {
         return this.baseDataService.query<GetOrderList.Query, GetOrderList.Variables>(GET_ORDERS_LIST, {
-            options: {
-                take,
-                skip,
-            },
+            options,
         });
     }
 
@@ -154,5 +160,28 @@ export class OrderDataService {
         >(UPDATE_ORDER_CUSTOM_FIELDS, {
             input,
         });
+    }
+
+    getOrderSummary(start: Date, end: Date) {
+        return this.baseDataService.query<GetOrderSummary.Query, GetOrderSummary.Variables>(
+            GET_ORDER_SUMMARY,
+            {
+                start: start.toISOString(),
+                end: end.toISOString(),
+            },
+        );
+    }
+
+    modifyOrder(input: ModifyOrderInput) {
+        return this.baseDataService.mutate<ModifyOrder.Mutation, ModifyOrder.Variables>(MODIFY_ORDER, {
+            input,
+        });
+    }
+
+    addManualPaymentToOrder(input: ManualPaymentInput) {
+        return this.baseDataService.mutate<AddManualPayment.Mutation, AddManualPayment.Variables>(
+            ADD_MANUAL_PAYMENT_TO_ORDER,
+            { input },
+        );
     }
 }

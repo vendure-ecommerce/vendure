@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, Injector, NgModule } from '@angular/core';
 import { ApolloClientOptions, InMemoryCache } from '@apollo/client/core';
 import { setContext } from '@apollo/client/link/context';
@@ -31,6 +31,15 @@ export function createApollo(
     const serverLocation = getServerLocation();
     const apolloCache = new InMemoryCache({
         possibleTypes: introspectionResult.possibleTypes,
+        typePolicies: {
+            GlobalSettings: {
+                fields: {
+                    serverConfig: {
+                        merge: (existing, incoming) => ({ ...existing, ...incoming }),
+                    },
+                },
+            },
+        },
     });
     apolloCache.writeQuery({
         query: GET_CLIENT_STATE,

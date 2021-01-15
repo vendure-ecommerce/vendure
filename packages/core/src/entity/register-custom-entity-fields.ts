@@ -16,6 +16,7 @@ import {
     CustomFacetFieldsTranslation,
     CustomFacetValueFields,
     CustomFacetValueFieldsTranslation,
+    CustomFulfillmentFields,
     CustomGlobalSettingsFields,
     CustomOrderFields,
     CustomOrderLineFields,
@@ -28,6 +29,7 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomShippingMethodFields,
+    CustomShippingMethodFieldsTranslation,
     CustomUserFields,
 } from './custom-entity-fields';
 
@@ -175,6 +177,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFieldsTranslation, true);
+    registerCustomFieldsForEntity(config, 'Fulfillment', CustomFulfillmentFields);
     registerCustomFieldsForEntity(config, 'Order', CustomOrderFields);
     registerCustomFieldsForEntity(config, 'OrderLine', CustomOrderLineFields);
     registerCustomFieldsForEntity(config, 'Product', CustomProductFields);
@@ -193,4 +196,5 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
+    registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
 }

@@ -1,5 +1,6 @@
 import { Stream } from 'stream';
 
+import { RequestContext } from '../../api/common/request-context';
 import { InjectableStrategy } from '../../common/types/injectable-strategy';
 
 /**
@@ -14,5 +15,5 @@ import { InjectableStrategy } from '../../common/types/injectable-strategy';
  * @docsCategory assets
  */
 export interface AssetPreviewStrategy extends InjectableStrategy {
-    generatePreviewImage(mimeType: string, data: Buffer): Promise<Buffer>;
+    generatePreviewImage(ctx: RequestContext, mimeType: string, data: Buffer): Promise<Buffer>;
 }

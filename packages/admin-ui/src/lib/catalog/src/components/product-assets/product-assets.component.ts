@@ -20,8 +20,8 @@ import {
 import { unique } from '@vendure/common/lib/unique';
 
 export interface AssetChange {
-    assetIds: string[];
-    featuredAssetId: string | undefined;
+    assets: Asset[];
+    featuredAsset: Asset | undefined;
 }
 
 /**
@@ -38,7 +38,10 @@ export interface AssetChange {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductAssetsComponent implements AfterViewInit {
-    @Input() assets: Asset[] = [];
+    @Input('assets') set assetsSetter(val: Asset[]) {
+        // create a new non-readonly array of assets
+        this.assets = val.slice();
+    }
     @Input() featuredAsset: Asset | undefined;
     @HostBinding('class.compact')
     @Input()
@@ -53,6 +56,7 @@ export class ProductAssetsComponent implements AfterViewInit {
     public sourceIndex: number;
     public dragIndex: number;
     public activeContainer;
+    public assets: Asset[] = [];
 
     constructor(
         private modalService: ModalService,
@@ -115,8 +119,8 @@ export class ProductAssetsComponent implements AfterViewInit {
 
     private emitChangeEvent(assets: Asset[], featuredAsset: Asset | undefined) {
         this.change.emit({
-            assetIds: assets.map(a => a.id),
-            featuredAssetId: featuredAsset && featuredAsset.id,
+            assets,
+            featuredAsset,
         });
     }
 

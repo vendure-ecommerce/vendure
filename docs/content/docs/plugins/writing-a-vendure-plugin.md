@@ -92,7 +92,7 @@ Now that we've defined the new mutation, we'll need a resolver function to handl
 
 ```TypeScript
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { Ctx, Allow, ProductService, RequestContext } from '@vendure/core';
+import { Ctx, Allow, ProductService, RequestContext, Transaction } from '@vendure/core';
 import { Permission } from '@vendure/common/lib/generated-types';
 
 @Resolver()
@@ -100,6 +100,7 @@ export class RandomCatResolver {
 
   constructor(private productService: ProductService, private catFetcher: CatFetcher) {}
 
+  @Transaction()
   @Mutation()
   @Allow(Permission.UpdateCatalog)
   async addRandomCat(@Ctx() ctx: RequestContext, @Args() args) {
@@ -116,8 +117,9 @@ Some explanations of this code are in order:
 
 * The `@Resolver()` decorator tells Nest that this class contains GraphQL resolvers.
 * We are able to use Nest's dependency injection to inject an instance of our `CatFetcher` class into the constructor of the resolver. We are also injecting an instance of the built-in `ProductService` class, which is responsible for operations on Products.
+* We use the `@Transaction()` decorator to ensure that all database operations in this resolver are run within a transaction. This ensure that if any part of it fails, all changes will be rolled back, keeping our data in a consistent state. For more on this, see the [Transaction Decorator docs]({{< relref "transaction-decorator" >}}).
 * We use the `@Mutation()` decorator to mark this method as a resolver for a mutation with the corresponding name.
-* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "/docs/graphql-api/admin/enums" >}}#permission).
+* The `@Allow()` decorator enables us to define permissions restrictions on the mutation. Only those users whose permissions include `UpdateCatalog` may perform this operation. For a full list of available permissions, see the [Permission enum]({{< relref "/docs/graphql-api/admin/enums" >}}#permission). Plugins may also define custom permissions, see [Defining customer permissions]({{< relref "defining-custom-permissions" >}}).
 * The `@Ctx()` decorator injects the current `RequestContext` into the resolver. This provides information about the current request such as the current Session, User and Channel. It is required by most of the internal service methods.
 * The `@Args()` decorator injects the arguments passed to the mutation as an object.
 

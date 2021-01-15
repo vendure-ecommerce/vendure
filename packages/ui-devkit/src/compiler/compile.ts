@@ -6,8 +6,8 @@ import { FSWatcher, watch as chokidarWatch } from 'chokidar';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { MODULES_OUTPUT_DIR } from './constants';
-import { setupScaffold } from './scaffold';
+import { DEFAULT_BASE_HREF, MODULES_OUTPUT_DIR } from './constants';
+import { copyGlobalStyleFile, setupScaffold } from './scaffold';
 import { getAllTranslationFiles, mergeExtensionTranslations } from './translations';
 import { Extension, StaticAssetDefinition, UiExtensionCompilerOptions } from './types';
 import {
@@ -15,6 +15,9 @@ import {
     copyUiDevkit,
     getStaticAssetPath,
     isAdminUiExtension,
+    isGlobalStylesExtension,
+    isStaticAssetExtension,
+    isTranslationExtension,
     normalizeExtensions,
     shouldUseYarn,
 } from './utils';
@@ -28,26 +31,30 @@ import {
 export function compileUiExtensions(
     options: UiExtensionCompilerOptions,
 ): AdminUiAppConfig | AdminUiAppDevModeConfig {
-    const { outputPath, devMode, watchPort, extensions } = options;
+    const { outputPath, baseHref, devMode, watchPort, extensions } = options;
     if (devMode) {
-        return runWatchMode(outputPath, watchPort || 4200, extensions);
+        return runWatchMode(outputPath, baseHref || DEFAULT_BASE_HREF, watchPort || 4200, extensions);
     } else {
-        return runCompileMode(outputPath, extensions);
+        return runCompileMode(outputPath, baseHref || DEFAULT_BASE_HREF, extensions);
     }
 }
 
-function runCompileMode(outputPath: string, extensions: Extension[]): AdminUiAppConfig {
+function runCompileMode(outputPath: string, baseHref: string, extensions: Extension[]): AdminUiAppConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const distPath = path.join(outputPath, 'dist');
 
     const compile = () =>
         new Promise<void>(async (resolve, reject) => {
             await setupScaffold(outputPath, extensions);
-            const buildProcess = spawn(cmd, ['run', 'build', `--outputPath=${distPath}`], {
-                cwd: outputPath,
-                shell: true,
-                stdio: 'inherit',
-            });
+            const buildProcess = spawn(
+                cmd,
+                ['run', 'build', `--outputPath=${distPath}`, `--base-href=${baseHref}`],
+                {
+                    cwd: outputPath,
+                    shell: true,
+                    stdio: 'inherit',
+                },
+            );
 
             buildProcess.on('close', code => {
                 if (code !== 0) {
@@ -61,10 +68,16 @@ function runCompileMode(outputPath: string, extensions: Extension[]): AdminUiApp
     return {
         path: distPath,
         compile,
+        route: baseHrefToRoute(baseHref),
     };
 }
 
-function runWatchMode(outputPath: string, port: number, extensions: Extension[]): AdminUiAppDevModeConfig {
+function runWatchMode(
+    outputPath: string,
+    baseHref: string,
+    port: number,
+    extensions: Extension[],
+): AdminUiAppDevModeConfig {
     const cmd = shouldUseYarn() ? 'yarn' : 'npm';
     const devkitPath = require.resolve('@vendure/ui-devkit');
     let buildProcess: ChildProcess;
@@ -77,8 +90,10 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
             await setupScaffold(outputPath, extensions);
             const adminUiExtensions = extensions.filter(isAdminUiExtension);
             const normalizedExtensions = normalizeExtensions(adminUiExtensions);
-            const allTranslationFiles = getAllTranslationFiles(extensions);
-            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`], {
+            const globalStylesExtensions = extensions.filter(isGlobalStylesExtension);
+            const staticAssetExtensions = extensions.filter(isStaticAssetExtension);
+            const allTranslationFiles = getAllTranslationFiles(extensions.filter(isTranslationExtension));
+            buildProcess = spawn(cmd, ['run', 'start', `--port=${port}`, `--base-href=${baseHref}`], {
                 cwd: outputPath,
                 shell: true,
                 stdio: 'inherit',
@@ -102,10 +117,26 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
                 } else {
                     watcher.add(extension.extensionPath);
                 }
-                if (extension.staticAssets) {
-                    for (const staticAssetDef of extension.staticAssets) {
-                        const assetPath = getStaticAssetPath(staticAssetDef);
+            }
+            for (const extension of staticAssetExtensions) {
+                for (const staticAssetDef of extension.staticAssets) {
+                    const assetPath = getStaticAssetPath(staticAssetDef);
+                    if (!watcher) {
+                        watcher = chokidarWatch(assetPath);
+                    } else {
                         watcher.add(assetPath);
+                    }
+                }
+            }
+            for (const extension of globalStylesExtensions) {
+                const globalStylePaths = Array.isArray(extension.globalStyles)
+                    ? extension.globalStyles
+                    : [extension.globalStyles];
+                for (const stylePath of globalStylePaths) {
+                    if (!watcher) {
+                        watcher = chokidarWatch(stylePath);
+                    } else {
+                        watcher.add(stylePath);
                     }
                 }
             }
@@ -128,9 +159,16 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
             }
 
             if (watcher) {
-                const allStaticAssetDefs = adminUiExtensions.reduce(
+                const allStaticAssetDefs = staticAssetExtensions.reduce(
                     (defs, e) => [...defs, ...(e.staticAssets || [])],
                     [] as StaticAssetDefinition[],
+                );
+                const allGlobalStyles = globalStylesExtensions.reduce(
+                    (defs, e) => [
+                        ...defs,
+                        ...(Array.isArray(e.globalStyles) ? e.globalStyles : [e.globalStyles]),
+                    ],
+                    [] as string[],
                 );
 
                 watcher.on('change', async filePath => {
@@ -148,6 +186,12 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
                         const assetPath = getStaticAssetPath(staticAssetDef);
                         if (filePath.includes(assetPath)) {
                             await copyStaticAsset(outputPath, staticAssetDef);
+                            return;
+                        }
+                    }
+                    for (const stylePath of allGlobalStyles) {
+                        if (filePath.includes(stylePath)) {
+                            await copyGlobalStyleFile(outputPath, stylePath);
                             return;
                         }
                     }
@@ -177,5 +221,9 @@ function runWatchMode(outputPath: string, port: number, extensions: Extension[])
     };
 
     process.on('SIGINT', close);
-    return { sourcePath: outputPath, port, compile };
+    return { sourcePath: outputPath, port, compile, route: baseHrefToRoute(baseHref) };
+}
+
+function baseHrefToRoute(baseHref: string): string {
+    return baseHref.replace(/^\//, '').replace(/\/$/, '');
 }

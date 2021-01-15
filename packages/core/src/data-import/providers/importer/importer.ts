@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ImportInfo, LanguageCode } from '@vendure/common/lib/generated-types';
+import { GlobalFlag, ImportInfo, LanguageCode } from '@vendure/common/lib/generated-types';
 import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { ID } from '@vendure/common/lib/shared-types';
 import ProgressBar from 'progress';

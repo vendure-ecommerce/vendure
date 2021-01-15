@@ -20,7 +20,8 @@ import { filter, map, takeUntil } from 'rxjs/operators';
     styleUrls: ['./job-list.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class JobListComponent extends BaseListComponent<GetAllJobs.Query, GetAllJobs.Items>
+export class JobListComponent
+    extends BaseListComponent<GetAllJobs.Query, GetAllJobs.Items>
     implements OnInit {
     queues$: Observable<GetJobQueueList.JobQueues[]>;
     liveUpdate = new FormControl(true);
@@ -88,5 +89,9 @@ export class JobListComponent extends BaseListComponent<GetAllJobs.Query, GetAll
             return Object.keys(result).length > 0;
         }
         return true;
+    }
+
+    cancelJob(id: string) {
+        this.dataService.settings.cancelJob(id).subscribe(() => this.refresh());
     }
 }

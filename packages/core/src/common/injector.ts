@@ -26,7 +26,7 @@ export class Injector {
 
     /**
      * @description
-     * Retrieve the TypeORM `Connection` instance.
+     * (deprecated) Retrieve the TypeORM `Connection` instance.
      *
      * @deprecated Use `.get(TransactionalConnection)` instead.
      */

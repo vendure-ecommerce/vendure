@@ -9,9 +9,12 @@ import { Order } from '../../../entity/order/order.entity';
  *
  * @docsCategory fulfillment
  */
-export type FulfillmentState = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type FulfillmentState = 'Created' | 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
 
 export const fulfillmentStateTransitions: Transitions<FulfillmentState> = {
+    Created: {
+        to: ['Pending'],
+    },
     Pending: {
         to: ['Shipped', 'Delivered', 'Cancelled'],
     },

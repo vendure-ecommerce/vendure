@@ -1,14 +1,13 @@
-@import "variables";
 
 .input-wrapper {
     background-color: white;
     border-radius: 3px !important;
-    border: 1px solid $color-grey-300 !important;
+    border: 1px solid var(--color-grey-300) !important;
     cursor: text;
 
     &.focus {
-        border-color: $color-primary-500 !important;
-        box-shadow: 0 0 1px 1px $color-primary-100;
+        border-color: var(--color-primary-500) !important;
+        box-shadow: 0 0 1px 1px var(--color-primary-100);
     }
 
     .chips {
@@ -25,7 +24,7 @@
             outline: none;
         }
         &:disabled {
-            background-color: $color-grey-100;
+            background-color: var(--color-component-bg-100);
         }
     }
 }
@@ -39,8 +38,8 @@ vdr-chip {
     }
     &.selected {
         ::ng-deep .wrapper {
-            border-color: $color-warning-500 !important;
-            box-shadow: 0 0 1px 1px $color-warning-400;
+            border-color: var(--color-warning-500) !important;
+            box-shadow: 0 0 1px 1px var(--color-warning-400);
             opacity: 0.6;
         }
     }

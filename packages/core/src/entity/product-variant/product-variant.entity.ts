@@ -1,12 +1,14 @@
-import { CurrencyCode } from '@vendure/common/lib/generated-types';
+import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { SoftDeletable } from '../../common/types/common-types';
+import { Calculated } from '../../common/calculated-decorator';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
@@ -31,7 +33,9 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
  * @docsCategory entities
  */
 @Entity()
-export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
+export class ProductVariant
+    extends VendureEntity
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
@@ -47,54 +51,69 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column()
     sku: string;
 
+    // TODO: Remove as deprecated
+    priceIncludesTax = false;
+
     /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
-     * It is marked as a @Column() so that changes to it will trigger the afterUpdate subscriber.
+     * Calculated at run-time
      */
-    @Column({
-        name: 'lastPriceValue',
-        comment: 'Not used - actual price is stored in product_variant_price table',
-    })
-    price: number;
+    listPrice: number;
+
+    /**
+     * Calculated at run-time
+     */
+    listPriceIncludesTax: boolean;
 
     /**
      * Calculated at run-time
      */
     currencyCode: CurrencyCode;
 
-    /**
-     * Calculated at run-time
-     */
-    priceIncludesTax: boolean;
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
+    get price(): number {
+        if (this.listPrice == null) {
+            return 0;
+        }
+        return this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice;
+    }
 
-    /**
-     * Calculated at run-time
-     */
-    priceWithTax: number;
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
+    get priceWithTax(): number {
+        if (this.listPrice == null) {
+            return 0;
+        }
+        return this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice);
+    }
 
     /**
      * Calculated at run-time
      */
     taxRateApplied: TaxRate;
 
-    @ManyToOne((type) => Asset, { onDelete: 'SET NULL' })
+    @ManyToOne(type => Asset, { onDelete: 'SET NULL' })
     featuredAsset: Asset;
 
-    @OneToMany((type) => ProductVariantAsset, (productVariantAsset) => productVariantAsset.productVariant, {
+    @OneToMany(type => ProductVariantAsset, productVariantAsset => productVariantAsset.productVariant, {
         onDelete: 'SET NULL',
     })
     assets: ProductVariantAsset[];
 
-    @ManyToOne((type) => TaxCategory)
+    @ManyToOne(type => TaxCategory)
     taxCategory: TaxCategory;
 
-    @OneToMany((type) => ProductVariantPrice, (price) => price.variant, { eager: true })
+    @OneToMany(type => ProductVariantPrice, price => price.variant, { eager: true })
     productVariantPrices: ProductVariantPrice[];
 
-    @OneToMany((type) => ProductVariantTranslation, (translation) => translation.base, { eager: true })
+    @OneToMany(type => ProductVariantTranslation, translation => translation.base, { eager: true })
     translations: Array<Translation<ProductVariant>>;
 
-    @ManyToOne((type) => Product, (product) => product.variants)
+    @ManyToOne(type => Product, product => product.variants)
     product: Product;
 
     @EntityId({ nullable: true })
@@ -103,23 +122,46 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column({ default: 0 })
     stockOnHand: number;
 
-    @Column()
-    trackInventory: boolean;
+    @Column({ default: 0 })
+    stockAllocated: number;
 
-    @OneToMany((type) => StockMovement, (stockMovement) => stockMovement.productVariant)
+    /**
+     * @description
+     * Specifies the value of stockOnHand at which the ProductVariant is considered
+     * out of stock.
+     */
+    @Column({ default: 0 })
+    outOfStockThreshold: number;
+
+    /**
+     * @description
+     * When true, the `outOfStockThreshold` value will be taken from the GlobalSettings and the
+     * value set on this ProductVariant will be ignored.
+     */
+    @Column({ default: true })
+    useGlobalOutOfStockThreshold: boolean;
+
+    @Column({ type: 'varchar', default: GlobalFlag.INHERIT })
+    trackInventory: GlobalFlag;
+
+    @OneToMany(type => StockMovement, stockMovement => stockMovement.productVariant)
     stockMovements: StockMovement[];
 
-    @ManyToMany((type) => ProductOption)
+    @ManyToMany(type => ProductOption)
     @JoinTable()
     options: ProductOption[];
 
-    @ManyToMany((type) => FacetValue)
+    @ManyToMany(type => FacetValue)
     @JoinTable()
     facetValues: FacetValue[];
 
-    @Column((type) => CustomProductVariantFields)
+    @Column(type => CustomProductVariantFields)
     customFields: CustomProductVariantFields;
 
-    @ManyToMany((type) => Collection, (collection) => collection.productVariants)
+    @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

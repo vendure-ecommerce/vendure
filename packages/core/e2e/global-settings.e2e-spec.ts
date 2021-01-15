@@ -3,14 +3,16 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { GLOBAL_SETTINGS_FRAGMENT } from './graphql/fragments';
 import {
     GetGlobalSettings,
     GlobalSettingsFragment,
     LanguageCode,
     UpdateGlobalSettings,
 } from './graphql/generated-e2e-admin-types';
+import { UPDATE_GLOBAL_SETTINGS } from './graphql/shared-definitions';
 
 describe('GlobalSettings resolver', () => {
     const { server, adminClient } = createTestEnvironment({
@@ -23,9 +25,9 @@ describe('GlobalSettings resolver', () => {
     });
     let globalSettings: GlobalSettingsFragment;
 
-    const globalSettingsGuard: ErrorResultGuard<GlobalSettingsFragment> = createErrorResultGuard<
-        GlobalSettingsFragment
-    >(input => !!input.availableLanguages);
+    const globalSettingsGuard: ErrorResultGuard<GlobalSettingsFragment> = createErrorResultGuard(
+        input => !!input.availableLanguages,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -34,6 +36,14 @@ describe('GlobalSettings resolver', () => {
             customerCount: 1,
         });
         await adminClient.asSuperAdmin();
+        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+            UPDATE_GLOBAL_SETTINGS,
+            {
+                input: {
+                    trackInventory: false,
+                },
+            },
+        );
         const result = await adminClient.query<GetGlobalSettings.Query>(GET_GLOBAL_SETTINGS);
         globalSettings = result.globalSettings;
     }, TEST_SETUP_TIMEOUT_MS);
@@ -50,8 +60,8 @@ describe('GlobalSettings resolver', () => {
 
         it('includes orderProcess', () => {
             expect(globalSettings.serverConfig.orderProcess[0]).toEqual({
-                name: 'AddingItems',
-                to: ['ArrangingPayment', 'Cancelled'],
+                name: 'Created',
+                to: ['AddingItems'],
             });
         });
 
@@ -66,6 +76,14 @@ describe('GlobalSettings resolver', () => {
 
         it('includes customFieldConfig', () => {
             expect(globalSettings.serverConfig.customFieldConfig.Customer).toEqual([{ name: 'age' }]);
+        });
+
+        it('includes non-internal permission definitions', () => {
+            const permissionNames = globalSettings.serverConfig.permissions.map(p => p.name);
+            expect(permissionNames).toContain('CreateAdministrator');
+            expect(permissionNames).not.toContain('SuperAdmin');
+            expect(permissionNames).not.toContain('Owner');
+            expect(permissionNames).not.toContain('Authenticated');
         });
     });
 
@@ -104,45 +122,10 @@ describe('GlobalSettings resolver', () => {
     });
 });
 
-const GLOBAL_SETTINGS_FRAGMENT = gql`
-    fragment GlobalSettings on GlobalSettings {
-        id
-        availableLanguages
-        trackInventory
-        serverConfig {
-            orderProcess {
-                name
-                to
-            }
-            permittedAssetTypes
-            customFieldConfig {
-                Customer {
-                    ... on CustomField {
-                        name
-                    }
-                }
-            }
-        }
-    }
-`;
-
 const GET_GLOBAL_SETTINGS = gql`
     query GetGlobalSettings {
         globalSettings {
             ...GlobalSettings
-        }
-    }
-    ${GLOBAL_SETTINGS_FRAGMENT}
-`;
-
-const UPDATE_GLOBAL_SETTINGS = gql`
-    mutation UpdateGlobalSettings($input: UpdateGlobalSettingsInput!) {
-        updateGlobalSettings(input: $input) {
-            ...GlobalSettings
-            ... on ErrorResult {
-                errorCode
-                message
-            }
         }
     }
     ${GLOBAL_SETTINGS_FRAGMENT}

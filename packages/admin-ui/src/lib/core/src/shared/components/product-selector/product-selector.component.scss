@@ -1,6 +1,9 @@
-@import "variables";
+
+:host {
+    display: block;
+}
 
 .sku {
     margin-left: 12px;
-    color: $color-grey-500;
+    color: var(--color-grey-500);
 }

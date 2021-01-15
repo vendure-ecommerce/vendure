@@ -2,6 +2,7 @@
     <div class="title-row">
         {{ 'asset.select-assets' | translate }}
         <vdr-asset-file-input
+            class="ml3"
             (selectFiles)="createAssets($event)"
             [uploading]="uploading"
             dropZoneTarget=".modal-content"
@@ -13,7 +14,7 @@
     name="searchTerm"
     [formControl]="searchTerm"
     [placeholder]="'asset.search-asset-name' | translate"
-    class="clr-input search-input"
+    class="search-input"
 />
 <vdr-asset-gallery
     [assets]="(assets$ | async)! | paginate: paginationConfig"

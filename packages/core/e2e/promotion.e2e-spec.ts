@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { PROMOTION_FRAGMENT } from './graphql/fragments';
 import {
@@ -50,7 +50,7 @@ describe('Promotion resolver', () => {
     ];
     let promotion: Promotion.Fragment;
 
-    const promotionGuard: ErrorResultGuard<PromotionFragment> = createErrorResultGuard<PromotionFragment>(
+    const promotionGuard: ErrorResultGuard<PromotionFragment> = createErrorResultGuard(
         input => !!input.couponCode,
     );
 

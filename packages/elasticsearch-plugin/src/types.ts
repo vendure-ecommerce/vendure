@@ -178,6 +178,13 @@ export interface ProductChannelMessageData {
     productId: ID;
     channelId: ID;
 }
+
+export type VariantChannelMessageData = {
+    ctx: SerializedRequestContext;
+    productVariantId: ID;
+    channelId: ID;
+};
+
 export interface UpdateAssetMessageData {
     ctx: SerializedRequestContext;
     asset: JsonCompatible<Required<Asset>>;
@@ -210,6 +217,12 @@ export class AssignProductToChannelMessage extends WorkerMessage<ProductChannelM
 export class RemoveProductFromChannelMessage extends WorkerMessage<ProductChannelMessageData, boolean> {
     static readonly pattern = 'RemoveProductFromChannel';
 }
+export class AssignVariantToChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
+    static readonly pattern = 'AssignVariantToChannel';
+}
+export class RemoveVariantFromChannelMessage extends WorkerMessage<VariantChannelMessageData, boolean> {
+    static readonly pattern = 'RemoveVariantFromChannel';
+}
 export class UpdateAssetMessage extends WorkerMessage<UpdateAssetMessageData, boolean> {
     static readonly pattern = 'UpdateAsset';
 }
@@ -235,6 +248,8 @@ type UpdateAssetJobData = NamedJobData<'update-asset', UpdateAssetMessageData>;
 type DeleteAssetJobData = NamedJobData<'delete-asset', UpdateAssetMessageData>;
 type AssignProductToChannelJobData = NamedJobData<'assign-product-to-channel', ProductChannelMessageData>;
 type RemoveProductFromChannelJobData = NamedJobData<'remove-product-from-channel', ProductChannelMessageData>;
+type AssignVariantToChannelJobData = NamedJobData<'assign-variant-to-channel', VariantChannelMessageData>;
+type RemoveVariantFromChannelJobData = NamedJobData<'remove-variant-from-channel', VariantChannelMessageData>;
 export type UpdateIndexQueueJobData =
     | ReindexJobData
     | UpdateProductJobData
@@ -245,7 +260,9 @@ export type UpdateIndexQueueJobData =
     | UpdateAssetJobData
     | DeleteAssetJobData
     | AssignProductToChannelJobData
-    | RemoveProductFromChannelJobData;
+    | RemoveProductFromChannelJobData
+    | AssignVariantToChannelJobData
+    | RemoveVariantFromChannelJobData;
 
 type CustomStringMapping<Args extends any[]> = CustomMappingDefinition<Args, 'String!', string>;
 type CustomStringMappingNullable<Args extends any[]> = CustomMappingDefinition<Args, 'String', Maybe<string>>;

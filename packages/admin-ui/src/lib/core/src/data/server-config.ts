@@ -1,5 +1,4 @@
 import { Injectable, Injector } from '@angular/core';
-import { gql } from 'apollo-angular';
 
 import {
     CustomFieldConfig,
@@ -7,6 +6,7 @@ import {
     GetGlobalSettings,
     GetServerConfig,
     OrderProcessState,
+    PermissionDefinition,
     ServerConfig,
 } from '../common/generated-types';
 
@@ -79,6 +79,14 @@ export class ServerConfigService {
 
     getOrderProcessStates(): OrderProcessState[] {
         return this.serverConfig.orderProcess;
+    }
+
+    getPermittedAssetTypes(): string[] {
+        return this.serverConfig.permittedAssetTypes;
+    }
+
+    getPermissionDefinitions(): PermissionDefinition[] {
+        return this.serverConfig.permissions;
     }
 
     get serverConfig(): ServerConfig {

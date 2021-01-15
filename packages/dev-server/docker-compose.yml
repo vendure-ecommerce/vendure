@@ -2,6 +2,7 @@ version: '3.7'
 services:
   mariadb:
     image: 'bitnami/mariadb:latest'
+    container_name: mariadb
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
@@ -20,6 +21,7 @@ services:
       - /sessions
   mysql:
     image: bitnami/mysql:8.0
+    container_name: mysql-8
     environment:
       ALLOW_EMPTY_PASSWORD: 'yes'
       MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
@@ -27,6 +29,25 @@ services:
       - 'mysql_data:/bitnami'
     ports:
       - '3306:3306'
+  mysql5:
+    image: bitnami/mysql:5.7
+    container_name: mysql-5.7
+    environment:
+      ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - 'mysql_data:/bitnami'
+    ports:
+      - '3306:3306'
+  phpmyadmin-mysql5:
+    image: 'phpmyadmin/phpmyadmin:latest'
+    container_name: phpmyadmin-mysql5
+    environment:
+      - PMA_HOST=mysql-5.7
+      - PMA_USER=root
+    ports:
+      - 8082:80
+    volumes:
+      - /sessions
   phpmyadmin-mysql:
     image: 'phpmyadmin/phpmyadmin:latest'
     container_name: phpmyadmin-mysql
@@ -39,6 +60,7 @@ services:
       - /sessions
   postgres:
     image: postgres:12.3
+    container_name: postgres
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: admin
@@ -49,6 +71,7 @@ services:
     ports:
       - "5432:5432"
   pgadmin:
+    container_name: pgadmin
     image: dpage/pgadmin4:4.18
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@localhost.dev

@@ -238,20 +238,6 @@ describe('addOrderLineCustomFieldsInput()', () => {
         const result = addOrderLineCustomFieldsInput(input, customFieldConfig);
         expect(printSchema(result)).toMatchSnapshot();
     });
-
-    it('Does not modify schema when the addItemToOrder mutation not present', () => {
-        const input = `
-            type Mutation {
-                createCustomer(id: ID!): Boolean
-            }
-        `;
-        const customFieldConfig: CustomFieldConfig[] = [
-            { name: 'giftWrap', type: 'boolean' },
-            { name: 'message', type: 'string' },
-        ];
-        const result = addOrderLineCustomFieldsInput(input, customFieldConfig);
-        expect(printSchema(result)).toMatchSnapshot();
-    });
 });
 
 describe('addRegisterCustomerCustomFieldsInput()', () => {

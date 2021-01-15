@@ -160,6 +160,8 @@ export class NavBuilderService {
      * move the section before any existing section with the specified id. If
      * omitted (or if the id is not found) the section will be appended to the
      * existing set of sections.
+     *
+     * Providing the `id` of an existing section will replace that section.
      */
     addNavMenuSection(config: NavMenuSection, before?: string) {
         this.addedNavMenuSections.push({ config, before });
@@ -171,6 +173,9 @@ export class NavBuilderService {
      * Providing the `before` argument will move the item before any existing item with the specified id.
      * If omitted (or if the name is not found) the item will be appended to the
      * end of the section.
+     *
+     * Providing the `id` of an existing item in that section will replace
+     * that item.
      */
     addNavMenuItem(config: NavMenuItem, sectionId: string, before?: string) {
         this.addedNavMenuItems.push({ config, sectionId, before });
@@ -208,10 +213,17 @@ export class NavBuilderService {
                     if (!config.requiresPermission) {
                         config.requiresPermission = Permission.Authenticated;
                     }
-                    const index = initialConfig.findIndex(c => c.id === before);
-                    if (-1 < index) {
-                        initialConfig.splice(index, 0, config);
-                    } else {
+                    const existingIndex = initialConfig.findIndex(c => c.id === config.id);
+                    if (-1 < existingIndex) {
+                        initialConfig[existingIndex] = config;
+                    }
+                    const beforeIndex = initialConfig.findIndex(c => c.id === before);
+                    if (-1 < beforeIndex) {
+                        if (-1 < existingIndex) {
+                            initialConfig.splice(existingIndex, 1);
+                        }
+                        initialConfig.splice(beforeIndex, 0, config);
+                    } else if (existingIndex === -1) {
                         initialConfig.push(config);
                     }
                 }
@@ -230,11 +242,19 @@ export class NavBuilderService {
                             `Could not add menu item "${item.config.id}", section "${item.sectionId}" does not exist`,
                         );
                     } else {
-                        const index = section.items.findIndex(i => i.id === item.before);
-                        if (-1 < index) {
-                            section.items.splice(index, 0, item.config);
-                        } else {
-                            section.items.push(item.config);
+                        const { config, sectionId, before } = item;
+                        const existingIndex = section.items.findIndex(i => i.id === config.id);
+                        if (-1 < existingIndex) {
+                            section.items[existingIndex] = config;
+                        }
+                        const beforeIndex = section.items.findIndex(i => i.id === before);
+                        if (-1 < beforeIndex) {
+                            if (-1 < existingIndex) {
+                                section.items.splice(existingIndex, 1);
+                            }
+                            section.items.splice(beforeIndex, 0, config);
+                        } else if (existingIndex === -1) {
+                            section.items.push(config);
                         }
                     }
                 }
