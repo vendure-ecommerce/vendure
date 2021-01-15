@@ -56,6 +56,7 @@ export class ProductVariantsListComponent implements OnChanges, OnInit, OnDestro
     @Input() customFields: CustomFieldConfig[];
     @Input() customOptionFields: CustomFieldConfig[];
     @Input() activeLanguage: LanguageCode;
+    @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     @Output() assignToChannel = new EventEmitter<ProductWithVariants.Variants>();
     @Output() removeFromChannel = new EventEmitter<{
         channelId: string;

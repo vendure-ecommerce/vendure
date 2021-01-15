@@ -42,8 +42,8 @@
                     <div class="assets">
                         <vdr-product-assets
                             [compact]="true"
-                            [assets]="variant.assets"
-                            [featuredAsset]="variant.featuredAsset"
+                            [assets]="pendingAssetChanges[variant.id]?.assets || variant.assets"
+                            [featuredAsset]="pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset"
                             (change)="onAssetChange(variant.id, $event)"
                         ></vdr-product-assets>
                     </div>

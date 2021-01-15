@@ -13,6 +13,8 @@ import { flattenFacetValues, ProductWithVariants } from '@vendure/admin-ui/core'
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
+import { SelectedAssets } from '../product-detail/product-detail.component';
+
 @Component({
     selector: 'vdr-product-variants-table',
     templateUrl: './product-variants-table.component.html',
@@ -24,6 +26,7 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
     @Input() variants: ProductWithVariants.Variants[];
     @Input() channelPriceIncludesTax: boolean;
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
+    @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     formGroupMap = new Map<string, FormGroup>();
     variantListPrice: { [variantId: string]: number } = {};
     private subscription: Subscription;
@@ -59,6 +62,10 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    getFeaturedAsset(variant: ProductWithVariants.Variants) {
+        return this.pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset;
     }
 
     optionGroupName(optionGroupId: string): string | undefined {

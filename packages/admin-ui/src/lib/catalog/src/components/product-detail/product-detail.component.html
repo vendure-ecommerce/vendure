@@ -228,6 +228,7 @@
                         [optionGroups]="product.optionGroups"
                         [channelPriceIncludesTax]="channelPriceIncludesTax$ | async"
                         [productVariantsFormArray]="detailForm.get('variants')"
+                        [pendingAssetChanges]="variantAssetChanges"
                     ></vdr-product-variants-table>
                     <vdr-product-variants-list
                         *ngIf="variantDisplayMode === 'card'"
@@ -240,6 +241,7 @@
                         [customFields]="customVariantFields"
                         [customOptionFields]="customOptionFields"
                         [activeLanguage]="languageCode$ | async"
+                        [pendingAssetChanges]="variantAssetChanges"
                         (assignToChannel)="assignVariantToChannel($event)"
                         (removeFromChannel)="removeVariantFromChannel($event)"
                         (assetChange)="variantAssetChange($event)"
