@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    Asset,
     BaseDetailComponent,
     CreateProductInput,
     createUpdatedTranslatable,
@@ -68,8 +69,8 @@ export interface VariantFormValue {
 }
 
 export interface SelectedAssets {
-    assetIds?: string[];
-    featuredAssetId?: string;
+    assets?: Asset[];
+    featuredAsset?: Asset;
 }
 
 @Component({
@@ -524,7 +525,7 @@ export class ProductDetailComponent
     }
 
     canDeactivate(): boolean {
-        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+        return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
     }
 
     /**
@@ -635,7 +636,8 @@ export class ProductDetailComponent
         });
         return {
             ...updatedProduct,
-            ...this.assetChanges,
+            assetIds: this.assetChanges.assets?.map(a => a.id),
+            featuredAssetId: this.assetChanges.featuredAsset?.id,
             facetValueIds: productFormGroup.value.facetValueIds,
         } as UpdateProductInput | CreateProductInput;
     }
@@ -677,8 +679,8 @@ export class ProductDetailComponent
                 result.price = priceIncludesTax ? formValue.priceWithTax : formValue.price;
                 const assetChanges = this.variantAssetChanges[variant.id];
                 if (assetChanges) {
-                    result.featuredAssetId = assetChanges.featuredAssetId;
-                    result.assetIds = assetChanges.assetIds;
+                    result.featuredAssetId = assetChanges.featuredAsset?.id;
+                    result.assetIds = assetChanges.assets?.map(a => a.id);
                 }
                 return result;
             })
