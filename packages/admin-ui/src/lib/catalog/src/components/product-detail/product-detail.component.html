@@ -96,7 +96,9 @@
                             </vdr-form-field>
                             <div
                                 class="auto-rename-wrapper"
-                                [class.visible]="(isNew$ | async) === false && detailForm.get(['product', 'name'])?.dirty"
+                                [class.visible]="
+                                    (isNew$ | async) === false && detailForm.get(['product', 'name'])?.dirty
+                                "
                             >
                                 <clr-checkbox-wrapper>
                                     <input
@@ -162,8 +164,8 @@
                     </div>
                     <div class="clr-col-md-auto">
                         <vdr-product-assets
-                            [assets]="product.assets"
-                            [featuredAsset]="product.featuredAsset"
+                            [assets]="assetChanges.assets || product.assets"
+                            [featuredAsset]="assetChanges.featuredAsset || product.featuredAsset"
                             (change)="assetChanges = $event"
                         ></vdr-product-assets>
                     </div>

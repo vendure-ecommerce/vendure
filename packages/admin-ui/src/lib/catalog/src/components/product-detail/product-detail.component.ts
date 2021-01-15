@@ -14,7 +14,6 @@ import {
     findTranslation,
     flattenFacetValues,
     GlobalFlag,
-    IGNORE_CAN_DEACTIVATE_GUARD,
     LanguageCode,
     ModalService,
     NotificationService,
@@ -31,7 +30,7 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { combineLatest, EMPTY, merge, Observable, of } from 'rxjs';
+import { combineLatest, EMPTY, merge, Observable } from 'rxjs';
 import {
     debounceTime,
     distinctUntilChanged,
@@ -198,13 +197,15 @@ export class ProductDetailComponent
     }
 
     navigateToTab(tabName: TabName) {
-        this.router.navigate(['./', { ...this.route.snapshot.params, tab: tabName }], {
-            queryParamsHandling: 'merge',
-            relativeTo: this.route,
-            state: {
-                [IGNORE_CAN_DEACTIVATE_GUARD]: true,
-            },
-        });
+        this.location.replaceState(
+            this.router
+                .createUrlTree(['./', { ...this.route.snapshot.params, tab: tabName }], {
+                    queryParamsHandling: 'merge',
+                    relativeTo: this.route,
+                    replaceUrl: true,
+                })
+                .toString(),
+        );
     }
 
     isDefaultChannel(channelCode: string): boolean {
