@@ -241,6 +241,13 @@ describe('Promotions applied to Orders', () => {
             expect(removeCouponCode!.totalWithTax).toBe(6000);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/649
+        it('discounts array cleared after coupon code removed', async () => {
+            const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+
+            expect(activeOrder?.discounts).toEqual([]);
+        });
+
         it('order history records removal', async () => {
             const { activeOrder } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 

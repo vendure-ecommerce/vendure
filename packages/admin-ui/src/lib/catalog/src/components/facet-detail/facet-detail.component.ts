@@ -108,6 +108,7 @@ export class FacetDetailComponent
             valuesFormArray.insert(
                 valuesFormArray.length,
                 this.formBuilder.group({
+                    id: '',
                     name: ['', Validators.required],
                     code: '',
                 }),
@@ -297,7 +298,6 @@ export class FacetDetailComponent
         }
 
         const currentValuesFormArray = this.detailForm.get('values') as FormArray;
-        currentValuesFormArray.clear();
         this.values = [...facet.values];
         facet.values.forEach((value, i) => {
             const valueTranslation = findTranslation(value, languageCode);
@@ -306,7 +306,12 @@ export class FacetDetailComponent
                 code: value.code,
                 name: valueTranslation ? valueTranslation.name : '',
             };
-            currentValuesFormArray.insert(i, this.formBuilder.group(group));
+            const valueControl = currentValuesFormArray.at(i);
+            if (valueControl) {
+                valueControl.setValue(group);
+            } else {
+                currentValuesFormArray.insert(i, this.formBuilder.group(group));
+            }
             if (this.customValueFields.length) {
                 let customValueFieldsGroup = this.detailForm.get(['values', i, 'customFields']) as FormGroup;
                 if (!customValueFieldsGroup) {

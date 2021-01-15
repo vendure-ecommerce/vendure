@@ -10,6 +10,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
+    Asset,
     BaseDetailComponent,
     Collection,
     ConfigurableOperation,
@@ -46,7 +47,7 @@ export class CollectionDetailComponent
     implements OnInit, OnDestroy {
     customFields: CustomFieldConfig[];
     detailForm: FormGroup;
-    assetChanges: { assetIds?: string[]; featuredAssetId?: string } = {};
+    assetChanges: { assets?: Asset[]; featuredAsset?: Asset } = {};
     filters: ConfigurableOperation[] = [];
     allFilters: ConfigurableOperationDefinition[] = [];
     @ViewChild('collectionContents') contentsComponent: CollectionContentsComponent;
@@ -217,7 +218,7 @@ export class CollectionDetailComponent
     }
 
     canDeactivate(): boolean {
-        return super.canDeactivate() && !this.assetChanges.assetIds && !this.assetChanges.featuredAssetId;
+        return super.canDeactivate() && !this.assetChanges.assets && !this.assetChanges.featuredAsset;
     }
 
     /**
@@ -275,7 +276,8 @@ export class CollectionDetailComponent
         });
         return {
             ...updatedCategory,
-            ...this.assetChanges,
+            assetIds: this.assetChanges.assets?.map(a => a.id),
+            featuredAssetId: this.assetChanges.featuredAsset?.id,
             isPrivate: !form.value.visible,
             filters: this.mapOperationsToInputs(this.filters, this.detailForm.value.filters),
         };

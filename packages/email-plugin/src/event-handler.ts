@@ -2,9 +2,18 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Type } from '@vendure/common/lib/shared-types';
 import { Injector, Logger } from '@vendure/core';
 
+import { serializeAttachments } from './attachment-utils';
 import { loggerCtx } from './constants';
-import { EmailEventListener, EmailTemplateConfig, SetTemplateVarsFn } from './event-listener';
-import { EventWithAsyncData, EventWithContext, IntermediateEmailDetails, LoadDataFn } from './types';
+import { EmailEventListener } from './event-listener';
+import {
+    EmailTemplateConfig,
+    EventWithAsyncData,
+    EventWithContext,
+    IntermediateEmailDetails,
+    LoadDataFn,
+    SetAttachmentsFn,
+    SetTemplateVarsFn,
+} from './types';
 
 /**
  * @description
@@ -48,6 +57,7 @@ import { EventWithAsyncData, EventWithContext, IntermediateEmailDetails, LoadDat
 export class EmailEventHandler<T extends string = string, Event extends EventWithContext = EventWithContext> {
     private setRecipientFn: (event: Event) => string;
     private setTemplateVarsFn: SetTemplateVarsFn<Event>;
+    private setAttachmentsFn?: SetAttachmentsFn<Event>;
     private filterFns: Array<(event: Event) => boolean> = [];
     private configurations: EmailTemplateConfig[] = [];
     private defaultSubject: string;
@@ -117,6 +127,32 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
 
     /**
      * @description
+     * Defines one or more files to be attached to the email. An attachment _must_ specify
+     * a `path` property which can be either a file system path _or_ a URL to the file.
+     *
+     * @example
+     * ```TypeScript
+     * const testAttachmentHandler = new EmailEventListener('activate-voucher')
+     *   .on(ActivateVoucherEvent)
+     *   // ... omitted some steps for brevity
+     *   .setAttachments(async (event) => {
+     *     const { imageUrl, voucherCode } = await getVoucherDataForUser(event.user.id);
+     *     return [
+     *       {
+     *         filename: `voucher-${voucherCode}.jpg`,
+     *         path: imageUrl,
+     *       },
+     *     ];
+     *   });
+     * ```
+     */
+    setAttachments(setAttachmentsFn: SetAttachmentsFn<Event>) {
+        this.setAttachmentsFn = setAttachmentsFn;
+        return this;
+    }
+
+    /**
+     * @description
      * Add configuration for another template other than the default `"body.hbs"`. Use this method to define specific
      * templates for channels or languageCodes other than the default.
      */
@@ -154,6 +190,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         const asyncHandler = new EmailEventHandlerWithAsyncData(loadDataFn, this.listener, this.event);
         asyncHandler.setRecipientFn = this.setRecipientFn;
         asyncHandler.setTemplateVarsFn = this.setTemplateVarsFn;
+        asyncHandler.setAttachmentsFn = this.setAttachmentsFn;
         asyncHandler.filterFns = this.filterFns;
         asyncHandler.configurations = this.configurations;
         asyncHandler.defaultSubject = this.defaultSubject;
@@ -216,6 +253,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
         }
         const recipient = this.setRecipientFn(event);
         const templateVars = this.setTemplateVarsFn ? this.setTemplateVarsFn(event, globals) : {};
+        const attachments = await serializeAttachments((await this.setAttachmentsFn?.(event)) ?? []);
         return {
             type: this.type,
             recipient,
@@ -223,6 +261,7 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
             templateVars: { ...globals, ...templateVars },
             subject,
             templateFile: configuration ? configuration.templateFile : 'body.hbs',
+            attachments,
         };
     }
 

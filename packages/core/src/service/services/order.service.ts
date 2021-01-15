@@ -11,6 +11,7 @@ import {
     AddFulfillmentToOrderResult,
     AddManualPaymentToOrderResult,
     AddNoteToOrderInput,
+    AdjustmentType,
     CancelOrderInput,
     CancelOrderResult,
     CreateAddressInput,
@@ -528,6 +529,16 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
+            // When removing a couponCode which has triggered an Order-level discount
+            // we need to make sure we persist the changes to the adjustments array of
+            // any affected OrderItems.
+            const affectedOrderItems = order.lines
+                .reduce((items, l) => [...items, ...l.items], [] as OrderItem[])
+                .filter(
+                    i =>
+                        i.adjustments.filter(a => a.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+                            .length,
+                );
             order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
@@ -535,7 +546,9 @@ export class OrderService {
                 type: HistoryEntryType.ORDER_COUPON_REMOVED,
                 data: { couponCode },
             });
-            return this.applyPriceAdjustments(ctx, order);
+            const result = await this.applyPriceAdjustments(ctx, order);
+            await this.connection.getRepository(ctx, OrderItem).save(affectedOrderItems);
+            return result;
         } else {
             return order;
         }

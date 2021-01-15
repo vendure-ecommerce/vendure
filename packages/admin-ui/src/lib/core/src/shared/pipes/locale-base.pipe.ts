@@ -1,24 +1,20 @@
-import { ChangeDetectorRef, OnDestroy, Optional, Pipe, PipeTransform } from '@angular/core';
-import { DataService } from '@vendure/admin-ui/core';
+import { ChangeDetectorRef, Injectable, OnDestroy, PipeTransform } from '@angular/core';
 import { Subscription } from 'rxjs';
+
+import { DataService } from '../../data/providers/data.service';
 
 /**
  * Used by locale-aware pipes to handle the task of getting the active languageCode
  * of the UI and cleaning up.
  */
-@Pipe({
-    name: 'basePipe',
-})
+@Injectable()
 export abstract class LocaleBasePipe implements OnDestroy, PipeTransform {
     protected locale: string;
     private readonly subscription: Subscription;
 
-    constructor(
-        @Optional() private dataService?: DataService,
-        @Optional() changeDetectorRef?: ChangeDetectorRef,
-    ) {
-        if (this.dataService && changeDetectorRef) {
-            this.subscription = this.dataService.client
+    protected constructor(dataService?: DataService, changeDetectorRef?: ChangeDetectorRef) {
+        if (dataService && changeDetectorRef) {
+            this.subscription = dataService.client
                 .uiState()
                 .mapStream(data => data.uiState.language)
                 .subscribe(languageCode => {

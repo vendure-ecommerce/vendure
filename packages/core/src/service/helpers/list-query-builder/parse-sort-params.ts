@@ -7,7 +7,8 @@ import { UserInputError } from '../../../common/error/errors';
 import { NullOptionals, SortParameter } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
-import { getColumnMetadata } from './get-column-metadata';
+import { escapeCalculatedColumnExpression, getColumnMetadata } from './connection-utils';
+import { getCalculatedColumns } from './get-calculated-columns';
 
 /**
  * Parses the provided SortParameter array against the metadata of the given entity, ensuring that only
@@ -25,22 +26,32 @@ export function parseSortParams<T extends VendureEntity>(
         return {};
     }
     const { columns, translationColumns, alias } = getColumnMetadata(connection, entity);
+    const calculatedColumns = getCalculatedColumns(entity);
     const output: OrderByCondition = {};
     for (const [key, order] of Object.entries(sortParams)) {
+        const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
         if (columns.find(c => c.propertyName === key)) {
             output[`${alias}.${key}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
             output[`${alias}_translations.${key}`] = order as any;
+        } else if (calculatedColumnDef) {
+            const instruction = calculatedColumnDef.listQuery;
+            if (instruction) {
+                output[escapeCalculatedColumnExpression(connection, instruction.expression)] = order as any;
+            }
         } else {
             throw new UserInputError('error.invalid-sort-field', {
                 fieldName: key,
-                validFields: getValidSortFields([...columns, ...translationColumns]),
+                validFields: [
+                    ...getValidSortFields([...columns, ...translationColumns]),
+                    ...calculatedColumns.map(c => c.name.toString()),
+                ].join(', '),
             });
         }
     }
     return output;
 }
 
-function getValidSortFields(columns: ColumnMetadata[]): string {
-    return unique(columns.map(c => c.propertyName)).join(', ');
+function getValidSortFields(columns: ColumnMetadata[]): string[] {
+    return unique(columns.map(c => c.propertyName));
 }

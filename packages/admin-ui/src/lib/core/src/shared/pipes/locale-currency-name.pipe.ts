@@ -1,4 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectorRef, Optional, Pipe, PipeTransform } from '@angular/core';
+
+import { DataService } from '../../data/providers/data.service';
 
 import { LocaleBasePipe } from './locale-base.pipe';
 
@@ -10,6 +12,9 @@ import { LocaleBasePipe } from './locale-base.pipe';
     pure: false,
 })
 export class LocaleCurrencyNamePipe extends LocaleBasePipe implements PipeTransform {
+    constructor(@Optional() dataService?: DataService, @Optional() changeDetectorRef?: ChangeDetectorRef) {
+        super(dataService, changeDetectorRef);
+    }
     transform(value: any, display: 'full' | 'symbol' | 'name' = 'full', locale?: unknown): any {
         if (value == null || value === '') {
             return '';

@@ -319,6 +319,8 @@ export const ORDER_FRAGMENT = gql`
         code
         state
         total
+        totalWithTax
+        totalQuantity
         currencyCode
         customer {
             id

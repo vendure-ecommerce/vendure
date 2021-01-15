@@ -1,6 +1,7 @@
 import { InternalServerError, Logger } from '@vendure/core';
 import fs from 'fs-extra';
 
+import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
 import { loggerCtx } from './constants';
 import { EmailSender } from './email-sender';
@@ -59,7 +60,11 @@ export class EmailProcessor {
                 bodySource,
                 data.templateVars,
             );
-            const emailDetails = { ...generated, recipient: data.recipient };
+            const emailDetails = {
+                ...generated,
+                recipient: data.recipient,
+                attachments: deserializeAttachments(data.attachments),
+            };
             await this.emailSender.send(emailDetails, this.transport);
             return true;
         } catch (err: unknown) {

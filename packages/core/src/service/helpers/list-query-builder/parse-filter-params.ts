@@ -14,7 +14,8 @@ import {
 } from '../../../common/types/common-types';
 import { VendureEntity } from '../../../entity/base/base.entity';
 
-import { getColumnMetadata } from './get-column-metadata';
+import { escapeCalculatedColumnExpression, getColumnMetadata } from './connection-utils';
+import { getCalculatedColumns } from './get-calculated-columns';
 
 export interface WhereCondition {
     clause: string;
@@ -33,17 +34,23 @@ export function parseFilterParams<T extends VendureEntity>(
         return [];
     }
     const { columns, translationColumns, alias } = getColumnMetadata(connection, entity);
+    const calculatedColumns = getCalculatedColumns(entity);
     const output: WhereCondition[] = [];
     const dbType = connection.options.type;
     let argIndex = 1;
     for (const [key, operation] of Object.entries(filterParams)) {
         if (operation) {
+            const calculatedColumnDef = calculatedColumns.find(c => c.name === key);
+            const instruction = calculatedColumnDef?.listQuery;
+            const calculatedColumnExpression = instruction?.expression;
             for (const [operator, operand] of Object.entries(operation as object)) {
                 let fieldName: string;
                 if (columns.find(c => c.propertyName === key)) {
                     fieldName = `${alias}.${key}`;
                 } else if (translationColumns.find(c => c.propertyName === key)) {
                     fieldName = `${alias}_translations.${key}`;
+                } else if (calculatedColumnExpression) {
+                    fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);
                 } else {
                     throw new UserInputError('error.invalid-filter-field');
                 }

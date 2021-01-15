@@ -13,6 +13,8 @@ import { flattenFacetValues, ProductWithVariants } from '@vendure/admin-ui/core'
 import { Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 
+import { SelectedAssets } from '../product-detail/product-detail.component';
+
 @Component({
     selector: 'vdr-product-variants-table',
     templateUrl: './product-variants-table.component.html',
@@ -24,6 +26,7 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
     @Input() variants: ProductWithVariants.Variants[];
     @Input() channelPriceIncludesTax: boolean;
     @Input() optionGroups: ProductWithVariants.OptionGroups[];
+    @Input() pendingAssetChanges: { [variantId: string]: SelectedAssets };
     formGroupMap = new Map<string, FormGroup>();
     variantListPrice: { [variantId: string]: number } = {};
     private subscription: Subscription;
@@ -47,11 +50,11 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
     ngOnChanges(changes: SimpleChanges) {
         if ('variants' in changes) {
             if (this.channelPriceIncludesTax != null && Object.keys(this.variantListPrice).length === 0) {
-                this.buildVariantListPrices(this.variants);
+                this.buildVariantListPrices(this.formArray.value);
             }
         }
         if ('channelPriceIncludesTax' in changes) {
-            this.buildVariantListPrices(this.variants);
+            this.buildVariantListPrices(this.formArray.value);
         }
     }
 
@@ -59,6 +62,10 @@ export class ProductVariantsTableComponent implements OnInit, OnChanges, OnDestr
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    getFeaturedAsset(variant: ProductWithVariants.Variants) {
+        return this.pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset;
     }
 
     optionGroupName(optionGroupId: string): string | undefined {
