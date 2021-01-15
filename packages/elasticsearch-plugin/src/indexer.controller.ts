@@ -772,7 +772,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         };
         const customMappings = Object.entries(this.options.customProductVariantMappings);
         for (const [name, def] of customMappings) {
-            item[name] = def.valueFn(v);
+            item[name] = def.valueFn(v, languageCode);
         }
         return item;
     }
@@ -826,7 +826,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
 
         const customMappings = Object.entries(this.options.customProductMappings);
         for (const [name, def] of customMappings) {
-            item[name] = def.valueFn(variants[0].product, variants);
+            item[name] = def.valueFn(variants[0].product, variants, languageCode);
         }
         return item;
     }
