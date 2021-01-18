@@ -85,6 +85,7 @@ const result: PossibleTypesResultData = {
             'PromotionList',
             'RoleList',
             'ShippingMethodList',
+            'TagList',
             'TaxRateList',
         ],
         Node: [

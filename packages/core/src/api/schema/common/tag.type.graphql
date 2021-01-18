@@ -4,3 +4,8 @@ type Tag implements Node {
     updatedAt: DateTime!
     value: String!
 }
+
+type TagList implements PaginatedList {
+    items: [Tag!]!
+    totalItems: Int!
+}

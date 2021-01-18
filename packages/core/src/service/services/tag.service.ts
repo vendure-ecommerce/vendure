@@ -1,16 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { ID, Type } from '@vendure/common/lib/shared-types';
+import {
+    CreateTagInput,
+    DeletionResponse,
+    DeletionResult,
+    UpdateTagInput,
+} from '@vendure/common/lib/generated-types';
+import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
-import { Taggable } from '../../common/types/common-types';
+import { ListQueryOptions, Taggable } from '../../common/types/common-types';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Tag } from '../../entity/tag/tag.entity';
+import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class TagService {
-    constructor(private connection: TransactionalConnection) {}
+    constructor(private connection: TransactionalConnection, private listQueryBuilder: ListQueryBuilder) {}
+
+    findAll(ctx: RequestContext, options?: ListQueryOptions<Tag>): Promise<PaginatedList<Tag>> {
+        return this.listQueryBuilder
+            .build(Tag, options, { ctx })
+            .getManyAndCount()
+            .then(([items, totalItems]) => ({
+                items,
+                totalItems,
+            }));
+    }
+
+    findOne(ctx: RequestContext, tagId: ID): Promise<Tag | undefined> {
+        return this.connection.getRepository(ctx, Tag).findOne(tagId);
+    }
+
+    create(ctx: RequestContext, input: CreateTagInput) {
+        return this.tagValueToTag(ctx, input.value);
+    }
+
+    async update(ctx: RequestContext, input: UpdateTagInput) {
+        const tag = await this.connection.getEntityOrThrow(ctx, Tag, input.id);
+        if (input.value) {
+            tag.value = input.value;
+            await this.connection.getRepository(ctx, Tag).save(tag);
+        }
+        return tag;
+    }
+
+    async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
+        const tag = await this.connection.getEntityOrThrow(ctx, Tag, id);
+        await this.connection.getRepository(ctx, Tag).remove(tag);
+        return {
+            result: DeletionResult.DELETED,
+        };
+    }
 
     async valuesToTags(ctx: RequestContext, values: string[]): Promise<Tag[]> {
         const tags: Tag[] = [];

@@ -2162,6 +2162,11 @@ export type Tag = Node & {
     value: Scalars['String'];
 };
 
+export type TagList = PaginatedList & {
+    items: Array<Tag>;
+    totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];

@@ -70,6 +70,8 @@ export type Query = {
     fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
     testEligibleShippingMethods: Array<ShippingMethodQuote>;
+    tag: Tag;
+    tags: TagList;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
     taxRates: TaxRateList;
@@ -222,6 +224,14 @@ export type QueryTestShippingMethodArgs = {
 
 export type QueryTestEligibleShippingMethodsArgs = {
     input: TestEligibleShippingMethodsInput;
+};
+
+export type QueryTagArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryTagsArgs = {
+    options?: Maybe<TagListOptions>;
 };
 
 export type QueryTaxCategoryArgs = {
@@ -399,6 +409,12 @@ export type Mutation = {
     updateShippingMethod: ShippingMethod;
     /** Delete a ShippingMethod */
     deleteShippingMethod: DeletionResponse;
+    /** Create a new Tag */
+    createTag: Tag;
+    /** Update an existing Tag */
+    updateTag: Tag;
+    /** Delete an existing Tag */
+    deleteTag: DeletionResponse;
     /** Create a new TaxCategory */
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
@@ -773,6 +789,18 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 export type MutationDeleteShippingMethodArgs = {
+    id: Scalars['ID'];
+};
+
+export type MutationCreateTagArgs = {
+    input: CreateTagInput;
+};
+
+export type MutationUpdateTagArgs = {
+    input: UpdateTagInput;
+};
+
+export type MutationDeleteTagArgs = {
     id: Scalars['ID'];
 };
 
@@ -2137,6 +2165,15 @@ export type StockMovementItem = StockAdjustment | Allocation | Sale | Cancellati
 export type StockMovementList = {
     items: Array<StockMovementItem>;
     totalItems: Scalars['Int'];
+};
+
+export type CreateTagInput = {
+    value: Scalars['String'];
+};
+
+export type UpdateTagInput = {
+    id: Scalars['ID'];
+    value?: Maybe<Scalars['String']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -3836,6 +3873,11 @@ export type Tag = Node & {
     value: Scalars['String'];
 };
 
+export type TagList = PaginatedList & {
+    items: Array<Tag>;
+    totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -3976,6 +4018,13 @@ export type ShippingMethodListOptions = {
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<ShippingMethodSortParameter>;
     filter?: Maybe<ShippingMethodFilterParameter>;
+};
+
+export type TagListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<TagSortParameter>;
+    filter?: Maybe<TagFilterParameter>;
 };
 
 export type TaxRateListOptions = {
@@ -4272,6 +4321,19 @@ export type ShippingMethodSortParameter = {
     name?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
     fulfillmentHandlerCode?: Maybe<SortOrder>;
+};
+
+export type TagFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    value?: Maybe<StringOperators>;
+};
+
+export type TagSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    value?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {
@@ -6142,6 +6204,38 @@ export type UpdateStockMutationVariables = Exact<{
 }>;
 
 export type UpdateStockMutation = { updateProductVariants: Array<Maybe<VariantWithStockFragment>> };
+
+export type GetTagListQueryVariables = Exact<{
+    options?: Maybe<TagListOptions>;
+}>;
+
+export type GetTagListQuery = {
+    tags: Pick<TagList, 'totalItems'> & { items: Array<Pick<Tag, 'id' | 'value'>> };
+};
+
+export type GetTagQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetTagQuery = { tag: Pick<Tag, 'id' | 'value'> };
+
+export type CreateTagMutationVariables = Exact<{
+    input: CreateTagInput;
+}>;
+
+export type CreateTagMutation = { createTag: Pick<Tag, 'id' | 'value'> };
+
+export type UpdateTagMutationVariables = Exact<{
+    input: UpdateTagInput;
+}>;
+
+export type UpdateTagMutation = { updateTag: Pick<Tag, 'id' | 'value'> };
+
+export type DeleteTagMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type DeleteTagMutation = { deleteTag: Pick<DeletionResponse, 'message' | 'result'> };
 
 export type GetTaxCategoryListQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -8211,6 +8305,37 @@ export namespace UpdateStock {
     export type UpdateProductVariants = NonNullable<
         NonNullable<UpdateStockMutation['updateProductVariants']>[number]
     >;
+}
+
+export namespace GetTagList {
+    export type Variables = GetTagListQueryVariables;
+    export type Query = GetTagListQuery;
+    export type Tags = NonNullable<GetTagListQuery['tags']>;
+    export type Items = NonNullable<NonNullable<NonNullable<GetTagListQuery['tags']>['items']>[number]>;
+}
+
+export namespace GetTag {
+    export type Variables = GetTagQueryVariables;
+    export type Query = GetTagQuery;
+    export type Tag = NonNullable<GetTagQuery['tag']>;
+}
+
+export namespace CreateTag {
+    export type Variables = CreateTagMutationVariables;
+    export type Mutation = CreateTagMutation;
+    export type CreateTag = NonNullable<CreateTagMutation['createTag']>;
+}
+
+export namespace UpdateTag {
+    export type Variables = UpdateTagMutationVariables;
+    export type Mutation = UpdateTagMutation;
+    export type UpdateTag = NonNullable<UpdateTagMutation['updateTag']>;
+}
+
+export namespace DeleteTag {
+    export type Variables = DeleteTagMutationVariables;
+    export type Mutation = DeleteTagMutation;
+    export type DeleteTag = NonNullable<DeleteTagMutation['deleteTag']>;
 }
 
 export namespace GetTaxCategoryList {

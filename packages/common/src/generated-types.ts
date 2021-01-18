@@ -71,6 +71,8 @@ export type Query = {
   fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
   testShippingMethod: TestShippingMethodResult;
   testEligibleShippingMethods: Array<ShippingMethodQuote>;
+  tag: Tag;
+  tags: TagList;
   taxCategories: Array<TaxCategory>;
   taxCategory?: Maybe<TaxCategory>;
   taxRates: TaxRateList;
@@ -262,6 +264,16 @@ export type QueryTestEligibleShippingMethodsArgs = {
 };
 
 
+export type QueryTagArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryTagsArgs = {
+  options?: Maybe<TagListOptions>;
+};
+
+
 export type QueryTaxCategoryArgs = {
   id: Scalars['ID'];
 };
@@ -441,6 +453,12 @@ export type Mutation = {
   updateShippingMethod: ShippingMethod;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
+  /** Create a new Tag */
+  createTag: Tag;
+  /** Update an existing Tag */
+  updateTag: Tag;
+  /** Delete an existing Tag */
+  deleteTag: DeletionResponse;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Update an existing TaxCategory */
@@ -899,6 +917,21 @@ export type MutationUpdateShippingMethodArgs = {
 
 
 export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationCreateTagArgs = {
+  input: CreateTagInput;
+};
+
+
+export type MutationUpdateTagArgs = {
+  input: UpdateTagInput;
+};
+
+
+export type MutationDeleteTagArgs = {
   id: Scalars['ID'];
 };
 
@@ -2298,6 +2331,15 @@ export type StockMovementList = {
   __typename?: 'StockMovementList';
   items: Array<StockMovementItem>;
   totalItems: Scalars['Int'];
+};
+
+export type CreateTagInput = {
+  value: Scalars['String'];
+};
+
+export type UpdateTagInput = {
+  id: Scalars['ID'];
+  value?: Maybe<Scalars['String']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -4069,6 +4111,12 @@ export type Tag = Node & {
   value: Scalars['String'];
 };
 
+export type TagList = PaginatedList & {
+  __typename?: 'TagList';
+  items: Array<Tag>;
+  totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
   __typename?: 'TaxCategory';
   id: Scalars['ID'];
@@ -4215,6 +4263,13 @@ export type ShippingMethodListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<ShippingMethodSortParameter>;
   filter?: Maybe<ShippingMethodFilterParameter>;
+};
+
+export type TagListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TagSortParameter>;
+  filter?: Maybe<TagFilterParameter>;
 };
 
 export type TaxRateListOptions = {
@@ -4511,6 +4566,19 @@ export type ShippingMethodSortParameter = {
   name?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
   fulfillmentHandlerCode?: Maybe<SortOrder>;
+};
+
+export type TagFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  value?: Maybe<StringOperators>;
+};
+
+export type TagSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {

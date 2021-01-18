@@ -71,6 +71,8 @@ export type Query = {
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   shippingMethod?: Maybe<ShippingMethod>;
   shippingMethods: ShippingMethodList;
+  tag: Tag;
+  tags: TagList;
   taxCategories: Array<TaxCategory>;
   taxCategory?: Maybe<TaxCategory>;
   taxRate?: Maybe<TaxRate>;
@@ -256,6 +258,16 @@ export type QueryShippingMethodsArgs = {
 };
 
 
+export type QueryTagArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryTagsArgs = {
+  options?: Maybe<TagListOptions>;
+};
+
+
 export type QueryTaxCategoryArgs = {
   id: Scalars['ID'];
 };
@@ -346,6 +358,8 @@ export type Mutation = {
   createRole: Role;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
+  /** Create a new Tag */
+  createTag: Tag;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Create a new TaxRate */
@@ -385,6 +399,8 @@ export type Mutation = {
   deleteRole: DeletionResponse;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
+  /** Delete an existing Tag */
+  deleteTag: DeletionResponse;
   /** Deletes a TaxCategory */
   deleteTaxCategory: DeletionResponse;
   /** Delete a TaxRate */
@@ -468,6 +484,8 @@ export type Mutation = {
   updateRole: Role;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
+  /** Update an existing Tag */
+  updateTag: Tag;
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory;
   /** Update an existing TaxRate */
@@ -635,6 +653,11 @@ export type MutationCreateShippingMethodArgs = {
 };
 
 
+export type MutationCreateTagArgs = {
+  input: CreateTagInput;
+};
+
+
 export type MutationCreateTaxCategoryArgs = {
   input: CreateTaxCategoryInput;
 };
@@ -740,6 +763,11 @@ export type MutationDeleteRoleArgs = {
 
 
 export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteTagArgs = {
   id: Scalars['ID'];
 };
 
@@ -974,6 +1002,11 @@ export type MutationUpdateRoleArgs = {
 
 export type MutationUpdateShippingMethodArgs = {
   input: UpdateShippingMethodInput;
+};
+
+
+export type MutationUpdateTagArgs = {
+  input: UpdateTagInput;
 };
 
 
@@ -2335,6 +2368,15 @@ export type StockMovementList = {
   __typename?: 'StockMovementList';
   items: Array<StockMovementItem>;
   totalItems: Scalars['Int'];
+};
+
+export type CreateTagInput = {
+  value: Scalars['String'];
+};
+
+export type UpdateTagInput = {
+  id: Scalars['ID'];
+  value?: Maybe<Scalars['String']>;
 };
 
 export type CreateTaxCategoryInput = {
@@ -4107,6 +4149,12 @@ export type Tag = Node & {
   value: Scalars['String'];
 };
 
+export type TagList = PaginatedList & {
+  __typename?: 'TagList';
+  items: Array<Tag>;
+  totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
   __typename?: 'TaxCategory';
   id: Scalars['ID'];
@@ -4253,6 +4301,13 @@ export type ShippingMethodListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<ShippingMethodSortParameter>;
   filter?: Maybe<ShippingMethodFilterParameter>;
+};
+
+export type TagListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TagSortParameter>;
+  filter?: Maybe<TagFilterParameter>;
 };
 
 export type TaxRateListOptions = {
@@ -4549,6 +4604,19 @@ export type ShippingMethodSortParameter = {
   name?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
   fulfillmentHandlerCode?: Maybe<SortOrder>;
+};
+
+export type TagFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  value?: Maybe<StringOperators>;
+};
+
+export type TagSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
 };
 
 export type TaxRateFilterParameter = {
