@@ -22,6 +22,13 @@ export const ASSET_FRAGMENT = gql`
     }
 `;
 
+export const TAG_FRAGMENT = gql`
+    fragment Tag on Tag {
+        id
+        value
+    }
+`;
+
 export const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
     fragment ProductOptionGroup on ProductOptionGroup {
         id
@@ -363,41 +370,57 @@ export const GET_ASSET_LIST = gql`
         assets(options: $options) {
             items {
                 ...Asset
+                tags {
+                    ...Tag
+                }
             }
             totalItems
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const GET_ASSET = gql`
     query GetAsset($id: ID!) {
         asset(id: $id) {
             ...Asset
+            tags {
+                ...Tag
+            }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
+            tags {
+                ...Tag
+            }
             ... on ErrorResult {
                 message
             }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
             ...Asset
+            tags {
+                ...Tag
+            }
         }
     }
     ${ASSET_FRAGMENT}
+    ${TAG_FRAGMENT}
 `;
 
 export const DELETE_ASSETS = gql`
@@ -610,6 +633,54 @@ export const GET_PRODUCT_VARIANT = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+export const GET_TAG_LIST = gql`
+    query GetTagList($options: TagListOptions) {
+        tags(options: $options) {
+            items {
+                ...Tag
+            }
+            totalItems
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const GET_TAG = gql`
+    query GetTag($id: ID!) {
+        tag(id: $id) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const CREATE_TAG = gql`
+    mutation CreateTag($input: CreateTagInput!) {
+        createTag(input: $input) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const UPDATE_TAG = gql`
+    mutation UpdateTag($input: UpdateTagInput!) {
+        updateTag(input: $input) {
+            ...Tag
+        }
+    }
+    ${TAG_FRAGMENT}
+`;
+
+export const DELETE_TAG = gql`
+    mutation DeleteTag($id: ID!) {
+        deleteTag(id: $id) {
+            message
+            result
         }
     }
 `;

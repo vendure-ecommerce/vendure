@@ -221,6 +221,7 @@
     "select": "Seleccionar...",
     "select-display-language": "Seleccionar idioma de interfaz",
     "select-today": "Hoy",
+    "tags": "",
     "theme": "",
     "there-are-unsaved-changes": "Hay cambios sin guardar. Si sale de este sitio sus cambios se perderán.",
     "toggle-all": "",
@@ -302,10 +303,14 @@
     "latest-orders": "",
     "orders-summary": "",
     "remove-widget": "",
+    "thisMonth": "",
+    "thisWeek": "",
+    "today": "",
     "total-order-value": "",
     "total-orders": "",
     "widget-resize": "",
-    "widget-width": ""
+    "widget-width": "",
+    "yesterday": ""
   },
   "datetime": {
     "ago-days": "",

@@ -221,6 +221,7 @@
     "select": "Auswählen...",
     "select-display-language": "Anzeigesprache wählen",
     "select-today": "Heute auswählen",
+    "tags": "",
     "theme": "",
     "there-are-unsaved-changes": "Es gibt ungespeicherte Änderungen. Wenn Sie wechseln, gehen diese Änderungen verloren.",
     "toggle-all": "",
@@ -302,10 +303,14 @@
     "latest-orders": "",
     "orders-summary": "",
     "remove-widget": "",
+    "thisMonth": "",
+    "thisWeek": "",
+    "today": "",
     "total-order-value": "",
     "total-orders": "",
     "widget-resize": "",
-    "widget-width": ""
+    "widget-width": "",
+    "yesterday": ""
   },
   "datetime": {
     "ago-days": "{count, plural, one {Vor einem Tag} other {Vor {count} Tagen}}",

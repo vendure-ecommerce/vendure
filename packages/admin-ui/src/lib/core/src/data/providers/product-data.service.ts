@@ -15,9 +15,12 @@ import {
     CreateProductOptionInput,
     CreateProductVariantInput,
     CreateProductVariants,
+    CreateTag,
+    CreateTagInput,
     DeleteAssets,
     DeleteProduct,
     DeleteProductVariant,
+    DeleteTag,
     GetAsset,
     GetAssetList,
     GetProductList,
@@ -26,6 +29,8 @@ import {
     GetProductVariant,
     GetProductVariantOptions,
     GetProductWithVariants,
+    GetTag,
+    GetTagList,
     ProductListOptions,
     ProductSelectorSearch,
     Reindex,
@@ -36,6 +41,7 @@ import {
     RemoveVariantsFromChannel,
     SearchProducts,
     SortOrder,
+    TagListOptions,
     UpdateAsset,
     UpdateAssetInput,
     UpdateProduct,
@@ -44,6 +50,8 @@ import {
     UpdateProductOptionInput,
     UpdateProductVariantInput,
     UpdateProductVariants,
+    UpdateTag,
+    UpdateTagInput,
 } from '../../common/generated-types';
 import {
     ADD_OPTION_GROUP_TO_PRODUCT,
@@ -54,9 +62,11 @@ import {
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
     CREATE_PRODUCT_VARIANTS,
+    CREATE_TAG,
     DELETE_ASSETS,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
+    DELETE_TAG,
     GET_ASSET,
     GET_ASSET_LIST,
     GET_PRODUCT_LIST,
@@ -65,6 +75,8 @@ import {
     GET_PRODUCT_VARIANT,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
+    GET_TAG,
+    GET_TAG_LIST,
     PRODUCT_SELECTOR_SEARCH,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
@@ -74,6 +86,7 @@ import {
     UPDATE_PRODUCT,
     UPDATE_PRODUCT_OPTION,
     UPDATE_PRODUCT_VARIANTS,
+    UPDATE_TAG,
 } from '../definitions/product-definitions';
 import { REINDEX } from '../definitions/settings-definitions';
 
@@ -353,5 +366,25 @@ export class ProductDataService {
         >(REMOVE_VARIANTS_FROM_CHANNEL, {
             input,
         });
+    }
+
+    getTag(id: string) {
+        return this.baseDataService.query<GetTag.Query, GetTag.Variables>(GET_TAG, { id });
+    }
+
+    getTagList(options?: TagListOptions) {
+        return this.baseDataService.query<GetTagList.Query, GetTagList.Variables>(GET_TAG_LIST, { options });
+    }
+
+    createTag(input: CreateTagInput) {
+        return this.baseDataService.mutate<CreateTag.Mutation, CreateTag.Variables>(CREATE_TAG, { input });
+    }
+
+    updateTag(input: UpdateTagInput) {
+        return this.baseDataService.mutate<UpdateTag.Mutation, UpdateTag.Variables>(UPDATE_TAG, { input });
+    }
+
+    deleteTag(id: string) {
+        return this.baseDataService.mutate<DeleteTag.Mutation, DeleteTag.Variables>(DELETE_TAG, { id });
     }
 }

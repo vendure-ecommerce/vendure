@@ -15,12 +15,13 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+import { GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
-import { Asset, UpdateAssetInput } from '../../../common/generated-types';
 import { Point } from '../focal-point-control/focal-point-control.component';
 
 export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | '';
+type AssetLike = GetAssetList.Items | GetAsset.Asset;
 
 @Component({
     selector: 'vdr-asset-preview',
@@ -29,7 +30,7 @@ export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | ''
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetPreviewComponent implements OnInit, OnDestroy {
-    @Input() asset: Asset;
+    @Input() asset: AssetLike;
     @Input() editable = false;
     @Output() assetChange = new EventEmitter<Omit<UpdateAssetInput, 'focalPoint'>>();
     @Output() editClick = new EventEmitter();
@@ -66,11 +67,13 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         const { focalPoint } = this.asset;
         this.form = this.formBuilder.group({
             name: [this.asset.name],
+            tags: [this.asset.tags?.map(t => t.value)],
         });
         this.subscription = this.form.valueChanges.subscribe(value => {
             this.assetChange.emit({
                 id: this.asset.id,
                 name: value.name,
+                tags: value.tags,
             });
         });
 

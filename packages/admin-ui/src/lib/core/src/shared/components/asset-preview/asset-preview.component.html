@@ -8,7 +8,12 @@
             [editable]="settingFocalPoint"
             (focalPointChange)="onFocalPointChange($event)"
         >
-            <img class="asset-image" [src]="asset | assetPreview:size" #imageElement (load)="onImageLoad()" />
+            <img
+                class="asset-image"
+                [src]="asset | assetPreview: size"
+                #imageElement
+                (load)="onImageLoad()"
+            />
         </vdr-focal-point-control>
         <div class="focal-point-info" *ngIf="settingFocalPoint">
             <button class="icon-button" (click)="setFocalPointCancel()">
@@ -36,7 +41,7 @@
 
         <vdr-labeled-data [label]="'common.name' | translate" *ngIf="!editable">
             <span class="elide">
-            {{ asset.name }}
+                {{ asset.name }}
             </span>
         </vdr-labeled-data>
 
@@ -77,6 +82,12 @@
             >
                 {{ 'asset.unset-focal-point' | translate }}
             </button>
+        </vdr-labeled-data>
+        <vdr-labeled-data [label]="'common.tags' | translate">
+            <vdr-tag-selector *ngIf="editable" formControlName="tags"></vdr-tag-selector>
+            <div *ngIf="!editable">
+                <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value"><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip>
+            </div>
         </vdr-labeled-data>
     </form>
     <div class="flex-spacer"></div>

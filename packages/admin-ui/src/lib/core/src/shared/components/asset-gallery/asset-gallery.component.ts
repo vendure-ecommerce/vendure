@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 
-import { Asset } from '../../../common/generated-types';
+import { Asset, GetAssetList } from '../../../common/generated-types';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-preview-dialog.component';
+
+export type AssetLike = GetAssetList.Items;
 
 @Component({
     selector: 'vdr-asset-gallery',
@@ -11,16 +13,16 @@ import { AssetPreviewDialogComponent } from '../asset-preview-dialog/asset-previ
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AssetGalleryComponent implements OnChanges {
-    @Input() assets: Asset[];
+    @Input() assets: AssetLike[];
     /**
      * If true, allows multiple assets to be selected by ctrl+clicking.
      */
     @Input() multiSelect = false;
     @Input() canDelete = false;
-    @Output() selectionChange = new EventEmitter<Asset[]>();
-    @Output() deleteAssets = new EventEmitter<Asset[]>();
+    @Output() selectionChange = new EventEmitter<AssetLike[]>();
+    @Output() deleteAssets = new EventEmitter<AssetLike[]>();
 
-    selection: Asset[] = [];
+    selection: AssetLike[] = [];
 
     constructor(private modalService: ModalService) {}
 
@@ -28,7 +30,7 @@ export class AssetGalleryComponent implements OnChanges {
         if (this.assets) {
             for (const asset of this.selection) {
                 // Update and selected assets with any changes
-                const match = this.assets.find((a) => a.id === asset.id);
+                const match = this.assets.find(a => a.id === asset.id);
                 if (match) {
                     Object.assign(asset, match);
                 }
@@ -37,15 +39,15 @@ export class AssetGalleryComponent implements OnChanges {
     }
 
     toggleSelection(event: MouseEvent, asset: Asset) {
-        const index = this.selection.findIndex((a) => a.id === asset.id);
+        const index = this.selection.findIndex(a => a.id === asset.id);
         if (this.multiSelect && event.shiftKey && 1 <= this.selection.length) {
             const lastSelection = this.selection[this.selection.length - 1];
-            const lastSelectionIndex = this.assets.findIndex((a) => a.id === lastSelection.id);
-            const currentIndex = this.assets.findIndex((a) => a.id === asset.id);
+            const lastSelectionIndex = this.assets.findIndex(a => a.id === lastSelection.id);
+            const currentIndex = this.assets.findIndex(a => a.id === asset.id);
             const start = currentIndex < lastSelectionIndex ? currentIndex : lastSelectionIndex;
             const end = currentIndex > lastSelectionIndex ? currentIndex + 1 : lastSelectionIndex;
             this.selection.push(
-                ...this.assets.slice(start, end).filter((a) => !this.selection.find((s) => s.id === a.id)),
+                ...this.assets.slice(start, end).filter(a => !this.selection.find(s => s.id === a.id)),
             );
         } else if (index === -1) {
             if (this.multiSelect && (event.ctrlKey || event.shiftKey)) {
@@ -65,15 +67,15 @@ export class AssetGalleryComponent implements OnChanges {
         this.selectionChange.emit(this.selection);
     }
 
-    isSelected(asset: Asset): boolean {
-        return !!this.selection.find((a) => a.id === asset.id);
+    isSelected(asset: AssetLike): boolean {
+        return !!this.selection.find(a => a.id === asset.id);
     }
 
-    lastSelected(): Asset {
+    lastSelected(): AssetLike {
         return this.selection[this.selection.length - 1];
     }
 
-    previewAsset(asset: Asset) {
+    previewAsset(asset: AssetLike) {
         this.modalService
             .fromComponent(AssetPreviewDialogComponent, {
                 size: 'xl',

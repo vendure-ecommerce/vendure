@@ -5977,6 +5977,11 @@ export type AssetFragment = (
   )> }
 );
 
+export type TagFragment = (
+  { __typename?: 'Tag' }
+  & Pick<Tag, 'id' | 'value'>
+);
+
 export type ProductOptionGroupFragment = (
   { __typename?: 'ProductOptionGroup' }
   & Pick<ProductOptionGroup, 'id' | 'code' | 'languageCode' | 'name'>
@@ -6249,6 +6254,10 @@ export type GetAssetListQuery = { assets: (
     & Pick<AssetList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Asset' }
+      & { tags: Array<(
+        { __typename?: 'Tag' }
+        & TagFragment
+      )> }
       & AssetFragment
     )> }
   ) };
@@ -6260,6 +6269,10 @@ export type GetAssetQueryVariables = Exact<{
 
 export type GetAssetQuery = { asset?: Maybe<(
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   )> };
 
@@ -6487,6 +6500,60 @@ export type GetProductVariantQuery = { productVariant?: Maybe<(
       )> }
     ) }
   )> };
+
+export type GetTagListQueryVariables = Exact<{
+  options?: Maybe<TagListOptions>;
+}>;
+
+
+export type GetTagListQuery = { tags: (
+    { __typename?: 'TagList' }
+    & Pick<TagList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
+  ) };
+
+export type GetTagQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetTagQuery = { tag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type CreateTagMutationVariables = Exact<{
+  input: CreateTagInput;
+}>;
+
+
+export type CreateTagMutation = { createTag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type UpdateTagMutationVariables = Exact<{
+  input: UpdateTagInput;
+}>;
+
+
+export type UpdateTagMutation = { updateTag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type DeleteTagMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteTagMutation = { deleteTag: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'message' | 'result'>
+  ) };
 
 export type PromotionFragment = (
   { __typename?: 'Promotion' }
@@ -8420,6 +8487,10 @@ export namespace Asset {
   export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
 }
 
+export namespace Tag {
+  export type Fragment = TagFragment;
+}
+
 export namespace ProductOptionGroup {
   export type Fragment = ProductOptionGroupFragment;
   export type Translations = NonNullable<(NonNullable<ProductOptionGroupFragment['translations']>)[number]>;
@@ -8553,12 +8624,14 @@ export namespace GetAssetList {
   export type Query = GetAssetListQuery;
   export type Assets = (NonNullable<GetAssetListQuery['assets']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetAssetListQuery['assets']>)['items']>)[number]>;
+  export type Tags = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetAssetListQuery['assets']>)['items']>)[number]>['tags']>)[number]>;
 }
 
 export namespace GetAsset {
   export type Variables = GetAssetQueryVariables;
   export type Query = GetAssetQuery;
   export type Asset = (NonNullable<GetAssetQuery['asset']>);
+  export type Tags = NonNullable<(NonNullable<(NonNullable<GetAssetQuery['asset']>)['tags']>)[number]>;
 }
 
 export namespace CreateAssets {
@@ -8664,6 +8737,37 @@ export namespace GetProductVariant {
   export type Product = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>);
   export type FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
   export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
+}
+
+export namespace GetTagList {
+  export type Variables = GetTagListQueryVariables;
+  export type Query = GetTagListQuery;
+  export type Tags = (NonNullable<GetTagListQuery['tags']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetTagListQuery['tags']>)['items']>)[number]>;
+}
+
+export namespace GetTag {
+  export type Variables = GetTagQueryVariables;
+  export type Query = GetTagQuery;
+  export type Tag = (NonNullable<GetTagQuery['tag']>);
+}
+
+export namespace CreateTag {
+  export type Variables = CreateTagMutationVariables;
+  export type Mutation = CreateTagMutation;
+  export type CreateTag = (NonNullable<CreateTagMutation['createTag']>);
+}
+
+export namespace UpdateTag {
+  export type Variables = UpdateTagMutationVariables;
+  export type Mutation = UpdateTagMutation;
+  export type UpdateTag = (NonNullable<UpdateTagMutation['updateTag']>);
+}
+
+export namespace DeleteTag {
+  export type Variables = DeleteTagMutationVariables;
+  export type Mutation = DeleteTagMutation;
+  export type DeleteTag = (NonNullable<DeleteTagMutation['deleteTag']>);
 }
 
 export namespace Promotion {

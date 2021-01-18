@@ -5,7 +5,8 @@
 </ng-template>
 
 <vdr-asset-preview
-    [asset]="asset"
+    *ngIf="assetWithTags$ | async as assetWithTags"
+    [asset]="assetWithTags"
     (assetChange)="assetChanges = $event"
     (editClick)="resolveWith()"
 ></vdr-asset-preview>
