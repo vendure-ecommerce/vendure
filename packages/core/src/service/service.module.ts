@@ -53,6 +53,7 @@ import { SearchService } from './services/search.service';
 import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
+import { TagService } from './services/tag.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
@@ -86,6 +87,7 @@ const services = [
     SessionService,
     ShippingMethodService,
     StockMovementService,
+    TagService,
     TaxCategoryService,
     TaxRateService,
     UserService,

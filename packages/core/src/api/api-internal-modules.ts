@@ -32,6 +32,7 @@ import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { AdministratorEntityResolver } from './resolvers/entity/administrator-entity.resolver';
+import { AssetEntityResolver } from './resolvers/entity/asset-entity.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
 import {
     CustomerAdminEntityResolver,
@@ -124,6 +125,7 @@ export const entityResolvers = [
 
 export const adminEntityResolvers = [
     AdministratorEntityResolver,
+    AssetEntityResolver,
     CustomerAdminEntityResolver,
     OrderAdminEntityResolver,
     PaymentMethodEntityResolver,

@@ -374,6 +374,10 @@ export const UPDATE_ASSET = gql`
         updateAsset(input: $input) {
             ...Asset
             ... on Asset {
+                tags {
+                    id
+                    value
+                }
                 focalPoint {
                     x
                     y

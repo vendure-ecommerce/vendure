@@ -861,6 +861,22 @@ export type AdministratorList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type Asset = Node & {
+    tags: Array<Tag>;
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
+    type: AssetType;
+    fileSize: Scalars['Int'];
+    mimeType: Scalars['String'];
+    width: Scalars['Int'];
+    height: Scalars['Int'];
+    source: Scalars['String'];
+    preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
+};
+
 export type MimeTypeError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -870,8 +886,18 @@ export type MimeTypeError = ErrorResult & {
 
 export type CreateAssetResult = Asset | MimeTypeError;
 
+export type AssetListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<AssetSortParameter>;
+    filter?: Maybe<AssetFilterParameter>;
+    tags?: Maybe<Array<Scalars['String']>>;
+    tagsOperator?: Maybe<LogicalOperator>;
+};
+
 export type CreateAssetInput = {
     file: Scalars['Upload'];
+    tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type CoordinateInput = {
@@ -883,6 +909,7 @@ export type UpdateAssetInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
+    tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -2166,21 +2193,6 @@ export type Address = Node & {
     defaultShippingAddress?: Maybe<Scalars['Boolean']>;
     defaultBillingAddress?: Maybe<Scalars['Boolean']>;
     customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type Asset = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    name: Scalars['String'];
-    type: AssetType;
-    fileSize: Scalars['Int'];
-    mimeType: Scalars['String'];
-    width: Scalars['Int'];
-    height: Scalars['Int'];
-    source: Scalars['String'];
-    preview: Scalars['String'];
-    focalPoint?: Maybe<Coordinate>;
 };
 
 export type Coordinate = {
@@ -3486,6 +3498,7 @@ export type OrderAddress = {
     country?: Maybe<Scalars['String']>;
     countryCode?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -3816,6 +3829,13 @@ export type ShippingMethodList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type Tag = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    value: Scalars['String'];
+};
+
 export type TaxCategory = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -3872,13 +3892,6 @@ export type AdministratorListOptions = {
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<AdministratorSortParameter>;
     filter?: Maybe<AdministratorFilterParameter>;
-};
-
-export type AssetListOptions = {
-    skip?: Maybe<Scalars['Int']>;
-    take?: Maybe<Scalars['Int']>;
-    sort?: Maybe<AssetSortParameter>;
-    filter?: Maybe<AssetFilterParameter>;
 };
 
 export type CollectionListOptions = {

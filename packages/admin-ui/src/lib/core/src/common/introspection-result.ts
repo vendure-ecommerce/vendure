@@ -89,6 +89,7 @@ const result: PossibleTypesResultData = {
         ],
         Node: [
             'Administrator',
+            'Asset',
             'Collection',
             'Customer',
             'Facet',
@@ -107,7 +108,6 @@ const result: PossibleTypesResultData = {
             'Return',
             'Release',
             'Address',
-            'Asset',
             'Channel',
             'Country',
             'CustomerGroup',
@@ -122,6 +122,7 @@ const result: PossibleTypesResultData = {
             'Promotion',
             'Role',
             'ShippingMethod',
+            'Tag',
             'TaxCategory',
             'TaxRate',
             'User',

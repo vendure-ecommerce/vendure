@@ -1746,6 +1746,7 @@ export type OrderAddress = {
     country?: Maybe<Scalars['String']>;
     countryCode?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -2152,6 +2153,13 @@ export type ShippingMethodTranslation = {
 export type ShippingMethodList = PaginatedList & {
     items: Array<ShippingMethod>;
     totalItems: Scalars['Int'];
+};
+
+export type Tag = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    value: Scalars['String'];
 };
 
 export type TaxCategory = Node & {
