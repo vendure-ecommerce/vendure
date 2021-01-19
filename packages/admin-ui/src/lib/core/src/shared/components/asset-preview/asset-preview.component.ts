@@ -17,8 +17,10 @@ import { debounceTime } from 'rxjs/operators';
 
 import { GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
+import { ModalService } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
 import { Point } from '../focal-point-control/focal-point-control.component';
+import { ManageTagsDialogComponent } from '../manage-tags-dialog/manage-tags-dialog.component';
 
 export type PreviewPreset = 'tiny' | 'thumb' | 'small' | 'medium' | 'large' | '';
 type AssetLike = GetAssetList.Items | GetAsset.Asset;
@@ -53,6 +55,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         private dataService: DataService,
         private notificationService: NotificationService,
         private changeDetector: ChangeDetectorRef,
+        private modalService: ModalService,
     ) {}
 
     get fpx(): number | null {
@@ -187,5 +190,17 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
                     () => this.notificationService.error(_('asset.update-focal-point-error')),
                 );
         }
+    }
+
+    manageTags() {
+        this.modalService
+            .fromComponent(ManageTagsDialogComponent, {
+                size: 'sm',
+            })
+            .subscribe(result => {
+                if (result) {
+                    this.notificationService.success(_('notify.updated-tags-success'));
+                }
+            });
     }
 }

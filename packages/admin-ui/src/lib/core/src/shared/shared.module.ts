@@ -59,6 +59,7 @@ import { HistoryEntryDetailComponent } from './components/history-entry-detail/h
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
+import { ManageTagsDialogComponent } from './components/manage-tags-dialog/manage-tags-dialog.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
@@ -218,7 +219,7 @@ const DYNAMIC_FORM_INPUTS = [
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
+    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS, ManageTagsDialogComponent],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which

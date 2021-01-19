@@ -12,7 +12,6 @@
     "original-asset-size": "资源大小",
     "preview": "预览",
     "remove-asset": "移除资源",
-    "search-asset-name": "输入要搜索的资源名称",
     "select-assets": "选择资源",
     "set-as-featured-asset": "设置为特征图片",
     "set-focal-point": "设置图片焦点",
@@ -197,6 +196,8 @@
     "live-update": "",
     "log-out": "退出",
     "login": "登陆",
+    "manage-tags": "",
+    "manage-tags-description": "",
     "more": "更多...",
     "name": "名称",
     "no-results": "没找到任何结果",
@@ -558,6 +559,9 @@
     "tax-categories": "税表分类",
     "tax-rates": "税表管理",
     "zones": ""
+  },
+  "notify": {
+    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

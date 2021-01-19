@@ -12,7 +12,6 @@
     "original-asset-size": "Source size",
     "preview": "Preview",
     "remove-asset": "Remove asset",
-    "search-asset-name": "Search assets by name",
     "select-assets": "Select assets",
     "set-as-featured-asset": "Set as featured asset",
     "set-focal-point": "Set focal point",
@@ -197,6 +196,8 @@
     "live-update": "Live update",
     "log-out": "Log out",
     "login": "Log in",
+    "manage-tags": "Manage tags",
+    "manage-tags-description": "Update or delete tags globally.",
     "more": "More...",
     "name": "Name",
     "no-results": "No results",
@@ -558,6 +559,9 @@
     "tax-categories": "Tax categories",
     "tax-rates": "Tax Rates",
     "zones": "Zones"
+  },
+  "notify": {
+    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "Add item to order",

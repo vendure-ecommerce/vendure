@@ -12,7 +12,6 @@
     "original-asset-size": "檔案大小",
     "preview": "預覽",
     "remove-asset": "移除檔案",
-    "search-asset-name": "輸入檔案名稱",
     "select-assets": "選擇檔案",
     "set-as-featured-asset": "設置為精選圖片",
     "set-focal-point": "設置圖片焦點",
@@ -197,6 +196,8 @@
     "live-update": "",
     "log-out": "退出",
     "login": "登陆",
+    "manage-tags": "",
+    "manage-tags-description": "",
     "more": "更多...",
     "name": "名稱",
     "no-results": "没找到任何結果",
@@ -558,6 +559,9 @@
     "tax-categories": "税表分類",
     "tax-rates": "税率管理",
     "zones": ""
+  },
+  "notify": {
+    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

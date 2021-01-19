@@ -84,9 +84,16 @@
             </button>
         </vdr-labeled-data>
         <vdr-labeled-data [label]="'common.tags' | translate">
-            <vdr-tag-selector *ngIf="editable" formControlName="tags"></vdr-tag-selector>
+            <ng-container *ngIf="editable">
+                <vdr-tag-selector formControlName="tags"></vdr-tag-selector>
+                <button class="btn btn-link btn-sm" (click)="manageTags()">
+                    <clr-icon shape="tags"></clr-icon> {{ 'common.manage-tags' | translate }}
+                </button>
+            </ng-container>
             <div *ngIf="!editable">
-                <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value"><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip>
+                <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value"
+                    ><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip
+                >
             </div>
         </vdr-labeled-data>
     </form>

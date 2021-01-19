@@ -12,7 +12,6 @@
     "original-asset-size": "Rozmiar bazowy",
     "preview": "Podgląd",
     "remove-asset": "Usuń zasób",
-    "search-asset-name": "Szukaj zasobu po nazwie",
     "select-assets": "Wybierz zasób",
     "set-as-featured-asset": "Ustaw jako polecany",
     "set-focal-point": "Ustaw punk centralny",
@@ -197,6 +196,8 @@
     "live-update": "Aktualizacja live",
     "log-out": "Wyloguj",
     "login": "Zaloguj",
+    "manage-tags": "",
+    "manage-tags-description": "",
     "more": "Więcej...",
     "name": "Nazwa",
     "no-results": "Brak wyników",
@@ -558,6 +559,9 @@
     "tax-categories": "Kategorie podatkowe",
     "tax-rates": "Stawki podatkowe",
     "zones": ""
+  },
+  "notify": {
+    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",
