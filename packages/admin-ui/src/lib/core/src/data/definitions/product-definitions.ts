@@ -398,8 +398,10 @@ export const CREATE_ASSETS = gql`
     mutation CreateAssets($input: [CreateAssetInput!]!) {
         createAssets(input: $input) {
             ...Asset
-            tags {
-                ...Tag
+            ... on Asset {
+                tags {
+                    ...Tag
+                }
             }
             ... on ErrorResult {
                 message

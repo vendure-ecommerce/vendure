@@ -28,6 +28,7 @@ import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/asset-preview-dialog.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
+import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
 import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
 import { ChipComponent } from './components/chip/chip.component';
@@ -125,6 +126,7 @@ const DECLARATIONS = [
     ActionBarRightComponent,
     AssetPreviewComponent,
     AssetPreviewDialogComponent,
+    AssetSearchInputComponent,
     ConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,

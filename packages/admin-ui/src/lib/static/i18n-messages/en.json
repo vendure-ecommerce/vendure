@@ -129,6 +129,7 @@
     "remove-option": "Remove option",
     "remove-product-from-channel": "Remove product from channel",
     "remove-product-variant-from-channel": "Remove product variant from channel",
+    "search-asset-name-or-tag": "Search by asset name or tags",
     "search-for-term": "Search for term",
     "search-product-name-or-code": "Search by product name or code",
     "sku": "SKU",

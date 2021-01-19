@@ -64,6 +64,8 @@ export class AssetGalleryComponent implements OnChanges {
                 this.selection.splice(index, 1);
             }
         }
+        // Make the selection mutable
+        this.selection = this.selection.map(x => ({ ...x }));
         this.selectionChange.emit(this.selection);
     }
 

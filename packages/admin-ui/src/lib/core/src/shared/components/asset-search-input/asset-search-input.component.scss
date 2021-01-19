@@ -1,0 +1,26 @@
+@import "mixins";
+
+:host {
+    display: block;
+    width: 100%;
+
+    ::ng-deep {
+        @include ng-select-facet-values;
+    }
+}
+
+ng-select {
+    width: 100%;
+    min-width: 300px;
+    margin-right: 12px;
+}
+
+.search-header {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--color-component-border-100);
+    cursor: pointer;
+
+    &.selected, &:hover {
+        background-color: var(--color-component-bg-200);
+    }
+}

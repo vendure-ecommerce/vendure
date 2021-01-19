@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { DataService, TagFragment } from '@vendure/admin-ui/core';
 import { Observable } from 'rxjs';
+
+import { DataService } from '../../../data/providers/data.service';
 
 @Component({
     selector: 'vdr-tag-selector',
@@ -17,6 +18,7 @@ import { Observable } from 'rxjs';
     ],
 })
 export class TagSelectorComponent implements OnInit, ControlValueAccessor {
+    @Input() placeholder: string | undefined;
     allTags$: Observable<string[]>;
     onChange: (val: any) => void;
     onTouch: () => void;

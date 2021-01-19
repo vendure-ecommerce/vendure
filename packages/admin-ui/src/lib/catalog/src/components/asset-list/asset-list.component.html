@@ -1,12 +1,11 @@
 <vdr-action-bar>
-    <vdr-ab-left>
-        <input
-            type="text"
-            name="searchTerm"
-            [formControl]="searchTerm"
-            [placeholder]="'asset.search-asset-name' | translate"
-            class="search-input ml3"
-        />
+    <vdr-ab-left [grow]="true">
+        <vdr-asset-search-input
+            class="pr4 mt1"
+            [tags]="allTags$ | async"
+            (searchTermChange)="searchTerm$.next($event)"
+            (tagsChange)="filterByTags$.next($event)"
+        ></vdr-asset-search-input>
     </vdr-ab-left>
     <vdr-ab-right>
         <vdr-action-bar-items locationId="asset-list"></vdr-action-bar-items>

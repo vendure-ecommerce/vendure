@@ -28,6 +28,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     private onPageChangeFn: OnPageChangeFn<VariableType> = (skip, take) =>
         ({ options: { skip, take } } as any);
     private refresh$ = new BehaviorSubject<undefined>(undefined);
+    private defaults: { take: number; skip: number } = { take: 10, skip: 0 };
 
     constructor(protected router: Router, protected route: ActivatedRoute) {}
 
@@ -38,11 +39,15 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         listQueryFn: ListQueryFn<ResultType>,
         mappingFn: MappingFn<ItemType, ResultType>,
         onPageChangeFn?: OnPageChangeFn<VariableType>,
+        defaults?: { take: number; skip: number },
     ) {
         this.listQueryFn = listQueryFn;
         this.mappingFn = mappingFn;
         if (onPageChangeFn) {
             this.onPageChangeFn = onPageChangeFn;
+        }
+        if (defaults) {
+            this.defaults = defaults;
         }
     }
 
@@ -52,7 +57,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
                 `No listQueryFn has been defined. Please call super.setQueryFn() in the constructor.`,
             );
         }
-        this.listQuery = this.listQueryFn(10, 0);
+        this.listQuery = this.listQueryFn(this.defaults.take, this.defaults.skip);
 
         const fetchPage = ([currentPage, itemsPerPage, _]: [number, number, undefined]) => {
             const take = itemsPerPage;
@@ -70,7 +75,7 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         );
         this.itemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('perPage')),
-            map(perPage => (!perPage ? 10 : +perPage)),
+            map(perPage => (!perPage ? this.defaults.take : +perPage)),
             distinctUntilChanged(),
         );
 

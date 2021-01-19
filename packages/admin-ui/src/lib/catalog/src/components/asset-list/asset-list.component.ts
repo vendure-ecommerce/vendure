@@ -8,12 +8,14 @@ import {
     DataService,
     DeletionResult,
     GetAssetList,
+    LogicalOperator,
     ModalService,
     NotificationService,
+    TagFragment,
 } from '@vendure/admin-ui/core';
 import { SortOrder } from '@vendure/common/lib/generated-shop-types';
 import { PaginationInstance } from 'ngx-pagination';
-import { combineLatest, EMPTY, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, Observable } from 'rxjs';
 import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -22,10 +24,12 @@ import { debounceTime, finalize, map, switchMap, takeUntil } from 'rxjs/operator
     styleUrls: ['./asset-list.component.scss'],
 })
 export class AssetListComponent
-    extends BaseListComponent<GetAssetList.Query, GetAssetList.Items>
+    extends BaseListComponent<GetAssetList.Query, GetAssetList.Items, GetAssetList.Variables>
     implements OnInit {
-    searchTerm = new FormControl('');
+    searchTerm$ = new BehaviorSubject<string | undefined>(undefined);
+    filterByTags$ = new BehaviorSubject<TagFragment[] | undefined>(undefined);
     uploading = false;
+    allTags$: Observable<TagFragment[]>;
     paginationConfig$: Observable<PaginationInstance>;
 
     constructor(
@@ -39,20 +43,29 @@ export class AssetListComponent
         super.setQueryFn(
             (...args: any[]) => this.dataService.product.getAssetList(...args),
             data => data.assets,
-            (skip, take) => ({
-                options: {
-                    skip,
-                    take,
-                    filter: {
-                        name: {
-                            contains: this.searchTerm.value,
+            (skip, take) => {
+                const searchTerm = this.searchTerm$.value;
+                const tags = this.filterByTags$.value?.map(t => t.value);
+                return {
+                    options: {
+                        skip,
+                        take,
+                        ...(searchTerm
+                            ? {
+                                  filter: {
+                                      name: { contains: searchTerm },
+                                  },
+                              }
+                            : {}),
+                        sort: {
+                            createdAt: SortOrder.DESC,
                         },
+                        tags,
+                        tagsOperator: LogicalOperator.AND,
                     },
-                    sort: {
-                        createdAt: SortOrder.DESC,
-                    },
-                },
-            }),
+                };
+            },
+            { take: 25, skip: 0 },
         );
     }
 
@@ -61,9 +74,10 @@ export class AssetListComponent
         this.paginationConfig$ = combineLatest(this.itemsPerPage$, this.currentPage$, this.totalItems$).pipe(
             map(([itemsPerPage, currentPage, totalItems]) => ({ itemsPerPage, currentPage, totalItems })),
         );
-        this.searchTerm.valueChanges
-            .pipe(debounceTime(250), takeUntil(this.destroy$))
-            .subscribe(() => this.refresh());
+        this.searchTerm$.pipe(debounceTime(250), takeUntil(this.destroy$)).subscribe(() => this.refresh());
+
+        this.filterByTags$.pipe(takeUntil(this.destroy$)).subscribe(() => this.refresh());
+        this.allTags$ = this.dataService.product.getTagList().mapStream(data => data.tags.items);
     }
 
     filesSelected(files: File[]) {
