@@ -6,7 +6,7 @@
                 [src]="featuredAsset | assetPreview:'small'"
                 (click)="previewAsset(featuredAsset)"
             />
-            <div class="placeholder" *ngIf="!featuredAsset">
+            <div class="placeholder" *ngIf="!featuredAsset" (click)="selectAssets()">
                 <clr-icon shape="image" size="128"></clr-icon>
                 <div>{{ 'catalog.no-featured-asset' | translate }}</div>
             </div>
@@ -29,7 +29,7 @@
             (click)="previewAsset(featuredAsset)"
         />
 
-        <div class="placeholder" *ngIf="!featuredAsset"><clr-icon shape="image" size="150"></clr-icon></div>
+        <div class="placeholder" *ngIf="!featuredAsset" (click)="selectAssets()"><clr-icon shape="image" size="150"></clr-icon></div>
     </div>
     <ng-container *ngTemplateOutlet="assetList"></ng-container>
     <button
