@@ -52,6 +52,7 @@ const result: PossibleTypesResultData = {
         ],
         SettleRefundResult: ['Refund', 'RefundStateTransitionError'],
         TransitionFulfillmentToStateResult: ['Fulfillment', 'FulfillmentStateTransitionError'],
+        TransitionPaymentToStateResult: ['Payment', 'PaymentStateTransitionError'],
         ModifyOrderResult: [
             'Order',
             'NoChangesSpecifiedError',
@@ -98,6 +99,7 @@ const result: PossibleTypesResultData = {
             'Fulfillment',
             'OrderModification',
             'PaymentMethod',
+            'Payment',
             'Product',
             'ProductVariant',
             'StockAdjustment',
@@ -114,7 +116,6 @@ const result: PossibleTypesResultData = {
             'FacetValue',
             'OrderItem',
             'OrderLine',
-            'Payment',
             'Refund',
             'Surcharge',
             'ProductOptionGroup',

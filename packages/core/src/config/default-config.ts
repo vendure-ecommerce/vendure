@@ -116,6 +116,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     paymentOptions: {
         paymentMethodHandlers: [],
+        customPaymentProcess: [],
     },
     taxOptions: {
         taxZoneStrategy: new DefaultTaxZoneStrategy(),

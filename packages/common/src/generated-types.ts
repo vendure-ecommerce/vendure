@@ -378,6 +378,7 @@ export type Mutation = {
   deleteOrderNote: DeletionResponse;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
+  transitionPaymentToState: TransitionPaymentToStateResult;
   setOrderCustomFields?: Maybe<Order>;
   /**
    * Allows an Order to be modified after it has been completed by the Customer. The Order must first
@@ -751,6 +752,12 @@ export type MutationTransitionOrderToStateArgs = {
 
 
 export type MutationTransitionFulfillmentToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type MutationTransitionPaymentToStateArgs = {
   id: Scalars['ID'];
   state: Scalars['String'];
 };
@@ -1799,6 +1806,8 @@ export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
 
+export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionError;
+
 export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
 
 export type AddManualPaymentToOrderResult = Order | ManualPaymentStateError;
@@ -1825,6 +1834,21 @@ export type PaymentMethod = Node & {
   enabled: Scalars['Boolean'];
   configArgs: Array<ConfigArg>;
   definition: ConfigurableOperationDefinition;
+};
+
+export type Payment = Node & {
+  __typename?: 'Payment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type Product = Node & {
@@ -3690,6 +3714,7 @@ export type OrderAddress = {
   country?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -3816,20 +3841,6 @@ export type OrderLine = Node & {
   taxLines: Array<TaxLine>;
   order: Order;
   customFields?: Maybe<Scalars['JSON']>;
-};
-
-export type Payment = Node & {
-  __typename?: 'Payment';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  method: Scalars['String'];
-  amount: Scalars['Int'];
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  refunds: Array<Refund>;
-  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type Refund = Node & {

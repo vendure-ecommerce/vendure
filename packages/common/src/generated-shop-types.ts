@@ -1799,6 +1799,7 @@ export type OrderAddress = {
     country?: Maybe<Scalars['String']>;
     countryCode?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
