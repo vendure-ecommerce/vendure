@@ -1,18 +1,21 @@
+import { SUPER_ADMIN_USER_IDENTIFIER } from '@vendure/common/lib/shared-constants';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ADMINISTRATOR_FRAGMENT } from './graphql/fragments';
 import {
+    ActiveAdministrator,
     Administrator,
     CreateAdministrator,
     DeleteAdministrator,
     DeletionResult,
     GetAdministrator,
     GetAdministrators,
+    UpdateActiveAdministrator,
     UpdateAdministrator,
 } from './graphql/generated-e2e-admin-types';
 import { CREATE_ADMINISTRATOR } from './graphql/shared-definitions';
@@ -157,6 +160,45 @@ describe('Administrator resolver', () => {
 
         expect(administrator).toBeNull();
     });
+
+    it('activeAdministrator', async () => {
+        await adminClient.asAnonymousUser();
+
+        const { activeAdministrator: result1 } = await adminClient.query<ActiveAdministrator.Query>(
+            GET_ACTIVE_ADMINISTRATOR,
+        );
+        expect(result1).toBeNull();
+
+        await adminClient.asSuperAdmin();
+
+        const { activeAdministrator: result2 } = await adminClient.query<ActiveAdministrator.Query>(
+            GET_ACTIVE_ADMINISTRATOR,
+        );
+        expect(result2?.emailAddress).toBe(SUPER_ADMIN_USER_IDENTIFIER);
+    });
+
+    it('updateActiveAdministrator', async () => {
+        const { updateActiveAdministrator } = await adminClient.query<
+            UpdateActiveAdministrator.Mutation,
+            UpdateActiveAdministrator.Variables
+        >(UPDATE_ACTIVE_ADMINISTRATOR, {
+            input: {
+                firstName: 'Thomas',
+                lastName: 'Anderson',
+                emailAddress: 'neo@metacortex.com',
+            },
+        });
+
+        expect(updateActiveAdministrator.firstName).toBe('Thomas');
+        expect(updateActiveAdministrator.lastName).toBe('Anderson');
+
+        const { activeAdministrator } = await adminClient.query<ActiveAdministrator.Query>(
+            GET_ACTIVE_ADMINISTRATOR,
+        );
+
+        expect(activeAdministrator?.firstName).toBe('Thomas');
+        expect(activeAdministrator?.user.identifier).toBe('neo@metacortex.com');
+    });
 });
 
 export const GET_ADMINISTRATORS = gql`
@@ -174,6 +216,24 @@ export const GET_ADMINISTRATORS = gql`
 export const GET_ADMINISTRATOR = gql`
     query GetAdministrator($id: ID!) {
         administrator(id: $id) {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const GET_ACTIVE_ADMINISTRATOR = gql`
+    query ActiveAdministrator {
+        activeAdministrator {
+            ...Administrator
+        }
+    }
+    ${ADMINISTRATOR_FRAGMENT}
+`;
+
+export const UPDATE_ACTIVE_ADMINISTRATOR = gql`
+    mutation UpdateActiveAdministrator($input: UpdateActiveAdministratorInput!) {
+        updateActiveAdministrator(input: $input) {
             ...Administrator
         }
     }

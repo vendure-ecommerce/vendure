@@ -13,19 +13,19 @@ They are specified in the VendureConfig:
 const config = {
     // ...
     dbConnectionOptions: {
-         // ...
-         synchronize: true,  
+        // ...
+        synchronize: true,  
     },
     customFields: {
         Product: [
-                { name: 'infoUrl', type: 'string' },
-                { name: 'downloadable', type: 'boolean' },
-                { name: 'shortName', type: 'localeString' },
-            ],
-            User: [
-                { name: 'socialLoginToken', type: 'string' },
-            ],
-        },
+            { name: 'infoUrl', type: 'string' },
+            { name: 'downloadable', type: 'boolean' },
+            { name: 'shortName', type: 'localeString' },
+        ],
+        User: [
+            { name: 'socialLoginToken', type: 'string' },
+        ],
+    },
 }
 ```
 

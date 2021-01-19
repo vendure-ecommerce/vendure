@@ -46,11 +46,11 @@ const myPaymentIntegration = new PaymentMethodHandler({
   },
 
   /** This is called when the `addPaymentToOrder` mutation is executed */
-  createPayment: async (ctx, order, args, metadata): Promise<CreatePaymentResult> => {
+  createPayment: async (ctx, order, amount, args, metadata): Promise<CreatePaymentResult> => {
     try {
       const result = await sdk.charges.create({
+        amount,
         apiKey: args.apiKey,
-        amount: order.total,
         source: metadata.token,
       });
       return {
@@ -106,6 +106,12 @@ export const config: VendureConfig = {
   },
 };
 ```
+
+{{% alert %}}
+**Dependency Injection**
+
+If your PaymentMethodHandler needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
+{{< /alert >}}
 
 ## Payment flow
 

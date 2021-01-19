@@ -12,6 +12,6 @@ export class DropdownItemDirective {
 
     @HostListener('click', ['$event'])
     onDropdownItemClick(event: any): void {
-        this.dropdown.toggleOpen();
+        this.dropdown.onClick();
     }
 }

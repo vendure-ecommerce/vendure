@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import { Server } from 'http';
 import path from 'path';
 
-import { DEFAULT_APP_PATH, defaultAvailableLanguages, defaultLanguage, loggerCtx } from './constants';
+import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
 
 /**
  * @description
@@ -255,6 +255,15 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             defaultLanguage: propOrDefault('defaultLanguage', defaultLanguage),
             availableLanguages: propOrDefault('availableLanguages', defaultAvailableLanguages),
             loginUrl: AdminUiPlugin.options.adminUiConfig?.loginUrl,
+            brand: AdminUiPlugin.options.adminUiConfig?.brand,
+            hideVendureBranding: propOrDefault(
+                'hideVendureBranding',
+                AdminUiPlugin.options.adminUiConfig?.hideVendureBranding || false,
+            ),
+            hideVersion: propOrDefault(
+                'hideVersion',
+                AdminUiPlugin.options.adminUiConfig?.hideVersion || false,
+            ),
         };
     }
 

@@ -681,6 +681,15 @@ export const GET_JOB_QUEUE_LIST = gql`
     }
 `;
 
+export const CANCEL_JOB = gql`
+    mutation CancelJob($id: ID!) {
+        cancelJob(jobId: $id) {
+            ...JobInfo
+        }
+    }
+    ${JOB_INFO_FRAGMENT}
+`;
+
 export const REINDEX = gql`
     mutation Reindex {
         reindex {

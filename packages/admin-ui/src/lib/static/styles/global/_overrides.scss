@@ -1,0 +1,62 @@
+@import "variables";
+@import "forms";
+
+.main-container {
+    background-color: var(--clr-global-app-background);
+}
+
+a:link, a:visited {
+    color: var(--clr-btn-link-color);
+}
+
+a:focus, button:focus {
+    outline-color: var(--color-primary-400);
+}
+
+.align-center {
+    align-items: center;
+}
+
+.btn-link.btn-warning {
+    color: var(--color-warning-500);
+
+    &:hover {
+        color: var(--color-warning-600);
+    }
+}
+
+.table {
+    border-color: var(--color-component-border-100);
+
+    td.align-middle {
+        vertical-align: middle!important;
+    }
+}
+
+.full-label, .compact-label {
+    margin-left: 6px;
+}
+.full-label {
+    display: none;
+}
+.compact-label {
+    display: initial;
+}
+button.icon-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-icon-button);
+}
+@media screen and (min-width: $breakpoint-small) {
+    .full-label {
+        display: initial;
+    }
+    .compact-label {
+        display: none;
+    }
+}
+
+.cdk-overlay-container {
+    z-index: 1060;
+}

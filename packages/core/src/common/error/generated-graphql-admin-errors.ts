@@ -84,6 +84,27 @@ export class ItemsAlreadyFulfilledError extends ErrorResult {
   }
 }
 
+export class InvalidFulfillmentHandlerError extends ErrorResult {
+  readonly __typename = 'InvalidFulfillmentHandlerError';
+  readonly errorCode = 'INVALID_FULFILLMENT_HANDLER_ERROR' as any;
+  readonly message = 'INVALID_FULFILLMENT_HANDLER_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class CreateFulfillmentError extends ErrorResult {
+  readonly __typename = 'CreateFulfillmentError';
+  readonly errorCode = 'CREATE_FULFILLMENT_ERROR' as any;
+  readonly message = 'CREATE_FULFILLMENT_ERROR';
+  constructor(
+    public fulfillmentHandlerError: Scalars['String'],
+  ) {
+    super();
+  }
+}
+
 export class InsufficientStockOnHandError extends ErrorResult {
   readonly __typename = 'InsufficientStockOnHandError';
   readonly errorCode = 'INSUFFICIENT_STOCK_ON_HAND_ERROR' as any;
@@ -209,6 +230,56 @@ export class FulfillmentStateTransitionError extends ErrorResult {
   }
 }
 
+export class OrderModificationStateError extends ErrorResult {
+  readonly __typename = 'OrderModificationStateError';
+  readonly errorCode = 'ORDER_MODIFICATION_STATE_ERROR' as any;
+  readonly message = 'ORDER_MODIFICATION_STATE_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class NoChangesSpecifiedError extends ErrorResult {
+  readonly __typename = 'NoChangesSpecifiedError';
+  readonly errorCode = 'NO_CHANGES_SPECIFIED_ERROR' as any;
+  readonly message = 'NO_CHANGES_SPECIFIED_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class PaymentMethodMissingError extends ErrorResult {
+  readonly __typename = 'PaymentMethodMissingError';
+  readonly errorCode = 'PAYMENT_METHOD_MISSING_ERROR' as any;
+  readonly message = 'PAYMENT_METHOD_MISSING_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class RefundPaymentIdMissingError extends ErrorResult {
+  readonly __typename = 'RefundPaymentIdMissingError';
+  readonly errorCode = 'REFUND_PAYMENT_ID_MISSING_ERROR' as any;
+  readonly message = 'REFUND_PAYMENT_ID_MISSING_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class ManualPaymentStateError extends ErrorResult {
+  readonly __typename = 'ManualPaymentStateError';
+  readonly errorCode = 'MANUAL_PAYMENT_STATE_ERROR' as any;
+  readonly message = 'MANUAL_PAYMENT_STATE_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
 export class ProductOptionInUseError extends ErrorResult {
   readonly __typename = 'ProductOptionInUseError';
   readonly errorCode = 'PRODUCT_OPTION_IN_USE_ERROR' as any;
@@ -275,8 +346,41 @@ export class EmailAddressConflictError extends ErrorResult {
   }
 }
 
+export class OrderLimitError extends ErrorResult {
+  readonly __typename = 'OrderLimitError';
+  readonly errorCode = 'ORDER_LIMIT_ERROR' as any;
+  readonly message = 'ORDER_LIMIT_ERROR';
+  constructor(
+    public maxItems: Scalars['Int'],
+  ) {
+    super();
+  }
+}
 
-const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError']);
+export class NegativeQuantityError extends ErrorResult {
+  readonly __typename = 'NegativeQuantityError';
+  readonly errorCode = 'NEGATIVE_QUANTITY_ERROR' as any;
+  readonly message = 'NEGATIVE_QUANTITY_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class InsufficientStockError extends ErrorResult {
+  readonly __typename = 'InsufficientStockError';
+  readonly errorCode = 'INSUFFICIENT_STOCK_ERROR' as any;
+  readonly message = 'INSUFFICIENT_STOCK_ERROR';
+  constructor(
+    public quantityAvailable: Scalars['Int'],
+    public order: any,
+  ) {
+    super();
+  }
+}
+
+
+const errorTypeNames = new Set(['MimeTypeError', 'LanguageNotAvailableError', 'ChannelDefaultLanguageError', 'SettlePaymentError', 'EmptyOrderLineSelectionError', 'ItemsAlreadyFulfilledError', 'InvalidFulfillmentHandlerError', 'CreateFulfillmentError', 'InsufficientStockOnHandError', 'MultipleOrderError', 'CancelActiveOrderError', 'PaymentOrderMismatchError', 'RefundOrderStateError', 'NothingToRefundError', 'AlreadyRefundedError', 'QuantityTooGreatError', 'RefundStateTransitionError', 'PaymentStateTransitionError', 'FulfillmentStateTransitionError', 'OrderModificationStateError', 'NoChangesSpecifiedError', 'PaymentMethodMissingError', 'RefundPaymentIdMissingError', 'ManualPaymentStateError', 'ProductOptionInUseError', 'MissingConditionsError', 'NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
@@ -357,9 +461,14 @@ export const adminErrorOperationTypeResolvers = {
       return isGraphQLError(value) ? (value as any).__typename : 'Fulfillment';
     },
   },
-  TransitionPaymentToStateResult: {
+  ModifyOrderResult: {
     __resolveType(value: any) {
-      return isGraphQLError(value) ? (value as any).__typename : 'Payment';
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  AddManualPaymentToOrderResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },
   },
   RemoveOptionGroupFromProductResult: {

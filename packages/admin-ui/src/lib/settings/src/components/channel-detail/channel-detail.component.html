@@ -40,7 +40,7 @@
             formControlName="currencyCode"
             [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
-            <option *ngFor="let code of currencyCodes" [value]="code">{{ code | currencyName }}</option>
+            <option *ngFor="let code of currencyCodes" [value]="code">{{ code | localeCurrencyName }}</option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'common.default-language' | translate" for="defaultLanguage">

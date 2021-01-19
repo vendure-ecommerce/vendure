@@ -1,0 +1,48 @@
+"Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured."
+type NativeAuthStrategyError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned if the user authentication credentials are not valid"
+type InvalidCredentialsError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    authenticationError: String!
+}
+
+"Returned if there is an error in transitioning the Order state"
+type OrderStateTransitionError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    transitionError: String!
+    fromState: String!
+    toState: String!
+}
+
+"Retured when attemting to create a Customer with an email address already registered to an existing User."
+type EmailAddressConflictError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Retured when the maximum order size limit has been reached."
+type OrderLimitError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    maxItems: Int!
+}
+
+"Retured when attemting to set a negative OrderLine quantity."
+type NegativeQuantityError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned when attempting to add more items to the Order than are available"
+type InsufficientStockError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    quantityAvailable: Int!
+    order: Order!
+}

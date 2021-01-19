@@ -8,7 +8,7 @@ import {
     DefaultSearchPlugin,
     examplePaymentHandler,
     LogLevel,
-    PermissionDefinition,
+    manualFulfillmentHandler,
     VendureConfig,
 } from '@vendure/core';
 import { defaultEmailHandlers, EmailPlugin } from '@vendure/email-plugin';
@@ -57,6 +57,9 @@ export const devConfig: VendureConfig = {
     importExportOptions: {
         importAssetsDir: path.join(__dirname, 'import-assets'),
     },
+    shippingOptions: {
+        fulfillmentHandlers: [manualFulfillmentHandler],
+    },
     plugins: [
         AssetServerPlugin.init({
             route: 'assets',
@@ -65,10 +68,10 @@ export const devConfig: VendureConfig = {
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
-        /*ElasticsearchPlugin.init({
-            host: 'http://localhost',
-            port: 9200,
-        }),*/
+        // ElasticsearchPlugin.init({
+        //     host: 'http://localhost',
+        //     port: 9200,
+        // }),
         EmailPlugin.init({
             devMode: true,
             handlers: defaultEmailHandlers,

@@ -42,8 +42,8 @@
                     <div class="assets">
                         <vdr-product-assets
                             [compact]="true"
-                            [assets]="variant.assets"
-                            [featuredAsset]="variant.featuredAsset"
+                            [assets]="pendingAssetChanges[variant.id]?.assets || variant.assets"
+                            [featuredAsset]="pendingAssetChanges[variant.id]?.featuredAsset || variant.featuredAsset"
                             (change)="onAssetChange(variant.id, $event)"
                         ></vdr-product-assets>
                     </div>
@@ -67,7 +67,7 @@
                                     <ng-template #taxCategoryLabel>
                                         <label class="clr-control-label">{{
                                             'catalog.tax-category' | translate
-                                            }}</label>
+                                        }}</label>
                                         <div class="tax-category-label">
                                             {{ getTaxCategoryName(formGroup) }}
                                         </div>
@@ -80,21 +80,22 @@
                                             clrInput
                                             [currencyCode]="variant.currencyCode"
                                             [readonly]="!('UpdateCatalog' | hasPermission)"
-                                            formControlName="price"
+                                            [value]="variantListPrice[variant.id]"
+                                            (valueChange)="updateVariantListPrice($event, variant.id, formGroup)"
                                         ></vdr-currency-input>
                                     </clr-input-container>
                                 </div>
                                 <vdr-variant-price-detail
                                     [price]="formGroup.get('price')!.value"
                                     [currencyCode]="variant.currencyCode"
-                                    [priceIncludesTax]="variant.priceIncludesTax"
+                                    [priceIncludesTax]="channelPriceIncludesTax"
                                     [taxCategoryId]="formGroup.get('taxCategoryId')!.value"
                                 ></vdr-variant-price-detail>
                             </div>
                             <div class="variant-form-input-row">
                                 <clr-select-container *vdrIfPermissions="'UpdateCatalog'">
                                     <label
-                                    >{{ 'catalog.track-inventory' | translate }}
+                                        >{{ 'catalog.track-inventory' | translate }}
                                         <vdr-help-tooltip
                                             [content]="'catalog.track-inventory-tooltip' | translate"
                                         ></vdr-help-tooltip>
@@ -112,7 +113,12 @@
                                     </select>
                                 </clr-select-container>
                                 <clr-input-container>
-                                    <label>{{ 'catalog.stock-on-hand' | translate }}</label>
+                                    <label
+                                        >{{ 'catalog.stock-on-hand' | translate }}
+                                        <vdr-help-tooltip
+                                            [content]="'catalog.stock-on-hand-tooltip' | translate"
+                                        ></vdr-help-tooltip
+                                    ></label>
                                     <input
                                         [class.inventory-untracked]="inventoryIsNotTracked(formGroup)"
                                         clrInput
@@ -124,9 +130,35 @@
                                         [vdrDisabled]="inventoryIsNotTracked(formGroup)"
                                     />
                                 </clr-input-container>
+                                <div [class.inventory-untracked]="inventoryIsNotTracked(formGroup)">
+                                    <label class="clr-control-label"
+                                        >{{ 'catalog.stock-allocated' | translate }}
+                                        <vdr-help-tooltip
+                                            [content]="'catalog.stock-allocated-tooltip' | translate"
+                                        ></vdr-help-tooltip
+                                    ></label>
+                                    <div class="value">
+                                        {{ variant.stockAllocated }}
+                                    </div>
+                                </div>
+                                <div [class.inventory-untracked]="inventoryIsNotTracked(formGroup)">
+                                    <label class="clr-control-label"
+                                        >{{ 'catalog.stock-saleable' | translate }}
+                                        <vdr-help-tooltip
+                                            [content]="'catalog.stock-saleable-tooltip' | translate"
+                                        ></vdr-help-tooltip
+                                    ></label>
+                                    <div class="value">
+                                        {{ getSaleableStockLevel(variant) }}
+                                    </div>
+                                </div>
                             </div>
+
                             <div class="variant-form-input-row">
-                                <div class="out-of-stock-threshold-wrapper" [class.inventory-untracked]="inventoryIsNotTracked(formGroup)">
+                                <div
+                                    class="out-of-stock-threshold-wrapper"
+                                    [class.inventory-untracked]="inventoryIsNotTracked(formGroup)"
+                                >
                                     <label class="clr-control-label"
                                         >{{ 'catalog.out-of-stock-threshold' | translate
                                         }}<vdr-help-tooltip
@@ -142,7 +174,7 @@
                                                 [readonly]="!('UpdateCatalog' | hasPermission)"
                                                 [vdrDisabled]="
                                                     formGroup.get('useGlobalOutOfStockThreshold')?.value !==
-                                                    false || inventoryIsNotTracked(formGroup)
+                                                        false || inventoryIsNotTracked(formGroup)
                                                 "
                                             />
                                         </clr-input-container>
@@ -152,9 +184,16 @@
                                                 clrToggle
                                                 name="useGlobalOutOfStockThreshold"
                                                 formControlName="useGlobalOutOfStockThreshold"
-                                                [vdrDisabled]="!('UpdateCatalog' | hasPermission) || inventoryIsNotTracked(formGroup)"
+                                                [vdrDisabled]="
+                                                    !('UpdateCatalog' | hasPermission) ||
+                                                    inventoryIsNotTracked(formGroup)
+                                                "
                                             />
-                                            <label>{{ 'catalog.use-global-value' | translate }} ({{ globalOutOfStockThreshold }})</label>
+                                            <label
+                                                >{{ 'catalog.use-global-value' | translate }} ({{
+                                                    globalOutOfStockThreshold
+                                                }})</label
+                                            >
                                         </clr-toggle-wrapper>
                                     </div>
                                 </div>
@@ -222,6 +261,29 @@
                     </div>
                 </div>
             </div>
+            <ng-container *vdrIfMultichannel>
+                <div class="card-block" *vdrIfDefaultChannelActive>
+                    <div class="flex channel-assignment">
+                        <ng-container *ngFor="let channel of variant.channels">
+                            <vdr-chip
+                                *ngIf="!isDefaultChannel(channel.code)"
+                                icon="times-circle"
+                                [title]="'catalog.remove-from-channel' | translate"
+                                (iconClick)="
+                                    removeFromChannel.emit({ channelId: channel.id, variant: variant })
+                                "
+                            >
+                                <vdr-channel-badge [channelCode]="channel.code"></vdr-channel-badge>
+                                {{ channel.code | channelCodeToLabel }}
+                            </vdr-chip>
+                        </ng-container>
+                        <button class="btn btn-sm" (click)="assignToChannel.emit(variant)">
+                            <clr-icon shape="layers"></clr-icon>
+                            {{ 'catalog.assign-to-channel' | translate }}
+                        </button>
+                    </div>
+                </div>
+            </ng-container>
         </ng-container>
     </div>
     <div class="table-footer">

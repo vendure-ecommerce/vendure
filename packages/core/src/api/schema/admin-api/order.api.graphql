@@ -16,6 +16,18 @@ type Mutation {
     transitionFulfillmentToState(id: ID!, state: String!): TransitionFulfillmentToStateResult!
     transitionPaymentToState(id: ID!, state: String!): TransitionPaymentToStateResult!
     setOrderCustomFields(input: UpdateOrderInput!): Order
+    """
+    Allows an Order to be modified after it has been completed by the Customer. The Order must first
+    be in the `Modifying` state.
+    """
+    modifyOrder(input: ModifyOrderInput!): ModifyOrderResult!
+    """
+    Used to manually create a new Payment against an Order. This is used when a completed Order
+    has been modified (using `modifyOrder`) and the price has increased. The extra payment
+    can then be manually arranged by the administrator, and the details used to create a new
+    Payment.
+    """
+    addManualPaymentToOrder(input: ManualPaymentInput!): AddManualPaymentToOrderResult!
 }
 
 type Order {
@@ -32,8 +44,7 @@ input UpdateOrderInput {
 
 input FulfillOrderInput {
     lines: [OrderLineInput!]!
-    method: String!
-    trackingCode: String
+    handler: ConfigurableOperationInput!
 }
 
 input CancelOrderInput {
@@ -74,6 +85,77 @@ input UpdateOrderNoteInput {
     isPublic: Boolean
 }
 
+input AdministratorPaymentInput {
+    paymentMethod: String
+    metadata: JSON
+}
+
+input AdministratorRefundInput {
+    paymentId: ID!
+    reason: String
+}
+
+input ModifyOrderOptions {
+    freezePromotions: Boolean
+    recalculateShipping: Boolean
+}
+
+input UpdateOrderAddressInput {
+    fullName: String
+    company: String
+    streetLine1: String
+    streetLine2: String
+    city: String
+    province: String
+    postalCode: String
+    countryCode: String
+    phoneNumber: String
+}
+
+input ModifyOrderInput {
+    dryRun: Boolean!
+    orderId: ID!
+    addItems: [AddItemInput!]
+    adjustOrderLines: [AdjustOrderLineInput!]
+    surcharges: [SurchargeInput!]
+    updateShippingAddress: UpdateOrderAddressInput
+    updateBillingAddress: UpdateOrderAddressInput
+    note: String
+    refund: AdministratorRefundInput
+    options: ModifyOrderOptions
+}
+
+input AddItemInput {
+    productVariantId: ID!
+    quantity: Int!
+}
+
+input AdjustOrderLineInput {
+    orderLineId: ID!
+    quantity: Int!
+}
+
+input OrderLineInput {
+    orderLineId: ID!
+    quantity: Int!
+}
+
+input SurchargeInput {
+    description: String!
+    sku: String
+    price: Int!
+    priceIncludesTax: Boolean!
+    taxRate: Float
+    taxDescription: String
+}
+
+input ManualPaymentInput {
+    orderId: ID!
+    method: String!
+    transactionId: String
+    metadata: JSON
+}
+
 "Returned if the Payment settlement fails"
 type SettlePaymentError implements ErrorResult {
     errorCode: ErrorCode!
@@ -91,6 +173,19 @@ type EmptyOrderLineSelectionError implements ErrorResult {
 type ItemsAlreadyFulfilledError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+}
+
+"Returned if the specified FulfillmentHandler code is not valid"
+type InvalidFulfillmentHandlerError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned if an error is thrown in a FulfillmentHandler's createFulfillment method"
+type CreateFulfillmentError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    fulfillmentHandlerError: String!
 }
 
 """
@@ -177,6 +272,45 @@ type FulfillmentStateTransitionError implements ErrorResult {
     toState: String!
 }
 
+"Returned when attempting to modify the contents of an Order that is not in the `Modifying` state."
+type OrderModificationStateError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"Returned when a call to modifyOrder fails to specify any changes"
+type NoChangesSpecifiedError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Returned when a call to modifyOrder fails to include a paymentMethod even
+though the price has increased as a result of the changes.
+"""
+type PaymentMethodMissingError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Returned when a call to modifyOrder fails to include a refundPaymentId even
+though the price has decreased as a result of the changes.
+"""
+type RefundPaymentIdMissingError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
+"""
+Returned when a call to addManualPaymentToOrder is made but the Order
+is not in the required state.
+"""
+type ManualPaymentStateError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+}
+
 union TransitionOrderToStateResult = Order | OrderStateTransitionError
 union SettlePaymentResult =
       Payment
@@ -188,6 +322,9 @@ union AddFulfillmentToOrderResult =
     | EmptyOrderLineSelectionError
     | ItemsAlreadyFulfilledError
     | InsufficientStockOnHandError
+    | InvalidFulfillmentHandlerError
+    | FulfillmentStateTransitionError
+    | CreateFulfillmentError
 union CancelOrderResult =
       Order
     | EmptyOrderLineSelectionError
@@ -208,3 +345,13 @@ union RefundOrderResult =
 union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
 union TransitionPaymentToStateResult = Payment | PaymentStateTransitionError
+union ModifyOrderResult =
+      Order
+    | NoChangesSpecifiedError
+    | OrderModificationStateError
+    | PaymentMethodMissingError
+    | RefundPaymentIdMissingError
+    | OrderLimitError
+    | NegativeQuantityError
+    | InsufficientStockError
+union AddManualPaymentToOrderResult = Order | ManualPaymentStateError

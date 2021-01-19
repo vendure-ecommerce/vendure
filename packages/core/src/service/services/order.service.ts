@@ -9,7 +9,9 @@ import {
 } from '@vendure/common/lib/generated-shop-types';
 import {
     AddFulfillmentToOrderResult,
+    AddManualPaymentToOrderResult,
     AddNoteToOrderInput,
+    AdjustmentType,
     CancelOrderInput,
     CancelOrderResult,
     CreateAddressInput,
@@ -17,6 +19,9 @@ import {
     DeletionResult,
     FulfillOrderInput,
     HistoryEntryType,
+    ManualPaymentInput,
+    ModifyOrderInput,
+    ModifyOrderResult,
     OrderLineInput,
     OrderProcessState,
     RefundOrderInput,
@@ -27,19 +32,20 @@ import {
     UpdateOrderNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
+import { summate } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
-import { doc } from 'prettier';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../common/error/error-result';
-import { EntityNotFoundError, UserInputError } from '../../common/error/errors';
+import { EntityNotFoundError, InternalServerError, UserInputError } from '../../common/error/errors';
 import {
     AlreadyRefundedError,
     CancelActiveOrderError,
     EmptyOrderLineSelectionError,
+    FulfillmentStateTransitionError,
     InsufficientStockOnHandError,
     ItemsAlreadyFulfilledError,
+    ManualPaymentStateError,
     MultipleOrderError,
     NothingToRefundError,
     PaymentOrderMismatchError,
@@ -49,6 +55,7 @@ import {
     SettlePaymentError,
 } from '../../common/error/generated-graphql-admin-errors';
 import {
+    IneligibleShippingMethodError,
     InsufficientStockError,
     NegativeQuantityError,
     OrderLimitError,
@@ -58,6 +65,7 @@ import {
     PaymentDeclinedError,
     PaymentFailedError,
 } from '../../common/error/generated-graphql-shop-errors';
+import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { ListQueryOptions, PaymentMetadata } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
@@ -66,11 +74,14 @@ import { Fulfillment } from '../../entity/fulfillment/fulfillment.entity';
 import { HistoryEntry } from '../../entity/history-entry/history-entry.entity';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
+import { OrderModification } from '../../entity/order-modification/order-modification.entity';
 import { Order } from '../../entity/order/order.entity';
 import { Payment } from '../../entity/payment/payment.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
 import { Refund } from '../../entity/refund/refund.entity';
+import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
+import { Surcharge } from '../../entity/surcharge/surcharge.entity';
 import { User } from '../../entity/user/user.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
@@ -80,6 +91,7 @@ import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillme
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { OrderMerger } from '../helpers/order-merger/order-merger';
+import { OrderModifier } from '../helpers/order-modifier/order-modifier';
 import { OrderState } from '../helpers/order-state-machine/order-state';
 import { OrderStateMachine } from '../helpers/order-state-machine/order-state-machine';
 import { PaymentState } from '../helpers/payment-state-machine/payment-state';
@@ -91,6 +103,7 @@ import {
     orderItemsAreDelivered,
     orderItemsAreShipped,
     orderTotalIsCovered,
+    totalCoveredByPayments,
 } from '../helpers/utils/order-utils';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -130,6 +143,7 @@ export class OrderService {
         private promotionService: PromotionService,
         private eventBus: EventBus,
         private channelService: ChannelService,
+        private orderModifier: OrderModifier,
     ) {}
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -142,7 +156,14 @@ export class OrderService {
     findAll(ctx: RequestContext, options?: ListQueryOptions<Order>): Promise<PaginatedList<Order>> {
         return this.listQueryBuilder
             .build(Order, options, {
-                relations: ['lines', 'customer', 'lines.productVariant', 'channels'],
+                relations: [
+                    'lines',
+                    'customer',
+                    'lines.productVariant',
+                    'lines.items',
+                    'channels',
+                    'shippingLines',
+                ],
                 channelId: ctx.channelId,
                 ctx,
             })
@@ -161,6 +182,8 @@ export class OrderService {
             .createQueryBuilder('order')
             .leftJoin('order.channels', 'channel')
             .leftJoinAndSelect('order.customer', 'customer')
+            .leftJoinAndSelect('order.shippingLines', 'shippingLines')
+            .leftJoinAndSelect('order.surcharges', 'surcharges')
             .leftJoinAndSelect('customer.user', 'user')
             .leftJoinAndSelect('order.lines', 'lines')
             .leftJoinAndSelect('lines.productVariant', 'productVariant')
@@ -169,7 +192,7 @@ export class OrderService {
             .leftJoinAndSelect('productVariant.translations', 'translations')
             .leftJoinAndSelect('lines.featuredAsset', 'featuredAsset')
             .leftJoinAndSelect('lines.items', 'items')
-            .leftJoinAndSelect('items.fulfillment', 'fulfillment')
+            .leftJoinAndSelect('items.fulfillments', 'fulfillments')
             .leftJoinAndSelect('lines.taxCategory', 'lineTaxCategory')
             .where('order.id = :orderId', { orderId })
             .andWhere('channel.id = :channelId', { channelId: ctx.channelId })
@@ -211,6 +234,7 @@ export class OrderService {
                     'lines.productVariant.options',
                     'customer',
                     'channels',
+                    'shippingLines',
                 ],
                 channelId: ctx.channelId,
                 ctx,
@@ -234,6 +258,7 @@ export class OrderService {
 
     getOrderPayments(ctx: RequestContext, orderId: ID): Promise<Payment[]> {
         return this.connection.getRepository(ctx, Payment).find({
+            relations: ['refunds'],
             where: {
                 order: { id: orderId } as any,
             },
@@ -245,6 +270,15 @@ export class OrderService {
             relations: ['orderItems'],
         });
         return refund.orderItems;
+    }
+
+    getOrderModifications(ctx: RequestContext, orderId: ID): Promise<OrderModification[]> {
+        return this.connection.getRepository(ctx, OrderModification).find({
+            where: {
+                order: orderId,
+            },
+            relations: ['orderItems', 'payment', 'refund', 'surcharges'],
+        });
     }
 
     getPaymentRefunds(ctx: RequestContext, paymentId: ID): Promise<Refund[]> {
@@ -265,6 +299,7 @@ export class OrderService {
                     channelId: ctx.channelId,
                 })
                 .leftJoinAndSelect('order.customer', 'customer')
+                .leftJoinAndSelect('order.shippingLines', 'shippingLines')
                 .where('active = :active', { active: true })
                 .andWhere('order.customer.id = :customerId', { customerId: customer.id })
                 .orderBy('order.createdAt', 'DESC')
@@ -280,12 +315,13 @@ export class OrderService {
             code: await this.configService.orderOptions.orderCodeStrategy.generate(ctx),
             state: this.orderStateMachine.getInitialState(),
             lines: [],
+            surcharges: [],
             couponCodes: [],
+            modifications: [],
             shippingAddress: {},
             billingAddress: {},
-            pendingAdjustments: [],
             subTotal: 0,
-            subTotalBeforeTax: 0,
+            subTotalWithTax: 0,
             currencyCode: ctx.channel.currencyCode,
         });
         if (userId) {
@@ -310,6 +346,10 @@ export class OrderService {
         return this.connection.getRepository(ctx, Order).save(order);
     }
 
+    /**
+     * Adds an OrderItem to the Order, either creating a new OrderLine or
+     * incrementing an existing one.
+     */
     async addItemToOrder(
         ctx: RequestContext,
         orderId: ID,
@@ -325,91 +365,72 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        const productVariant = await this.getProductVariantOrThrow(ctx, productVariantId);
-        let orderLine = order.lines.find(line => {
-            return (
-                idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
-
-        if (!orderLine) {
-            const newLine = this.createOrderLineFromVariant(productVariant, customFields);
-            orderLine = await this.connection.getRepository(ctx, OrderLine).save(newLine);
-            order.lines.push(orderLine);
-            await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
+        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+            ctx,
+            variant,
+            quantity,
+        );
+        if (correctedQuantity === 0) {
+            return new InsufficientStockError(correctedQuantity, order);
         }
-        return this.adjustOrderLine(ctx, order, orderLine.id, orderLine.quantity + quantity);
+        const orderLine = await this.orderModifier.getOrCreateItemOrderLine(
+            ctx,
+            order,
+            productVariantId,
+            customFields,
+        );
+        await this.orderModifier.updateOrderLineQuantity(
+            ctx,
+            orderLine,
+            orderLine.quantity + correctedQuantity,
+            order,
+        );
+        const quantityWasAdjustedDown = correctedQuantity < quantity;
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
+        if (quantityWasAdjustedDown) {
+            return new InsufficientStockError(correctedQuantity, updatedOrder);
+        } else {
+            return updatedOrder;
+        }
     }
 
+    /**
+     * Adjusts the quantity of an existing OrderLine
+     */
     async adjustOrderLine(
         ctx: RequestContext,
-        orderIdOrOrder: ID | Order,
+        orderId: ID,
         orderLineId: ID,
-        quantity?: number | null,
+        quantity: number,
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
-        let correctedQuantity = quantity;
-        let quantityWasAdjustedDown = false;
-        const { priceCalculationStrategy } = this.configService.orderOptions;
-        const order =
-            orderIdOrOrder instanceof Order
-                ? orderIdOrOrder
-                : await this.getOrderOrThrow(ctx, orderIdOrOrder);
+        const order = await this.getOrderOrThrow(ctx, orderId);
         const orderLine = this.getOrderLineOrThrow(order, orderLineId);
+        const validationError =
+            this.assertAddingItemsState(order) ||
+            this.assertQuantityIsPositive(quantity) ||
+            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity);
+        if (validationError) {
+            return validationError;
+        }
         if (customFields != null) {
             orderLine.customFields = customFields;
         }
-        if (correctedQuantity != null) {
-            const currentQuantity = orderLine.quantity;
-            const validationError =
-                this.assertAddingItemsState(order) ||
-                this.assertQuantityIsPositive(correctedQuantity) ||
-                this.assertNotOverOrderItemsLimit(order, correctedQuantity - currentQuantity);
-            if (validationError) {
-                return validationError;
-            }
-            const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(
-                ctx,
-                orderLine.productVariant,
-            );
-            if (saleableStockLevel < correctedQuantity) {
-                correctedQuantity = Math.max(saleableStockLevel, 0);
-                quantityWasAdjustedDown = true;
-            }
-            if (correctedQuantity === 0) {
-                order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLineId));
-                await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
-                return new InsufficientStockError(correctedQuantity, order);
-            } else if (currentQuantity < correctedQuantity) {
-                if (!orderLine.items) {
-                    orderLine.items = [];
-                }
-                const productVariant = orderLine.productVariant;
-                const { price, priceIncludesTax } = await priceCalculationStrategy.calculateUnitPrice(
-                    ctx,
-                    productVariant,
-                    orderLine.customFields || {},
-                );
-                const taxRate = productVariant.taxRateApplied;
-                const unitPrice = priceIncludesTax ? taxRate.netPriceOf(price) : price;
-                for (let i = currentQuantity; i < correctedQuantity; i++) {
-                    const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
-                        new OrderItem({
-                            unitPrice,
-                            pendingAdjustments: [],
-                            taxRate: taxRate.value,
-                        }),
-                    );
-                    orderLine.items.push(orderItem);
-                }
-            } else if (correctedQuantity < currentQuantity) {
-                orderLine.items = orderLine.items.slice(0, correctedQuantity);
-            }
+        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
+            ctx,
+            orderLine.productVariant,
+            quantity,
+        );
+        if (correctedQuantity === 0) {
+            order.lines = order.lines.filter(l => !idsAreEqual(l.id, orderLine.id));
+            await this.connection.getRepository(ctx, OrderLine).remove(orderLine);
+        } else {
+            await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, quantity, order);
         }
-        await this.connection.getRepository(ctx, OrderLine).save(orderLine, { reload: false });
+        const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
-        if (correctedQuantity && quantityWasAdjustedDown) {
+        if (quantityWasAdjustedDown) {
             return new InsufficientStockError(correctedQuantity, updatedOrder);
         } else {
             return updatedOrder;
@@ -448,6 +469,39 @@ export class OrderService {
         return updatedOrder;
     }
 
+    async addSurchargeToOrder(
+        ctx: RequestContext,
+        orderId: ID,
+        surchargeInput: Partial<Omit<Surcharge, 'id' | 'createdAt' | 'updatedAt' | 'order'>>,
+    ): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const surcharge = await this.connection.getRepository(ctx, Surcharge).save(
+            new Surcharge({
+                taxLines: [],
+                sku: '',
+                listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                order,
+                ...surchargeInput,
+            }),
+        );
+        order.surcharges.push(surcharge);
+        const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+        return updatedOrder;
+    }
+
+    async removeSurchargeFromOrder(ctx: RequestContext, orderId: ID, surchargeId: ID): Promise<Order> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        const surcharge = await this.connection.getEntityOrThrow(ctx, Surcharge, surchargeId);
+        if (order.surcharges.find(s => idsAreEqual(s.id, surcharge.id))) {
+            order.surcharges = order.surcharges.filter(s => !idsAreEqual(s.id, surchargeId));
+            const updatedOrder = await this.applyPriceAdjustments(ctx, order);
+            await this.connection.getRepository(ctx, Surcharge).remove(surcharge);
+            return updatedOrder;
+        } else {
+            return order;
+        }
+    }
+
     async applyCouponCode(
         ctx: RequestContext,
         orderId: ID,
@@ -478,6 +532,16 @@ export class OrderService {
     async removeCouponCode(ctx: RequestContext, orderId: ID, couponCode: string) {
         const order = await this.getOrderOrThrow(ctx, orderId);
         if (order.couponCodes.includes(couponCode)) {
+            // When removing a couponCode which has triggered an Order-level discount
+            // we need to make sure we persist the changes to the adjustments array of
+            // any affected OrderItems.
+            const affectedOrderItems = order.lines
+                .reduce((items, l) => [...items, ...l.items], [] as OrderItem[])
+                .filter(
+                    i =>
+                        i.adjustments.filter(a => a.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION)
+                            .length,
+                );
             order.couponCodes = order.couponCodes.filter(cc => cc !== couponCode);
             await this.historyService.createHistoryEntryForOrder({
                 ctx,
@@ -485,7 +549,9 @@ export class OrderService {
                 type: HistoryEntryType.ORDER_COUPON_REMOVED,
                 data: { couponCode },
             });
-            return this.applyPriceAdjustments(ctx, order);
+            const result = await this.applyPriceAdjustments(ctx, order);
+            await this.connection.getRepository(ctx, OrderItem).save(affectedOrderItems);
+            return result;
         } else {
             return order;
         }
@@ -520,13 +586,17 @@ export class OrderService {
     async getEligibleShippingMethods(ctx: RequestContext, orderId: ID): Promise<ShippingMethodQuote[]> {
         const order = await this.getOrderOrThrow(ctx, orderId);
         const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        return eligibleMethods.map(eligible => ({
-            id: eligible.method.id,
-            price: eligible.result.price,
-            priceWithTax: eligible.result.priceWithTax,
-            description: eligible.method.description,
-            metadata: eligible.result.metadata,
-        }));
+        return eligibleMethods.map(eligible => {
+            const { price, taxRate, priceIncludesTax, metadata } = eligible.result;
+            return {
+                id: eligible.method.id,
+                price: priceIncludesTax ? netPriceOf(price, taxRate) : price,
+                priceWithTax: priceIncludesTax ? price : grossPriceOf(price, taxRate),
+                description: eligible.method.description,
+                name: eligible.method.name,
+                metadata,
+            };
+        });
     }
 
     async setShippingMethod(
@@ -539,12 +609,31 @@ export class OrderService {
         if (validationError) {
             return validationError;
         }
-        const eligibleMethods = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const selectedMethod = eligibleMethods.find(m => idsAreEqual(m.method.id, shippingMethodId));
-        if (!selectedMethod) {
-            throw new UserInputError(`error.shipping-method-unavailable`);
+        const shippingMethod = await this.shippingCalculator.getMethodIfEligible(
+            ctx,
+            order,
+            shippingMethodId,
+        );
+        if (!shippingMethod) {
+            return new IneligibleShippingMethodError();
         }
-        order.shippingMethod = selectedMethod.method;
+        let shippingLine: ShippingLine | undefined = order.shippingLines[0];
+        if (shippingLine) {
+            shippingLine.shippingMethod = shippingMethod;
+        } else {
+            shippingLine = await this.connection.getRepository(ctx, ShippingLine).save(
+                new ShippingLine({
+                    shippingMethod,
+                    order,
+                    adjustments: [],
+                    listPrice: 0,
+                    listPriceIncludesTax: ctx.channel.pricesIncludeTax,
+                    taxLines: [],
+                }),
+            );
+            order.shippingLines = [shippingLine];
+        }
+        await this.connection.getRepository(ctx, ShippingLine).save(shippingLine);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.applyPriceAdjustments(ctx, order);
         return this.connection.getRepository(ctx, Order).save(order);
@@ -573,16 +662,43 @@ export class OrderService {
         ctx: RequestContext,
         fulfillmentId: ID,
         state: FulfillmentState,
-    ): Promise<Fulfillment> {
-        const { fulfillment, fromState, toState, orders } = await this.fulfillmentService.transitionToState(
-            ctx,
-            fulfillmentId,
-            state,
-        );
+    ): Promise<Fulfillment | FulfillmentStateTransitionError> {
+        const result = await this.fulfillmentService.transitionToState(ctx, fulfillmentId, state);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        const { fulfillment, fromState, toState, orders } = result;
         await Promise.all(
             orders.map(order => this.handleFulfillmentStateTransitByOrder(ctx, order, fromState, toState)),
         );
         return fulfillment;
+    }
+
+    async modifyOrder(
+        ctx: RequestContext,
+        input: ModifyOrderInput,
+    ): Promise<ErrorResultUnion<ModifyOrderResult, Order>> {
+        await this.connection.startTransaction(ctx);
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        const result = await this.orderModifier.modifyOrder(ctx, input, order);
+        if (input.dryRun) {
+            await this.connection.rollBackTransaction(ctx);
+            return isGraphQlErrorResult(result) ? result : result.order;
+        }
+        if (isGraphQlErrorResult(result)) {
+            await this.connection.rollBackTransaction(ctx);
+            return result;
+        }
+        await this.historyService.createHistoryEntryForOrder({
+            ctx,
+            orderId: input.orderId,
+            type: HistoryEntryType.ORDER_MODIFIED,
+            data: {
+                modificationId: result.modification.id,
+            },
+        });
+        await this.connection.commitOpenTransaction(ctx);
+        return this.getOrderOrThrow(ctx, input.orderId);
     }
 
     private async handleFulfillmentStateTransitByOrder(
@@ -640,6 +756,7 @@ export class OrderService {
         const payment = await this.paymentMethodService.createPayment(
             ctx,
             order,
+            order.totalWithTax,
             input.method,
             input.metadata,
         );
@@ -672,6 +789,36 @@ export class OrderService {
         return order;
     }
 
+    async addManualPaymentToOrder(
+        ctx: RequestContext,
+        input: ManualPaymentInput,
+    ): Promise<ErrorResultUnion<AddManualPaymentToOrderResult, Order>> {
+        const order = await this.getOrderOrThrow(ctx, input.orderId);
+        if (order.state !== 'ArrangingAdditionalPayment') {
+            return new ManualPaymentStateError();
+        }
+        const existingPayments = await this.getOrderPayments(ctx, order.id);
+        order.payments = existingPayments;
+        const amount = order.totalWithTax - totalCoveredByPayments(order);
+        const modifications = await this.getOrderModifications(ctx, order.id);
+        const unsettledModifications = modifications.filter(m => !m.isSettled);
+        const outstandingModificationsTotal = summate(unsettledModifications, 'priceChange');
+        if (outstandingModificationsTotal !== amount) {
+            throw new InternalServerError(
+                `The outstanding order amount (${amount}) should equal the unsettled OrderModifications total (${outstandingModificationsTotal})`,
+            );
+        }
+
+        const payment = await this.paymentMethodService.createManualPayment(ctx, order, amount, input);
+        order.payments.push(payment);
+        await this.connection.getRepository(ctx, Order).save(order, { reload: false });
+        for (const modification of unsettledModifications) {
+            modification.payment = payment;
+            await this.connection.getRepository(ctx, OrderModification).save(modification);
+        }
+        return order;
+    }
+
     async settlePayment(
         ctx: RequestContext,
         paymentId: ID,
@@ -698,7 +845,7 @@ export class OrderService {
             this.eventBus.publish(
                 new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
             );
-            const orderTotalSettled = payment.amount === payment.order.total;
+            const orderTotalSettled = payment.amount === payment.order.totalWithTax;
             if (
                 orderTotalSettled &&
                 this.orderStateMachine.canTransition(payment.order.state, 'PaymentSettled')
@@ -729,7 +876,7 @@ export class OrderService {
             !input.lines ||
             input.lines.length === 0 ||
             input.lines.length === 0 ||
-            input.lines.reduce((total, line) => total + line.quantity, 0) === 0
+            summate(input.lines, 'quantity') === 0
         ) {
             return new EmptyOrderLineSelectionError();
         }
@@ -746,11 +893,15 @@ export class OrderService {
             return stockCheckResult;
         }
 
-        const fulfillment = await this.fulfillmentService.create(ctx, {
-            trackingCode: input.trackingCode,
-            method: input.method,
-            orderItems: ordersAndItems.items,
-        });
+        const fulfillment = await this.fulfillmentService.create(
+            ctx,
+            ordersAndItems.orders,
+            ordersAndItems.items,
+            input.handler,
+        );
+        if (isGraphQlErrorResult(fulfillment)) {
+            return fulfillment;
+        }
 
         await this.stockMovementService.createSalesForOrder(ctx, ordersAndItems.items);
 
@@ -764,12 +915,11 @@ export class OrderService {
                 },
             });
         }
-        const { fulfillment: pendingFulfillment } = await this.fulfillmentService.transitionToState(
-            ctx,
-            fulfillment.id,
-            'Pending',
-        );
-        return pendingFulfillment;
+        const result = await this.fulfillmentService.transitionToState(ctx, fulfillment.id, 'Pending');
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        return result.fulfillment;
     }
 
     private async ensureSufficientStockForFulfillment(
@@ -801,23 +951,30 @@ export class OrderService {
 
     async getOrderFulfillments(ctx: RequestContext, order: Order): Promise<Fulfillment[]> {
         let lines: OrderLine[];
-        if (
-            order.lines &&
-            order.lines[0] &&
-            order.lines[0].items &&
-            order.lines[0].items[0].fulfillment !== undefined
-        ) {
+        if (order.lines?.[0]?.items?.[0]?.fulfillments !== undefined) {
             lines = order.lines;
         } else {
             lines = await this.connection.getRepository(ctx, OrderLine).find({
                 where: {
                     order: order.id,
                 },
-                relations: ['items', 'items.fulfillment'],
+                relations: ['items', 'items.fulfillments'],
             });
         }
         const items = lines.reduce((acc, l) => [...acc, ...l.items], [] as OrderItem[]);
-        return unique(items.map(i => i.fulfillment).filter(notNullOrUndefined), 'id');
+        const fulfillments = items.reduce(
+            (acc, i) => [...acc, ...(i.fulfillments || [])],
+            [] as Fulfillment[],
+        );
+        return unique(fulfillments, 'id');
+    }
+
+    async getOrderSurcharges(ctx: RequestContext, orderId: ID): Promise<Surcharge[]> {
+        const order = await this.connection.getEntityOrThrow(ctx, Order, orderId, {
+            channelId: ctx.channelId,
+            relations: ['surcharges'],
+        });
+        return order.surcharges || [];
     }
 
     async cancelOrder(
@@ -863,7 +1020,7 @@ export class OrderService {
         input: CancelOrderInput,
         lines: OrderLineInput[],
     ) {
-        if (lines.length === 0 || lines.reduce((total, line) => total + line.quantity, 0) === 0) {
+        if (lines.length === 0 || summate(lines, 'quantity') === 0) {
             return new EmptyOrderLineSelectionError();
         }
         const ordersAndItems = await this.getOrdersAndItemsFromLines(ctx, lines, i => !i.cancelled);
@@ -910,9 +1067,7 @@ export class OrderService {
         input: RefundOrderInput,
     ): Promise<ErrorResultUnion<RefundOrderResult, Refund>> {
         if (
-            (!input.lines ||
-                input.lines.length === 0 ||
-                input.lines.reduce((total, line) => total + line.quantity, 0) === 0) &&
+            (!input.lines || input.lines.length === 0 || summate(input.lines, 'quantity') === 0) &&
             input.shipping === 0
         ) {
             return new NothingToRefundError();
@@ -1074,35 +1229,12 @@ export class OrderService {
         return order;
     }
 
-    private async getProductVariantOrThrow(
-        ctx: RequestContext,
-        productVariantId: ID,
-    ): Promise<ProductVariant> {
-        const productVariant = await this.productVariantService.findOne(ctx, productVariantId);
-        if (!productVariant) {
-            throw new EntityNotFoundError('ProductVariant', productVariantId);
-        }
-        return productVariant;
-    }
-
     private getOrderLineOrThrow(order: Order, orderLineId: ID): OrderLine {
-        const orderItem = order.lines.find(line => idsAreEqual(line.id, orderLineId));
-        if (!orderItem) {
+        const orderLine = order.lines.find(line => idsAreEqual(line.id, orderLineId));
+        if (!orderLine) {
             throw new UserInputError(`error.order-does-not-contain-line-with-id`, { id: orderLineId });
         }
-        return orderItem;
-    }
-
-    private createOrderLineFromVariant(
-        productVariant: ProductVariant,
-        customFields?: { [key: string]: any },
-    ): OrderLine {
-        return new OrderLine({
-            productVariant,
-            taxCategory: productVariant.taxCategory,
-            featuredAsset: productVariant.product.featuredAsset,
-            customFields,
-        });
+        return orderLine;
     }
 
     /**
@@ -1128,7 +1260,7 @@ export class OrderService {
      * maximum limit specified in the config.
      */
     private assertNotOverOrderItemsLimit(order: Order, quantityToAdd: number) {
-        const currentItemsCount = order.lines.reduce((count, line) => count + line.quantity, 0);
+        const currentItemsCount = summate(order.lines, 'quantity');
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
             return new OrderLimitError(orderItemsLimit);
@@ -1151,29 +1283,18 @@ export class OrderService {
             ctx,
             order,
             promotions,
-            updatedOrderLine,
+            updatedOrderLine ? [updatedOrderLine] : [],
         );
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
+        await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return order;
     }
 
     private async getOrderWithFulfillments(ctx: RequestContext, orderId: ID): Promise<Order> {
         return await this.connection.getEntityOrThrow(ctx, Order, orderId, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
         });
-    }
-
-    private customFieldsAreEqual(
-        inputCustomFields: { [key: string]: any } | null | undefined,
-        existingCustomFields?: { [key: string]: any },
-    ): boolean {
-        if (inputCustomFields == null && typeof existingCustomFields === 'object') {
-            // A null value for an OrderLine customFields input is the equivalent
-            // of every property of an existing customFields object being null.
-            return Object.values(existingCustomFields).every(v => v === null);
-        }
-        return JSON.stringify(inputCustomFields) === JSON.stringify(existingCustomFields);
     }
 
     private async getOrdersAndItemsFromLines(
@@ -1187,7 +1308,7 @@ export class OrderService {
         const lines = await this.connection.getRepository(ctx, OrderLine).findByIds(
             orderLinesInput.map(l => l.orderLineId),
             {
-                relations: ['order', 'items', 'items.fulfillment', 'order.channels'],
+                relations: ['order', 'items', 'items.fulfillments', 'order.channels'],
                 order: { id: 'ASC' },
             },
         );

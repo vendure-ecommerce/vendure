@@ -23,6 +23,7 @@ import { HistoryEntry } from './history-entry/history-entry.entity';
 import { OrderHistoryEntry } from './history-entry/order-history-entry.entity';
 import { OrderItem } from './order-item/order-item.entity';
 import { OrderLine } from './order-line/order-line.entity';
+import { OrderModification } from './order-modification/order-modification.entity';
 import { Order } from './order/order.entity';
 import { PaymentMethod } from './payment-method/payment-method.entity';
 import { Payment } from './payment/payment.entity';
@@ -43,6 +44,8 @@ import { Role } from './role/role.entity';
 import { AnonymousSession } from './session/anonymous-session.entity';
 import { AuthenticatedSession } from './session/authenticated-session.entity';
 import { Session } from './session/session.entity';
+import { ShippingLine } from './shipping-line/shipping-line.entity';
+import { ShippingMethodTranslation } from './shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from './shipping-method/shipping-method.entity';
 import { Allocation } from './stock-movement/allocation.entity';
 import { Cancellation } from './stock-movement/cancellation.entity';
@@ -50,6 +53,7 @@ import { Release } from './stock-movement/release.entity';
 import { Sale } from './stock-movement/sale.entity';
 import { StockAdjustment } from './stock-movement/stock-adjustment.entity';
 import { StockMovement } from './stock-movement/stock-movement.entity';
+import { Surcharge } from './surcharge/surcharge.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
@@ -89,6 +93,7 @@ export const coreEntitiesMap = {
     OrderHistoryEntry,
     OrderItem,
     OrderLine,
+    OrderModification,
     Payment,
     PaymentMethod,
     Product,
@@ -108,9 +113,12 @@ export const coreEntitiesMap = {
     Role,
     Sale,
     Session,
+    ShippingLine,
     ShippingMethod,
+    ShippingMethodTranslation,
     StockAdjustment,
     StockMovement,
+    Surcharge,
     TaxCategory,
     TaxRate,
     User,

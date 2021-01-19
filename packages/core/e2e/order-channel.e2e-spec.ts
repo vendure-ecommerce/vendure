@@ -8,7 +8,7 @@ import {
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AssignProductsToChannel,
@@ -125,9 +125,9 @@ describe('Channelaware orders', () => {
         await server.destroy();
     });
 
-    const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard<
-        UpdatedOrderFragment
-    >(input => !!input.lines);
+    const orderResultGuard: ErrorResultGuard<UpdatedOrderFragment> = createErrorResultGuard(
+        input => !!input.lines,
+    );
 
     it('creates order on current channel', async () => {
         shopClient.setChannelToken(SECOND_CHANNEL_TOKEN);
@@ -193,7 +193,7 @@ describe('Channelaware orders', () => {
     it('returns all orders on default channel', async () => {
         adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const result = await adminClient.query<GetOrderList.Query>(GET_ORDERS_LIST);
-        expect(result.orders.items.map(o => o.id)).toEqual([order1Id, order2Id]);
+        expect(result.orders.items.map(o => o.id).sort()).toEqual([order1Id, order2Id]);
     });
 
     it('returns only channel specific orders when on other than default channel', async () => {

@@ -62,16 +62,6 @@ export class EmailAddressConflictError extends ErrorResult {
   }
 }
 
-export class OrderModificationError extends ErrorResult {
-  readonly __typename = 'OrderModificationError';
-  readonly errorCode = 'ORDER_MODIFICATION_ERROR' as any;
-  readonly message = 'ORDER_MODIFICATION_ERROR';
-  constructor(
-  ) {
-    super();
-  }
-}
-
 export class OrderLimitError extends ErrorResult {
   readonly __typename = 'OrderLimitError';
   readonly errorCode = 'ORDER_LIMIT_ERROR' as any;
@@ -100,6 +90,26 @@ export class InsufficientStockError extends ErrorResult {
   constructor(
     public quantityAvailable: Scalars['Int'],
     public order: any,
+  ) {
+    super();
+  }
+}
+
+export class OrderModificationError extends ErrorResult {
+  readonly __typename = 'OrderModificationError';
+  readonly errorCode = 'ORDER_MODIFICATION_ERROR' as any;
+  readonly message = 'ORDER_MODIFICATION_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
+
+export class IneligibleShippingMethodError extends ErrorResult {
+  readonly __typename = 'IneligibleShippingMethodError';
+  readonly errorCode = 'INELIGIBLE_SHIPPING_METHOD_ERROR' as any;
+  readonly message = 'INELIGIBLE_SHIPPING_METHOD_ERROR';
+  constructor(
   ) {
     super();
   }
@@ -271,8 +281,18 @@ export class NotVerifiedError extends ErrorResult {
   }
 }
 
+export class NoActiveOrderError extends ErrorResult {
+  readonly __typename = 'NoActiveOrderError';
+  readonly errorCode = 'NO_ACTIVE_ORDER_ERROR' as any;
+  readonly message = 'NO_ACTIVE_ORDER_ERROR';
+  constructor(
+  ) {
+    super();
+  }
+}
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderModificationError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError']);
+
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderModificationError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError', 'NoActiveOrderError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }
@@ -294,6 +314,11 @@ export const shopErrorOperationTypeResolvers = {
     },
   },
   TransitionOrderToStateResult: {
+    __resolveType(value: any) {
+      return isGraphQLError(value) ? (value as any).__typename : 'Order';
+    },
+  },
+  ActiveOrderResult: {
     __resolveType(value: any) {
       return isGraphQLError(value) ? (value as any).__typename : 'Order';
     },

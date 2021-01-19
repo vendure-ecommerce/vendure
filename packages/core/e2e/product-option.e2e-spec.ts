@@ -3,9 +3,10 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { omit } from '../../common/lib/omit';
 
+import { PRODUCT_OPTION_GROUP_FRAGMENT } from './graphql/fragments';
 import {
     CreateProductOption,
     CreateProductOptionGroup,
@@ -14,6 +15,7 @@ import {
     UpdateProductOption,
     UpdateProductOptionGroup,
 } from './graphql/generated-e2e-admin-types';
+import { CREATE_PRODUCT_OPTION_GROUP } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 // tslint:disable:no-non-null-assertion
@@ -149,33 +151,6 @@ describe('ProductOption resolver', () => {
         expect(updateProductOption.name).toBe('Middling');
     });
 });
-
-const PRODUCT_OPTION_GROUP_FRAGMENT = gql`
-    fragment ProductOptionGroup on ProductOptionGroup {
-        id
-        code
-        name
-        options {
-            id
-            code
-            name
-        }
-        translations {
-            id
-            languageCode
-            name
-        }
-    }
-`;
-
-const CREATE_PRODUCT_OPTION_GROUP = gql`
-    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
-        createProductOptionGroup(input: $input) {
-            ...ProductOptionGroup
-        }
-    }
-    ${PRODUCT_OPTION_GROUP_FRAGMENT}
-`;
 
 const UPDATE_PRODUCT_OPTION_GROUP = gql`
     mutation UpdateProductOptionGroup($input: UpdateProductOptionGroupInput!) {

@@ -10,12 +10,14 @@ import {
     PromotionAction,
     PromotionItemAction,
     PromotionOrderAction,
+    PromotionShippingAction,
 } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Channel } from '../channel/channel.entity';
 import { OrderItem } from '../order-item/order-item.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Order } from '../order/order.entity';
+import { ShippingLine } from '../shipping-line/shipping-line.entity';
 
 export interface ApplyOrderItemActionArgs {
     orderItem: OrderItem;
@@ -23,6 +25,11 @@ export interface ApplyOrderItemActionArgs {
 }
 
 export interface ApplyOrderActionArgs {
+    order: Order;
+}
+
+export interface ApplyShippingActionArgs {
+    shippingLine: ShippingLine;
     order: Order;
 }
 
@@ -40,7 +47,9 @@ export interface ApplyOrderActionArgs {
 export class Promotion extends AdjustmentSource implements ChannelAware, SoftDeletable {
     type = AdjustmentType.PROMOTION;
     private readonly allConditions: { [code: string]: PromotionCondition } = {};
-    private readonly allActions: { [code: string]: PromotionItemAction | PromotionOrderAction } = {};
+    private readonly allActions: {
+        [code: string]: PromotionItemAction | PromotionOrderAction | PromotionShippingAction;
+    } = {};
 
     constructor(
         input?: DeepPartial<Promotion> & {
@@ -103,23 +112,30 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
 
     async apply(
         ctx: RequestContext,
-        args: ApplyOrderActionArgs | ApplyOrderItemActionArgs,
+        args: ApplyOrderActionArgs | ApplyOrderItemActionArgs | ApplyShippingActionArgs,
     ): Promise<Adjustment | undefined> {
         let amount = 0;
 
         for (const action of this.actions) {
             const promotionAction = this.allActions[action.code];
-            if (this.isItemAction(promotionAction)) {
+            if (promotionAction instanceof PromotionItemAction) {
                 if (this.isOrderItemArg(args)) {
                     const { orderItem, orderLine } = args;
                     amount += Math.round(
                         await promotionAction.execute(ctx, orderItem, orderLine, action.args),
                     );
                 }
-            } else {
-                if (!this.isOrderItemArg(args)) {
+            } else if (promotionAction instanceof PromotionOrderAction) {
+                if (this.isOrderArg(args)) {
                     const { order } = args;
                     amount += Math.round(await promotionAction.execute(ctx, order, action.args));
+                }
+            } else if (promotionAction instanceof PromotionShippingAction) {
+                if (this.isShippingArg(args)) {
+                    const { shippingLine, order } = args;
+                    amount += Math.round(
+                        await promotionAction.execute(ctx, shippingLine, order, action.args),
+                    );
                 }
             }
         }
@@ -151,14 +167,27 @@ export class Promotion extends AdjustmentSource implements ChannelAware, SoftDel
         }
         return true;
     }
+    private isShippingAction(
+        value: PromotionItemAction | PromotionOrderAction | PromotionShippingAction,
+    ): value is PromotionItemAction {
+        return value instanceof PromotionShippingAction;
+    }
 
-    private isItemAction(value: PromotionItemAction | PromotionOrderAction): value is PromotionItemAction {
-        return value instanceof PromotionItemAction;
+    private isOrderArg(
+        value: ApplyOrderItemActionArgs | ApplyOrderActionArgs | ApplyShippingActionArgs,
+    ): value is ApplyOrderActionArgs {
+        return !this.isOrderItemArg(value) && !this.isShippingArg(value);
     }
 
     private isOrderItemArg(
-        value: ApplyOrderItemActionArgs | ApplyOrderActionArgs,
+        value: ApplyOrderItemActionArgs | ApplyOrderActionArgs | ApplyShippingActionArgs,
     ): value is ApplyOrderItemActionArgs {
         return value.hasOwnProperty('orderItem');
+    }
+
+    private isShippingArg(
+        value: ApplyOrderItemActionArgs | ApplyOrderActionArgs | PromotionShippingAction,
+    ): value is ApplyShippingActionArgs {
+        return value.hasOwnProperty('shippingLine');
     }
 }

@@ -1,0 +1,46 @@
+
+@mixin order-table {
+
+    .is-cancelled td {
+        text-decoration: line-through;
+        background-color: var(--color-component-bg-200);
+    }
+
+    .sub-total td {
+        border-top: 1px dashed var(--color-component-border-200);
+    }
+
+    .total td {
+        font-weight: bold;
+        border-top: 1px dashed var(--color-component-border-200);
+    }
+
+    .order-line-custom-field {
+        background-color: var(--color-component-bg-100);
+
+        .custom-field-ellipsis {
+            color: var(--color-text-300);
+        }
+    }
+
+    .net-price {
+        font-size: 11px;
+        color: var(--color-text-300);
+    }
+    .promotions-label {
+        text-decoration: underline dotted var(--color-text-200);
+        font-size: 11px;
+        margin-top: 6px;
+        cursor: pointer;
+        text-transform: lowercase;
+    }
+
+    .line-promotion {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 12px;
+        .promotion-amount {
+            margin-left: 12px;
+        }
+    }
+}

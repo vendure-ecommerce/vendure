@@ -16,6 +16,7 @@ import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/ful
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from './helpers/order-calculator/order-calculator';
 import { OrderMerger } from './helpers/order-merger/order-merger';
+import { OrderModifier } from './helpers/order-modifier/order-modifier';
 import { OrderStateMachine } from './helpers/order-state-machine/order-state-machine';
 import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
@@ -23,7 +24,6 @@ import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
 import { ShippingConfiguration } from './helpers/shipping-configuration/shipping-configuration';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
-import { TaxCalculator } from './helpers/tax-calculator/tax-calculator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
 import { InitializerService } from './initializer.service';
@@ -97,11 +97,11 @@ const services = [
 const helpers = [
     TranslatableSaver,
     PasswordCiper,
-    TaxCalculator,
     OrderCalculator,
     OrderStateMachine,
     FulfillmentStateMachine,
     OrderMerger,
+    OrderModifier,
     PaymentStateMachine,
     ListQueryBuilder,
     ShippingCalculator,

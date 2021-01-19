@@ -5,6 +5,8 @@ import {
     AddOptionToGroup,
     AssignProductsToChannel,
     AssignProductsToChannelInput,
+    AssignProductVariantsToChannelInput,
+    AssignVariantsToChannel,
     CreateAssets,
     CreateProduct,
     CreateProductInput,
@@ -30,6 +32,8 @@ import {
     RemoveOptionGroupFromProduct,
     RemoveProductsFromChannel,
     RemoveProductsFromChannelInput,
+    RemoveProductVariantsFromChannelInput,
+    RemoveVariantsFromChannel,
     SearchProducts,
     SortOrder,
     UpdateAsset,
@@ -45,6 +49,7 @@ import {
     ADD_OPTION_GROUP_TO_PRODUCT,
     ADD_OPTION_TO_GROUP,
     ASSIGN_PRODUCTS_TO_CHANNEL,
+    ASSIGN_VARIANTS_TO_CHANNEL,
     CREATE_ASSETS,
     CREATE_PRODUCT,
     CREATE_PRODUCT_OPTION_GROUP,
@@ -63,6 +68,7 @@ import {
     PRODUCT_SELECTOR_SEARCH,
     REMOVE_OPTION_GROUP_FROM_PRODUCT,
     REMOVE_PRODUCTS_FROM_CHANNEL,
+    REMOVE_VARIANTS_FROM_CHANNEL,
     SEARCH_PRODUCTS,
     UPDATE_ASSET,
     UPDATE_PRODUCT,
@@ -144,6 +150,7 @@ export class ProductDataService {
     createProduct(product: CreateProductInput) {
         const input: CreateProduct.Variables = {
             input: pick(product, [
+                'enabled',
                 'translations',
                 'customFields',
                 'assetIds',
@@ -326,6 +333,24 @@ export class ProductDataService {
             RemoveProductsFromChannel.Mutation,
             RemoveProductsFromChannel.Variables
         >(REMOVE_PRODUCTS_FROM_CHANNEL, {
+            input,
+        });
+    }
+
+    assignVariantsToChannel(input: AssignProductVariantsToChannelInput) {
+        return this.baseDataService.mutate<
+            AssignVariantsToChannel.Mutation,
+            AssignVariantsToChannel.Variables
+        >(ASSIGN_VARIANTS_TO_CHANNEL, {
+            input,
+        });
+    }
+
+    removeVariantsFromChannel(input: RemoveProductVariantsFromChannelInput) {
+        return this.baseDataService.mutate<
+            RemoveVariantsFromChannel.Mutation,
+            RemoveVariantsFromChannel.Variables
+        >(REMOVE_VARIANTS_FROM_CHANNEL, {
             input,
         });
     }

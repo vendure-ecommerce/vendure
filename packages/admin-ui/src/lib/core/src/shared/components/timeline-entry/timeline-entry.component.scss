@@ -1,4 +1,3 @@
-@import "variables";
 
 :host {
     display: block;
@@ -6,7 +5,7 @@
     &:first-of-type {
         .timeline {
             &:before {
-                border-left-color: $color-grey-100;
+                border-left-color: var(--color-timeline-thread);
             }
         }
         .entry-body {
@@ -18,7 +17,7 @@
     display: flex;
 }
 .timeline {
-    border-left: 2px solid $color-primary-100;
+    border-left: 2px solid var(--color-timeline-thread);
     padding-bottom: 8px;
     position: relative;
 
@@ -28,7 +27,7 @@
         width: 2px;
         height: 32px;
         left: -2px;
-        border-left: 2px solid $color-primary-100;
+        border-left: 2px solid var(--color-timeline-thread);
     }
     &:after {
         content: '';
@@ -36,8 +35,8 @@
         border-radius: 50%;
         width: 8px;
         height: 8px;
-        background-color: $color-grey-200;
-        border: 1px solid $color-grey-400;
+        background-color: var(--color-component-bg-200);
+        border: 1px solid var(--color-component-border-300);
         position: absolute;
         left: -5px;
         top: 32px;
@@ -54,9 +53,9 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        color: $color-primary-600;
-        background-color: $color-grey-100;
-        border: 1px solid $color-grey-300;
+        color: var(--color-primary-600);
+        background-color: var(--color-component-bg-100);
+        border: 1px solid var(--color-component-border-200);
         display: none;
     }
 }
@@ -80,7 +79,7 @@
     padding-left: 12px;
     line-height: 16px;
     margin-left: 12px;
-    color: $color-grey-500;
+    color: var(--color-text-200);
     overflow: visible;
     max-height: 100px;
     transition: max-height 0.2s, padding-top 0.2s, opacity 0.2s 0.2s;
@@ -88,19 +87,19 @@
 
 .featured-entry ::ng-deep {
     .title {
-        color: $color-grey-800;
+        color: var(--color-text-100);
         font-size: 16px;
         line-height: 26px;
     }
     .note-text {
-        color: $color-grey-800;
+        color: var(--color-text-100);
         white-space: pre-wrap;
     }
 }
 
 .detail {
     display: flex;
-    color: $color-grey-400;
+    color: var(--color-text-300);
     font-size: 12px;
     .time {
     }
@@ -112,37 +111,37 @@
 
 .muted {
     .timeline, .timeline .custom-icon {
-        color: $color-grey-400;
+        color: var(--color-text-300);
     }
 }
 
 .success {
     .timeline, .timeline .custom-icon {
-        color: $color-success-400;
+        color: var(--color-success-400);
     }
     .timeline:after {
-        background-color: $color-success-200;
-        border: 1px solid $color-success-400;
+        background-color: var(--color-success-200);
+        border: 1px solid var(--color-success-400);
     }
 }
 
 .error {
     .timeline, .timeline .custom-icon {
-        color: $color-error-400;
+        color: var(--color-error-400);
     }
     .timeline:after {
-        background-color: $color-error-200;
-        border: 1px solid $color-error-400;
+        background-color: var(--color-error-200);
+        border: 1px solid var(--color-error-400);
     }
 }
 
 .warning {
     .timeline, .timeline .custom-icon {
-        color: $color-warning-400;
+        color: var(--color-warning-400);
     }
     .timeline:after {
-        background-color: $color-warning-200;
-        border: 1px solid $color-warning-400;
+        background-color: var(--color-warning-200);
+        border: 1px solid var(--color-warning-400);
     }
 }
 

@@ -10,7 +10,6 @@ import { CustomProductFieldsTranslation } from '../custom-entity-fields';
 import { Product } from './product.entity';
 
 @Entity()
-@Index(['languageCode', 'slug'], { unique: true })
 export class ProductTranslation extends VendureEntity implements Translation<Product>, HasCustomFields {
     constructor(input?: DeepPartial<Translation<Product>>) {
         super(input);
@@ -24,10 +23,7 @@ export class ProductTranslation extends VendureEntity implements Translation<Pro
 
     @Column('text') description: string;
 
-    @ManyToOne(
-        type => Product,
-        base => base.translations,
-    )
+    @ManyToOne(type => Product, base => base.translations)
     base: Product;
 
     @Column(type => CustomProductFieldsTranslation)

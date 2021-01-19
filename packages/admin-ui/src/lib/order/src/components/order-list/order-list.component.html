@@ -1,19 +1,72 @@
 <vdr-action-bar>
     <vdr-ab-left>
         <div class="search-form">
-            <select clrSelect name="state" [formControl]="stateFilter">
-                <option value="all">{{ 'order.state-all-orders' | translate }}</option>
-                <option *ngFor="let orderState of orderStates" [value]="orderState">
-                    {{ orderState | orderStateI18nToken | translate }}
-                </option>
-            </select>
+            <div class="btn-group btn-outline-primary" *ngIf="activePreset$ | async as activePreset">
+                <button
+                    class="btn"
+                    *ngFor="let preset of filterPresets"
+                    [class.btn-primary]="activePreset === preset.name"
+                    (click)="selectFilterPreset(preset.name)"
+                >
+                    {{ preset.label | translate }}
+                </button>
+                <button
+                    class="btn"
+                    [class.btn-primary]="activePreset === 'custom'"
+                    (click)="selectFilterPreset('custom')"
+                >
+                    {{ 'order.filter-custom' | translate }}
+                    <clr-icon shape="angle down"></clr-icon>
+                </button>
+            </div>
+
             <input
                 type="text"
                 name="searchTerm"
                 [formControl]="searchTerm"
                 [placeholder]="'order.search-by-order-code' | translate"
-                class="clr-input search-input"
+                class="search-input"
             />
+        </div>
+        <div class="custom-filters" [class.expanded]="(activePreset$ | async) === 'custom'">
+            <form [formGroup]="customFilterForm">
+                <div class="flex align-center">
+                    <ng-select
+                        [items]="orderStates"
+                        appendTo="body"
+                        [addTag]="false"
+                        [multiple]="true"
+                        formControlName="states"
+                        [placeholder]="'state.all-orders' | translate"
+                        [clearable]="true"
+                        [searchable]="false"
+                    >
+                        <ng-template ng-option-tmp let-item="item">{{ item | stateI18nToken | translate }}</ng-template>
+                        <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                            <span class="ng-value-label"> {{ item | stateI18nToken | translate }}</span>
+                            <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+                        </ng-template>
+                    </ng-select>
+                    <button
+                        class="btn btn-secondary"
+                        [disabled]="customFilterForm.pristine"
+                        (click)="applyCustomFilters()"
+                    >
+                        {{ 'order.apply-filters' | translate }}
+                        <clr-icon shape="filter"></clr-icon>
+                    </button>
+                </div>
+                <div class="flex">
+                    <div>
+                        <label>{{ 'order.placed-at-start' | translate }}</label>
+                        <vdr-datetime-picker formControlName="placedAtStart"></vdr-datetime-picker>
+                    </div>
+                    <div>
+                        <label>{{ 'order.placed-at-end' | translate }}</label>
+                        <vdr-datetime-picker formControlName="placedAtEnd"></vdr-datetime-picker>
+                    </div>
+                </div>
+            </form>
         </div>
     </vdr-ab-left>
     <vdr-ab-right>
@@ -34,6 +87,8 @@
     <vdr-dt-column>{{ 'order.state' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'order.total' | translate }}</vdr-dt-column>
     <vdr-dt-column>{{ 'common.updated-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'order.placed-at' | translate }}</vdr-dt-column>
+    <vdr-dt-column>{{ 'order.shipping' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <ng-template let-order="item">
         <td class="left align-middle">{{ order.code }}</td>
@@ -43,13 +98,15 @@
         <td class="left align-middle">
             <vdr-order-state-label [state]="order.state"></vdr-order-state-label>
         </td>
-        <td class="left align-middle">{{ order.total / 100 | currency: order.currencyCode }}</td>
-        <td class="left align-middle">{{ order.updatedAt | date: 'medium' }}</td>
+        <td class="left align-middle">{{ order.total | localeCurrency: order.currencyCode }}</td>
+        <td class="left align-middle">{{ order.updatedAt | timeAgo }}</td>
+        <td class="left align-middle">{{ order.orderPlacedAt | localeDate: 'medium' }}</td>
+        <td class="left align-middle">{{ getShippingNames(order) }}</td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="shopping-cart"
                 [label]="'common.open' | translate"
-                [linkTo]="['./', order.id]"
+                [linkTo]="order.state === 'Modifying' ? ['./', order.id, 'modify'] : ['./', order.id]"
             ></vdr-table-row-action>
         </td>
     </ng-template>

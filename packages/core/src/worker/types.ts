@@ -5,7 +5,7 @@
  *
  * @example
  * ```TypeScript
- * export class ReindexMessage extends WorkerMessage<{ ctx: RequestContext }, boolean> {
+ * export class ReindexMessage extends WorkerMessage<{ ctx: SerializedRequestContext }, boolean> {
  *   static readonly pattern = 'Reindex';
  * }
  *
@@ -15,7 +15,10 @@
  *   constructor(private workerService: WorkerService) {}
  *
  *   reindex(ctx: RequestContext): Observable<boolean>> {
- *     return this.workerService.send(new ReindexMessage({ ctx }))
+ *     // If you need to send the RequestContext object to the worker,
+ *     // be sure to send a serialized version to avoid errors.
+ *     const serializedCtx = ctx.serialize();
+ *     return this.workerService.send(new ReindexMessage({ ctx: serializedCtx }))
  *   }
  * }
  *
@@ -23,7 +26,10 @@
  * class MyController {
  *
  *  \@MessagePattern(ReindexMessage.pattern)
- *  reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
+ *  reindex({ ctx: serializedCtx }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
+ *    // Convert the SerializedRequestContext back into a regular
+ *    // RequestContext object
+ *    const ctx = RequestContext.deserialize(serializedCtx);
  *    // ... some long-running workload
  *  }
  * }

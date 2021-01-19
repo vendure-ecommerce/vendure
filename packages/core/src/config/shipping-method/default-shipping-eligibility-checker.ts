@@ -19,6 +19,6 @@ export const defaultShippingEligibilityChecker = new ShippingEligibilityChecker(
         },
     },
     check: (ctx, order, args) => {
-        return order.total >= args.orderMinimum;
+        return order.subTotalWithTax >= args.orderMinimum;
     },
 });

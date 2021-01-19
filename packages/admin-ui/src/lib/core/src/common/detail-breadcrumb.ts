@@ -29,7 +29,7 @@ export function detailBreadcrumb<T>(options: {
                 },
                 {
                     label,
-                    link: [options.id],
+                    link: [options.route, options.id],
                 },
             ];
         }),

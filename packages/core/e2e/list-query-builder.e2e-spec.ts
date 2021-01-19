@@ -4,9 +4,10 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
+import { SortOrder } from './graphql/generated-e2e-admin-types';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
@@ -34,6 +35,269 @@ describe('ListQueryBuilder', () => {
     function getItemLabels(items: any[]): string[] {
         return items.map((x: any) => x.label).sort();
     }
+
+    describe('string filtering', () => {
+        it('eq', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            eq: 'B',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B']);
+        });
+
+        it('notEq', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            notEq: 'B',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C', 'D', 'E']);
+        });
+
+        it('contains', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            contains: 'adip',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['C']);
+        });
+
+        it('notContains', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        description: {
+                            notContains: 'te',
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
+        it('in', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            in: ['A', 'C'],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'C']);
+        });
+
+        it('notIn', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        label: {
+                            notIn: ['A', 'C'],
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E']);
+        });
+
+        describe('regex', () => {
+            it('simple substring', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'or',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'D']);
+            });
+
+            it('start of string', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: '^in',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['E']);
+            });
+
+            it('end of string', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'or$',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['D']);
+            });
+
+            it('alternation', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: 'dolor|tempor',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['B', 'D']);
+            });
+
+            it('complex', async () => {
+                const { testEntities } = await adminClient.query(GET_LIST, {
+                    options: {
+                        filter: {
+                            description: {
+                                regex: '(dolor|tempor)|inc[i]?d[^a]d.*nt',
+                            },
+                        },
+                    },
+                });
+
+                expect(getItemLabels(testEntities.items)).toEqual(['B', 'D', 'E']);
+            });
+        });
+    });
+
+    describe('boolean filtering', () => {
+        it('eq', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        active: {
+                            eq: false,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'E']);
+        });
+    });
+
+    describe('number filtering', () => {
+        it('eq', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            eq: 1,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B']);
+        });
+
+        it('lt', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            lt: 1,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A']);
+        });
+
+        it('lte', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            lte: 1,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
+        it('gt', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            gt: 1,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+        });
+
+        it('gte', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            gte: 1,
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['B', 'C', 'D', 'E']);
+        });
+
+        it('between', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        order: {
+                            between: {
+                                start: 2,
+                                end: 4,
+                            },
+                        },
+                    },
+                },
+            });
+
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+        });
+    });
 
     describe('date filtering', () => {
         it('before', async () => {
@@ -75,7 +339,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
         });
 
         it('after on same date', async () => {
@@ -89,7 +353,7 @@ describe('ListQueryBuilder', () => {
                 },
             });
 
-            expect(getItemLabels(testEntities.items)).toEqual(['C']);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
         });
 
         it('between', async () => {
@@ -107,6 +371,103 @@ describe('ListQueryBuilder', () => {
             });
 
             expect(getItemLabels(testEntities.items)).toEqual(['B']);
+        });
+    });
+
+    describe('sorting', () => {
+        it('sort by string', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        label: SortOrder.DESC,
+                    },
+                },
+            });
+
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by number', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        order: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by date', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        date: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+
+        it('sort by ID', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        id: SortOrder.DESC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
+        });
+    });
+
+    describe('calculated fields', () => {
+        it('filter by simple calculated property', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        descriptionLength: {
+                            lt: 12,
+                        },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
+        it('filter by calculated property with join', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    filter: {
+                        price: {
+                            lt: 14,
+                        },
+                    },
+                },
+            });
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'E']);
+        });
+
+        it('sort by simple calculated property', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        descriptionLength: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
+        });
+
+        it('sort by calculated property with join', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
         });
     });
 });

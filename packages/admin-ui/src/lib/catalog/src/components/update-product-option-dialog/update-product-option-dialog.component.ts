@@ -16,8 +16,10 @@ import { normalizeString } from '@vendure/common/lib/normalize-string';
     styleUrls: ['./update-product-option-dialog.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UpdateProductOptionDialogComponent implements Dialog<UpdateProductOptionInput>, OnInit {
-    resolveWith: (result?: UpdateProductOptionInput) => void;
+export class UpdateProductOptionDialogComponent
+    implements Dialog<UpdateProductOptionInput & { autoUpdate: boolean }>, OnInit {
+    resolveWith: (result?: UpdateProductOptionInput & { autoUpdate: boolean }) => void;
+    updateVariantName = true;
     // Provided by caller
     productOption: ProductVariant.Options;
     activeLanguage: LanguageCode;
@@ -29,7 +31,7 @@ export class UpdateProductOptionDialogComponent implements Dialog<UpdateProductO
 
     ngOnInit(): void {
         const currentTranslation = this.productOption.translations.find(
-            (t) => t.languageCode === this.activeLanguage,
+            t => t.languageCode === this.activeLanguage,
         );
         this.name = currentTranslation?.name ?? '';
         this.code = this.productOption.code;
@@ -64,7 +66,7 @@ export class UpdateProductOptionDialogComponent implements Dialog<UpdateProductO
                 name: '',
             },
         });
-        this.resolveWith(result);
+        this.resolveWith({ ...result, autoUpdate: this.updateVariantName });
     }
 
     cancel() {

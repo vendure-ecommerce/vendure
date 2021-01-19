@@ -1,0 +1,90 @@
+@import "variables";
+
+// Default Vendure light theme. The Clarity component custom properties
+// are left as their defaults.
+:root {
+    // Colors
+    --color-primary-100: #{$color-primary-100};
+    --color-primary-200: #{$color-primary-200};
+    --color-primary-300: #{$color-primary-300};
+    --color-primary-400: #{$color-primary-400};
+    --color-primary-500: #{$color-primary-500};
+    --color-primary-600: #{$color-primary-600};
+    --color-primary-700: #{$color-primary-700};
+    --color-primary-800: #{$color-primary-800};
+    --color-primary-900: #{$color-primary-900};
+    --color-secondary-100: #{$color-secondary-100};
+    --color-secondary-200: #{$color-secondary-200};
+    --color-secondary-300: #{$color-secondary-300};
+    --color-secondary-400: #{$color-secondary-400};
+    --color-secondary-500: #{$color-secondary-500};
+    --color-secondary-600: #{$color-secondary-600};
+    --color-secondary-700: #{$color-secondary-700};
+    --color-secondary-800: #{$color-secondary-800};
+    --color-secondary-900: #{$color-secondary-900};
+    --color-success-100: #{$color-success-100};
+    --color-success-200: #{$color-success-200};
+    --color-success-300: #{$color-success-300};
+    --color-success-400: #{$color-success-400};
+    --color-success-500: #{$color-success-500};
+    --color-success-600: #{$color-success-600};
+    --color-success-700: #{$color-success-700};
+    --color-success-800: #{$color-success-800};
+    --color-success-900: #{$color-success-900};
+    --color-error-100: #{$color-error-100};
+    --color-error-200: #{$color-error-200};
+    --color-error-300: #{$color-error-300};
+    --color-error-400: #{$color-error-400};
+    --color-error-500: #{$color-error-500};
+    --color-error-600: #{$color-error-600};
+    --color-error-700: #{$color-error-700};
+    --color-error-800: #{$color-error-800};
+    --color-error-900: #{$color-error-900};
+    --color-warning-100: #{$color-warning-100};
+    --color-warning-200: #{$color-warning-200};
+    --color-warning-300: #{$color-warning-300};
+    --color-warning-400: #{$color-warning-400};
+    --color-warning-500: #{$color-warning-500};
+    --color-warning-600: #{$color-warning-600};
+    --color-warning-700: #{$color-warning-700};
+    --color-warning-800: #{$color-warning-800};
+    --color-warning-900: #{$color-warning-900};
+    --color-grey-100: #{$color-grey-100};
+    --color-grey-200: #{$color-grey-200};
+    --color-grey-300: #{$color-grey-300};
+    --color-grey-400: #{$color-grey-400};
+    --color-grey-500: #{$color-grey-500};
+    --color-grey-600: #{$color-grey-600};
+    --color-grey-700: #{$color-grey-700};
+    --color-grey-800: #{$color-grey-800};
+    --color-grey-900: #{$color-grey-900};
+
+    // Universal semantic colors
+    --color-component-bg-100: var(--color-grey-100);
+    --color-component-bg-200: var(--color-grey-200);
+    --color-component-bg-300: var(--color-grey-300);
+    --color-component-border-100: var(--color-grey-200);
+    --color-component-border-200: var(--color-grey-300);
+    --color-component-border-300: var(--color-grey-400);
+    --color-text-100: var(--clr-global-font-color);
+    --color-text-200: var(--clr-global-font-color-secondary);
+    --color-text-300: var(--color-grey-400);
+
+    // Component-specific colors
+    --color-icon-button: var(--color-grey-600);
+    --color-form-input-bg: white;
+    --color-timeline-thread: var(--color-primary-100);
+    --color-chip-warning-border: var(--color-warning-200);
+    --color-chip-warning-text: var(--color-warning-600);
+    --color-chip-warning-bg: var(--color-warning-100);
+    --color-chip-success-border: var(--color-success-200);
+    --color-chip-success-text: var(--color-success-600);
+    --color-chip-success-bg: var(--color-success-100);
+    --color-chip-error-border: var(--color-error-200);
+    --color-chip-error-text: var(--color-error-600);
+    --color-chip-error-bg: var(--color-error-100);
+
+    // Other variables
+    --login-page-bg: url(data:image/gif;base64,R0lGODlhFAAhAKIAABwcHBsbGxcXFx0dHRUVFRkZGR4eHhQUFCH/C1hNUCBEYXRhWE1QPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ2NzI5LCAyMDEyLzA1LzAzLTEzOjQwOjAzICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgRWxlbWVudHMgMTIuMCBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjhBOTg1NDlCNjMwNDExRUFBNEUwQ0M2RDdENUQ3RTBFIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjhBOTg1NDlDNjMwNDExRUFBNEUwQ0M2RDdENUQ3RTBFIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6OEE5ODU0OTk2MzA0MTFFQUE0RTBDQzZEN0Q1RDdFMEUiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6OEE5ODU0OUE2MzA0MTFFQUE0RTBDQzZEN0Q1RDdFMEUiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4B//79/Pv6+fj39vX08/Lx8O/u7ezr6uno5+bl5OPi4eDf3t3c29rZ2NfW1dTT0tHQz87NzMvKycjHxsXEw8LBwL++vby7urm4t7a1tLOysbCvrq2sq6qpqKempaSjoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAh+QQAAAAAACwAAAAAFAAhAAADfSi23M7igEcZOIfUSvApm1N42RAuQ0cqZ0Ri0xa8nlaltAdSY44RJsfAt3q4iLDGDFlj4Ji6RQ/6GwypqyOtwO12BQKv+EawnRq93dlwLa0NWtZpSYptniRzZfpSP9o0QBVaNHJKUHYoKkh6BnxIaoBMgnBYGAp0lgCLlgQJADs=);
+    --breakpoint-small: 768px;
+}

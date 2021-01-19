@@ -24,11 +24,7 @@ For example, there are already Vendure storefront projects built with Vue, React
 
 ## Who is using Vendure?
 
-There are a number of Vendure projects under development at the moment. Based on community interactions, we know that Vendure is being used in both public B2C settings and enterprise B2B. Here are some live Vendure sites that we know of. Please get in touch if you'd like yours to be added!
-
-* [CB Made In Italy](https://cbmadeinitaly.com/): Vendure + [Vue Storefront](https://www.vuestorefront.io/)
-* [Racketworld.ch](https://racketworld.ch/): Vendure + [Svelte](https://svelte.dev/) + [Sapper](https://sapper.svelte.dev/)
-* [GoMo](https://gomo.in.th/): Vendure + [React](https://reactjs.org/)
+There are a number of Vendure projects under development at the moment. Based on community interactions, we know that Vendure is being used in both public B2C settings and enterprise B2B. We're collecting a list of production Vendure-powered sites in the [Built With Vendure](https://github.com/vendure-ecommerce/vendure/discussions/485) thread in our discussion forum.
 
 ## Is enterprise support available?
 

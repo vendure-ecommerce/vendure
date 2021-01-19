@@ -1,7 +1,6 @@
-@import "variables";
 
 td {
     &.private {
-        background-color: $color-grey-200;
+        background-color: var(--color-component-bg-200);
     }
 }

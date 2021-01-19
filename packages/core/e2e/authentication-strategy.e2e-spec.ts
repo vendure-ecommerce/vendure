@@ -54,11 +54,10 @@ describe('AuthenticationStrategy', () => {
         await server.destroy();
     });
 
-    const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard<
-        CurrentUserFragment
-    >(input => input.identifier != null);
-
-    const customerGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard<CustomerFragment>(
+    const currentUserGuard: ErrorResultGuard<CurrentUserFragment> = createErrorResultGuard(
+        input => input.identifier != null,
+    );
+    const customerGuard: ErrorResultGuard<CustomerFragment> = createErrorResultGuard(
         input => input.emailAddress != null,
     );
 
@@ -193,9 +192,9 @@ describe('AuthenticationStrategy', () => {
         });
 
         it('registerCustomerAccount with external email', async () => {
-            const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard<{
-                success: boolean;
-            }>(input => input.success != null);
+            const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard(
+                input => input.success != null,
+            );
 
             const { registerCustomerAccount } = await shopClient.query<Register.Mutation, Register.Variables>(
                 REGISTER_ACCOUNT,

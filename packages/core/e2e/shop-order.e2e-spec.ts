@@ -103,7 +103,7 @@ describe('Shop orders', () => {
         | TestOrderFragmentFragment
         | TestOrderWithPaymentsFragment
         | ActiveOrderCustomerFragment;
-    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard<OrderSuccessResult>(
+    const orderResultGuard: ErrorResultGuard<OrderSuccessResult> = createErrorResultGuard(
         input => !!input.lines,
     );
 
@@ -844,8 +844,8 @@ describe('Shop orders', () => {
                 shippingMethods = result.eligibleShippingMethods;
 
                 expect(shippingMethods).toEqual([
-                    { id: 'T_1', price: 500, description: 'Standard Shipping' },
-                    { id: 'T_2', price: 1000, description: 'Express Shipping' },
+                    { id: 'T_1', price: 500, name: 'Standard Shipping', description: '' },
+                    { id: 'T_2', price: 1000, name: 'Express Shipping', description: '' },
                 ]);
             });
 
@@ -853,7 +853,7 @@ describe('Shop orders', () => {
                 const result = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
 
                 expect(result.activeOrder!.shipping).toEqual(0);
-                expect(result.activeOrder!.shippingMethod).toEqual(null);
+                expect(result.activeOrder!.shippingLines).toEqual([]);
             });
 
             it('setOrderShippingMethod sets the shipping method', async () => {
@@ -869,8 +869,10 @@ describe('Shop orders', () => {
                 const order = activeOrderResult.activeOrder!;
 
                 expect(order.shipping).toBe(shippingMethods[1].price);
-                expect(order.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(order.shippingMethod!.description).toBe(shippingMethods[1].description);
+                expect(order.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
+                expect(order.shippingLines[0].shippingMethod!.description).toBe(
+                    shippingMethods[1].description,
+                );
             });
 
             it('shipping method is preserved after adjustOrderLine', async () => {
@@ -885,8 +887,10 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertSuccess(adjustOrderLine);
                 expect(adjustOrderLine!.shipping).toBe(shippingMethods[1].price);
-                expect(adjustOrderLine!.shippingMethod!.id).toBe(shippingMethods[1].id);
-                expect(adjustOrderLine!.shippingMethod!.description).toBe(shippingMethods[1].description);
+                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.id).toBe(shippingMethods[1].id);
+                expect(adjustOrderLine!.shippingLines[0].shippingMethod!.description).toBe(
+                    shippingMethods[1].description,
+                );
             });
         });
 
@@ -1069,7 +1073,7 @@ describe('Shop orders', () => {
                 });
                 orderResultGuard.assertSuccess(addPaymentToOrder);
 
-                const payment = addPaymentToOrder!.payments![2];
+                const payment = addPaymentToOrder!.payments!.find(p => p.transactionId === '12345')!;
                 expect(addPaymentToOrder!.state).toBe('PaymentSettled');
                 expect(addPaymentToOrder!.active).toBe(false);
                 expect(addPaymentToOrder!.payments!.length).toBe(3);
@@ -1390,9 +1394,15 @@ const GET_ORDER_CUSTOM_FIELDS = gql`
 const SET_ORDER_CUSTOM_FIELDS = gql`
     mutation SetOrderCustomFields($input: UpdateOrderInput!) {
         setOrderCustomFields(input: $input) {
-            id
-            customFields {
-                giftWrap
+            ... on Order {
+                id
+                customFields {
+                    giftWrap
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }

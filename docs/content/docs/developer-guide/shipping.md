@@ -43,7 +43,7 @@ export const maxWeightChecker = new ShippingEligibilityChecker({
    * (This example assumes a custom field "weight" is defined on the
    * ProductVariant entity)
    */
-  check: (order, args) => {
+  check: (ctx, order, args) => {
     const totalWeight = order.lines
       .map((l) => (l.productVariant.customFields as any).weight * l.quantity)
       .reduce((total, lineWeight) => total + lineWeight, 0);
@@ -89,7 +89,7 @@ export const externalShippingCalculator = new ShippingCalculator({
       label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
     },
   },
-  calculate: async (order, args) => {
+  calculate: async (ctx, order, args) => {
     // `shippingDataSource` is assumed to fetch the data from some
     // external data source.
     const { rate, deliveryDate, courier } = await shippingDataSource.getRate({
@@ -99,7 +99,8 @@ export const externalShippingCalculator = new ShippingCalculator({
 
     return { 
       price: rate, 
-      priceWithTax: rate * ((100 + args.taxRate) / 100),
+      priceIncludesTax: ctx.channel.pricesIncludeTax,
+      taxRate: args.taxRate,
       // metadata is optional but can be used to pass arbitrary
       // data about the shipping estimate to the storefront.
       metadata: { courier, deliveryDate },
@@ -125,9 +126,25 @@ export const config: VendureConfig = {
 }
 ```
 
+{{% alert %}}
+**Dependency Injection**
+
+If your ShippingEligibilityChecker or ShippingCalculator needs access to the database or other providers, see the [ConfigurableOperationDef Dependency Injection guide]({{< relref "configurable-operation-def" >}}#dependency-injection).
+{{< /alert >}}
+
 ## Fulfillments
 
-Fulfillments represent the actual shipping status of items in an order. Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):
+Fulfillments represent the actual shipping status of items in an order. When an order is placed and payment has been settled, the order items are then delivered to the customer in one or more Fulfillments.
+
+### FulfillmentHandlers
+
+It is often required to integrate your fulfillment process, e.g. with an external shipping API which provides shipping labels or tracking codes. This is done by defining [FulfillmentHandlers]({{< relref "fulfillment-handler" >}}) (click the link for full documentation) and passing them in to the `shippingOptions.fulfillmentHandlers` array in your config.
+
+By default, Vendure uses a manual fulfillment handler, which requires the Administrator to manually enter the method and tracking code of the Fulfillment.
+
+### Fulfillment state machine
+
+Like Orders, Fulfillments are governed by a [finite state machine]({{< relref "fsm" >}}) and by default, a Fulfillment can be in one of the [following states]({{< relref "fulfillment-state" >}}):
 
 * `Pending` The Fulfillment has been created
 * `Shipped` The Fulfillment has been shipped

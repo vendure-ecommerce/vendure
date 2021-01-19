@@ -1,15 +1,16 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { Adjustment, AdjustmentType, TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
-import { Column, Entity, ManyToOne, OneToOne } from 'typeorm';
+import { summate } from '@vendure/common/lib/shared-utils';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
+import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { VendureEntity } from '../base/base.entity';
 import { EntityId } from '../entity-id.decorator';
 import { Fulfillment } from '../fulfillment/fulfillment.entity';
 import { OrderLine } from '../order-line/order-line.entity';
 import { Refund } from '../refund/refund.entity';
 import { Cancellation } from '../stock-movement/cancellation.entity';
-import { DecimalTransformer } from '../value-transformers';
 
 /**
  * @description
@@ -26,24 +27,31 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => OrderLine, line => line.items, { onDelete: 'CASCADE' })
     line: OrderLine;
 
-    @Column() readonly unitPrice: number;
+    /**
+     * @description
+     * This is the price as listed by the ProductVariant, which, depending on the
+     * current Channel, may or may not include tax.
+     */
+    @Column()
+    readonly listPrice: number;
 
     /**
-     * @deprecated
-     * TODO: remove once the field has been removed from the GraphQL type
+     * @description
+     * Whether or not the listPrice includes tax, which depends on the settings
+     * of the current Channel.
      */
-    unitPriceIncludesTax = false;
+    @Column()
+    readonly listPriceIncludesTax: boolean;
 
-    @Column({ type: 'decimal', precision: 5, scale: 2, transformer: new DecimalTransformer() })
-    taxRate: number;
+    @Column('simple-json')
+    adjustments: Adjustment[];
 
-    @Column('simple-json') pendingAdjustments: Adjustment[];
+    @Column('simple-json')
+    taxLines: TaxLine[];
 
-    @ManyToOne(type => Fulfillment)
-    fulfillment: Fulfillment;
-
-    @EntityId({ nullable: true })
-    fulfillmentId: ID | null;
+    @ManyToMany(type => Fulfillment, fulfillment => fulfillment.orderItems)
+    @JoinTable()
+    fulfillments: Fulfillment[];
 
     @ManyToOne(type => Refund)
     refund: Refund;
@@ -57,65 +65,86 @@ export class OrderItem extends VendureEntity {
     @Column({ default: false })
     cancelled: boolean;
 
+    get fulfillment(): Fulfillment | undefined {
+        return this.fulfillments?.find(f => f.state !== 'Cancelled');
+    }
+
+    @Calculated()
+    get unitPrice(): number {
+        return this.listPriceIncludesTax ? netPriceOf(this.listPrice, this.taxRate) : this.listPrice;
+    }
+
     @Calculated()
     get unitPriceWithTax(): number {
-        return Math.round(this.unitPrice * ((100 + this.taxRate) / 100));
+        return this.listPriceIncludesTax ? this.listPrice : grossPriceOf(this.listPrice, this.taxRate);
     }
 
     /**
-     * Adjustments with promotion values adjusted to include tax.
+     * @description
+     * The total applicable tax rate, which is the sum of all taxLines on this
+     * OrderItem.
      */
     @Calculated()
-    get adjustments(): Adjustment[] {
-        if (!this.pendingAdjustments) {
-            return [];
-        }
-        return this.pendingAdjustments.map(a => {
-            if (a.type === AdjustmentType.PROMOTION) {
-                // Add the tax that would have been payable on the discount so that the numbers add up
-                // for the end-user.
-                const adjustmentWithTax = Math.round(a.amount * ((100 + this.taxRate) / 100));
-                return {
-                    ...a,
-                    amount: adjustmentWithTax,
-                };
-            }
-            return a;
-        });
+    get taxRate(): number {
+        return summate(this.taxLines, 'taxRate');
+    }
+
+    @Calculated()
+    get unitTax(): number {
+        return this.unitPriceWithTax - this.unitPrice;
+    }
+
+    @Calculated()
+    get discountedUnitPrice(): number {
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
+    }
+
+    @Calculated()
+    get discountedUnitPriceWithTax(): number {
+        const result = this.listPrice + this.getAdjustmentsTotal(AdjustmentType.PROMOTION);
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
+    }
+
+    @Calculated()
+    get proratedUnitPrice(): number {
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? netPriceOf(result, this.taxRate) : result;
+    }
+
+    @Calculated()
+    get proratedUnitPriceWithTax(): number {
+        const result = this.listPrice + this.getAdjustmentsTotal();
+        return this.listPriceIncludesTax ? result : grossPriceOf(result, this.taxRate);
+    }
+
+    @Calculated()
+    get proratedUnitTax(): number {
+        return this.proratedUnitPriceWithTax - this.proratedUnitPrice;
     }
 
     /**
-     * This is the actual, final price of the OrderItem payable by the customer.
+     * @description
+     * The total of all price adjustments. Will typically be a negative number due to discounts.
      */
-    get unitPriceWithPromotionsAndTax(): number {
-        return this.unitPriceWithPromotions + this.unitTax;
-    }
-
-    get unitTax(): number {
-        const taxAdjustment = this.adjustments.find(a => a.type === AdjustmentType.TAX);
-        return taxAdjustment ? taxAdjustment.amount : 0;
-    }
-
-    get promotionAdjustmentsTotal(): number {
-        if (!this.pendingAdjustments) {
+    private getAdjustmentsTotal(type?: AdjustmentType): number {
+        if (!this.adjustments) {
             return 0;
         }
-        return this.pendingAdjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
+        return this.adjustments
+            .filter(adjustment => (type ? adjustment.type === type : true))
             .reduce((total, a) => total + a.amount, 0);
     }
 
-    get unitPriceWithPromotions(): number {
-        return this.unitPrice + this.promotionAdjustmentsTotal;
+    addAdjustment(adjustment: Adjustment) {
+        this.adjustments = this.adjustments.concat(adjustment);
     }
 
     clearAdjustments(type?: AdjustmentType) {
         if (!type) {
-            this.pendingAdjustments = [];
+            this.adjustments = [];
         } else {
-            this.pendingAdjustments = this.pendingAdjustments
-                ? this.pendingAdjustments.filter(a => a.type !== type)
-                : [];
+            this.adjustments = this.adjustments ? this.adjustments.filter(a => a.type !== type) : [];
         }
     }
 }

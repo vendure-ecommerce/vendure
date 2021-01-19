@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    ActiveOrderResult,
     AddPaymentToOrderResult,
     ApplyCouponCodeResult,
     MutationAddItemToOrderArgs,
@@ -28,7 +29,10 @@ import ms from 'ms';
 
 import { ErrorResultUnion, isGraphQlErrorResult } from '../../../common/error/error-result';
 import { ForbiddenError, InternalServerError } from '../../../common/error/errors';
-import { AlreadyLoggedInError } from '../../../common/error/generated-graphql-shop-errors';
+import {
+    AlreadyLoggedInError,
+    NoActiveOrderError,
+} from '../../../common/error/generated-graphql-shop-errors';
 import { Translated } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
 import { Country } from '../../../entity';
@@ -138,15 +142,14 @@ export class ShopOrderResolver {
     async setOrderShippingAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetOrderShippingAddressArgs,
-    ): Promise<Order | undefined> {
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingAddress(ctx, sessionOrder.id, args.input);
-            } else {
-                return;
             }
         }
+        return new NoActiveOrderError();
     }
 
     @Transaction()
@@ -155,15 +158,14 @@ export class ShopOrderResolver {
     async setOrderBillingAddress(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetOrderBillingAddressArgs,
-    ): Promise<Order | undefined> {
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setBillingAddress(ctx, sessionOrder.id, args.input);
-            } else {
-                return;
             }
         }
+        return new NoActiveOrderError();
     }
 
     @Query()
@@ -184,13 +186,14 @@ export class ShopOrderResolver {
     async setOrderShippingMethod(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetOrderShippingMethodArgs,
-    ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order> | undefined> {
+    ): Promise<ErrorResultUnion<SetOrderShippingMethodResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.setShippingMethod(ctx, sessionOrder.id, args.shippingMethodId);
             }
         }
+        return new NoActiveOrderError();
     }
 
     @Transaction()
@@ -199,13 +202,14 @@ export class ShopOrderResolver {
     async setOrderCustomFields(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetOrderCustomFieldsArgs,
-    ): Promise<Order | undefined> {
+    ): Promise<ErrorResultUnion<ActiveOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.updateCustomFields(ctx, sessionOrder.id, args.input.customFields);
             }
         }
+        return new NoActiveOrderError();
     }
 
     @Query()
@@ -317,7 +321,7 @@ export class ShopOrderResolver {
     async addPaymentToOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationAddPaymentToOrderArgs,
-    ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order> | undefined> {
+    ): Promise<ErrorResultUnion<AddPaymentToOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
@@ -352,6 +356,7 @@ export class ShopOrderResolver {
                 return order;
             }
         }
+        return new NoActiveOrderError();
     }
 
     @Transaction()
@@ -360,7 +365,7 @@ export class ShopOrderResolver {
     async setCustomerForOrder(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationSetCustomerForOrderArgs,
-    ): Promise<ErrorResultUnion<SetCustomerForOrderResult, Order> | undefined> {
+    ): Promise<ErrorResultUnion<SetCustomerForOrderResult, Order>> {
         if (ctx.authorizedAsOwnerOnly) {
             if (ctx.activeUserId) {
                 return new AlreadyLoggedInError();
@@ -374,6 +379,7 @@ export class ShopOrderResolver {
                 return this.orderService.addCustomerToOrder(ctx, sessionOrder.id, customer);
             }
         }
+        return new NoActiveOrderError();
     }
 
     private async getOrderFromContext(ctx: RequestContext): Promise<Order | undefined>;

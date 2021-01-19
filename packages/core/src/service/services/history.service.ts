@@ -102,6 +102,9 @@ export type OrderHistoryEntryData = {
     [HistoryEntryType.ORDER_COUPON_REMOVED]: {
         couponCode: string;
     };
+    [HistoryEntryType.ORDER_MODIFIED]: {
+        modificationId: ID;
+    };
 };
 
 export interface CreateCustomerHistoryEntryArgs<T extends keyof CustomerHistoryEntryData> {

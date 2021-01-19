@@ -185,14 +185,9 @@ export class PromotionService {
     }
 
     async addPromotionsToOrder(ctx: RequestContext, order: Order): Promise<Order> {
-        const allAdjustments: Adjustment[] = [];
-        for (const line of order.lines) {
-            allAdjustments.push(...line.adjustments);
-        }
-        allAdjustments.push(...order.adjustments);
-        const allPromotionIds = allAdjustments
-            .filter(a => a.type === AdjustmentType.PROMOTION)
-            .map(a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id);
+        const allPromotionIds = order.discounts.map(
+            a => AdjustmentSource.decodeSourceId(a.adjustmentSource).id,
+        );
         const promotionIds = unique(allPromotionIds);
         const promotions = await this.connection.getRepository(ctx, Promotion).findByIds(promotionIds);
         order.promotions = promotions;

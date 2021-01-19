@@ -13,6 +13,7 @@ import { GlobalSettingsComponent } from './components/global-settings/global-set
 import { PaymentMethodDetailComponent } from './components/payment-method-detail/payment-method-detail.component';
 import { PaymentMethodListComponent } from './components/payment-method-list/payment-method-list.component';
 import { PermissionGridComponent } from './components/permission-grid/permission-grid.component';
+import { ProfileComponent } from './components/profile/profile.component';
 import { RoleDetailComponent } from './components/role-detail/role-detail.component';
 import { RoleListComponent } from './components/role-list/role-list.component';
 import { ShippingEligibilityTestResultComponent } from './components/shipping-eligibility-test-result/shipping-eligibility-test-result.component';
@@ -63,6 +64,7 @@ import { settingsRoutes } from './settings.routes';
         ZoneMemberListHeaderDirective,
         ZoneMemberControlsDirective,
         ZoneDetailDialogComponent,
+        ProfileComponent,
     ],
 })
 export class SettingsModule {}

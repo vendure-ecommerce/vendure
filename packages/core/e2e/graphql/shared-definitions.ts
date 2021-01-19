@@ -8,15 +8,19 @@ import {
     COUNTRY_FRAGMENT,
     CURRENT_USER_FRAGMENT,
     CUSTOMER_FRAGMENT,
+    CUSTOMER_GROUP_FRAGMENT,
     FACET_WITH_VALUES_FRAGMENT,
     FULFILLMENT_FRAGMENT,
     GLOBAL_SETTINGS_FRAGMENT,
     ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
+    PRODUCT_OPTION_GROUP_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
+    PRODUCT_WITH_OPTIONS_FRAGMENT,
     PRODUCT_WITH_VARIANTS_FRAGMENT,
     PROMOTION_FRAGMENT,
     ROLE_FRAGMENT,
+    SHIPPING_METHOD_FRAGMENT,
     TAX_RATE_FRAGMENT,
     VARIANT_WITH_STOCK_FRAGMENT,
 } from './fragments';
@@ -347,6 +351,24 @@ export const REMOVE_PRODUCT_FROM_CHANNEL = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const ASSIGN_PRODUCTVARIANT_TO_CHANNEL = gql`
+    mutation AssignProductVariantsToChannel($input: AssignProductVariantsToChannelInput!) {
+        assignProductVariantsToChannel(input: $input) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
+export const REMOVE_PRODUCTVARIANT_FROM_CHANNEL = gql`
+    mutation RemoveProductVariantsFromChannel($input: RemoveProductVariantsFromChannelInput!) {
+        removeProductVariantsFromChannel(input: $input) {
+            ...ProductVariant
+        }
+    }
+    ${PRODUCT_VARIANT_FRAGMENT}
+`;
+
 export const UPDATE_ASSET = gql`
     mutation UpdateAsset($input: UpdateAssetInput!) {
         updateAsset(input: $input) {
@@ -413,19 +435,6 @@ export const GET_ORDER = gql`
     ${ORDER_WITH_LINES_FRAGMENT}
 `;
 
-export const CUSTOMER_GROUP_FRAGMENT = gql`
-    fragment CustomerGroup on CustomerGroup {
-        id
-        name
-        customers {
-            items {
-                id
-            }
-            totalItems
-        }
-    }
-`;
-
 export const CREATE_CUSTOMER_GROUP = gql`
     mutation CreateCustomerGroup($input: CreateCustomerGroupInput!) {
         createCustomerGroup(input: $input) {
@@ -451,6 +460,9 @@ export const CREATE_FULFILLMENT = gql`
             ... on ErrorResult {
                 errorCode
                 message
+            }
+            ... on CreateFulfillmentError {
+                fulfillmentHandlerError
             }
         }
     }
@@ -730,6 +742,72 @@ export const GET_PRODUCTS_WITH_VARIANT_PRICES = gql`
                         id
                         code
                     }
+                }
+            }
+        }
+    }
+`;
+
+export const CREATE_PRODUCT_OPTION_GROUP = gql`
+    mutation CreateProductOptionGroup($input: CreateProductOptionGroupInput!) {
+        createProductOptionGroup(input: $input) {
+            ...ProductOptionGroup
+        }
+    }
+    ${PRODUCT_OPTION_GROUP_FRAGMENT}
+`;
+
+export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
+    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
+        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
+            ...ProductWithOptions
+        }
+    }
+    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
+`;
+
+export const CREATE_SHIPPING_METHOD = gql`
+    mutation CreateShippingMethod($input: CreateShippingMethodInput!) {
+        createShippingMethod(input: $input) {
+            ...ShippingMethod
+        }
+    }
+    ${SHIPPING_METHOD_FRAGMENT}
+`;
+
+export const SETTLE_PAYMENT = gql`
+    mutation SettlePayment($id: ID!) {
+        settlePayment(id: $id) {
+            ...Payment
+            ... on ErrorResult {
+                errorCode
+                message
+            }
+            ... on SettlePaymentError {
+                paymentErrorMessage
+            }
+        }
+    }
+    fragment Payment on Payment {
+        id
+        state
+        metadata
+    }
+`;
+
+export const GET_ORDER_HISTORY = gql`
+    query GetOrderHistory($id: ID!, $options: HistoryEntryListOptions) {
+        order(id: $id) {
+            id
+            history(options: $options) {
+                totalItems
+                items {
+                    id
+                    type
+                    administrator {
+                        id
+                    }
+                    data
                 }
             }
         }

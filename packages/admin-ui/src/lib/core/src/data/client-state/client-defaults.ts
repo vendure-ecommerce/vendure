@@ -1,9 +1,11 @@
+import { getAppConfig } from '../../app.config';
 import { GetNetworkStatus, GetUiState, GetUserStatus } from '../../common/generated-types';
 import { getDefaultUiLanguage } from '../../common/utilities/get-default-ui-language';
 import { LocalStorageService } from '../../providers/local-storage/local-storage.service';
 
 export function getClientDefaults(localStorageService: LocalStorageService) {
     const currentLanguage = localStorageService.get('uiLanguageCode') || getDefaultUiLanguage();
+    const activeTheme = localStorageService.get('activeTheme') || 'default';
     return {
         networkStatus: {
             inFlightRequests: 0,
@@ -20,6 +22,7 @@ export function getClientDefaults(localStorageService: LocalStorageService) {
         } as GetUserStatus.UserStatus,
         uiState: {
             language: currentLanguage,
+            theme: activeTheme,
             __typename: 'UiState',
         } as GetUiState.UiState,
     };

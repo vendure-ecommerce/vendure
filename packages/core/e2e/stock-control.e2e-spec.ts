@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { mergeConfig, OrderState } from '@vendure/core';
+import { manualFulfillmentHandler, mergeConfig, OrderState } from '@vendure/core';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -7,7 +7,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
+import { testSuccessfulPaymentMethod, twoStagePaymentMethod } from './fixtures/test-payment-methods';
 import { VARIANT_WITH_STOCK_FRAGMENT } from './graphql/fragments';
 import {
     CancelOrder,
@@ -18,6 +18,7 @@ import {
     GetOrder,
     GetStockMovement,
     GlobalFlag,
+    SettlePayment,
     StockMovementType,
     UpdateGlobalSettings,
     UpdateProductVariantInput,
@@ -41,6 +42,7 @@ import {
     CREATE_FULFILLMENT,
     GET_ORDER,
     GET_STOCK_MOVEMENT,
+    SETTLE_PAYMENT,
     UPDATE_GLOBAL_SETTINGS,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
@@ -57,18 +59,18 @@ describe('Stock control', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             paymentOptions: {
-                paymentMethodHandlers: [testSuccessfulPaymentMethod],
+                paymentMethodHandlers: [testSuccessfulPaymentMethod, twoStagePaymentMethod],
             },
         }),
     );
 
     const orderGuard: ErrorResultGuard<
         TestOrderFragmentFragment | UpdatedOrderFragment
-    > = createErrorResultGuard<TestOrderFragmentFragment>(input => !!input.lines);
+    > = createErrorResultGuard(input => !!input.lines);
 
-    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard<
-        FulfillmentFragment
-    >(input => !!input.state);
+    const fulfillmentGuard: ErrorResultGuard<FulfillmentFragment> = createErrorResultGuard(
+        input => !!input.state,
+    );
 
     async function getProductWithStockMovement(productId: string) {
         const { product } = await adminClient.query<GetStockMovement.Query, GetStockMovement.Variables>(
@@ -85,6 +87,15 @@ describe('Stock control', () => {
             customerCount: 3,
         });
         await adminClient.asSuperAdmin();
+
+        await adminClient.query<UpdateGlobalSettings.Mutation, UpdateGlobalSettings.Variables>(
+            UPDATE_GLOBAL_SETTINGS,
+            {
+                input: {
+                    trackInventory: false,
+                },
+            },
+        );
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
@@ -313,8 +324,13 @@ describe('Stock control', () => {
                 {
                     input: {
                         lines: order?.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })) ?? [],
-                        method: 'test method',
-                        trackingCode: 'ABC123',
+                        handler: {
+                            code: manualFulfillmentHandler.code,
+                            arguments: [
+                                { name: 'method', value: 'test method' },
+                                { name: 'trackingCode', value: 'ABC123' },
+                            ],
+                        },
                     },
                 },
             );
@@ -427,11 +443,36 @@ describe('Stock control', () => {
                             trackInventory: GlobalFlag.TRUE,
                             useGlobalOutOfStockThreshold: true,
                         },
+                        {
+                            id: 'T_5',
+                            stockOnHand: 0,
+                            outOfStockThreshold: 0,
+                            trackInventory: GlobalFlag.TRUE,
+                            useGlobalOutOfStockThreshold: false,
+                        },
                     ],
                 },
             );
 
             await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+        });
+
+        it('does not add an empty OrderLine if zero saleable stock', async () => {
+            const variantId = 'T_5';
+            const { addItemToOrder } = await shopClient.query<
+                AddItemToOrder.Mutation,
+                AddItemToOrder.Variables
+            >(ADD_ITEM_TO_ORDER, {
+                productVariantId: variantId,
+                quantity: 1,
+            });
+
+            orderGuard.assertErrorResult(addItemToOrder);
+
+            expect(addItemToOrder.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+            expect(addItemToOrder.message).toBe(`No items were added to the order due to insufficient stock`);
+            expect((addItemToOrder as any).quantityAvailable).toBe(0);
+            expect((addItemToOrder as any).order.lines.length).toBe(0);
         });
 
         it('returns InsufficientStockError when tracking inventory', async () => {
@@ -543,9 +584,30 @@ describe('Stock control', () => {
 
         it('allocates stock', async () => {
             await proceedToArrangingPayment(shopClient);
-            const result = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+            const result = await addPaymentToOrder(shopClient, twoStagePaymentMethod);
             orderGuard.assertSuccess(result);
             order = result;
+
+            const product = await getProductWithStockMovement('T_1');
+            const [variant1, variant2, variant3, variant4] = product!.variants;
+
+            expect(variant1.stockAllocated).toBe(3);
+            expect(variant1.stockOnHand).toBe(3);
+
+            expect(variant2.stockAllocated).toBe(0); // inventory not tracked
+            expect(variant2.stockOnHand).toBe(3);
+
+            expect(variant3.stockAllocated).toBe(1);
+            expect(variant3.stockOnHand).toBe(3);
+
+            expect(variant4.stockAllocated).toBe(8);
+            expect(variant4.stockOnHand).toBe(3);
+        });
+
+        it('does not re-allocate stock when transitioning Payment from Authorized -> Settled', async () => {
+            await adminClient.query<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
+                id: order.id,
+            });
 
             const product = await getProductWithStockMovement('T_1');
             const [variant1, variant2, variant3, variant4] = product!.variants;
@@ -570,8 +632,13 @@ describe('Stock control', () => {
             >(CREATE_FULFILLMENT, {
                 input: {
                     lines: order.lines.map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -592,8 +659,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_1')
                         .map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -615,8 +687,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_2')
                         .map(l => ({ orderLineId: l.id, quantity: l.quantity })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -638,8 +715,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_4')
                         .map(l => ({ orderLineId: l.id, quantity: 3 })), // we know there are only 3 on hand
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 
@@ -675,8 +757,13 @@ describe('Stock control', () => {
                     lines: order.lines
                         .filter(l => l.productVariant.id === 'T_4')
                         .map(l => ({ orderLineId: l.id, quantity: 5 })),
-                    method: 'test method',
-                    trackingCode: 'ABC123',
+                    handler: {
+                        code: manualFulfillmentHandler.code,
+                        arguments: [
+                            { name: 'method', value: 'test method' },
+                            { name: 'trackingCode', value: 'ABC123' },
+                        ],
+                    },
                 },
             });
 

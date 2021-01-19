@@ -4,29 +4,27 @@ import { ClientOptions, Transport } from '@nestjs/microservices';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { PluginDefinition } from 'apollo-server-core';
 import { RequestHandler } from 'express';
-import { Observable } from 'rxjs';
 import { ConnectionOptions } from 'typeorm';
 
-import { RequestContext } from '../api/common/request-context';
-import { Transitions } from '../common/finite-state-machine/types';
 import { PermissionDefinition } from '../common/permission-definition';
-import { Order } from '../entity/order/order.entity';
-import { OrderState } from '../service/helpers/order-state-machine/order-state';
 
 import { AssetNamingStrategy } from './asset-naming-strategy/asset-naming-strategy';
 import { AssetPreviewStrategy } from './asset-preview-strategy/asset-preview-strategy';
 import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-strategy';
 import { AuthenticationStrategy } from './auth/authentication-strategy';
-import { CollectionFilter } from './collection/collection-filter';
+import { CollectionFilter } from './catalog/collection-filter';
+import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
+import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
 import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
+import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
-import { PriceCalculationStrategy } from './order/price-calculation-strategy';
+import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
@@ -34,7 +32,7 @@ import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
 import { ShippingCalculator } from './shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from './shipping-method/shipping-eligibility-checker';
-import { TaxCalculationStrategy } from './tax/tax-calculation-strategy';
+import { TaxLineCalculationStrategy } from './tax/tax-line-calculation-strategy';
 import { TaxZoneStrategy } from './tax/tax-zone-strategy';
 
 /**
@@ -390,7 +388,7 @@ export interface OrderOptions {
      *
      * @default DefaultPriceCalculationStrategy
      */
-    priceCalculationStrategy?: PriceCalculationStrategy;
+    orderItemPriceCalculationStrategy?: OrderItemPriceCalculationStrategy;
     /**
      * @description
      * Allows the definition of custom states and transition logic for the order process state machine.
@@ -399,6 +397,13 @@ export interface OrderOptions {
      * @default []
      */
     process?: Array<CustomOrderProcess<any>>;
+    /**
+     * @description
+     * Determines the point of the order process at which stock gets allocated.
+     *
+     * @default DefaultStockAllocationStrategy
+     */
+    stockAllocationStrategy?: StockAllocationStrategy;
     /**
      * @description
      * Defines the strategy used to merge a guest Order and an existing Order when
@@ -493,6 +498,14 @@ export interface CatalogOptions {
      * @default defaultCollectionFilters
      */
     collectionFilters: Array<CollectionFilter<any>>;
+    /**
+     * @description
+     * Defines the strategy used for calculating the price of ProductVariants based
+     * on the Channel settings and active tax Zone.
+     *
+     * @default DefaultTaxCalculationStrategy
+     */
+    productVariantPriceCalculationStrategy: ProductVariantPriceCalculationStrategy;
 }
 
 /**
@@ -532,6 +545,12 @@ export interface ShippingOptions {
      * Takes an array of objects implementing the {@link CustomFulfillmentProcess} interface.
      */
     customFulfillmentProcess?: Array<CustomFulfillmentProcess<any>>;
+
+    /**
+     * @description
+     * An array of available FulfillmentHandlers.
+     */
+    fulfillmentHandlers?: Array<FulfillmentHandler<any>>;
 }
 
 /**
@@ -589,14 +608,14 @@ export interface TaxOptions {
      *
      * @default DefaultTaxZoneStrategy
      */
-    taxZoneStrategy: TaxZoneStrategy;
+    taxZoneStrategy?: TaxZoneStrategy;
     /**
      * @description
-     * Defines the strategy used for calculating taxes.
+     * Defines the strategy used to calculate the TaxLines added to OrderItems.
      *
-     * @default DefaultTaxCalculationStrategy
+     * @default DefaultTaxLineCalculationStrategy
      */
-    taxCalculationStrategy: TaxCalculationStrategy;
+    taxLineCalculationStrategy?: TaxLineCalculationStrategy;
 }
 
 /**
@@ -832,9 +851,12 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     authOptions: Required<AuthOptions>;
     customFields: Required<CustomFields>;
     importExportOptions: Required<ImportExportOptions>;
-    orderOptions: Required<OrderOptions>;
-    workerOptions: Required<WorkerOptions>;
     jobQueueOptions: Required<JobQueueOptions>;
+    orderOptions: Required<OrderOptions>;
+    promotionOptions: Required<PromotionOptions>;
+    shippingOptions: Required<ShippingOptions>;
+    workerOptions: Required<WorkerOptions>;
+    taxOptions: Required<TaxOptions>;
 }
 
 type DeepPartialSimple<T> = {

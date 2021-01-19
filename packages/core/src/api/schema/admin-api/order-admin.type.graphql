@@ -1,0 +1,21 @@
+type Order {
+    nextStates: [String!]!
+    modifications: [OrderModification!]!
+}
+
+type Fulfillment {
+    nextStates: [String!]!
+}
+
+type OrderModification implements Node {
+    id: ID!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+    priceChange: Int!
+    note: String!
+    orderItems: [OrderItem!]
+    surcharges: [Surcharge!]
+    payment: Payment
+    refund: Refund
+    isSettled: Boolean!
+}

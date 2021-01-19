@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationCancelJobArgs,
     MutationRemoveSettledJobsArgs,
     Permission,
     QueryJobArgs,
@@ -42,5 +43,11 @@ export class JobResolver {
     @Allow(Permission.DeleteSettings)
     removeSettledJobs(@Args() args: MutationRemoveSettledJobsArgs) {
         return this.jobService.removeSettledJobs(args.queueNames || [], args.olderThan);
+    }
+
+    @Mutation()
+    @Allow(Permission.DeleteSettings)
+    cancelJob(@Args() args: MutationCancelJobArgs) {
+        return this.jobService.cancelJob(args.jobId);
     }
 }

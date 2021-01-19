@@ -1,7 +1,7 @@
 import { Directive, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, QueryParamsHandling, Router } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { map, shareReplay, takeUntil } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, takeUntil } from 'rxjs/operators';
 
 import { QueryResult } from '../data/query-result';
 
@@ -14,6 +14,7 @@ export type OnPageChangeFn<V> = (skip: number, take: number) => V;
  * a list of data from a query which returns a PaginatedList type.
  */
 @Directive()
+// tslint:disable-next-line:directive-class-suffix
 export class BaseListComponent<ResultType, ItemType, VariableType = any> implements OnInit, OnDestroy {
     result$: Observable<ResultType>;
     items$: Observable<ItemType[]>;
@@ -65,10 +66,12 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.currentPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('page')),
             map(page => (!page ? 1 : +page)),
+            distinctUntilChanged(),
         );
         this.itemsPerPage$ = this.route.queryParamMap.pipe(
             map(qpm => qpm.get('perPage')),
             map(perPage => (!perPage ? 10 : +perPage)),
+            distinctUntilChanged(),
         );
 
         combineLatest(this.currentPage$, this.itemsPerPage$, this.refresh$)
@@ -79,14 +82,15 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
     ngOnDestroy() {
         this.destroy$.next();
         this.destroy$.complete();
+        this.listQuery.completed$.next();
     }
 
     setPageNumber(page: number) {
-        this.setQueryParam('page', page);
+        this.setQueryParam('page', page, { replaceUrl: true });
     }
 
     setItemsPerPage(perPage: number) {
-        this.setQueryParam('perPage', perPage);
+        this.setQueryParam('perPage', perPage, { replaceUrl: true });
     }
 
     /**
@@ -96,13 +100,27 @@ export class BaseListComponent<ResultType, ItemType, VariableType = any> impleme
         this.refresh$.next(undefined);
     }
 
-    protected setQueryParam(hash: { [key: string]: any });
-    protected setQueryParam(key: string, value: any);
-    protected setQueryParam(keyOrHash: string | { [key: string]: any }, value?: any) {
+    protected setQueryParam(
+        hash: { [key: string]: any },
+        options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
+    );
+    protected setQueryParam(
+        key: string,
+        value: any,
+        options?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
+    );
+    protected setQueryParam(
+        keyOrHash: string | { [key: string]: any },
+        valueOrOptions?: any,
+        maybeOptions?: { replaceUrl?: boolean; queryParamsHandling?: QueryParamsHandling },
+    ) {
+        const paramsObject = typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash;
+        const options = (typeof keyOrHash === 'string' ? maybeOptions : valueOrOptions) ?? {};
         this.router.navigate(['./'], {
-            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: value } : keyOrHash,
+            queryParams: typeof keyOrHash === 'string' ? { [keyOrHash]: valueOrOptions } : keyOrHash,
             relativeTo: this.route,
             queryParamsHandling: 'merge',
+            ...options,
         });
     }
 }

@@ -3,20 +3,18 @@ scalar JSON
 scalar DateTime
 scalar Upload
 
-enum GlobalFlag {
-    TRUE
-    FALSE
-    INHERIT
+interface PaginatedList {
+    items: [Node!]!
+    totalItems: Int!
 }
 
-enum AdjustmentType {
-    TAX
-    PROMOTION
-    SHIPPING
-    REFUND
-    TAX_REFUND
-    PROMOTION_REFUND
-    SHIPPING_REFUND
+interface Node {
+    id: ID!
+}
+
+interface ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
 }
 
 type Adjustment {
@@ -24,6 +22,11 @@ type Adjustment {
     type: AdjustmentType!
     description: String!
     amount: Int!
+}
+
+type TaxLine {
+    description: String!
+    taxRate: Float!
 }
 
 type ConfigArg {
@@ -51,17 +54,6 @@ type ConfigurableOperationDefinition {
     description: String!
 }
 
-enum DeletionResult {
-    "The entity was successfully deleted"
-    DELETED
-    "Deletion did not take place, reason given in message"
-    NOT_DELETED
-}
-
-# Populated at run-time
-enum Permission {
-    Placeholder
-}
 
 type DeletionResponse {
     result: DeletionResult!
@@ -78,32 +70,14 @@ input ConfigurableOperationInput {
     arguments: [ConfigArgInput!]!
 }
 
-interface PaginatedList {
-    items: [Node!]!
-    totalItems: Int!
-}
-
-interface Node {
-    id: ID!
-}
-
-enum SortOrder {
-    ASC
-    DESC
-}
-
-enum ErrorCode {
-    UNKNOWN_ERROR
-}
-
-interface ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
 input StringOperators {
     eq: String
+    notEq: String
     contains: String
+    notContains: String
+    in: [String!]
+    notIn: [String!]
+    regex: String
 }
 
 input BooleanOperators {
@@ -134,11 +108,6 @@ input DateOperators {
     before: DateTime
     after: DateTime
     between: DateRange
-}
-
-enum LogicalOperator {
-    AND
-    OR
 }
 
 input SearchInput {
@@ -200,32 +169,4 @@ Indicates that an operation succeeded, where we do not want to return any more s
 """
 type Success {
     success: Boolean!
-}
-
-"Retured when attempting an operation that relies on the NativeAuthStrategy, if that strategy is not configured."
-type NativeAuthStrategyError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-}
-
-"Returned if the user authentication credentials are not valid"
-type InvalidCredentialsError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    authenticationError: String!
-}
-
-"Returned if there is an error in transitioning the Order state"
-type OrderStateTransitionError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
-    transitionError: String!
-    fromState: String!
-    toState: String!
-}
-
-"Retured when attemting to create a Customer with an email address already registered to an existing User."
-type EmailAddressConflictError implements ErrorResult {
-    errorCode: ErrorCode!
-    message: String!
 }

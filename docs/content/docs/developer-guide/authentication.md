@@ -50,7 +50,7 @@ function onSignIn(googleUser) {
         authenticate(input: {
           google: { token: $token }
         }) {
-        user {
+        ...on CurrentUser {
             id
             identifier
         }
@@ -170,7 +170,7 @@ vendureLoginButton.addEventListener('click', () => {
           token: $token
         }
       }) {
-        user { id }
+        ...on CurrentUser { id }
       }
     }`,
     { token: keycloak.token },
@@ -251,7 +251,7 @@ export class KeycloakAuthenticationStrategy implements AuthenticationStrategy<Ke
     if (!userInfo) {
         return false;
     }
-    const user = await this.externalAuthenticationService.findAdministratorUser(this.name, userInfo.sub);
+    const user = await this.externalAuthenticationService.findAdministratorUser(ctx, this.name, userInfo.sub);
     if (user) {
         return user;
     }

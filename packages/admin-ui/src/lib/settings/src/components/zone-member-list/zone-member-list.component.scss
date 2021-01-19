@@ -1,12 +1,11 @@
-@import "variables";
 
 .members-header {
-    background-color: $color-grey-100;
+    background-color: var(--color-component-bg-100);
     position: sticky;
     top: 0;
     padding: 6px;
     z-index: 5;
-    border-bottom: 1px solid $color-grey-300;
+    border-bottom: 1px solid var(--color-component-border-200);
 
     .header-title-row {
         display: flex;

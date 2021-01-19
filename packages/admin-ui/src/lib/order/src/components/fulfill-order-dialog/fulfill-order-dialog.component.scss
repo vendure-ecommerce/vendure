@@ -23,7 +23,7 @@
             margin-top: 24px;
         }
     }
-    .order-lines {
+    .order-table {
         flex: 1;
         overflow-y: auto;
         table {
@@ -31,6 +31,6 @@
         }
     }
     tr.ignore {
-        color: $color-grey-300;
+        color: var(--color-grey-300);
     }
 }

@@ -1,0 +1,15 @@
+type Product implements Node {
+    enabled: Boolean!
+    channels: [Channel!]!
+}
+
+type ProductVariant implements Node {
+    enabled: Boolean!
+    trackInventory: GlobalFlag!
+    stockOnHand: Int!
+    stockAllocated: Int!
+    outOfStockThreshold: Int!
+    useGlobalOutOfStockThreshold: Boolean!
+    stockMovements(options: StockMovementListOptions): StockMovementList!
+    channels: [Channel!]!
+}

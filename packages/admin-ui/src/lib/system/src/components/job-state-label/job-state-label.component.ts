@@ -17,6 +17,8 @@ export class JobStateLabelComponent {
                 return 'check-circle';
             case JobState.FAILED:
                 return 'exclamation-circle';
+            case JobState.CANCELLED:
+                return 'ban';
             case JobState.PENDING:
             case JobState.RETRYING:
                 return 'hourglass';
@@ -30,6 +32,7 @@ export class JobStateLabelComponent {
             case JobState.COMPLETED:
                 return 'success';
             case JobState.FAILED:
+            case JobState.CANCELLED:
                 return 'error';
             case JobState.PENDING:
             case JobState.RETRYING:

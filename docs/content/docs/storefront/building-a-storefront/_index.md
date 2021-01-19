@@ -8,11 +8,11 @@ showtoc: true
 
 The storefront is the application which customers use to buy things from your store.
 
-As a headless server, Vendure provides a GraphQL API and admin UI app, but no storefront. The key advantage of the headless model is that the storefront (or indeed, any number of client applications) can be developed completely independently of the server. This flexibility comes at the cost of having to build and maintain your own storefront.
+As a headless server, Vendure provides a GraphQL API and Admin UI app, but no storefront. The key advantage of the headless model is that the storefront (or indeed, any number of client applications) can be developed completely independently of the server. This flexibility comes at the cost of having to build and maintain your own storefront.
 
-However, we'd like to lower the barrier to getting started in the regard, so here are some options you may wish to investigate:
+Essentially, you can use **any technology** to build your storefront. Here are some suggestions you may wish to investigate:
 
-## Vendure Angular Storefront
+## Angular / Vendure Storefront
 
 {{< figure src="./vendure-storefront-screenshot-01.jpg" >}}
 
@@ -22,18 +22,23 @@ A live demo can be found here: [demo.vendure.io/storefront/](https://demo.vendur
 
 Keep up with development here: [github.com/vendure-ecommerce/storefront](https://github.com/vendure-ecommerce/storefront)
 
-## DEITY Falcon
+## Next.js
 
-[DEITY Falcon](https://falcon.deity.io/docs/getting-started/intro) is a React-based PWA storefront solution. It uses a modular architecture which allows it to connect to any e-commerce backend. We are developing the [Vendure Falcon API](https://www.npmjs.com/package/@vendure/falcon-vendure-api) which allows Falcon to be used with Vendure.
+[Next.js](https://nextjs.org/) is a popular React-based framework which many Vendure developers have chosen as the basis of their storefront application. The team behind Next.js are also working on an e-commerce-specific solution, [Next.js Commerce](https://nextjs.org/commerce), which is currently under development but is worth keeping an eye on.
 
-Here's a video showing how to quickly get started with Vendure + DEITY Falcon: 
+## Vue / Nuxt
 
-{{< vimeo 322812102 >}}
+[Nuxt](https://nuxtjs.org/) is a framework based on [Vue](https://vuejs.org/) with a focus on developer experience and has support for PWA, server-side rendering and static content generation.
+
 
 ## Vue Storefront
 
-[Vue Storefront](https://www.vuestorefront.io/) is one of the most popular backend-agnostic storefront PWA solutions. They offer extensive documentation on connecting their frontend application with a custom backend such as Vendure: https://github.com/DivanteLtd/vue-storefront-integration-sdk
+[Vue Storefront](https://www.vuestorefront.io/) is a popular backend-agnostic storefront PWA solution. They offer documentation on connecting their frontend application with a custom backend such as Vendure: https://github.com/DivanteLtd/vue-storefront-integration-sdk
 
 ## Gatsby
 
-We have developed a [Gatsby](https://www.gatsbyjs.org/)-based storefront app: [vendure-ecommerce/gatsby-storefront](https://github.com/vendure-ecommerce/gatsby-storefront). This is a proof-of-concept which can be used as the starting point for your own Gatsby-based storefront.
+[Gatsby](https://www.gatsbyjs.org/) is a popular React-based static site generator. We have developed a Gatsby-based storefront app: [vendure-ecommerce/gatsby-storefront](https://github.com/vendure-ecommerce/gatsby-storefront). This is a minimal proof-of-concept which can be used as the starting point for your own Gatsby-based storefront.
+
+## Svelte / Sapper
+
+[Sapper](https://sapper.svelte.dev/) is a framework based on [Svelte](https://svelte.dev/), and focuses on high-performance and supports server-rendering.

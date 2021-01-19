@@ -81,7 +81,12 @@ export type FilterParameter<T extends VendureEntity> = {
 
 export interface StringOperators {
     eq?: string;
+    notEq?: string;
     contains?: string;
+    notContains?: string;
+    in?: string[];
+    notIn?: string[];
+    regex?: string;
 }
 
 export interface BooleanOperators {
@@ -118,4 +123,16 @@ export type PaymentMetadata = {
     [prop: string]: any;
 } & {
     public?: any;
+};
+
+/**
+ * @description
+ * The result of the price calculation from the {@link ProductVariantPriceCalculationStrategy} or the
+ * {@link OrderItemPriceCalculationStrategy}.
+ *
+ * @docsCategory Common
+ */
+export type PriceCalculationResult = {
+    price: number;
+    priceIncludesTax: boolean;
 };

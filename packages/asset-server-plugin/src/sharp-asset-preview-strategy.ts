@@ -23,7 +23,12 @@ export class SharpAssetPreviewStrategy implements AssetPreviewStrategy {
             if (maxWidth < width || maxHeight < height) {
                 return image.resize(maxWidth, maxHeight, { fit: 'inside' }).toBuffer();
             } else {
-                return data;
+                if (mimeType === 'image/svg+xml') {
+                    // Convert the SVG to a raster for the preview
+                    return image.toBuffer();
+                } else {
+                    return data;
+                }
             }
         } else {
             return sharp(path.join(__dirname, 'file-icon.png'))

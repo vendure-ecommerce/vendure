@@ -1,14 +1,21 @@
 import gql from 'graphql-tag';
 
+import { ERROR_RESULT_FRAGMENT } from '../../../admin-ui/src/lib/core/src/data/definitions/shared-definitions';
+
 export const TEST_ORDER_FRAGMENT = gql`
     fragment TestOrderFragment on Order {
         id
         code
         state
         active
+        subTotal
+        subTotalWithTax
+        shipping
+        shippingWithTax
         total
+        totalWithTax
         couponCodes
-        adjustments {
+        discounts {
             adjustmentSource
             amount
             description
@@ -17,21 +24,29 @@ export const TEST_ORDER_FRAGMENT = gql`
         lines {
             id
             quantity
+            linePrice
+            linePriceWithTax
+            unitPrice
+            unitPriceWithTax
             productVariant {
                 id
             }
-            adjustments {
+            discounts {
                 adjustmentSource
                 amount
                 description
                 type
             }
+            items {
+                id
+            }
         }
-        shipping
-        shippingMethod {
-            id
-            code
-            description
+        shippingLines {
+            shippingMethod {
+                id
+                code
+                description
+            }
         }
         customer {
             id
@@ -57,20 +72,21 @@ export const UPDATED_ORDER_FRAGMENT = gql`
         state
         active
         total
+        totalWithTax
         lines {
             id
             quantity
             productVariant {
                 id
             }
-            adjustments {
+            discounts {
                 adjustmentSource
                 amount
                 description
                 type
             }
         }
-        adjustments {
+        discounts {
             adjustmentSource
             amount
             description
@@ -300,9 +316,10 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
     query GetActiveOrderWithPriceData {
         activeOrder {
             id
-            subTotalBeforeTax
             subTotal
-            totalBeforeTax
+            subTotalWithTax
+            total
+            totalWithTax
             total
             lines {
                 id
@@ -322,8 +339,13 @@ export const GET_ACTIVE_ORDER_WITH_PRICE_DATA = gql`
                     amount
                     type
                 }
+                taxLines {
+                    taxRate
+                    description
+                }
             }
             taxSummary {
+                description
                 taxRate
                 taxBase
                 taxTotal
@@ -363,6 +385,7 @@ export const GET_ELIGIBLE_SHIPPING_METHODS = gql`
         eligibleShippingMethods {
             id
             price
+            name
             description
         }
     }
@@ -459,16 +482,22 @@ export const TRANSITION_TO_STATE = gql`
 export const SET_SHIPPING_ADDRESS = gql`
     mutation SetShippingAddress($input: CreateAddressInput!) {
         setOrderShippingAddress(input: $input) {
-            shippingAddress {
-                fullName
-                company
-                streetLine1
-                streetLine2
-                city
-                province
-                postalCode
-                country
-                phoneNumber
+            ... on Order {
+                shippingAddress {
+                    fullName
+                    company
+                    streetLine1
+                    streetLine2
+                    city
+                    province
+                    postalCode
+                    country
+                    phoneNumber
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }
@@ -477,16 +506,22 @@ export const SET_SHIPPING_ADDRESS = gql`
 export const SET_BILLING_ADDRESS = gql`
     mutation SetBillingAddress($input: CreateAddressInput!) {
         setOrderBillingAddress(input: $input) {
-            billingAddress {
-                fullName
-                company
-                streetLine1
-                streetLine2
-                city
-                province
-                postalCode
-                country
-                phoneNumber
+            ... on Order {
+                billingAddress {
+                    fullName
+                    company
+                    streetLine1
+                    streetLine2
+                    city
+                    province
+                    postalCode
+                    country
+                    phoneNumber
+                }
+            }
+            ... on ErrorResult {
+                errorCode
+                message
             }
         }
     }

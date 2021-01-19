@@ -4,28 +4,28 @@ import { AdjustmentType } from '@vendure/common/lib/generated-types';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { InternalServerError } from '../../../common/error/errors';
+import { netPriceOf } from '../../../common/tax-utils';
 import { idsAreEqual } from '../../../common/utils';
-import { ShippingCalculationResult } from '../../../config';
 import { ConfigService } from '../../../config/config.service';
 import { OrderItem, OrderLine, TaxCategory, TaxRate } from '../../../entity';
 import { Order } from '../../../entity/order/order.entity';
 import { Promotion } from '../../../entity/promotion/promotion.entity';
-import { ShippingMethod } from '../../../entity/shipping-method/shipping-method.entity';
+import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Zone } from '../../../entity/zone/zone.entity';
+import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
-import { TransactionalConnection } from '../../transaction/transactional-connection';
 import { ShippingCalculator } from '../shipping-calculator/shipping-calculator';
-import { TaxCalculator } from '../tax-calculator/tax-calculator';
+
+import { prorate } from './prorate';
 
 @Injectable()
 export class OrderCalculator {
     constructor(
-        private connection: TransactionalConnection,
         private configService: ConfigService,
         private zoneService: ZoneService,
         private taxRateService: TaxRateService,
-        private taxCalculator: TaxCalculator,
+        private shippingMethodService: ShippingMethodService,
         private shippingCalculator: ShippingCalculator,
     ) {}
 
@@ -38,7 +38,8 @@ export class OrderCalculator {
         ctx: RequestContext,
         order: Order,
         promotions: Promotion[],
-        updatedOrderLine?: OrderLine,
+        updatedOrderLines: OrderLine[] = [],
+        options?: { recalculateShipping?: boolean },
     ): Promise<OrderItem[]> {
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
@@ -52,34 +53,37 @@ export class OrderCalculator {
             taxZoneChanged = true;
         }
         const updatedOrderItems = new Set<OrderItem>();
-        if (updatedOrderLine) {
-            this.applyTaxesToOrderLine(
+        for (const updatedOrderLine of updatedOrderLines) {
+            await this.applyTaxesToOrderLine(
                 ctx,
+                order,
                 updatedOrderLine,
                 activeTaxZone,
                 this.createTaxRateGetter(activeTaxZone),
             );
             updatedOrderLine.activeItems.forEach(item => updatedOrderItems.add(item));
         }
-        order.clearAdjustments();
         this.calculateOrderTotals(order);
         if (order.lines.length) {
             if (taxZoneChanged) {
                 // First apply taxes to the non-discounted prices
-                this.applyTaxes(ctx, order, activeTaxZone);
+                await this.applyTaxes(ctx, order, activeTaxZone);
             }
 
             // Then test and apply promotions
-            const totalBeforePromotions = order.total;
+            const totalBeforePromotions = order.subTotal;
             const itemsModifiedByPromotions = await this.applyPromotions(ctx, order, promotions);
             itemsModifiedByPromotions.forEach(item => updatedOrderItems.add(item));
 
-            if (order.total !== totalBeforePromotions || itemsModifiedByPromotions.length) {
+            if (order.subTotal !== totalBeforePromotions || itemsModifiedByPromotions.length) {
                 // Finally, re-calculate taxes because the promotions may have
                 // altered the unit prices, which in turn will alter the tax payable.
-                this.applyTaxes(ctx, order, activeTaxZone);
+                await this.applyTaxes(ctx, order, activeTaxZone);
             }
-            await this.applyShipping(ctx, order);
+            if (options?.recalculateShipping !== false) {
+                await this.applyShipping(ctx, order);
+                await this.applyShippingPromotions(ctx, order, promotions);
+            }
         }
         this.calculateOrderTotals(order);
         return taxZoneChanged ? order.getOrderItems() : Array.from(updatedOrderItems);
@@ -88,10 +92,10 @@ export class OrderCalculator {
     /**
      * Applies the correct TaxRate to each OrderItem in the order.
      */
-    private applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
+    private async applyTaxes(ctx: RequestContext, order: Order, activeZone: Zone) {
         const getTaxRate = this.createTaxRateGetter(activeZone);
         for (const line of order.lines) {
-            this.applyTaxesToOrderLine(ctx, line, activeZone, getTaxRate);
+            await this.applyTaxesToOrderLine(ctx, order, line, activeZone, getTaxRate);
         }
         this.calculateOrderTotals(order);
     }
@@ -99,20 +103,23 @@ export class OrderCalculator {
     /**
      * Applies the correct TaxRate to an OrderLine
      */
-    private applyTaxesToOrderLine(
+    private async applyTaxesToOrderLine(
         ctx: RequestContext,
+        order: Order,
         line: OrderLine,
         activeZone: Zone,
         getTaxRate: (taxCategory: TaxCategory) => TaxRate,
     ) {
-        line.clearAdjustments(AdjustmentType.TAX);
-
         const applicableTaxRate = getTaxRate(line.taxCategory);
+        const { taxLineCalculationStrategy } = this.configService.taxOptions;
         for (const item of line.activeItems) {
-            item.taxRate = applicableTaxRate.value;
-            item.pendingAdjustments = item.pendingAdjustments.concat(
-                applicableTaxRate.apply(item.unitPriceWithPromotions),
-            );
+            item.taxLines = await taxLineCalculationStrategy.calculate({
+                ctx,
+                applicableTaxRate,
+                order,
+                orderItem: item,
+                orderLine: line,
+            });
         }
     }
 
@@ -144,8 +151,12 @@ export class OrderCalculator {
         promotions: Promotion[],
     ): Promise<OrderItem[]> {
         const updatedItems = await this.applyOrderItemPromotions(ctx, order, promotions);
-        await this.applyOrderPromotions(ctx, order, promotions);
-        return updatedItems;
+        const orderUpdatedItems = await this.applyOrderPromotions(ctx, order, promotions);
+        if (orderUpdatedItems.length) {
+            return orderUpdatedItems;
+        } else {
+            return updatedItems;
+        }
     }
 
     /**
@@ -153,7 +164,11 @@ export class OrderCalculator {
      * of applying the promotions, and also due to added complexity in the name of performance
      * optimization. Therefore it is heavily annotated so that the purpose of each step is clear.
      */
-    private async applyOrderItemPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
+    private async applyOrderItemPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<OrderItem[]> {
         // The naive implementation updates *every* OrderItem after this function is run.
         // However, on a very large order with hundreds or thousands of OrderItems, this results in
         // very poor performance. E.g. updating a single quantity of an OrderLine results in saving
@@ -167,13 +182,13 @@ export class OrderCalculator {
             // which affected the order price.
             const applicablePromotions = await filterAsync(promotions, p => p.test(ctx, order));
 
-            const lineHasExistingPromotions =
-                line.items[0].pendingAdjustments &&
-                !!line.items[0].pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+            const lineHasExistingPromotions = !!line.items[0]?.adjustments?.find(
+                a => a.type === AdjustmentType.PROMOTION,
+            );
             const forceUpdateItems = this.orderLineHasInapplicablePromotions(applicablePromotions, line);
 
             if (forceUpdateItems || lineHasExistingPromotions) {
-                line.clearAdjustments(AdjustmentType.PROMOTION);
+                line.clearAdjustments();
             }
             if (forceUpdateItems) {
                 // This OrderLine contains Promotion adjustments for Promotions that are no longer
@@ -194,7 +209,7 @@ export class OrderCalculator {
                             orderLine: line,
                         });
                         if (adjustment) {
-                            item.pendingAdjustments = item.pendingAdjustments.concat(adjustment);
+                            item.addAdjustment(adjustment);
                             priceAdjusted = true;
                             updatedOrderItems.add(item);
                         }
@@ -206,8 +221,8 @@ export class OrderCalculator {
                 }
             }
             const lineNoLongerHasPromotions =
-                !line.items[0].pendingAdjustments ||
-                !line.items[0].pendingAdjustments.find(a => a.type === AdjustmentType.PROMOTION);
+                !line.items[0]?.adjustments ||
+                !line.items[0]?.adjustments.find(a => a.type === AdjustmentType.PROMOTION);
             if (lineHasExistingPromotions && lineNoLongerHasPromotions) {
                 line.items.forEach(i => updatedOrderItems.add(i));
             }
@@ -244,8 +259,14 @@ export class OrderCalculator {
         return hasPromotionsThatAreNoLongerApplicable;
     }
 
-    private async applyOrderPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
-        order.clearAdjustments(AdjustmentType.PROMOTION);
+    private async applyOrderPromotions(
+        ctx: RequestContext,
+        order: Order,
+        promotions: Promotion[],
+    ): Promise<OrderItem[]> {
+        const updatedItems = new Set<OrderItem>();
+        order.lines.forEach(line => line.clearAdjustments(AdjustmentType.DISTRIBUTED_ORDER_PROMOTION));
+        this.calculateOrderTotals(order);
         const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
         if (applicableOrderPromotions.length) {
             for (const promotion of applicableOrderPromotions) {
@@ -253,40 +274,128 @@ export class OrderCalculator {
                 // may be modified by a previously-applied promotion
                 if (await promotion.test(ctx, order)) {
                     const adjustment = await promotion.apply(ctx, { order });
-                    if (adjustment) {
-                        order.pendingAdjustments = order.pendingAdjustments.concat(adjustment);
+                    if (adjustment && adjustment.amount !== 0) {
+                        const amount = adjustment.amount;
+                        const weights = order.lines.map(l => l.proratedLinePriceWithTax);
+                        const distribution = prorate(weights, amount);
+                        order.lines.forEach((line, i) => {
+                            const shareOfAmount = distribution[i];
+                            const itemWeights = line.items.map(item => item.unitPrice);
+                            const itemDistribution = prorate(itemWeights, shareOfAmount);
+                            line.items.forEach((item, j) => {
+                                const discount = itemDistribution[j];
+                                const adjustedDiscount = item.listPriceIncludesTax
+                                    ? netPriceOf(amount, item.taxRate)
+                                    : amount;
+                                // Note: At this point, any time we have an Order-level discount being applied,
+                                // we are effectively nuking all the performance optimizations we have for updating
+                                // as few OrderItems as possible (see notes in the `applyOrderItemPromotions()` method).
+                                // This is because we are prorating any Order-level discounts over _all_ OrderItems.
+                                // (see https://github.com/vendure-ecommerce/vendure/issues/573 for a detailed discussion
+                                // as to why). The are ways to optimize this, but for now I am leaving the implementation
+                                // as-is, and we can deal with performance issues later. Correctness is more important
+                                // when is comes to price & tax calculations.
+                                updatedItems.add(item);
+                                item.addAdjustment({
+                                    amount: discount,
+                                    adjustmentSource: adjustment.adjustmentSource,
+                                    description: adjustment.description,
+                                    type: AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+                                });
+                            });
+                        });
+                        this.calculateOrderTotals(order);
                     }
                 }
             }
             this.calculateOrderTotals(order);
         }
+        return Array.from(updatedItems.values());
+    }
+
+    private async applyShippingPromotions(ctx: RequestContext, order: Order, promotions: Promotion[]) {
+        const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
+        if (applicableOrderPromotions.length) {
+            order.shippingLines.forEach(line => (line.adjustments = []));
+            for (const promotion of applicableOrderPromotions) {
+                // re-test the promotion on each iteration, since the order total
+                // may be modified by a previously-applied promotion
+                if (await promotion.test(ctx, order)) {
+                    for (const shippingLine of order.shippingLines) {
+                        const adjustment = await promotion.apply(ctx, { shippingLine, order });
+                        if (adjustment && adjustment.amount !== 0) {
+                            shippingLine.addAdjustment(adjustment);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private async applyShipping(ctx: RequestContext, order: Order) {
-        const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order);
-        const currentShippingMethod = order.shippingMethod;
-        if (results && results.length && currentShippingMethod) {
-            let selected: { method: ShippingMethod; result: ShippingCalculationResult } | undefined;
-            selected = results.find(r => idsAreEqual(r.method.id, currentShippingMethod.id));
-            if (!selected) {
-                selected = results[0];
+        const shippingLine: ShippingLine | undefined = order.shippingLines[0];
+        const currentShippingMethod =
+            shippingLine?.shippingMethodId &&
+            (await this.shippingMethodService.findOne(ctx, shippingLine.shippingMethodId));
+        if (!currentShippingMethod) {
+            return;
+        }
+        const currentMethodStillEligible = await currentShippingMethod.test(ctx, order);
+        if (currentMethodStillEligible) {
+            const result = await currentShippingMethod.apply(ctx, order);
+            if (result) {
+                shippingLine.listPrice = result.price;
+                shippingLine.listPriceIncludesTax = result.priceIncludesTax;
+                shippingLine.taxLines = [
+                    {
+                        description: 'shipping tax',
+                        taxRate: result.taxRate,
+                    },
+                ];
             }
-            order.shipping = selected.result.price;
-            order.shippingWithTax = selected.result.priceWithTax;
+            return;
+        }
+        const results = await this.shippingCalculator.getEligibleShippingMethods(ctx, order, [
+            currentShippingMethod.id,
+        ]);
+        if (results && results.length) {
+            const cheapest = results[0];
+            shippingLine.listPrice = cheapest.result.price;
+            shippingLine.listPriceIncludesTax = cheapest.result.priceIncludesTax;
+            shippingLine.shippingMethod = cheapest.method;
+            shippingLine.taxLines = [
+                {
+                    description: 'shipping tax',
+                    taxRate: cheapest.result.taxRate,
+                },
+            ];
         }
     }
 
     private calculateOrderTotals(order: Order) {
         let totalPrice = 0;
-        let totalTax = 0;
+        let totalPriceWithTax = 0;
 
         for (const line of order.lines) {
-            totalPrice += line.linePriceWithTax;
-            totalTax += line.lineTax;
+            totalPrice += line.proratedLinePrice;
+            totalPriceWithTax += line.proratedLinePriceWithTax;
         }
-        const totalPriceBeforeTax = totalPrice - totalTax;
+        for (const surcharge of order.surcharges) {
+            totalPrice += surcharge.price;
+            totalPriceWithTax += surcharge.priceWithTax;
+        }
 
-        order.subTotalBeforeTax = totalPriceBeforeTax;
         order.subTotal = totalPrice;
+        order.subTotalWithTax = totalPriceWithTax;
+
+        let shippingPrice = 0;
+        let shippingPriceWithTax = 0;
+        for (const shippingLine of order.shippingLines) {
+            shippingPrice += shippingLine.discountedPrice;
+            shippingPriceWithTax += shippingLine.discountedPriceWithTax;
+        }
+
+        order.shipping = shippingPrice;
+        order.shippingWithTax = shippingPriceWithTax;
     }
 }

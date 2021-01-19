@@ -6,7 +6,7 @@ import path from 'path';
 import { skip } from 'rxjs/operators';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     AttemptLogin,
@@ -40,9 +40,9 @@ describe('Shop customers', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
     let customer: GetCustomer.Customer;
 
-    const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard<{
-        success: boolean;
-    }>(input => input.success != null);
+    const successErrorGuard: ErrorResultGuard<{ success: boolean }> = createErrorResultGuard(
+        input => input.success != null,
+    );
 
     beforeAll(async () => {
         await server.init({

@@ -2,11 +2,13 @@ import { CurrencyCode, GlobalFlag } from '@vendure/common/lib/generated-types';
 import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
-import { SoftDeletable } from '../../common/types/common-types';
+import { Calculated } from '../../common/calculated-decorator';
+import { ChannelAware, SoftDeletable } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { Collection } from '../collection/collection.entity';
 import { CustomProductVariantFields } from '../custom-entity-fields';
 import { EntityId } from '../entity-id.decorator';
@@ -31,7 +33,9 @@ import { ProductVariantTranslation } from './product-variant-translation.entity'
  * @docsCategory entities
  */
 @Entity()
-export class ProductVariant extends VendureEntity implements Translatable, HasCustomFields, SoftDeletable {
+export class ProductVariant
+    extends VendureEntity
+    implements Translatable, HasCustomFields, SoftDeletable, ChannelAware {
     constructor(input?: DeepPartial<ProductVariant>) {
         super(input);
     }
@@ -47,30 +51,45 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
     @Column()
     sku: string;
 
+    // TODO: Remove as deprecated
+    priceIncludesTax = false;
+
     /**
-     * A synthetic property which is populated with data from a ProductVariantPrice entity.
-     * It is marked as a @Column() so that changes to it will trigger the afterUpdate subscriber.
+     * Calculated at run-time
      */
-    @Column({
-        name: 'lastPriceValue',
-        comment: 'Not used - actual price is stored in product_variant_price table',
-    })
-    price: number;
+    listPrice: number;
+
+    /**
+     * Calculated at run-time
+     */
+    listPriceIncludesTax: boolean;
 
     /**
      * Calculated at run-time
      */
     currencyCode: CurrencyCode;
 
-    /**
-     * Calculated at run-time
-     */
-    priceIncludesTax: boolean;
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
+    get price(): number {
+        if (this.listPrice == null) {
+            return 0;
+        }
+        return this.listPriceIncludesTax ? this.taxRateApplied.netPriceOf(this.listPrice) : this.listPrice;
+    }
 
-    /**
-     * Calculated at run-time
-     */
-    priceWithTax: number;
+    @Calculated({
+        relations: ['productVariantPrices'],
+        expression: 'productVariantPrices.price',
+    })
+    get priceWithTax(): number {
+        if (this.listPrice == null) {
+            return 0;
+        }
+        return this.listPriceIncludesTax ? this.listPrice : this.taxRateApplied.grossPriceOf(this.listPrice);
+    }
 
     /**
      * Calculated at run-time
@@ -141,4 +160,8 @@ export class ProductVariant extends VendureEntity implements Translatable, HasCu
 
     @ManyToMany(type => Collection, collection => collection.productVariants)
     collections: Collection[];
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

@@ -20,6 +20,7 @@ import {
     ActionBarLeftComponent,
     ActionBarRightComponent,
 } from './components/action-bar/action-bar.component';
+import { AddressFormComponent } from './components/address-form/address-form.component';
 import { AffixedInputComponent } from './components/affixed-input/affixed-input.component';
 import { PercentageSuffixInputComponent } from './components/affixed-input/percentage-suffix-input.component';
 import { AssetFileInputComponent } from './components/asset-file-input/asset-file-input.component';
@@ -90,14 +91,16 @@ import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-inpu
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
 import { ChannelLabelPipe } from './pipes/channel-label.pipe';
-import { CurrencyNamePipe } from './pipes/currency-name.pipe';
 import { CustomFieldLabelPipe } from './pipes/custom-field-label.pipe';
 import { DurationPipe } from './pipes/duration.pipe';
 import { FileSizePipe } from './pipes/file-size.pipe';
 import { HasPermissionPipe } from './pipes/has-permission.pipe';
-import { OrderStateI18nTokenPipe } from './pipes/order-state-i18n-token.pipe';
+import { LocaleCurrencyNamePipe } from './pipes/locale-currency-name.pipe';
+import { LocaleCurrencyPipe } from './pipes/locale-currency.pipe';
+import { LocaleDatePipe } from './pipes/locale-date.pipe';
 import { SentenceCasePipe } from './pipes/sentence-case.pipe';
 import { SortPipe } from './pipes/sort.pipe';
+import { StateI18nTokenPipe } from './pipes/state-i18n-token.pipe';
 import { StringToColorPipe } from './pipes/string-to-color.pipe';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
 import { CanDeactivateDetailGuard } from './providers/routing/can-deactivate-detail-guard';
@@ -125,7 +128,7 @@ const DECLARATIONS = [
     AffixedInputComponent,
     ChipComponent,
     CurrencyInputComponent,
-    CurrencyNamePipe,
+    LocaleCurrencyNamePipe,
     CustomerLabelComponent,
     CustomFieldControlComponent,
     DataTableComponent,
@@ -187,10 +190,13 @@ const DECLARATIONS = [
     HistoryEntryDetailComponent,
     EditNoteDialogComponent,
     ProductSelectorFormInputComponent,
-    OrderStateI18nTokenPipe,
+    StateI18nTokenPipe,
     ProductSelectorComponent,
     HelpTooltipComponent,
     CustomerGroupFormInputComponent,
+    AddressFormComponent,
+    LocaleDatePipe,
+    LocaleCurrencyPipe,
 ];
 
 const DYNAMIC_FORM_INPUTS = [

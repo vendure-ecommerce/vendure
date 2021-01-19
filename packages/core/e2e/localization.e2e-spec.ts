@@ -4,7 +4,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     GetProductWithVariants,
@@ -15,7 +15,7 @@ import {
 import { GET_PRODUCT_WITH_VARIANTS, UPDATE_PRODUCT } from './graphql/shared-definitions';
 
 /* tslint:disable:no-non-null-assertion */
-describe('Role resolver', () => {
+describe('Localization', () => {
     const { server, adminClient } = createTestEnvironment(testConfig);
 
     beforeAll(async () => {

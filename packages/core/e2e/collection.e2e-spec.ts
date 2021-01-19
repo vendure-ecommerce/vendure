@@ -330,159 +330,211 @@ describe('Collection resolver', () => {
         });
     });
 
-    it('collection by id', async () => {
-        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-            id: computersCollection.id,
-        });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.id).toBe(computersCollection.id);
-    });
-
-    it('collection by slug', async () => {
-        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-            slug: computersCollection.slug,
-        });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.id).toBe(computersCollection.id);
-    });
-
-    it(
-        'throws if neither id nor slug provided',
-        assertThrowsWithMessage(async () => {
-            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {});
-        }, 'Either the Collection id or slug must be provided'),
-    );
-
-    it(
-        'throws if id and slug do not refer to the same Product',
-        assertThrowsWithMessage(async () => {
-            await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-                id: computersCollection.id,
-                slug: pearCollection.slug,
-            });
-        }, 'The provided id and slug refer to different Collections'),
-    );
-
-    it('parent field', async () => {
-        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-            id: computersCollection.id,
-        });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.parent!.name).toBe('Electronics');
-    });
-
-    // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
-    it('parent field resolved by CollectionEntityResolver', async () => {
-        const { product } = await adminClient.query<
-            GetProductCollectionsWithParent.Query,
-            GetProductCollectionsWithParent.Variables
-        >(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
-            id: 'T_1',
-        });
-
-        expect(product?.collections.length).toBe(3);
-        expect(product?.collections.sort(sortById)).toEqual([
-            {
-                id: 'T_3',
-                name: 'Electronics',
-                parent: {
-                    id: 'T_1',
-                    name: '__root_collection__',
+    describe('querying', () => {
+        it('collection by id', async () => {
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: computersCollection.id,
                 },
-            },
-            {
-                id: 'T_4',
-                name: 'Computers',
-                parent: {
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.id).toBe(computersCollection.id);
+        });
+
+        it('collection by slug', async () => {
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    slug: computersCollection.slug,
+                },
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.id).toBe(computersCollection.id);
+        });
+
+        it(
+            'throws if neither id nor slug provided',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {});
+            }, 'Either the Collection id or slug must be provided'),
+        );
+
+        it(
+            'throws if id and slug do not refer to the same Product',
+            assertThrowsWithMessage(async () => {
+                await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
+                    id: computersCollection.id,
+                    slug: pearCollection.slug,
+                });
+            }, 'The provided id and slug refer to different Collections'),
+        );
+
+        it('parent field', async () => {
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: computersCollection.id,
+                },
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.parent!.name).toBe('Electronics');
+        });
+
+        // Tests fix for https://github.com/vendure-ecommerce/vendure/issues/361
+        it('parent field resolved by CollectionEntityResolver', async () => {
+            const { product } = await adminClient.query<
+                GetProductCollectionsWithParent.Query,
+                GetProductCollectionsWithParent.Variables
+            >(GET_PRODUCT_COLLECTIONS_WITH_PARENT, {
+                id: 'T_1',
+            });
+
+            expect(product?.collections.length).toBe(3);
+            expect(product?.collections.sort(sortById)).toEqual([
+                {
                     id: 'T_3',
                     name: 'Electronics',
+                    parent: {
+                        id: 'T_1',
+                        name: '__root_collection__',
+                    },
                 },
-            },
-            {
-                id: 'T_5',
-                name: 'Pear',
-                parent: {
+                {
                     id: 'T_4',
                     name: 'Computers',
+                    parent: {
+                        id: 'T_3',
+                        name: 'Electronics',
+                    },
                 },
-            },
-        ]);
-    });
-
-    it('children field', async () => {
-        const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(GET_COLLECTION, {
-            id: electronicsCollection.id,
+                {
+                    id: 'T_5',
+                    name: 'Pear',
+                    parent: {
+                        id: 'T_4',
+                        name: 'Computers',
+                    },
+                },
+            ]);
         });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.children!.length).toBe(1);
-        expect(result.collection.children![0].name).toBe('Computers');
-    });
 
-    it('breadcrumbs', async () => {
-        const result = await adminClient.query<
-            GetCollectionBreadcrumbs.Query,
-            GetCollectionBreadcrumbs.Variables
-        >(GET_COLLECTION_BREADCRUMBS, {
-            id: pearCollection.id,
+        it('children field', async () => {
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: electronicsCollection.id,
+                },
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.children!.length).toBe(1);
+            expect(result.collection.children![0].name).toBe('Computers');
         });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.breadcrumbs).toEqual([
-            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
-            {
-                id: electronicsCollection.id,
-                name: electronicsCollection.name,
-                slug: electronicsCollection.slug,
-            },
-            { id: computersCollection.id, name: computersCollection.name, slug: computersCollection.slug },
-            { id: pearCollection.id, name: pearCollection.name, slug: pearCollection.slug },
-        ]);
-    });
 
-    it('breadcrumbs for root collection', async () => {
-        const result = await adminClient.query<
-            GetCollectionBreadcrumbs.Query,
-            GetCollectionBreadcrumbs.Variables
-        >(GET_COLLECTION_BREADCRUMBS, {
-            id: 'T_1',
+        it('breadcrumbs', async () => {
+            const result = await adminClient.query<
+                GetCollectionBreadcrumbs.Query,
+                GetCollectionBreadcrumbs.Variables
+            >(GET_COLLECTION_BREADCRUMBS, {
+                id: pearCollection.id,
+            });
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.breadcrumbs).toEqual([
+                { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+                {
+                    id: electronicsCollection.id,
+                    name: electronicsCollection.name,
+                    slug: electronicsCollection.slug,
+                },
+                {
+                    id: computersCollection.id,
+                    name: computersCollection.name,
+                    slug: computersCollection.slug,
+                },
+                { id: pearCollection.id, name: pearCollection.name, slug: pearCollection.slug },
+            ]);
         });
-        if (!result.collection) {
-            fail(`did not return the collection`);
-            return;
-        }
-        expect(result.collection.breadcrumbs).toEqual([
-            { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
-        ]);
-    });
 
-    it('collections.assets', async () => {
-        const { collections } = await adminClient.query<GetCollectionsWithAssets.Query>(gql`
-            query GetCollectionsWithAssets {
-                collections {
-                    items {
-                        assets {
-                            name
+        it('breadcrumbs for root collection', async () => {
+            const result = await adminClient.query<
+                GetCollectionBreadcrumbs.Query,
+                GetCollectionBreadcrumbs.Variables
+            >(GET_COLLECTION_BREADCRUMBS, {
+                id: 'T_1',
+            });
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.breadcrumbs).toEqual([
+                { id: 'T_1', name: ROOT_COLLECTION_NAME, slug: ROOT_COLLECTION_NAME },
+            ]);
+        });
+
+        it('collections.assets', async () => {
+            const { collections } = await adminClient.query<GetCollectionsWithAssets.Query>(gql`
+                query GetCollectionsWithAssets {
+                    collections {
+                        items {
+                            assets {
+                                name
+                            }
                         }
                     }
                 }
-            }
-        `);
+            `);
 
-        expect(collections.items[0].assets).toBeDefined();
+            expect(collections.items[0].assets).toBeDefined();
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/642
+        it('sorting on Collection.productVariants.price', async () => {
+            const { collection } = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    id: computersCollection.id,
+                    variantListOptions: {
+                        sort: {
+                            price: SortOrder.ASC,
+                        },
+                    },
+                },
+            );
+            expect(collection!.productVariants.items.map(i => i.price)).toEqual([
+                3799,
+                5374,
+                6900,
+                7489,
+                7896,
+                9299,
+                13435,
+                14374,
+                16994,
+                93120,
+                94920,
+                108720,
+                109995,
+                129900,
+                139900,
+                219900,
+                229900,
+            ]);
+        });
     });
 
     describe('moveCollection', () => {
@@ -1325,13 +1377,14 @@ describe('Collection resolver', () => {
 });
 
 export const GET_COLLECTION = gql`
-    query GetCollection($id: ID, $slug: String) {
+    query GetCollection($id: ID, $slug: String, $variantListOptions: ProductVariantListOptions) {
         collection(id: $id, slug: $slug) {
             ...Collection
-            productVariants {
+            productVariants(options: $variantListOptions) {
                 items {
                     id
                     name
+                    price
                 }
             }
         }

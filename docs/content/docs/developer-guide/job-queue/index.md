@@ -36,7 +36,7 @@ It is also possible to implement your own JobQueueStrategy to enable other persi
 
 ## Using Job Queues in a plugin
 
-If you create a [Vendure plugin]({{< relref "/docs/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "plugin-examples" >}}#using-the-jobqueueservice) for a detailed annotated example.
+If you create a [Vendure plugin]({{< relref "/docs/plugins" >}}) which involves some long-running tasks, you can also make use of the job queue. See the [JobQueue plugin example]({{< relref "using-job-queue-service" >}}) for a detailed annotated example.
 
 {{< alert "primary" >}}
 Note: The [JobQueueService]({{< relref "job-queue-service" >}}) combines well with the [WorkerService]({{< relref "worker-service" >}}).

@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import {
     ConfigArg,
     ConfigArgInput,
+    ManualPaymentInput,
     RefundOrderInput,
     UpdatePaymentMethodInput,
 } from '@vendure/common/lib/generated-types';
 import { omit } from '@vendure/common/lib/omit';
 import { ConfigArgType, ID, PaginatedList } from '@vendure/common/lib/shared-types';
-import { assertNever } from '@vendure/common/lib/shared-utils';
+import { assertNever, summate } from '@vendure/common/lib/shared-utils';
 
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
@@ -78,9 +79,21 @@ export class PaymentMethodService {
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
     }
 
-    async createPayment(ctx: RequestContext, order: Order, method: string, metadata: any): Promise<Payment> {
+    async createPayment(
+        ctx: RequestContext,
+        order: Order,
+        amount: number,
+        method: string,
+        metadata: any,
+    ): Promise<Payment> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
-        const result = await handler.createPayment(ctx, order, paymentMethod.configArgs, metadata || {});
+        const result = await handler.createPayment(
+            ctx,
+            order,
+            amount,
+            paymentMethod.configArgs,
+            metadata || {},
+        );
         const initialState = 'Created';
         const payment = await this.connection
             .getRepository(ctx, Payment)
@@ -90,6 +103,28 @@ export class PaymentMethodService {
         this.eventBus.publish(
             new PaymentStateTransitionEvent(initialState, result.state, ctx, payment, order),
         );
+        return payment;
+    }
+
+    /**
+     * Creates a Payment from the manual payment mutation in the Admin API
+     */
+    async createManualPayment(ctx: RequestContext, order: Order, amount: number, input: ManualPaymentInput) {
+        const initialState = 'Created';
+        const endState = 'Settled';
+        const payment = await this.connection.getRepository(ctx, Payment).save(
+            new Payment({
+                amount,
+                order,
+                transactionId: input.transactionId,
+                metadata: input.metadata,
+                method: input.method,
+                state: initialState,
+            }),
+        );
+        await this.paymentStateMachine.transition(ctx, order, payment, endState);
+        await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
+        this.eventBus.publish(new PaymentStateTransitionEvent(initialState, endState, ctx, payment, order));
         return payment;
     }
 
@@ -106,7 +141,7 @@ export class PaymentMethodService {
         payment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
         const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
-        const itemAmount = items.reduce((sum, item) => sum + item.unitPriceWithTax, 0);
+        const itemAmount = summate(items, 'proratedUnitPriceWithTax');
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
             payment,

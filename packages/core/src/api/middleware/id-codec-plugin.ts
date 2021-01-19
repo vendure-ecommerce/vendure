@@ -44,6 +44,7 @@ export class IdCodecPlugin implements ApolloServerPlugin {
                     'promotionId',
                     'refundId',
                     'groupId',
+                    'modificationId',
                 ]);
             }
             return isIdType ? this.idCodecService.encode(value) : value;

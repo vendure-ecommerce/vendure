@@ -1,6 +1,7 @@
 import { Args, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { HistoryEntryListOptions, OrderHistoryArgs, SortOrder } from '@vendure/common/lib/generated-types';
 
+import { assertFound } from '../../../common/utils';
 import { Order } from '../../../entity/order/order.entity';
 import { ProductOptionGroup } from '../../../entity/product-option-group/product-option-group.entity';
 import { HistoryService } from '../../../service/services/history.service';
@@ -28,20 +29,25 @@ export class OrderEntityResolver {
     }
 
     @ResolveField()
-    async shippingMethod(@Ctx() ctx: RequestContext, @Parent() order: Order) {
-        if (order.shippingMethodId) {
-            // Does not need to be decoded because it is an internal property
-            // which is never exposed to the outside world.
-            const shippingMethodId = order.shippingMethodId;
-            return this.shippingMethodService.findOne(ctx, shippingMethodId);
-        } else {
-            return null;
-        }
+    async fulfillments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        return this.orderService.getOrderFulfillments(ctx, order);
     }
 
     @ResolveField()
-    async fulfillments(@Ctx() ctx: RequestContext, @Parent() order: Order) {
-        return this.orderService.getOrderFulfillments(ctx, order);
+    async surcharges(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.surcharges) {
+            return order.surcharges;
+        }
+        return this.orderService.getOrderSurcharges(ctx, order.id);
+    }
+
+    @ResolveField()
+    async lines(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.lines) {
+            return order.lines;
+        }
+        const { lines } = await assertFound(this.orderService.findOne(ctx, order.id));
+        return lines;
     }
 
     @ResolveField()
@@ -71,6 +77,14 @@ export class OrderEntityResolver {
 @Resolver('Order')
 export class OrderAdminEntityResolver {
     constructor(private orderService: OrderService) {}
+
+    @ResolveField()
+    async modifications(@Ctx() ctx: RequestContext, @Parent() order: Order) {
+        if (order.modifications) {
+            return order.modifications;
+        }
+        return this.orderService.getOrderModifications(ctx, order.id);
+    }
 
     @ResolveField()
     async nextStates(@Parent() order: Order) {

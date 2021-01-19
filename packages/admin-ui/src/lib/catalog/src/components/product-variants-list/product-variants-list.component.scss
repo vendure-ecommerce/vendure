@@ -4,7 +4,7 @@
     display: flex;
     min-height: 52px;
     align-items: center;
-    border: 1px solid $color-grey-200;
+    border: 1px solid var(--color-component-border-100);
     border-radius: 3px;
     padding: 6px 18px;
 
@@ -21,7 +21,7 @@
     transition: background-color 0.2s;
     min-height: 330px;
     &.disabled {
-        background-color: $color-grey-200;
+        background-color: var(--color-component-bg-200);
     }
     .header-row {
         display: flex;
@@ -118,7 +118,7 @@
     }
 
     .option-group-name {
-        color: $color-grey-400;
+        color: var(--color-text-200);
         text-transform: uppercase;
         font-size: 10px;
         margin-right: 3px;
@@ -127,7 +127,14 @@
 
     .options-facets {
         display: flex;
-        color: $color-grey-400;
+        color: var(--color-grey-400);
+    }
+}
+
+.channel-assignment {
+    justify-content: flex-end;
+    .btn {
+        margin: 6px 12px 6px 0;
     }
 }
 

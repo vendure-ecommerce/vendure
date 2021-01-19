@@ -113,7 +113,7 @@ export class PostgresSearchStrategy implements SearchStrategy {
     ): SelectQueryBuilder<SearchIndexItem> {
         const { term, facetValueIds, facetValueOperator, collectionId, collectionSlug } = input;
         // join multiple words with the logical AND operator
-        const termLogicalAnd = term ? term.trim().replace(/\s+/, ' & ') : '';
+        const termLogicalAnd = term ? term.trim().replace(/\s+/g, ' & ') : '';
 
         qb.where('1 = 1');
         if (term && term.length > this.minTermLength) {

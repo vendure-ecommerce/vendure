@@ -1,9 +1,10 @@
-import { Adjustment, AdjustmentType } from '@vendure/common/lib/generated-types';
+import { TaxLine } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { AdjustmentSource } from '../../common/types/adjustment-source';
+import { grossPriceOf, netPriceOf, taxComponentOf, taxPayableOn } from '../../common/tax-utils';
 import { idsAreEqual } from '../../common/utils';
+import { VendureEntity } from '../base/base.entity';
 import { CustomerGroup } from '../customer-group/customer-group.entity';
 import { TaxCategory } from '../tax-category/tax-category.entity';
 import { DecimalTransformer } from '../value-transformers';
@@ -20,9 +21,7 @@ import { Zone } from '../zone/zone.entity';
  * @docsCategory entities
  */
 @Entity()
-export class TaxRate extends AdjustmentSource {
-    readonly type = AdjustmentType.TAX;
-
+export class TaxRate extends VendureEntity {
     constructor(input?: DeepPartial<TaxRate>) {
         super(input);
     }
@@ -46,36 +45,34 @@ export class TaxRate extends AdjustmentSource {
      * Returns the tax component of a given gross price.
      */
     taxComponentOf(grossPrice: number): number {
-        return Math.round(grossPrice - grossPrice / ((100 + this.value) / 100));
+        return taxComponentOf(grossPrice, this.value);
     }
 
     /**
      * Given a gross (tax-inclusive) price, returns the net price.
      */
     netPriceOf(grossPrice: number): number {
-        return grossPrice - this.taxComponentOf(grossPrice);
+        return netPriceOf(grossPrice, this.value);
     }
 
     /**
      * Returns the tax applicable to the given net price.
      */
     taxPayableOn(netPrice: number): number {
-        return Math.round(netPrice * (this.value / 100));
+        return taxPayableOn(netPrice, this.value);
     }
 
     /**
      * Given a net price, return the gross price (net + tax)
      */
     grossPriceOf(netPrice: number): number {
-        return netPrice + this.taxPayableOn(netPrice);
+        return grossPriceOf(netPrice, this.value);
     }
 
-    apply(price: number): Adjustment {
+    apply(price: number): TaxLine {
         return {
-            type: this.type,
-            adjustmentSource: this.getSourceId(),
             description: this.name,
-            amount: this.taxPayableOn(price),
+            taxRate: this.value,
         };
     }
 

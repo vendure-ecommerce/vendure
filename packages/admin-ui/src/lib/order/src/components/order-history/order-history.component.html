@@ -45,6 +45,27 @@
                     }}
                 </ng-template>
             </ng-container>
+            <ng-container *ngSwitchCase="type.ORDER_MODIFIED">
+                <div class="title">
+                    {{ 'order.history-order-modified' | translate }}
+                </div>
+                <ng-container *ngIf="getModification(entry.data.modificationId) as modification">
+                    {{ 'order.modify-order-price-difference' | translate }}:
+                    <strong>{{ modification.priceChange | localeCurrency: order.currencyCode }}</strong>
+                    <vdr-chip colorType="success" *ngIf="modification.isSettled">{{
+                        'order.modification-settled' | translate
+                    }}</vdr-chip>
+                    <vdr-chip colorType="error" *ngIf="!modification.isSettled">{{
+                        'order.modification-not-settled' | translate
+                    }}</vdr-chip>
+                    <vdr-history-entry-detail>
+                        <vdr-modification-detail
+                            [order]="order"
+                            [modification]="modification"
+                        ></vdr-modification-detail>
+                    </vdr-history-entry-detail>
+                </ng-container>
+            </ng-container>
             <ng-container *ngSwitchCase="type.ORDER_PAYMENT_TRANSITION">
                 <ng-container *ngIf="entry.data.to === 'Settled'; else regularPaymentTransition">
                     <div class="title">
@@ -62,7 +83,11 @@
                     {{
                         'order.history-payment-transition'
                             | translate
-                                : { from: entry.data.from, to: entry.data.to, id: getPayment(entry)?.transactionId }
+                                : {
+                                      from: entry.data.from,
+                                      to: entry.data.to,
+                                      id: getPayment(entry)?.transactionId
+                                  }
                     }}
                 </ng-template>
             </ng-container>

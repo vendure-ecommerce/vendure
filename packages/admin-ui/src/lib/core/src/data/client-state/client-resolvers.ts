@@ -8,6 +8,7 @@ import {
     SetActiveChannel,
     SetAsLoggedIn,
     SetUiLanguage,
+    SetUiTheme,
     UpdateUserChannels,
     UserStatus,
 } from '../../common/generated-types';
@@ -69,14 +70,30 @@ export const clientResolvers: ResolverDefinition = {
             return data.userStatus;
         },
         setUiLanguage: (_, args: SetUiLanguage.Variables, { cache }): LanguageCode => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
             const data: GetUiState.Query = {
                 uiState: {
                     __typename: 'UiState',
                     language: args.languageCode,
+                    theme: previous.uiState.theme,
                 },
             };
             cache.writeQuery({ query: GET_UI_STATE, data });
             return args.languageCode;
+        },
+        setUiTheme: (_, args: SetUiTheme.Variables, { cache }): string => {
+            // tslint:disable-next-line:no-non-null-assertion
+            const previous = cache.readQuery<GetUiState.Query>({ query: GET_UI_STATE })!;
+            const data: GetUiState.Query = {
+                uiState: {
+                    __typename: 'UiState',
+                    language: previous.uiState.language,
+                    theme: args.theme,
+                },
+            };
+            cache.writeQuery({ query: GET_UI_STATE, data });
+            return args.theme;
         },
         setActiveChannel: (_, args: SetActiveChannel.Variables, { cache }): UserStatus => {
             // tslint:disable-next-line:no-non-null-assertion
@@ -101,12 +118,12 @@ export const clientResolvers: ResolverDefinition = {
             const previous = cache.readQuery<GetUserStatus.Query>({ query: GET_USER_STATUS })!;
             const data = {
                 userStatus: {
-                    __typename: 'UserStatus' as const,
+                    ...previous.userStatus,
                     channels: args.channels,
                 },
             };
             cache.writeQuery({ query: GET_USER_STATUS, data });
-            return { ...previous.userStatus, ...data.userStatus };
+            return data.userStatus;
         },
     },
 };

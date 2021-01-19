@@ -8,6 +8,7 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
+import { PRODUCT_WITH_OPTIONS_FRAGMENT } from './graphql/fragments';
 import {
     AddOptionGroupToProduct,
     CreateProduct,
@@ -32,6 +33,7 @@ import {
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
+    ADD_OPTION_GROUP_TO_PRODUCT,
     CREATE_PRODUCT,
     CREATE_PRODUCT_VARIANTS,
     DELETE_PRODUCT,
@@ -44,16 +46,15 @@ import {
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
-import { sortById } from './utils/test-order-utils';
 
 // tslint:disable:no-non-null-assertion
 
 describe('Product resolver', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
 
-    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard<
-        ProductWithOptionsFragment
-    >(input => !!input.optionGroups);
+    const removeOptionGuard: ErrorResultGuard<ProductWithOptionsFragment> = createErrorResultGuard(
+        input => !!input.optionGroups,
+    );
 
     beforeAll(async () => {
         await server.init({
@@ -405,6 +406,27 @@ describe('Product resolver', () => {
             expect(result.createProduct.assets.map(a => a.id)).toEqual(assetIds);
             expect(result.createProduct.featuredAsset!.id).toBe(featuredAssetId);
             newProductWithAssets = result.createProduct;
+        });
+
+        it('createProduct creates a disabled Product', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        enabled: false,
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'en Small apple',
+                                slug: 'en-small-apple',
+                                description: 'A small apple',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.enabled).toBe(false);
+            newProduct = result.createProduct;
         });
 
         it('updateProduct updates a Product', async () => {
@@ -954,7 +976,7 @@ describe('Product resolver', () => {
                 expect(updatedVariant.featuredAsset!.id).toBe('T_4');
             });
 
-            it('updateProductVariants updates taxCategory and priceBeforeTax', async () => {
+            it('updateProductVariants updates taxCategory and price', async () => {
                 const firstVariant = variants[0];
                 const result = await adminClient.query<
                     UpdateProductVariants.Mutation,
@@ -1165,31 +1187,28 @@ describe('Product resolver', () => {
                 `No Product with the id '1' could be found`,
             ),
         );
+
+        // https://github.com/vendure-ecommerce/vendure/issues/558
+        it('slug of a deleted product can be re-used', async () => {
+            const result = await adminClient.query<CreateProduct.Mutation, CreateProduct.Variables>(
+                CREATE_PRODUCT,
+                {
+                    input: {
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Product reusing deleted slug',
+                                slug: productToDelete.slug,
+                                description: 'stuff',
+                            },
+                        ],
+                    },
+                },
+            );
+            expect(result.createProduct.slug).toBe(productToDelete.slug);
+        });
     });
 });
-
-const PRODUCT_WITH_OPTIONS_FRAGMENT = gql`
-    fragment ProductWithOptions on Product {
-        id
-        optionGroups {
-            id
-            code
-            options {
-                id
-                code
-            }
-        }
-    }
-`;
-
-export const ADD_OPTION_GROUP_TO_PRODUCT = gql`
-    mutation AddOptionGroupToProduct($productId: ID!, $optionGroupId: ID!) {
-        addOptionGroupToProduct(productId: $productId, optionGroupId: $optionGroupId) {
-            ...ProductWithOptions
-        }
-    }
-    ${PRODUCT_WITH_OPTIONS_FRAGMENT}
-`;
 
 export const REMOVE_OPTION_GROUP_FROM_PRODUCT = gql`
     mutation RemoveOptionGroupFromProduct($productId: ID!, $optionGroupId: ID!) {

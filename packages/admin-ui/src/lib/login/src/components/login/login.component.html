@@ -1,6 +1,6 @@
 <div class="login-wrapper">
     <form class="login">
-        <label class="title"><img src="assets/cube-logo-300px.png" /></label>
+        <label class="title"><img src="assets/logo-300px.png" /></label>
         <div class="login-group">
             <input
                 class="username"
@@ -18,6 +18,13 @@
                 [(ngModel)]="password"
                 [placeholder]="'common.password' | translate"
             />
+            <clr-alert [clrAlertType]="'danger'"  [clrAlertClosable]="false" [class.visible]="errorMessage" class="login-error">
+                <clr-alert-item>
+                    <span class="alert-text">
+                        {{ errorMessage }}
+                    </span>
+                </clr-alert-item>
+            </clr-alert>
             <clr-checkbox-wrapper>
                 <input
                     type="checkbox"
@@ -36,14 +43,11 @@
             >
                 {{ 'common.login' | translate }}
             </button>
-            <clr-alert [clrAlertType]="'danger'" *ngIf="errorMessage">
-                <clr-alert-item>
-                    <span class="alert-text">
-                        {{ errorMessage }}
-                    </span>
-                </clr-alert-item>
-            </clr-alert>
         </div>
-        <div class="version">vendure {{ version }}</div>
+        <div class="version">
+            <span *ngIf="brand">{{ brand }} <span *ngIf="!hideVendureBranding || !hideVersion">-</span></span>
+            <span *ngIf="!hideVendureBranding">vendure</span>
+            <span *ngIf="!hideVersion">v{{ version }}</span>
+        </div>
     </form>
 </div>

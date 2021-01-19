@@ -40,6 +40,7 @@ export * from './role/role.entity';
 export * from './session/session.entity';
 export * from './session/anonymous-session.entity';
 export * from './session/authenticated-session.entity';
+export * from './surcharge/surcharge.entity';
 export * from './shipping-method/shipping-method.entity';
 export * from './tax-category/tax-category.entity';
 export * from './tax-rate/tax-rate.entity';

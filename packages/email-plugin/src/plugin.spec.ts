@@ -5,6 +5,7 @@ import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import {
     EventBus,
     LanguageCode,
+    Logger,
     Order,
     OrderStateTransitionEvent,
     PluginCommonModule,
@@ -12,6 +13,7 @@ import {
     RequestContext,
     VendureEvent,
 } from '@vendure/core';
+import { TestingLogger } from '@vendure/testing';
 import path from 'path';
 
 import { orderConfirmationHandler } from './default-email-handlers';
@@ -24,6 +26,8 @@ describe('EmailPlugin', () => {
     let eventBus: EventBus;
     let onSend: jest.Mock;
     let module: TestingModule;
+
+    const testingLogger = new TestingLogger(() => jest.fn());
 
     async function initPluginWithHandlers(
         handlers: Array<EmailEventHandler<string, any>>,
@@ -50,6 +54,9 @@ describe('EmailPlugin', () => {
             ],
             providers: [MockService],
         }).compile();
+
+        Logger.useLogger(testingLogger);
+        module.useLogger(new Logger());
 
         const plugin = module.get(EmailPlugin);
         eventBus = module.get(EventBus);
@@ -311,7 +318,7 @@ describe('EmailPlugin', () => {
             expect(onSend.mock.calls[0][0].body).toContain('Date: Wed Jan 01 2020 10:00:00');
         });
 
-        it('formateMoney', async () => {
+        it('formatMoney', async () => {
             const handler = new EmailEventListener('test-helpers')
                 .on(MockEvent)
                 .setFrom('"test from" <noreply@test.com>')
@@ -441,6 +448,66 @@ describe('EmailPlugin', () => {
         });
     });
 
+    describe('attachments', () => {
+        const ctx = RequestContext.deserialize({
+            _channel: { code: DEFAULT_CHANNEL_CODE },
+            _languageCode: LanguageCode.en,
+        } as any);
+        const TEST_IMAGE_PATH = path.join(__dirname, '../test-fixtures/test.jpg');
+
+        it('attachments are empty by default', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}');
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(onSend.mock.calls[0][0].attachments).toEqual([]);
+        });
+
+        it('sync attachment', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(() => [
+                    {
+                        path: TEST_IMAGE_PATH,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
+        });
+
+        it('async attachment', async () => {
+            const handler = new EmailEventListener('test')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .setAttachments(async () => [
+                    {
+                        path: TEST_IMAGE_PATH,
+                    },
+                ]);
+
+            await initPluginWithHandlers([handler]);
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+
+            expect(onSend.mock.calls[0][0].attachments).toEqual([{ path: TEST_IMAGE_PATH }]);
+        });
+    });
+
     describe('orderConfirmationHandler', () => {
         beforeEach(async () => {
             await initPluginWithHandlers([orderConfirmationHandler], {
@@ -490,6 +557,71 @@ describe('EmailPlugin', () => {
             await pause();
 
             expect(onSend.mock.calls[0][0].subject).toBe(`Order confirmation for #${order.code}`);
+        });
+    });
+
+    describe('error handling', () => {
+        it('Logs an error if the template file is not found', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            testingLogger.errorSpy.mockClear();
+
+            const handler = new EmailEventListener('no-template')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}');
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`ENOENT: no such file or directory`);
+        });
+
+        it('Logs a Handlebars error if the template is invalid', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            testingLogger.errorSpy.mockClear();
+
+            const handler = new EmailEventListener('bad-template')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}');
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`Parse error on line 3:`);
+        });
+
+        it('Logs an error if the loadData method throws', async () => {
+            const ctx = RequestContext.deserialize({
+                _channel: { code: DEFAULT_CHANNEL_CODE },
+                _languageCode: LanguageCode.en,
+            } as any);
+            testingLogger.errorSpy.mockClear();
+
+            const handler = new EmailEventListener('bad-template')
+                .on(MockEvent)
+                .setFrom('"test from" <noreply@test.com>')
+                .setRecipient(() => 'test@test.com')
+                .setSubject('Hello {{ subjectVar }}')
+                .loadData(context => {
+                    throw new Error('something went horribly wrong!');
+                });
+
+            await initPluginWithHandlers([handler]);
+
+            eventBus.publish(new MockEvent(ctx, true));
+            await pause();
+            expect(testingLogger.errorSpy.mock.calls[0][0]).toContain(`something went horribly wrong!`);
         });
     });
 });

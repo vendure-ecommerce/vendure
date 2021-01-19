@@ -3,16 +3,18 @@ import {
     AddFulfillmentToOrderResult,
     CancelOrderResult,
     MutationAddFulfillmentToOrderArgs,
+    // MutationAddManualPaymentToOrderArgs, TODO
     MutationAddNoteToOrderArgs,
     MutationCancelOrderArgs,
     MutationDeleteOrderNoteArgs,
+    // MutationModifyOrderArgs,
     MutationRefundOrderArgs,
     MutationSetOrderCustomFieldsArgs,
     MutationSettlePaymentArgs,
     MutationSettleRefundArgs,
     MutationTransitionFulfillmentToStateArgs,
     MutationTransitionOrderToStateArgs,
-    MutationTransitionPaymentToStateArgs,
+    // MutationTransitionPaymentToStateArgs,
     MutationUpdateOrderNoteArgs,
     Permission,
     QueryOrderArgs,
@@ -114,12 +116,12 @@ export class OrderResolver {
         return this.orderService.updateOrderNote(ctx, args.input);
     }
 
-    @Transaction()
-    @Mutation()
-    @Allow(Permission.UpdateOrder)
-    async deleteOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteOrderNoteArgs) {
-        return this.orderService.deleteOrderNote(ctx, args.id);
-    }
+    // @Transaction()
+    // @Mutation()
+    // @Allow(Permission.UpdateOrder)
+    // async deleteOrderNote(@Ctx() ctx: RequestContext, @Args() args: MutationDeleteOrderNoteArgs) {
+    //     return this.orderService.deleteOrderNote(ctx, args.id);
+    // }
 
     @Transaction()
     @Mutation()
@@ -148,13 +150,30 @@ export class OrderResolver {
         return this.orderService.transitionFulfillmentToState(ctx, args.id, args.state as FulfillmentState);
     }
 
-    @Transaction()
-    @Mutation()
-    @Allow(Permission.UpdateOrder)
-    async transitionPaymentToState(
-        @Ctx() ctx: RequestContext,
-        @Args() args: MutationTransitionPaymentToStateArgs,
-    ) {
-        return this.orderService.transitionPaymentToState(ctx, args.id, args.state as PaymentState);
-    }
+    // @Transaction()
+    // @Mutation()
+    // @Allow(Permission.UpdateOrder)
+    // async transitionPaymentToState(
+    //     @Ctx() ctx: RequestContext,
+    //     @Args() args: MutationTransitionPaymentToStateArgs,
+    // ) {
+    //     return this.orderService.transitionPaymentToState(ctx, args.id, args.state as PaymentState);
+    // }
+
+    // @Transaction('manual')
+    // @Mutation()
+    // @Allow(Permission.UpdateOrder)
+    // async modifyOrder(@Ctx() ctx: RequestContext, @Args() args: MutationModifyOrderArgs) {
+    //     return this.orderService.modifyOrder(ctx, args.input);
+    // }
+
+    // @Transaction()
+    // @Mutation()
+    // @Allow(Permission.UpdateOrder)
+    // async addManualPaymentToOrder(
+    //     @Ctx() ctx: RequestContext,
+    //     @Args() args: MutationAddManualPaymentToOrderArgs,
+    // ) {
+    //     return this.orderService.addManualPaymentToOrder(ctx, args.input);
+    // }
 }

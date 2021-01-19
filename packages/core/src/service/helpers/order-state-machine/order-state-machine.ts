@@ -10,7 +10,9 @@ import { StateMachineConfig, Transitions } from '../../../common/finite-state-ma
 import { validateTransitionDefinition } from '../../../common/finite-state-machine/validate-transition-definition';
 import { awaitPromiseOrObservable } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
+import { OrderModification } from '../../../entity/order-modification/order-modification.entity';
 import { Order } from '../../../entity/order/order.entity';
+import { Payment } from '../../../entity/payment/payment.entity';
 import { HistoryService } from '../../services/history.service';
 import { PromotionService } from '../../services/promotion.service';
 import { StockMovementService } from '../../services/stock-movement.service';
@@ -22,6 +24,7 @@ import {
     orderItemsArePartiallyShipped,
     orderItemsAreShipped,
     orderTotalIsCovered,
+    totalCoveredByPayments,
 } from '../utils/order-utils';
 
 import { OrderState, orderStateTransitions, OrderTransitionData } from './order-state';
@@ -62,7 +65,7 @@ export class OrderStateMachine {
 
     private async findOrderWithFulfillments(ctx: RequestContext, id: ID): Promise<Order> {
         return await this.connection.getEntityOrThrow(ctx, Order, id, {
-            relations: ['lines', 'lines.items', 'lines.items.fulfillment'],
+            relations: ['lines', 'lines.items', 'lines.items.fulfillments'],
         });
     }
 
@@ -70,6 +73,33 @@ export class OrderStateMachine {
      * Specific business logic to be executed on Order state transitions.
      */
     private async onTransitionStart(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
+        if (fromState === 'Modifying') {
+            const modifications = await this.connection
+                .getRepository(data.ctx, OrderModification)
+                .find({ where: { order: data.order }, relations: ['refund', 'payment'] });
+            if (toState === 'ArrangingAdditionalPayment') {
+                if (modifications.every(modification => modification.isSettled)) {
+                    return `message.cannot-transition-no-additional-payments-needed`;
+                }
+            } else {
+                if (modifications.some(modification => !modification.isSettled)) {
+                    return `message.cannot-transition-without-modification-payment`;
+                }
+            }
+        }
+        if (fromState === 'ArrangingAdditionalPayment') {
+            const existingPayments = await this.connection.getRepository(data.ctx, Payment).find({
+                relations: ['refunds'],
+                where: {
+                    order: { id: data.order.id },
+                },
+            });
+            data.order.payments = existingPayments;
+            const deficit = data.order.totalWithTax - totalCoveredByPayments(data.order);
+            if (0 < deficit) {
+                return `message.cannot-transition-from-arranging-additional-payment`;
+            }
+        }
         if (toState === 'ArrangingPayment') {
             if (data.order.lines.length === 0) {
                 return `message.cannot-transition-to-payment-when-order-is-empty`;
@@ -119,19 +149,32 @@ export class OrderStateMachine {
      * Specific business logic to be executed after Order state transition completes.
      */
     private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
-        if (toState === 'PaymentAuthorized' || toState === 'PaymentSettled') {
-            data.order.active = false;
-            data.order.orderPlacedAt = new Date();
-            await this.stockMovementService.createAllocationsForOrder(data.ctx, data.order);
-            await this.promotionService.addPromotionsToOrder(data.ctx, data.order);
+        const { ctx, order } = data;
+        const { stockAllocationStrategy } = this.configService.orderOptions;
+        if (
+            fromState === 'ArrangingPayment' &&
+            (toState === 'PaymentAuthorized' || toState === 'PaymentSettled')
+        ) {
+            order.active = false;
+            order.orderPlacedAt = new Date();
+            await this.promotionService.addPromotionsToOrder(ctx, order);
+        }
+        const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(
+            ctx,
+            fromState,
+            toState,
+            order,
+        );
+        if (shouldAllocateStock) {
+            await this.stockMovementService.createAllocationsForOrder(ctx, order);
         }
         if (toState === 'Cancelled') {
-            data.order.active = false;
+            order.active = false;
         }
         await this.historyService.createHistoryEntryForOrder({
-            orderId: data.order.id,
+            orderId: order.id,
             type: HistoryEntryType.ORDER_STATE_TRANSITION,
-            ctx: data.ctx,
+            ctx,
             data: {
                 from: fromState,
                 to: toState,

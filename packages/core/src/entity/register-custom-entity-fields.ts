@@ -29,6 +29,7 @@ import {
     CustomProductVariantFields,
     CustomProductVariantFieldsTranslation,
     CustomShippingMethodFields,
+    CustomShippingMethodFieldsTranslation,
     CustomUserFields,
 } from './custom-entity-fields';
 
@@ -195,4 +196,5 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'User', CustomUserFields);
     registerCustomFieldsForEntity(config, 'GlobalSettings', CustomGlobalSettingsFields);
     registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFields);
+    registerCustomFieldsForEntity(config, 'ShippingMethod', CustomShippingMethodFieldsTranslation, true);
 }
