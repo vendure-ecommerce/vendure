@@ -33,6 +33,7 @@ import { Job } from '../../job-queue/job';
 import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { WorkerService } from '../../worker/worker.service';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -62,6 +63,7 @@ export class CollectionService implements OnModuleInit {
         private jobQueueService: JobQueueService,
         private configService: ConfigService,
         private slugValidator: SlugValidator,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     onModuleInit() {
@@ -295,6 +297,7 @@ export class CollectionService implements OnModuleInit {
             },
         });
         await this.assetService.updateEntityAssets(ctx, collection, input);
+        await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
@@ -317,6 +320,7 @@ export class CollectionService implements OnModuleInit {
                 await this.assetService.updateEntityAssets(ctx, coll, input);
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
             this.applyFiltersQueue.add({
                 ctx: ctx.serialize(),

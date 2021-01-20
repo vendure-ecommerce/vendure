@@ -6,9 +6,12 @@ import {
     IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
     LocalizedString,
+    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
+
+import { VendureEntity } from '../../entity/base/base.entity';
 
 // prettier-ignore
 export type DefaultValueType<T extends CustomFieldType> =
@@ -70,6 +73,10 @@ export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCusto
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
 export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', GraphQLDateTimeCustomFieldConfig>;
+export type RelationCustomFieldConfig = TypedCustomFieldConfig<
+    'relation',
+    Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
+> & { entity: Type<VendureEntity>; graphQLType?: string; eager?: boolean };
 
 /**
  * @description
@@ -83,7 +90,8 @@ export type CustomFieldConfig =
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
-    | DateTimeCustomFieldConfig;
+    | DateTimeCustomFieldConfig
+    | RelationCustomFieldConfig;
 
 /**
  * @description

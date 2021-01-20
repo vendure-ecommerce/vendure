@@ -15,6 +15,7 @@ import { assertFound } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';
 import { FacetTranslation } from '../../entity/facet/facet-translation.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -30,6 +31,7 @@ export class FacetService {
         private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findAll(
@@ -94,6 +96,7 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
         });
+        await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
         return assertFound(this.findOne(ctx, facet.id));
     }
 
@@ -104,6 +107,7 @@ export class FacetService {
             entityType: Facet,
             translationType: FacetTranslation,
         });
+        await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
         return assertFound(this.findOne(ctx, facet.id));
     }
 

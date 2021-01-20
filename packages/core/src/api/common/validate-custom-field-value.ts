@@ -44,6 +44,7 @@ export function validateCustomFieldValue(
             validateDateTimeField(config, value);
             break;
         case 'boolean':
+        case 'relation':
             break;
         default:
             assertNever(config);

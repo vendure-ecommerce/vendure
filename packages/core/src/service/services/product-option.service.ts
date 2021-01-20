@@ -12,13 +12,18 @@ import { assertFound } from '../../common/utils';
 import { ProductOptionGroup } from '../../entity/product-option-group/product-option-group.entity';
 import { ProductOptionTranslation } from '../../entity/product-option/product-option-translation.entity';
 import { ProductOption } from '../../entity/product-option/product-option.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class ProductOptionService {
-    constructor(private connection: TransactionalConnection, private translatableSaver: TranslatableSaver) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private translatableSaver: TranslatableSaver,
+        private customFieldRelationService: CustomFieldRelationService,
+    ) {}
 
     findAll(ctx: RequestContext): Promise<Array<Translated<ProductOption>>> {
         return this.connection
@@ -54,6 +59,12 @@ export class ProductOptionService {
             translationType: ProductOptionTranslation,
             beforeSave: po => (po.group = productOptionGroup),
         });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            ProductOption,
+            input as CreateProductOptionInput,
+            option,
+        );
         return assertFound(this.findOne(ctx, option.id));
     }
 
@@ -64,6 +75,7 @@ export class ProductOptionService {
             entityType: ProductOption,
             translationType: ProductOptionTranslation,
         });
+        await this.customFieldRelationService.updateRelations(ctx, ProductOption, input, option);
         return assertFound(this.findOne(ctx, option.id));
     }
 }

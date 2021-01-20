@@ -91,7 +91,7 @@ export class FacetResolver {
         return this.facetService.delete(ctx, args.id, args.force || false);
     }
 
-    // @Transaction()
+    @Transaction()
     @Mutation()
     @Allow(Permission.CreateCatalog)
     async createFacetValues(
@@ -104,12 +104,12 @@ export class FacetResolver {
         if (!facet) {
             throw new EntityNotFoundError('Facet', facetId);
         }
-        return Promise.all(
-            input.map(async facetValue => {
-                const res = await this.facetValueService.create(ctx, facet, facetValue);
-                return res;
-            }),
-        );
+        const facetValues: Array<Translated<FacetValue>> = [];
+        for (const facetValue of input) {
+            const res = await this.facetValueService.create(ctx, facet, facetValue);
+            facetValues.push(res);
+        }
+        return facetValues;
     }
 
     @Transaction()

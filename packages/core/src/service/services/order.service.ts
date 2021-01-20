@@ -87,6 +87,7 @@ import { EventBus } from '../../event-bus/event-bus';
 import { OrderStateTransitionEvent } from '../../event-bus/events/order-state-transition-event';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { FulfillmentState } from '../helpers/fulfillment-state-machine/fulfillment-state';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
@@ -141,6 +142,7 @@ export class OrderService {
         private eventBus: EventBus,
         private channelService: ChannelService,
         private orderModifier: OrderModifier,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     getOrderProcessStates(): OrderProcessState[] {
@@ -340,6 +342,7 @@ export class OrderService {
     async updateCustomFields(ctx: RequestContext, orderId: ID, customFields: any) {
         let order = await this.getOrderOrThrow(ctx, orderId);
         order = patchEntity(order, { customFields });
+        await this.customFieldRelationService.updateRelations(ctx, Order, { customFields }, order);
         return this.connection.getRepository(ctx, Order).save(order);
     }
 

@@ -172,6 +172,7 @@ const result: PossibleTypesResultData = {
             'FloatCustomFieldConfig',
             'BooleanCustomFieldConfig',
             'DateTimeCustomFieldConfig',
+            'RelationCustomFieldConfig',
         ],
         CustomFieldConfig: [
             'StringCustomFieldConfig',
@@ -180,6 +181,7 @@ const result: PossibleTypesResultData = {
             'FloatCustomFieldConfig',
             'BooleanCustomFieldConfig',
             'DateTimeCustomFieldConfig',
+            'RelationCustomFieldConfig',
         ],
         SearchResultPrice: ['PriceRange', 'SinglePrice'],
     },

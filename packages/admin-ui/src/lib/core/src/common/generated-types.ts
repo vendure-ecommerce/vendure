@@ -3330,13 +3330,24 @@ export type DateTimeCustomFieldConfig = CustomField & {
   step?: Maybe<Scalars['Int']>;
 };
 
+export type RelationCustomFieldConfig = CustomField & {
+  __typename?: 'RelationCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
 
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig;
 
 export type CustomerGroup = Node & {
   __typename?: 'CustomerGroup';
@@ -6283,6 +6294,10 @@ export type CreateAssetsMutationVariables = Exact<{
 
 export type CreateAssetsMutation = { createAssets: Array<(
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   ) | (
     { __typename?: 'MimeTypeError' }
@@ -6296,6 +6311,10 @@ export type UpdateAssetMutationVariables = Exact<{
 
 export type UpdateAssetMutation = { updateAsset: (
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   ) };
 
@@ -7142,7 +7161,19 @@ type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
   )>> }
 );
 
-export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment;
+type CustomFieldConfig_RelationCustomFieldConfig_Fragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & Pick<RelationCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
+
+export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment;
 
 export type StringCustomFieldFragment = (
   { __typename?: 'StringCustomFieldConfig' }
@@ -7217,7 +7248,9 @@ type CustomFields_DateTimeCustomFieldConfig_Fragment = (
   & DateTimeCustomFieldFragment
 );
 
-export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment;
+type CustomFields_RelationCustomFieldConfig_Fragment = { __typename?: 'RelationCustomFieldConfig' };
+
+export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment;
 
 export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7254,6 +7287,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Collection: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7272,6 +7308,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Customer: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7290,6 +7329,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Facet: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7308,6 +7350,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, FacetValue: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7326,6 +7371,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Fulfillment: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7344,6 +7392,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, GlobalSettings: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7362,6 +7413,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Order: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7380,6 +7434,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, OrderLine: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7398,6 +7455,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Product: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7416,6 +7476,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductOption: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7434,6 +7497,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductOptionGroup: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7452,6 +7518,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductVariant: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7470,6 +7539,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ShippingMethod: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7488,6 +7560,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, User: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7506,6 +7581,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )> }
       ) }
     ) }
@@ -8638,6 +8716,8 @@ export namespace CreateAssets {
   export type Variables = CreateAssetsMutationVariables;
   export type Mutation = CreateAssetsMutation;
   export type CreateAssets = NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>;
+  export type AssetInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'Asset' }>);
+  export type Tags = NonNullable<(NonNullable<(DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'Asset' }>)['tags']>)[number]>;
   export type ErrorResultInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'ErrorResult' }>);
 }
 
@@ -8645,6 +8725,7 @@ export namespace UpdateAsset {
   export type Variables = UpdateAssetMutationVariables;
   export type Mutation = UpdateAssetMutation;
   export type UpdateAsset = (NonNullable<UpdateAssetMutation['updateAsset']>);
+  export type Tags = NonNullable<(NonNullable<(NonNullable<UpdateAssetMutation['updateAsset']>)['tags']>)[number]>;
 }
 
 export namespace DeleteAssets {

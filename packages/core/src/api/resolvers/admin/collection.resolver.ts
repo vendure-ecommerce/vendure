@@ -19,7 +19,6 @@ import { Collection } from '../../../entity/collection/collection.entity';
 import { CollectionService } from '../../../service/services/collection.service';
 import { FacetValueService } from '../../../service/services/facet-value.service';
 import { ConfigurableOperationCodec } from '../../common/configurable-operation-codec';
-import { IdCodecService } from '../../common/id-codec.service';
 import { RequestContext } from '../../common/request-context';
 import { Allow } from '../../decorators/allow.decorator';
 import { Ctx } from '../../decorators/request-context.decorator';

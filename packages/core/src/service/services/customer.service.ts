@@ -48,6 +48,7 @@ import { AccountRegistrationEvent } from '../../event-bus/events/account-registr
 import { IdentifierChangeEvent } from '../../event-bus/events/identifier-change-event';
 import { IdentifierChangeRequestEvent } from '../../event-bus/events/identifier-change-request-event';
 import { PasswordResetEvent } from '../../event-bus/events/password-reset-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { addressToLine } from '../helpers/utils/address-to-line';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -70,6 +71,7 @@ export class CustomerService {
         private eventBus: EventBus,
         private historyService: HistoryService,
         private channelService: ChannelService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findAll(
@@ -206,7 +208,7 @@ export class CustomerService {
         }
         this.channelService.assignToCurrentChannel(customer, ctx);
         const createdCustomer = await this.connection.getRepository(ctx, Customer).save(customer);
-
+        await this.customFieldRelationService.updateRelations(ctx, Customer, input, createdCustomer);
         await this.historyService.createHistoryEntryForCustomer({
             ctx,
             customerId: createdCustomer.id,
@@ -262,6 +264,7 @@ export class CustomerService {
         });
         const updatedCustomer = patchEntity(customer, input);
         await this.connection.getRepository(ctx, Customer).save(updatedCustomer, { reload: false });
+        await this.customFieldRelationService.updateRelations(ctx, Customer, input, updatedCustomer);
         await this.historyService.createHistoryEntryForCustomer({
             customerId: customer.id,
             ctx,
@@ -551,6 +554,7 @@ export class CustomerService {
             country,
         });
         const createdAddress = await this.connection.getRepository(ctx, Address).save(address);
+        await this.customFieldRelationService.updateRelations(ctx, Address, input, createdAddress);
         customer.addresses.push(createdAddress);
         await this.connection.getRepository(ctx, Customer).save(customer, { reload: false });
         await this.enforceSingleDefaultAddress(ctx, createdAddress.id, input);
@@ -583,6 +587,7 @@ export class CustomerService {
         }
         let updatedAddress = patchEntity(address, input);
         updatedAddress = await this.connection.getRepository(ctx, Address).save(updatedAddress);
+        await this.customFieldRelationService.updateRelations(ctx, Address, input, updatedAddress);
         await this.enforceSingleDefaultAddress(ctx, input.id, input);
 
         await this.historyService.createHistoryEntryForCustomer({

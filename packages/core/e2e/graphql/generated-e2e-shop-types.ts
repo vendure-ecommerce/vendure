@@ -1195,6 +1195,18 @@ export type DateTimeCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
+export type RelationCustomFieldConfig = CustomField & {
+    name: Scalars['String'];
+    type: Scalars['String'];
+    list: Scalars['Boolean'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
+    entity: Scalars['String'];
+    scalarFields: Array<Scalars['String']>;
+};
+
 export type LocalizedString = {
     languageCode: LanguageCode;
     value: Scalars['String'];
@@ -1206,7 +1218,8 @@ export type CustomFieldConfig =
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
-    | DateTimeCustomFieldConfig;
+    | DateTimeCustomFieldConfig
+    | RelationCustomFieldConfig;
 
 export type CustomerGroup = Node & {
     id: Scalars['ID'];

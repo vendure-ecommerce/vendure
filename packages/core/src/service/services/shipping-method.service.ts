@@ -18,10 +18,10 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
-import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -38,6 +38,7 @@ export class ShippingMethodService {
         private channelService: ChannelService,
         private shippingConfiguration: ShippingConfiguration,
         private translatableSaver: TranslatableSaver,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async initShippingMethods() {
@@ -100,6 +101,7 @@ export class ShippingMethodService {
         const newShippingMethod = await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(shippingMethod);
+        await this.customFieldRelationService.updateRelations(ctx, ShippingMethod, input, newShippingMethod);
         await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, newShippingMethod.id));
     }
@@ -132,6 +134,12 @@ export class ShippingMethodService {
         await this.connection
             .getRepository(ctx, ShippingMethod)
             .save(updatedShippingMethod, { reload: false });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            ShippingMethod,
+            input,
+            updatedShippingMethod,
+        );
         await this.updateActiveShippingMethods(ctx);
         return assertFound(this.findOne(ctx, shippingMethod.id));
     }

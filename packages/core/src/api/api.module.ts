@@ -7,6 +7,7 @@ import { I18nModule } from '../i18n/i18n.module';
 import { ServiceModule } from '../service/service.module';
 
 import { AdminApiModule, ApiSharedModule, ShopApiModule } from './api-internal-modules';
+import { CustomFieldRelationResolverService } from './common/custom-field-relation-resolver.service';
 import { RequestContextService } from './common/request-context.service';
 import { configureGraphQLModule } from './config/configure-graphql-module';
 import { AuthGuard } from './middleware/auth-guard';

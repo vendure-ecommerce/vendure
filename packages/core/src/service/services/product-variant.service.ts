@@ -27,6 +27,7 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { samplesEach } from '../helpers/utils/samples-each';
@@ -60,6 +61,7 @@ export class ProductVariantService {
         private stockMovementService: StockMovementService,
         private channelService: ChannelService,
         private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
@@ -314,6 +316,7 @@ export class ProductVariantService {
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, createdVariant);
         await this.assetService.updateEntityAssets(ctx, createdVariant, input);
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
@@ -380,6 +383,7 @@ export class ProductVariantService {
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, existingVariant);
         if (input.price != null) {
             const variantPriceRepository = this.connection.getRepository(ctx, ProductVariantPrice);
             const variantPrice = await variantPriceRepository.findOne({

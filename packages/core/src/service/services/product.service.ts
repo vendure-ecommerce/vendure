@@ -26,6 +26,7 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductChannelEvent } from '../../event-bus/events/product-channel-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -57,6 +58,7 @@ export class ProductService {
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
         private slugValidator: SlugValidator,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async findAll(
@@ -159,6 +161,7 @@ export class ProductService {
                 await this.assetService.updateFeaturedAsset(ctx, p, input);
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
         await this.assetService.updateEntityAssets(ctx, product, input);
         this.eventBus.publish(new ProductEvent(ctx, product, 'created'));
         return assertFound(this.findOne(ctx, product.id));
@@ -180,6 +183,7 @@ export class ProductService {
                 await this.assetService.updateEntityAssets(ctx, p, input);
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
         this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
         return assertFound(this.findOne(ctx, product.id));
     }

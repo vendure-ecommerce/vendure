@@ -11,6 +11,7 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
 import { TaxRateController } from './controllers/tax-rate.controller';
+import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
@@ -111,6 +112,7 @@ const helpers = [
     SlugValidator,
     ExternalAuthenticationService,
     TransactionalConnection,
+    CustomFieldRelationService,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];

@@ -92,7 +92,14 @@ export type ID = string | number;
  *
  * @docsCategory custom-fields
  */
-export type CustomFieldType = 'string' | 'localeString' | 'int' | 'float' | 'boolean' | 'datetime';
+export type CustomFieldType =
+    | 'string'
+    | 'localeString'
+    | 'int'
+    | 'float'
+    | 'boolean'
+    | 'datetime'
+    | 'relation';
 
 /**
  * @description
@@ -125,7 +132,8 @@ export type DefaultFormComponentId =
     | 'product-selector-form-input'
     | 'customer-group-form-input'
     | 'text-form-input'
-    | 'password-form-input';
+    | 'password-form-input'
+    | 'relation-form-input';
 
 /**
  * @description
@@ -146,6 +154,7 @@ type DefaultFormConfigHash = {
     'customer-group-form-input': {};
     'text-form-input': {};
     'password-form-input': {};
+    'relation-form-input': {};
 };
 
 export type DefaultFormComponentConfig<T extends DefaultFormComponentId> = DefaultFormConfigHash[T];

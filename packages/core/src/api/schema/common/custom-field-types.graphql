@@ -87,9 +87,28 @@ type DateTimeCustomFieldConfig implements CustomField {
     step: Int
 }
 
+type RelationCustomFieldConfig implements CustomField {
+    name: String!
+    type: String!
+    list: Boolean!
+    label: [LocalizedString!]
+    description: [LocalizedString!]
+    readonly: Boolean
+    internal: Boolean
+    entity: String!
+    scalarFields: [String!]!
+}
+
 type LocalizedString {
     languageCode: LanguageCode!
     value: String!
 }
 
-union CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig
+union CustomFieldConfig =
+      StringCustomFieldConfig
+    | LocaleStringCustomFieldConfig
+    | IntCustomFieldConfig
+    | FloatCustomFieldConfig
+    | BooleanCustomFieldConfig
+    | DateTimeCustomFieldConfig
+    | RelationCustomFieldConfig
