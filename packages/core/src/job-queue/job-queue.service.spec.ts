@@ -4,7 +4,7 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
 
 import { ConfigService } from '../config/config.service';
-import { ProcessContext, ServerProcessContext } from '../process-context/process-context';
+import { ProcessContext, WorkerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
@@ -20,7 +20,7 @@ describe('JobQueueService', () => {
         module = await Test.createTestingModule({
             providers: [
                 { provide: ConfigService, useClass: MockConfigService },
-                { provide: ProcessContext, useClass: ServerProcessContext },
+                { provide: ProcessContext, useClass: WorkerProcessContext },
                 JobQueueService,
             ],
         }).compile();

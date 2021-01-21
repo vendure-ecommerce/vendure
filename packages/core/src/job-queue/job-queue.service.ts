@@ -66,7 +66,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
 
     /** @internal */
     async onApplicationBootstrap() {
-        if (this.processContext.isServer) {
+        if (this.processContext.isWorker) {
             const { pollInterval } = this.configService.jobQueueOptions;
             if (pollInterval < 100) {
                 Logger.warn(
@@ -95,7 +95,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
     createQueue<Data extends JobData<Data>>(options: CreateQueueOptions<Data>): JobQueue<Data> {
         const { jobQueueStrategy, pollInterval } = this.configService.jobQueueOptions;
         const queue = new JobQueue(options, jobQueueStrategy, pollInterval);
-        if (this.processContext.isServer && this.hasInitialized) {
+        if (this.processContext.isWorker && this.hasInitialized) {
             queue.start();
         }
         this.queues.push(queue);
