@@ -76,7 +76,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
             await new Promise(resolve => setTimeout(resolve, 1000));
             this.hasInitialized = true;
             for (const queue of this.queues) {
-                if (!queue.started) {
+                if (!queue.started && this.shouldStartQueue(queue.name)) {
                     queue.start();
                 }
             }
@@ -95,7 +95,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
     createQueue<Data extends JobData<Data>>(options: CreateQueueOptions<Data>): JobQueue<Data> {
         const { jobQueueStrategy, pollInterval } = this.configService.jobQueueOptions;
         const queue = new JobQueue(options, jobQueueStrategy, pollInterval);
-        if (this.processContext.isWorker && this.hasInitialized) {
+        if (this.processContext.isWorker && this.hasInitialized && this.shouldStartQueue(queue.name)) {
             queue.start();
         }
         this.queues.push(queue);
@@ -157,5 +157,15 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
             await this.jobQueueStrategy.update(job);
             return job;
         }
+    }
+
+    private shouldStartQueue(queueName: string): boolean {
+        if (this.configService.jobQueueOptions.activeQueues.length > 0) {
+            if (!this.configService.jobQueueOptions.activeQueues.includes(queueName)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -298,6 +298,59 @@ describe('JobQueueService', () => {
 
         expect((await jobQueueService.getJob(testJob.id!))?.state).toBe(JobState.PENDING);
     }, 10000);
+
+    it('should start a queue if its name is in the active list', async () => {
+        module.get(ConfigService).jobQueueOptions.activeQueues = ['test'];
+
+        const subject = new Subject();
+        const testQueue = jobQueueService.createQueue<string>({
+            name: 'test',
+            concurrency: 1,
+            process: (job) => {
+                subject.subscribe(() => {
+                    job.complete('yay');
+                });
+            },
+        });
+
+        const testJob = await testQueue.add('hello');
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        await tick(queuePollInterval);
+        expect(testJob.state).toBe(JobState.RUNNING);
+
+        subject.next();
+        expect(testJob.state).toBe(JobState.COMPLETED);
+        expect(testJob.result).toBe('yay');
+
+        subject.complete();
+    })
+
+    it('should not start a queue if its name is in the active list', async () => {
+        module.get(ConfigService).jobQueueOptions.activeQueues = ['another'];
+
+        const subject = new Subject();
+        const testQueue = jobQueueService.createQueue<string>({
+            name: 'test',
+            concurrency: 1,
+            process: (job) => {
+                subject.subscribe(() => {
+                    job.complete('yay');
+                });
+            },
+        });
+
+        const testJob = await testQueue.add('hello');
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        await tick(queuePollInterval);
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        subject.next();
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        subject.complete();
+    })
 });
 
 function tick(ms: number): Promise<void> {
