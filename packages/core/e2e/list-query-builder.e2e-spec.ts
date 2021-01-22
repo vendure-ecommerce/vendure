@@ -36,6 +36,63 @@ describe('ListQueryBuilder', () => {
         return items.map((x: any) => x.label).sort();
     }
 
+    describe('pagination', () => {
+        it('take', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    take: 2,
+                },
+            });
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B']);
+        });
+
+        it('skip', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    skip: 2,
+                },
+            });
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(getItemLabels(testEntities.items)).toEqual(['C', 'D', 'E']);
+        });
+
+        it('skip negative is ignored', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    skip: -1,
+                },
+            });
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(testEntities.items.length).toBe(5);
+        });
+
+        it('take zero is ignored', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    take: 0,
+                },
+            });
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(testEntities.items.length).toBe(5);
+        });
+
+        it('take negative is ignored', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    take: -1,
+                },
+            });
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(testEntities.items.length).toBe(5);
+        });
+    });
+
     describe('string filtering', () => {
         it('eq', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {

@@ -45,9 +45,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         options: ListQueryOptions<T> = {},
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
-        const skip = options.skip;
         const rawConnection = this.connection.rawConnection;
-        let take = options.take;
+        const skip = Math.max(options.skip ?? 0, 0);
+        let take = Math.max(options.take ?? 0, 0);
         if (options.skip !== undefined && options.take === undefined) {
             take = Number.MAX_SAFE_INTEGER;
         }
