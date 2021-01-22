@@ -7,7 +7,7 @@ import { WhereCondition } from './parse-filter-params';
 
 /**
  * Creates a WhereCondition for a channel-aware entity, filtering for only those entities
- * which are assigned to the channel speicified by channelId,
+ * which are assigned to the channel specified by channelId,
  */
 export function parseChannelParam<T extends VendureEntity>(
     connection: Connection,
