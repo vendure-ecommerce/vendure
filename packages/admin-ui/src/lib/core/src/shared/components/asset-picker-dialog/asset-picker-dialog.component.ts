@@ -34,6 +34,8 @@ export class AssetPickerDialogComponent implements OnInit, OnDestroy, Dialog<Ass
         totalItems: 1,
     };
 
+    multiSelect = true;
+
     resolveWith: (result?: Asset[]) => void;
     selection: Asset[] = [];
     searchTerm$ = new BehaviorSubject<string | undefined>(undefined);

@@ -26,13 +26,16 @@ import {
     GetProductList,
     GetProductOptionGroup,
     GetProductOptionGroups,
+    GetProductSimple,
     GetProductVariant,
+    GetProductVariantList,
     GetProductVariantOptions,
     GetProductWithVariants,
     GetTag,
     GetTagList,
     ProductListOptions,
     ProductSelectorSearch,
+    ProductVariantListOptions,
     Reindex,
     RemoveOptionGroupFromProduct,
     RemoveProductsFromChannel,
@@ -72,7 +75,9 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_OPTION_GROUP,
     GET_PRODUCT_OPTION_GROUPS,
+    GET_PRODUCT_SIMPLE,
     GET_PRODUCT_VARIANT,
+    GET_PRODUCT_VARIANT_LIST,
     GET_PRODUCT_VARIANT_OPTIONS,
     GET_PRODUCT_WITH_VARIANTS,
     GET_TAG,
@@ -132,6 +137,22 @@ export class ProductDataService {
             {
                 id,
             },
+        );
+    }
+
+    getProductSimple(id: string) {
+        return this.baseDataService.query<GetProductSimple.Query, GetProductSimple.Variables>(
+            GET_PRODUCT_SIMPLE,
+            {
+                id,
+            },
+        );
+    }
+
+    getProductVariants(options: ProductVariantListOptions) {
+        return this.baseDataService.query<GetProductVariantList.Query, GetProductVariantList.Variables>(
+            GET_PRODUCT_VARIANT_LIST,
+            { options },
         );
     }
 

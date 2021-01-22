@@ -321,6 +321,19 @@ export const GET_PRODUCT_WITH_VARIANTS = gql`
     ${PRODUCT_WITH_VARIANTS_FRAGMENT}
 `;
 
+export const GET_PRODUCT_SIMPLE = gql`
+    query GetProductSimple($id: ID!) {
+        product(id: $id) {
+            id
+            name
+            featuredAsset {
+                ...Asset
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
 export const GET_PRODUCT_LIST = gql`
     query GetProductList($options: ProductListOptions) {
         products(options: $options) {
@@ -624,6 +637,14 @@ export const GET_PRODUCT_VARIANT = gql`
             id
             name
             sku
+            featuredAsset {
+                id
+                preview
+                focalPoint {
+                    x
+                    y
+                }
+            }
             product {
                 id
                 featuredAsset {
@@ -635,6 +656,38 @@ export const GET_PRODUCT_VARIANT = gql`
                     }
                 }
             }
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantList($options: ProductVariantListOptions!) {
+        productVariants(options: $options) {
+            items {
+                id
+                name
+                sku
+                featuredAsset {
+                    id
+                    preview
+                    focalPoint {
+                        x
+                        y
+                    }
+                }
+                product {
+                    id
+                    featuredAsset {
+                        id
+                        preview
+                        focalPoint {
+                            x
+                            y
+                        }
+                    }
+                }
+            }
+            totalItems
         }
     }
 `;

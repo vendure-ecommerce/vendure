@@ -12,6 +12,7 @@
     "original-asset-size": "资源大小",
     "preview": "预览",
     "remove-asset": "移除资源",
+    "select-asset": "",
     "select-assets": "选择资源",
     "set-as-featured-asset": "设置为特征图片",
     "set-focal-point": "设置图片焦点",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "",
     "search-for-term": "输入搜索条目",
     "search-product-name-or-code": "输入要搜索的商品名称或商品编码",
+    "select-product": "",
+    "select-product-variant": "",
     "sku": "商品库存编码",
     "slug": "名称缩写",
     "slug-pattern-error": "",
@@ -163,6 +166,7 @@
     "available-languages": "可用语言",
     "cancel": "取消",
     "cancel-navigation": "取消",
+    "change-selection": "",
     "channel": "销售渠道",
     "channels": "销售渠道",
     "code": "编码",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "修改已保存",
     "notify-update-error": "更新{ entity }失败",
     "notify-update-success": "{ entity }已更新",
+    "notify-updated-tags-success": "",
     "open": "详情",
     "password": "密码",
     "price": "价格",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "",
     "remove-from-group": "",
     "search-customers-by-email": "输入要搜索的客户邮件地址",
+    "select-customer": "",
     "set-as-default-billing-address": "设置为默认账单地址",
     "set-as-default-shipping-address": "设置为默认邮寄地址",
     "street-line-1": "街道",
@@ -559,9 +565,6 @@
     "tax-categories": "税表分类",
     "tax-rates": "税表管理",
     "zones": ""
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

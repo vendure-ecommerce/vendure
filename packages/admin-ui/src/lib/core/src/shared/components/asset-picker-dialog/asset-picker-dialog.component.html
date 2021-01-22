@@ -18,7 +18,7 @@
 ></vdr-asset-search-input>
 <vdr-asset-gallery
     [assets]="(assets$ | async)! | paginate: paginationConfig"
-    [multiSelect]="true"
+    [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
 ></vdr-asset-gallery>
 

@@ -527,6 +527,14 @@ export const DATE_TIME_CUSTOM_FIELD_FRAGMENT = gql`
     }
     ${CUSTOM_FIELD_CONFIG_FRAGMENT}
 `;
+export const RELATION_CUSTOM_FIELD_FRAGMENT = gql`
+    fragment RelationCustomField on RelationCustomFieldConfig {
+        ...CustomFieldConfig
+        entity
+        scalarFields
+    }
+    ${CUSTOM_FIELD_CONFIG_FRAGMENT}
+`;
 
 export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     fragment CustomFields on CustomField {
@@ -548,6 +556,9 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
         ... on DateTimeCustomFieldConfig {
             ...DateTimeCustomField
         }
+        ... on RelationCustomFieldConfig {
+            ...RelationCustomField
+        }
     }
     ${STRING_CUSTOM_FIELD_FRAGMENT}
     ${LOCALE_STRING_CUSTOM_FIELD_FRAGMENT}
@@ -555,6 +566,7 @@ export const ALL_CUSTOM_FIELDS_FRAGMENT = gql`
     ${INT_CUSTOM_FIELD_FRAGMENT}
     ${FLOAT_CUSTOM_FIELD_FRAGMENT}
     ${DATE_TIME_CUSTOM_FIELD_FRAGMENT}
+    ${RELATION_CUSTOM_FIELD_FRAGMENT}
 `;
 
 export const GET_SERVER_CONFIG = gql`

@@ -59,6 +59,9 @@ export type Query = {
   productOptionGroups: Array<ProductOptionGroup>;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
+  /** List ProductVariants */
+  productVariants: ProductVariantList;
+  /** List Products */
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -215,6 +218,11 @@ export type QueryProductOptionGroupsArgs = {
 
 export type QueryProductVariantArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryProductVariantsArgs = {
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 
@@ -1457,7 +1465,7 @@ export type ImportInfo = {
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -2535,7 +2543,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -2910,7 +2918,7 @@ export type CountryList = PaginatedList & {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -3339,6 +3347,8 @@ export type RelationCustomFieldConfig = CustomField & {
   description?: Maybe<Array<LocalizedString>>;
   readonly?: Maybe<Scalars['Boolean']>;
   internal?: Maybe<Scalars['Boolean']>;
+  entity: Scalars['String'];
+  scalarFields: Array<Scalars['String']>;
 };
 
 export type LocalizedString = {
@@ -3445,7 +3455,7 @@ export type HistoryEntryList = PaginatedList & {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3834,7 +3844,7 @@ export type OrderItem = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -3874,7 +3884,7 @@ export type OrderLine = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -4293,6 +4303,13 @@ export type ProductListOptions = {
   filter?: Maybe<ProductFilterParameter>;
 };
 
+export type ProductVariantListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
+};
+
 export type PromotionListOptions = {
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
@@ -4326,13 +4343,6 @@ export type TaxRateListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<TaxRateSortParameter>;
   filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductVariantSortParameter>;
-  filter?: Maybe<ProductVariantFilterParameter>;
 };
 
 export type HistoryEntryListOptions = {
@@ -4561,6 +4571,38 @@ export type ProductSortParameter = {
   description?: Maybe<SortOrder>;
 };
 
+export type ProductVariantFilterParameter = {
+  enabled?: Maybe<BooleanOperators>;
+  trackInventory?: Maybe<StringOperators>;
+  stockOnHand?: Maybe<NumberOperators>;
+  stockAllocated?: Maybe<NumberOperators>;
+  outOfStockThreshold?: Maybe<NumberOperators>;
+  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  sku?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  price?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  priceWithTax?: Maybe<NumberOperators>;
+};
+
+export type ProductVariantSortParameter = {
+  stockOnHand?: Maybe<SortOrder>;
+  stockAllocated?: Maybe<SortOrder>;
+  outOfStockThreshold?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  sku?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+  priceWithTax?: Maybe<SortOrder>;
+};
+
 export type PromotionFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -4644,38 +4686,6 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   value?: Maybe<SortOrder>;
-};
-
-export type ProductVariantFilterParameter = {
-  enabled?: Maybe<BooleanOperators>;
-  trackInventory?: Maybe<StringOperators>;
-  stockOnHand?: Maybe<NumberOperators>;
-  stockAllocated?: Maybe<NumberOperators>;
-  outOfStockThreshold?: Maybe<NumberOperators>;
-  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  sku?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  price?: Maybe<NumberOperators>;
-  currencyCode?: Maybe<StringOperators>;
-  priceIncludesTax?: Maybe<BooleanOperators>;
-  priceWithTax?: Maybe<NumberOperators>;
-};
-
-export type ProductVariantSortParameter = {
-  stockOnHand?: Maybe<SortOrder>;
-  stockAllocated?: Maybe<SortOrder>;
-  outOfStockThreshold?: Maybe<SortOrder>;
-  id?: Maybe<SortOrder>;
-  productId?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  sku?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  price?: Maybe<SortOrder>;
-  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type HistoryEntryFilterParameter = {
@@ -6223,6 +6233,20 @@ export type GetProductWithVariantsQuery = { product?: Maybe<(
     & ProductWithVariantsFragment
   )> };
 
+export type GetProductSimpleQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetProductSimpleQuery = { product?: Maybe<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'name'>
+    & { featuredAsset?: Maybe<(
+      { __typename?: 'Asset' }
+      & AssetFragment
+    )> }
+  )> };
+
 export type GetProductListQueryVariables = Exact<{
   options?: Maybe<ProductListOptions>;
 }>;
@@ -6506,7 +6530,14 @@ export type GetProductVariantQueryVariables = Exact<{
 export type GetProductVariantQuery = { productVariant?: Maybe<(
     { __typename?: 'ProductVariant' }
     & Pick<ProductVariant, 'id' | 'name' | 'sku'>
-    & { product: (
+    & { featuredAsset?: Maybe<(
+      { __typename?: 'Asset' }
+      & Pick<Asset, 'id' | 'preview'>
+      & { focalPoint?: Maybe<(
+        { __typename?: 'Coordinate' }
+        & Pick<Coordinate, 'x' | 'y'>
+      )> }
+    )>, product: (
       { __typename?: 'Product' }
       & Pick<Product, 'id'>
       & { featuredAsset?: Maybe<(
@@ -6519,6 +6550,39 @@ export type GetProductVariantQuery = { productVariant?: Maybe<(
       )> }
     ) }
   )> };
+
+export type GetProductVariantListQueryVariables = Exact<{
+  options: ProductVariantListOptions;
+}>;
+
+
+export type GetProductVariantListQuery = { productVariants: (
+    { __typename?: 'ProductVariantList' }
+    & Pick<ProductVariantList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'ProductVariant' }
+      & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, product: (
+        { __typename?: 'Product' }
+        & Pick<Product, 'id'>
+        & { featuredAsset?: Maybe<(
+          { __typename?: 'Asset' }
+          & Pick<Asset, 'id' | 'preview'>
+          & { focalPoint?: Maybe<(
+            { __typename?: 'Coordinate' }
+            & Pick<Coordinate, 'x' | 'y'>
+          )> }
+        )> }
+      ) }
+    )> }
+  ) };
 
 export type GetTagListQueryVariables = Exact<{
   options?: Maybe<TagListOptions>;
@@ -7218,6 +7282,12 @@ export type DateTimeCustomFieldFragment = (
   & CustomFieldConfig_DateTimeCustomFieldConfig_Fragment
 );
 
+export type RelationCustomFieldFragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & Pick<RelationCustomFieldConfig, 'entity' | 'scalarFields'>
+  & CustomFieldConfig_RelationCustomFieldConfig_Fragment
+);
+
 type CustomFields_StringCustomFieldConfig_Fragment = (
   { __typename?: 'StringCustomFieldConfig' }
   & StringCustomFieldFragment
@@ -7248,7 +7318,10 @@ type CustomFields_DateTimeCustomFieldConfig_Fragment = (
   & DateTimeCustomFieldFragment
 );
 
-type CustomFields_RelationCustomFieldConfig_Fragment = { __typename?: 'RelationCustomFieldConfig' };
+type CustomFields_RelationCustomFieldConfig_Fragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & RelationCustomFieldFragment
+);
 
 export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment;
 
@@ -8682,6 +8755,13 @@ export namespace GetProductWithVariants {
   export type Product = (NonNullable<GetProductWithVariantsQuery['product']>);
 }
 
+export namespace GetProductSimple {
+  export type Variables = GetProductSimpleQueryVariables;
+  export type Query = GetProductSimpleQuery;
+  export type Product = (NonNullable<GetProductSimpleQuery['product']>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductSimpleQuery['product']>)['featuredAsset']>);
+}
+
 export namespace GetProductList {
   export type Variables = GetProductListQueryVariables;
   export type Query = GetProductListQuery;
@@ -8815,9 +8895,23 @@ export namespace GetProductVariant {
   export type Variables = GetProductVariantQueryVariables;
   export type Query = GetProductVariantQuery;
   export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['featuredAsset']>)['focalPoint']>);
   export type Product = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>);
-  export type FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
+  export type _FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
+}
+
+export namespace GetProductVariantList {
+  export type Variables = GetProductVariantListQueryVariables;
+  export type Query = GetProductVariantListQuery;
+  export type ProductVariants = (NonNullable<GetProductVariantListQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>;
+  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>)['focalPoint']>);
+  export type Product = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>);
+  export type _FeaturedAsset = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>)['focalPoint']>);
 }
 
 export namespace GetTagList {
@@ -9176,6 +9270,10 @@ export namespace DateTimeCustomField {
   export type Fragment = DateTimeCustomFieldFragment;
 }
 
+export namespace RelationCustomField {
+  export type Fragment = RelationCustomFieldFragment;
+}
+
 export namespace CustomFields {
   export type Fragment = CustomFieldsFragment;
   export type StringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'StringCustomFieldConfig' }>);
@@ -9184,6 +9282,7 @@ export namespace CustomFields {
   export type IntCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'IntCustomFieldConfig' }>);
   export type FloatCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'FloatCustomFieldConfig' }>);
   export type DateTimeCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'DateTimeCustomFieldConfig' }>);
+  export type RelationCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'RelationCustomFieldConfig' }>);
 }
 
 export namespace GetServerConfig {

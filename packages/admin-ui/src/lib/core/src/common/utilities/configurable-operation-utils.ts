@@ -98,6 +98,8 @@ export function getDefaultConfigArgSingleValue(type: ConfigArgType | CustomField
             return '';
         case 'datetime':
             return new Date();
+        case 'relation':
+            return null;
         default:
             assertNever(type);
     }

@@ -53,10 +53,11 @@ export type Query = {
   productOptionGroups: Array<ProductOptionGroup>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
   search: SearchResponse;
+  /** List Products */
   products: ProductList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
-  /** Get a ProductVariant by id */
+  /** List ProductVariants */
   productVariants: ProductVariantList;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
@@ -1427,7 +1428,7 @@ export type ImportInfo = {
 /**
  * @description
  * The state of a Job in the JobQueue
- * 
+ *
  * @docsCategory common
  */
 export enum JobState {
@@ -2505,7 +2506,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- * 
+ *
  * @docsCategory common
  */
 export enum Permission {
@@ -2879,7 +2880,7 @@ export type CountryList = PaginatedList & {
 /**
  * @description
  * ISO 4217 currency code
- * 
+ *
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -3416,7 +3417,7 @@ export type HistoryEntryList = PaginatedList & {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- * 
+ *
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3805,7 +3806,7 @@ export type OrderItem = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -3845,7 +3846,7 @@ export type OrderLine = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   * 
+   *
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion

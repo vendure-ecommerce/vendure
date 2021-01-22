@@ -12,6 +12,7 @@
     "original-asset-size": "Taille originale",
     "preview": "Apercu",
     "remove-asset": "Retirer le fichier",
+    "select-asset": "",
     "select-assets": "Selectionner fichiers",
     "set-as-featured-asset": "Définir en tant que fichier en vedette",
     "set-focal-point": "Définir point de focale",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "",
     "search-for-term": "Chercher le terme",
     "search-product-name-or-code": "Chercher par nom de produit ou code",
+    "select-product": "",
+    "select-product-variant": "",
     "sku": "UGS",
     "slug": "Identifiant",
     "slug-pattern-error": "Identifiant invalide",
@@ -163,6 +166,7 @@
     "available-languages": "Langues disponibles",
     "cancel": "Annuler",
     "cancel-navigation": "Annuler la navigation",
+    "change-selection": "",
     "channel": "Canal",
     "channels": "Canaux",
     "code": "Code",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "Changements enregistrés",
     "notify-update-error": "Une erreur est survenue, mise à jour de { entity } échouée",
     "notify-update-success": "{ entity } mis à jour",
+    "notify-updated-tags-success": "",
     "open": "Ouvert",
     "password": "Mot de passe",
     "price": "Prix",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "Retrait {customerCount, plural, one {d'un client} other {de {customerCount} clients}} de \"{ groupName }\"",
     "remove-from-group": "Retirer de ce groupe",
     "search-customers-by-email": "Chercher par adresse email",
+    "select-customer": "",
     "set-as-default-billing-address": "Etablir en tant qu'adresse de facturation par défaut",
     "set-as-default-shipping-address": "Etablir en tant qu'adresse de livraison par défaut",
     "street-line-1": "Rue ligne 1",
@@ -559,9 +565,6 @@
     "tax-categories": "Catégories de Taxe",
     "tax-rates": "Taux de Taxe",
     "zones": "Zones"
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

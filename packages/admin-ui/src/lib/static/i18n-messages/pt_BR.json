@@ -12,6 +12,7 @@
     "original-asset-size": "Tamanho do arquivo",
     "preview": "Pré-visualização",
     "remove-asset": "Excluir imagens",
+    "select-asset": "",
     "select-assets": "Selecione imagens",
     "set-as-featured-asset": "Definir como imagem em destaque",
     "set-focal-point": "Definir ponto central",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "",
     "search-for-term": "Pesquisar termo",
     "search-product-name-or-code": "Pesquisar por nome ou código do produto",
+    "select-product": "",
+    "select-product-variant": "",
     "sku": "SKU",
     "slug": "Slug",
     "slug-pattern-error": "",
@@ -163,6 +166,7 @@
     "available-languages": "Idiomas disponíveis",
     "cancel": "Cancelar",
     "cancel-navigation": "Cancelar navegação",
+    "change-selection": "",
     "channel": "Canal",
     "channels": "Canais",
     "code": "Código",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "Alterações salvas",
     "notify-update-error": "Ocorreu um erro, não foi possível atualizar { entity }",
     "notify-update-success": "Atualizado { entity }",
+    "notify-updated-tags-success": "",
     "open": "Aberto",
     "password": "Senha",
     "price": "Preço",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "Excluído {customerCount, plural, one {1 customer} other {{customerCount} customers}} from \"{ groupName }\"",
     "remove-from-group": "Excluir deste grupo",
     "search-customers-by-email": "Busca por email",
+    "select-customer": "",
     "set-as-default-billing-address": "Definir como cobrança padrão",
     "set-as-default-shipping-address": "Definir como remessa padrão",
     "street-line-1": "Endereço",
@@ -559,9 +565,6 @@
     "tax-categories": "Categorias das taxas",
     "tax-rates": "Taxas de impostos",
     "zones": "Zonas"
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

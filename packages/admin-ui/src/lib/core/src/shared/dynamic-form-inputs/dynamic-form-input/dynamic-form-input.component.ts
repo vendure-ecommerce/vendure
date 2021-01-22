@@ -309,6 +309,8 @@ export class DynamicFormInputComponent
                 return { component: 'date-form-input' };
             case 'ID':
                 return { component: 'text-form-input' };
+            case 'relation':
+                return { component: 'relation-form-input' };
             default:
                 assertNever(type);
         }

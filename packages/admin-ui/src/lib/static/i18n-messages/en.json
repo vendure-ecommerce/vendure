@@ -12,6 +12,7 @@
     "original-asset-size": "Source size",
     "preview": "Preview",
     "remove-asset": "Remove asset",
+    "select-asset": "Select asset",
     "select-assets": "Select assets",
     "set-as-featured-asset": "Set as featured asset",
     "set-focal-point": "Set focal point",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "Search by asset name or tags",
     "search-for-term": "Search for term",
     "search-product-name-or-code": "Search by product name or code",
+    "select-product": "Select product",
+    "select-product-variant": "Select product variant",
     "sku": "SKU",
     "slug": "Slug",
     "slug-pattern-error": "Slug is invalid",
@@ -163,6 +166,7 @@
     "available-languages": "Available languages",
     "cancel": "Cancel",
     "cancel-navigation": "Cancel navigation",
+    "change-selection": "Change selection",
     "channel": "Channel",
     "channels": "Channels",
     "code": "Code",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "Saved changes",
     "notify-update-error": "An error occurred, could not update { entity }",
     "notify-update-success": "Updated { entity }",
+    "notify-updated-tags-success": "Successfully updated tags",
     "open": "Open",
     "password": "Password",
     "price": "Price",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "Removed {customerCount, plural, one {1 customer} other {{customerCount} customers}} from \"{ groupName }\"",
     "remove-from-group": "Remove from this group",
     "search-customers-by-email": "Search by email address",
+    "select-customer": "Select customer",
     "set-as-default-billing-address": "Set as default billing",
     "set-as-default-shipping-address": "Set as default shipping",
     "street-line-1": "Street line 1",
@@ -559,9 +565,6 @@
     "tax-categories": "Tax categories",
     "tax-rates": "Tax Rates",
     "zones": "Zones"
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "Add item to order",

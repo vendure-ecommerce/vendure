@@ -199,7 +199,7 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
             })
             .subscribe(result => {
                 if (result) {
-                    this.notificationService.success(_('notify.updated-tags-success'));
+                    this.notificationService.success(_('common.notify-updated-tags-success'));
                 }
             });
     }

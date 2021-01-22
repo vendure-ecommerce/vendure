@@ -12,6 +12,7 @@
     "original-asset-size": "Rozmiar bazowy",
     "preview": "Podgląd",
     "remove-asset": "Usuń zasób",
+    "select-asset": "",
     "select-assets": "Wybierz zasób",
     "set-as-featured-asset": "Ustaw jako polecany",
     "set-focal-point": "Ustaw punk centralny",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "",
     "search-for-term": "Szukaj frazy",
     "search-product-name-or-code": "Szukaj produktu po nazwie lub kodzie",
+    "select-product": "",
+    "select-product-variant": "",
     "sku": "SKU",
     "slug": "Slug",
     "slug-pattern-error": "",
@@ -163,6 +166,7 @@
     "available-languages": "Dostępne języki",
     "cancel": "Anuluj",
     "cancel-navigation": "Anuluj nawigacje",
+    "change-selection": "",
     "channel": "Kanał",
     "channels": "Kanały",
     "code": "Kod",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "Zapisano zmiany",
     "notify-update-error": "Wystąpił błąd, nie można zaktualizować { entity }",
     "notify-update-success": "Zaktualizowano { entity }",
+    "notify-updated-tags-success": "",
     "open": "Otwórz",
     "password": "Hasło",
     "price": "Cena",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "",
     "remove-from-group": "",
     "search-customers-by-email": "Szukaj przez email",
+    "select-customer": "",
     "set-as-default-billing-address": "Ustaw jako domyślny adres rozliczeniowy",
     "set-as-default-shipping-address": "Ustaw jako domyślny adres wysyłki",
     "street-line-1": "Ulica 1",
@@ -559,9 +565,6 @@
     "tax-categories": "Kategorie podatkowe",
     "tax-rates": "Stawki podatkowe",
     "zones": ""
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "",

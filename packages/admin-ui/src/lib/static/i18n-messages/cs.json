@@ -12,6 +12,7 @@
     "original-asset-size": "Originální velikost",
     "preview": "Náhled",
     "remove-asset": "Smazat médium",
+    "select-asset": "",
     "select-assets": "Vybrat média",
     "set-as-featured-asset": "Zvýraznit médium",
     "set-focal-point": "Nastavit ohnisko",
@@ -131,6 +132,8 @@
     "search-asset-name-or-tag": "",
     "search-for-term": "Hledat výraz",
     "search-product-name-or-code": "Hledat produkt dle jména, nebo kódu",
+    "select-product": "",
+    "select-product-variant": "",
     "sku": "SKU",
     "slug": "Odkaz",
     "slug-pattern-error": "Špatný formát odkazu",
@@ -163,6 +166,7 @@
     "available-languages": "Dostupné jazyky",
     "cancel": "Zrušit",
     "cancel-navigation": "Zrušit navigaci",
+    "change-selection": "",
     "channel": "Kanál",
     "channels": "Kanály",
     "code": "Kód",
@@ -210,6 +214,7 @@
     "notify-saved-changes": "Změny uloženy",
     "notify-update-error": "Vyskytla se chyba, nebylo aktualizováno: { entity }",
     "notify-update-success": "Aktualizováno: { entity }",
+    "notify-updated-tags-success": "",
     "open": "Otevřít",
     "password": "Heslo",
     "price": "Cena",
@@ -291,6 +296,7 @@
     "remove-customers-from-group-success": "Odebrán: {customerCount, plural, one {1 zákazník} other {{customerCount} zákazníci/zákazníků}} z \"{ groupName }\"",
     "remove-from-group": "Odebrat ze skupiny",
     "search-customers-by-email": "Hledat podle e-mailové adresy",
+    "select-customer": "",
     "set-as-default-billing-address": "Nastavit jako výchozí fakturační adresu",
     "set-as-default-shipping-address": "Nastavit jako výchozí dodací adresu",
     "street-line-1": "Adresa",
@@ -559,9 +565,6 @@
     "tax-categories": "Daňové kategorie",
     "tax-rates": "Daňové sazby",
     "zones": "Zóny"
-  },
-  "notify": {
-    "updated-tags-success": ""
   },
   "order": {
     "add-item-to-order": "Přidat k objednávce",
