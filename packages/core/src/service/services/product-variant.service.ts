@@ -62,6 +62,30 @@ export class ProductVariantService {
         private roleService: RoleService,
     ) {}
 
+    async findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductVariant>,
+    ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        const relations = ['featuredAsset', 'taxCategory', 'channels'];
+        return this.listQueryBuilder
+            .build(ProductVariant, options, {
+                relations,
+                channelId: ctx.channelId,
+                where: { deletedAt: null },
+                ctx,
+            })
+            .getManyAndCount()
+            .then(async ([variants, totalItems]) => {
+                const items = variants.map(variant =>
+                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode),
+                );
+                return {
+                    items,
+                    totalItems,
+                };
+            });
+    }
+
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
         const relations = ['product', 'product.featuredAsset', 'taxCategory'];
         return this.connection
