@@ -434,7 +434,10 @@ export class ProductVariantService {
     applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
-            throw new InternalServerError(`error.no-price-found-for-channel`);
+            throw new InternalServerError(`error.no-price-found-for-channel`, {
+                variantId: variant.id,
+                channel: ctx.channel.code,
+            });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);

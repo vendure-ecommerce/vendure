@@ -26,6 +26,7 @@
     "forbidden": "You are not currently authorized to perform this action",
     "invalid-sort-field": "The sort field '{ fieldName }' is invalid. Valid fields are: { validFields }",
     "no-active-tax-zone": "The active tax zone could not be determined. Ensure a default tax zone is set for the current channel.",
+    "no-price-found-for-channel": "No price information was found for ProductVariant ID '{ variantId}' in the Channel '{ channel }'.",
     "no-search-plugin-configured": "No search plugin has been configured",
     "order-does-not-contain-line-with-id": "This order does not contain an OrderLine with the id { id }",
     "pending-identifier-missing": "Could not find the pending email address to update",
