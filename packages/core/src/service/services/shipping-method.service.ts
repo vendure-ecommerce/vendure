@@ -18,8 +18,8 @@ import { Logger } from '../../config/logger/vendure-logger';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ShippingMethodTranslation } from '../../entity/shipping-method/shipping-method-translation.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
-import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { translateDeep } from '../helpers/utils/translate-entity';
@@ -36,7 +36,7 @@ export class ShippingMethodService {
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private channelService: ChannelService,
-        private shippingConfiguration: ShippingConfiguration,
+        private configArgService: ConfigArgService,
         private translatableSaver: TranslatableSaver,
     ) {}
 
@@ -92,8 +92,11 @@ export class ShippingMethodService {
                     method.code,
                     input.fulfillmentHandler,
                 );
-                method.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
-                method.calculator = this.shippingConfiguration.parseCalculatorInput(input.calculator);
+                method.checker = this.configArgService.parseInput(
+                    'ShippingEligibilityChecker',
+                    input.checker,
+                );
+                method.calculator = this.configArgService.parseInput('ShippingCalculator', input.calculator);
             },
         });
         this.channelService.assignToCurrentChannel(shippingMethod, ctx);
@@ -116,10 +119,14 @@ export class ShippingMethodService {
             translationType: ShippingMethodTranslation,
         });
         if (input.checker) {
-            updatedShippingMethod.checker = this.shippingConfiguration.parseCheckerInput(input.checker);
+            updatedShippingMethod.checker = this.configArgService.parseInput(
+                'ShippingEligibilityChecker',
+                input.checker,
+            );
         }
         if (input.calculator) {
-            updatedShippingMethod.calculator = this.shippingConfiguration.parseCalculatorInput(
+            updatedShippingMethod.calculator = this.configArgService.parseInput(
+                'ShippingCalculator',
                 input.calculator,
             );
         }
@@ -150,15 +157,17 @@ export class ShippingMethodService {
     }
 
     getShippingEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingEligibilityCheckers.map(x => x.toGraphQlType(ctx));
+        return this.configArgService
+            .getDefinitions('ShippingEligibilityChecker')
+            .map(x => x.toGraphQlType(ctx));
     }
 
     getShippingCalculators(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.shippingCalculators.map(x => x.toGraphQlType(ctx));
+        return this.configArgService.getDefinitions('ShippingCalculator').map(x => x.toGraphQlType(ctx));
     }
 
     getFulfillmentHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
-        return this.shippingConfiguration.fulfillmentHandlers.map(x => x.toGraphQlType(ctx));
+        return this.configArgService.getDefinitions('FulfillmentHandler').map(x => x.toGraphQlType(ctx));
     }
 
     getActiveShippingMethods(channel: Channel): ShippingMethod[] {

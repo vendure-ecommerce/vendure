@@ -71,7 +71,7 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.dbConnectionOptions;
     }
 
-    get promotionOptions(): PromotionOptions {
+    get promotionOptions(): Required<PromotionOptions> {
         return this.activeConfig.promotionOptions;
     }
 

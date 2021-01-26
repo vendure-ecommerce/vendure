@@ -847,12 +847,7 @@ export class OrderService {
         ctx: RequestContext,
         input: FulfillOrderInput,
     ): Promise<ErrorResultUnion<AddFulfillmentToOrderResult, Fulfillment>> {
-        if (
-            !input.lines ||
-            input.lines.length === 0 ||
-            input.lines.length === 0 ||
-            summate(input.lines, 'quantity') === 0
-        ) {
+        if (!input.lines || input.lines.length === 0 || summate(input.lines, 'quantity') === 0) {
             return new EmptyOrderLineSelectionError();
         }
         const ordersAndItems = await this.getOrdersAndItemsFromLines(

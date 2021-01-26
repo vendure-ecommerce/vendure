@@ -18,9 +18,9 @@ import { Order } from '../../entity/order/order.entity';
 import { ProductVariant } from '../../entity/product-variant/product-variant.entity';
 import { ShippingLine } from '../../entity/shipping-line/shipping-line.entity';
 import { ShippingMethod } from '../../entity/shipping-method/shipping-method.entity';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { OrderCalculator } from '../helpers/order-calculator/order-calculator';
 import { ShippingCalculator } from '../helpers/shipping-calculator/shipping-calculator';
-import { ShippingConfiguration } from '../helpers/shipping-configuration/shipping-configuration';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -36,7 +36,7 @@ export class OrderTestingService {
         private connection: TransactionalConnection,
         private orderCalculator: OrderCalculator,
         private shippingCalculator: ShippingCalculator,
-        private shippingConfiguration: ShippingConfiguration,
+        private configArgService: ConfigArgService,
         private configService: ConfigService,
         private productVariantService: ProductVariantService,
     ) {}
@@ -50,8 +50,8 @@ export class OrderTestingService {
         input: TestShippingMethodInput,
     ): Promise<TestShippingMethodResult> {
         const shippingMethod = new ShippingMethod({
-            checker: this.shippingConfiguration.parseCheckerInput(input.checker),
-            calculator: this.shippingConfiguration.parseCalculatorInput(input.calculator),
+            checker: this.configArgService.parseInput('ShippingEligibilityChecker', input.checker),
+            calculator: this.configArgService.parseInput('ShippingCalculator', input.calculator),
         });
         const mockOrder = await this.buildMockOrder(ctx, input.shippingAddress, input.lines);
         const eligible = await shippingMethod.test(ctx, mockOrder);
