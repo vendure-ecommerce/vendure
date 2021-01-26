@@ -10,6 +10,7 @@ export class CustomProductFields {}
 export class CustomProductFieldsTranslation {}
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}
+export class CustomChannelFields {}
 export class CustomProductOptionFields {}
 export class CustomProductOptionFieldsTranslation {}
 export class CustomProductOptionGroupFields {}

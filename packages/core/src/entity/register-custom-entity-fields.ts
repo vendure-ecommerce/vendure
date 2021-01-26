@@ -20,6 +20,7 @@ import { VendureConfig } from '../config/vendure-config';
 
 import {
     CustomAddressFields,
+    CustomChannelFields,
     CustomCollectionFields,
     CustomCollectionFieldsTranslation,
     CustomCustomerFields,
@@ -211,6 +212,7 @@ export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);
+    registerCustomFieldsForEntity(config, 'Channel', CustomChannelFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFields);
     registerCustomFieldsForEntity(config, 'Facet', CustomFacetFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'FacetValue', CustomFacetValueFields);
