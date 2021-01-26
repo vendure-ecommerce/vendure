@@ -11,6 +11,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
 
+import { Injector } from '../../common/injector';
 import { VendureEntity } from '../../entity/base/base.entity';
 
 // prettier-ignore
@@ -46,7 +47,10 @@ export type TypedCustomSingleFieldConfig<
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: false;
     defaultValue?: DefaultValueType<T>;
-    validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;
+    validate?: (
+        value: DefaultValueType<T>,
+        injector: Injector,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
 export type TypedCustomListFieldConfig<

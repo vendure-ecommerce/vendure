@@ -1,4 +1,5 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import {
@@ -11,6 +12,7 @@ import {
 } from 'graphql';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
+import { Injector } from '../../common/injector';
 import { ConfigService } from '../../config/config.service';
 import { CustomFieldConfig, CustomFields } from '../../config/custom-field/custom-field-types';
 import { parseContext } from '../common/parse-context';
@@ -26,7 +28,7 @@ import { validateCustomFieldValue } from '../common/validate-custom-field-value'
 export class ValidateCustomFieldsInterceptor implements NestInterceptor {
     private readonly inputsWithCustomFields: Set<string>;
 
-    constructor(private configService: ConfigService) {
+    constructor(private configService: ConfigService, private moduleRef: ModuleRef) {
         this.inputsWithCustomFields = Object.keys(configService.customFields).reduce((inputs, entityName) => {
             inputs.add(`Create${entityName}Input`);
             inputs.add(`Update${entityName}Input`);
@@ -34,8 +36,9 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         }, new Set<string>());
     }
 
-    intercept(context: ExecutionContext, next: CallHandler<any>) {
+    async intercept(context: ExecutionContext, next: CallHandler<any>) {
         const parsedContext = parseContext(context);
+        const injector = new Injector(this.moduleRef);
         if (parsedContext.isGraphQL) {
             const gqlExecutionContext = GqlExecutionContext.create(context);
             const { operation, schema } = parsedContext.info;
@@ -44,21 +47,27 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
 
             if (operation.operation === 'mutation') {
                 const inputTypeNames = this.getArgumentMap(operation, schema);
-                Object.entries(inputTypeNames).forEach(([inputName, typeName]) => {
+                for (const [inputName, typeName] of Object.entries(inputTypeNames)) {
                     if (this.inputsWithCustomFields.has(typeName)) {
                         if (variables[inputName]) {
-                            this.validateInput(typeName, ctx.languageCode, variables[inputName]);
+                            await this.validateInput(
+                                typeName,
+                                ctx.languageCode,
+                                injector,
+                                variables[inputName],
+                            );
                         }
                     }
-                });
+                }
             }
         }
         return next.handle();
     }
 
-    private validateInput(
+    private async validateInput(
         typeName: string,
         languageCode: LanguageCode,
+        injector: Injector,
         variableValues?: { [key: string]: any },
     ) {
         if (variableValues) {
@@ -66,16 +75,22 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
             const customFieldConfig = this.configService.customFields[entityName as keyof CustomFields];
 
             if (variableValues.customFields) {
-                this.validateCustomFieldsObject(customFieldConfig, languageCode, variableValues.customFields);
+                await this.validateCustomFieldsObject(
+                    customFieldConfig,
+                    languageCode,
+                    variableValues.customFields,
+                    injector,
+                );
             }
             const translations = variableValues.translations;
             if (Array.isArray(translations)) {
                 for (const translation of translations) {
                     if (translation.customFields) {
-                        this.validateCustomFieldsObject(
+                        await this.validateCustomFieldsObject(
                             customFieldConfig,
                             languageCode,
                             translation.customFields,
+                            injector,
                         );
                     }
                 }
@@ -83,15 +98,16 @@ export class ValidateCustomFieldsInterceptor implements NestInterceptor {
         }
     }
 
-    private validateCustomFieldsObject(
+    private async validateCustomFieldsObject(
         customFieldConfig: CustomFieldConfig[],
         languageCode: LanguageCode,
         customFieldsObject: { [key: string]: any },
+        injector: Injector,
     ) {
         for (const [key, value] of Object.entries(customFieldsObject)) {
             const config = customFieldConfig.find(c => c.name === key);
             if (config) {
-                validateCustomFieldValue(config, value, languageCode);
+                await validateCustomFieldValue(config, value, injector, languageCode);
             }
         }
     }

@@ -2,6 +2,7 @@ import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { assertNever } from '@vendure/common/lib/shared-utils';
 
 import { UserInputError } from '../../common/error/errors';
+import { Injector } from '../../common/injector';
 import {
     CustomFieldConfig,
     DateTimeCustomFieldConfig,
@@ -16,11 +17,12 @@ import {
  * Validates the value of a custom field input against any configured constraints.
  * If validation fails, an error is thrown.
  */
-export function validateCustomFieldValue(
+export async function validateCustomFieldValue(
     config: CustomFieldConfig,
     value: any,
+    injector: Injector,
     languageCode?: LanguageCode,
-): void {
+): Promise<void> {
     if (config.readonly) {
         throw new UserInputError('error.field-invalid-readonly', { name: config.name });
     }
@@ -49,16 +51,17 @@ export function validateCustomFieldValue(
         default:
             assertNever(config);
     }
-    validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, languageCode);
+    await validateCustomFunction(config as TypedCustomFieldConfig<any, any>, value, injector, languageCode);
 }
 
-function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
+async function validateCustomFunction<T extends TypedCustomFieldConfig<any, any>>(
     config: T,
     value: any,
+    injector: Injector,
     languageCode?: LanguageCode,
 ) {
     if (typeof config.validate === 'function') {
-        const error = config.validate(value);
+        const error = await config.validate(value, injector);
         if (typeof error === 'string') {
             throw new UserInputError(error);
         }
