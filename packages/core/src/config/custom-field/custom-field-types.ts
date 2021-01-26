@@ -156,6 +156,13 @@ export type CustomFieldConfig =
  * * `max?: string`: The latest permitted date
  * * `step?: string`: The step value
  *
+ * #### `relation` type
+ *
+ * * `entity: VendureEntity`: The entity which this custom field is referencing
+ * * `eager?: boolean`: Whether to [eagerly load](https://typeorm.io/#/eager-and-lazy-relations) the relation. Defaults to false.
+ * * `graphQLType?: string`: The name of the GraphQL type that corresponds to the entity.
+ *     Can be omitted if it is the same, which is usually the case.
+ *
  * @example
  * ```TypeScript
  * bootstrap({
