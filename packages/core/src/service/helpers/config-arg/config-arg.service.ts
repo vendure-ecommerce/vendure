@@ -10,24 +10,28 @@ import { ConfigService } from '../../../config/config.service';
 import { FulfillmentHandler } from '../../../config/fulfillment/fulfillment-handler';
 import { PaymentMethodHandler } from '../../../config/payment-method/payment-method-handler';
 import { PromotionAction } from '../../../config/promotion/promotion-action';
+import { PromotionCondition } from '../../../config/promotion/promotion-condition';
 import { ShippingCalculator } from '../../../config/shipping-method/shipping-calculator';
 import { ShippingEligibilityChecker } from '../../../config/shipping-method/shipping-eligibility-checker';
 
-export type ConfigDefType =
-    | 'CollectionFilter'
-    | 'FulfillmentHandler'
-    | 'PaymentMethodHandler'
-    | 'PromotionAction'
-    | 'PromotionCondition'
-    | 'ShippingCalculator'
-    | 'ShippingEligibilityChecker';
+export type ConfigDefTypeMap = {
+    CollectionFilter: CollectionFilter;
+    FulfillmentHandler: FulfillmentHandler;
+    PaymentMethodHandler: PaymentMethodHandler;
+    PromotionAction: PromotionAction;
+    PromotionCondition: PromotionCondition;
+    ShippingCalculator: ShippingCalculator;
+    ShippingEligibilityChecker: ShippingEligibilityChecker;
+};
+
+export type ConfigDefType = keyof ConfigDefTypeMap;
 
 /**
  * This helper class provides methods relating to ConfigurableOperationDef instances.
  */
 @Injectable()
 export class ConfigArgService {
-    private readonly definitionsByType: { [K in ConfigDefType]: ConfigurableOperationDef[] };
+    private readonly definitionsByType: { [K in ConfigDefType]: Array<ConfigDefTypeMap[K]> };
 
     constructor(private configService: ConfigService) {
         this.definitionsByType = {
@@ -41,19 +45,24 @@ export class ConfigArgService {
         };
     }
 
-    getDefinitions(defType: ConfigDefType): ConfigurableOperationDef[] {
-        return this.definitionsByType[defType];
+    getDefinitions<T extends ConfigDefType>(defType: T): Array<ConfigDefTypeMap[T]> {
+        return this.definitionsByType[defType] as Array<ConfigDefTypeMap[T]>;
     }
 
-    parseInput(defType: ConfigDefType, input: ConfigurableOperationInput): ConfigurableOperation {
-        const defsOfType = this.definitionsByType[defType];
-        const match = defsOfType.find(def => def.code === input.code);
+    getByCode<T extends ConfigDefType>(defType: T, code: string): ConfigDefTypeMap[T] {
+        const defsOfType = this.getDefinitions(defType);
+        const match = defsOfType.find(def => def.code === code);
         if (!match) {
             throw new UserInputError(`error.no-configurable-operation-def-with-code-found`, {
-                code: input.code,
+                code,
                 type: defType,
             });
         }
+        return match as ConfigDefTypeMap[T];
+    }
+
+    parseInput(defType: ConfigDefType, input: ConfigurableOperationInput): ConfigurableOperation {
+        const match = this.getByCode(defType, input.code);
         return {
             code: input.code,
             args: input.arguments,

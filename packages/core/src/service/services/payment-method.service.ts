@@ -24,6 +24,7 @@ import { Refund } from '../../entity/refund/refund.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { PaymentStateTransitionEvent } from '../../event-bus/events/payment-state-transition-event';
 import { RefundStateTransitionEvent } from '../../event-bus/events/refund-state-transition-event';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PaymentStateMachine } from '../helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from '../helpers/refund-state-machine/refund-state-machine';
@@ -39,6 +40,7 @@ export class PaymentMethodService {
         private paymentStateMachine: PaymentStateMachine,
         private refundStateMachine: RefundStateMachine,
         private eventBus: EventBus,
+        private configArgService: ConfigArgService,
     ) {}
 
     async initPaymentMethods() {
@@ -184,11 +186,7 @@ export class PaymentMethodService {
     }
 
     getPaymentMethodHandler(code: string): PaymentMethodHandler {
-        const handler = this.configService.paymentOptions.paymentMethodHandlers.find(h => h.code === code);
-        if (!handler) {
-            throw new UserInputError(`error.no-payment-handler-with-code`, { code });
-        }
-        return handler;
+        return this.configArgService.getByCode('PaymentMethodHandler', code);
     }
 
     private async getMethodAndHandler(
