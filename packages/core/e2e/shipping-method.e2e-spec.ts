@@ -206,9 +206,16 @@ describe('ShippingMethod resolver', () => {
             description: '',
             calculator: {
                 code: 'calculator-with-metadata',
+                args: [],
             },
             checker: {
                 code: 'default-shipping-eligibility-checker',
+                args: [
+                    {
+                        name: 'orderMinimum',
+                        value: '0',
+                    },
+                ],
             },
         });
     });
