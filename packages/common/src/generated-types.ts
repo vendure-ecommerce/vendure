@@ -2651,6 +2651,7 @@ export type ConfigArgDefinition = {
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
+  required: Scalars['Boolean'];
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   ui?: Maybe<Scalars['JSON']>;
@@ -3690,6 +3691,7 @@ export type OrderAddress = {
   country?: Maybe<Scalars['String']>;
   countryCode?: Maybe<Scalars['String']>;
   phoneNumber?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {

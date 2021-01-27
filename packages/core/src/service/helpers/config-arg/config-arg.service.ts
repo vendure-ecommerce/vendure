@@ -61,17 +61,18 @@ export class ConfigArgService {
         return match as ConfigDefTypeMap[T];
     }
 
+    /**
+     * Parses and validates the input to a ConfigurableOperation.
+     */
     parseInput(defType: ConfigDefType, input: ConfigurableOperationInput): ConfigurableOperation {
         const match = this.getByCode(defType, input.code);
+        this.validateRequiredFields(input, match);
         return {
             code: input.code,
             args: input.arguments,
         };
     }
 
-    /**
-     * Converts the input values of the "create" and "update" mutations into the format expected by the ShippingMethod entity.
-     */
     private parseOperationArgs(
         input: ConfigurableOperationInput,
         checkerOrCalculator: ShippingEligibilityChecker | ShippingCalculator,
@@ -81,5 +82,27 @@ export class ConfigArgService {
             args: input.arguments,
         };
         return output;
+    }
+
+    private validateRequiredFields(input: ConfigurableOperationInput, def: ConfigurableOperationDef) {
+        for (const [name, argDef] of Object.entries(def.args)) {
+            if (argDef.required) {
+                const inputArg = input.arguments.find(a => a.name === name);
+                let val: unknown;
+                if (inputArg) {
+                    try {
+                        val = JSON.parse(inputArg?.value);
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+                if (!val) {
+                    throw new UserInputError('error.configurable-argument-is-required', {
+                        name,
+                        value: String(val),
+                    });
+                }
+            }
+        }
     }
 }

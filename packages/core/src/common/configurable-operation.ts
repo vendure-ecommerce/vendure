@@ -53,6 +53,7 @@ export type UiComponentConfig =
 
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;
+    required?: boolean;
     list?: boolean;
     label?: LocalizedStringArray;
     description?: LocalizedStringArray;
@@ -360,6 +361,7 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
                         name,
                         type: arg.type,
                         list: arg.list ?? false,
+                        required: arg.required ?? true,
                         ui: arg.ui,
                         label: arg.label && localizeString(arg.label, ctx.languageCode),
                         description: arg.description && localizeString(arg.description, ctx.languageCode),

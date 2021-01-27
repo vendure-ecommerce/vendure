@@ -26,7 +26,7 @@ import {
     TestShippingMethod,
     UpdateShippingMethod,
 } from './graphql/generated-e2e-admin-types';
-import { CREATE_SHIPPING_METHOD } from './graphql/shared-definitions';
+import { CREATE_SHIPPING_METHOD, UPDATE_SHIPPING_METHOD } from './graphql/shared-definitions';
 
 const TEST_METADATA = {
     foo: 'bar',
@@ -343,15 +343,6 @@ const GET_SHIPPING_METHOD_LIST = gql`
 const GET_SHIPPING_METHOD = gql`
     query GetShippingMethod($id: ID!) {
         shippingMethod(id: $id) {
-            ...ShippingMethod
-        }
-    }
-    ${SHIPPING_METHOD_FRAGMENT}
-`;
-
-const UPDATE_SHIPPING_METHOD = gql`
-    mutation UpdateShippingMethod($input: UpdateShippingMethodInput!) {
-        updateShippingMethod(input: $input) {
             ...ShippingMethod
         }
     }

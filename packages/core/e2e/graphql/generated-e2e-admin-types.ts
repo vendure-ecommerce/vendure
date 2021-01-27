@@ -2466,6 +2466,7 @@ export type ConfigArgDefinition = {
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
+    required: Scalars['Boolean'];
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     ui?: Maybe<Scalars['JSON']>;
@@ -3486,6 +3487,7 @@ export type OrderAddress = {
     country?: Maybe<Scalars['String']>;
     countryCode?: Maybe<Scalars['String']>;
     phoneNumber?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type OrderList = PaginatedList & {
@@ -5094,8 +5096,8 @@ export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
 };
 
 export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'name' | 'description'> & {
-    calculator: Pick<ConfigurableOperation, 'code'>;
-    checker: Pick<ConfigurableOperation, 'code'>;
+    calculator: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
+    checker: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
 };
 
 export type CreateAdministratorMutationVariables = Exact<{
@@ -5689,6 +5691,12 @@ export type GetOrderHistoryQuery = {
     >;
 };
 
+export type UpdateShippingMethodMutationVariables = Exact<{
+    input: UpdateShippingMethodInput;
+}>;
+
+export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -5994,12 +6002,6 @@ export type GetShippingMethodQueryVariables = Exact<{
 }>;
 
 export type GetShippingMethodQuery = { shippingMethod?: Maybe<ShippingMethodFragment> };
-
-export type UpdateShippingMethodMutationVariables = Exact<{
-    input: UpdateShippingMethodInput;
-}>;
-
-export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
 
 export type DeleteShippingMethodMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -7105,7 +7107,13 @@ export namespace ProductWithOptions {
 export namespace ShippingMethod {
     export type Fragment = ShippingMethodFragment;
     export type Calculator = NonNullable<ShippingMethodFragment['calculator']>;
+    export type Args = NonNullable<
+        NonNullable<NonNullable<ShippingMethodFragment['calculator']>['args']>[number]
+    >;
     export type Checker = NonNullable<ShippingMethodFragment['checker']>;
+    export type _Args = NonNullable<
+        NonNullable<NonNullable<ShippingMethodFragment['checker']>['args']>[number]
+    >;
 }
 
 export namespace CreateAdministrator {
@@ -7686,6 +7694,12 @@ export namespace GetOrderHistory {
     >;
 }
 
+export namespace UpdateShippingMethod {
+    export type Variables = UpdateShippingMethodMutationVariables;
+    export type Mutation = UpdateShippingMethodMutation;
+    export type UpdateShippingMethod = NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -8011,12 +8025,6 @@ export namespace GetShippingMethod {
     export type Variables = GetShippingMethodQueryVariables;
     export type Query = GetShippingMethodQuery;
     export type ShippingMethod = NonNullable<GetShippingMethodQuery['shippingMethod']>;
-}
-
-export namespace UpdateShippingMethod {
-    export type Variables = UpdateShippingMethodMutationVariables;
-    export type Mutation = UpdateShippingMethodMutation;
-    export type UpdateShippingMethod = NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>;
 }
 
 export namespace DeleteShippingMethod {
