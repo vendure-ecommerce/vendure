@@ -130,24 +130,16 @@ export class OrderModifier {
         order: Order,
     ): Promise<OrderLine> {
         const currentQuantity = orderLine.quantity;
-        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
 
         if (currentQuantity < quantity) {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
-            const productVariant = orderLine.productVariant;
-            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
-                ctx,
-                productVariant,
-                orderLine.customFields || {},
-            );
-            const taxRate = productVariant.taxRateApplied;
             for (let i = currentQuantity; i < quantity; i++) {
                 const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                     new OrderItem({
-                        listPrice: price,
-                        listPriceIncludesTax: priceIncludesTax,
+                        listPrice: orderLine.productVariant.price,
+                        listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
                         adjustments: [],
                         taxLines: [],
                         line: orderLine,

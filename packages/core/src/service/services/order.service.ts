@@ -1245,6 +1245,18 @@ export class OrderService {
         order: Order,
         updatedOrderLine?: OrderLine,
     ): Promise<Order> {
+        if (updatedOrderLine) {
+            const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
+            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+                ctx,
+                updatedOrderLine.productVariant,
+                updatedOrderLine.customFields || {},
+            );
+            for (const item of updatedOrderLine.items) {
+                item.listPrice = price;
+                item.listPriceIncludesTax = priceIncludesTax;
+            }
+        }
         const promotions = await this.connection.getRepository(ctx, Promotion).find({
             where: { enabled: true, deletedAt: null },
             order: { priorityScore: 'ASC' },
