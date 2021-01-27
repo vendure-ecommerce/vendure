@@ -13,12 +13,7 @@
 <div *ngFor="let group of optionGroups" class="option-groups">
     <div class="name">
         <label>{{ 'catalog.option' | translate }}</label>
-        <input
-            clrInput
-            [(ngModel)]="group.name"
-            name="name"
-            [readonly]="!group.isNew"
-        />
+        <input clrInput [(ngModel)]="group.name" name="name" [readonly]="!group.isNew" />
     </div>
     <div class="values">
         <label>{{ 'catalog.option-values' | translate }}</label>
@@ -31,7 +26,11 @@
         ></vdr-option-value-input>
     </div>
 </div>
-<button class="btn btn-primary-outline btn-sm" (click)="addOption()" *ngIf="product.variants.length === 1">
+<button
+    class="btn btn-primary-outline btn-sm"
+    (click)="addOption()"
+    *ngIf="product?.variants.length === 1 && product?.optionGroups.length === 0"
+>
     <clr-icon shape="plus"></clr-icon>
     {{ 'catalog.add-option' | translate }}
 </button>
@@ -39,74 +38,71 @@
 <div class="variants-preview">
     <table class="table">
         <thead>
-        <tr>
-            <th>{{ 'common.create' | translate }}</th>
-            <th>{{ 'catalog.variant' | translate }}</th>
-            <th>{{ 'catalog.sku' | translate }}</th>
-            <th>{{ 'catalog.price' | translate }}</th>
-            <th>{{ 'catalog.stock-on-hand' | translate }}</th>
-            <th></th>
-        </tr>
+            <tr>
+                <th>{{ 'common.create' | translate }}</th>
+                <th>{{ 'catalog.variant' | translate }}</th>
+                <th>{{ 'catalog.sku' | translate }}</th>
+                <th>{{ 'catalog.price' | translate }}</th>
+                <th>{{ 'catalog.stock-on-hand' | translate }}</th>
+                <th></th>
+            </tr>
         </thead>
-        <tr
-            *ngFor="let variant of variants"
-            [class.disabled]="!variantFormValues[variant.id].enabled || variantFormValues[variant.id].existing"
-        >
+        <tr *ngFor="let variant of generatedVariants" [class.disabled]="!variant.enabled || variant.existing">
             <td>
                 <input
                     type="checkbox"
-                    *ngIf="!variantFormValues[variant.id].existing"
-                    [(ngModel)]="variantFormValues[variant.id].enabled"
+                    *ngIf="!variant.existing"
+                    [(ngModel)]="variant.enabled"
                     name="enabled"
                     clrCheckbox
                     (ngModelChange)="formValueChanged = true"
                 />
             </td>
             <td>
-                {{ getVariantName(variant) }}
+                {{ getVariantName(variant) | translate }}
             </td>
             <td>
-                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                <clr-input-container *ngIf="!variant.existing">
                     <input
                         clrInput
                         type="text"
-                        [(ngModel)]="variantFormValues[variant.id].sku"
+                        [(ngModel)]="variant.sku"
                         [placeholder]="'catalog.sku' | translate"
                         name="sku"
                         required
-                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                        (ngModelChange)="onFormChanged(variant)"
                     />
                 </clr-input-container>
-                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].sku }}</span>
+                <span *ngIf="variant.existing">{{ variant.sku }}</span>
             </td>
             <td>
-                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                <clr-input-container *ngIf="!variant.existing">
                     <vdr-currency-input
                         clrInput
-                        [(ngModel)]="variantFormValues[variant.id].price"
+                        [(ngModel)]="variant.price"
                         name="price"
                         [currencyCode]="currencyCode"
-                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                        (ngModelChange)="onFormChanged(variant)"
                     ></vdr-currency-input>
                 </clr-input-container>
-                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].price | localeCurrency: currencyCode }}</span>
+                <span *ngIf="variant.existing">{{ variant.price | localeCurrency: currencyCode }}</span>
             </td>
             <td>
-                <clr-input-container *ngIf="!variantFormValues[variant.id].existing">
+                <clr-input-container *ngIf="!variant.existing">
                     <input
                         clrInput
                         type="number"
-                        [(ngModel)]="variantFormValues[variant.id].stock"
+                        [(ngModel)]="variant.stock"
                         name="stock"
                         min="0"
                         step="1"
-                        (ngModelChange)="onFormChanged(variantFormValues[variant.id])"
+                        (ngModelChange)="onFormChanged(variant)"
                     />
                 </clr-input-container>
-                <span *ngIf="variantFormValues[variant.id].existing">{{ variantFormValues[variant.id].stock }}</span>
+                <span *ngIf="variant.existing">{{ variant.stock }}</span>
             </td>
             <td>
-                <vdr-dropdown *ngIf="variantFormValues[variant.id].productVariantId as productVariantId">
+                <vdr-dropdown *ngIf="variant.productVariantId as productVariantId">
                     <button class="icon-button" vdrDropdownTrigger>
                         <clr-icon shape="ellipsis-vertical"></clr-icon>
                     </button>
@@ -121,7 +117,6 @@
                             {{ 'common.delete' | translate }}
                         </button>
                     </vdr-dropdown-menu>
-
                 </vdr-dropdown>
             </td>
         </tr>
