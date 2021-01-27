@@ -9,7 +9,7 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { DataService } from '../../../data/providers/data.service';
@@ -41,20 +41,21 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     onChange: (val: any) => void;
     onTouch: () => void;
     _decimalValue: string;
+    private currencyCode$ = new BehaviorSubject<string>('');
 
     constructor(private dataService: DataService, private changeDetectorRef: ChangeDetectorRef) {}
 
     ngOnInit() {
         const languageCode$ = this.dataService.client.uiState().mapStream(data => data.uiState.language);
-        const shouldPrefix$ = languageCode$.pipe(
-            map(languageCode => {
-                if (!this.currencyCode) {
+        const shouldPrefix$ = combineLatest(languageCode$, this.currencyCode$).pipe(
+            map(([languageCode, currencyCode]) => {
+                if (!currencyCode) {
                     return '';
                 }
                 const locale = languageCode.replace(/_/g, '-');
                 const localised = new Intl.NumberFormat(locale, {
                     style: 'currency',
-                    currency: this.currencyCode,
+                    currency: currencyCode,
                     currencyDisplay: 'symbol',
                 }).format(undefined as any);
                 return localised.indexOf('NaN') > 0;
@@ -67,6 +68,9 @@ export class CurrencyInputComponent implements ControlValueAccessor, OnInit, OnC
     ngOnChanges(changes: SimpleChanges) {
         if ('value' in changes) {
             this.writeValue(changes['value'].currentValue);
+        }
+        if ('currencyCode' in changes) {
+            this.currencyCode$.next(this.currencyCode);
         }
     }
 
