@@ -2467,6 +2467,7 @@ export type ConfigArgDefinition = {
     type: Scalars['String'];
     list: Scalars['Boolean'];
     required: Scalars['Boolean'];
+    defaultValue?: Maybe<Scalars['String']>;
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     ui?: Maybe<Scalars['JSON']>;
@@ -2490,6 +2491,7 @@ export type DeletionResponse = {
 
 export type ConfigArgInput = {
     name: Scalars['String'];
+    /** A JSON stringified representation of the actual value */
     value: Scalars['String'];
 };
 
@@ -4604,6 +4606,21 @@ export type GetProductCollectionsWithParentQuery = {
     >;
 };
 
+export type GetCheckersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCheckersQuery = {
+    shippingEligibilityCheckers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<
+                Pick<
+                    ConfigArgDefinition,
+                    'defaultValue' | 'description' | 'label' | 'list' | 'name' | 'required' | 'type'
+                >
+            >;
+        }
+    >;
+};
+
 export type DeleteCountryMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -6548,6 +6565,19 @@ export namespace GetProductCollectionsWithParent {
         NonNullable<
             NonNullable<NonNullable<GetProductCollectionsWithParentQuery['product']>['collections']>[number]
         >['parent']
+    >;
+}
+
+export namespace GetCheckers {
+    export type Variables = GetCheckersQueryVariables;
+    export type Query = GetCheckersQuery;
+    export type ShippingEligibilityCheckers = NonNullable<
+        NonNullable<GetCheckersQuery['shippingEligibilityCheckers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GetCheckersQuery['shippingEligibilityCheckers']>[number]>['args']
+        >[number]
     >;
 }
 

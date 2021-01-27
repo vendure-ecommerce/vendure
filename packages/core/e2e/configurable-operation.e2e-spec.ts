@@ -1,12 +1,14 @@
+import { pick } from '@vendure/common/lib/pick';
 import { LanguageCode, mergeConfig, ShippingEligibilityChecker } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
+import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
-import { UPDATE_SHIPPING_METHOD } from '../../admin-ui/src/lib/core/src/data/definitions/shipping-definitions';
 
-import { UpdateShippingMethod } from './graphql/generated-e2e-admin-types';
+import { GetCheckers, UpdateShippingMethod } from './graphql/generated-e2e-admin-types';
+import { UPDATE_SHIPPING_METHOD } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
 const testShippingEligibilityChecker = new ShippingEligibilityChecker({
@@ -14,12 +16,21 @@ const testShippingEligibilityChecker = new ShippingEligibilityChecker({
     description: [{ languageCode: LanguageCode.en, value: 'test checker' }],
     args: {
         optional: {
+            label: [
+                { languageCode: LanguageCode.en, value: 'Optional argument' },
+                { languageCode: LanguageCode.de, value: 'Optional eingabe' },
+            ],
+            description: [
+                { languageCode: LanguageCode.en, value: 'This is an optional argument' },
+                { languageCode: LanguageCode.de, value: 'Das ist eine optionale eingabe' },
+            ],
             required: false,
             type: 'string',
         },
         required: {
             required: true,
             type: 'string',
+            defaultValue: 'hello',
         },
     },
     check: ctx => true,
@@ -100,4 +111,29 @@ describe('Configurable operations', () => {
             }, "The argument 'required' is required, but the value is [null]"),
         );
     });
+
+    it('defaultValue', async () => {
+        const { shippingEligibilityCheckers } = await adminClient.query<GetCheckers.Query>(GET_CHECKERS);
+        expect(shippingEligibilityCheckers[0].args.map(pick(['name', 'defaultValue']))).toEqual([
+            { name: 'optional', defaultValue: null },
+            { name: 'required', defaultValue: 'hello' },
+        ]);
+    });
 });
+
+export const GET_CHECKERS = gql`
+    query GetCheckers {
+        shippingEligibilityCheckers {
+            code
+            args {
+                defaultValue
+                description
+                label
+                list
+                name
+                required
+                type
+            }
+        }
+    }
+`;

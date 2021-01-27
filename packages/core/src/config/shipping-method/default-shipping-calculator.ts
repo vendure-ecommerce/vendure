@@ -16,11 +16,13 @@ export const defaultShippingCalculator = new ShippingCalculator({
     args: {
         rate: {
             type: 'int',
+            defaultValue: 0,
             ui: { component: 'currency-form-input' },
             label: [{ languageCode: LanguageCode.en, value: 'Shipping price' }],
         },
         includesTax: {
             type: 'string',
+            defaultValue: TaxSetting.auto,
             ui: {
                 component: 'select-form-input',
                 options: [
@@ -42,6 +44,7 @@ export const defaultShippingCalculator = new ShippingCalculator({
         },
         taxRate: {
             type: 'int',
+            defaultValue: 0,
             ui: { component: 'number-form-input', suffix: '%' },
             label: [{ languageCode: LanguageCode.en, value: 'Tax rate' }],
         },
