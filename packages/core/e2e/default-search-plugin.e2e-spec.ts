@@ -63,7 +63,9 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 
 describe('Default search plugin', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
-        mergeConfig(testConfig, { plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin] }),
+        mergeConfig(testConfig, {
+            plugins: [DefaultSearchPlugin, DefaultJobQueuePlugin],
+        }),
     );
 
     beforeAll(async () => {
@@ -935,6 +937,8 @@ describe('Default search plugin', () => {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
+                // The postgres test is kinda flaky so we stick in a pause for good measure
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
@@ -952,7 +956,7 @@ describe('Default search plugin', () => {
                 ]);
             }, 10000);
 
-            it('removing product variant to channel', async () => {
+            it('removing product variant from channel', async () => {
                 adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
                 await adminClient.query<
                     RemoveProductVariantsFromChannel.Mutation,
@@ -975,6 +979,37 @@ describe('Default search plugin', () => {
                     'T_10',
                 ]);
             }, 10000);
+
+            it('updating product affects current channel', async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_3',
+                        enabled: true,
+                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search: searchGrouped } = await doAdminSearchQuery({
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
+
+            it('updating product affects other channels', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { search: searchGrouped } = await doAdminSearchQuery({
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
         });
 
         describe('multiple language handling', () => {
