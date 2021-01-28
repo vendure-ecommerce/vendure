@@ -5,7 +5,7 @@
                 class="nav-group"
                 [attr.data-section-id]="section.id"
                 [class.collapsible]="section.collapsible"
-                *vdrIfPermissions="section.requiresPermission"
+                *ngIf="shouldDisplayLink(section)"
             >
                 <ng-container *ngIf="navBuilderService.sectionBadges[section.id] | async as sectionBadge">
                     <div *ngIf="sectionBadge !== 'none'" class="status-badge" [class]="sectionBadge"></div>
@@ -14,7 +14,7 @@
                 <label [for]="section.id">{{ section.label | translate }}</label>
                 <ul class="nav-list">
                     <ng-container *ngFor="let item of section.items">
-                        <li *vdrIfPermissions="item.requiresPermission">
+                        <li *ngIf="shouldDisplayLink(item)">
                             <a
                                 class="nav-link"
                                 [attr.data-item-id]="section.id"
