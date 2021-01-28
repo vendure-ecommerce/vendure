@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-
 import { SearchProducts } from '@vendure/admin-ui/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { ProductSearchSelectionModelFactory } from './product-search-selection-model';
 
@@ -96,6 +95,10 @@ export class ProductSearchInputComponent {
             this.facetValueChange.emit(facetValueIds);
             this.lastFacetValueIds = facetValueIds;
         }
+    }
+
+    addTagFn(item: any) {
+        return { label: item };
     }
 
     isSearchHeaderSelected(): boolean {
