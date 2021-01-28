@@ -1,5 +1,10 @@
 import { pick } from '@vendure/common/lib/pick';
-import { LanguageCode, mergeConfig, ShippingEligibilityChecker } from '@vendure/core';
+import {
+    defaultShippingEligibilityChecker,
+    LanguageCode,
+    mergeConfig,
+    ShippingEligibilityChecker,
+} from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
@@ -40,7 +45,10 @@ describe('Configurable operations', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             shippingOptions: {
-                shippingEligibilityCheckers: [testShippingEligibilityChecker],
+                shippingEligibilityCheckers: [
+                    defaultShippingEligibilityChecker,
+                    testShippingEligibilityChecker,
+                ],
             },
         }),
     );
@@ -114,7 +122,7 @@ describe('Configurable operations', () => {
 
     it('defaultValue', async () => {
         const { shippingEligibilityCheckers } = await adminClient.query<GetCheckers.Query>(GET_CHECKERS);
-        expect(shippingEligibilityCheckers[0].args.map(pick(['name', 'defaultValue']))).toEqual([
+        expect(shippingEligibilityCheckers[1].args.map(pick(['name', 'defaultValue']))).toEqual([
             { name: 'optional', defaultValue: null },
             { name: 'required', defaultValue: 'hello' },
         ]);
