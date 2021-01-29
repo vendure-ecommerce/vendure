@@ -1,11 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApplyCouponCodeResult } from '@vendure/common/lib/generated-shop-types';
 import {
-    Adjustment,
-    AdjustmentType,
-    ConfigurableOperation,
     ConfigurableOperationDefinition,
-    ConfigurableOperationInput,
     CreatePromotionInput,
     CreatePromotionResult,
     DeletionResponse,
@@ -19,7 +15,6 @@ import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
 import { ErrorResultUnion, JustErrorResults } from '../../common/error/error-result';
-import { UserInputError } from '../../common/error/errors';
 import { MissingConditionsError } from '../../common/error/generated-graphql-admin-errors';
 import {
     CouponCodeExpiredError,
@@ -34,6 +29,7 @@ import { PromotionAction } from '../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../config/promotion/promotion-condition';
 import { Order } from '../../entity/order/order.entity';
 import { Promotion } from '../../entity/promotion/promotion.entity';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
@@ -56,6 +52,7 @@ export class PromotionService {
         private configService: ConfigService,
         private channelService: ChannelService,
         private listQueryBuilder: ListQueryBuilder,
+        private configArgService: ConfigArgService,
     ) {
         this.availableConditions = this.configService.promotionOptions.promotionConditions || [];
         this.availableActions = this.configService.promotionOptions.promotionActions || [];
@@ -111,8 +108,8 @@ export class PromotionService {
             perCustomerUsageLimit: input.perCustomerUsageLimit,
             startsAt: input.startsAt,
             endsAt: input.endsAt,
-            conditions: input.conditions.map(c => this.parseOperationArgs('condition', c)),
-            actions: input.actions.map(a => this.parseOperationArgs('action', a)),
+            conditions: input.conditions.map(c => this.configArgService.parseInput('PromotionCondition', c)),
+            actions: input.actions.map(a => this.configArgService.parseInput('PromotionAction', a)),
             priorityScore: this.calculatePriorityScore(input),
         });
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
@@ -133,10 +130,14 @@ export class PromotionService {
         });
         const updatedPromotion = patchEntity(promotion, omit(input, ['conditions', 'actions']));
         if (input.conditions) {
-            updatedPromotion.conditions = input.conditions.map(c => this.parseOperationArgs('condition', c));
+            updatedPromotion.conditions = input.conditions.map(c =>
+                this.configArgService.parseInput('PromotionCondition', c),
+            );
         }
         if (input.actions) {
-            updatedPromotion.actions = input.actions.map(a => this.parseOperationArgs('action', a));
+            updatedPromotion.actions = input.actions.map(a =>
+                this.configArgService.parseInput('PromotionAction', a),
+            );
         }
         if (promotion.conditions.length === 0 && !promotion.couponCode) {
             return new MissingConditionsError();
@@ -208,42 +209,15 @@ export class PromotionService {
 
         return qb.getCount();
     }
-    /**
-     * Converts the input values of the "create" and "update" mutations into the format expected by the AdjustmentSource entity.
-     */
-    private parseOperationArgs(
-        type: 'condition' | 'action',
-        input: ConfigurableOperationInput,
-    ): ConfigurableOperation {
-        const match = this.getAdjustmentOperationByCode(type, input.code);
-        const output: ConfigurableOperation = {
-            code: input.code,
-            args: input.arguments,
-        };
-        return output;
-    }
 
     private calculatePriorityScore(input: CreatePromotionInput | UpdatePromotionInput): number {
         const conditions = input.conditions
-            ? input.conditions.map(c => this.getAdjustmentOperationByCode('condition', c.code))
+            ? input.conditions.map(c => this.configArgService.getByCode('PromotionCondition', c.code))
             : [];
         const actions = input.actions
-            ? input.actions.map(c => this.getAdjustmentOperationByCode('action', c.code))
+            ? input.actions.map(c => this.configArgService.getByCode('PromotionAction', c.code))
             : [];
         return [...conditions, ...actions].reduce((score, op) => score + op.priorityValue, 0);
-    }
-
-    private getAdjustmentOperationByCode(
-        type: 'condition' | 'action',
-        code: string,
-    ): PromotionCondition | PromotionAction {
-        const available: Array<PromotionAction | PromotionCondition> =
-            type === 'condition' ? this.availableConditions : this.availableActions;
-        const match = available.find(a => a.code === code);
-        if (!match) {
-            throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
-        }
-        return match;
     }
 
     /**

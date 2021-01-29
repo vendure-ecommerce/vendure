@@ -168,7 +168,7 @@ export class ProductService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
-        await this.connection.getEntityOrThrow(ctx, Product, input.id);
+        await this.connection.getEntityOrThrow(ctx, Product, input.id, { channelId: ctx.channelId });
         await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
         const product = await this.translatableSaver.update({
             ctx,

@@ -43,6 +43,8 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
         await server.destroy();
     });
 
+    let secondOrderLineId: string;
+
     it('does not add surcharge', async () => {
         const variant0 = variants[0];
 
@@ -72,8 +74,45 @@ describe('custom OrderItemPriceCalculationStrategy', () => {
         expect(addItemToOrder.lines[0].unitPrice).toEqual(variantPrice);
         expect(addItemToOrder.lines[1].unitPrice).toEqual(variantPrice + 500);
         expect(addItemToOrder.subTotal).toEqual(variantPrice + variantPrice + 500);
+        secondOrderLineId = addItemToOrder.lines[1].id;
+    });
+
+    it('re-calculates when customFields changes', async () => {
+        const { adjustOrderLine } = await shopClient.query(ADJUST_ORDER_LINE_CUSTOM_FIELDS, {
+            orderLineId: secondOrderLineId,
+            quantity: 1,
+            customFields: {
+                giftWrap: false,
+            },
+        });
+
+        const variantPrice = (variants[0].price as SinglePrice).value as number;
+        expect(adjustOrderLine.lines[0].unitPrice).toEqual(variantPrice);
+        expect(adjustOrderLine.lines[1].unitPrice).toEqual(variantPrice);
+        expect(adjustOrderLine.subTotal).toEqual(variantPrice + variantPrice);
     });
 });
+
+const ORDER_WITH_LINES_AND_ITEMS_FRAGMENT = gql`
+    fragment OrderWithLinesAndItems on Order {
+        id
+        subTotal
+        subTotalWithTax
+        shipping
+        total
+        totalWithTax
+        lines {
+            id
+            quantity
+            unitPrice
+            unitPriceWithTax
+            items {
+                unitPrice
+                unitPriceWithTax
+            }
+        }
+    }
+`;
 
 const ADD_ITEM_TO_ORDER_CUSTOM_FIELDS = gql`
     mutation AddItemToOrderCustomFields(
@@ -86,24 +125,21 @@ const ADD_ITEM_TO_ORDER_CUSTOM_FIELDS = gql`
             quantity: $quantity
             customFields: $customFields
         ) {
-            ... on Order {
-                id
-                subTotal
-                subTotalWithTax
-                shipping
-                total
-                totalWithTax
-                lines {
-                    id
-                    quantity
-                    unitPrice
-                    unitPriceWithTax
-                    items {
-                        unitPrice
-                        unitPriceWithTax
-                    }
-                }
-            }
+            ...OrderWithLinesAndItems
         }
     }
+    ${ORDER_WITH_LINES_AND_ITEMS_FRAGMENT}
+`;
+
+const ADJUST_ORDER_LINE_CUSTOM_FIELDS = gql`
+    mutation AdjustOrderLineCustomFields(
+        $orderLineId: ID!
+        $quantity: Int!
+        $customFields: OrderLineCustomFieldsInput
+    ) {
+        adjustOrderLine(orderLineId: $orderLineId, quantity: $quantity, customFields: $customFields) {
+            ...OrderWithLinesAndItems
+        }
+    }
+    ${ORDER_WITH_LINES_AND_ITEMS_FRAGMENT}
 `;

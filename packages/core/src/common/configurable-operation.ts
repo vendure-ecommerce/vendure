@@ -53,6 +53,8 @@ export type UiComponentConfig =
 
 export interface ConfigArgCommonDef<T extends ConfigArgType> {
     type: T;
+    required?: boolean;
+    defaultValue?: ConfigArgTypeToTsType<T>;
     list?: boolean;
     label?: LocalizedStringArray;
     description?: LocalizedStringArray;
@@ -183,6 +185,23 @@ export type ConfigArgDefToType<D extends ConfigArgDef<ConfigArgType>> = D extend
     : D extends ConfigArgListDef<'string'>
     ? string[]
     : string;
+
+/**
+ * Converts a ConfigArgType to a TypeScript type
+ *
+ * ConfigArgTypeToTsType<'int'> -> number
+ */
+export type ConfigArgTypeToTsType<T extends ConfigArgType> = T extends 'string'
+    ? string
+    : T extends 'int'
+    ? number
+    : T extends 'float'
+    ? number
+    : T extends 'boolean'
+    ? boolean
+    : T extends 'datetime'
+    ? Date
+    : ID;
 
 /**
  * Converts a TS type to a ConfigArgDef, e.g:
@@ -360,6 +379,8 @@ export class ConfigurableOperationDef<T extends ConfigArgs = ConfigArgs> {
                         name,
                         type: arg.type,
                         list: arg.list ?? false,
+                        required: arg.required ?? true,
+                        defaultValue: arg.defaultValue,
                         ui: arg.ui,
                         label: arg.label && localizeString(arg.label, ctx.languageCode),
                         description: arg.description && localizeString(arg.description, ctx.languageCode),

@@ -77,30 +77,28 @@ export function toConfigurableOperationInput(
     };
 }
 
+export function configurableOperationValueIsValid(
+    def?: ConfigurableOperationDefinition,
+    value?: { code: string; args: { [key: string]: string } },
+) {
+    if (!def || !value) {
+        return false;
+    }
+    if (def.code !== value.code) {
+        return false;
+    }
+    for (const argDef of def.args) {
+        const argVal = value.args[argDef.name];
+        if (argDef.required && (argVal == null || argVal === '' || argVal === '0')) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /**
  * Returns a default value based on the type of the config arg.
  */
 export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
-    return arg.list ? [] : getDefaultConfigArgSingleValue(arg.type as ConfigArgType);
-}
-
-export function getDefaultConfigArgSingleValue(type: ConfigArgType | CustomFieldType): any {
-    switch (type) {
-        case 'boolean':
-            return 'false';
-        case 'int':
-        case 'float':
-            return '0';
-        case 'ID':
-            return '';
-        case 'string':
-        case 'localeString':
-            return '';
-        case 'datetime':
-            return new Date();
-        case 'relation':
-            return null;
-        default:
-            assertNever(type);
-    }
+    return arg.list ? [] : arg.defaultValue || null; // getDefaultConfigArgSingleValue(arg.type as ConfigArgType);
 }

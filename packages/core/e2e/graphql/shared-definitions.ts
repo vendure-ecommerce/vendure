@@ -817,3 +817,12 @@ export const GET_ORDER_HISTORY = gql`
         }
     }
 `;
+
+export const UPDATE_SHIPPING_METHOD = gql`
+    mutation UpdateShippingMethod($input: UpdateShippingMethodInput!) {
+        updateShippingMethod(input: $input) {
+            ...ShippingMethod
+        }
+    }
+    ${SHIPPING_METHOD_FRAGMENT}
+`;

@@ -33,7 +33,7 @@ export class OrderItem extends VendureEntity {
      * current Channel, may or may not include tax.
      */
     @Column()
-    readonly listPrice: number;
+    listPrice: number;
 
     /**
      * @description
@@ -41,7 +41,7 @@ export class OrderItem extends VendureEntity {
      * of the current Channel.
      */
     @Column()
-    readonly listPriceIncludesTax: boolean;
+    listPriceIncludesTax: boolean;
 
     @Column('simple-json')
     adjustments: Adjustment[];

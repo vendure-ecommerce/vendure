@@ -89,6 +89,10 @@ export class ProductSearchInputComponent {
         }
     }
 
+    addTagFn(item: any) {
+        return { label: item };
+    }
+
     isSearchHeaderSelected(): boolean {
         return this.selectComponent.itemsList.markedIndex === -1;
     }

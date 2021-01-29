@@ -2751,6 +2751,8 @@ export type ConfigArgDefinition = {
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
+  required: Scalars['Boolean'];
+  defaultValue?: Maybe<Scalars['String']>;
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   ui?: Maybe<Scalars['JSON']>;
@@ -2777,6 +2779,7 @@ export type DeletionResponse = {
 
 export type ConfigArgInput = {
   name: Scalars['String'];
+  /** A JSON stringified representation of the actual value */
   value: Scalars['String'];
 };
 
@@ -7741,7 +7744,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui' | 'label'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'required' | 'defaultValue' | 'list' | 'ui' | 'label'>
   )> }
 );
 

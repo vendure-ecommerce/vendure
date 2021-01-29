@@ -9,12 +9,12 @@ import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 import { RequestContext } from '../../../api/common/request-context';
 import { AsyncQueue } from '../../../common/async-queue';
 import { Translatable, Translation } from '../../../common/types/locale-types';
+import { idsAreEqual } from '../../../common/utils';
 import { ConfigService } from '../../../config/config.service';
 import { Logger } from '../../../config/logger/vendure-logger';
 import { FacetValue } from '../../../entity/facet-value/facet-value.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
 import { Product } from '../../../entity/product/product.entity';
-import { translateDeep } from '../../../service/helpers/utils/translate-entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
 import { asyncObservable } from '../../../worker/async-observable';
@@ -47,6 +47,7 @@ export const variantRelations = [
     'collections',
     'taxCategory',
     'channels',
+    'channels.defaultTaxZone',
 ];
 
 export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
@@ -84,8 +85,7 @@ export class IndexerController {
                     .take(BATCH_SIZE)
                     .skip(i * BATCH_SIZE)
                     .getMany();
-                const hydratedVariants = this.hydrateVariants(ctx, variants);
-                await this.saveVariants(ctx.channelId, hydratedVariants);
+                await this.saveVariants(variants);
                 observer.next({
                     total: count,
                     completed: Math.min((i + 1) * BATCH_SIZE, count),
@@ -123,8 +123,7 @@ export class IndexerController {
                         relations: variantRelations,
                         where: { deletedAt: null },
                     });
-                    const variants = this.hydrateVariants(ctx, batch);
-                    await this.saveVariants(ctx.channelId, variants);
+                    await this.saveVariants(batch);
                     observer.next({
                         total: ids.length,
                         completed: Math.min((i + 1) * BATCH_SIZE, ids.length),
@@ -263,7 +262,7 @@ export class IndexerController {
             relations: ['variants'],
         });
         if (product) {
-            let updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
+            const updatedVariants = await this.connection.getRepository(ProductVariant).findByIds(
                 product.variants.map(v => v.id),
                 {
                     relations: variantRelations,
@@ -273,10 +272,12 @@ export class IndexerController {
             if (product.enabled === false) {
                 updatedVariants.forEach(v => (v.enabled = false));
             }
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            updatedVariants = this.hydrateVariants(ctx, updatedVariants);
-            if (updatedVariants.length) {
-                await this.saveVariants(channelId, updatedVariants);
+            const variantsInCurrentChannel = updatedVariants.filter(
+                v => !!v.channels.find(c => idsAreEqual(c.id, ctx.channelId)),
+            );
+            Logger.verbose(`Updating ${variantsInCurrentChannel.length} variants`, workerLoggerCtx);
+            if (variantsInCurrentChannel.length) {
+                await this.saveVariants(variantsInCurrentChannel);
             }
         }
         return true;
@@ -292,9 +293,8 @@ export class IndexerController {
             where: { deletedAt: null },
         });
         if (variants) {
-            const updatedVariants = this.hydrateVariants(ctx, variants);
-            Logger.verbose(`Updating ${updatedVariants.length} variants`, workerLoggerCtx);
-            await this.saveVariants(channelId, updatedVariants);
+            Logger.verbose(`Updating ${variants.length} variants`, workerLoggerCtx);
+            await this.saveVariants(variants);
         }
         return true;
     }
@@ -334,55 +334,66 @@ export class IndexerController {
         return qb;
     }
 
-    /**
-     * Given an array of ProductVariants, this method applies the correct taxes and translations.
-     */
-    private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
-        return variants
-            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
-    }
-
-    private async saveVariants(channelId: ID, variants: ProductVariant[]) {
+    private async saveVariants(variants: ProductVariant[]) {
         const items: SearchIndexItem[] = [];
 
-        for (const v of variants) {
+        for (const variant of variants) {
             const languageVariants = unique([
-                ...v.translations.map(t => t.languageCode),
-                ...v.product.translations.map(t => t.languageCode),
+                ...variant.translations.map(t => t.languageCode),
+                ...variant.product.translations.map(t => t.languageCode),
             ]);
             for (const languageCode of languageVariants) {
-                const productTranslation = this.getTranslation(v.product, languageCode);
-                const variantTranslation = this.getTranslation(v, languageCode);
-                items.push(
-                    new SearchIndexItem({
-                        productVariantId: v.id,
-                        channelId,
-                        languageCode,
-                        sku: v.sku,
-                        enabled: v.product.enabled === false ? false : v.enabled,
-                        slug: productTranslation.slug,
-                        price: v.price,
-                        priceWithTax: v.priceWithTax,
-                        productId: v.product.id,
-                        productName: productTranslation.name,
-                        description: productTranslation.description,
-                        productVariantName: variantTranslation.name,
-                        productAssetId: v.product.featuredAsset ? v.product.featuredAsset.id : null,
-                        productPreviewFocalPoint: v.product.featuredAsset
-                            ? v.product.featuredAsset.focalPoint
-                            : null,
-                        productVariantPreviewFocalPoint: v.featuredAsset ? v.featuredAsset.focalPoint : null,
-                        productVariantAssetId: v.featuredAsset ? v.featuredAsset.id : null,
-                        productPreview: v.product.featuredAsset ? v.product.featuredAsset.preview : '',
-                        productVariantPreview: v.featuredAsset ? v.featuredAsset.preview : '',
-                        channelIds: v.channels.map(c => c.id as string),
-                        facetIds: this.getFacetIds(v),
-                        facetValueIds: this.getFacetValueIds(v),
-                        collectionIds: v.collections.map(c => c.id.toString()),
-                        collectionSlugs: v.collections.map(c => c.slug),
-                    }),
+                const productTranslation = this.getTranslation(variant.product, languageCode);
+                const variantTranslation = this.getTranslation(variant, languageCode);
+                const collectionTranslations = variant.collections.map(c =>
+                    this.getTranslation(c, languageCode),
                 );
+
+                for (const channel of variant.channels) {
+                    const ctx = new RequestContext({
+                        channel,
+                        apiType: 'admin',
+                        authorizedAsOwnerOnly: false,
+                        isAuthorized: true,
+                        session: {} as any,
+                    });
+                    this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+                    items.push(
+                        new SearchIndexItem({
+                            channelId: channel.id,
+                            languageCode,
+                            productVariantId: variant.id,
+                            price: variant.price,
+                            priceWithTax: variant.priceWithTax,
+                            sku: variant.sku,
+                            enabled: variant.product.enabled === false ? false : variant.enabled,
+                            slug: productTranslation.slug,
+                            productId: variant.product.id,
+                            productName: productTranslation.name,
+                            description: productTranslation.description,
+                            productVariantName: variantTranslation.name,
+                            productAssetId: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.id
+                                : null,
+                            productPreviewFocalPoint: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.focalPoint
+                                : null,
+                            productVariantPreviewFocalPoint: variant.featuredAsset
+                                ? variant.featuredAsset.focalPoint
+                                : null,
+                            productVariantAssetId: variant.featuredAsset ? variant.featuredAsset.id : null,
+                            productPreview: variant.product.featuredAsset
+                                ? variant.product.featuredAsset.preview
+                                : '',
+                            productVariantPreview: variant.featuredAsset ? variant.featuredAsset.preview : '',
+                            channelIds: variant.channels.map(c => c.id as string),
+                            facetIds: this.getFacetIds(variant),
+                            facetValueIds: this.getFacetValueIds(variant),
+                            collectionIds: variant.collections.map(c => c.id.toString()),
+                            collectionSlugs: collectionTranslations.map(c => c.slug),
+                        }),
+                    );
+                }
             }
         }
 

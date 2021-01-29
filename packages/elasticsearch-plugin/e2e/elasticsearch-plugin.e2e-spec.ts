@@ -855,6 +855,37 @@ describe('Elasticsearch plugin', () => {
                     'T_4',
                 ]);
             });
+
+            it('updating product affects current channel', async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                const { updateProduct } = await adminClient.query<
+                    UpdateProduct.Mutation,
+                    UpdateProduct.Variables
+                >(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_3',
+                        enabled: true,
+                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+
+                const { search: searchGrouped } = await doAdminSearchQuery(adminClient, {
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
+
+            it('updating product affects other channels', async () => {
+                adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+                const { search: searchGrouped } = await doAdminSearchQuery(adminClient, {
+                    groupByProduct: true,
+                    term: 'xyz',
+                });
+                expect(searchGrouped.items.map(i => i.productName)).toEqual(['xyz']);
+            });
         });
 
         describe('multiple language handling', () => {

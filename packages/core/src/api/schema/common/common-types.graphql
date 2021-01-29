@@ -38,6 +38,8 @@ type ConfigArgDefinition {
     name: String!
     type: String!
     list: Boolean!
+    required: Boolean!
+    defaultValue: String
     label: String
     description: String
     ui: JSON
@@ -62,6 +64,7 @@ type DeletionResponse {
 
 input ConfigArgInput {
     name: String!
+    "A JSON stringified representation of the actual value"
     value: String!
 }
 

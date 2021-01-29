@@ -20,6 +20,7 @@ import {
     ProductVariantFragment,
     RemoveProductsFromChannel,
     RemoveProductVariantsFromChannel,
+    UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCTVARIANT_TO_CHANNEL,
@@ -32,6 +33,7 @@ import {
     GET_PRODUCT_WITH_VARIANTS,
     REMOVE_PRODUCTVARIANT_FROM_CHANNEL,
     REMOVE_PRODUCT_FROM_CHANNEL,
+    UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -469,5 +471,20 @@ describe('ChannelAware Products and ProductVariants', () => {
             expect(product?.channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
             expect(product?.variants[0].channels.map(c => c.id).sort()).toEqual(['T_1', 'T_2']);
         });
+    });
+
+    describe('updating Product in sub-channel', () => {
+        it(
+            'throws if attempting to update a Product which is not assigned to that Channel',
+            assertThrowsWithMessage(async () => {
+                adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+                await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(UPDATE_PRODUCT, {
+                    input: {
+                        id: 'T_2',
+                        translations: [{ languageCode: LanguageCode.en, name: 'xyz' }],
+                    },
+                });
+            }, `No Product with the id '2' could be found`),
+        );
     });
 });

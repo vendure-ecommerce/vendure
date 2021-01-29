@@ -1,3 +1,26 @@
+## <small>0.18.3 (2021-01-29)</small>
+
+
+#### Fixes
+
+* **admin-ui** Fix filtering products by term in Channel ([d880f8e](https://github.com/vendure-ecommerce/vendure/commit/d880f8e))
+* **admin-ui** Fix role editor Channel value display  ([c258975](https://github.com/vendure-ecommerce/vendure/commit/c258975))
+* **admin-ui** Fix various issues with product variant management view ([d34f935](https://github.com/vendure-ecommerce/vendure/commit/d34f935)), closes [#602](https://github.com/vendure-ecommerce/vendure/issues/602)
+* **admin-ui** Translate missing Brazilian (PT-br) i18n json ([808d1fe](https://github.com/vendure-ecommerce/vendure/commit/808d1fe))
+* **core** Do not allow updating products not in active channel ([4b2fac7](https://github.com/vendure-ecommerce/vendure/commit/4b2fac7))
+* **core** Prevent multiple ProductVariantPrice creation ([c853033](https://github.com/vendure-ecommerce/vendure/commit/c853033)), closes [#652](https://github.com/vendure-ecommerce/vendure/issues/652)
+* **core** Re-calculate OrderItem price on all OrderLine changes ([0d8c485](https://github.com/vendure-ecommerce/vendure/commit/0d8c485)), closes [#660](https://github.com/vendure-ecommerce/vendure/issues/660)
+* **core** Update search index for all channels on updates ([85de520](https://github.com/vendure-ecommerce/vendure/commit/85de520)), closes [#629](https://github.com/vendure-ecommerce/vendure/issues/629)
+* **elasticsearch-plugin** Update search index for all channels on updates ([2be29c2](https://github.com/vendure-ecommerce/vendure/commit/2be29c2)), closes [#629](https://github.com/vendure-ecommerce/vendure/issues/629)
+
+#### Features
+
+* **admin-ui** Nav menu requirePermissions accepts predicate fn ([c74765d](https://github.com/vendure-ecommerce/vendure/commit/c74765d)), closes [#651](https://github.com/vendure-ecommerce/vendure/issues/651)
+* **admin-ui** Support "required" & "defaultValue" in ConfigArgs ([6e5e482](https://github.com/vendure-ecommerce/vendure/commit/6e5e482)), closes [#643](https://github.com/vendure-ecommerce/vendure/issues/643)
+* **core** Support "defaultValue" field in ConfigArgs ([92ae819](https://github.com/vendure-ecommerce/vendure/commit/92ae819)), closes [#643](https://github.com/vendure-ecommerce/vendure/issues/643)
+* **core** Support "required" field in ConfigArgs ([9940385](https://github.com/vendure-ecommerce/vendure/commit/9940385)), closes [#643](https://github.com/vendure-ecommerce/vendure/issues/643)
+* **elasticsearch-plugin** LanguageCode support in CustomMappings ([b114428](https://github.com/vendure-ecommerce/vendure/commit/b114428))
+
 ## <small>0.18.2 (2021-01-15)</small>
 
 

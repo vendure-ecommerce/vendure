@@ -4,6 +4,7 @@ import {
     configurableDefinitionToInstance,
     ConfigurableOperation,
     ConfigurableOperationDefinition,
+    configurableOperationValueIsValid,
     DataService,
     Dialog,
     FulfillOrderInput,
@@ -77,8 +78,10 @@ export class FulfillOrderDialogComponent implements Dialog<FulfillOrderInput>, O
             0,
         );
         const formIsValid =
-            this.fulfillmentHandlerDef?.args.length === 0 ||
-            (this.fulfillmentHandlerControl.valid && this.fulfillmentHandlerControl.touched);
+            configurableOperationValueIsValid(
+                this.fulfillmentHandlerDef,
+                this.fulfillmentHandlerControl.value,
+            ) && this.fulfillmentHandlerControl.valid;
         return formIsValid && 0 < totalCount;
     }
 

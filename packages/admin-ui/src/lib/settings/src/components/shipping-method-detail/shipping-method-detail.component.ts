@@ -70,7 +70,7 @@ export class ShippingMethodDetailComponent
             code: ['', Validators.required],
             name: ['', Validators.required],
             description: '',
-            fulfillmentHandler: '',
+            fulfillmentHandler: ['', Validators.required],
             checker: {},
             calculator: {},
             customFields: this.formBuilder.group(
