@@ -173,3 +173,13 @@ Indicates that an operation succeeded, where we do not want to return any more s
 type Success {
     success: Boolean!
 }
+
+type ShippingMethodQuote {
+    id: ID!
+    price: Int!
+    priceWithTax: Int!
+    name: String!
+    description: String!
+    "Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult"
+    metadata: JSON
+}

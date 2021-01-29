@@ -49,6 +49,7 @@ export type Query = {
     orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
+    paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
     paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
@@ -1735,6 +1736,7 @@ export type CreatePaymentMethodInput = {
     code: Scalars['String'];
     description?: Maybe<Scalars['String']>;
     enabled: Scalars['Boolean'];
+    checker?: Maybe<ConfigurableOperationInput>;
     handler: ConfigurableOperationInput;
 };
 
@@ -1744,6 +1746,7 @@ export type UpdatePaymentMethodInput = {
     code?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
+    checker?: Maybe<ConfigurableOperationInput>;
     handler?: Maybe<ConfigurableOperationInput>;
 };
 
@@ -1755,6 +1758,7 @@ export type PaymentMethod = Node & {
     code: Scalars['String'];
     description: Scalars['String'];
     enabled: Scalars['Boolean'];
+    checker?: Maybe<ConfigurableOperation>;
     handler: ConfigurableOperation;
 };
 
@@ -2679,6 +2683,16 @@ export type Success = {
     success: Scalars['Boolean'];
 };
 
+export type ShippingMethodQuote = {
+    id: Scalars['ID'];
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
+    description: Scalars['String'];
+    /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type Country = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -3585,15 +3599,6 @@ export type OrderAddress = {
 export type OrderList = PaginatedList & {
     items: Array<Order>;
     totalItems: Scalars['Int'];
-};
-
-export type ShippingMethodQuote = {
-    id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
-    name: Scalars['String'];
-    description: Scalars['String'];
-    metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingLine = {

@@ -747,6 +747,10 @@ export class OrderService {
             input.metadata,
         );
 
+        if (isGraphQlErrorResult(payment)) {
+            return payment;
+        }
+
         const existingPayments = await this.getOrderPayments(ctx, orderId);
         order.payments = [...existingPayments, payment];
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });

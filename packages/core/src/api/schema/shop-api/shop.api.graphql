@@ -194,6 +194,7 @@ union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalid
 union AddPaymentToOrderResult =
       Order
     | OrderPaymentStateError
+    | IneligiblePaymentMethodError
     | PaymentFailedError
     | PaymentDeclinedError
     | OrderStateTransitionError

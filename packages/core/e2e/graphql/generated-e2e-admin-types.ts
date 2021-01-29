@@ -49,6 +49,7 @@ export type Query = {
     orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
+    paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
     paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
@@ -1735,6 +1736,7 @@ export type CreatePaymentMethodInput = {
     code: Scalars['String'];
     description?: Maybe<Scalars['String']>;
     enabled: Scalars['Boolean'];
+    checker?: Maybe<ConfigurableOperationInput>;
     handler: ConfigurableOperationInput;
 };
 
@@ -1744,6 +1746,7 @@ export type UpdatePaymentMethodInput = {
     code?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
+    checker?: Maybe<ConfigurableOperationInput>;
     handler?: Maybe<ConfigurableOperationInput>;
 };
 
@@ -1755,6 +1758,7 @@ export type PaymentMethod = Node & {
     code: Scalars['String'];
     description: Scalars['String'];
     enabled: Scalars['Boolean'];
+    checker?: Maybe<ConfigurableOperation>;
     handler: ConfigurableOperation;
 };
 
@@ -2679,6 +2683,16 @@ export type Success = {
     success: Scalars['Boolean'];
 };
 
+export type ShippingMethodQuote = {
+    id: Scalars['ID'];
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
+    description: Scalars['String'];
+    /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type Country = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -3585,15 +3599,6 @@ export type OrderAddress = {
 export type OrderList = PaginatedList & {
     items: Array<Order>;
     totalItems: Scalars['Int'];
-};
-
-export type ShippingMethodQuote = {
-    id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
-    name: Scalars['String'];
-    description: Scalars['String'];
-    metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type ShippingLine = {
@@ -6039,6 +6044,26 @@ export type UpdatePaymentMethodMutationVariables = Exact<{
 
 export type UpdatePaymentMethodMutation = { updatePaymentMethod: PaymentMethodFragment };
 
+export type GetPaymentMethodHandlersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetPaymentMethodHandlersQuery = {
+    paymentMethodHandlers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type'>>;
+        }
+    >;
+};
+
+export type GetPaymentMethodCheckersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetPaymentMethodCheckersQuery = {
+    paymentMethodEligibilityCheckers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type'>>;
+        }
+    >;
+};
+
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -8140,6 +8165,34 @@ export namespace UpdatePaymentMethod {
     export type Variables = UpdatePaymentMethodMutationVariables;
     export type Mutation = UpdatePaymentMethodMutation;
     export type UpdatePaymentMethod = NonNullable<UpdatePaymentMethodMutation['updatePaymentMethod']>;
+}
+
+export namespace GetPaymentMethodHandlers {
+    export type Variables = GetPaymentMethodHandlersQueryVariables;
+    export type Query = GetPaymentMethodHandlersQuery;
+    export type PaymentMethodHandlers = NonNullable<
+        NonNullable<GetPaymentMethodHandlersQuery['paymentMethodHandlers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GetPaymentMethodHandlersQuery['paymentMethodHandlers']>[number]>['args']
+        >[number]
+    >;
+}
+
+export namespace GetPaymentMethodCheckers {
+    export type Variables = GetPaymentMethodCheckersQueryVariables;
+    export type Query = GetPaymentMethodCheckersQuery;
+    export type PaymentMethodEligibilityCheckers = NonNullable<
+        NonNullable<GetPaymentMethodCheckersQuery['paymentMethodEligibilityCheckers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<GetPaymentMethodCheckersQuery['paymentMethodEligibilityCheckers']>[number]
+            >['args']
+        >[number]
+    >;
 }
 
 export namespace UpdateProductOptionGroup {

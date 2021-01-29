@@ -530,6 +530,7 @@ export enum ErrorCode {
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
+    INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
     COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
@@ -786,6 +787,17 @@ export type UpdateAddressInput = {
 export type Success = {
     __typename?: 'Success';
     success: Scalars['Boolean'];
+};
+
+export type ShippingMethodQuote = {
+    __typename?: 'ShippingMethodQuote';
+    id: Scalars['ID'];
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
+    description: Scalars['String'];
+    /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+    metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type Country = Node & {
@@ -1826,16 +1838,6 @@ export type OrderList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodQuote = {
-    __typename?: 'ShippingMethodQuote';
-    id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
-    name: Scalars['String'];
-    description: Scalars['String'];
-    metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type ShippingLine = {
     __typename?: 'ShippingLine';
     shippingMethod: ShippingMethod;
@@ -2336,7 +2338,7 @@ export type OrderModificationError = ErrorResult & {
     message: Scalars['String'];
 };
 
-/** Returned when attempting to set a ShippingMethod for which the order is not eligible */
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
 export type IneligibleShippingMethodError = ErrorResult & {
     __typename?: 'IneligibleShippingMethodError';
     errorCode: ErrorCode;
@@ -2348,6 +2350,14 @@ export type OrderPaymentStateError = ErrorResult & {
     __typename?: 'OrderPaymentStateError';
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Returned when attempting to add a Payment using a PaymentMethod for which the Order is not eligible. */
+export type IneligiblePaymentMethodError = ErrorResult & {
+    __typename?: 'IneligiblePaymentMethodError';
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    eligibilityCheckerMessage?: Maybe<Scalars['String']>;
 };
 
 /** Returned when a Payment fails due to an error. */
@@ -2545,6 +2555,7 @@ export type ApplyCouponCodeResult =
 export type AddPaymentToOrderResult =
     | Order
     | OrderPaymentStateError
+    | IneligiblePaymentMethodError
     | PaymentFailedError
     | PaymentDeclinedError
     | OrderStateTransitionError

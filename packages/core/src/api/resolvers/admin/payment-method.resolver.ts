@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    ConfigurableOperationDefinition,
     MutationCreatePaymentMethodArgs,
     MutationUpdatePaymentMethodArgs,
     Permission,
@@ -55,5 +56,17 @@ export class PaymentMethodResolver {
         @Args() args: MutationUpdatePaymentMethodArgs,
     ): Promise<PaymentMethod> {
         return this.paymentMethodService.update(ctx, args.input);
+    }
+
+    @Query()
+    @Allow(Permission.ReadSettings)
+    paymentMethodHandlers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.paymentMethodService.getPaymentMethodHandlers(ctx);
+    }
+
+    @Query()
+    @Allow(Permission.ReadSettings)
+    paymentMethodEligibilityCheckers(@Ctx() ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.paymentMethodService.getPaymentMethodEligibilityCheckers(ctx);
     }
 }

@@ -6,5 +6,6 @@ type PaymentMethod implements Node {
     code: String!
     description: String!
     enabled: Boolean!
+    checker: ConfigurableOperation
     handler: ConfigurableOperation!
 }

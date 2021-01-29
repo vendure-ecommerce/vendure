@@ -35,10 +35,10 @@ export interface ShippingEligibilityCheckerConfig<T extends ConfigArgs>
  *     code: 'min-order-total-eligibility-checker',
  *     description: [{ languageCode: LanguageCode.en, value: 'Checks that the order total is above some minimum value' }],
  *     args: {
- *         orderMinimum: { type: 'int', config: { inputType: 'money' } },
+ *         orderMinimum: { type: 'int', ui: { component: 'currency-form-input' } },
  *     },
- *     check: (order, args) => {
- *         return order.total >= args.orderMinimum;
+ *     check: (ctx, order, args) => {
+ *         return order.totalWithTax >= args.orderMinimum;
  *     },
  * });
  * ```

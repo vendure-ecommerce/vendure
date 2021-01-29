@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+    ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
     ManualPaymentInput,
     RefundOrderInput,
@@ -12,8 +13,10 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { RequestContext } from '../../api/common/request-context';
 import { UserInputError } from '../../common/error/errors';
 import { RefundStateTransitionError } from '../../common/error/generated-graphql-admin-errors';
+import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
+import { PaymentMethodEligibilityChecker } from '../../config/payment-method/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
@@ -62,16 +65,38 @@ export class PaymentMethodService {
     async create(ctx: RequestContext, input: CreatePaymentMethodInput): Promise<PaymentMethod> {
         const paymentMethod = new PaymentMethod(input);
         paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
+        if (input.checker) {
+            paymentMethod.checker = this.configArgService.parseInput(
+                'PaymentMethodEligibilityChecker',
+                input.checker,
+            );
+        }
         return this.connection.getRepository(ctx, PaymentMethod).save(paymentMethod);
     }
 
     async update(ctx: RequestContext, input: UpdatePaymentMethodInput): Promise<PaymentMethod> {
         const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, input.id);
-        const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['handler']));
+        const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['handler', 'checker']));
+        if (input.checker) {
+            paymentMethod.handler = this.configArgService.parseInput(
+                'PaymentMethodEligibilityChecker',
+                input.checker,
+            );
+        }
         if (input.handler) {
             paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
         }
         return this.connection.getRepository(ctx, PaymentMethod).save(updatedPaymentMethod);
+    }
+
+    getPaymentMethodEligibilityCheckers(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.configArgService
+            .getDefinitions('PaymentMethodEligibilityChecker')
+            .map(x => x.toGraphQlType(ctx));
+    }
+
+    getPaymentMethodHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
+        return this.configArgService.getDefinitions('PaymentMethodHandler').map(x => x.toGraphQlType(ctx));
     }
 
     async createPayment(
@@ -80,8 +105,14 @@ export class PaymentMethodService {
         amount: number,
         method: string,
         metadata: any,
-    ): Promise<Payment> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, method);
+    ): Promise<Payment | IneligiblePaymentMethodError> {
+        const { paymentMethod, handler, checker } = await this.getMethodAndOperations(ctx, method);
+        if (paymentMethod.checker && checker) {
+            const eligible = await checker.check(ctx, order, paymentMethod.checker.args);
+            if (eligible === false || typeof eligible === 'string') {
+                return new IneligiblePaymentMethodError(typeof eligible === 'string' ? eligible : undefined);
+            }
+        }
         const result = await handler.createPayment(
             ctx,
             order,
@@ -124,7 +155,7 @@ export class PaymentMethodService {
     }
 
     async settlePayment(ctx: RequestContext, payment: Payment, order: Order) {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
+        const { paymentMethod, handler } = await this.getMethodAndOperations(ctx, payment.method);
         return handler.settlePayment(ctx, order, payment, paymentMethod.handler.args);
     }
 
@@ -135,7 +166,7 @@ export class PaymentMethodService {
         items: OrderItem[],
         payment: Payment,
     ): Promise<Refund | RefundStateTransitionError> {
-        const { paymentMethod, handler } = await this.getMethodAndHandler(ctx, payment.method);
+        const { paymentMethod, handler } = await this.getMethodAndOperations(ctx, payment.method);
         const itemAmount = summate(items, 'proratedUnitPriceWithTax');
         const refundAmount = itemAmount + input.shipping + input.adjustment;
         let refund = new Refund({
@@ -178,10 +209,14 @@ export class PaymentMethodService {
         return refund;
     }
 
-    private async getMethodAndHandler(
+    private async getMethodAndOperations(
         ctx: RequestContext,
         method: string,
-    ): Promise<{ paymentMethod: PaymentMethod; handler: PaymentMethodHandler }> {
+    ): Promise<{
+        paymentMethod: PaymentMethod;
+        handler: PaymentMethodHandler;
+        checker: PaymentMethodEligibilityChecker | undefined;
+    }> {
         const paymentMethod = await this.connection.getRepository(ctx, PaymentMethod).findOne({
             where: {
                 code: method,
@@ -192,6 +227,9 @@ export class PaymentMethodService {
             throw new UserInputError(`error.payment-method-not-found`, { method });
         }
         const handler = this.configArgService.getByCode('PaymentMethodHandler', paymentMethod.handler.code);
-        return { paymentMethod, handler };
+        const checker =
+            paymentMethod.checker &&
+            this.configArgService.getByCode('PaymentMethodEligibilityChecker', paymentMethod.checker.code);
+        return { paymentMethod, handler, checker };
     }
 }

@@ -568,6 +568,9 @@ export const ADD_PAYMENT = gql`
             ... on OrderStateTransitionError {
                 transitionError
             }
+            ... on IneligiblePaymentMethodError {
+                eligibilityCheckerMessage
+            }
         }
     }
     ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}

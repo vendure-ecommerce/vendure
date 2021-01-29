@@ -8,6 +8,7 @@ import { UserInputError } from '../../../common/error/errors';
 import { CollectionFilter } from '../../../config/catalog/collection-filter';
 import { ConfigService } from '../../../config/config.service';
 import { FulfillmentHandler } from '../../../config/fulfillment/fulfillment-handler';
+import { PaymentMethodEligibilityChecker } from '../../../config/payment-method/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../../config/payment-method/payment-method-handler';
 import { PromotionAction } from '../../../config/promotion/promotion-action';
 import { PromotionCondition } from '../../../config/promotion/promotion-condition';
@@ -17,6 +18,7 @@ import { ShippingEligibilityChecker } from '../../../config/shipping-method/ship
 export type ConfigDefTypeMap = {
     CollectionFilter: CollectionFilter;
     FulfillmentHandler: FulfillmentHandler;
+    PaymentMethodEligibilityChecker: PaymentMethodEligibilityChecker;
     PaymentMethodHandler: PaymentMethodHandler;
     PromotionAction: PromotionAction;
     PromotionCondition: PromotionCondition;
@@ -37,6 +39,8 @@ export class ConfigArgService {
         this.definitionsByType = {
             CollectionFilter: this.configService.catalogOptions.collectionFilters,
             FulfillmentHandler: this.configService.shippingOptions.fulfillmentHandlers,
+            PaymentMethodEligibilityChecker:
+                this.configService.paymentOptions.paymentMethodEligibilityCheckers || [],
             PaymentMethodHandler: this.configService.paymentOptions.paymentMethodHandlers,
             PromotionAction: this.configService.promotionOptions.promotionActions,
             PromotionCondition: this.configService.promotionOptions.promotionConditions,

@@ -1,6 +1,7 @@
 type Query {
     paymentMethods(options: PaymentMethodListOptions): PaymentMethodList!
     paymentMethod(id: ID!): PaymentMethod
+    paymentMethodEligibilityCheckers: [ConfigurableOperationDefinition!]!
     paymentMethodHandlers: [ConfigurableOperationDefinition!]!
 }
 
@@ -24,6 +25,7 @@ input CreatePaymentMethodInput {
     code: String!
     description: String
     enabled: Boolean!
+    checker: ConfigurableOperationInput
     handler: ConfigurableOperationInput!
 }
 
@@ -33,5 +35,6 @@ input UpdatePaymentMethodInput {
     code: String
     description: String
     enabled: Boolean
+    checker: ConfigurableOperationInput
     handler: ConfigurableOperationInput
 }

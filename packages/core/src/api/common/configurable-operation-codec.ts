@@ -13,6 +13,7 @@ import {
 } from '../../config';
 import { CollectionFilter } from '../../config/catalog/collection-filter';
 import { ConfigService } from '../../config/config.service';
+import { PaymentMethodEligibilityChecker } from '../../config/payment-method/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
 
 import { IdCodecService } from './id-codec.service';
@@ -87,6 +88,8 @@ export class ConfigurableOperationCodec {
                 return this.configService.catalogOptions.collectionFilters;
             case PaymentMethodHandler:
                 return this.configService.paymentOptions.paymentMethodHandlers;
+            case PaymentMethodEligibilityChecker:
+                return this.configService.paymentOptions.paymentMethodEligibilityCheckers || [];
             case PromotionItemAction:
             case PromotionOrderAction:
                 return this.configService.promotionOptions.promotionActions || [];

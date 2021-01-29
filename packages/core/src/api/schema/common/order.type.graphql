@@ -94,15 +94,6 @@ type OrderList implements PaginatedList {
     totalItems: Int!
 }
 
-type ShippingMethodQuote {
-    id: ID!
-    price: Int!
-    priceWithTax: Int!
-    name: String!
-    description: String!
-    metadata: JSON
-}
-
 type ShippingLine {
     shippingMethod: ShippingMethod!
     price: Int!

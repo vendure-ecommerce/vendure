@@ -115,6 +115,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
     },
     paymentOptions: {
+        paymentMethodEligibilityCheckers: [],
         paymentMethodHandlers: [],
     },
     taxOptions: {

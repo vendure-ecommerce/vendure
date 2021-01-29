@@ -25,6 +25,7 @@ import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
+import { PaymentMethodEligibilityChecker } from './payment-method/payment-method-eligibility-checker';
 import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
@@ -584,9 +585,16 @@ export interface SuperadminCredentials {
 export interface PaymentOptions {
     /**
      * @description
-     * An array of {@link PaymentMethodHandler}s with which to process payments.
+     * Defines which {@link PaymentMethodHandler}s are available when configuring
+     * {@link PaymentMethod}s
      */
     paymentMethodHandlers: PaymentMethodHandler[];
+    /**
+     * @description
+     * Defines which {@link PaymentMethodEligibilityChecker}s are available when configuring
+     * {@link PaymentMethod}s
+     */
+    paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
 }
 
 /**
