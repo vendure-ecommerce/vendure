@@ -21,9 +21,10 @@ import {
     AddItemToOrder,
     AddPaymentToOrder,
     ErrorCode,
+    GetEligiblePaymentMethods,
     TestOrderWithPaymentsFragment,
 } from './graphql/generated-e2e-shop-types';
-import { ADD_ITEM_TO_ORDER, ADD_PAYMENT } from './graphql/shop-definitions';
+import { ADD_ITEM_TO_ORDER, ADD_PAYMENT, GET_ELIGIBLE_PAYMENT_METHODS } from './graphql/shop-definitions';
 import { proceedToArrangingPayment } from './utils/test-order-utils';
 
 const checkerSpy = jest.fn();
@@ -116,7 +117,6 @@ describe('PaymentMethod resolver', () => {
             input: {
                 id: 'T_1',
                 description: 'modified',
-                enabled: false,
                 handler: {
                     code: dummyPaymentHandler.code,
                     arguments: [{ name: 'automaticSettle', value: 'false' }],
@@ -129,7 +129,7 @@ describe('PaymentMethod resolver', () => {
             name: 'No Checker',
             code: 'no-checks',
             description: 'modified',
-            enabled: false,
+            enabled: true,
             handler: {
                 args: [
                     {
@@ -168,25 +168,40 @@ describe('PaymentMethod resolver', () => {
 
     describe('eligibility checks', () => {
         beforeAll(async () => {
-            const { createPaymentMethod } = await adminClient.query<
-                CreatePaymentMethod.Mutation,
-                CreatePaymentMethod.Variables
-            >(CREATE_PAYMENT_METHOD, {
-                input: {
-                    code: 'price-check',
-                    name: 'With Min Price Checker',
-                    description: 'Order total must be more than 2k',
-                    enabled: true,
-                    checker: {
-                        code: minPriceChecker.code,
-                        arguments: [{ name: 'minPrice', value: '200000' }],
-                    },
-                    handler: {
-                        code: dummyPaymentHandler.code,
-                        arguments: [{ name: 'automaticSettle', value: 'true' }],
+            await adminClient.query<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+                CREATE_PAYMENT_METHOD,
+                {
+                    input: {
+                        code: 'price-check',
+                        name: 'With Min Price Checker',
+                        description: 'Order total must be more than 2k',
+                        enabled: true,
+                        checker: {
+                            code: minPriceChecker.code,
+                            arguments: [{ name: 'minPrice', value: '200000' }],
+                        },
+                        handler: {
+                            code: dummyPaymentHandler.code,
+                            arguments: [{ name: 'automaticSettle', value: 'true' }],
+                        },
                     },
                 },
-            });
+            );
+            await adminClient.query<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+                CREATE_PAYMENT_METHOD,
+                {
+                    input: {
+                        code: 'disabled-method',
+                        name: 'Disabled ones',
+                        description: 'This method is disabled',
+                        enabled: false,
+                        handler: {
+                            code: dummyPaymentHandler.code,
+                            arguments: [{ name: 'automaticSettle', value: 'true' }],
+                        },
+                    },
+                },
+            );
 
             await shopClient.asUserWithCredentials('hayden.zieme12@hotmail.com', 'test');
             await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
@@ -195,6 +210,26 @@ describe('PaymentMethod resolver', () => {
             });
 
             await proceedToArrangingPayment(shopClient);
+        });
+
+        it('eligiblePaymentMethods', async () => {
+            const { eligiblePaymentMethods } = await shopClient.query<GetEligiblePaymentMethods.Query>(
+                GET_ELIGIBLE_PAYMENT_METHODS,
+            );
+            expect(eligiblePaymentMethods).toEqual([
+                {
+                    id: 'T_1',
+                    code: 'no-checks',
+                    isEligible: true,
+                    eligibilityMessage: null,
+                },
+                {
+                    id: 'T_2',
+                    code: 'price-check',
+                    isEligible: false,
+                    eligibilityMessage: 'Order total too low',
+                },
+            ]);
         });
 
         it('addPaymentToOrder does not allow ineligible method', async () => {

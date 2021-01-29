@@ -14,6 +14,7 @@ import {
     MutationSetOrderShippingAddressArgs,
     MutationSetOrderShippingMethodArgs,
     MutationTransitionOrderToStateArgs,
+    PaymentMethodQuote,
     Permission,
     QueryOrderArgs,
     QueryOrderByCodeArgs,
@@ -175,6 +176,18 @@ export class ShopOrderResolver {
             const sessionOrder = await this.getOrderFromContext(ctx);
             if (sessionOrder) {
                 return this.orderService.getEligibleShippingMethods(ctx, sessionOrder.id);
+            }
+        }
+        return [];
+    }
+
+    @Query()
+    @Allow(Permission.Owner)
+    async eligiblePaymentMethods(@Ctx() ctx: RequestContext): Promise<PaymentMethodQuote[]> {
+        if (ctx.authorizedAsOwnerOnly) {
+            const sessionOrder = await this.getOrderFromContext(ctx);
+            if (sessionOrder) {
+                return this.orderService.getEligiblePaymentMethods(ctx, sessionOrder.id);
             }
         }
         return [];

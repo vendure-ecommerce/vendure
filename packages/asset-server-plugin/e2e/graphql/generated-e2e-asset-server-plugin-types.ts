@@ -2693,6 +2693,13 @@ export type ShippingMethodQuote = {
     metadata?: Maybe<Scalars['JSON']>;
 };
 
+export type PaymentMethodQuote = {
+    id: Scalars['ID'];
+    code: Scalars['String'];
+    isEligible: Scalars['Boolean'];
+    eligibilityMessage?: Maybe<Scalars['String']>;
+};
+
 export type Country = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];

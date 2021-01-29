@@ -3,6 +3,7 @@ import {
     AddPaymentToOrderResult,
     ApplyCouponCodeResult,
     PaymentInput,
+    PaymentMethodQuote,
     RemoveOrderItemsResult,
     SetOrderShippingMethodResult,
     UpdateOrderItemsResult,
@@ -597,6 +598,11 @@ export class OrderService {
                 metadata,
             };
         });
+    }
+
+    async getEligiblePaymentMethods(ctx: RequestContext, orderId: ID): Promise<PaymentMethodQuote[]> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        return this.paymentMethodService.getEligiblePaymentMethods(ctx, order);
     }
 
     async setShippingMethod(

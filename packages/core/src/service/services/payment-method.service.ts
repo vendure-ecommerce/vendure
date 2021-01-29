@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { PaymentMethodQuote } from '@vendure/common/lib/generated-shop-types';
 import {
     ConfigurableOperationDefinition,
     CreatePaymentMethodInput,
@@ -97,6 +98,35 @@ export class PaymentMethodService {
 
     getPaymentMethodHandlers(ctx: RequestContext): ConfigurableOperationDefinition[] {
         return this.configArgService.getDefinitions('PaymentMethodHandler').map(x => x.toGraphQlType(ctx));
+    }
+
+    async getEligiblePaymentMethods(ctx: RequestContext, order: Order): Promise<PaymentMethodQuote[]> {
+        const paymentMethods = await this.connection
+            .getRepository(ctx, PaymentMethod)
+            .find({ where: { enabled: true } });
+        const results: PaymentMethodQuote[] = [];
+        for (const method of paymentMethods) {
+            let isEligible = true;
+            let eligibilityMessage: string | undefined;
+            if (method.checker) {
+                const checker = this.configArgService.getByCode(
+                    'PaymentMethodEligibilityChecker',
+                    method.checker.code,
+                );
+                const eligible = await checker.check(ctx, order, method.checker.args);
+                if (eligible === false || typeof eligible === 'string') {
+                    isEligible = false;
+                    eligibilityMessage = typeof eligible === 'string' ? eligible : undefined;
+                }
+            }
+            results.push({
+                id: method.id,
+                code: method.code,
+                isEligible,
+                eligibilityMessage,
+            });
+        }
+        return results;
     }
 
     async createPayment(

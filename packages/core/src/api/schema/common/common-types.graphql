@@ -183,3 +183,10 @@ type ShippingMethodQuote {
     "Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult"
     metadata: JSON
 }
+
+type PaymentMethodQuote {
+    id: ID!
+    code: String!
+    isEligible: Boolean!
+    eligibilityMessage: String
+}

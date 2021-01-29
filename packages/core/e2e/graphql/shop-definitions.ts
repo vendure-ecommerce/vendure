@@ -669,3 +669,14 @@ export const REMOVE_ALL_ORDER_LINES = gql`
     }
     ${TEST_ORDER_FRAGMENT}
 `;
+
+export const GET_ELIGIBLE_PAYMENT_METHODS = gql`
+    query GetEligiblePaymentMethods {
+        eligiblePaymentMethods {
+            id
+            code
+            eligibilityMessage
+            isEligible
+        }
+    }
+`;

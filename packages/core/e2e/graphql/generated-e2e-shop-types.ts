@@ -35,6 +35,8 @@ export type Query = {
     collection?: Maybe<Collection>;
     /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;
+    /** Returns a list of payment methods and their eligibility based on the current active Order */
+    eligiblePaymentMethods: Array<PaymentMethodQuote>;
     /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
     /** Returns the possible next states that the activeOrder can transition to */
@@ -768,6 +770,13 @@ export type ShippingMethodQuote = {
     description: Scalars['String'];
     /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
     metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethodQuote = {
+    id: Scalars['ID'];
+    code: Scalars['String'];
+    isEligible: Scalars['Boolean'];
+    eligibilityMessage?: Maybe<Scalars['String']>;
 };
 
 export type Country = Node & {
@@ -3153,6 +3162,14 @@ export type RemoveAllOrderLinesMutation = {
     removeAllOrderLines: TestOrderFragmentFragment | Pick<OrderModificationError, 'errorCode' | 'message'>;
 };
 
+export type GetEligiblePaymentMethodsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetEligiblePaymentMethodsQuery = {
+    eligiblePaymentMethods: Array<
+        Pick<PaymentMethodQuote, 'id' | 'code' | 'eligibilityMessage' | 'isEligible'>
+    >;
+};
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 export namespace TestOrderFragment {
@@ -3662,5 +3679,13 @@ export namespace RemoveAllOrderLines {
     export type ErrorResultInlineFragment = DiscriminateUnion<
         NonNullable<RemoveAllOrderLinesMutation['removeAllOrderLines']>,
         { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace GetEligiblePaymentMethods {
+    export type Variables = GetEligiblePaymentMethodsQueryVariables;
+    export type Query = GetEligiblePaymentMethodsQuery;
+    export type EligiblePaymentMethods = NonNullable<
+        NonNullable<GetEligiblePaymentMethodsQuery['eligiblePaymentMethods']>[number]
     >;
 }
