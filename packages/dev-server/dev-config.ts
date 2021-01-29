@@ -6,6 +6,7 @@ import {
     DefaultJobQueuePlugin,
     DefaultLogger,
     DefaultSearchPlugin,
+    dummyPaymentHandler,
     examplePaymentHandler,
     LogLevel,
     manualFulfillmentHandler,
@@ -50,7 +51,7 @@ export const devConfig: VendureConfig = {
         ...getDbConfig(),
     },
     paymentOptions: {
-        paymentMethodHandlers: [examplePaymentHandler],
+        paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
     logger: new DefaultLogger({ level: LogLevel.Info }),

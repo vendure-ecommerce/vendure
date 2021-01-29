@@ -50,6 +50,7 @@ export type Query = {
   orders: OrderList;
   paymentMethods: PaymentMethodList;
   paymentMethod?: Maybe<PaymentMethod>;
+  paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
   productOptionGroups: Array<ProductOptionGroup>;
   productOptionGroup?: Maybe<ProductOptionGroup>;
   search: SearchResponse;
@@ -411,6 +412,8 @@ export type Mutation = {
    * Payment.
    */
   addManualPaymentToOrder: AddManualPaymentToOrderResult;
+  /** Create existing PaymentMethod */
+  createPaymentMethod: PaymentMethod;
   /** Update an existing PaymentMethod */
   updatePaymentMethod: PaymentMethod;
   /** Create a new ProductOptionGroup */
@@ -797,6 +800,11 @@ export type MutationAddManualPaymentToOrderArgs = {
 };
 
 
+export type MutationCreatePaymentMethodArgs = {
+  input: CreatePaymentMethodInput;
+};
+
+
 export type MutationUpdatePaymentMethodArgs = {
   input: UpdatePaymentMethodInput;
 };
@@ -1106,6 +1114,7 @@ export type CreateChannelInput = {
   currencyCode: CurrencyCode;
   defaultTaxZoneId: Scalars['ID'];
   defaultShippingZoneId: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -1117,6 +1126,7 @@ export type UpdateChannelInput = {
   currencyCode?: Maybe<CurrencyCode>;
   defaultTaxZoneId?: Maybe<Scalars['ID']>;
   defaultShippingZoneId?: Maybe<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -1428,7 +1438,7 @@ export type ImportInfo = {
 /**
  * @description
  * The state of a Job in the JobQueue
- *
+ * 
  * @docsCategory common
  */
 export enum JobState {
@@ -1878,11 +1888,21 @@ export type PaymentMethodList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type CreatePaymentMethodInput = {
+  name: Scalars['String'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  handler: ConfigurableOperationInput;
+};
+
 export type UpdatePaymentMethodInput = {
   id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
   code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   enabled?: Maybe<Scalars['Boolean']>;
-  configArgs?: Maybe<Array<ConfigArgInput>>;
+  handler?: Maybe<ConfigurableOperationInput>;
 };
 
 export type PaymentMethod = Node & {
@@ -1890,10 +1910,11 @@ export type PaymentMethod = Node & {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
   code: Scalars['String'];
+  description: Scalars['String'];
   enabled: Scalars['Boolean'];
-  configArgs: Array<ConfigArg>;
-  definition: ConfigurableOperationDefinition;
+  handler: ConfigurableOperation;
 };
 
 export type Product = Node & {
@@ -2452,6 +2473,7 @@ export type Channel = Node & {
   defaultLanguageCode: LanguageCode;
   currencyCode: CurrencyCode;
   pricesIncludeTax: Scalars['Boolean'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -2506,7 +2528,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- *
+ * 
  * @docsCategory common
  */
 export enum Permission {
@@ -2883,7 +2905,7 @@ export type CountryList = PaginatedList & {
 /**
  * @description
  * ISO 4217 currency code
- *
+ * 
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -3420,7 +3442,7 @@ export type HistoryEntryList = PaginatedList & {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- *
+ * 
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3809,7 +3831,7 @@ export type OrderItem = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   *
+   * 
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -3849,7 +3871,7 @@ export type OrderLine = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   *
+   * 
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -4506,7 +4528,9 @@ export type OrderSortParameter = {
 export type PaymentMethodFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
   enabled?: Maybe<BooleanOperators>;
 };
 
@@ -4514,7 +4538,9 @@ export type PaymentMethodSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
   code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -4678,6 +4704,7 @@ export type NativeAuthInput = {
 export type CustomFields = {
   __typename?: 'CustomFields';
   Address: Array<CustomFieldConfig>;
+  Channel: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
   Facet: Array<CustomFieldConfig>;

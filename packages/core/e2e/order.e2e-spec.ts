@@ -111,7 +111,23 @@ describe('Orders resolver', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: twoStagePaymentMethod.code,
+                        handler: { code: twoStagePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: failsToSettlePaymentMethod.code,
+                        handler: { code: failsToSettlePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: singleStageRefundablePaymentMethod.code,
+                        handler: { code: singleStageRefundablePaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
             customerCount: 3,
         });

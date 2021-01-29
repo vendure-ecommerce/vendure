@@ -25,6 +25,7 @@ export * from './order/order-code-strategy';
 export * from './order/order-merge-strategy';
 export * from './order/order-item-price-calculation-strategy';
 export * from './order/stock-allocation-strategy';
+export * from './payment-method/dummy-payment-method-handler';
 export * from './payment-method/example-payment-method-handler';
 export * from './payment-method/payment-method-handler';
 export * from './promotion';

@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { AdministratorService } from './services/administrator.service';
 import { ChannelService } from './services/channel.service';
 import { GlobalSettingsService } from './services/global-settings.service';
-import { PaymentMethodService } from './services/payment-method.service';
 import { RoleService } from './services/role.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { TaxRateService } from './services/tax-rate.service';
@@ -20,7 +19,6 @@ export class InitializerService {
         private administratorService: AdministratorService,
         private taxRateService: TaxRateService,
         private shippingMethodService: ShippingMethodService,
-        private paymentMethodService: PaymentMethodService,
         private globalSettingsService: GlobalSettingsService,
     ) {}
 
@@ -37,6 +35,5 @@ export class InitializerService {
         await this.administratorService.initAdministrators();
         await this.taxRateService.initTaxRates();
         await this.shippingMethodService.initShippingMethods();
-        await this.paymentMethodService.initPaymentMethods();
     }
 }

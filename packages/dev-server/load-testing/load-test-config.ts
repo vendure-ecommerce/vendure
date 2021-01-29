@@ -4,11 +4,10 @@ import {
     defaultConfig,
     DefaultLogger,
     DefaultSearchPlugin,
-    examplePaymentHandler,
+    dummyPaymentHandler,
     InMemorySessionCacheStrategy,
     LogLevel,
     mergeConfig,
-    NoopSessionCacheStrategy,
     VendureConfig,
 } from '@vendure/core';
 import path from 'path';
@@ -41,7 +40,7 @@ export function getLoadTestConfig(tokenMethod: 'cookie' | 'bearer'): Required<Ve
     const count = getProductCount();
     return mergeConfig(defaultConfig, {
         paymentOptions: {
-            paymentMethodHandlers: [examplePaymentHandler],
+            paymentMethodHandlers: [dummyPaymentHandler],
         },
         orderOptions: {
             orderItemsLimit: 99999,

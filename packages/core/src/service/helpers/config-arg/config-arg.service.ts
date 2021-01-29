@@ -96,7 +96,7 @@ export class ConfigArgService {
                         // ignore
                     }
                 }
-                if (!val) {
+                if (val == null) {
                     throw new UserInputError('error.configurable-argument-is-required', {
                         name,
                         value: String(val),

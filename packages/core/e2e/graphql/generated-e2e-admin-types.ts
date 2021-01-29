@@ -49,6 +49,7 @@ export type Query = {
     orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
+    paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     search: SearchResponse;
@@ -366,6 +367,8 @@ export type Mutation = {
      * Payment.
      */
     addManualPaymentToOrder: AddManualPaymentToOrderResult;
+    /** Create existing PaymentMethod */
+    createPaymentMethod: PaymentMethod;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -693,6 +696,10 @@ export type MutationAddManualPaymentToOrderArgs = {
     input: ManualPaymentInput;
 };
 
+export type MutationCreatePaymentMethodArgs = {
+    input: CreatePaymentMethodInput;
+};
+
 export type MutationUpdatePaymentMethodArgs = {
     input: UpdatePaymentMethodInput;
 };
@@ -959,6 +966,7 @@ export type CreateChannelInput = {
     currencyCode: CurrencyCode;
     defaultTaxZoneId: Scalars['ID'];
     defaultShippingZoneId: Scalars['ID'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -970,6 +978,7 @@ export type UpdateChannelInput = {
     currencyCode?: Maybe<CurrencyCode>;
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -1721,21 +1730,32 @@ export type PaymentMethodList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type CreatePaymentMethodInput = {
+    name: Scalars['String'];
+    code: Scalars['String'];
+    description?: Maybe<Scalars['String']>;
+    enabled: Scalars['Boolean'];
+    handler: ConfigurableOperationInput;
+};
+
 export type UpdatePaymentMethodInput = {
     id: Scalars['ID'];
+    name?: Maybe<Scalars['String']>;
     code?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
-    configArgs?: Maybe<Array<ConfigArgInput>>;
+    handler?: Maybe<ConfigurableOperationInput>;
 };
 
 export type PaymentMethod = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
     code: Scalars['String'];
+    description: Scalars['String'];
     enabled: Scalars['Boolean'];
-    configArgs: Array<ConfigArg>;
-    definition: ConfigurableOperationDefinition;
+    handler: ConfigurableOperation;
 };
 
 export type Product = Node & {
@@ -2279,6 +2299,7 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -4260,7 +4281,9 @@ export type OrderSortParameter = {
 export type PaymentMethodFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    name?: Maybe<StringOperators>;
     code?: Maybe<StringOperators>;
+    description?: Maybe<StringOperators>;
     enabled?: Maybe<BooleanOperators>;
 };
 
@@ -4268,7 +4291,9 @@ export type PaymentMethodSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
+    description?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -4431,6 +4456,7 @@ export type NativeAuthInput = {
 
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
+    Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
@@ -5995,6 +6021,23 @@ export type GetOrderListWithQtyQuery = {
         >;
     };
 };
+
+export type PaymentMethodFragment = Pick<
+    PaymentMethod,
+    'id' | 'code' | 'name' | 'description' | 'enabled'
+> & { handler: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> } };
+
+export type CreatePaymentMethodMutationVariables = Exact<{
+    input: CreatePaymentMethodInput;
+}>;
+
+export type CreatePaymentMethodMutation = { createPaymentMethod: PaymentMethodFragment };
+
+export type UpdatePaymentMethodMutationVariables = Exact<{
+    input: UpdatePaymentMethodInput;
+}>;
+
+export type UpdatePaymentMethodMutation = { updatePaymentMethod: PaymentMethodFragment };
 
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
@@ -8077,6 +8120,26 @@ export namespace GetOrderListWithQty {
             >['lines']
         >[number]
     >;
+}
+
+export namespace PaymentMethod {
+    export type Fragment = PaymentMethodFragment;
+    export type Handler = NonNullable<PaymentMethodFragment['handler']>;
+    export type Args = NonNullable<
+        NonNullable<NonNullable<PaymentMethodFragment['handler']>['args']>[number]
+    >;
+}
+
+export namespace CreatePaymentMethod {
+    export type Variables = CreatePaymentMethodMutationVariables;
+    export type Mutation = CreatePaymentMethodMutation;
+    export type CreatePaymentMethod = NonNullable<CreatePaymentMethodMutation['createPaymentMethod']>;
+}
+
+export namespace UpdatePaymentMethod {
+    export type Variables = UpdatePaymentMethodMutationVariables;
+    export type Mutation = UpdatePaymentMethodMutation;
+    export type UpdatePaymentMethod = NonNullable<UpdatePaymentMethodMutation['updatePaymentMethod']>;
 }
 
 export namespace UpdateProductOptionGroup {

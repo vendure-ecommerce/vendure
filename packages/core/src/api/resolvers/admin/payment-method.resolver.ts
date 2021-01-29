@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    MutationCreatePaymentMethodArgs,
     MutationUpdatePaymentMethodArgs,
     Permission,
     QueryPaymentMethodArgs,
@@ -34,6 +35,16 @@ export class PaymentMethodResolver {
         @Args() args: QueryPaymentMethodArgs,
     ): Promise<PaymentMethod | undefined> {
         return this.paymentMethodService.findOne(ctx, args.id);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.CreateSettings)
+    createPaymentMethod(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationCreatePaymentMethodArgs,
+    ): Promise<PaymentMethod> {
+        return this.paymentMethodService.create(ctx, args.input);
     }
 
     @Transaction()
