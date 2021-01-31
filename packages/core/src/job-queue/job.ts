@@ -11,7 +11,7 @@ import { JobConfig, JobData } from './types';
  * @docsCategory JobQueue
  * @docsPage Job
  */
-export type JobEventType = 'start' | 'progress' | 'complete' | 'fail' | 'cancel';
+export type JobEventType = 'progress';
 
 /**
  * @description
@@ -47,11 +47,7 @@ export class Job<T extends JobData<T> = any> {
     private _startedAt?: Date;
     private _settledAt?: Date;
     private readonly eventListeners: { [type in JobEventType]: Array<JobEventListener<T>> } = {
-        start: [],
         progress: [],
-        complete: [],
-        fail: [],
-        cancel: [],
     };
 
     get name(): string {
@@ -124,7 +120,6 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.RUNNING;
             this._startedAt = new Date();
             this._attempts++;
-            this.fireEvent('start');
         }
     }
 
@@ -147,7 +142,6 @@ export class Job<T extends JobData<T> = any> {
         this._progress = 100;
         this._state = JobState.COMPLETED;
         this._settledAt = new Date();
-        this.fireEvent('complete');
     }
 
     /**
@@ -163,14 +157,12 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.FAILED;
             this._settledAt = new Date();
         }
-        this.fireEvent('fail');
     }
 
     cancel() {
         this._progress = 0;
         this._settledAt = new Date();
         this._state = JobState.CANCELLED;
-        this.fireEvent('cancel');
     }
 
     /**

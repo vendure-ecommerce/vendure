@@ -10,11 +10,10 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { generatePublicId } from '../common/generate-public-id';
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
-import { Logger } from '../config/logger/vendure-logger';
+import { InspectableJobQueueStrategy } from '../config';
 
 import { Job } from './job';
+import { PollingJobQueueStrategy } from './polling-job-queue-strategy';
 
 /**
  * @description
@@ -25,7 +24,7 @@ import { Job } from './job';
  *
  * @docsCategory JobQueue
  */
-export class InMemoryJobQueueStrategy implements JobQueueStrategy {
+export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
     protected jobs = new Map<ID, Job>();
     protected unsettledJobs: { [queueName: string]: Job[] } = {};
     private timer: any;

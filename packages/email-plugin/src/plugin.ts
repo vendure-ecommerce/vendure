@@ -231,11 +231,12 @@ export class EmailPlugin implements OnApplicationBootstrap, OnVendureBootstrap, 
         } else {
             this.jobQueue = this.jobQueueService.createQueue({
                 name: 'send-email',
-                concurrency: 5,
                 process: job => {
-                    this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
-                        complete: () => job.complete(),
-                        error: err => job.fail(err),
+                    return new Promise((resolve, reject) => {
+                        this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
+                            complete: () => resolve(),
+                            error: err => reject(err),
+                        });
                     });
                 },
             });

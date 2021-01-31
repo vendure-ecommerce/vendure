@@ -3,10 +3,12 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { Brackets, Connection, FindConditions, In, LessThan } from 'typeorm';
 
 import { Injector } from '../../common/injector';
-import { JobQueueStrategy } from '../../config/job-queue/job-queue-strategy';
-import { Job } from '../../job-queue/job';
+import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
+import { Job } from '../../job-queue';
+import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { ProcessContext } from '../../process-context/process-context';
 import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
+import { TransactionalConnection } from '../../service';
 
 import { JobRecord } from './job-record.entity';
 
@@ -17,21 +19,21 @@ import { JobRecord } from './job-record.entity';
  *
  * @docsCategory JobQueue
  */
-export class SqlJobQueueStrategy implements JobQueueStrategy {
+export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
     private connection: Connection | undefined;
     private listQueryBuilder: ListQueryBuilder;
 
     init(injector: Injector) {
         const processContext = injector.get(ProcessContext);
         if (processContext.isServer) {
-            this.connection = injector.getConnection();
+            this.connection = injector.get(TransactionalConnection).rawConnection;
             this.listQueryBuilder = injector.get(ListQueryBuilder);
         }
     }
 
     async add(job: Job): Promise<Job> {
         if (!this.connectionAvailable(this.connection)) {
-            return job;
+            throw new Error('Connection not available');
         }
         const newRecord = this.toRecord(job);
         const record = await this.connection.getRepository(JobRecord).save(newRecord);
@@ -40,7 +42,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     async next(queueName: string): Promise<Job | undefined> {
         if (!this.connectionAvailable(this.connection)) {
-            return;
+            throw new Error('Connection not available');
         }
         const record = await this.connection
             .getRepository(JobRecord)
@@ -64,17 +66,14 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     async update(job: Job<any>): Promise<void> {
         if (!this.connectionAvailable(this.connection)) {
-            return;
+            throw new Error('Connection not available');
         }
         await this.connection.getRepository(JobRecord).save(this.toRecord(job));
     }
 
     async findMany(options?: JobListOptions): Promise<PaginatedList<Job>> {
         if (!this.connectionAvailable(this.connection)) {
-            return {
-                items: [],
-                totalItems: 0,
-            };
+            throw new Error('Connection not available');
         }
         return this.listQueryBuilder
             .build(JobRecord, options)
@@ -87,7 +86,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     async findOne(id: ID): Promise<Job | undefined> {
         if (!this.connectionAvailable(this.connection)) {
-            return;
+            throw new Error('Connection not available');
         }
         const record = await this.connection.getRepository(JobRecord).findOne(id);
         if (record) {
@@ -97,7 +96,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     async findManyById(ids: ID[]): Promise<Job[]> {
         if (!this.connectionAvailable(this.connection)) {
-            return [];
+            throw new Error('Connection not available');
         }
         return this.connection
             .getRepository(JobRecord)
@@ -107,7 +106,7 @@ export class SqlJobQueueStrategy implements JobQueueStrategy {
 
     async removeSettledJobs(queueNames: string[] = [], olderThan?: Date) {
         if (!this.connectionAvailable(this.connection)) {
-            return 0;
+            throw new Error('Connection not available');
         }
         const findOptions: FindConditions<JobRecord> = {
             ...(0 < queueNames.length ? { queueName: In(queueNames) } : {}),
