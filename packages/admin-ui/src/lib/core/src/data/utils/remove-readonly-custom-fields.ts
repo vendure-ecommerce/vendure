@@ -17,6 +17,11 @@ export function isEntityCreateOrUpdateMutation(documentNode: DocumentNode): stri
             const namedType = extractInputType(variableDef.type);
             const inputTypeName = namedType.name.value;
 
+            // special cases which don't follow the usual pattern
+            if (inputTypeName === 'UpdateActiveAdministratorInput') {
+                return 'Administrator';
+            }
+
             const createMatch = inputTypeName.match(CREATE_ENTITY_REGEX);
             if (createMatch) {
                 return createMatch[1];

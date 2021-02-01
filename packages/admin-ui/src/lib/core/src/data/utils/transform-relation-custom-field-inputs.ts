@@ -4,8 +4,8 @@ import { simpleDeepClone } from '@vendure/common/lib/simple-deep-clone';
 import { CustomFieldConfig } from '../../common/generated-types';
 
 /**
- * Removes any `readonly` custom fields from an entity (including its translations).
- * To be used before submitting the entity for a create or update request.
+ * Transforms any custom field "relation" type inputs into the corresponding `<name>Id` format,
+ * as expected by the server.
  */
 export function transformRelationCustomFieldInputs<T extends { input?: any } & Record<string, any> = any>(
     variables: T,

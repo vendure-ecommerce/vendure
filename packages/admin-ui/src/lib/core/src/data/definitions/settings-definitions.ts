@@ -614,6 +614,9 @@ export const GET_SERVER_CONFIG = gql`
                     Address {
                         ...CustomFields
                     }
+                    Administrator {
+                        ...CustomFields
+                    }
                     Channel {
                         ...CustomFields
                     }
