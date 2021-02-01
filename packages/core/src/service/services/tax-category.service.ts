@@ -29,6 +29,11 @@ export class TaxCategoryService {
 
     async create(ctx: RequestContext, input: CreateTaxCategoryInput): Promise<TaxCategory> {
         const taxCategory = new TaxCategory(input);
+        if (input.isDefault === true) {
+            await this.connection
+                .getRepository(ctx, TaxCategory)
+                .update({ isDefault: true }, { isDefault: false });
+        }
         const newTaxCategory = await this.connection.getRepository(ctx, TaxCategory).save(taxCategory);
         return assertFound(this.findOne(ctx, newTaxCategory.id));
     }
@@ -39,6 +44,11 @@ export class TaxCategoryService {
             throw new EntityNotFoundError('TaxCategory', input.id);
         }
         const updatedTaxCategory = patchEntity(taxCategory, input);
+        if (input.isDefault === true) {
+            await this.connection
+                .getRepository(ctx, TaxCategory)
+                .update({ isDefault: true }, { isDefault: false });
+        }
         await this.connection.getRepository(ctx, TaxCategory).save(updatedTaxCategory, { reload: false });
         return assertFound(this.findOne(ctx, taxCategory.id));
     }

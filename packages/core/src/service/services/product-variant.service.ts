@@ -650,7 +650,7 @@ export class ProductVariantService {
             taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, taxCategoryId);
         } else {
             const taxCategories = await this.taxCategoryService.findAll(ctx);
-            taxCategory = taxCategories[0];
+            taxCategory = taxCategories.find(t => t.isDefault === true) ?? taxCategories[0];
         }
         if (!taxCategory) {
             // there is no TaxCategory set up, so create a default

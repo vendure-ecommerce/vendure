@@ -2290,6 +2290,7 @@ export type TaxCategory = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {

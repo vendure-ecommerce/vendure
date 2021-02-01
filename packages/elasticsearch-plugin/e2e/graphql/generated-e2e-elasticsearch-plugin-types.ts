@@ -2213,11 +2213,13 @@ export type UpdateTagInput = {
 
 export type CreateTaxCategoryInput = {
     name: Scalars['String'];
+    isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateTaxCategoryInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
+    isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateTaxRateInput = {
@@ -3943,6 +3945,7 @@ export type TaxCategory = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
