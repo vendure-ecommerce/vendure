@@ -228,6 +228,7 @@ export class Populator {
             await this.paymentMethodService.create(ctx, {
                 name: method.name,
                 code: normalizeString(method.name, '-'),
+                description: '',
                 enabled: true,
                 handler: method.handler,
             });

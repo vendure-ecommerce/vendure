@@ -14,7 +14,15 @@ export const initialData: InitialData = {
         { name: 'Standard Shipping', price: 500 },
         { name: 'Express Shipping', price: 1000 },
     ],
-    paymentMethods: [{ name: 'Standard Payment', handler: { code: 'dummy-payment-handler', arguments: [] } }],
+    paymentMethods: [
+        {
+            name: 'Standard Payment',
+            handler: {
+                code: 'dummy-payment-handler',
+                arguments: [{ name: 'automaticSettle', value: 'false' }],
+            },
+        },
+    ],
     collections: [
         {
             name: 'Electronics',

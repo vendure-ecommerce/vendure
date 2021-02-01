@@ -2740,7 +2740,7 @@ export type ConfigArgDefinition = {
   type: Scalars['String'];
   list: Scalars['Boolean'];
   required: Scalars['Boolean'];
-  defaultValue?: Maybe<Scalars['String']>;
+  defaultValue?: Maybe<Scalars['JSON']>;
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   ui?: Maybe<Scalars['JSON']>;

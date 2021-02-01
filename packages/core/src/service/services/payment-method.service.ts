@@ -79,10 +79,13 @@ export class PaymentMethodService {
         const paymentMethod = await this.connection.getEntityOrThrow(ctx, PaymentMethod, input.id);
         const updatedPaymentMethod = patchEntity(paymentMethod, omit(input, ['handler', 'checker']));
         if (input.checker) {
-            paymentMethod.handler = this.configArgService.parseInput(
+            paymentMethod.checker = this.configArgService.parseInput(
                 'PaymentMethodEligibilityChecker',
                 input.checker,
             );
+        }
+        if (input.checker === null) {
+            paymentMethod.checker = null;
         }
         if (input.handler) {
             paymentMethod.handler = this.configArgService.parseInput('PaymentMethodHandler', input.handler);
@@ -245,7 +248,7 @@ export class PaymentMethodService {
     ): Promise<{
         paymentMethod: PaymentMethod;
         handler: PaymentMethodHandler;
-        checker: PaymentMethodEligibilityChecker | undefined;
+        checker: PaymentMethodEligibilityChecker | null;
     }> {
         const paymentMethod = await this.connection.getRepository(ctx, PaymentMethod).findOne({
             where: {

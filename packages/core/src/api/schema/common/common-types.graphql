@@ -39,7 +39,7 @@ type ConfigArgDefinition {
     type: String!
     list: Boolean!
     required: Boolean!
-    defaultValue: String
+    defaultValue: JSON
     label: String
     description: String
     ui: JSON

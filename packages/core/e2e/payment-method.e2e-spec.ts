@@ -13,6 +13,7 @@ import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-conf
 
 import {
     CreatePaymentMethod,
+    GetPaymentMethod,
     GetPaymentMethodCheckers,
     GetPaymentMethodHandlers,
     UpdatePaymentMethod,
@@ -97,6 +98,7 @@ describe('PaymentMethod resolver', () => {
             code: 'no-checks',
             description: 'This is a test payment method',
             enabled: true,
+            checker: null,
             handler: {
                 args: [
                     {
@@ -117,6 +119,10 @@ describe('PaymentMethod resolver', () => {
             input: {
                 id: 'T_1',
                 description: 'modified',
+                checker: {
+                    code: minPriceChecker.code,
+                    arguments: [{ name: 'minPrice', value: '0' }],
+                },
                 handler: {
                     code: dummyPaymentHandler.code,
                     arguments: [{ name: 'automaticSettle', value: 'false' }],
@@ -130,6 +136,10 @@ describe('PaymentMethod resolver', () => {
             code: 'no-checks',
             description: 'modified',
             enabled: true,
+            checker: {
+                args: [{ name: 'minPrice', value: '0' }],
+                code: minPriceChecker.code,
+            },
             handler: {
                 args: [
                     {
@@ -137,9 +147,29 @@ describe('PaymentMethod resolver', () => {
                         value: 'false',
                     },
                 ],
-                code: 'dummy-payment-handler',
+                code: dummyPaymentHandler.code,
             },
         });
+    });
+
+    it('unset checker', async () => {
+        const { updatePaymentMethod } = await adminClient.query<
+            UpdatePaymentMethod.Mutation,
+            UpdatePaymentMethod.Variables
+        >(UPDATE_PAYMENT_METHOD, {
+            input: {
+                id: 'T_1',
+                checker: null,
+            },
+        });
+
+        expect(updatePaymentMethod.checker).toEqual(null);
+
+        const { paymentMethod } = await adminClient.query<GetPaymentMethod.Query, GetPaymentMethod.Variables>(
+            GET_PAYMENT_METHOD,
+            { id: 'T_1' },
+        );
+        expect(paymentMethod.checker).toEqual(null);
     });
 
     it('paymentMethodEligibilityCheckers', async () => {
@@ -260,6 +290,13 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         name
         description
         enabled
+        checker {
+            code
+            args {
+                name
+                value
+            }
+        }
         handler {
             code
             args {
@@ -310,4 +347,13 @@ export const GET_PAYMENT_METHOD_CHECKERS = gql`
             }
         }
     }
+`;
+
+export const GET_PAYMENT_METHOD = gql`
+    query GetPaymentMethod($id: ID!) {
+        paymentMethod(id: $id) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
 `;

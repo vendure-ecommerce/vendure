@@ -25,7 +25,7 @@ export class PaymentMethod extends VendureEntity {
 
     @Column() enabled: boolean;
 
-    @Column('simple-json', { nullable: true }) checker?: ConfigurableOperation;
+    @Column('simple-json', { nullable: true }) checker: ConfigurableOperation | null;
 
     @Column('simple-json') handler: ConfigurableOperation;
 }

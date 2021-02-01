@@ -2548,7 +2548,7 @@ export type ConfigArgDefinition = {
     type: Scalars['String'];
     list: Scalars['Boolean'];
     required: Scalars['Boolean'];
-    defaultValue?: Maybe<Scalars['String']>;
+    defaultValue?: Maybe<Scalars['JSON']>;
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     ui?: Maybe<Scalars['JSON']>;
@@ -6037,7 +6037,10 @@ export type GetOrderListWithQtyQuery = {
 export type PaymentMethodFragment = Pick<
     PaymentMethod,
     'id' | 'code' | 'name' | 'description' | 'enabled'
-> & { handler: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> } };
+> & {
+    checker?: Maybe<Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> }>;
+    handler: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
+};
 
 export type CreatePaymentMethodMutationVariables = Exact<{
     input: CreatePaymentMethodInput;
@@ -6070,6 +6073,12 @@ export type GetPaymentMethodCheckersQuery = {
         }
     >;
 };
+
+export type GetPaymentMethodQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetPaymentMethodQuery = { paymentMethod?: Maybe<PaymentMethodFragment> };
 
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
@@ -8156,8 +8165,12 @@ export namespace GetOrderListWithQty {
 
 export namespace PaymentMethod {
     export type Fragment = PaymentMethodFragment;
-    export type Handler = NonNullable<PaymentMethodFragment['handler']>;
+    export type Checker = NonNullable<PaymentMethodFragment['checker']>;
     export type Args = NonNullable<
+        NonNullable<NonNullable<PaymentMethodFragment['checker']>['args']>[number]
+    >;
+    export type Handler = NonNullable<PaymentMethodFragment['handler']>;
+    export type _Args = NonNullable<
         NonNullable<NonNullable<PaymentMethodFragment['handler']>['args']>[number]
     >;
 }
@@ -8200,6 +8213,12 @@ export namespace GetPaymentMethodCheckers {
             >['args']
         >[number]
     >;
+}
+
+export namespace GetPaymentMethod {
+    export type Variables = GetPaymentMethodQueryVariables;
+    export type Query = GetPaymentMethodQuery;
+    export type PaymentMethod = NonNullable<GetPaymentMethodQuery['paymentMethod']>;
 }
 
 export namespace UpdateProductOptionGroup {
