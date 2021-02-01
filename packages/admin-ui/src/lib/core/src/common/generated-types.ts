@@ -2418,11 +2418,13 @@ export type UpdateTagInput = {
 
 export type CreateTaxCategoryInput = {
   name: Scalars['String'];
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateTaxCategoryInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateTaxRateInput = {
@@ -4224,6 +4226,7 @@ export type TaxCategory = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
@@ -6925,7 +6928,7 @@ export type RemoveMembersFromZoneMutation = { removeMembersFromZone: (
 
 export type TaxCategoryFragment = (
   { __typename?: 'TaxCategory' }
-  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'isDefault'>
 );
 
 export type GetTaxCategoriesQueryVariables = Exact<{ [key: string]: never; }>;

@@ -175,6 +175,7 @@ export const TAX_CATEGORY_FRAGMENT = gql`
         createdAt
         updatedAt
         name
+        isDefault
     }
 `;
 
