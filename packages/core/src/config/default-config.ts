@@ -138,6 +138,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     customFields: {
         Address: [],
+        Administrator: [],
         Channel: [],
         Collection: [],
         Customer: [],

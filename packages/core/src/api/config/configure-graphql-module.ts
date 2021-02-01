@@ -2,7 +2,7 @@ import { DynamicModule } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { buildSchema, extendSchema, printSchema } from 'graphql';
+import { buildSchema, extendSchema, GraphQLSchema, printSchema } from 'graphql';
 import path from 'path';
 
 import { ConfigModule } from '../../config/config.module';
@@ -28,6 +28,7 @@ import { generateListOptions } from './generate-list-options';
 import { generatePermissionEnum } from './generate-permissions';
 import { generateResolvers } from './generate-resolvers';
 import {
+    addActiveAdministratorCustomFields,
     addGraphQLCustomFields,
     addModifyOrderCustomFields,
     addOrderLineCustomFieldsInput,
@@ -87,11 +88,18 @@ async function createGraphQLOptions(
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
+    const builtSchema = await buildSchemaForApi(options.apiType);
+    const resolvers = generateResolvers(
+        configService,
+        customFieldRelationResolverService,
+        options.apiType,
+        builtSchema,
+    );
     return {
         path: '/' + options.apiPath,
-        typeDefs: await createTypeDefs(options.apiType),
+        typeDefs: printSchema(builtSchema),
         include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
-        resolvers: generateResolvers(configService, customFieldRelationResolverService, options.apiType),
+        resolvers,
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
         },
@@ -114,7 +122,7 @@ async function createGraphQLOptions(
      * 2. any custom fields defined in the config
      * 3. any schema extensions defined by plugins
      */
-    async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
+    async function buildSchemaForApi(apiType: 'shop' | 'admin'): Promise<GraphQLSchema> {
         const customFields = configService.customFields;
         // Paths must be normalized to use forward-slash separators.
         // See https://github.com/nestjs/graphql/issues/336
@@ -139,11 +147,12 @@ async function createGraphQLOptions(
         schema = generateErrorCodeEnum(schema);
         if (apiType === 'admin') {
             schema = addServerConfigCustomFields(schema, customFields);
+            schema = addActiveAdministratorCustomFields(schema, customFields.Administrator);
         }
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }
 
-        return printSchema(schema);
+        return schema;
     }
 }

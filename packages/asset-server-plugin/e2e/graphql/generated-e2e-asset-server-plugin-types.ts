@@ -871,6 +871,7 @@ export type CreateAdministratorInput = {
     emailAddress: Scalars['String'];
     password: Scalars['String'];
     roleIds: Array<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
@@ -880,6 +881,7 @@ export type UpdateAdministratorInput = {
     emailAddress?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
     roleIds?: Maybe<Array<Scalars['ID']>>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateActiveAdministratorInput = {
@@ -887,6 +889,7 @@ export type UpdateActiveAdministratorInput = {
     lastName?: Maybe<Scalars['String']>;
     emailAddress?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Administrator = Node & {
@@ -897,6 +900,7 @@ export type Administrator = Node & {
     lastName: Scalars['String'];
     emailAddress: Scalars['String'];
     user: User;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AdministratorList = PaginatedList & {
@@ -4468,6 +4472,7 @@ export type NativeAuthInput = {
 
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
+    Administrator: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;

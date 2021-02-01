@@ -13,6 +13,7 @@ import { ConfigService } from '../../config';
 import { Administrator } from '../../entity/administrator/administrator.entity';
 import { NativeAuthenticationMethod } from '../../entity/authentication-method/native-authentication-method.entity';
 import { User } from '../../entity/user/user.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { PasswordCiper } from '../helpers/password-cipher/password-ciper';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -30,6 +31,7 @@ export class AdministratorService {
         private passwordCipher: PasswordCiper,
         private userService: UserService,
         private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     async initAdministrators() {
@@ -80,6 +82,12 @@ export class AdministratorService {
         for (const roleId of input.roleIds) {
             createdAdministrator = await this.assignRole(ctx, createdAdministrator.id, roleId);
         }
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            Administrator,
+            input,
+            createdAdministrator,
+        );
         return createdAdministrator;
     }
 
@@ -110,6 +118,12 @@ export class AdministratorService {
                 updatedAdministrator = await this.assignRole(ctx, administrator.id, roleId);
             }
         }
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            Administrator,
+            input,
+            updatedAdministrator,
+        );
         return updatedAdministrator;
     }
 

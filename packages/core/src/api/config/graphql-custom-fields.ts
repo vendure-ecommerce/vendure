@@ -232,6 +232,21 @@ export function addServerConfigCustomFields(
     return extendSchema(schema, parse(customFieldTypeDefs));
 }
 
+export function addActiveAdministratorCustomFields(
+    typeDefsOrSchema: string | GraphQLSchema,
+    administratorCustomFields: CustomFieldConfig[],
+) {
+    const schema = typeof typeDefsOrSchema === 'string' ? buildSchema(typeDefsOrSchema) : typeDefsOrSchema;
+    const extension = `
+        extend input UpdateActiveAdministratorInput {
+            customFields: ${
+                0 < administratorCustomFields?.length ? 'UpdateAdministratorCustomFieldsInput' : 'JSON'
+            }
+        }
+    `;
+    return extendSchema(schema, parse(extension));
+}
+
 /**
  * If CustomFields are defined on the Customer entity, then an extra `customFields` field is added to
  * the `RegisterCustomerInput` so that public writable custom fields can be set when a new customer
