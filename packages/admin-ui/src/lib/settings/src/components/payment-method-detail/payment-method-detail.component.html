@@ -17,7 +17,7 @@
                 *vdrIfPermissions="'UpdateSettings'"
                 class="btn btn-primary"
                 (click)="save()"
-                [disabled]="detailForm.pristine || detailForm.invalid"
+                [disabled]="detailForm.pristine || detailForm.invalid || !selectedHandler"
             >
                 {{ 'common.update' | translate }}
             </button>
@@ -25,8 +25,21 @@
     </vdr-ab-right>
 </vdr-action-bar>
 
-<form class="form" [formGroup]="detailForm">
-    <vdr-form-field [label]="'common.code' | translate" for="code">
+<form class="form" [formGroup]="detailForm" *ngIf="entity$ | async as paymentMethod">
+    <vdr-form-field [label]="'common.name' | translate" for="name">
+        <input
+            id="name"
+            type="text"
+            formControlName="name"
+            [readonly]="!('UpdateSettings' | hasPermission)"
+            (input)="updateCode(paymentMethod.code, $event.target.value)"
+        />
+    </vdr-form-field>
+    <vdr-form-field
+        [label]="'common.code' | translate"
+        for="code"
+        [readOnlyToggle]="'UpdateSettings' | hasPermission"
+    >
         <input
             id="code"
             type="text"
@@ -34,6 +47,11 @@
             [readonly]="!('UpdateSettings' | hasPermission)"
         />
     </vdr-form-field>
+    <vdr-rich-text-editor
+        formControlName="description"
+        [readonly]="!('UpdateSettings' | hasPermission)"
+        [label]="'common.description' | translate"
+    ></vdr-rich-text-editor>
     <vdr-form-field [label]="'common.enabled' | translate" for="description">
         <clr-toggle-wrapper>
             <input
@@ -46,28 +64,64 @@
         </clr-toggle-wrapper>
     </vdr-form-field>
 
-    <ng-container *ngIf="entity$ | async as paymentMethod">
-        <div
-            class="clr-row"
-            formGroupName="configArgs"
-            *ngIf="paymentMethod?.configArgs?.length && configArgsIsPopulated()"
-        >
-            <div class="clr-col">
-                <label>{{ 'settings.payment-method-config-options' | translate }}</label>
-                <section class="form-block" *ngFor="let arg of paymentMethod.definition.args; index as i">
-                    <vdr-form-field
-                        [label]="arg.label || arg.name"
-                        [for]="arg.name"
-                    >
-                        <vdr-dynamic-form-input
-                            [def]="paymentMethod.definition.args[i]"
-                            [formControlName]="arg.name"
-                            [control]="detailForm.get(['configArgs', arg.name])"
-                            [readonly]="!('UpdateSettings' | hasPermission)"
-                        ></vdr-dynamic-form-input>
-                    </vdr-form-field>
-                </section>
+    <div class="clr-row mt4">
+        <div class="clr-col">
+            <label class="clr-control-label">{{ 'settings.payment-eligibility-checker' | translate }}</label>
+            <vdr-configurable-input
+                *ngIf="selectedChecker && selectedCheckerDefinition"
+                [operation]="selectedChecker"
+                [operationDefinition]="selectedCheckerDefinition"
+                [readonly]="!('UpdateSettings' | hasPermission)"
+                (remove)="removeChecker()"
+                formControlName="checker"
+            ></vdr-configurable-input>
+            <div *ngIf="!selectedChecker || !selectedCheckerDefinition">
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'common.select' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
+                        <button
+                            *ngFor="let checker of checkers"
+                            type="button"
+                            vdrDropdownItem
+                            (click)="selectChecker(checker)"
+                        >
+                            {{ checker.description }}
+                        </button>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
             </div>
         </div>
-    </ng-container>
+        <div class="clr-col">
+            <label class="clr-control-label">{{ 'settings.payment-handler' | translate }}</label>
+            <vdr-configurable-input
+                *ngIf="selectedHandler && selectedHandlerDefinition"
+                [operation]="selectedHandler"
+                [operationDefinition]="selectedHandlerDefinition"
+                [readonly]="!('UpdateSettings' | hasPermission)"
+                (remove)="removeHandler()"
+                formControlName="handler"
+            ></vdr-configurable-input>
+            <div *ngIf="!selectedHandler || !selectedHandlerDefinition">
+                <vdr-dropdown>
+                    <button class="btn btn-outline" vdrDropdownTrigger>
+                        <clr-icon shape="plus"></clr-icon>
+                        {{ 'common.select' | translate }}
+                    </button>
+                    <vdr-dropdown-menu vdrPosition="bottom-left">
+                        <button
+                            *ngFor="let handler of handlers"
+                            type="button"
+                            vdrDropdownItem
+                            (click)="selectHandler(handler)"
+                        >
+                            {{ handler.description }}
+                        </button>
+                    </vdr-dropdown-menu>
+                </vdr-dropdown>
+            </div>
+        </div>
+    </div>
 </form>

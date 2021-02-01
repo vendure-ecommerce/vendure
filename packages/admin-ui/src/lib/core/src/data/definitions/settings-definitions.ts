@@ -1,6 +1,10 @@
 import { gql } from 'apollo-angular';
 
-import { CONFIGURABLE_OPERATION_DEF_FRAGMENT, ERROR_RESULT_FRAGMENT } from './shared-definitions';
+import {
+    CONFIGURABLE_OPERATION_DEF_FRAGMENT,
+    CONFIGURABLE_OPERATION_FRAGMENT,
+    ERROR_RESULT_FRAGMENT,
+} from './shared-definitions';
 
 export const COUNTRY_FRAGMENT = gql`
     fragment Country on Country {
@@ -374,17 +378,18 @@ export const PAYMENT_METHOD_FRAGMENT = gql`
         id
         createdAt
         updatedAt
+        name
         code
+        description
         enabled
-        configArgs {
-            name
-            value
+        checker {
+            ...ConfigurableOperation
         }
-        definition {
-            ...ConfigurableOperationDef
+        handler {
+            ...ConfigurableOperation
         }
     }
-    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
+    ${CONFIGURABLE_OPERATION_FRAGMENT}
 `;
 
 export const GET_PAYMENT_METHOD_LIST = gql`
@@ -399,9 +404,30 @@ export const GET_PAYMENT_METHOD_LIST = gql`
     ${PAYMENT_METHOD_FRAGMENT}
 `;
 
+export const GET_PAYMENT_METHOD_OPERATIONS = gql`
+    query GetPaymentMethodOperations {
+        paymentMethodEligibilityCheckers {
+            ...ConfigurableOperationDef
+        }
+        paymentMethodHandlers {
+            ...ConfigurableOperationDef
+        }
+    }
+    ${CONFIGURABLE_OPERATION_DEF_FRAGMENT}
+`;
+
 export const GET_PAYMENT_METHOD = gql`
     query GetPaymentMethod($id: ID!) {
         paymentMethod(id: $id) {
+            ...PaymentMethod
+        }
+    }
+    ${PAYMENT_METHOD_FRAGMENT}
+`;
+
+export const CREATE_PAYMENT_METHOD = gql`
+    mutation CreatePaymentMethod($input: CreatePaymentMethodInput!) {
+        createPaymentMethod(input: $input) {
             ...PaymentMethod
         }
     }
@@ -586,6 +612,9 @@ export const GET_SERVER_CONFIG = gql`
                 }
                 customFieldConfig {
                     Address {
+                        ...CustomFields
+                    }
+                    Channel {
                         ...CustomFields
                     }
                     Collection {
