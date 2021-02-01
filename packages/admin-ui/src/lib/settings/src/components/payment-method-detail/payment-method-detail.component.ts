@@ -168,6 +168,7 @@ export class PaymentMethodDetailComponent
                     });
                     this.detailForm.markAsPristine();
                     this.changeDetector.markForCheck();
+                    this.router.navigate(['../', data.createPaymentMethod.id], { relativeTo: this.route });
                 },
                 err => {
                     this.notificationService.error(_('common.notify-create-error'), {

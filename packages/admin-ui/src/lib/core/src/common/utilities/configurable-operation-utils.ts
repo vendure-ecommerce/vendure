@@ -100,5 +100,5 @@ export function configurableOperationValueIsValid(
  * Returns a default value based on the type of the config arg.
  */
 export function getDefaultConfigArgValue(arg: ConfigArgDefinition): any {
-    return arg.list ? [] : arg.defaultValue || null; // getDefaultConfigArgSingleValue(arg.type as ConfigArgType);
+    return arg.list ? [] : arg.defaultValue ?? null;
 }

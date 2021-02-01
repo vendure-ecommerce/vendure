@@ -9,6 +9,7 @@
             class="btn btn-primary"
             *ngIf="isNew$ | async; else updateButton"
             [disabled]="detailForm.pristine || detailForm.invalid"
+            (click)="create()"
         >
             {{ 'common.create' | translate }}
         </button>
