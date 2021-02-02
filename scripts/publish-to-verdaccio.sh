@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Move into the project root
+dir=$(cd -P -- "$(dirname -- "$0")" && pwd -P)
+cd "$dir"
+
 # A shell script which publishes all packages to a local Verdaccio registry for testing / local dev purposes
 
 if [[ -z "${VERDACCIO_URL}" ]]; then
