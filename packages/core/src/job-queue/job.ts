@@ -1,5 +1,4 @@
 import { JobState } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
 import { isClassInstance, isObject } from '@vendure/common/lib/shared-utils';
 
 import { JobConfig, JobData } from './types';
@@ -34,7 +33,7 @@ export type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void;
  * @docsWeight 0
  */
 export class Job<T extends JobData<T> = any> {
-    readonly id: ID | null;
+    readonly id: number | string | null;
     readonly queueName: string;
     readonly retries: number;
     readonly createdAt: Date;
