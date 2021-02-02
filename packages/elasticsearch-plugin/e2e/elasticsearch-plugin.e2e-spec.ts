@@ -807,8 +807,11 @@ describe('Elasticsearch plugin', () => {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
-                // Updating of index sometimes flaky (postgres), so add a delay
-                await new Promise(resolve => setTimeout(resolve, 500));
+
+                if (process.env.DB === 'postgres') {
+                    // The postgres test is kinda flaky so we stick in a pause for good measure
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
@@ -839,8 +842,11 @@ describe('Elasticsearch plugin', () => {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
-                // Updating of index sometimes flaky (postgres), so add a delay
-                await new Promise(resolve => setTimeout(resolve, 500));
+
+                if (process.env.DB === 'postgres') {
+                    // The postgres test is kinda flaky so we stick in a pause for good measure
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
