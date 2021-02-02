@@ -4,7 +4,7 @@ import { Brackets, Connection, FindConditions, In, LessThan } from 'typeorm';
 
 import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
-import { Job } from '../../job-queue';
+import { Job, JobData } from '../../job-queue';
 import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
 import { ProcessContext } from '../../process-context/process-context';
 import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
@@ -31,7 +31,7 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
         }
     }
 
-    async add(job: Job): Promise<Job> {
+    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
         if (!this.connectionAvailable(this.connection)) {
             throw new Error('Connection not available');
         }

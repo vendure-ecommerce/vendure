@@ -14,6 +14,7 @@ import { InspectableJobQueueStrategy } from '../config';
 
 import { Job } from './job';
 import { PollingJobQueueStrategy } from './polling-job-queue-strategy';
+import { JobData } from './types';
 
 /**
  * @description
@@ -38,7 +39,7 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
         clearTimeout(this.timer);
     }
 
-    async add(job: Job): Promise<Job> {
+    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
         if (!job.id) {
             (job as any).id = Math.floor(Math.random() * 1000000000)
                 .toString()
