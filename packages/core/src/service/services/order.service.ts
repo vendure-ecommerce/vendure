@@ -1182,7 +1182,7 @@ export class OrderService {
             return existingOrder;
         }
         const mergeResult = await this.orderMerger.merge(ctx, guestOrder, existingOrder);
-        const { orderToDelete, linesToInsert } = mergeResult;
+        const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
             await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
@@ -1190,7 +1190,37 @@ export class OrderService {
         if (order && linesToInsert) {
             const orderId = order.id;
             for (const line of linesToInsert) {
-                const result = await this.addItemToOrder(ctx, orderId, line.productVariantId, line.quantity);
+                const result = await this.addItemToOrder(
+                    ctx,
+                    orderId,
+                    line.productVariantId,
+                    line.quantity,
+                    line.customFields,
+                );
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            }
+        }
+        if (order && linesToModify) {
+            const orderId = order.id;
+            for (const line of linesToModify) {
+                const result = await this.adjustOrderLine(
+                    ctx,
+                    orderId,
+                    line.orderLineId,
+                    line.quantity,
+                    line.customFields,
+                );
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            }
+        }
+        if (order && linesToDelete) {
+            const orderId = order.id;
+            for (const line of linesToDelete) {
+                const result = await this.removeItemFromOrder(ctx, orderId, line.orderLineId);
                 if (!isGraphQlErrorResult(result)) {
                     order = result;
                 }
