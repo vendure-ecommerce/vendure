@@ -6,9 +6,8 @@ import { Injector } from '../../common/injector';
 import { InspectableJobQueueStrategy, JobQueueStrategy } from '../../config';
 import { Job, JobData } from '../../job-queue';
 import { PollingJobQueueStrategy } from '../../job-queue/polling-job-queue-strategy';
-import { ProcessContext } from '../../process-context/process-context';
-import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 import { TransactionalConnection } from '../../service';
+import { ListQueryBuilder } from '../../service/helpers/list-query-builder/list-query-builder';
 
 import { JobRecord } from './job-record.entity';
 
@@ -24,11 +23,14 @@ export class SqlJobQueueStrategy extends PollingJobQueueStrategy implements Insp
     private listQueryBuilder: ListQueryBuilder;
 
     init(injector: Injector) {
-        const processContext = injector.get(ProcessContext);
-        if (processContext.isServer) {
-            this.connection = injector.get(TransactionalConnection).rawConnection;
-            this.listQueryBuilder = injector.get(ListQueryBuilder);
-        }
+        this.connection = injector.get(TransactionalConnection).rawConnection;
+        this.listQueryBuilder = injector.get(ListQueryBuilder);
+        super.init(injector);
+    }
+
+    destroy() {
+        this.connection = undefined;
+        super.destroy();
     }
 
     async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {

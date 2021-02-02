@@ -11,6 +11,9 @@ import { ProcessContext, WorkerProcessContext } from '../process-context/process
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
 import { TestingJobQueueStrategy } from './testing-job-queue-strategy';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
+import { Injector } from '../common';
 
 const queuePollInterval = 10;
 
@@ -35,16 +38,19 @@ describe('JobQueueService', () => {
         await module.close();
     });
 
-    it('data is passed into job', cb => {
+    it('data is passed into job', async () => {
+        const subject = new Subject<string>();
+        const subNext = subject.pipe(take(1)).toPromise();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
             process: async job => {
-                expect(job.data).toBe('hello');
-                cb();
+                subject.next(job.data);
             },
         });
 
-        testQueue.add('hello');
+        await testQueue.add('hello');
+        const data = await subNext;
+        expect(data).toBe('hello');
     });
 
     it('job marked as complete', async () => {
@@ -341,9 +347,17 @@ function tick(ms: number): Promise<void> {
     return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
-class MockConfigService {
+@Injectable()
+class MockConfigService implements OnApplicationBootstrap {
+    constructor(private moduleRef: ModuleRef) {}
+
     jobQueueOptions = {
         jobQueueStrategy: new TestingJobQueueStrategy(1, queuePollInterval),
         activeQueues: [],
     };
+
+    async onApplicationBootstrap() {
+        const injector = new Injector(this.moduleRef);
+        await this.jobQueueOptions.jobQueueStrategy.init(injector);
+    }
 }

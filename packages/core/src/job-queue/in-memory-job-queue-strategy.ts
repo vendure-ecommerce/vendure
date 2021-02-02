@@ -10,6 +10,7 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
+import { Injector } from '../common';
 import { InspectableJobQueueStrategy } from '../config';
 
 import { Job } from './job';
@@ -31,11 +32,13 @@ export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements
     private timer: any;
     private evictJobsAfterMs = 1000 * 60 * 60 * 2; // 2 hours
 
-    init() {
+    init(injector: Injector) {
+        super.init(injector);
         this.timer = setTimeout(this.evictSettledJobs, this.evictJobsAfterMs);
     }
 
     destroy() {
+        super.destroy();
         clearTimeout(this.timer);
     }
 

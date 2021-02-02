@@ -1,7 +1,7 @@
 import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
 
-import { ConfigService, InspectableJobQueueStrategy, JobQueueStrategy } from '../config';
+import { ConfigService, JobQueueStrategy } from '../config';
 import { ProcessContext } from '../process-context';
 
 import { JobQueue } from './job-queue';
@@ -65,6 +65,7 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
 
     /** @internal */
     onModuleDestroy() {
+        this.hasInitialized = false;
         return Promise.all(this.queues.map(q => q.destroy()));
     }
 

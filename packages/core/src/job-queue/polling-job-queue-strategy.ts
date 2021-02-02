@@ -4,6 +4,7 @@ import { throttleTime } from 'rxjs/operators';
 
 import { Logger } from '../config/logger/vendure-logger';
 
+import { InjectableJobQueueStrategy } from './injectable-job-queue-strategy';
 import { Job } from './job';
 import { JobData } from './types';
 
@@ -114,15 +115,26 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
     }
 }
 
-export abstract class PollingJobQueueStrategy {
+/**
+ * @description
+ * This class allows easier implementation of {@link JobQueueStrategy} in a polling style.
+ * Instead of providing {@link JobQueueStrategy} `start()` you should provide a `next` method.
+ */
+export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
     private activeQueues = new Map<string, ActiveQueue<any>>();
 
-    constructor(public concurrency: number = 1, public pollInterval: number = 200) {}
+    constructor(public concurrency: number = 1, public pollInterval: number = 200) {
+        super();
+    }
 
     start<Data extends JobData<Data> = {}>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
     ): void {
+        if (!this.hasInitialized) {
+            this.started.set(queueName, process);
+            return;
+        }
         if (this.activeQueues.has(queueName)) {
             return;
         }
