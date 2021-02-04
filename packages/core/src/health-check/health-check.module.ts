@@ -18,16 +18,8 @@ export class HealthCheckModule {
         private configService: ConfigService,
         private healthCheckRegistryService: HealthCheckRegistryService,
         private typeOrm: TypeOrmHealthIndicator,
-        private microservice: MicroserviceHealthIndicator,
     ) {
         // Register the default health checks for database and worker
-        this.healthCheckRegistryService.registerIndicatorFunction([
-            () => this.typeOrm.pingCheck('database'),
-            () =>
-                this.microservice.pingCheck('worker', {
-                    transport: this.configService.workerOptions.transport,
-                    options: this.configService.workerOptions.options,
-                }),
-        ]);
+        this.healthCheckRegistryService.registerIndicatorFunction([() => this.typeOrm.pingCheck('database')]);
     }
 }
