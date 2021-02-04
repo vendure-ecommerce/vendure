@@ -577,12 +577,11 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     }
 
     private async updateProductInternal(ctx: RequestContext, productId: ID) {
-        let updatedProductVariants: ProductVariant[] = [];
         const product = await this.connection.getRepository(Product).findOne(productId, {
             relations: ['variants', 'channels', 'channels.defaultTaxZone'],
         });
         if (product) {
-            updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
+            const updatedProductVariants = await this.connection.getRepository(ProductVariant).findByIds(
                 product.variants.map(v => v.id),
                 {
                     relations: variantRelations,
@@ -594,10 +593,10 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             if (product.enabled === false) {
                 updatedProductVariants.forEach(v => (v.enabled = false));
             }
+            const operations: Array<BulkOperation | BulkOperationDoc<ProductIndexItem>> = [];
 
             if (updatedProductVariants.length) {
                 Logger.verbose(`Updating 1 Product (${productId})`, loggerCtx);
-                const operations: Array<BulkOperation | BulkOperationDoc<ProductIndexItem>> = [];
                 const languageVariants = product.translations.map(t => t.languageCode);
 
                 for (const channel of product.channels) {
@@ -636,8 +635,18 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
                         );
                     }
                 }
-                await this.executeBulkOperations(PRODUCT_INDEX_NAME, operations);
+            } else {
+                const syntheticIndexItem = this.createSyntheticProductIndexItem(ctx, product);
+                operations.push(
+                    {
+                        update: {
+                            _id: this.getId(syntheticIndexItem.productId, ctx.channelId, ctx.languageCode),
+                        },
+                    },
+                    { doc: syntheticIndexItem, doc_as_upsert: true },
+                );
             }
+            await this.executeBulkOperations(PRODUCT_INDEX_NAME, operations);
         }
     }
 
@@ -864,6 +873,42 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
             item[name] = def.valueFn(variants[0].product, variants, languageCode);
         }
         return item;
+    }
+
+    /**
+     * If a Product has no variants, we create a synthetic variant for the purposes
+     * of making that product visible via the search query.
+     */
+    private createSyntheticProductIndexItem(ctx: RequestContext, product: Product): ProductIndexItem {
+        const productTranslation = this.getTranslation(product, ctx.languageCode);
+        return {
+            channelId: ctx.channelId,
+            languageCode: ctx.languageCode,
+            sku: '',
+            slug: productTranslation.slug,
+            productId: product.id,
+            productName: productTranslation.name,
+            productAssetId: product.featuredAsset?.id ?? undefined,
+            productPreview: product.featuredAsset?.preview ?? '',
+            productPreviewFocalPoint: product.featuredAsset?.focalPoint ?? undefined,
+            productVariantId: 0,
+            productVariantName: productTranslation.name,
+            productVariantAssetId: undefined,
+            productVariantPreview: '',
+            productVariantPreviewFocalPoint: undefined,
+            priceMin: 0,
+            priceMax: 0,
+            priceWithTaxMin: 0,
+            priceWithTaxMax: 0,
+            currencyCode: ctx.channel.currencyCode,
+            description: productTranslation.description,
+            facetIds: product.facetValues?.map(fv => fv.facet.id.toString()) ?? [],
+            facetValueIds: product.facetValues?.map(fv => fv.id.toString()) ?? [],
+            collectionIds: [],
+            collectionSlugs: [],
+            channelIds: [ctx.channelId],
+            enabled: false,
+        };
     }
 
     private getTranslation<T extends Translatable>(
