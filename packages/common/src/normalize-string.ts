@@ -8,6 +8,6 @@ export function normalizeString(input: string, spaceReplacer = ' '): string {
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase()
-        .replace(/[!"£$%^&*()+[\]{};:@#~?\\/,|><`¬'=]/g, '')
+        .replace(/[!"£$%^&*()+[\]{};:@#~?\\/,|><`¬'=‘’]/g, '')
         .replace(/\s+/g, spaceReplacer);
 }
