@@ -359,6 +359,22 @@ describe('Collection resolver', () => {
             expect(result.collection.id).toBe(computersCollection.id);
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/538
+        it('falls back to default language slug', async () => {
+            const result = await adminClient.query<GetCollection.Query, GetCollection.Variables>(
+                GET_COLLECTION,
+                {
+                    slug: computersCollection.slug,
+                },
+                { languageCode: LanguageCode.de },
+            );
+            if (!result.collection) {
+                fail(`did not return the collection`);
+                return;
+            }
+            expect(result.collection.id).toBe(computersCollection.id);
+        });
+
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {

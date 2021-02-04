@@ -252,6 +252,21 @@ describe('Product resolver', () => {
             expect(product.slug).toBe('curvy-monitor');
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/538
+        it('falls back to default language slug', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: 'curvy-monitor' },
+                { languageCode: LanguageCode.de },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe('curvy-monitor');
+        });
+
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
