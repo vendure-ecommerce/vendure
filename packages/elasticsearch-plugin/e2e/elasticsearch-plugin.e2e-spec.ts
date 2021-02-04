@@ -131,6 +131,7 @@ describe('Elasticsearch plugin', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 
@@ -808,11 +809,6 @@ describe('Elasticsearch plugin', () => {
                 });
                 await awaitRunningJobs(adminClient);
 
-                if (process.env.DB === 'postgres') {
-                    // The postgres test is kinda flaky so we stick in a pause for good measure
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 
                 const { search: searchGrouped } = await doAdminSearchQuery(adminClient, {
@@ -842,11 +838,6 @@ describe('Elasticsearch plugin', () => {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_1', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
-
-                if (process.env.DB === 'postgres') {
-                    // The postgres test is kinda flaky so we stick in a pause for good measure
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 

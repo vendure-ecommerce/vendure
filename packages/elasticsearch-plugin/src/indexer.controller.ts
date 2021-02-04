@@ -191,7 +191,7 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
         ctx: rawContext,
         productVariantId,
         channelId,
-    }: AssignVariantToChannelMessage['data']): Observable<AssignVariantToChannelMessage['response']> {
+    }: RemoveVariantFromChannelMessage['data']): Observable<RemoveVariantFromChannelMessage['response']> {
         const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async () => {
             const productVariant = await this.connection.getEntityOrThrow(
