@@ -136,18 +136,19 @@ export class CollectionService implements OnModuleInit {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {
-        const translation = await this.connection.getRepository(ctx, CollectionTranslation).findOne({
+        const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
-            where: {
-                languageCode: ctx.languageCode,
-                slug,
-            },
+            where: { slug },
         });
 
-        if (!translation) {
+        if (!translations?.length) {
             return;
         }
-        return this.findOne(ctx, translation.base.id);
+        const bestMatch =
+            translations.find(t => t.languageCode === ctx.languageCode) ??
+            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
+            translations[0];
+        return this.findOne(ctx, bestMatch.base.id);
     }
 
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
