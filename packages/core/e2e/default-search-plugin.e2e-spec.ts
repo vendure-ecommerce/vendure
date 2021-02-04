@@ -78,6 +78,7 @@ describe('Default search plugin', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 
@@ -937,8 +938,6 @@ describe('Default search plugin', () => {
                     input: { channelId: secondChannel.id, productVariantIds: ['T_10', 'T_15'] },
                 });
                 await awaitRunningJobs(adminClient);
-                // The postgres test is kinda flaky so we stick in a pause for good measure
-                await new Promise(resolve => setTimeout(resolve, 500));
 
                 adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
 

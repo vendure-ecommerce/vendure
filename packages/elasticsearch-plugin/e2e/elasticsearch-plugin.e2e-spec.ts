@@ -131,6 +131,7 @@ describe('Elasticsearch plugin', () => {
     }, TEST_SETUP_TIMEOUT_MS);
 
     afterAll(async () => {
+        await awaitRunningJobs(adminClient);
         await server.destroy();
     });
 

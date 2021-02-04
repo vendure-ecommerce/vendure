@@ -497,12 +497,18 @@ export class ProductVariantService {
                 variant.price * priceFactor,
                 input.channelId,
             );
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
         }
-        return this.findByIds(
+        const result = await this.findByIds(
             ctx,
             variants.map(v => v.id),
         );
+        // Publish the events at the latest possible stage to decrease the chance of race conditions
+        // whereby an event listener triggers a query which does not yet have access to the changes
+        // within the current transaction.
+        for (const variant of variants) {
+            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
+        }
+        return result;
     }
 
     async removeProductVariantsFromChannel(
@@ -544,12 +550,18 @@ export class ProductVariantService {
                     input.channelId,
                 ]);
             }
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
         }
-        return this.findByIds(
+        const result = await this.findByIds(
             ctx,
             variants.map(v => v.id),
         );
+        // Publish the events at the latest possible stage to decrease the chance of race conditions
+        // whereby an event listener triggers a query which does not yet have access to the changes
+        // within the current transaction.
+        for (const variant of variants) {
+            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
+        }
+        return result;
     }
 
     private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
