@@ -20,6 +20,8 @@ import {
     CreateChannel,
     CreateCollection,
     CreateFacet,
+    CreateProduct,
+    CreateProductVariants,
     CurrencyCode,
     DeleteAsset,
     DeleteProduct,
@@ -47,6 +49,8 @@ import {
     CREATE_CHANNEL,
     CREATE_COLLECTION,
     CREATE_FACET,
+    CREATE_PRODUCT,
+    CREATE_PRODUCT_VARIANTS,
     DELETE_ASSET,
     DELETE_PRODUCT,
     DELETE_PRODUCT_VARIANT,
@@ -870,6 +874,79 @@ describe('Default search plugin', () => {
                     { productId: 'T_1', enabled: false },
                     { productId: 'T_2', enabled: true },
                     { productId: 'T_3', enabled: false },
+                ]);
+            });
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/609
+        describe('Synthetic index items', () => {
+            let createdProductId: string;
+
+            it('creates synthetic index item for Product with no variants', async () => {
+                const { createProduct } = await adminClient.query<
+                    CreateProduct.Mutation,
+                    CreateProduct.Variables
+                >(CREATE_PRODUCT, {
+                    input: {
+                        facetValueIds: ['T_1'],
+                        translations: [
+                            {
+                                languageCode: LanguageCode.en,
+                                name: 'Strawberry cheesecake',
+                                slug: 'strawberry-cheesecake',
+                                description: 'A yummy dessert',
+                            },
+                        ],
+                    },
+                });
+
+                await awaitRunningJobs(adminClient);
+                const result = await doAdminSearchQuery({ groupByProduct: true, term: 'strawberry' });
+                expect(
+                    result.search.items.map(
+                        pick([
+                            'productId',
+                            'enabled',
+                            'productName',
+                            'productVariantName',
+                            'slug',
+                            'description',
+                        ]),
+                    ),
+                ).toEqual([
+                    {
+                        productId: createProduct.id,
+                        enabled: false,
+                        productName: 'Strawberry cheesecake',
+                        productVariantName: 'Strawberry cheesecake',
+                        slug: 'strawberry-cheesecake',
+                        description: 'A yummy dessert',
+                    },
+                ]);
+                createdProductId = createProduct.id;
+            });
+
+            it('removes synthetic index item once a variant is created', async () => {
+                const { createProductVariants } = await adminClient.query<
+                    CreateProductVariants.Mutation,
+                    CreateProductVariants.Variables
+                >(CREATE_PRODUCT_VARIANTS, {
+                    input: [
+                        {
+                            productId: createdProductId,
+                            sku: 'SC01',
+                            price: 1399,
+                            translations: [
+                                { languageCode: LanguageCode.en, name: 'Strawberry Cheesecake Pie' },
+                            ],
+                        },
+                    ],
+                });
+                await awaitRunningJobs(adminClient);
+
+                const result = await doAdminSearchQuery({ groupByProduct: false, term: 'strawberry' });
+                expect(result.search.items.map(pick(['productVariantName']))).toEqual([
+                    { productVariantName: 'Strawberry Cheesecake Pie' },
                 ]);
             });
         });
