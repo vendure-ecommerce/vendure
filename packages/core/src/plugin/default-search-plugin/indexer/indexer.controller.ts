@@ -269,15 +269,19 @@ export class IndexerController {
                     where: { deletedAt: null },
                 },
             );
-            if (product.enabled === false) {
-                updatedVariants.forEach(v => (v.enabled = false));
-            }
-            const variantsInCurrentChannel = updatedVariants.filter(
-                v => !!v.channels.find(c => idsAreEqual(c.id, ctx.channelId)),
-            );
-            Logger.verbose(`Updating ${variantsInCurrentChannel.length} variants`, workerLoggerCtx);
-            if (variantsInCurrentChannel.length) {
-                await this.saveVariants(variantsInCurrentChannel);
+            if (updatedVariants.length === 0) {
+                await this.saveSyntheticVariant(ctx, product);
+            } else {
+                if (product.enabled === false) {
+                    updatedVariants.forEach(v => (v.enabled = false));
+                }
+                const variantsInCurrentChannel = updatedVariants.filter(
+                    v => !!v.channels.find(c => idsAreEqual(c.id, ctx.channelId)),
+                );
+                Logger.verbose(`Updating ${variantsInCurrentChannel.length} variants`, workerLoggerCtx);
+                if (variantsInCurrentChannel.length) {
+                    await this.saveVariants(variantsInCurrentChannel);
+                }
             }
         }
         return true;
@@ -336,6 +340,8 @@ export class IndexerController {
 
     private async saveVariants(variants: ProductVariant[]) {
         const items: SearchIndexItem[] = [];
+
+        await this.removeSyntheticVariants(variants);
 
         for (const variant of variants) {
             const languageVariants = unique([
@@ -398,6 +404,56 @@ export class IndexerController {
         }
 
         await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(items));
+    }
+
+    /**
+     * If a Product has no variants, we create a synthetic variant for the purposes
+     * of making that product visible via the search query.
+     */
+    private async saveSyntheticVariant(ctx: RequestContext, product: Product) {
+        const productTranslation = this.getTranslation(product, ctx.languageCode);
+        const item = new SearchIndexItem({
+            channelId: ctx.channelId,
+            languageCode: ctx.languageCode,
+            productVariantId: 0,
+            price: 0,
+            priceWithTax: 0,
+            sku: '',
+            enabled: false,
+            slug: productTranslation.slug,
+            productId: product.id,
+            productName: productTranslation.name,
+            description: productTranslation.description,
+            productVariantName: productTranslation.name,
+            productAssetId: product.featuredAsset?.id ?? null,
+            productPreviewFocalPoint: product.featuredAsset?.focalPoint ?? null,
+            productVariantPreviewFocalPoint: null,
+            productVariantAssetId: null,
+            productPreview: product.featuredAsset?.preview ?? '',
+            productVariantPreview: '',
+            channelIds: [ctx.channelId.toString()],
+            facetIds: product.facetValues?.map(fv => fv.facet.id.toString()) ?? [],
+            facetValueIds: product.facetValues?.map(fv => fv.id.toString()) ?? [],
+            collectionIds: [],
+            collectionSlugs: [],
+        });
+        await this.queue.push(() => this.connection.getRepository(SearchIndexItem).save(item));
+    }
+
+    /**
+     * Removes any synthetic variants for the given product
+     */
+    private async removeSyntheticVariants(variants: ProductVariant[]) {
+        const prodIds = unique(variants.map(v => v.productId));
+        for (const productId of prodIds) {
+            await this.queue.push(() =>
+                this.connection.getRepository(SearchIndexItem).delete({
+                    productId,
+                    sku: '',
+                    price: 0,
+                }),
+            );
+        }
     }
 
     private getTranslation<T extends Translatable>(
