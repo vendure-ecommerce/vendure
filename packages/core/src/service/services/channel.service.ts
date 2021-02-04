@@ -22,6 +22,7 @@ import { ConfigService } from '../../config/config.service';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
+import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
@@ -201,6 +202,7 @@ export class ChannelService {
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         await this.connection.getEntityOrThrow(ctx, Channel, id);
+        await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,
