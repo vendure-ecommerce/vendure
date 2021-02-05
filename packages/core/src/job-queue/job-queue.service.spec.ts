@@ -200,7 +200,7 @@ describe('JobQueueService', () => {
         const testingJobQueueStrategy = module.get(ConfigService).jobQueueOptions
             .jobQueueStrategy as TestingJobQueueStrategy;
 
-        testingJobQueueStrategy.prePopulate([
+        await testingJobQueueStrategy.prePopulate([
             new Job<any>({
                 queueName: 'test',
                 data: {},
