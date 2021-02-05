@@ -330,7 +330,7 @@ export class OrderModifier {
         if (input.updateBillingAddress) {
             order.billingAddress = {
                 ...order.billingAddress,
-                ...input.updateShippingAddress,
+                ...input.updateBillingAddress,
             };
             if (input.updateBillingAddress.countryCode) {
                 const country = await this.countryService.findOneByCode(
