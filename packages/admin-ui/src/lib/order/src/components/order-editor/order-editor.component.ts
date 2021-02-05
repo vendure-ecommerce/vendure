@@ -125,28 +125,32 @@ export class OrderEditorComponent
                 taxRate: new FormControl(0),
                 taxDescription: new FormControl(''),
             });
-            this.shippingAddressForm = new FormGroup({
-                fullName: new FormControl(order.shippingAddress?.fullName),
-                company: new FormControl(order.shippingAddress?.company),
-                streetLine1: new FormControl(order.shippingAddress?.streetLine1),
-                streetLine2: new FormControl(order.shippingAddress?.streetLine2),
-                city: new FormControl(order.shippingAddress?.city),
-                province: new FormControl(order.shippingAddress?.province),
-                postalCode: new FormControl(order.shippingAddress?.postalCode),
-                countryCode: new FormControl(order.shippingAddress?.countryCode),
-                phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
-            });
-            this.billingAddressForm = new FormGroup({
-                fullName: new FormControl(order.billingAddress?.fullName),
-                company: new FormControl(order.billingAddress?.company),
-                streetLine1: new FormControl(order.billingAddress?.streetLine1),
-                streetLine2: new FormControl(order.billingAddress?.streetLine2),
-                city: new FormControl(order.billingAddress?.city),
-                province: new FormControl(order.billingAddress?.province),
-                postalCode: new FormControl(order.billingAddress?.postalCode),
-                countryCode: new FormControl(order.billingAddress?.countryCode),
-                phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
-            });
+            if (!this.shippingAddressForm) {
+                this.shippingAddressForm = new FormGroup({
+                    fullName: new FormControl(order.shippingAddress?.fullName),
+                    company: new FormControl(order.shippingAddress?.company),
+                    streetLine1: new FormControl(order.shippingAddress?.streetLine1),
+                    streetLine2: new FormControl(order.shippingAddress?.streetLine2),
+                    city: new FormControl(order.shippingAddress?.city),
+                    province: new FormControl(order.shippingAddress?.province),
+                    postalCode: new FormControl(order.shippingAddress?.postalCode),
+                    countryCode: new FormControl(order.shippingAddress?.countryCode),
+                    phoneNumber: new FormControl(order.shippingAddress?.phoneNumber),
+                });
+            }
+            if (!this.billingAddressForm) {
+                this.billingAddressForm = new FormGroup({
+                    fullName: new FormControl(order.billingAddress?.fullName),
+                    company: new FormControl(order.billingAddress?.company),
+                    streetLine1: new FormControl(order.billingAddress?.streetLine1),
+                    streetLine2: new FormControl(order.billingAddress?.streetLine2),
+                    city: new FormControl(order.billingAddress?.city),
+                    province: new FormControl(order.billingAddress?.province),
+                    postalCode: new FormControl(order.billingAddress?.postalCode),
+                    countryCode: new FormControl(order.billingAddress?.countryCode),
+                    phoneNumber: new FormControl(order.billingAddress?.phoneNumber),
+                });
+            }
             this.orderLineCustomFieldsFormArray = new FormArray([]);
             for (const line of order.lines) {
                 const formGroup = new FormGroup({});
@@ -341,6 +345,10 @@ export class OrderEditorComponent
     previewAndModify(order: OrderDetail.Fragment) {
         const input: ModifyOrderInput = {
             ...this.modifyOrderInput,
+            ...(this.billingAddressForm.dirty ? { updateBillingAddress: this.billingAddressForm.value } : {}),
+            ...(this.shippingAddressForm.dirty
+                ? { updateShippingAddress: this.shippingAddressForm.value }
+                : {}),
             dryRun: true,
             note: this.note,
             options: {
