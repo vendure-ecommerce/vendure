@@ -297,7 +297,7 @@ export class OrderService {
                 })
                 .leftJoinAndSelect('order.customer', 'customer')
                 .leftJoinAndSelect('order.shippingLines', 'shippingLines')
-                .where('active = :active', { active: true })
+                .where('order.active = :active', { active: true })
                 .andWhere('order.customer.id = :customerId', { customerId: customer.id })
                 .orderBy('order.createdAt', 'DESC')
                 .getOne();
