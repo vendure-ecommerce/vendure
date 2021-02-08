@@ -174,8 +174,8 @@ export class EmailEventHandler<T extends string = string, Event extends EventWit
      * new EmailEventListener('order-confirmation')
      *   .on(OrderStateTransitionEvent)
      *   .filter(event => event.toState === 'PaymentSettled' && !!event.order.customer)
-     *   .loadData(({ event, inject}) => {
-     *     const orderService = inject(OrderService);
+     *   .loadData(({ event, injector }) => {
+     *     const orderService = injector.get(OrderService);
      *     return orderService.getOrderPayments(event.order.id);
      *   })
      *   .setTemplateVars(event => ({
