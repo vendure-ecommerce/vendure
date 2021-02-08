@@ -14,11 +14,17 @@ import path from 'path';
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { manualFulfillmentHandler } from '../src/config/fulfillment/manual-fulfillment-handler';
+import { orderFixedDiscount } from '../src/config/promotion/actions/order-fixed-discount-action';
 
-import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
+import {
+    failsToSettlePaymentMethod,
+    testFailingPaymentMethod,
+    testSuccessfulPaymentMethod,
+} from './fixtures/test-payment-methods';
 import {
     AddManualPayment,
     AdminTransition,
+    CreatePromotion,
     CreateShippingMethod,
     ErrorCode,
     GetOrder,
@@ -31,10 +37,12 @@ import {
     OrderFragment,
     OrderWithLinesFragment,
     OrderWithModificationsFragment,
+    SettlePayment,
     UpdateProductVariants,
 } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrderMutationVariables,
+    ApplyCouponCode,
     SetShippingAddress,
     SetShippingMethod,
     TestOrderWithPaymentsFragment,
@@ -43,12 +51,19 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import {
     ADMIN_TRANSITION_TO_STATE,
+    CREATE_PROMOTION,
     CREATE_SHIPPING_METHOD,
     GET_ORDER,
     GET_ORDER_HISTORY,
+    SETTLE_PAYMENT,
     UPDATE_PRODUCT_VARIANTS,
 } from './graphql/shared-definitions';
-import { SET_SHIPPING_ADDRESS, SET_SHIPPING_METHOD, TRANSITION_TO_STATE } from './graphql/shop-definitions';
+import {
+    APPLY_COUPON_CODE,
+    SET_SHIPPING_ADDRESS,
+    SET_SHIPPING_METHOD,
+    TRANSITION_TO_STATE,
+} from './graphql/shop-definitions';
 import { addPaymentToOrder, proceedToArrangingPayment } from './utils/test-order-utils';
 
 const SHIPPING_GB = 500;
@@ -82,7 +97,14 @@ describe('Order modification', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(
         mergeConfig(testConfig, {
             paymentOptions: {
-                paymentMethodHandlers: [testSuccessfulPaymentMethod],
+                paymentMethodHandlers: [
+                    testSuccessfulPaymentMethod,
+                    failsToSettlePaymentMethod,
+                    testFailingPaymentMethod,
+                ],
+            },
+            promotionOptions: {
+                promotionConditions: [orderFixedDiscount],
             },
             shippingOptions: {
                 shippingCalculators: [defaultShippingCalculator, testCalculator],
@@ -108,6 +130,14 @@ describe('Order modification', () => {
                     {
                         name: testSuccessfulPaymentMethod.code,
                         handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: failsToSettlePaymentMethod.code,
+                        handler: { code: failsToSettlePaymentMethod.code, arguments: [] },
+                    },
+                    {
+                        name: testFailingPaymentMethod.code,
+                        handler: { code: testFailingPaymentMethod.code, arguments: [] },
                     },
                 ],
             },
@@ -1253,6 +1283,73 @@ describe('Order modification', () => {
             expect(order?.payments![0].refunds[0].total).toBe(300);
             expect(order?.payments![0].refunds[0].reason).toBe('discount');
         });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/688 - 4th point
+    it('correct additional payment when discounts applied', async () => {
+        await adminClient.query<CreatePromotion.Mutation, CreatePromotion.Variables>(CREATE_PROMOTION, {
+            input: {
+                name: '$5 off',
+                couponCode: '5OFF',
+                enabled: true,
+                conditions: [],
+                actions: [
+                    {
+                        code: orderFixedDiscount.code,
+                        arguments: [{ name: 'discount', value: '500' }],
+                    },
+                ],
+            },
+        });
+
+        await shopClient.asUserWithCredentials('trevor_donnelly96@hotmail.com', 'test');
+        await shopClient.query(gql(ADD_ITEM_TO_ORDER_WITH_CUSTOM_FIELDS), {
+            productVariantId: 'T_1',
+            quantity: 1,
+        } as any);
+        await shopClient.query<ApplyCouponCode.Mutation, ApplyCouponCode.Variables>(APPLY_COUPON_CODE, {
+            couponCode: '5OFF',
+        });
+        await proceedToArrangingPayment(shopClient);
+        const order = await addPaymentToOrder(shopClient, testSuccessfulPaymentMethod);
+        orderGuard.assertSuccess(order);
+
+        const originalTotalWithTax = order.totalWithTax;
+        const surcharge = 300;
+
+        const { transitionOrderToState } = await adminClient.query<
+            AdminTransition.Mutation,
+            AdminTransition.Variables
+        >(ADMIN_TRANSITION_TO_STATE, {
+            id: order.id,
+            state: 'Modifying',
+        });
+        orderGuard.assertSuccess(transitionOrderToState);
+
+        expect(transitionOrderToState.state).toBe('Modifying');
+
+        const { modifyOrder } = await adminClient.query<ModifyOrder.Mutation, ModifyOrder.Variables>(
+            MODIFY_ORDER,
+            {
+                input: {
+                    dryRun: false,
+                    orderId: order.id,
+                    surcharges: [
+                        {
+                            description: 'extra fee',
+                            sku: '123',
+                            price: surcharge,
+                            priceIncludesTax: true,
+                            taxRate: 20,
+                            taxDescription: 'VAT',
+                        },
+                    ],
+                },
+            },
+        );
+        orderGuard.assertSuccess(modifyOrder);
+
+        expect(modifyOrder.totalWithTax).toBe(originalTotalWithTax + surcharge);
     });
 
     async function assertOrderIsUnchanged(order: OrderWithLinesFragment) {

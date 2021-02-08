@@ -24,6 +24,7 @@ import { OrderModification } from '../../../entity/order-modification/order-modi
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { CountryService } from '../../services/country.service';
@@ -344,7 +345,11 @@ export class OrderModifier {
         }
 
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        await this.orderCalculator.applyPriceAdjustments(ctx, order, [], updatedOrderLines, {
+        const promotions = await this.connection.getRepository(ctx, Promotion).find({
+            where: { enabled: true, deletedAt: null },
+            order: { priorityScore: 'ASC' },
+        });
+        await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
 

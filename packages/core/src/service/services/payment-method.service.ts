@@ -156,7 +156,7 @@ export class PaymentMethodService {
         const initialState = 'Created';
         const payment = await this.connection
             .getRepository(ctx, Payment)
-            .save(new Payment({ ...result, state: initialState }));
+            .save(new Payment({ ...result, method, state: initialState }));
         await this.paymentStateMachine.transition(ctx, order, payment, result.state);
         await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
         this.eventBus.publish(
