@@ -33,7 +33,8 @@ export function parseSortParams<T extends VendureEntity>(
         if (columns.find(c => c.propertyName === key)) {
             output[`${alias}.${key}`] = order as any;
         } else if (translationColumns.find(c => c.propertyName === key)) {
-            output[`${alias}_translations.${key}`] = order as any;
+            const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(alias, 'translations');
+            output[`${translationsAlias}.${key}`] = order as any;
         } else if (calculatedColumnDef) {
             const instruction = calculatedColumnDef.listQuery;
             if (instruction) {

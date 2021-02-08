@@ -1,10 +1,17 @@
 import { Args, Query, Resolver } from '@nestjs/graphql';
-import { ID } from '@vendure/common/lib/shared-types';
+import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { DeepPartial, ID } from '@vendure/common/lib/shared-types';
 import {
+    Ctx,
     ListQueryBuilder,
+    LocaleString,
     OnVendureBootstrap,
     PluginCommonModule,
+    RequestContext,
     TransactionalConnection,
+    Translatable,
+    translateDeep,
+    Translation,
     VendureEntity,
     VendurePlugin,
 } from '@vendure/core';
@@ -15,12 +22,14 @@ import { Calculated } from '../../../src/common/calculated-decorator';
 import { EntityId } from '../../../src/entity/entity-id.decorator';
 
 @Entity()
-export class TestEntity extends VendureEntity {
+export class TestEntity extends VendureEntity implements Translatable {
     constructor(input: Partial<TestEntity>) {
         super(input);
     }
     @Column()
     label: string;
+
+    name: LocaleString;
 
     @Column()
     description: string;
@@ -52,6 +61,23 @@ export class TestEntity extends VendureEntity {
 
     @OneToMany(type => TestEntityPrice, price => price.parent)
     prices: TestEntityPrice[];
+
+    @OneToMany(type => TestEntityTranslation, translation => translation.base, { eager: true })
+    translations: Array<Translation<TestEntity>>;
+}
+
+@Entity()
+export class TestEntityTranslation extends VendureEntity implements Translation<TestEntity> {
+    constructor(input?: DeepPartial<Translation<TestEntity>>) {
+        super(input);
+    }
+
+    @Column('varchar') languageCode: LanguageCode;
+
+    @Column() name: string;
+
+    @ManyToOne(type => TestEntity, base => base.translations)
+    base: TestEntity;
 }
 
 @Entity()
@@ -74,9 +100,9 @@ export class ListQueryResolver {
     constructor(private listQueryBuilder: ListQueryBuilder) {}
 
     @Query()
-    testEntities(@Args() args: any) {
+    testEntities(@Ctx() ctx: RequestContext, @Args() args: any) {
         return this.listQueryBuilder
-            .build(TestEntity, args.options)
+            .build(TestEntity, args.options, { ctx })
             .getManyAndCount()
             .then(([items, totalItems]) => {
                 for (const item of items) {
@@ -85,7 +111,7 @@ export class ListQueryResolver {
                     }
                 }
                 return {
-                    items,
+                    items: items.map(i => translateDeep(i, ctx.languageCode)),
                     totalItems,
                 };
             });
@@ -98,6 +124,7 @@ const adminApiExtensions = gql`
         createdAt: DateTime!
         updatedAt: DateTime!
         label: String!
+        name: String!
         description: String!
         active: Boolean!
         order: Int!
@@ -120,7 +147,7 @@ const adminApiExtensions = gql`
 
 @VendurePlugin({
     imports: [PluginCommonModule],
-    entities: [TestEntity, TestEntityPrice],
+    entities: [TestEntity, TestEntityPrice, TestEntityTranslation],
     adminApiExtensions: {
         schema: adminApiExtensions,
         resolvers: [ListQueryResolver],
@@ -169,6 +196,15 @@ export class ListQueryPlugin implements OnVendureBootstrap {
                     order: 4,
                 }),
             ]);
+
+            const translations: any = {
+                A: { [LanguageCode.en]: 'apple', [LanguageCode.de]: 'apfel' },
+                B: { [LanguageCode.en]: 'bike', [LanguageCode.de]: 'fahrrad' },
+                C: { [LanguageCode.en]: 'cake', [LanguageCode.de]: 'kuchen' },
+                D: { [LanguageCode.en]: 'dog', [LanguageCode.de]: 'hund' },
+                E: { [LanguageCode.en]: 'egg' },
+            };
+
             for (const testEntity of testEntities) {
                 await this.connection.getRepository(TestEntityPrice).save([
                     new TestEntityPrice({
@@ -182,6 +218,19 @@ export class ListQueryPlugin implements OnVendureBootstrap {
                         parent: testEntity,
                     }),
                 ]);
+
+                for (const code of [LanguageCode.en, LanguageCode.de]) {
+                    const translation = translations[testEntity.label][code];
+                    if (translation) {
+                        await this.connection.getRepository(TestEntityTranslation).save(
+                            new TestEntityTranslation({
+                                name: translation,
+                                base: testEntity,
+                                languageCode: code,
+                            }),
+                        );
+                    }
+                }
             }
         }
     }
