@@ -212,12 +212,11 @@ export class OrderEditorComponent
     canPreviewChanges(): boolean {
         const { addItems, adjustOrderLines, surcharges } = this.modifyOrderInput;
         return (
-            (!!addItems?.length ||
-                !!surcharges?.length ||
-                !!adjustOrderLines?.length ||
-                (this.shippingAddressForm.dirty && this.shippingAddressForm.valid) ||
-                (this.billingAddressForm.dirty && this.billingAddressForm.valid)) &&
-            this.note !== ''
+            !!addItems?.length ||
+            !!surcharges?.length ||
+            !!adjustOrderLines?.length ||
+            (this.shippingAddressForm.dirty && this.shippingAddressForm.valid) ||
+            (this.billingAddressForm.dirty && this.billingAddressForm.valid)
         );
     }
 
@@ -350,7 +349,7 @@ export class OrderEditorComponent
                 ? { updateShippingAddress: this.shippingAddressForm.value }
                 : {}),
             dryRun: true,
-            note: this.note,
+            note: this.note ?? '',
             options: {
                 recalculateShipping: this.recalculateShipping,
             },

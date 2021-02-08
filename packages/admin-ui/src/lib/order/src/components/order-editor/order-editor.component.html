@@ -108,10 +108,7 @@
                                 <clr-icon shape="trash"></clr-icon>
                             </button>
                         </td>
-                        <td
-                            *ngIf="orderLineCustomFields.length"
-                            class="order-line-custom-field align-middle"
-                        >
+                        <td *ngIf="orderLineCustomFields.length" class="order-line-custom-field align-middle">
                             <ng-container *ngFor="let customField of orderLineCustomFields">
                                 <vdr-custom-field-control
                                     [customField]="customField"
@@ -193,13 +190,21 @@
                         <vdr-product-selector class="mb4" (productSelected)="addItemSelectedVariant = $event">
                         </vdr-product-selector>
                         <div *ngIf="addItemSelectedVariant" class="flex mb4">
-                            <img *ngIf="addItemSelectedVariant.productAsset as asset" [src]="asset | assetPreview: 'tiny'" class="mr4" />
+                            <img
+                                *ngIf="addItemSelectedVariant.productAsset as asset"
+                                [src]="asset | assetPreview: 'tiny'"
+                                class="mr4"
+                            />
                             <div>
                                 <strong class="mr4">{{ addItemSelectedVariant.productVariantName }}</strong>
                                 <small>{{ addItemSelectedVariant.sku }}</small>
-                                <div>{{ getSelectedItemPrice(addItemSelectedVariant) | localeCurrency: order.currencyCode }}</div>
+                                <div>
+                                    {{
+                                        getSelectedItemPrice(addItemSelectedVariant)
+                                            | localeCurrency: order.currencyCode
+                                    }}
+                                </div>
                             </div>
-
                         </div>
                         <ng-container *ngFor="let customField of orderLineCustomFields">
                             <vdr-custom-field-control
@@ -225,10 +230,7 @@
                     <clr-accordion-content *clrIfExpanded>
                         <form [formGroup]="surchargeForm" (submit)="addSurcharge(surchargeForm.value)">
                             <vdr-form-field [label]="'common.description' | translate" for="description"
-                                ><input
-                                    id="description"
-                                    type="text"
-                                    formControlName="description"
+                                ><input id="description" type="text" formControlName="description"
                             /></vdr-form-field>
                             <vdr-form-field [label]="'order.product-sku' | translate" for="sku"
                                 ><input id="sku" type="text" formControlName="sku"
@@ -262,14 +264,15 @@
                                         formControlName="taxRate" /></vdr-affixed-input
                             ></vdr-form-field>
                             <vdr-form-field [label]="'order.tax-description' | translate" for="taxDescription"
-                                ><input
-                                    id="taxDescription"
-                                    type="text"
-                                    formControlName="taxDescription"
+                                ><input id="taxDescription" type="text" formControlName="taxDescription"
                             /></vdr-form-field>
                             <button
                                 class="btn btn-secondary"
-                                [disabled]="surchargeForm.invalid || surchargeForm.pristine || surchargeForm.get('price')?.value === 0"
+                                [disabled]="
+                                    surchargeForm.invalid ||
+                                    surchargeForm.pristine ||
+                                    surchargeForm.get('price')?.value === 0
+                                "
                             >
                                 {{ 'order.add-surcharge' | translate }}
                             </button>
