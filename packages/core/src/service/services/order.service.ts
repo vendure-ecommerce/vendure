@@ -1291,15 +1291,31 @@ export class OrderService {
         updatedOrderLine?: OrderLine,
     ): Promise<Order> {
         if (updatedOrderLine) {
-            const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
-            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+            const {
+                orderItemPriceCalculationStrategy,
+                changedPriceHandlingStrategy,
+            } = this.configService.orderOptions;
+            let priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
                 ctx,
                 updatedOrderLine.productVariant,
                 updatedOrderLine.customFields || {},
             );
+            const initialListPrice =
+                updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
+                priceResult.price;
+            if (initialListPrice !== priceResult.price) {
+                priceResult = await changedPriceHandlingStrategy.handlePriceChange(
+                    ctx,
+                    priceResult,
+                    updatedOrderLine.items,
+                );
+            }
             for (const item of updatedOrderLine.items) {
-                item.listPrice = price;
-                item.listPriceIncludesTax = priceIncludesTax;
+                if (item.initialListPrice == null) {
+                    item.initialListPrice = initialListPrice;
+                }
+                item.listPrice = priceResult.price;
+                item.listPriceIncludesTax = priceResult.priceIncludesTax;
             }
         }
         const promotions = await this.connection.getRepository(ctx, Promotion).find({

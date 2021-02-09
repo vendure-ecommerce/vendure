@@ -1848,6 +1848,10 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /** If the unitPrice has changed since initially added to Order */
+    unitPriceChangeSinceAdded: Scalars['Int'];
+    /** If the unitPriceWithTax has changed since initially added to Order */
+    unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
      *
@@ -2709,11 +2713,18 @@ export type TestOrderFragmentFragment = Pick<
     lines: Array<
         Pick<
             OrderLine,
-            'id' | 'quantity' | 'linePrice' | 'linePriceWithTax' | 'unitPrice' | 'unitPriceWithTax'
+            | 'id'
+            | 'quantity'
+            | 'linePrice'
+            | 'linePriceWithTax'
+            | 'unitPrice'
+            | 'unitPriceWithTax'
+            | 'unitPriceChangeSinceAdded'
+            | 'unitPriceWithTaxChangeSinceAdded'
         > & {
             productVariant: Pick<ProductVariant, 'id'>;
             discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
-            items: Array<Pick<OrderItem, 'id'>>;
+            items: Array<Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax'>>;
         }
     >;
     shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;

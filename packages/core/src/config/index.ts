@@ -21,6 +21,7 @@ export * from './logger/noop-logger';
 export * from './logger/vendure-logger';
 export * from './merge-config';
 export * from './order/custom-order-process';
+export * from './order/changed-price-handling-strategy';
 export * from './order/default-stock-allocation-strategy';
 export * from './order/merge-orders-strategy';
 export * from './order/order-code-strategy';

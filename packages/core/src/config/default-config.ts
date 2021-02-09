@@ -17,6 +17,7 @@ import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
+import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
@@ -113,6 +114,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         process: [],
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
+        changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

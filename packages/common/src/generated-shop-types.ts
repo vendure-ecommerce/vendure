@@ -1908,6 +1908,10 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /** If the unitPrice has changed since initially added to Order */
+    unitPriceChangeSinceAdded: Scalars['Int'];
+    /** If the unitPriceWithTax has changed since initially added to Order */
+    unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
      *

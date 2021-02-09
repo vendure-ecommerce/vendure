@@ -4,7 +4,7 @@ import { summate } from '@vendure/common/lib/shared-utils';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Calculated } from '../../common/calculated-decorator';
-import { grossPriceOf } from '../../common/tax-utils';
+import { grossPriceOf, netPriceOf } from '../../common/tax-utils';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { Asset } from '../asset/asset.entity';
 import { VendureEntity } from '../base/base.entity';
@@ -52,6 +52,32 @@ export class OrderLine extends VendureEntity implements HasCustomFields {
     @Calculated()
     get unitPriceWithTax(): number {
         return this.firstActiveItemPropOr('unitPriceWithTax', 0);
+    }
+
+    @Calculated()
+    get unitPriceChangeSinceAdded(): number {
+        const firstItem = this.activeItems[0];
+        if (!firstItem) {
+            return 0;
+        }
+        const { initialListPrice, listPriceIncludesTax } = firstItem;
+        const initialPrice = listPriceIncludesTax
+            ? netPriceOf(initialListPrice, this.taxRate)
+            : initialListPrice;
+        return this.unitPrice - initialPrice;
+    }
+
+    @Calculated()
+    get unitPriceWithTaxChangeSinceAdded(): number {
+        const firstItem = this.activeItems[0];
+        if (!firstItem) {
+            return 0;
+        }
+        const { initialListPrice, listPriceIncludesTax } = firstItem;
+        const initialPriceWithTax = listPriceIncludesTax
+            ? initialListPrice
+            : grossPriceOf(initialListPrice, this.taxRate);
+        return this.unitPriceWithTax - initialPriceWithTax;
     }
 
     @Calculated()

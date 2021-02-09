@@ -20,6 +20,7 @@ import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-proce
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
+import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
 import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
@@ -433,6 +434,17 @@ export interface OrderOptions {
      * @default DefaultOrderCodeStrategy
      */
     orderCodeStrategy?: OrderCodeStrategy;
+    /**
+     * @description
+     * Defines how we handle the situation where an OrderItem exists in an Order, and
+     * then later on another is added but in the mean time the price of the ProductVariant has changed.
+     *
+     * By default, the latest price will be used. Any price changes resulting from using a newer price
+     * will be reflected in the GraphQL `OrderLine.unitPrice[WithTax]ChangeSinceAdded` field.
+     *
+     * @default DefaultChangedPriceHandlingStrategy
+     */
+    changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
 }
 
 /**

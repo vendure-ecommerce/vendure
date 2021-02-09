@@ -28,6 +28,8 @@ export const TEST_ORDER_FRAGMENT = gql`
             linePriceWithTax
             unitPrice
             unitPriceWithTax
+            unitPriceChangeSinceAdded
+            unitPriceWithTaxChangeSinceAdded
             productVariant {
                 id
             }
@@ -39,6 +41,8 @@ export const TEST_ORDER_FRAGMENT = gql`
             }
             items {
                 id
+                unitPrice
+                unitPriceWithTax
             }
         }
         shippingLines {
