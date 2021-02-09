@@ -22,6 +22,7 @@ import {
     GetProductList,
     GetProductSimple,
     GetProductVariant,
+    GetProductVariantList,
     GetProductWithVariants,
     LanguageCode,
     ProductVariantFragment,
@@ -333,6 +334,78 @@ describe('Product resolver', () => {
             });
 
             expect(result.product).toBeNull();
+        });
+    });
+
+    describe('productVariants list query', () => {
+        it('returns list', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_34',
+                    name: 'Bonsai Tree',
+                    price: 1999,
+                    sku: 'B01MXFLUSV',
+                },
+                {
+                    id: 'T_24',
+                    name: 'Boxing Gloves',
+                    price: 3304,
+                    sku: 'B000ZYLPPU',
+                },
+                {
+                    id: 'T_19',
+                    name: 'Camera Lens',
+                    price: 10400,
+                    sku: 'B0012UUP02',
+                },
+            ]);
+        });
+
+        it('sort by price', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_23',
+                    name: 'Skipping Rope',
+                    price: 799,
+                    sku: 'B07CNGXVXT',
+                },
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    sku: 'B00XI87KV8',
+                },
+                {
+                    id: 'T_32',
+                    name: 'Spiky Cactus',
+                    price: 1550,
+                    sku: 'SC011001',
+                },
+            ]);
         });
     });
 
@@ -1258,6 +1331,20 @@ export const GET_PRODUCT_VARIANT = gql`
         productVariant(id: $id) {
             id
             name
+        }
+    }
+`;
+
+export const GET_PRODUCT_VARIANT_LIST = gql`
+    query GetProductVariantLIST($options: ProductVariantListOptions) {
+        productVariants(options: $options) {
+            items {
+                id
+                name
+                sku
+                price
+            }
+            totalItems
         }
     }
 `;

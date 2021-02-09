@@ -70,8 +70,7 @@ export class ProductVariant
     currencyCode: CurrencyCode;
 
     @Calculated({
-        relations: ['productVariantPrices'],
-        expression: 'productVariantPrices.price',
+        expression: 'productvariant_productVariantPrices.price',
     })
     get price(): number {
         if (this.listPrice == null) {
@@ -81,8 +80,7 @@ export class ProductVariant
     }
 
     @Calculated({
-        relations: ['productVariantPrices'],
-        expression: 'productVariantPrices.price',
+        expression: 'productvariant_productVariantPrices.price',
     })
     get priceWithTax(): number {
         if (this.listPrice == null) {
