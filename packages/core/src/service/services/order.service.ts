@@ -367,26 +367,28 @@ export class OrderService {
             return validationError;
         }
         const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
-        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
-            ctx,
-            variant,
-            quantity,
-        );
-        if (correctedQuantity === 0) {
-            return new InsufficientStockError(correctedQuantity, order);
-        }
-        const orderLine = await this.orderModifier.getOrCreateItemOrderLine(
+        const existingOrderLine = this.orderModifier.getExistingOrderLine(
             ctx,
             order,
             productVariantId,
             customFields,
         );
-        await this.orderModifier.updateOrderLineQuantity(
+        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
-            orderLine,
-            orderLine.quantity + correctedQuantity,
-            order,
+            variant,
+            quantity,
+            existingOrderLine?.quantity,
         );
+        if (correctedQuantity === 0) {
+            return new InsufficientStockError(correctedQuantity, order);
+        }
+        const orderLine = await this.orderModifier.getOrCreateOrderLine(
+            ctx,
+            order,
+            productVariantId,
+            customFields,
+        );
+        await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
         if (quantityWasAdjustedDown) {

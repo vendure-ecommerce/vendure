@@ -63,31 +63,45 @@ export class OrderModifier {
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
      */
-    async constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number) {
-        let correctedQuantity = quantity;
+    async constrainQuantityToSaleable(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        quantity: number,
+        existingQuantity = 0,
+    ) {
+        let correctedQuantity = quantity + existingQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
         if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel, 0);
+            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
         }
         return correctedQuantity;
+    }
+
+    getExistingOrderLine(
+        ctx: RequestContext,
+        order: Order,
+        productVariantId: ID,
+        customFields?: { [key: string]: any },
+    ): OrderLine | undefined {
+        return order.lines.find(line => {
+            return (
+                idsAreEqual(line.productVariant.id, productVariantId) &&
+                this.customFieldsAreEqual(customFields, line.customFields)
+            );
+        });
     }
 
     /**
      * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
      * if no existing line is found.
      */
-    async getOrCreateItemOrderLine(
+    async getOrCreateOrderLine(
         ctx: RequestContext,
         order: Order,
         productVariantId: ID,
         customFields?: { [key: string]: any },
     ) {
-        const existingOrderLine = order.lines.find(line => {
-            return (
-                idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
+        const existingOrderLine = this.getExistingOrderLine(ctx, order, productVariantId, customFields);
         if (existingOrderLine) {
             return existingOrderLine;
         }
@@ -210,7 +224,7 @@ export class OrderModifier {
             }
 
             const customFields = (row as any).customFields || {};
-            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId, customFields);
+            const orderLine = await this.getOrCreateOrderLine(ctx, order, productVariantId, customFields);
             const correctedQuantity = await this.constrainQuantityToSaleable(
                 ctx,
                 orderLine.productVariant,

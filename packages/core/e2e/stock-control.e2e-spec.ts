@@ -487,7 +487,7 @@ describe('Stock control', () => {
             expect((addItemToOrder as any).order.lines.length).toBe(0);
         });
 
-        it('returns InsufficientStockError when tracking inventory', async () => {
+        it('returns InsufficientStockError when tracking inventory & adding too many at once', async () => {
             const variantId = 'T_1';
             const { addItemToOrder } = await shopClient.query<
                 AddItemToOrder.Mutation,
@@ -789,7 +789,8 @@ describe('Stock control', () => {
         });
 
         describe('edge cases', () => {
-            const variantId = 'T_5';
+            const variant5Id = 'T_5';
+            const variant6Id = 'T_6';
 
             beforeAll(async () => {
                 // First place an order which creates a backorder (excess of allocated units)
@@ -798,9 +799,16 @@ describe('Stock control', () => {
                     {
                         input: [
                             {
-                                id: variantId,
+                                id: variant5Id,
                                 stockOnHand: 5,
                                 outOfStockThreshold: -20,
+                                trackInventory: GlobalFlag.TRUE,
+                                useGlobalOutOfStockThreshold: false,
+                            },
+                            {
+                                id: variant6Id,
+                                stockOnHand: 3,
+                                outOfStockThreshold: 0,
                                 trackInventory: GlobalFlag.TRUE,
                                 useGlobalOutOfStockThreshold: false,
                             },
@@ -812,7 +820,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 25,
                 });
                 orderGuard.assertSuccess(add1);
@@ -827,7 +835,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 1,
                 });
                 orderGuard.assertErrorResult(addItemToOrder);
@@ -844,7 +852,7 @@ describe('Stock control', () => {
                     {
                         input: [
                             {
-                                id: variantId,
+                                id: variant5Id,
                                 outOfStockThreshold: -10,
                             },
                         ],
@@ -856,7 +864,7 @@ describe('Stock control', () => {
                     AddItemToOrder.Mutation,
                     AddItemToOrder.Variables
                 >(ADD_ITEM_TO_ORDER, {
-                    productVariantId: variantId,
+                    productVariantId: variant5Id,
                     quantity: 1,
                 });
                 orderGuard.assertErrorResult(addItemToOrder);
@@ -865,6 +873,37 @@ describe('Stock control', () => {
                 expect(addItemToOrder.message).toBe(
                     `No items were added to the order due to insufficient stock`,
                 );
+            });
+
+            // https://github.com/vendure-ecommerce/vendure/issues/691
+            it('returns InsufficientStockError when tracking inventory & adding too many individually', async () => {
+                await shopClient.asAnonymousUser();
+                const { addItemToOrder: add1 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant6Id,
+                    quantity: 3,
+                });
+
+                orderGuard.assertSuccess(add1);
+
+                const { addItemToOrder: add2 } = await shopClient.query<
+                    AddItemToOrder.Mutation,
+                    AddItemToOrder.Variables
+                >(ADD_ITEM_TO_ORDER, {
+                    productVariantId: variant6Id,
+                    quantity: 1,
+                });
+
+                orderGuard.assertErrorResult(add2);
+
+                expect(add2.errorCode).toBe(ErrorCode.INSUFFICIENT_STOCK_ERROR);
+                expect(add2.message).toBe(`No items were added to the order due to insufficient stock`);
+                expect((add2 as any).quantityAvailable).toBe(0);
+                // Still adds as many as available to the Order
+                expect((add2 as any).order.lines[0].productVariant.id).toBe(variant6Id);
+                expect((add2 as any).order.lines[0].quantity).toBe(3);
             });
         });
     });
