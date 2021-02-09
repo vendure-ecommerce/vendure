@@ -18,6 +18,7 @@ import {
 } from './graphql/generated-e2e-shop-types';
 import { GET_PRODUCTS_WITH_VARIANT_PRICES, UPDATE_CHANNEL } from './graphql/shared-definitions';
 import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER_WITH_PRICE_DATA } from './graphql/shop-definitions';
+import { sortById } from './utils/test-order-utils';
 
 describe('Order taxes', () => {
     const { server, adminClient, shopClient } = createTestEnvironment({
@@ -62,7 +63,7 @@ describe('Order taxes', () => {
         });
 
         it('prices are correct', async () => {
-            const variant = products[0].variants[0];
+            const variant = products.sort(sortById)[0].variants.sort(sortById)[0];
             await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
                 productVariantId: variant.id,
                 quantity: 2,

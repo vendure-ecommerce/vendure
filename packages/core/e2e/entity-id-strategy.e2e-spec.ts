@@ -17,6 +17,7 @@ import {
     IdTest8,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
+import { sortById } from './utils/test-order-utils';
 
 describe('EntityIdStrategy', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
@@ -44,9 +45,13 @@ describe('EntityIdStrategy', () => {
                 }
             }
         `);
-        expect(products).toEqual({
-            items: [{ id: 'T_1' }, { id: 'T_2' }, { id: 'T_3' }, { id: 'T_4' }, { id: 'T_5' }],
-        });
+        expect(products.items.sort(sortById)).toEqual([
+            { id: 'T_1' },
+            { id: 'T_2' },
+            { id: 'T_3' },
+            { id: 'T_4' },
+            { id: 'T_5' },
+        ]);
     });
 
     it('Does not doubly-encode ids from resolved properties', async () => {
