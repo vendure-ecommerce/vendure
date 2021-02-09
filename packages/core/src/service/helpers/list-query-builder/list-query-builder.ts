@@ -113,11 +113,16 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             if (instruction) {
                 const relations = instruction.relations || [];
                 for (const relation of relations) {
-                    const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
-                    const relationAlias = relation.includes('.')
-                        ? relation.split('.').reverse()[0]
-                        : relation;
-                    qb.innerJoinAndSelect(propertyPath, relationAlias);
+                    const relationIsAlreadyJoined = qb.expressionMap.joinAttributes.find(
+                        ja => ja.entityOrProperty === `${alias}.${relation}`,
+                    );
+                    if (!relationIsAlreadyJoined) {
+                        const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
+                        const relationAlias = relation.includes('.')
+                            ? relation.split('.').reverse()[0]
+                            : relation;
+                        qb.innerJoinAndSelect(propertyPath, relationAlias);
+                    }
                 }
                 if (typeof instruction.query === 'function') {
                     instruction.query(qb);
