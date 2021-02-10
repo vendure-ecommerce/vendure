@@ -468,7 +468,10 @@ describe('Facet resolver', () => {
                 id: 'T_1',
             });
 
-            expect(product?.facetValues.map(fv => fv.code)).toEqual(['channel-value-1', 'channel-value-2']);
+            expect(product?.facetValues.map(fv => fv.code).sort()).toEqual([
+                'channel-value-1',
+                'channel-value-2',
+            ]);
         });
 
         it('ProductVariant.facetValues in channel', async () => {
@@ -479,7 +482,7 @@ describe('Facet resolver', () => {
                 id: 'T_1',
             });
 
-            expect(product?.variants[0].facetValues.map(fv => fv.code)).toEqual([
+            expect(product?.variants[0].facetValues.map(fv => fv.code).sort()).toEqual([
                 'channel-value-1',
                 'channel-value-2',
             ]);
