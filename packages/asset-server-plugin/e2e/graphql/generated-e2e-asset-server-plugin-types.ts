@@ -278,6 +278,8 @@ export type Mutation = {
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
+    /** Assign assets to channel */
+    assignAssetsToChannel: Array<Asset>;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
     login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
@@ -480,13 +482,15 @@ export type MutationUpdateAssetArgs = {
 };
 
 export type MutationDeleteAssetArgs = {
-    id: Scalars['ID'];
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetInput;
 };
 
 export type MutationDeleteAssetsArgs = {
-    ids: Array<Scalars['ID']>;
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetsInput;
+};
+
+export type MutationAssignAssetsToChannelArgs = {
+    input: AssignAssetsToChannelInput;
 };
 
 export type MutationLoginArgs = {
@@ -952,11 +956,28 @@ export type CoordinateInput = {
     y: Scalars['Float'];
 };
 
+export type DeleteAssetInput = {
+    assetId: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetsInput = {
+    assetIds: Array<Scalars['ID']>;
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
 export type UpdateAssetInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
     tags?: Maybe<Array<Scalars['String']>>;
+};
+
+export type AssignAssetsToChannelInput = {
+    assetIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -3671,9 +3692,9 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
-    /** If the unitPrice has changed since initially added to Order */
+    /** Non-zero if the unitPrice has changed since it was initially added to Order */
     unitPriceChangeSinceAdded: Scalars['Int'];
-    /** If the unitPriceWithTax has changed since initially added to Order */
+    /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
     unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
@@ -4510,8 +4531,7 @@ export type CreateAssetsMutation = {
 };
 
 export type DeleteAssetMutationVariables = Exact<{
-    id: Scalars['ID'];
-    force: Scalars['Boolean'];
+    input: DeleteAssetInput;
 }>;
 
 export type DeleteAssetMutation = { deleteAsset: Pick<DeletionResponse, 'result'> };
