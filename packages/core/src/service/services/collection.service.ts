@@ -75,7 +75,7 @@ export class CollectionService implements OnModuleInit {
             .pipe(debounceTime(50))
             .subscribe(async event => {
                 const collections = await this.connection.getRepository(Collection).find();
-                this.applyFiltersQueue.add({
+                await this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
                     collectionIds: collections.map(c => c.id),
                 });
@@ -299,7 +299,7 @@ export class CollectionService implements OnModuleInit {
         });
         await this.assetService.updateEntityAssets(ctx, collection, input);
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
-        this.applyFiltersQueue.add({
+        await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
         });
@@ -323,7 +323,7 @@ export class CollectionService implements OnModuleInit {
         });
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
-            this.applyFiltersQueue.add({
+            await this.applyFiltersQueue.add({
                 ctx: ctx.serialize(),
                 collectionIds: [collection.id],
             });
@@ -373,7 +373,7 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(ctx, Collection).save(siblings);
-        this.applyFiltersQueue.add({
+        await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [target.id],
         });
@@ -423,7 +423,7 @@ export class CollectionService implements OnModuleInit {
                     reject(err);
                 },
             });
-        })
+        });
     }
 
     /**
