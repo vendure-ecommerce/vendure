@@ -59,6 +59,9 @@ export type Query = {
   productOptionGroups: Array<ProductOptionGroup>;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
+  /** List ProductVariants */
+  productVariants: ProductVariantList;
+  /** List Products */
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -213,6 +216,11 @@ export type QueryProductOptionGroupsArgs = {
 
 export type QueryProductVariantArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryProductVariantsArgs = {
+  options?: Maybe<ProductVariantListOptions>;
 };
 
 
@@ -4224,6 +4232,13 @@ export type ProductListOptions = {
   filter?: Maybe<ProductFilterParameter>;
 };
 
+export type ProductVariantListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
+};
+
 export type PromotionListOptions = {
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
@@ -4250,13 +4265,6 @@ export type TaxRateListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<TaxRateSortParameter>;
   filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductVariantSortParameter>;
-  filter?: Maybe<ProductVariantFilterParameter>;
 };
 
 export type HistoryEntryListOptions = {
@@ -4485,6 +4493,38 @@ export type ProductSortParameter = {
   description?: Maybe<SortOrder>;
 };
 
+export type ProductVariantFilterParameter = {
+  enabled?: Maybe<BooleanOperators>;
+  trackInventory?: Maybe<StringOperators>;
+  stockOnHand?: Maybe<NumberOperators>;
+  stockAllocated?: Maybe<NumberOperators>;
+  outOfStockThreshold?: Maybe<NumberOperators>;
+  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  sku?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  price?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  priceWithTax?: Maybe<NumberOperators>;
+};
+
+export type ProductVariantSortParameter = {
+  stockOnHand?: Maybe<SortOrder>;
+  stockAllocated?: Maybe<SortOrder>;
+  outOfStockThreshold?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  sku?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+  priceWithTax?: Maybe<SortOrder>;
+};
+
 export type PromotionFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -4555,38 +4595,6 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   value?: Maybe<SortOrder>;
-};
-
-export type ProductVariantFilterParameter = {
-  enabled?: Maybe<BooleanOperators>;
-  trackInventory?: Maybe<StringOperators>;
-  stockOnHand?: Maybe<NumberOperators>;
-  stockAllocated?: Maybe<NumberOperators>;
-  outOfStockThreshold?: Maybe<NumberOperators>;
-  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  sku?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  price?: Maybe<NumberOperators>;
-  currencyCode?: Maybe<StringOperators>;
-  priceIncludesTax?: Maybe<BooleanOperators>;
-  priceWithTax?: Maybe<NumberOperators>;
-};
-
-export type ProductVariantSortParameter = {
-  stockOnHand?: Maybe<SortOrder>;
-  stockAllocated?: Maybe<SortOrder>;
-  outOfStockThreshold?: Maybe<SortOrder>;
-  id?: Maybe<SortOrder>;
-  productId?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  sku?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  price?: Maybe<SortOrder>;
-  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type HistoryEntryFilterParameter = {

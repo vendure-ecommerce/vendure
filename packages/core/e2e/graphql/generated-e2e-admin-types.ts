@@ -52,10 +52,11 @@ export type Query = {
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     search: SearchResponse;
+    /** List Products */
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
-    /** Get a ProductVariant by id */
+    /** List ProductVariants */
     productVariants: ProductVariantList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
