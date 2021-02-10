@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 import { AssetServerPlugin } from '../src/plugin';
 
 import { CreateAssets, DeleteAsset, DeletionResult } from './graphql/generated-e2e-asset-server-plugin-types';
@@ -172,8 +172,10 @@ describe('AssetServerPlugin', () => {
             const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
                 DELETE_ASSET,
                 {
-                    id: asset.id,
-                    force: true,
+                    input: {
+                        assetId: asset.id,
+                        force: true,
+                    },
                 },
             );
 
@@ -254,8 +256,8 @@ export const CREATE_ASSETS = gql`
 `;
 
 export const DELETE_ASSET = gql`
-    mutation DeleteAsset($id: ID!, $force: Boolean!) {
-        deleteAsset(id: $id, force: $force) {
+    mutation DeleteAsset($input: DeleteAssetInput!) {
+        deleteAsset(input: $input) {
             result
         }
     }

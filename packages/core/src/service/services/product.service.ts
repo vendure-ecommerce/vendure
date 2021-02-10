@@ -207,7 +207,7 @@ export class ProductService {
         const productsWithVariants = await this.connection
             .getRepository(ctx, Product)
             .findByIds(input.productIds, {
-                relations: ['variants'],
+                relations: ['variants', 'assets'],
             });
         await this.productVariantService.assignProductVariantsToChannel(ctx, {
             productVariantIds: ([] as ID[]).concat(
@@ -216,6 +216,8 @@ export class ProductService {
             channelId: input.channelId,
             priceFactor: input.priceFactor,
         });
+        const assetIds: ID[] = ([] as ID[]).concat(...productsWithVariants.map(p => p.assets.map(a => a.id)));
+        await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
         const products = await this.connection.getRepository(ctx, Product).findByIds(input.productIds);
         for (const product of products) {
             this.eventBus.publish(new ProductChannelEvent(ctx, product, input.channelId, 'assigned'));

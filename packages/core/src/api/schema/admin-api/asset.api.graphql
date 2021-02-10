@@ -11,9 +11,11 @@ type Mutation {
     "Update an existing Asset"
     updateAsset(input: UpdateAssetInput!): Asset!
     "Delete an Asset"
-    deleteAsset(id: ID!, force: Boolean): DeletionResponse!
+    deleteAsset(input: DeleteAssetInput!): DeletionResponse!
     "Delete multiple Assets"
-    deleteAssets(ids: [ID!]!, force: Boolean): DeletionResponse!
+    deleteAssets(input: DeleteAssetsInput!): DeletionResponse!
+    "Assign assets to channel"
+    assignAssetsToChannel(input: AssignAssetsToChannelInput!): [Asset!]!
 }
 
 type MimeTypeError implements ErrorResult {
@@ -41,9 +43,26 @@ input CoordinateInput {
     y: Float!
 }
 
+input DeleteAssetInput {
+    assetId: ID!
+    force: Boolean
+    deleteFromAllChannels: Boolean
+}
+
+input DeleteAssetsInput {
+    assetIds: [ID!]!
+    force: Boolean
+    deleteFromAllChannels: Boolean
+}
+
 input UpdateAssetInput {
     id: ID!
     name: String
     focalPoint: CoordinateInput
     tags: [String!]
+}
+
+input AssignAssetsToChannelInput {
+    assetIds: [ID!]!
+    channelId: ID!
 }

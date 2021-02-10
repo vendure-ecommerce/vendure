@@ -1,6 +1,7 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
     CreateAssetResult,
+    MutationAssignAssetsToChannelArgs,
     MutationCreateAssetsArgs,
     MutationDeleteAssetArgs,
     MutationDeleteAssetsArgs,
@@ -61,14 +62,40 @@ export class AssetResolver {
     @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
-    async deleteAsset(@Ctx() ctx: RequestContext, @Args() { id, force }: MutationDeleteAssetArgs) {
-        return this.assetService.delete(ctx, [id], force || undefined);
+    async deleteAsset(
+        @Ctx() ctx: RequestContext,
+        @Args() { input: { assetId, force, deleteFromAllChannels } }: MutationDeleteAssetArgs,
+    ) {
+        return this.assetService.delete(
+            ctx,
+            [assetId],
+            force || undefined,
+            deleteFromAllChannels || undefined,
+        );
     }
 
     @Transaction()
     @Mutation()
     @Allow(Permission.DeleteCatalog)
-    async deleteAssets(@Ctx() ctx: RequestContext, @Args() { ids, force }: MutationDeleteAssetsArgs) {
-        return this.assetService.delete(ctx, ids, force || undefined);
+    async deleteAssets(
+        @Ctx() ctx: RequestContext,
+        @Args() { input: { assetIds, force, deleteFromAllChannels } }: MutationDeleteAssetsArgs,
+    ) {
+        return this.assetService.delete(
+            ctx,
+            assetIds,
+            force || undefined,
+            deleteFromAllChannels || undefined,
+        );
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateCatalog)
+    async assignAssetsToChannel(
+        @Ctx() ctx: RequestContext,
+        @Args() { input }: MutationAssignAssetsToChannelArgs,
+    ) {
+        return this.assetService.assignToChannel(ctx, input);
     }
 }

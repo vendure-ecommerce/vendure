@@ -276,6 +276,8 @@ export type Mutation = {
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
+    /** Assign assets to channel */
+    assignAssetsToChannel: Array<Asset>;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
     login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
@@ -476,13 +478,15 @@ export type MutationUpdateAssetArgs = {
 };
 
 export type MutationDeleteAssetArgs = {
-    id: Scalars['ID'];
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetInput;
 };
 
 export type MutationDeleteAssetsArgs = {
-    ids: Array<Scalars['ID']>;
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetsInput;
+};
+
+export type MutationAssignAssetsToChannelArgs = {
+    input: AssignAssetsToChannelInput;
 };
 
 export type MutationLoginArgs = {
@@ -940,11 +944,28 @@ export type CoordinateInput = {
     y: Scalars['Float'];
 };
 
+export type DeleteAssetInput = {
+    assetId: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetsInput = {
+    assetIds: Array<Scalars['ID']>;
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
 export type UpdateAssetInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
     tags?: Maybe<Array<Scalars['String']>>;
+};
+
+export type AssignAssetsToChannelInput = {
+    assetIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -959,6 +980,7 @@ export type CreateChannelInput = {
     currencyCode: CurrencyCode;
     defaultTaxZoneId: Scalars['ID'];
     defaultShippingZoneId: Scalars['ID'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -970,6 +992,7 @@ export type UpdateChannelInput = {
     currencyCode?: Maybe<CurrencyCode>;
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -2279,6 +2302,7 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -4431,6 +4455,7 @@ export type NativeAuthInput = {
 
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
+    Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
@@ -4493,33 +4518,11 @@ export type Q2QueryVariables = Exact<{ [key: string]: never }>;
 
 export type Q2Query = { product?: Maybe<Pick<Product, 'id' | 'name'>> };
 
-export type GetAssetQueryVariables = Exact<{
-    id: Scalars['ID'];
+export type AssignAssetsToChannelMutationVariables = Exact<{
+    input: AssignAssetsToChannelInput;
 }>;
 
-export type GetAssetQuery = { asset?: Maybe<Pick<Asset, 'width' | 'height'> & AssetFragment> };
-
-export type AssetFragFirstFragment = Pick<Asset, 'id' | 'preview'>;
-
-export type GetAssetFragmentFirstQueryVariables = Exact<{
-    id: Scalars['ID'];
-}>;
-
-export type GetAssetFragmentFirstQuery = { asset?: Maybe<AssetFragFirstFragment> };
-
-export type CreateAssetsMutationVariables = Exact<{
-    input: Array<CreateAssetInput>;
-}>;
-
-export type CreateAssetsMutation = {
-    createAssets: Array<
-        | ({
-              focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
-              tags: Array<Pick<Tag, 'id' | 'value'>>;
-          } & AssetFragment)
-        | Pick<MimeTypeError, 'message' | 'fileName' | 'mimeType'>
-    >;
-};
+export type AssignAssetsToChannelMutation = { assignAssetsToChannel: Array<AssetFragment> };
 
 export type CanCreateCustomerMutationVariables = Exact<{
     input: CreateCustomerInput;
@@ -5472,8 +5475,7 @@ export type UpdateAssetMutation = {
 };
 
 export type DeleteAssetMutationVariables = Exact<{
-    id: Scalars['ID'];
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetInput;
 }>;
 
 export type DeleteAssetMutation = { deleteAsset: Pick<DeletionResponse, 'result' | 'message'> };
@@ -5814,6 +5816,34 @@ export type UpdateShippingMethodMutationVariables = Exact<{
 }>;
 
 export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
+
+export type GetAssetQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetAssetQuery = { asset?: Maybe<Pick<Asset, 'width' | 'height'> & AssetFragment> };
+
+export type AssetFragFirstFragment = Pick<Asset, 'id' | 'preview'>;
+
+export type GetAssetFragmentFirstQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetAssetFragmentFirstQuery = { asset?: Maybe<AssetFragFirstFragment> };
+
+export type CreateAssetsMutationVariables = Exact<{
+    input: Array<CreateAssetInput>;
+}>;
+
+export type CreateAssetsMutation = {
+    createAssets: Array<
+        | ({
+              focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
+              tags: Array<Pick<Tag, 'id' | 'value'>>;
+          } & AssetFragment)
+        | Pick<MimeTypeError, 'message' | 'fileName' | 'mimeType'>
+    >;
+};
 
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6435,47 +6465,11 @@ export namespace Q2 {
     export type Product = NonNullable<Q2Query['product']>;
 }
 
-export namespace GetAsset {
-    export type Variables = GetAssetQueryVariables;
-    export type Query = GetAssetQuery;
-    export type Asset = NonNullable<GetAssetQuery['asset']>;
-}
-
-export namespace AssetFragFirst {
-    export type Fragment = AssetFragFirstFragment;
-}
-
-export namespace GetAssetFragmentFirst {
-    export type Variables = GetAssetFragmentFirstQueryVariables;
-    export type Query = GetAssetFragmentFirstQuery;
-    export type Asset = NonNullable<GetAssetFragmentFirstQuery['asset']>;
-}
-
-export namespace CreateAssets {
-    export type Variables = CreateAssetsMutationVariables;
-    export type Mutation = CreateAssetsMutation;
-    export type CreateAssets = NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>;
-    export type AssetInlineFragment = DiscriminateUnion<
-        NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
-        { __typename?: 'Asset' }
-    >;
-    export type FocalPoint = NonNullable<
-        DiscriminateUnion<
-            NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
-            { __typename?: 'Asset' }
-        >['focalPoint']
-    >;
-    export type Tags = NonNullable<
-        NonNullable<
-            DiscriminateUnion<
-                NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
-                { __typename?: 'Asset' }
-            >['tags']
-        >[number]
-    >;
-    export type MimeTypeErrorInlineFragment = DiscriminateUnion<
-        NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
-        { __typename?: 'MimeTypeError' }
+export namespace AssignAssetsToChannel {
+    export type Variables = AssignAssetsToChannelMutationVariables;
+    export type Mutation = AssignAssetsToChannelMutation;
+    export type AssignAssetsToChannel = NonNullable<
+        NonNullable<AssignAssetsToChannelMutation['assignAssetsToChannel']>[number]
     >;
 }
 
@@ -7887,6 +7881,50 @@ export namespace UpdateShippingMethod {
     export type Variables = UpdateShippingMethodMutationVariables;
     export type Mutation = UpdateShippingMethodMutation;
     export type UpdateShippingMethod = NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>;
+}
+
+export namespace GetAsset {
+    export type Variables = GetAssetQueryVariables;
+    export type Query = GetAssetQuery;
+    export type Asset = NonNullable<GetAssetQuery['asset']>;
+}
+
+export namespace AssetFragFirst {
+    export type Fragment = AssetFragFirstFragment;
+}
+
+export namespace GetAssetFragmentFirst {
+    export type Variables = GetAssetFragmentFirstQueryVariables;
+    export type Query = GetAssetFragmentFirstQuery;
+    export type Asset = NonNullable<GetAssetFragmentFirstQuery['asset']>;
+}
+
+export namespace CreateAssets {
+    export type Variables = CreateAssetsMutationVariables;
+    export type Mutation = CreateAssetsMutation;
+    export type CreateAssets = NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>;
+    export type AssetInlineFragment = DiscriminateUnion<
+        NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+        { __typename?: 'Asset' }
+    >;
+    export type FocalPoint = NonNullable<
+        DiscriminateUnion<
+            NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+            { __typename?: 'Asset' }
+        >['focalPoint']
+    >;
+    export type Tags = NonNullable<
+        NonNullable<
+            DiscriminateUnion<
+                NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+                { __typename?: 'Asset' }
+            >['tags']
+        >[number]
+    >;
+    export type MimeTypeErrorInlineFragment = DiscriminateUnion<
+        NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+        { __typename?: 'MimeTypeError' }
+    >;
 }
 
 export namespace CancelJob {

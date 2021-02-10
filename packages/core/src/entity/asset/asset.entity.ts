@@ -2,6 +2,7 @@ import { AssetType } from '@vendure/common/lib/generated-types';
 import { DeepPartial } from '@vendure/common/lib/shared-types';
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 
+import { Channel } from '..';
 import { Taggable } from '../../common/types/common-types';
 import { Address } from '../address/address.entity';
 import { VendureEntity } from '../base/base.entity';
@@ -44,4 +45,8 @@ export class Asset extends VendureEntity implements Taggable {
     @ManyToMany(type => Tag)
     @JoinTable()
     tags: Tag[];
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

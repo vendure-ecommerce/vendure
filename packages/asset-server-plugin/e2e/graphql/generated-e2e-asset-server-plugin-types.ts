@@ -276,6 +276,8 @@ export type Mutation = {
     deleteAsset: DeletionResponse;
     /** Delete multiple Assets */
     deleteAssets: DeletionResponse;
+    /** Assign assets to channel */
+    assignAssetsToChannel: Array<Asset>;
     /** Authenticates the user using the native authentication strategy. This mutation is an alias for `authenticate({ native: { ... }})` */
     login: NativeAuthenticationResult;
     /** Authenticates the user using a named authentication strategy */
@@ -476,13 +478,15 @@ export type MutationUpdateAssetArgs = {
 };
 
 export type MutationDeleteAssetArgs = {
-    id: Scalars['ID'];
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetInput;
 };
 
 export type MutationDeleteAssetsArgs = {
-    ids: Array<Scalars['ID']>;
-    force?: Maybe<Scalars['Boolean']>;
+    input: DeleteAssetsInput;
+};
+
+export type MutationAssignAssetsToChannelArgs = {
+    input: AssignAssetsToChannelInput;
 };
 
 export type MutationLoginArgs = {
@@ -940,11 +944,28 @@ export type CoordinateInput = {
     y: Scalars['Float'];
 };
 
+export type DeleteAssetInput = {
+    assetId: Scalars['ID'];
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetsInput = {
+    assetIds: Array<Scalars['ID']>;
+    force?: Maybe<Scalars['Boolean']>;
+    deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
 export type UpdateAssetInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
     tags?: Maybe<Array<Scalars['String']>>;
+};
+
+export type AssignAssetsToChannelInput = {
+    assetIds: Array<Scalars['ID']>;
+    channelId: Scalars['ID'];
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -959,6 +980,7 @@ export type CreateChannelInput = {
     currencyCode: CurrencyCode;
     defaultTaxZoneId: Scalars['ID'];
     defaultShippingZoneId: Scalars['ID'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -970,6 +992,7 @@ export type UpdateChannelInput = {
     currencyCode?: Maybe<CurrencyCode>;
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -2279,6 +2302,7 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -4431,6 +4455,7 @@ export type NativeAuthInput = {
 
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
+    Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
@@ -4460,8 +4485,7 @@ export type CreateAssetsMutation = {
 };
 
 export type DeleteAssetMutationVariables = Exact<{
-    id: Scalars['ID'];
-    force: Scalars['Boolean'];
+    input: DeleteAssetInput;
 }>;
 
 export type DeleteAssetMutation = { deleteAsset: Pick<DeletionResponse, 'result'> };

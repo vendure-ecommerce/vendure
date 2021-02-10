@@ -371,6 +371,7 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Collection = Node & {
