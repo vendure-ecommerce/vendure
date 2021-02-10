@@ -126,7 +126,9 @@ export class ProductService {
     getFacetValuesForProduct(ctx: RequestContext, productId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .getRepository(ctx, Product)
-            .findOne(productId, { relations: ['facetValues', 'facetValues.facet'] })
+            .findOne(productId, {
+                relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
+            })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
             );
@@ -169,24 +171,33 @@ export class ProductService {
     }
 
     async update(ctx: RequestContext, input: UpdateProductInput): Promise<Translated<Product>> {
-        await this.connection.getEntityOrThrow(ctx, Product, input.id, { channelId: ctx.channelId });
+        const product = await this.connection.getEntityOrThrow(ctx, Product, input.id, {
+            channelId: ctx.channelId,
+            relations: ['facetValues', 'facetValues.channels'],
+        });
         await this.slugValidator.validateSlugs(ctx, input, ProductTranslation);
-        const product = await this.translatableSaver.update({
+        const updatedProduct = await this.translatableSaver.update({
             ctx,
             input,
             entityType: Product,
             translationType: ProductTranslation,
             beforeSave: async p => {
                 if (input.facetValueIds) {
-                    p.facetValues = await this.facetValueService.findByIds(ctx, input.facetValueIds);
+                    const facetValuesInOtherChannels = product.facetValues.filter(fv =>
+                        fv.channels.every(channel => !idsAreEqual(channel.id, ctx.channelId)),
+                    );
+                    p.facetValues = [
+                        ...facetValuesInOtherChannels,
+                        ...(await this.facetValueService.findByIds(ctx, input.facetValueIds)),
+                    ];
                 }
                 await this.assetService.updateFeaturedAsset(ctx, p, input);
                 await this.assetService.updateEntityAssets(ctx, p, input);
             },
         });
-        await this.customFieldRelationService.updateRelations(ctx, Product, input, product);
-        this.eventBus.publish(new ProductEvent(ctx, product, 'updated'));
-        return assertFound(this.findOne(ctx, product.id));
+        await this.customFieldRelationService.updateRelations(ctx, Product, input, updatedProduct);
+        this.eventBus.publish(new ProductEvent(ctx, updatedProduct, 'updated'));
+        return assertFound(this.findOne(ctx, updatedProduct.id));
     }
 
     async softDelete(ctx: RequestContext, productId: ID): Promise<DeletionResponse> {

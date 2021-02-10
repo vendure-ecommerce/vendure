@@ -67,16 +67,25 @@ export class ProductVariantEntityResolver {
         @Parent() productVariant: ProductVariant,
         @Api() apiType: ApiType,
     ): Promise<Array<Translated<FacetValue>>> {
+        if (productVariant.facetValues?.length === 0) {
+            return [];
+        }
         let facetValues: Array<Translated<FacetValue>>;
-        if (productVariant.facetValues) {
+        if (productVariant.facetValues?.[0]?.channels) {
             facetValues = productVariant.facetValues as Array<Translated<FacetValue>>;
         } else {
             facetValues = await this.productVariantService.getFacetValuesForVariant(ctx, productVariant.id);
         }
-        if (apiType === 'shop') {
-            facetValues = facetValues.filter(fv => !fv.facet.isPrivate);
-        }
-        return facetValues;
+
+        return facetValues.filter(fv => {
+            if (!fv.channels.find(c => idsAreEqual(c.id, ctx.channelId))) {
+                return false;
+            }
+            if (apiType === 'shop' && fv.facet.isPrivate) {
+                return false;
+            }
+            return true;
+        });
     }
 }
 

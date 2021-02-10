@@ -64,10 +64,16 @@ export class ProductEntityResolver {
         @Ctx() ctx: RequestContext,
         @Parent() product: Product,
     ): Promise<Array<Translated<FacetValue>>> {
-        if (product.facetValues) {
-            return product.facetValues as Array<Translated<FacetValue>>;
+        if (product.facetValues?.length === 0) {
+            return [];
         }
-        return this.productService.getFacetValuesForProduct(ctx, product.id);
+        let facetValues: Array<Translated<FacetValue>>;
+        if (product.facetValues?.[0]?.channels) {
+            facetValues = product.facetValues as Array<Translated<FacetValue>>;
+        } else {
+            facetValues = await this.productService.getFacetValuesForProduct(ctx, product.id);
+        }
+        return facetValues.filter(fv => fv.channels.find(c => idsAreEqual(c.id, ctx.channelId)));
     }
 
     @ResolveField()

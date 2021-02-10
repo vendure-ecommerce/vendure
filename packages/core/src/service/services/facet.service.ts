@@ -21,6 +21,7 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
+import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
 
 @Injectable()
@@ -31,6 +32,7 @@ export class FacetService {
         private translatableSaver: TranslatableSaver,
         private listQueryBuilder: ListQueryBuilder,
         private configService: ConfigService,
+        private channelService: ChannelService,
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
@@ -38,10 +40,10 @@ export class FacetService {
         ctx: RequestContext,
         options?: ListQueryOptions<Facet>,
     ): Promise<PaginatedList<Translated<Facet>>> {
-        const relations = ['values', 'values.facet'];
+        const relations = ['values', 'values.facet', 'channels'];
 
         return this.listQueryBuilder
-            .build(Facet, options, { relations, ctx })
+            .build(Facet, options, { relations, ctx, channelId: ctx.channelId })
             .getManyAndCount()
             .then(([facets, totalItems]) => {
                 const items = facets.map(facet =>
@@ -55,11 +57,10 @@ export class FacetService {
     }
 
     findOne(ctx: RequestContext, facetId: ID): Promise<Translated<Facet> | undefined> {
-        const relations = ['values', 'values.facet'];
+        const relations = ['values', 'values.facet', 'channels'];
 
         return this.connection
-            .getRepository(ctx, Facet)
-            .findOne(facetId, { relations })
+            .findOneInChannel(ctx, Facet, facetId, ctx.channelId, { relations })
             .then(facet => facet && translateDeep(facet, ctx.languageCode, ['values', ['values', 'facet']]));
     }
 
@@ -95,6 +96,9 @@ export class FacetService {
             input,
             entityType: Facet,
             translationType: FacetTranslation,
+            beforeSave: newEntity => {
+                this.channelService.assignToCurrentChannel(newEntity, ctx);
+            },
         });
         await this.customFieldRelationService.updateRelations(ctx, Facet, input, facet);
         return assertFound(this.findOne(ctx, facet.id));
@@ -112,7 +116,10 @@ export class FacetService {
     }
 
     async delete(ctx: RequestContext, id: ID, force: boolean = false): Promise<DeletionResponse> {
-        const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, { relations: ['values'] });
+        const facet = await this.connection.getEntityOrThrow(ctx, Facet, id, {
+            relations: ['values'],
+            channelId: ctx.channelId,
+        });
         let productCount = 0;
         let variantCount = 0;
         if (facet.values.length) {

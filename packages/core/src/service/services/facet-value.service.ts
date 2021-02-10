@@ -22,6 +22,8 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
+import { ChannelService } from './channel.service';
+
 @Injectable()
 export class FacetValueService {
     constructor(
@@ -29,6 +31,7 @@ export class FacetValueService {
         private translatableSaver: TranslatableSaver,
         private configService: ConfigService,
         private customFieldRelationService: CustomFieldRelationService,
+        private channelService: ChannelService,
     ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
@@ -79,7 +82,10 @@ export class FacetValueService {
             input,
             entityType: FacetValue,
             translationType: FacetValueTranslation,
-            beforeSave: fv => (fv.facet = facet),
+            beforeSave: fv => {
+                fv.facet = facet;
+                this.channelService.assignToCurrentChannel(fv, ctx);
+            },
         });
         await this.customFieldRelationService.updateRelations(
             ctx,

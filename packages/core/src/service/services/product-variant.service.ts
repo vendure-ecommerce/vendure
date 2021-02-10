@@ -217,7 +217,7 @@ export class ProductVariantService {
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
-                relations: ['facetValues', 'facetValues.facet'],
+                relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
@@ -370,6 +370,7 @@ export class ProductVariantService {
     private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
         const existingVariant = await this.connection.getEntityOrThrow(ctx, ProductVariant, input.id, {
             channelId: ctx.channelId,
+            relations: ['facetValues', 'facetValues.channels'],
         });
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
@@ -391,10 +392,13 @@ export class ProductVariantService {
                     }
                 }
                 if (input.facetValueIds) {
-                    updatedVariant.facetValues = await this.facetValueService.findByIds(
-                        ctx,
-                        input.facetValueIds,
+                    const facetValuesInOtherChannels = existingVariant.facetValues.filter(fv =>
+                        fv.channels.every(channel => !idsAreEqual(channel.id, ctx.channelId)),
                     );
+                    updatedVariant.facetValues = [
+                        ...facetValuesInOtherChannels,
+                        ...(await this.facetValueService.findByIds(ctx, input.facetValueIds)),
+                    ];
                 }
                 if (input.stockOnHand != null) {
                     await this.stockMovementService.adjustProductVariantStock(
