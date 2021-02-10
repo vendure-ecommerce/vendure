@@ -252,6 +252,21 @@ describe('Product resolver', () => {
             expect(product.slug).toBe('curvy-monitor');
         });
 
+        // https://github.com/vendure-ecommerce/vendure/issues/538
+        it('falls back to default language slug', async () => {
+            const { product } = await adminClient.query<GetProductSimple.Query, GetProductSimple.Variables>(
+                GET_PRODUCT_SIMPLE,
+                { slug: 'curvy-monitor' },
+                { languageCode: LanguageCode.de },
+            );
+
+            if (!product) {
+                fail('Product not found');
+                return;
+            }
+            expect(product.slug).toBe('curvy-monitor');
+        });
+
         it(
             'throws if neither id nor slug provided',
             assertThrowsWithMessage(async () => {
@@ -354,6 +369,41 @@ describe('Product resolver', () => {
                     name: 'Camera Lens',
                     price: 10400,
                     sku: 'B0012UUP02',
+                },
+            ]);
+        });
+
+        it('sort by price', async () => {
+            const { productVariants } = await adminClient.query<
+                GetProductVariantList.Query,
+                GetProductVariantList.Variables
+            >(GET_PRODUCT_VARIANT_LIST, {
+                options: {
+                    take: 3,
+                    sort: {
+                        price: SortOrder.ASC,
+                    },
+                },
+            });
+
+            expect(productVariants.items).toEqual([
+                {
+                    id: 'T_23',
+                    name: 'Skipping Rope',
+                    price: 799,
+                    sku: 'B07CNGXVXT',
+                },
+                {
+                    id: 'T_20',
+                    name: 'Tripod',
+                    price: 1498,
+                    sku: 'B00XI87KV8',
+                },
+                {
+                    id: 'T_32',
+                    name: 'Spiky Cactus',
+                    price: 1550,
+                    sku: 'SC011001',
                 },
             ]);
         });

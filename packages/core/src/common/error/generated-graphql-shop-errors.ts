@@ -125,6 +125,17 @@ export class OrderPaymentStateError extends ErrorResult {
   }
 }
 
+export class IneligiblePaymentMethodError extends ErrorResult {
+  readonly __typename = 'IneligiblePaymentMethodError';
+  readonly errorCode = 'INELIGIBLE_PAYMENT_METHOD_ERROR' as any;
+  readonly message = 'INELIGIBLE_PAYMENT_METHOD_ERROR';
+  constructor(
+    public eligibilityCheckerMessage: any,
+  ) {
+    super();
+  }
+}
+
 export class PaymentFailedError extends ErrorResult {
   readonly __typename = 'PaymentFailedError';
   readonly errorCode = 'PAYMENT_FAILED_ERROR' as any;
@@ -292,7 +303,7 @@ export class NoActiveOrderError extends ErrorResult {
 }
 
 
-const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderModificationError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError', 'NoActiveOrderError']);
+const errorTypeNames = new Set(['NativeAuthStrategyError', 'InvalidCredentialsError', 'OrderStateTransitionError', 'EmailAddressConflictError', 'OrderLimitError', 'NegativeQuantityError', 'InsufficientStockError', 'OrderModificationError', 'IneligibleShippingMethodError', 'OrderPaymentStateError', 'IneligiblePaymentMethodError', 'PaymentFailedError', 'PaymentDeclinedError', 'CouponCodeInvalidError', 'CouponCodeExpiredError', 'CouponCodeLimitError', 'AlreadyLoggedInError', 'MissingPasswordError', 'PasswordAlreadySetError', 'VerificationTokenInvalidError', 'VerificationTokenExpiredError', 'IdentifierChangeTokenInvalidError', 'IdentifierChangeTokenExpiredError', 'PasswordResetTokenInvalidError', 'PasswordResetTokenExpiredError', 'NotVerifiedError', 'NoActiveOrderError']);
 function isGraphQLError(input: any): input is import('@vendure/common/lib/generated-types').ErrorResult {
   return input instanceof ErrorResult || errorTypeNames.has(input.__typename);
 }

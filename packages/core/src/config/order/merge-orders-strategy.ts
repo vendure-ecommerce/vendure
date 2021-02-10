@@ -2,7 +2,7 @@ import { RequestContext } from '../../api/common/request-context';
 import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
-import { OrderMergeStrategy } from './order-merge-strategy';
+import { MergedOrderLine, OrderMergeStrategy, toMergedOrderLine } from './order-merge-strategy';
 
 /**
  * @description
@@ -13,19 +13,28 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * @docsPage Merge Strategies
  */
 export class MergeOrdersStrategy implements OrderMergeStrategy {
-    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): OrderLine[] {
-        const mergedLines = existingOrder.lines.slice();
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[] {
+        const mergedLines: MergedOrderLine[] = existingOrder.lines.map(toMergedOrderLine);
         const guestLines = guestOrder.lines.slice();
         for (const guestLine of guestLines.reverse()) {
             const existingLine = this.findCorrespondingLine(existingOrder, guestLine);
             if (!existingLine) {
-                mergedLines.unshift(guestLine);
+                mergedLines.unshift(toMergedOrderLine(guestLine));
+            } else {
+                const matchingMergedLine = mergedLines.find(l => l.orderLineId === existingLine.id);
+                if (matchingMergedLine) {
+                    matchingMergedLine.quantity = guestLine.quantity;
+                }
             }
         }
         return mergedLines;
     }
 
     private findCorrespondingLine(existingOrder: Order, guestLine: OrderLine): OrderLine | undefined {
-        return existingOrder.lines.find(line => line.productVariant.id === guestLine.productVariant.id);
+        return existingOrder.lines.find(
+            line =>
+                line.productVariant.id === guestLine.productVariant.id &&
+                JSON.stringify(line.customFields) === JSON.stringify(guestLine.customFields),
+        );
     }
 }

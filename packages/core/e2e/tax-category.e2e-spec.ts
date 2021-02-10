@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import {
     CreateTaxCategory,
@@ -35,9 +35,9 @@ describe('TaxCategory resolver', () => {
         const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
 
         expect(taxCategories.sort(sortById)).toEqual([
-            { id: 'T_1', name: 'Standard Tax' },
-            { id: 'T_2', name: 'Reduced Tax' },
-            { id: 'T_3', name: 'Zero Tax' },
+            { id: 'T_1', name: 'Standard Tax', isDefault: false },
+            { id: 'T_2', name: 'Reduced Tax', isDefault: false },
+            { id: 'T_3', name: 'Zero Tax', isDefault: false },
         ]);
     });
 
@@ -52,6 +52,7 @@ describe('TaxCategory resolver', () => {
         expect(taxCategory).toEqual({
             id: 'T_2',
             name: 'Reduced Tax',
+            isDefault: false,
         });
     });
 
@@ -68,6 +69,7 @@ describe('TaxCategory resolver', () => {
         expect(createTaxCategory).toEqual({
             id: 'T_4',
             name: 'New Category',
+            isDefault: false,
         });
     });
 
@@ -85,7 +87,60 @@ describe('TaxCategory resolver', () => {
         expect(updateTaxCategory).toEqual({
             id: 'T_4',
             name: 'New Category Updated',
+            isDefault: false,
         });
+    });
+
+    it('set default', async () => {
+        const { updateTaxCategory } = await adminClient.query<
+            UpdateTaxCategory.Mutation,
+            UpdateTaxCategory.Variables
+        >(UPDATE_TAX_CATEGORY, {
+            input: {
+                id: 'T_2',
+                isDefault: true,
+            },
+        });
+
+        expect(updateTaxCategory).toEqual({
+            id: 'T_2',
+            name: 'Reduced Tax',
+            isDefault: true,
+        });
+
+        const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
+        expect(taxCategories.sort(sortById)).toEqual([
+            { id: 'T_1', name: 'Standard Tax', isDefault: false },
+            { id: 'T_2', name: 'Reduced Tax', isDefault: true },
+            { id: 'T_3', name: 'Zero Tax', isDefault: false },
+            { id: 'T_4', name: 'New Category Updated', isDefault: false },
+        ]);
+    });
+
+    it('set a different default', async () => {
+        const { updateTaxCategory } = await adminClient.query<
+            UpdateTaxCategory.Mutation,
+            UpdateTaxCategory.Variables
+        >(UPDATE_TAX_CATEGORY, {
+            input: {
+                id: 'T_1',
+                isDefault: true,
+            },
+        });
+
+        expect(updateTaxCategory).toEqual({
+            id: 'T_1',
+            name: 'Standard Tax',
+            isDefault: true,
+        });
+
+        const { taxCategories } = await adminClient.query<GetTaxCategoryList.Query>(GET_TAX_CATEGORY_LIST);
+        expect(taxCategories.sort(sortById)).toEqual([
+            { id: 'T_1', name: 'Standard Tax', isDefault: true },
+            { id: 'T_2', name: 'Reduced Tax', isDefault: false },
+            { id: 'T_3', name: 'Zero Tax', isDefault: false },
+            { id: 'T_4', name: 'New Category Updated', isDefault: false },
+        ]);
     });
 
     describe('deletion', () => {
@@ -131,6 +186,7 @@ const GET_TAX_CATEGORY_LIST = gql`
         taxCategories {
             id
             name
+            isDefault
         }
     }
 `;
@@ -140,6 +196,7 @@ const GET_TAX_CATEGORY = gql`
         taxCategory(id: $id) {
             id
             name
+            isDefault
         }
     }
 `;
@@ -149,6 +206,7 @@ const CREATE_TAX_CATEGORY = gql`
         createTaxCategory(input: $input) {
             id
             name
+            isDefault
         }
     }
 `;
@@ -158,6 +216,7 @@ const UPDATE_TAX_CATEGORY = gql`
         updateTaxCategory(input: $input) {
             id
             name
+            isDefault
         }
     }
 `;

@@ -48,7 +48,11 @@ export function parseFilterParams<T extends VendureEntity>(
                 if (columns.find(c => c.propertyName === key)) {
                     fieldName = `${alias}.${key}`;
                 } else if (translationColumns.find(c => c.propertyName === key)) {
-                    fieldName = `${alias}_translations.${key}`;
+                    const translationsAlias = connection.namingStrategy.eagerJoinRelationAlias(
+                        alias,
+                        'translations',
+                    );
+                    fieldName = `${translationsAlias}.${key}`;
                 } else if (calculatedColumnExpression) {
                     fieldName = escapeCalculatedColumnExpression(connection, calculatedColumnExpression);
                 } else {

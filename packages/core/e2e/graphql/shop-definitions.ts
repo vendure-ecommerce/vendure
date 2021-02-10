@@ -28,6 +28,8 @@ export const TEST_ORDER_FRAGMENT = gql`
             linePriceWithTax
             unitPrice
             unitPriceWithTax
+            unitPriceChangeSinceAdded
+            unitPriceWithTaxChangeSinceAdded
             productVariant {
                 id
             }
@@ -39,6 +41,8 @@ export const TEST_ORDER_FRAGMENT = gql`
             }
             items {
                 id
+                unitPrice
+                unitPriceWithTax
             }
         }
         shippingLines {
@@ -568,6 +572,9 @@ export const ADD_PAYMENT = gql`
             ... on OrderStateTransitionError {
                 transitionError
             }
+            ... on IneligiblePaymentMethodError {
+                eligibilityCheckerMessage
+            }
         }
     }
     ${TEST_ORDER_WITH_PAYMENTS_FRAGMENT}
@@ -665,4 +672,15 @@ export const REMOVE_ALL_ORDER_LINES = gql`
         }
     }
     ${TEST_ORDER_FRAGMENT}
+`;
+
+export const GET_ELIGIBLE_PAYMENT_METHODS = gql`
+    query GetEligiblePaymentMethods {
+        eligiblePaymentMethods {
+            id
+            code
+            eligibilityMessage
+            isEligible
+        }
+    }
 `;

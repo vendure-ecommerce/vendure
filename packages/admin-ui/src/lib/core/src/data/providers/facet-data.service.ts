@@ -39,12 +39,8 @@ export class FacetDataService {
         });
     }
 
-    getAllFacets(refresh: boolean = false) {
-        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(
-            GET_FACET_LIST,
-            {},
-            refresh ? 'network-only' : 'cache-first',
-        );
+    getAllFacets() {
+        return this.baseDataService.query<GetFacetList.Query, GetFacetList.Variables>(GET_FACET_LIST, {});
     }
 
     getFacet(id: string) {

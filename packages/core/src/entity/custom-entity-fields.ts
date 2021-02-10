@@ -1,4 +1,5 @@
 export class CustomAddressFields {}
+export class CustomAdministratorFields {}
 export class CustomFacetFields {}
 export class CustomFacetFieldsTranslation {}
 export class CustomFacetValueFields {}

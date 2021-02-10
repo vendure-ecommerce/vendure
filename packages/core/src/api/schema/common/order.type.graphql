@@ -94,15 +94,6 @@ type OrderList implements PaginatedList {
     totalItems: Int!
 }
 
-type ShippingMethodQuote {
-    id: ID!
-    price: Int!
-    priceWithTax: Int!
-    name: String!
-    description: String!
-    metadata: JSON
-}
-
 type ShippingLine {
     shippingMethod: ShippingMethod!
     price: Int!
@@ -159,6 +150,14 @@ type OrderLine implements Node {
     unitPrice: Int!
     "The price of a single unit, including tax but excluding discounts"
     unitPriceWithTax: Int!
+    """
+    Non-zero if the unitPrice has changed since it was initially added to Order
+    """
+    unitPriceChangeSinceAdded: Int!
+    """
+    Non-zero if the unitPriceWithTax has changed since it was initially added to Order
+    """
+    unitPriceWithTaxChangeSinceAdded: Int!
     """
     The price of a single unit including discounts, excluding tax.
 

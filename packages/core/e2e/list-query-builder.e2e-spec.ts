@@ -7,7 +7,7 @@ import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ListQueryPlugin } from './fixtures/test-plugins/list-query-plugin';
-import { SortOrder } from './graphql/generated-e2e-admin-types';
+import { LanguageCode, SortOrder } from './graphql/generated-e2e-admin-types';
 import { fixPostgresTimezone } from './utils/fix-pg-timezone';
 
 fixPostgresTimezone();
@@ -37,6 +37,46 @@ describe('ListQueryBuilder', () => {
     }
 
     describe('pagination', () => {
+        it('all en', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {},
+                },
+                { languageCode: LanguageCode.en },
+            );
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E']);
+            expect(testEntities.items.map((i: any) => i.name)).toEqual([
+                'apple',
+                'bike',
+                'cake',
+                'dog',
+                'egg',
+            ]);
+        });
+
+        it('all de', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {},
+                },
+                { languageCode: LanguageCode.de },
+            );
+
+            expect(testEntities.totalItems).toBe(5);
+            expect(getItemLabels(testEntities.items)).toEqual(['A', 'B', 'C', 'D', 'E']);
+            expect(testEntities.items.map((i: any) => i.name)).toEqual([
+                'apfel',
+                'fahrrad',
+                'kuchen',
+                'hund',
+                'egg', // falls back to en translation when de doesn't exist
+            ]);
+        });
+
         it('take', async () => {
             const { testEntities } = await adminClient.query(GET_LIST, {
                 options: {
@@ -476,6 +516,72 @@ describe('ListQueryBuilder', () => {
             });
             expect(testEntities.items.map((x: any) => x.label)).toEqual(['E', 'D', 'C', 'B', 'A']);
         });
+
+        it('sort by translated field en', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.name)).toEqual([
+                'apple',
+                'bike',
+                'cake',
+                'dog',
+                'egg',
+            ]);
+        });
+
+        it('sort by translated field de', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                    },
+                },
+                { languageCode: LanguageCode.de },
+            );
+            expect(testEntities.items.map((x: any) => x.name)).toEqual([
+                'apfel',
+                'egg',
+                'fahrrad',
+                'hund',
+                'kuchen',
+            ]);
+        });
+
+        it('sort by translated field en with take', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                    take: 3,
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apple', 'bike', 'cake']);
+        });
+
+        it('sort by translated field de with take', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                        take: 3,
+                    },
+                },
+                { languageCode: LanguageCode.de },
+            );
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['apfel', 'egg', 'fahrrad']);
+        });
     });
 
     describe('calculated fields', () => {
@@ -536,6 +642,7 @@ const GET_LIST = gql`
             items {
                 id
                 label
+                name
                 date
             }
         }

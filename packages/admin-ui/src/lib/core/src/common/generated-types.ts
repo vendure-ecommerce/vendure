@@ -52,6 +52,8 @@ export type Query = {
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethod?: Maybe<PaymentMethod>;
+  paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+  paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
   paymentMethods: PaymentMethodList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
@@ -355,6 +357,8 @@ export type Mutation = {
   createFacet: Facet;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
+  /** Create existing PaymentMethod */
+  createPaymentMethod: PaymentMethod;
   /** Create a new Product */
   createProduct: Product;
   /** Create a new ProductOption within a ProductOptionGroup */
@@ -630,6 +634,11 @@ export type MutationCreateFacetArgs = {
 
 export type MutationCreateFacetValuesArgs = {
   input: Array<CreateFacetValueInput>;
+};
+
+
+export type MutationCreatePaymentMethodArgs = {
+  input: CreatePaymentMethodInput;
 };
 
 
@@ -1048,6 +1057,7 @@ export type CreateAdministratorInput = {
   emailAddress: Scalars['String'];
   password: Scalars['String'];
   roleIds: Array<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
@@ -1057,6 +1067,7 @@ export type UpdateAdministratorInput = {
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   roleIds?: Maybe<Array<Scalars['ID']>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateActiveAdministratorInput = {
@@ -1064,6 +1075,7 @@ export type UpdateActiveAdministratorInput = {
   lastName?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Administrator = Node & {
@@ -1075,6 +1087,7 @@ export type Administrator = Node & {
   lastName: Scalars['String'];
   emailAddress: Scalars['String'];
   user: User;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AdministratorList = PaginatedList & {
@@ -1489,7 +1502,7 @@ export type ImportInfo = {
 /**
  * @description
  * The state of a Job in the JobQueue
- *
+ * 
  * @docsCategory common
  */
 export enum JobState {
@@ -1939,11 +1952,23 @@ export type PaymentMethodList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type CreatePaymentMethodInput = {
+  name: Scalars['String'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  checker?: Maybe<ConfigurableOperationInput>;
+  handler: ConfigurableOperationInput;
+};
+
 export type UpdatePaymentMethodInput = {
   id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
   code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   enabled?: Maybe<Scalars['Boolean']>;
-  configArgs?: Maybe<Array<ConfigArgInput>>;
+  checker?: Maybe<ConfigurableOperationInput>;
+  handler?: Maybe<ConfigurableOperationInput>;
 };
 
 export type PaymentMethod = Node & {
@@ -1951,10 +1976,12 @@ export type PaymentMethod = Node & {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
   code: Scalars['String'];
+  description: Scalars['String'];
   enabled: Scalars['Boolean'];
-  configArgs: Array<ConfigArg>;
-  definition: ConfigurableOperationDefinition;
+  checker?: Maybe<ConfigurableOperation>;
+  handler: ConfigurableOperation;
 };
 
 export type Product = Node & {
@@ -2413,11 +2440,13 @@ export type UpdateTagInput = {
 
 export type CreateTaxCategoryInput = {
   name: Scalars['String'];
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateTaxCategoryInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateTaxRateInput = {
@@ -2568,7 +2597,7 @@ export enum DeletionResult {
  * @description
  * Permissions for administrators and customers. Used to control access to
  * GraphQL resolvers via the {@link Allow} decorator.
- *
+ * 
  * @docsCategory common
  */
 export enum Permission {
@@ -2777,7 +2806,7 @@ export type ConfigArgDefinition = {
   type: Scalars['String'];
   list: Scalars['Boolean'];
   required: Scalars['Boolean'];
-  defaultValue?: Maybe<Scalars['String']>;
+  defaultValue?: Maybe<Scalars['JSON']>;
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   ui?: Maybe<Scalars['JSON']>;
@@ -2916,6 +2945,25 @@ export type Success = {
   success: Scalars['Boolean'];
 };
 
+export type ShippingMethodQuote = {
+  __typename?: 'ShippingMethodQuote';
+  id: Scalars['ID'];
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  name: Scalars['String'];
+  description: Scalars['String'];
+  /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethodQuote = {
+  __typename?: 'PaymentMethodQuote';
+  id: Scalars['ID'];
+  code: Scalars['String'];
+  isEligible: Scalars['Boolean'];
+  eligibilityMessage?: Maybe<Scalars['String']>;
+};
+
 export type Country = Node & {
   __typename?: 'Country';
   id: Scalars['ID'];
@@ -2946,7 +2994,7 @@ export type CountryList = PaginatedList & {
 /**
  * @description
  * ISO 4217 currency code
- *
+ * 
  * @docsCategory common
  */
 export enum CurrencyCode {
@@ -3483,7 +3531,7 @@ export type HistoryEntryList = PaginatedList & {
  * region or script modifier (e.g. de_AT). The selection available is based
  * on the [Unicode CLDR summary list](https://unicode-org.github.io/cldr-staging/charts/37/summary/root.html)
  * and includes the major spoken languages of the world and any widely-used variants.
- *
+ * 
  * @docsCategory common
  */
 export enum LanguageCode {
@@ -3840,16 +3888,6 @@ export type OrderList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodQuote = {
-  __typename?: 'ShippingMethodQuote';
-  id: Scalars['ID'];
-  price: Scalars['Int'];
-  priceWithTax: Scalars['Int'];
-  name: Scalars['String'];
-  description: Scalars['String'];
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type ShippingLine = {
   __typename?: 'ShippingLine';
   shippingMethod: ShippingMethod;
@@ -3872,7 +3910,7 @@ export type OrderItem = Node & {
   unitPriceWithTax: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   *
+   * 
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -3910,9 +3948,13 @@ export type OrderLine = Node & {
   unitPrice: Scalars['Int'];
   /** The price of a single unit, including tax but excluding discounts */
   unitPriceWithTax: Scalars['Int'];
+  /** If the unitPrice has changed since initially added to Order */
+  unitPriceChangeSinceAdded: Scalars['Int'];
+  /** If the unitPriceWithTax has changed since initially added to Order */
+  unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
-   *
+   * 
    * If Order-level discounts have been applied, this will not be the
    * actual taxable unit price (see `proratedUnitPrice`), but is generally the
    * correct price to display to customers to avoid confusion
@@ -4210,6 +4252,7 @@ export type TaxCategory = Node & {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
@@ -4569,7 +4612,9 @@ export type OrderSortParameter = {
 export type PaymentMethodFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
   enabled?: Maybe<BooleanOperators>;
 };
 
@@ -4577,7 +4622,9 @@ export type PaymentMethodSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
   code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -4741,6 +4788,8 @@ export type NativeAuthInput = {
 export type CustomFields = {
   __typename?: 'CustomFields';
   Address: Array<CustomFieldConfig>;
+  Administrator: Array<CustomFieldConfig>;
+  Channel: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
   Facet: Array<CustomFieldConfig>;
@@ -6904,7 +6953,7 @@ export type RemoveMembersFromZoneMutation = { removeMembersFromZone: (
 
 export type TaxCategoryFragment = (
   { __typename?: 'TaxCategory' }
-  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'isDefault'>
 );
 
 export type GetTaxCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
@@ -7100,13 +7149,13 @@ export type DeleteChannelMutation = { deleteChannel: (
 
 export type PaymentMethodFragment = (
   { __typename?: 'PaymentMethod' }
-  & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'>
-  & { configArgs: Array<(
-    { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'value'>
-  )>, definition: (
-    { __typename?: 'ConfigurableOperationDefinition' }
-    & ConfigurableOperationDefFragment
+  & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'description' | 'enabled'>
+  & { checker?: Maybe<(
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  )>, handler: (
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
   ) }
 );
 
@@ -7124,6 +7173,17 @@ export type GetPaymentMethodListQuery = { paymentMethods: (
     )> }
   ) };
 
+export type GetPaymentMethodOperationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPaymentMethodOperationsQuery = { paymentMethodEligibilityCheckers: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )>, paymentMethodHandlers: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )> };
+
 export type GetPaymentMethodQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -7133,6 +7193,16 @@ export type GetPaymentMethodQuery = { paymentMethod?: Maybe<(
     { __typename?: 'PaymentMethod' }
     & PaymentMethodFragment
   )> };
+
+export type CreatePaymentMethodMutationVariables = Exact<{
+  input: CreatePaymentMethodInput;
+}>;
+
+
+export type CreatePaymentMethodMutation = { createPaymentMethod: (
+    { __typename?: 'PaymentMethod' }
+    & PaymentMethodFragment
+  ) };
 
 export type UpdatePaymentMethodMutationVariables = Exact<{
   input: UpdatePaymentMethodInput;
@@ -7370,6 +7440,48 @@ export type GetServerConfigQuery = { globalSettings: (
       )>, customFieldConfig: (
         { __typename?: 'CustomFields' }
         & { Address: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        )>, Administrator: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        )>, Channel: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
         ) | (
@@ -9223,8 +9335,8 @@ export namespace DeleteChannel {
 
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
-  export type ConfigArgs = NonNullable<(NonNullable<PaymentMethodFragment['configArgs']>)[number]>;
-  export type Definition = (NonNullable<PaymentMethodFragment['definition']>);
+  export type Checker = (NonNullable<PaymentMethodFragment['checker']>);
+  export type Handler = (NonNullable<PaymentMethodFragment['handler']>);
 }
 
 export namespace GetPaymentMethodList {
@@ -9234,10 +9346,23 @@ export namespace GetPaymentMethodList {
   export type Items = NonNullable<(NonNullable<(NonNullable<GetPaymentMethodListQuery['paymentMethods']>)['items']>)[number]>;
 }
 
+export namespace GetPaymentMethodOperations {
+  export type Variables = GetPaymentMethodOperationsQueryVariables;
+  export type Query = GetPaymentMethodOperationsQuery;
+  export type PaymentMethodEligibilityCheckers = NonNullable<(NonNullable<GetPaymentMethodOperationsQuery['paymentMethodEligibilityCheckers']>)[number]>;
+  export type PaymentMethodHandlers = NonNullable<(NonNullable<GetPaymentMethodOperationsQuery['paymentMethodHandlers']>)[number]>;
+}
+
 export namespace GetPaymentMethod {
   export type Variables = GetPaymentMethodQueryVariables;
   export type Query = GetPaymentMethodQuery;
   export type PaymentMethod = (NonNullable<GetPaymentMethodQuery['paymentMethod']>);
+}
+
+export namespace CreatePaymentMethod {
+  export type Variables = CreatePaymentMethodMutationVariables;
+  export type Mutation = CreatePaymentMethodMutation;
+  export type CreatePaymentMethod = (NonNullable<CreatePaymentMethodMutation['createPaymentMethod']>);
 }
 
 export namespace UpdatePaymentMethod {
@@ -9321,6 +9446,8 @@ export namespace GetServerConfig {
   export type Permissions = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['permissions']>)[number]>;
   export type CustomFieldConfig = (NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>);
   export type Address = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Address']>)[number]>;
+  export type Administrator = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Administrator']>)[number]>;
+  export type Channel = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Channel']>)[number]>;
   export type Collection = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Collection']>)[number]>;
   export type Customer = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Customer']>)[number]>;
   export type Facet = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Facet']>)[number]>;

@@ -8,6 +8,8 @@ import {
     CreateChannelInput,
     CreateCountry,
     CreateCountryInput,
+    CreatePaymentMethod,
+    CreatePaymentMethodInput,
     CreateTaxCategory,
     CreateTaxCategoryInput,
     CreateTaxRate,
@@ -32,6 +34,7 @@ import {
     GetJobsById,
     GetPaymentMethod,
     GetPaymentMethodList,
+    GetPaymentMethodOperations,
     GetTaxCategories,
     GetTaxCategory,
     GetTaxRate,
@@ -61,6 +64,7 @@ import {
     CANCEL_JOB,
     CREATE_CHANNEL,
     CREATE_COUNTRY,
+    CREATE_PAYMENT_METHOD,
     CREATE_TAX_CATEGORY,
     CREATE_TAX_RATE,
     CREATE_ZONE,
@@ -82,6 +86,7 @@ import {
     GET_JOB_QUEUE_LIST,
     GET_PAYMENT_METHOD,
     GET_PAYMENT_METHOD_LIST,
+    GET_PAYMENT_METHOD_OPERATIONS,
     GET_TAX_CATEGORIES,
     GET_TAX_CATEGORY,
     GET_TAX_RATE,
@@ -317,6 +322,15 @@ export class SettingsDataService {
         );
     }
 
+    createPaymentMethod(input: CreatePaymentMethodInput) {
+        return this.baseDataService.mutate<CreatePaymentMethod.Mutation, CreatePaymentMethod.Variables>(
+            CREATE_PAYMENT_METHOD,
+            {
+                input,
+            },
+        );
+    }
+
     updatePaymentMethod(input: UpdatePaymentMethodInput) {
         return this.baseDataService.mutate<UpdatePaymentMethod.Mutation, UpdatePaymentMethod.Variables>(
             UPDATE_PAYMENT_METHOD,
@@ -324,6 +338,10 @@ export class SettingsDataService {
                 input,
             },
         );
+    }
+
+    getPaymentMethodOperations() {
+        return this.baseDataService.query<GetPaymentMethodOperations.Query>(GET_PAYMENT_METHOD_OPERATIONS);
     }
 
     getGlobalSettings(fetchPolicy?: WatchQueryFetchPolicy) {

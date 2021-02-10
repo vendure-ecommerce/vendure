@@ -10,6 +10,7 @@ import {
 } from '@vendure/common/lib/generated-types';
 import { DEFAULT_CHANNEL_CODE } from '@vendure/common/lib/shared-constants';
 import { ID, Type } from '@vendure/common/lib/shared-types';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
@@ -22,7 +23,9 @@ import { ConfigService } from '../../config/config.service';
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
 import { ProductVariantPrice } from '../../entity/product-variant/product-variant-price.entity';
+import { Session } from '../../entity/session/session.entity';
 import { Zone } from '../../entity/zone/zone.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
@@ -36,6 +39,7 @@ export class ChannelService {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private globalSettingsService: GlobalSettingsService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     /**
@@ -159,6 +163,7 @@ export class ChannelService {
             );
         }
         const newChannel = await this.connection.getRepository(ctx, Channel).save(channel);
+        await this.customFieldRelationService.updateRelations(ctx, Channel, input, newChannel);
         await this.updateAllChannels(ctx);
         return channel;
     }
@@ -191,12 +196,14 @@ export class ChannelService {
             );
         }
         await this.connection.getRepository(ctx, Channel).save(updatedChannel, { reload: false });
+        await this.customFieldRelationService.updateRelations(ctx, Channel, input, updatedChannel);
         await this.updateAllChannels(ctx);
         return assertFound(this.findOne(ctx, channel.id));
     }
 
     async delete(ctx: RequestContext, id: ID): Promise<DeletionResponse> {
         await this.connection.getEntityOrThrow(ctx, Channel, id);
+        await this.connection.getRepository(ctx, Session).delete({ activeChannelId: id });
         await this.connection.getRepository(ctx, Channel).delete(id);
         await this.connection.getRepository(ctx, ProductVariantPrice).delete({
             channelId: id,

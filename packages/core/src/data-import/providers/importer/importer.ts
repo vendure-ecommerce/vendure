@@ -238,6 +238,13 @@ export class Importer {
         languageCode: LanguageCode,
     ): Promise<ID[]> {
         const facetValueIds: ID[] = [];
+        const ctx = new RequestContext({
+            channel: this.channelService.getDefaultChannel(),
+            apiType: 'admin',
+            isAuthorized: true,
+            authorizedAsOwnerOnly: false,
+            session: {} as any,
+        });
 
         for (const item of facets) {
             const facetName = item.facet;
@@ -252,7 +259,7 @@ export class Importer {
                 if (existing) {
                     facetEntity = existing;
                 } else {
-                    facetEntity = await this.facetService.create(RequestContext.empty(), {
+                    facetEntity = await this.facetService.create(ctx, {
                         isPrivate: false,
                         code: normalizeString(facetName, '-'),
                         translations: [{ languageCode, name: facetName }],

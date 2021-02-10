@@ -35,6 +35,8 @@ export type Query = {
     collection?: Maybe<Collection>;
     /** Returns a list of eligible shipping methods based on the current active Order */
     eligibleShippingMethods: Array<ShippingMethodQuote>;
+    /** Returns a list of payment methods and their eligibility based on the current active Order */
+    eligiblePaymentMethods: Array<PaymentMethodQuote>;
     /** Returns information about the current authenticated User */
     me?: Maybe<CurrentUser>;
     /** Returns the possible next states that the activeOrder can transition to */
@@ -516,6 +518,7 @@ export enum ErrorCode {
     ORDER_MODIFICATION_ERROR = 'ORDER_MODIFICATION_ERROR',
     INELIGIBLE_SHIPPING_METHOD_ERROR = 'INELIGIBLE_SHIPPING_METHOD_ERROR',
     ORDER_PAYMENT_STATE_ERROR = 'ORDER_PAYMENT_STATE_ERROR',
+    INELIGIBLE_PAYMENT_METHOD_ERROR = 'INELIGIBLE_PAYMENT_METHOD_ERROR',
     PAYMENT_FAILED_ERROR = 'PAYMENT_FAILED_ERROR',
     PAYMENT_DECLINED_ERROR = 'PAYMENT_DECLINED_ERROR',
     COUPON_CODE_INVALID_ERROR = 'COUPON_CODE_INVALID_ERROR',
@@ -624,7 +627,7 @@ export type ConfigArgDefinition = {
     type: Scalars['String'];
     list: Scalars['Boolean'];
     required: Scalars['Boolean'];
-    defaultValue?: Maybe<Scalars['String']>;
+    defaultValue?: Maybe<Scalars['JSON']>;
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     ui?: Maybe<Scalars['JSON']>;
@@ -757,6 +760,23 @@ export type UpdateAddressInput = {
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
     success: Scalars['Boolean'];
+};
+
+export type ShippingMethodQuote = {
+    id: Scalars['ID'];
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
+    description: Scalars['String'];
+    /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethodQuote = {
+    id: Scalars['ID'];
+    code: Scalars['String'];
+    isEligible: Scalars['Boolean'];
+    eligibilityMessage?: Maybe<Scalars['String']>;
 };
 
 export type Country = Node & {
@@ -1771,15 +1791,6 @@ export type OrderList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodQuote = {
-    id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
-    name: Scalars['String'];
-    description: Scalars['String'];
-    metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type ShippingLine = {
     shippingMethod: ShippingMethod;
     price: Scalars['Int'];
@@ -1837,6 +1848,10 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /** If the unitPrice has changed since initially added to Order */
+    unitPriceChangeSinceAdded: Scalars['Int'];
+    /** If the unitPriceWithTax has changed since initially added to Order */
+    unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
      *
@@ -2189,6 +2204,7 @@ export type TaxCategory = Node & {
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
@@ -2241,7 +2257,7 @@ export type OrderModificationError = ErrorResult & {
     message: Scalars['String'];
 };
 
-/** Returned when attempting to set a ShippingMethod for which the order is not eligible */
+/** Returned when attempting to set a ShippingMethod for which the Order is not eligible */
 export type IneligibleShippingMethodError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
@@ -2251,6 +2267,13 @@ export type IneligibleShippingMethodError = ErrorResult & {
 export type OrderPaymentStateError = ErrorResult & {
     errorCode: ErrorCode;
     message: Scalars['String'];
+};
+
+/** Returned when attempting to add a Payment using a PaymentMethod for which the Order is not eligible. */
+export type IneligiblePaymentMethodError = ErrorResult & {
+    errorCode: ErrorCode;
+    message: Scalars['String'];
+    eligibilityCheckerMessage?: Maybe<Scalars['String']>;
 };
 
 /** Returned when a Payment fails due to an error. */
@@ -2432,6 +2455,7 @@ export type ApplyCouponCodeResult =
 export type AddPaymentToOrderResult =
     | Order
     | OrderPaymentStateError
+    | IneligiblePaymentMethodError
     | PaymentFailedError
     | PaymentDeclinedError
     | OrderStateTransitionError
@@ -2689,11 +2713,18 @@ export type TestOrderFragmentFragment = Pick<
     lines: Array<
         Pick<
             OrderLine,
-            'id' | 'quantity' | 'linePrice' | 'linePriceWithTax' | 'unitPrice' | 'unitPriceWithTax'
+            | 'id'
+            | 'quantity'
+            | 'linePrice'
+            | 'linePriceWithTax'
+            | 'unitPrice'
+            | 'unitPriceWithTax'
+            | 'unitPriceChangeSinceAdded'
+            | 'unitPriceWithTaxChangeSinceAdded'
         > & {
             productVariant: Pick<ProductVariant, 'id'>;
             discounts: Array<Pick<Adjustment, 'adjustmentSource' | 'amount' | 'description' | 'type'>>;
-            items: Array<Pick<OrderItem, 'id'>>;
+            items: Array<Pick<OrderItem, 'id' | 'unitPrice' | 'unitPriceWithTax'>>;
         }
     >;
     shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;
@@ -3071,6 +3102,7 @@ export type AddPaymentToOrderMutation = {
     addPaymentToOrder:
         | TestOrderWithPaymentsFragment
         | Pick<OrderPaymentStateError, 'errorCode' | 'message'>
+        | Pick<IneligiblePaymentMethodError, 'errorCode' | 'message' | 'eligibilityCheckerMessage'>
         | Pick<PaymentFailedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
         | Pick<PaymentDeclinedError, 'errorCode' | 'message' | 'paymentErrorMessage'>
         | Pick<OrderStateTransitionError, 'errorCode' | 'message' | 'transitionError'>
@@ -3140,6 +3172,14 @@ export type RemoveAllOrderLinesMutationVariables = Exact<{ [key: string]: never 
 
 export type RemoveAllOrderLinesMutation = {
     removeAllOrderLines: TestOrderFragmentFragment | Pick<OrderModificationError, 'errorCode' | 'message'>;
+};
+
+export type GetEligiblePaymentMethodsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetEligiblePaymentMethodsQuery = {
+    eligiblePaymentMethods: Array<
+        Pick<PaymentMethodQuote, 'id' | 'code' | 'eligibilityMessage' | 'isEligible'>
+    >;
 };
 
 type DiscriminateUnion<T, U> = T extends U ? T : never;
@@ -3573,6 +3613,10 @@ export namespace AddPaymentToOrder {
         NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>,
         { __typename?: 'OrderStateTransitionError' }
     >;
+    export type IneligiblePaymentMethodErrorInlineFragment = DiscriminateUnion<
+        NonNullable<AddPaymentToOrderMutation['addPaymentToOrder']>,
+        { __typename?: 'IneligiblePaymentMethodError' }
+    >;
 }
 
 export namespace GetActiveOrderPayments {
@@ -3647,5 +3691,13 @@ export namespace RemoveAllOrderLines {
     export type ErrorResultInlineFragment = DiscriminateUnion<
         NonNullable<RemoveAllOrderLinesMutation['removeAllOrderLines']>,
         { __typename?: 'ErrorResult' }
+    >;
+}
+
+export namespace GetEligiblePaymentMethods {
+    export type Variables = GetEligiblePaymentMethodsQueryVariables;
+    export type Query = GetEligiblePaymentMethodsQuery;
+    export type EligiblePaymentMethods = NonNullable<
+        NonNullable<GetEligiblePaymentMethodsQuery['eligiblePaymentMethods']>[number]
     >;
 }

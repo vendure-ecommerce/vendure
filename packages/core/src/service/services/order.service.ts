@@ -3,6 +3,7 @@ import {
     AddPaymentToOrderResult,
     ApplyCouponCodeResult,
     PaymentInput,
+    PaymentMethodQuote,
     RemoveOrderItemsResult,
     SetOrderShippingMethodResult,
     UpdateOrderItemsResult,
@@ -299,7 +300,7 @@ export class OrderService {
                 })
                 .leftJoinAndSelect('order.customer', 'customer')
                 .leftJoinAndSelect('order.shippingLines', 'shippingLines')
-                .where('active = :active', { active: true })
+                .where('order.active = :active', { active: true })
                 .andWhere('order.customer.id = :customerId', { customerId: customer.id })
                 .orderBy('order.createdAt', 'DESC')
                 .getOne();
@@ -366,26 +367,28 @@ export class OrderService {
             return validationError;
         }
         const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
-        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
-            ctx,
-            variant,
-            quantity,
-        );
-        if (correctedQuantity === 0) {
-            return new InsufficientStockError(correctedQuantity, order);
-        }
-        const orderLine = await this.orderModifier.getOrCreateItemOrderLine(
+        const existingOrderLine = this.orderModifier.getExistingOrderLine(
             ctx,
             order,
             productVariantId,
             customFields,
         );
-        await this.orderModifier.updateOrderLineQuantity(
+        const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
-            orderLine,
-            orderLine.quantity + correctedQuantity,
-            order,
+            variant,
+            quantity,
+            existingOrderLine?.quantity,
         );
+        if (correctedQuantity === 0) {
+            return new InsufficientStockError(correctedQuantity, order);
+        }
+        const orderLine = await this.orderModifier.getOrCreateOrderLine(
+            ctx,
+            order,
+            productVariantId,
+            customFields,
+        );
+        await this.orderModifier.updateOrderLineQuantity(ctx, orderLine, correctedQuantity, order);
         const quantityWasAdjustedDown = correctedQuantity < quantity;
         const updatedOrder = await this.applyPriceAdjustments(ctx, order, orderLine);
         if (quantityWasAdjustedDown) {
@@ -599,6 +602,11 @@ export class OrderService {
         });
     }
 
+    async getEligiblePaymentMethods(ctx: RequestContext, orderId: ID): Promise<PaymentMethodQuote[]> {
+        const order = await this.getOrderOrThrow(ctx, orderId);
+        return this.paymentMethodService.getEligiblePaymentMethods(ctx, order);
+    }
+
     async setShippingMethod(
         ctx: RequestContext,
         orderId: ID,
@@ -746,6 +754,10 @@ export class OrderService {
             input.method,
             input.metadata,
         );
+
+        if (isGraphQlErrorResult(payment)) {
+            return payment;
+        }
 
         const existingPayments = await this.getOrderPayments(ctx, orderId);
         order.payments = [...existingPayments, payment];
@@ -1172,7 +1184,7 @@ export class OrderService {
             return existingOrder;
         }
         const mergeResult = await this.orderMerger.merge(ctx, guestOrder, existingOrder);
-        const { orderToDelete, linesToInsert } = mergeResult;
+        const { orderToDelete, linesToInsert, linesToDelete, linesToModify } = mergeResult;
         let { order } = mergeResult;
         if (orderToDelete) {
             await this.connection.getRepository(ctx, Order).delete(orderToDelete.id);
@@ -1180,7 +1192,37 @@ export class OrderService {
         if (order && linesToInsert) {
             const orderId = order.id;
             for (const line of linesToInsert) {
-                const result = await this.addItemToOrder(ctx, orderId, line.productVariantId, line.quantity);
+                const result = await this.addItemToOrder(
+                    ctx,
+                    orderId,
+                    line.productVariantId,
+                    line.quantity,
+                    line.customFields,
+                );
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            }
+        }
+        if (order && linesToModify) {
+            const orderId = order.id;
+            for (const line of linesToModify) {
+                const result = await this.adjustOrderLine(
+                    ctx,
+                    orderId,
+                    line.orderLineId,
+                    line.quantity,
+                    line.customFields,
+                );
+                if (!isGraphQlErrorResult(result)) {
+                    order = result;
+                }
+            }
+        }
+        if (order && linesToDelete) {
+            const orderId = order.id;
+            for (const line of linesToDelete) {
+                const result = await this.removeItemFromOrder(ctx, orderId, line.orderLineId);
                 if (!isGraphQlErrorResult(result)) {
                     order = result;
                 }
@@ -1249,15 +1291,31 @@ export class OrderService {
         updatedOrderLine?: OrderLine,
     ): Promise<Order> {
         if (updatedOrderLine) {
-            const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
-            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
+            const {
+                orderItemPriceCalculationStrategy,
+                changedPriceHandlingStrategy,
+            } = this.configService.orderOptions;
+            let priceResult = await orderItemPriceCalculationStrategy.calculateUnitPrice(
                 ctx,
                 updatedOrderLine.productVariant,
                 updatedOrderLine.customFields || {},
             );
+            const initialListPrice =
+                updatedOrderLine.items.find(i => i.initialListPrice != null)?.initialListPrice ??
+                priceResult.price;
+            if (initialListPrice !== priceResult.price) {
+                priceResult = await changedPriceHandlingStrategy.handlePriceChange(
+                    ctx,
+                    priceResult,
+                    updatedOrderLine.items,
+                );
+            }
             for (const item of updatedOrderLine.items) {
-                item.listPrice = price;
-                item.listPriceIncludesTax = priceIncludesTax;
+                if (item.initialListPrice == null) {
+                    item.initialListPrice = initialListPrice;
+                }
+                item.listPrice = priceResult.price;
+                item.listPriceIncludesTax = priceResult.priceIncludesTax;
             }
         }
         const promotions = await this.connection.getRepository(ctx, Promotion).find({

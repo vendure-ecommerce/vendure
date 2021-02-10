@@ -110,7 +110,15 @@ describe('Promotions applied to Orders', () => {
 
     beforeAll(async () => {
         await server.init({
-            initialData,
+            initialData: {
+                ...initialData,
+                paymentMethods: [
+                    {
+                        name: testSuccessfulPaymentMethod.code,
+                        handler: { code: testSuccessfulPaymentMethod.code, arguments: [] },
+                    },
+                ],
+            },
             productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-promotions.csv'),
             customerCount: 2,
         });

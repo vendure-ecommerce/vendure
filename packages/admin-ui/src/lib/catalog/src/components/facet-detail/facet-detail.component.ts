@@ -133,7 +133,7 @@ export class FacetDetailComponent
                     ) as CreateFacetInput;
                     return this.dataService.facet.createFacet(newFacet);
                 }),
-                switchMap(data => this.dataService.facet.getAllFacets(true).single$.pipe(mapTo(data))),
+                switchMap(data => this.dataService.facet.getAllFacets().single$.pipe(mapTo(data))),
             )
             .subscribe(
                 data => {
@@ -196,7 +196,7 @@ export class FacetDetailComponent
 
                     return forkJoin(updateOperations);
                 }),
-                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
+                switchMap(() => this.dataService.facet.getAllFacets().single$),
             )
             .subscribe(
                 () => {

@@ -1,6 +1,7 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { GraphQLUpload } from 'apollo-server-core';
 import { IFieldResolver, IResolvers } from 'apollo-server-express';
+import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
 
@@ -27,6 +28,7 @@ export function generateResolvers(
     configService: ConfigService,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
     apiType: ApiType,
+    schema: GraphQLSchema,
 ) {
     // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
     // See https://github.com/apollographql/apollo-server/issues/1075
@@ -99,6 +101,7 @@ export function generateResolvers(
     const customFieldRelationResolvers = generateCustomFieldRelationResolvers(
         configService,
         customFieldRelationResolverService,
+        schema,
     );
 
     const adminResolvers = {
@@ -128,6 +131,7 @@ export function generateResolvers(
 function generateCustomFieldRelationResolvers(
     configService: ConfigService,
     customFieldRelationResolverService: CustomFieldRelationResolverService,
+    schema: GraphQLSchema,
 ) {
     const ENTITY_ID_KEY = '__entityId__';
     const adminResolvers: IResolvers = {};
@@ -135,7 +139,7 @@ function generateCustomFieldRelationResolvers(
 
     for (const [entityName, customFields] of Object.entries(configService.customFields)) {
         const relationCustomFields = customFields.filter(isRelationalType);
-        if (relationCustomFields.length === 0) {
+        if (relationCustomFields.length === 0 || !schema.getType(entityName)) {
             continue;
         }
         const customFieldTypeName = `${entityName}CustomFields`;

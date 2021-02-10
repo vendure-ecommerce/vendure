@@ -96,7 +96,7 @@ describe('Shop catalog', () => {
                 }
             `);
 
-            expect(result.products.items.map(item => item.id)).toEqual(['T_2', 'T_3', 'T_4']);
+            expect(result.products.items.map(item => item.id).sort()).toEqual(['T_2', 'T_3', 'T_4']);
         });
 
         it('by id', async () => {

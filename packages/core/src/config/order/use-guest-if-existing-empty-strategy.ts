@@ -1,8 +1,7 @@
 import { RequestContext } from '../../api/common/request-context';
-import { OrderLine } from '../../entity/order-line/order-line.entity';
 import { Order } from '../../entity/order/order.entity';
 
-import { OrderMergeStrategy } from './order-merge-strategy';
+import { MergedOrderLine, OrderMergeStrategy, toMergedOrderLine } from './order-merge-strategy';
 
 /**
  * @description
@@ -12,7 +11,9 @@ import { OrderMergeStrategy } from './order-merge-strategy';
  * @docsPage Merge Strategies
  */
 export class UseGuestIfExistingEmptyStrategy implements OrderMergeStrategy {
-    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): OrderLine[] {
-        return existingOrder.lines.length ? existingOrder.lines.slice() : guestOrder.lines.slice();
+    merge(ctx: RequestContext, guestOrder: Order, existingOrder: Order): MergedOrderLine[] {
+        return existingOrder.lines.length
+            ? existingOrder.lines.map(toMergedOrderLine)
+            : guestOrder.lines.map(toMergedOrderLine);
     }
 }

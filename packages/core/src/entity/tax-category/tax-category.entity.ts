@@ -16,4 +16,6 @@ export class TaxCategory extends VendureEntity {
     }
 
     @Column() name: string;
+
+    @Column({ default: false }) isDefault: boolean;
 }
