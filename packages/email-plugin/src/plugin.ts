@@ -13,14 +13,12 @@ import {
     RuntimeVendureConfig,
     Type,
     VendurePlugin,
-    WorkerService,
 } from '@vendure/core';
 
 import { isDevModeOptions } from './common';
 import { EMAIL_PLUGIN_OPTIONS } from './constants';
 import { DevMailbox } from './dev-mailbox';
 import { EmailProcessor } from './email-processor';
-import { EmailProcessorController } from './email-processor.controller';
 import { EmailEventHandler, EmailEventHandlerWithAsyncData } from './event-handler';
 import {
     EmailPluginDevModeOptions,
@@ -169,8 +167,7 @@ import {
  */
 @VendurePlugin({
     imports: [PluginCommonModule],
-    providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }],
-    workers: [EmailProcessorController],
+    providers: [{ provide: EMAIL_PLUGIN_OPTIONS, useFactory: () => EmailPlugin.options }, EmailProcessor],
     configuration: config => EmailPlugin.configure(config),
 })
 export class EmailPlugin implements OnApplicationBootstrap, OnVendureBootstrap, OnVendureClose {
@@ -183,7 +180,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnVendureBootstrap, 
     constructor(
         private eventBus: EventBus,
         private moduleRef: ModuleRef,
-        private workerService: WorkerService,
+        private emailProcessor: EmailProcessor,
         private jobQueueService: JobQueueService,
     ) {}
 
@@ -232,12 +229,7 @@ export class EmailPlugin implements OnApplicationBootstrap, OnVendureBootstrap, 
             this.jobQueue = this.jobQueueService.createQueue({
                 name: 'send-email',
                 process: job => {
-                    return new Promise((resolve, reject) => {
-                        this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
-                            complete: () => resolve(),
-                            error: err => reject(err),
-                        });
-                    });
+                    return this.emailProcessor.process(job.data);
                 },
             });
         }

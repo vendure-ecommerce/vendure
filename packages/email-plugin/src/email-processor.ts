@@ -1,9 +1,10 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { InternalServerError, Logger } from '@vendure/core';
 import fs from 'fs-extra';
 
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
-import { loggerCtx } from './constants';
+import { EMAIL_PLUGIN_OPTIONS, loggerCtx } from './constants';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
 import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
@@ -20,13 +21,14 @@ import {
  * the EmailPlugin. It is arranged this way primarily to accommodate easier testing, so that the
  * tests can be run without needing all the JobQueue stuff which would require a full e2e test.
  */
+@Injectable()
 export class EmailProcessor {
     protected templateLoader: TemplateLoader;
     protected emailSender: EmailSender;
     protected generator: EmailGenerator;
     protected transport: EmailTransportOptions;
 
-    constructor(protected options: EmailPluginOptions) {}
+    constructor(@Inject(EMAIL_PLUGIN_OPTIONS) protected options: EmailPluginOptions) {}
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
