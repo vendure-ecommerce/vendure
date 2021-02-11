@@ -1,5 +1,4 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
@@ -20,18 +19,14 @@ import { TransactionalConnection } from '../../../service/transaction/transactio
 import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
-    AssignProductToChannelMessage,
-    AssignVariantToChannelMessage,
-    DeleteAssetMessage,
-    DeleteProductMessage,
-    DeleteVariantMessage,
-    ReindexMessage,
-    RemoveProductFromChannelMessage,
-    RemoveVariantFromChannelMessage,
-    UpdateAssetMessage,
-    UpdateProductMessage,
-    UpdateVariantMessage,
-    UpdateVariantsByIdMessage,
+    ProductChannelMessageData,
+    ReindexMessageData,
+    ReindexMessageResponse,
+    UpdateAssetMessageData,
+    UpdateProductMessageData,
+    UpdateVariantMessageData,
+    UpdateVariantsByIdMessageData,
+    VariantChannelMessageData,
 } from '../types';
 
 export const BATCH_SIZE = 1000;
@@ -52,7 +47,7 @@ export const variantRelations = [
 
 export const workerLoggerCtx = 'DefaultSearchPlugin Worker';
 
-@Controller()
+@Injectable()
 export class IndexerController {
     private queue = new AsyncQueue('search-index');
 
@@ -62,8 +57,7 @@ export class IndexerController {
         private configService: ConfigService,
     ) {}
 
-    @MessagePattern(ReindexMessage.pattern)
-    reindex({ ctx: rawContext }: ReindexMessage['data']): Observable<ReindexMessage['response']> {
+    reindex({ ctx: rawContext }: ReindexMessageData): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.deserialize(rawContext);
         return asyncObservable(async observer => {
             const timeStart = Date.now();
@@ -101,11 +95,10 @@ export class IndexerController {
         });
     }
 
-    @MessagePattern(UpdateVariantsByIdMessage.pattern)
     updateVariantsById({
         ctx: rawContext,
         ids,
-    }: UpdateVariantsByIdMessage['data']): Observable<UpdateVariantsByIdMessage['response']> {
+    }: UpdateVariantsByIdMessageData): Observable<ReindexMessageResponse> {
         const ctx = RequestContext.deserialize(rawContext);
 
         return asyncObservable(async observer => {
@@ -140,117 +133,79 @@ export class IndexerController {
         });
     }
 
-    @MessagePattern(UpdateProductMessage.pattern)
-    updateProduct(data: UpdateProductMessage['data']): Observable<UpdateProductMessage['response']> {
+    async updateProduct(data: UpdateProductMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
-        });
+        return this.updateProductInChannel(ctx, data.productId, ctx.channelId);
     }
 
-    @MessagePattern(UpdateVariantMessage.pattern)
-    updateVariants(data: UpdateVariantMessage['data']): Observable<UpdateVariantMessage['response']> {
+    async updateVariants(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
-        });
+        return this.updateVariantsInChannel(ctx, data.variantIds, ctx.channelId);
     }
 
-    @MessagePattern(DeleteProductMessage.pattern)
-    deleteProduct(data: DeleteProductMessage['data']): Observable<DeleteProductMessage['response']> {
+    async deleteProduct(data: UpdateProductMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
-        });
+        return this.deleteProductInChannel(ctx, data.productId, ctx.channelId);
     }
 
-    @MessagePattern(DeleteVariantMessage.pattern)
-    deleteVariant(data: DeleteVariantMessage['data']): Observable<DeleteVariantMessage['response']> {
+    async deleteVariant(data: UpdateVariantMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
-            if (variants.length) {
-                await this.removeSearchIndexItems(
-                    ctx.languageCode,
-                    ctx.channelId,
-                    variants.map(v => v.id),
-                );
-            }
-            return true;
-        });
+        const variants = await this.connection.getRepository(ProductVariant).findByIds(data.variantIds);
+        if (variants.length) {
+            await this.removeSearchIndexItems(
+                ctx.languageCode,
+                ctx.channelId,
+                variants.map(v => v.id),
+            );
+        }
+        return true;
     }
 
-    @MessagePattern(AssignProductToChannelMessage.pattern)
-    assignProductToChannel(
-        data: AssignProductToChannelMessage['data'],
-    ): Observable<AssignProductToChannelMessage['response']> {
+    async assignProductToChannel(data: ProductChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateProductInChannel(ctx, data.productId, data.channelId);
-        });
+        return this.updateProductInChannel(ctx, data.productId, data.channelId);
     }
 
-    @MessagePattern(RemoveProductFromChannelMessage.pattern)
-    removeProductFromChannel(
-        data: RemoveProductFromChannelMessage['data'],
-    ): Observable<RemoveProductFromChannelMessage['response']> {
+    async removeProductFromChannel(data: ProductChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.deleteProductInChannel(ctx, data.productId, data.channelId);
-        });
+        return this.deleteProductInChannel(ctx, data.productId, data.channelId);
     }
 
-    @MessagePattern(AssignVariantToChannelMessage.pattern)
-    assignVariantToChannel(
-        data: AssignVariantToChannelMessage['data'],
-    ): Observable<AssignProductToChannelMessage['response']> {
+    async assignVariantToChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            return this.updateVariantsInChannel(ctx, [data.productVariantId], data.channelId);
-        });
+        return this.updateVariantsInChannel(ctx, [data.productVariantId], data.channelId);
     }
 
-    @MessagePattern(RemoveVariantFromChannelMessage.pattern)
-    removeVariantFromChannel(
-        data: RemoveVariantFromChannelMessage['data'],
-    ): Observable<RemoveProductFromChannelMessage['response']> {
+    async removeVariantFromChannel(data: VariantChannelMessageData): Promise<boolean> {
         const ctx = RequestContext.deserialize(data.ctx);
-        return asyncObservable(async () => {
-            await this.removeSearchIndexItems(ctx.languageCode, data.channelId, [data.productVariantId]);
-            return true;
-        });
+        await this.removeSearchIndexItems(ctx.languageCode, data.channelId, [data.productVariantId]);
+        return true;
     }
 
-    @MessagePattern(UpdateAssetMessage.pattern)
-    updateAsset(data: UpdateAssetMessage['data']): Observable<UpdateAssetMessage['response']> {
-        return asyncObservable(async () => {
-            const id = data.asset.id;
-            function getFocalPoint(point?: { x: number; y: number }) {
-                return point && point.x && point.y ? point : null;
-            }
-            const focalPoint = getFocalPoint(data.asset.focalPoint);
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productAssetId: id }, { productPreviewFocalPoint: focalPoint });
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
-            return true;
-        });
+    async updateAsset(data: UpdateAssetMessageData): Promise<boolean> {
+        const id = data.asset.id;
+        function getFocalPoint(point?: { x: number; y: number }) {
+            return point && point.x && point.y ? point : null;
+        }
+        const focalPoint = getFocalPoint(data.asset.focalPoint);
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productAssetId: id }, { productPreviewFocalPoint: focalPoint });
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productVariantAssetId: id }, { productVariantPreviewFocalPoint: focalPoint });
+        return true;
     }
 
-    @MessagePattern(DeleteAssetMessage.pattern)
-    deleteAsset(data: DeleteAssetMessage['data']): Observable<DeleteAssetMessage['response']> {
-        return asyncObservable(async () => {
-            const id = data.asset.id;
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productAssetId: id }, { productAssetId: null });
-            await this.connection
-                .getRepository(SearchIndexItem)
-                .update({ productVariantAssetId: id }, { productVariantAssetId: null });
-            return true;
-        });
+    async deleteAsset(data: UpdateAssetMessageData): Promise<boolean> {
+        const id = data.asset.id;
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productAssetId: id }, { productAssetId: null });
+        await this.connection
+            .getRepository(SearchIndexItem)
+            .update({ productVariantAssetId: id }, { productVariantAssetId: null });
+        return true;
     }
 
     private async updateProductInChannel(
