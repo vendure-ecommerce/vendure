@@ -150,18 +150,18 @@ export class OrderModifier {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
+            const newOrderItems = [];
             for (let i = currentQuantity; i < quantity; i++) {
-                const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
-                    new OrderItem({
-                        listPrice: orderLine.productVariant.price,
-                        listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
-                        adjustments: [],
-                        taxLines: [],
-                        line: orderLine,
-                    }),
-                );
-                orderLine.items.push(orderItem);
+                newOrderItems.push(new OrderItem({
+                    listPrice: orderLine.productVariant.price,
+                    listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
+                    adjustments: [],
+                    taxLines: [],
+                    line: orderLine,
+                }));
             }
+            await this.connection.getRepository(ctx, OrderItem).createQueryBuilder().insert().values(newOrderItems);
+            orderLine.items = orderLine.items.concat(newOrderItems);
         } else if (quantity < currentQuantity) {
             if (order.active) {
                 // When an Order is still active, it is fine to just delete
