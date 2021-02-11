@@ -38,8 +38,8 @@ import { VendurePlugin } from '@vendure/core';
 export class RandomCatPlugin {}
 ```
 
-Changing the database schema by `CustomFields` configuration requires a synchronized database. See [Customizing Models With Custom Fields]({{< relref "customizing-models" >}}) for more details.
-
+Changing the database schema by `CustomFields` configuration requires a synchronized database. See [Customizing Models With Custom Fields](https://www.vendure.io/docs/developer-guide/customizing-models/)
+for more details.
 
 ### Step 2: Create a service to fetch the data
 
