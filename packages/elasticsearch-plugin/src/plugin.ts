@@ -196,6 +196,7 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         ElasticsearchIndexService,
         ElasticsearchService,
         ElasticsearchHealthIndicator,
+        ElasticsearchIndexerController,
         { provide: ELASTIC_SEARCH_OPTIONS, useFactory: () => ElasticsearchPlugin.options },
     ],
     adminApiExtensions: { resolvers: [AdminElasticSearchResolver] },
@@ -213,7 +214,6 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
         // which looks like possibly a TS/definitions bug.
         schema: () => generateSchemaExtensions(ElasticsearchPlugin.options as any),
     },
-    workers: [ElasticsearchIndexerController],
 })
 export class ElasticsearchPlugin implements OnApplicationBootstrap {
     private static options: ElasticsearchRuntimeOptions;
@@ -252,7 +252,6 @@ export class ElasticsearchPlugin implements OnApplicationBootstrap {
         Logger.info(`Successfully connected to Elasticsearch instance at "${nodeName}"`, loggerCtx);
 
         await this.elasticsearchService.createIndicesIfNotExists();
-        this.elasticsearchIndexService.initJobQueue();
         this.healthCheckRegistryService.registerIndicatorFunction(() =>
             this.elasticsearchHealthIndicator.isHealthy(),
         );

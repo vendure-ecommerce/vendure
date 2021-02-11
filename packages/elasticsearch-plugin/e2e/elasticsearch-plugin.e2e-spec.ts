@@ -102,11 +102,6 @@ describe('Elasticsearch plugin', () => {
             apiOptions: {
                 port: 4050,
             },
-            workerOptions: {
-                options: {
-                    port: 4055,
-                },
-            },
             logger: new DefaultLogger({ level: LogLevel.Info }),
             plugins: [
                 ElasticsearchPlugin.init({
