@@ -633,6 +633,66 @@ describe('ListQueryBuilder', () => {
             expect(testEntities.items.map((x: any) => x.label)).toEqual(['B', 'A', 'E', 'D', 'C']);
         });
     });
+
+    describe('multiple clauses', () => {
+        it('sort by translated field en & filter', async () => {
+            const { testEntities } = await adminClient.query(GET_LIST, {
+                options: {
+                    sort: {
+                        name: SortOrder.ASC,
+                    },
+                    filter: {
+                        order: {
+                            gte: 1,
+                        },
+                    },
+                },
+            });
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['bike', 'cake', 'dog', 'egg']);
+        });
+
+        it('sort by translated field de & filter', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                        filter: {
+                            order: {
+                                gte: 1,
+                            },
+                        },
+                    },
+                },
+                { languageCode: LanguageCode.de },
+            );
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['egg', 'fahrrad', 'hund', 'kuchen']);
+        });
+
+        it('sort by translated field de & filter & pagination', async () => {
+            const { testEntities } = await adminClient.query(
+                GET_LIST,
+                {
+                    options: {
+                        sort: {
+                            name: SortOrder.ASC,
+                        },
+                        filter: {
+                            order: {
+                                gte: 1,
+                            },
+                        },
+                        take: 2,
+                        skip: 1,
+                    },
+                },
+                { languageCode: LanguageCode.de },
+            );
+            expect(testEntities.items.map((x: any) => x.name)).toEqual(['fahrrad', 'hund']);
+        });
+    });
 });
 
 const GET_LIST = gql`

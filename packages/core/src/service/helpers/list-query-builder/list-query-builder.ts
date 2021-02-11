@@ -154,34 +154,38 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
                 'translations',
             );
 
-            qb.andWhere(`${translationsAlias}.languageCode = :languageCode`, { languageCode });
+            qb.andWhere(
+                new Brackets(qb1 => {
+                    qb1.where(`${translationsAlias}.languageCode = :languageCode`, { languageCode });
 
-            if (languageCode !== this.configService.defaultLanguageCode) {
-                // If the current languageCode is not the default, then we create a more
-                // complex WHERE clause to allow us to use the non-default translations and
-                // fall back to the default language if no translation exists.
-                qb.orWhere(
-                    new Brackets(qb1 => {
-                        const translationEntity = translationColumns[0].entityMetadata.target;
-                        const subQb1 = this.connection.rawConnection
-                            .createQueryBuilder(translationEntity, 'translation')
-                            .where(`translation.base = ${alias}.id`)
-                            .andWhere('translation.languageCode = :defaultLanguageCode');
-                        const subQb2 = this.connection.rawConnection
-                            .createQueryBuilder(translationEntity, 'translation')
-                            .where(`translation.base = ${alias}.id`)
-                            .andWhere('translation.languageCode = :nonDefaultLanguageCode');
+                    if (languageCode !== this.configService.defaultLanguageCode) {
+                        // If the current languageCode is not the default, then we create a more
+                        // complex WHERE clause to allow us to use the non-default translations and
+                        // fall back to the default language if no translation exists.
+                        qb1.orWhere(
+                            new Brackets(qb2 => {
+                                const translationEntity = translationColumns[0].entityMetadata.target;
+                                const subQb1 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode = :defaultLanguageCode');
+                                const subQb2 = this.connection.rawConnection
+                                    .createQueryBuilder(translationEntity, 'translation')
+                                    .where(`translation.base = ${alias}.id`)
+                                    .andWhere('translation.languageCode = :nonDefaultLanguageCode');
 
-                        qb1.where(`EXISTS (${subQb1.getQuery()})`).andWhere(
-                            `NOT EXISTS (${subQb2.getQuery()})`,
+                                qb2.where(`EXISTS (${subQb1.getQuery()})`).andWhere(
+                                    `NOT EXISTS (${subQb2.getQuery()})`,
+                                );
+                            }),
                         );
-                    }),
-                );
-                qb.setParameters({
-                    nonDefaultLanguageCode: languageCode,
-                    defaultLanguageCode: this.configService.defaultLanguageCode,
-                });
-            }
+                        qb.setParameters({
+                            nonDefaultLanguageCode: languageCode,
+                            defaultLanguageCode: this.configService.defaultLanguageCode,
+                        });
+                    }
+                }),
+            );
         }
     }
 
