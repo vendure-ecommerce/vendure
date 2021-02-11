@@ -1329,8 +1329,8 @@ export class OrderService {
             updatedOrderLine ? [updatedOrderLine] : [],
         );
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
-        await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
+        await this.connection.getRepository(ctx, OrderItem).createQueryBuilder().insert().values(updatedItems);
+        await this.connection.getRepository(ctx, ShippingLine).createQueryBuilder().insert().values(order.shippingLines);
         return order;
     }
 
