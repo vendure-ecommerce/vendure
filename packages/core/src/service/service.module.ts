@@ -2,14 +2,13 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConnectionOptions } from 'typeorm';
 
+import { CacheModule } from '../cache/cache.module';
 import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { TypeOrmLogger } from '../config/logger/typeorm-logger';
 import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
-import { WorkerServiceModule } from '../worker/worker-service.module';
 
-import { TaxRateController } from './controllers/tax-rate.controller';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
@@ -116,8 +115,6 @@ const helpers = [
     CustomFieldRelationService,
 ];
 
-const workerControllers = [TaxRateController];
-
 let defaultTypeOrmModule: DynamicModule;
 let workerTypeOrmModule: DynamicModule;
 
@@ -127,7 +124,7 @@ let workerTypeOrmModule: DynamicModule;
  * only run a single time.
  */
 @Module({
-    imports: [ConfigModule, EventBusModule, WorkerServiceModule, JobQueueModule],
+    imports: [ConfigModule, EventBusModule, CacheModule, JobQueueModule],
     providers: [...services, ...helpers, InitializerService],
     exports: [...services, ...helpers],
 })
@@ -195,7 +192,6 @@ export class ServiceModule {
         return {
             module: ServiceModule,
             imports: [workerTypeOrmModule, ConfigModule],
-            controllers: workerControllers,
         };
     }
 

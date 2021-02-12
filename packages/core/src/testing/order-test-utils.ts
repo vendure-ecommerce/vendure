@@ -124,7 +124,7 @@ export class MockTaxRateService {
         /* noop */
     }
 
-    getApplicableTaxRate(zone: Zone, taxCategory: TaxCategory): TaxRate {
+    async getApplicableTaxRate(ctx: RequestContext, zone: Zone, taxCategory: TaxCategory): Promise<TaxRate> {
         const rate = this.activeTaxRates.find(r => r.test(zone, taxCategory));
         return rate || taxRateDefaultStandard;
     }

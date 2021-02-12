@@ -711,10 +711,13 @@ export class ElasticsearchIndexerController implements OnModuleInit, OnModuleDes
     /**
      * Given an array of ProductVariants, this method applies the correct taxes and translations.
      */
-    private hydrateVariants(ctx: RequestContext, variants: ProductVariant[]): ProductVariant[] {
-        return variants
-            .map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx))
-            .map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
+    private async hydrateVariants(
+        ctx: RequestContext,
+        variants: ProductVariant[],
+    ): Promise<ProductVariant[]> {
+        return (
+            await Promise.all(variants.map(v => this.productVariantService.applyChannelPriceAndTax(v, ctx)))
+        ).map(v => translateDeep(v, ctx.languageCode, ['product', 'collections']));
     }
 
     private createVariantIndexItem(

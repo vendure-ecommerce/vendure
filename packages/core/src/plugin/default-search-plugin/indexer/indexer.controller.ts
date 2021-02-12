@@ -318,7 +318,7 @@ export class IndexerController {
                         isAuthorized: true,
                         session: {} as any,
                     });
-                    this.productVariantService.applyChannelPriceAndTax(variant, ctx);
+                    await this.productVariantService.applyChannelPriceAndTax(variant, ctx);
                     items.push(
                         new SearchIndexItem({
                             channelId: channel.id,

@@ -118,7 +118,7 @@ export class OrderTestingService {
                 line.productVariantId,
                 { relations: ['taxCategory'] },
             );
-            this.productVariantService.applyChannelPriceAndTax(productVariant, ctx);
+            await this.productVariantService.applyChannelPriceAndTax(productVariant, ctx);
             const orderLine = new OrderLine({
                 productVariant,
                 items: [],

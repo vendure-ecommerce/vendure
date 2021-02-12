@@ -12,7 +12,7 @@ import { TaxRateService } from '../../service/services/tax-rate.service';
  * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
-    calculate(args: ProductVariantPriceCalculationArgs): PriceCalculationResult;
+    calculate(args: ProductVariantPriceCalculationArgs): Promise<PriceCalculationResult>;
 }
 
 /**

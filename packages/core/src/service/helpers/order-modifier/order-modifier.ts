@@ -125,7 +125,7 @@ export class OrderModifier {
             ],
         });
         lineWithRelations.productVariant = translateDeep(
-            this.productVariantService.applyChannelPriceAndTax(lineWithRelations.productVariant, ctx),
+            await this.productVariantService.applyChannelPriceAndTax(lineWithRelations.productVariant, ctx),
             ctx.languageCode,
         );
         order.lines.push(lineWithRelations);

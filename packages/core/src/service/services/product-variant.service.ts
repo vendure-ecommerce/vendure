@@ -78,8 +78,10 @@ export class ProductVariantService {
             })
             .getManyAndCount()
             .then(async ([variants, totalItems]) => {
-                const items = variants.map(variant =>
-                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode),
+                const items = await Promise.all(
+                    variants.map(async variant =>
+                        translateDeep(await this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode),
+                    ),
                 );
                 return {
                     items,
@@ -92,9 +94,9 @@ export class ProductVariantService {
         const relations = ['product', 'product.featuredAsset', 'taxCategory'];
         return this.connection
             .findOneInChannel(ctx, ProductVariant, productVariantId, ctx.channelId, { relations })
-            .then(result => {
+            .then(async result => {
                 if (result) {
-                    return translateDeep(this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
+                    return translateDeep(await this.applyChannelPriceAndTax(result, ctx), ctx.languageCode, [
                         'product',
                     ]);
                 }
@@ -114,12 +116,14 @@ export class ProductVariantService {
                 ],
             })
             .then(variants => {
-                return variants.map(variant =>
-                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
-                        'options',
-                        'facetValues',
-                        ['facetValues', 'facet'],
-                    ]),
+                return Promise.all(
+                    variants.map(async variant =>
+                        translateDeep(await this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode, [
+                            'options',
+                            'facetValues',
+                            ['facetValues', 'facet'],
+                        ]),
+                    ),
                 );
             });
     }
@@ -147,15 +151,18 @@ export class ProductVariantService {
             .andWhere('productVariant.deletedAt IS NULL')
             .orderBy('productVariant.id', 'ASC')
             .getMany()
-            .then(variants =>
-                variants.map(variant => {
-                    const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
-                    return translateDeep(variantWithPrices, ctx.languageCode, [
-                        'options',
-                        'facetValues',
-                        ['facetValues', 'facet'],
-                    ]);
-                }),
+            .then(
+                async variants =>
+                    await Promise.all(
+                        variants.map(async variant => {
+                            const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
+                            return translateDeep(variantWithPrices, ctx.languageCode, [
+                                'options',
+                                'facetValues',
+                                ['facetValues', 'facet'],
+                            ]);
+                        }),
+                    ),
             );
     }
 
@@ -180,10 +187,12 @@ export class ProductVariantService {
         }
 
         return qb.getManyAndCount().then(async ([variants, totalItems]) => {
-            const items = variants.map(variant => {
-                const variantWithPrices = this.applyChannelPriceAndTax(variant, ctx);
-                return translateDeep(variantWithPrices, ctx.languageCode);
-            });
+            const items = await Promise.all(
+                variants.map(async variant => {
+                    const variantWithPrices = await this.applyChannelPriceAndTax(variant, ctx);
+                    return translateDeep(variantWithPrices, ctx.languageCode);
+                }),
+            );
             return {
                 items,
                 totalItems,
@@ -484,7 +493,7 @@ export class ProductVariantService {
     /**
      * Populates the `price` field with the price for the specified channel.
      */
-    applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
+    async applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): Promise<ProductVariant> {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
             throw new InternalServerError(`error.no-price-found-for-channel`, {
@@ -498,13 +507,14 @@ export class ProductVariantService {
         if (!activeTaxZone) {
             throw new InternalServerError(`error.no-active-tax-zone`);
         }
-        const applicableTaxRate = this.taxRateService.getApplicableTaxRate(
+        const applicableTaxRate = await this.taxRateService.getApplicableTaxRate(
+            ctx,
             activeTaxZone,
             variant.taxCategory,
         );
 
         const { productVariantPriceCalculationStrategy } = this.configService.catalogOptions;
-        const { price, priceIncludesTax } = productVariantPriceCalculationStrategy.calculate({
+        const { price, priceIncludesTax } = await productVariantPriceCalculationStrategy.calculate({
             inputPrice: channelPrice.price,
             taxCategory: variant.taxCategory,
             activeTaxZone,
@@ -535,7 +545,7 @@ export class ProductVariantService {
             .findByIds(input.productVariantIds, { relations: ['taxCategory', 'assets'] });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
-            this.applyChannelPriceAndTax(variant, ctx);
+            await this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
             await this.createOrUpdateProductVariantPrice(

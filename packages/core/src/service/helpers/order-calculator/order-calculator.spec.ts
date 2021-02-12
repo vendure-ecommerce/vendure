@@ -27,7 +27,6 @@ import {
     taxCategoryStandard,
     taxCategoryZero,
 } from '../../../testing/order-test-utils';
-import { WorkerService } from '../../../worker/worker.service';
 import { ShippingMethodService } from '../../services/shipping-method.service';
 import { TaxRateService } from '../../services/tax-rate.service';
 import { ZoneService } from '../../services/zone.service';
@@ -1559,7 +1558,6 @@ function createTestModule() {
             { provide: ListQueryBuilder, useValue: {} },
             { provide: ConfigService, useClass: MockConfigService },
             { provide: EventBus, useValue: { publish: () => ({}) } },
-            { provide: WorkerService, useValue: { send: () => ({}) } },
             { provide: ZoneService, useValue: { findAll: () => [] } },
         ],
     }).compile();

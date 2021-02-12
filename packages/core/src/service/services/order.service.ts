@@ -204,12 +204,12 @@ export class OrderService {
             .addOrderBy('items.createdAt', 'ASC')
             .getOne();
         if (order) {
-            order.lines.forEach(line => {
+            for (const line of order.lines) {
                 line.productVariant = translateDeep(
-                    this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
+                    await this.productVariantService.applyChannelPriceAndTax(line.productVariant, ctx),
                     ctx.languageCode,
                 );
-            });
+            }
             return order;
         }
     }
