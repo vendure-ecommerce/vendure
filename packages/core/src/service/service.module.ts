@@ -9,7 +9,6 @@ import { EventBusModule } from '../event-bus/event-bus.module';
 import { JobQueueModule } from '../job-queue/job-queue.module';
 import { WorkerServiceModule } from '../worker/worker-service.module';
 
-import { CollectionController } from './controllers/collection.controller';
 import { TaxRateController } from './controllers/tax-rate.controller';
 import { ConfigArgService } from './helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
@@ -117,7 +116,7 @@ const helpers = [
     CustomFieldRelationService,
 ];
 
-const workerControllers = [CollectionController, TaxRateController];
+const workerControllers = [TaxRateController];
 
 let defaultTypeOrmModule: DynamicModule;
 let workerTypeOrmModule: DynamicModule;

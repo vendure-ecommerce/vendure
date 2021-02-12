@@ -28,10 +28,8 @@ import { EventBus } from '../../event-bus/event-bus';
 import { CollectionModificationEvent } from '../../event-bus/events/collection-modification-event';
 import { ProductEvent } from '../../event-bus/events/product-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
-import { Job } from '../../job-queue/job';
 import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
-import { WorkerService } from '../../worker/worker.service';
 import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
 import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
@@ -40,11 +38,12 @@ import { TranslatableSaver } from '../helpers/translatable-saver/translatable-sa
 import { moveToIndex } from '../helpers/utils/move-to-index';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
-import { ApplyCollectionFiltersJobData, ApplyCollectionFiltersMessage } from '../types/collection-messages';
 
 import { AssetService } from './asset.service';
 import { ChannelService } from './channel.service';
 import { FacetValueService } from './facet-value.service';
+
+type ApplyCollectionFiltersJobData = { ctx: SerializedRequestContext; collectionIds: ID[] };
 
 @Injectable()
 export class CollectionService implements OnModuleInit {
@@ -59,7 +58,6 @@ export class CollectionService implements OnModuleInit {
         private listQueryBuilder: ListQueryBuilder,
         private translatableSaver: TranslatableSaver,
         private eventBus: EventBus,
-        private workerService: WorkerService,
         private jobQueueService: JobQueueService,
         private configService: ConfigService,
         private slugValidator: SlugValidator,
@@ -84,10 +82,19 @@ export class CollectionService implements OnModuleInit {
         this.applyFiltersQueue = this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             process: async job => {
+                const ctx = RequestContext.deserialize(job.data.ctx);
+
+                Logger.verbose(`Processing ${job.data.collectionIds.length} Collections`);
                 const collections = await this.connection
                     .getRepository(Collection)
-                    .findByIds(job.data.collectionIds);
-                return this.applyCollectionFilters(job.data.ctx, collections, job);
+                    .findByIds(job.data.collectionIds, {
+                        relations: ['productVariants'],
+                    });
+                let completed = 0;
+                for (const collection of collections) {
+                    await this.applyCollectionFiltersInternal(collection);
+                    job.setProgress(Math.ceil((++completed / job.data.collectionIds.length) * 100));
+                }
             },
         });
     }
@@ -393,37 +400,55 @@ export class CollectionService implements OnModuleInit {
     }
 
     /**
-     * Applies the CollectionFilters and returns an array of all affected ProductVariant ids.
+     * Applies the CollectionFilters
      */
-    private async applyCollectionFilters(
-        ctx: SerializedRequestContext,
-        collections: Collection[],
-        job: Job<ApplyCollectionFiltersJobData>,
-    ): Promise<void> {
-        const collectionIds = collections.map(c => c.id);
-        const requestContext = RequestContext.deserialize(ctx);
+    private async applyCollectionFiltersInternal(collection: Collection): Promise<void> {
+        const ancestorFilters = await this.getAncestors(collection.id).then(ancestors =>
+            ancestors.reduce(
+                (filters, c) => [...filters, ...(c.filters || [])],
+                [] as ConfigurableOperation[],
+            ),
+        );
+        collection.productVariants = await this.getFilteredProductVariants([
+            ...ancestorFilters,
+            ...(collection.filters || []),
+        ]);
+        try {
+            await this.connection
+                .getRepository(Collection)
+                // Only update the exact changed properties, to avoid VERY hard-to-debug
+                // non-deterministic race conditions e.g. when the "position" is changed
+                // by moving a Collection and then this save operation clobbers it back
+                // to the old value.
+                .save(pick(collection, ['id', 'productVariants']), {
+                    chunk: Math.ceil(collection.productVariants.length / 500),
+                    reload: false,
+                });
+        } catch (e) {
+            Logger.error(e);
+        }
+    }
 
-        return new Promise<void>((resolve, reject) => {
-            this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
-                next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
-                    const progress = Math.ceil((completed / total) * 100);
-                    const collection = collections.find(c => idsAreEqual(c.id, collectionId));
-                    if (collection) {
-                        this.eventBus.publish(
-                            new CollectionModificationEvent(requestContext, collection, affectedVariantIds),
-                        );
-                    }
-                    job.setProgress(progress);
-                },
-                complete: () => {
-                    resolve();
-                },
-                error: err => {
-                    Logger.error(err);
-                    reject(err);
-                },
-            });
-        });
+    /**
+     * Applies the CollectionFilters and returns an array of ProductVariant entities which match.
+     */
+    private async getFilteredProductVariants(filters: ConfigurableOperation[]): Promise<ProductVariant[]> {
+        if (filters.length === 0) {
+            return [];
+        }
+        const { collectionFilters } = this.configService.catalogOptions;
+        let qb = this.connection.getRepository(ProductVariant).createQueryBuilder('productVariant');
+
+        for (const filterType of collectionFilters) {
+            const filtersOfType = filters.filter(f => f.code === filterType.code);
+            if (filtersOfType.length) {
+                for (const filter of filtersOfType) {
+                    qb = filterType.apply(qb, filter.args);
+                }
+            }
+        }
+
+        return qb.getMany();
     }
 
     /**
