@@ -143,7 +143,7 @@ export class AssetService {
                 entity.id,
                 ctx.channelId,
                 {
-                    relations: ['assets', 'assets.channels'],
+                    relations: ['assets'],
                 },
             );
             assets = (entityWithAssets && entityWithAssets.assets) || [];
