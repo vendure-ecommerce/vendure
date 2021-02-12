@@ -143,7 +143,7 @@ export class AssetService {
                 entity.id,
                 ctx.channelId,
                 {
-                    relations: ['assets'],
+                    relations: ['assets', 'assets.channels'],
                 },
             );
             assets = (entityWithAssets && entityWithAssets.assets) || [];
@@ -182,9 +182,8 @@ export class AssetService {
         if (!entity.id) {
             throw new InternalServerError('error.entity-must-have-an-id');
         }
-        const { assetIds, featuredAssetId } = input;
+        const { assetIds } = input;
         if (assetIds && assetIds.length) {
-            // const assets = await this.connection.getRepository(ctx, Asset).findByIds(assetIds);
             const assets = await this.connection.findByIdsInChannel(ctx, Asset, assetIds, ctx.channelId, {});
             const sortedAssets = assetIds
                 .map(id => assets.find(a => idsAreEqual(a.id, id)))
@@ -242,7 +241,7 @@ export class AssetService {
             relations: ['channels'],
         });
         let channelsOfAssets: ID[] = [];
-        assets.map(a => a.channels.map(c => channelsOfAssets.push(c.id)));
+        assets.forEach(a => a.channels.forEach(c => channelsOfAssets.push(c.id)));
         channelsOfAssets = unique(channelsOfAssets);
         const usageCount = {
             products: 0,
@@ -272,8 +271,11 @@ export class AssetService {
             throw new ForbiddenError();
         }
         if (!deleteFromAllChannels) {
-            assets.map(asset =>
-                this.channelService.removeFromChannels(ctx, Asset, asset.id, [ctx.channelId]),
+            await Promise.all(
+                assets.map(async asset => {
+                    await this.channelService.removeFromChannels(ctx, Asset, asset.id, [ctx.channelId]);
+                    this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+                }),
             );
             const isOnlyChannel = channelsOfAssets.length === 1;
             if (isOnlyChannel) {
@@ -285,7 +287,12 @@ export class AssetService {
             };
         }
         // This leaves us with deleteFromAllChannels with force or deleteFromAllChannels with no current usages
-        assets.map(asset => this.channelService.removeFromChannels(ctx, Asset, asset.id, channelsOfAssets));
+        await Promise.all(
+            assets.map(async asset => {
+                await this.channelService.removeFromChannels(ctx, Asset, asset.id, channelsOfAssets);
+                this.eventBus.publish(new AssetChannelEvent(ctx, asset, ctx.channelId, 'removed'));
+            }),
+        );
         return this.deleteUnconditional(ctx, assets);
     }
 
@@ -363,7 +370,7 @@ export class AssetService {
     private async hasDeletePermissionForChannels(ctx: RequestContext, channelIds: ID[]): Promise<boolean> {
         const permissions = await Promise.all(
             channelIds.map(async channelId => {
-                return this.roleService.userHasPermissionOnChannel(ctx, channelId, Permission.UpdateCatalog);
+                return this.roleService.userHasPermissionOnChannel(ctx, channelId, Permission.DeleteCatalog);
             }),
         );
         return !permissions.includes(false);

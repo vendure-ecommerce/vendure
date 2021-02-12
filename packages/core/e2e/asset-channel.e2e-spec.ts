@@ -5,6 +5,7 @@ import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
+import { DefaultLogger, LogLevel } from '../src/config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -29,41 +30,44 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-describe('ChannelAware Assets', () => {
-    const { server, adminClient } = createTestEnvironment(testConfig);
-    const SECOND_CHANNEL_TOKEN = 'second_channel_token';
-    let createdAssetId: string;
-    let channel2Id: string;
-    let featuredAssetId: string;
+// FIXME
+testConfig.logger = new DefaultLogger({ level: LogLevel.Debug });
 
-    beforeAll(async () => {
-        await server.init({
-            initialData,
-            productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
-            customerCount: 1,
-        });
-        await adminClient.asSuperAdmin();
-        const { createChannel } = await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(
-            CREATE_CHANNEL,
-            {
-                input: {
-                    code: 'second-channel',
-                    token: SECOND_CHANNEL_TOKEN,
-                    defaultLanguageCode: LanguageCode.en,
-                    currencyCode: CurrencyCode.GBP,
-                    pricesIncludeTax: true,
-                    defaultShippingZoneId: 'T_1',
-                    defaultTaxZoneId: 'T_1',
-                },
-            },
-        );
-        channel2Id = createChannel.id;
-    }, TEST_SETUP_TIMEOUT_MS);
+const { server, adminClient } = createTestEnvironment(testConfig);
+const SECOND_CHANNEL_TOKEN = 'second_channel_token';
+let createdAssetId: string;
+let channel2Id: string;
+let featuredAssetId: string;
 
-    afterAll(async () => {
-        await server.destroy();
+beforeAll(async () => {
+    await server.init({
+        initialData,
+        productsCsvPath: path.join(__dirname, 'fixtures/e2e-products-full.csv'),
+        customerCount: 1,
     });
+    await adminClient.asSuperAdmin();
+    const { createChannel } = await adminClient.query<CreateChannel.Mutation, CreateChannel.Variables>(
+        CREATE_CHANNEL,
+        {
+            input: {
+                code: 'second-channel',
+                token: SECOND_CHANNEL_TOKEN,
+                defaultLanguageCode: LanguageCode.en,
+                currencyCode: CurrencyCode.GBP,
+                pricesIncludeTax: true,
+                defaultShippingZoneId: 'T_1',
+                defaultTaxZoneId: 'T_1',
+            },
+        },
+    );
+    channel2Id = createChannel.id;
+}, TEST_SETUP_TIMEOUT_MS);
 
+afterAll(async () => {
+    await server.destroy();
+});
+
+describe('ChannelAware Assets', () => {
     it('Create asset in default channel', async () => {
         const filesToUpload = [path.join(__dirname, 'fixtures/assets/pps2.jpg')];
         const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
@@ -188,8 +192,10 @@ describe('ChannelAware Assets', () => {
         });
         expect(asset?.id).toBeUndefined();
     });
+});
 
-    it('Featured asset is not available in channel2', async () => {
+describe('Product related assets', () => {
+    it('Featured asset is available in default channel', async () => {
         await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { product } = await adminClient.query<
             GetProductWithVariants.Query,
@@ -199,14 +205,7 @@ describe('ChannelAware Assets', () => {
         });
         featuredAssetId = product!.featuredAsset!.id;
         expect(featuredAssetId).toBeDefined();
-        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
-        const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
-            id: featuredAssetId,
-        });
-        expect(asset?.id).toBeUndefined();
-    });
 
-    it('Featured asset is available in default channel', async () => {
         await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
             id: featuredAssetId,
@@ -214,7 +213,15 @@ describe('ChannelAware Assets', () => {
         expect(asset?.id).toEqual(featuredAssetId);
     });
 
-    it('Add productVariant to channel2', async () => {
+    it('Featured asset is not available in channel2', async () => {
+        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
+            id: featuredAssetId,
+        });
+        expect(asset?.id).toBeUndefined();
+    });
+
+    it('Add Product to channel2', async () => {
         await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
         const { assignProductsToChannel } = await adminClient.query<
             AssignProductsToChannel.Mutation,
@@ -229,7 +236,7 @@ describe('ChannelAware Assets', () => {
         expect(assignProductsToChannel[0].channels.map(c => c.id)).toContain(channel2Id);
     });
 
-    it('Get asset from channel2', async () => {
+    it('Get featured asset from channel2', async () => {
         await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
         const { asset } = await adminClient.query<GetAsset.Query, GetAsset.Variables>(GET_ASSET, {
             id: featuredAssetId,
