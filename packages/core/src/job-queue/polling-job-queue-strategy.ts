@@ -38,7 +38,8 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                     if (nextJob) {
                         this.activeJobs.push(nextJob);
                         await this.jobQueueStrategy.update(nextJob);
-                        nextJob.on('progress', job => this.jobQueueStrategy.update(job));
+                        const onProgress = (job: Job) => this.jobQueueStrategy.update(job);
+                        nextJob.on('progress', onProgress);
                         this.process(nextJob)
                             .then(
                                 result => {
@@ -52,6 +53,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
                                 if (!this.running) {
                                     return;
                                 }
+                                nextJob.off('progress', onProgress);
                                 return this.onFailOrComplete(nextJob);
                             })
                             .catch(err => {

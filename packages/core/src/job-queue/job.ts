@@ -184,6 +184,13 @@ export class Job<T extends JobData<T> = any> {
         this.eventListeners[eventType].push(listener);
     }
 
+    off(eventType: JobEventType, listener: JobEventListener<T>) {
+        const idx = this.eventListeners[eventType].indexOf(listener);
+        if (idx !== -1) {
+            this.eventListeners[eventType].splice(idx, 1);
+        }
+    }
+
     private fireEvent(eventType: JobEventType) {
         for (const listener of this.eventListeners[eventType]) {
             listener(this);
