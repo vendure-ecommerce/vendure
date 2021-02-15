@@ -1,6 +1,14 @@
 import { Message, PubSub, Subscription, Topic } from '@google-cloud/pubsub';
 import { JobState } from '@vendure/common/lib/generated-types';
-import { InjectableJobQueueStrategy, Injector, Job, JobData, JobQueueStrategy, Logger } from '@vendure/core';
+import {
+    InjectableJobQueueStrategy,
+    Injector,
+    Job,
+    JobData,
+    JobQueueStrategy,
+    Logger,
+    QueueNameProcessStorage,
+} from '@vendure/core';
 
 import { loggerCtx, PUB_SUB_OPTIONS } from './constants';
 import { PubSubOptions } from './options';
@@ -11,6 +19,7 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
     private pubSubClient: PubSub;
     private topics = new Map<string, Topic>();
     private subscriptions = new Map<string, Subscription>();
+    private listeners = new QueueNameProcessStorage<(message: Message) => void>();
 
     init(injector: Injector) {
         this.pubSubClient = injector.get(PubSub);
@@ -54,9 +63,12 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
             return;
         }
 
-        const subscription = this.subscription(queueName);
+        if (this.listeners.has(queueName, process)) {
+            return;
+        }
 
-        subscription.on('message', (message: Message) => {
+        const subscription = this.subscription(queueName);
+        const listener = (message: Message) => {
             Logger.debug(`Received message: ${queueName}: ${message.id}`, loggerCtx);
 
             const job = new Job<Data>({
@@ -76,15 +88,23 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
                 .catch(err => {
                     message.nack();
                 });
-        });
+        };
+        this.listeners.set(queueName, process, listener);
+        subscription.on('message', listener);
     }
 
-    stop(queueName: string) {
-        this.subscription(queueName).removeAllListeners('message');
-        return Promise.resolve();
+    async stop<Data extends JobData<Data> = {}>(
+        queueName: string,
+        process: (job: Job<Data>) => Promise<any>,
+    ) {
+        const listener = this.listeners.getAndDelete(queueName, process);
+        if (!listener) {
+            return;
+        }
+        this.subscription(queueName).off('message', listener);
     }
 
-    topic(queueName: string): Topic {
+    private topic(queueName: string): Topic {
         let topic = this.topics.get(queueName);
         if (topic) {
             return topic;
@@ -102,7 +122,7 @@ export class PubSubJobQueueStrategy extends InjectableJobQueueStrategy implement
         return topic;
     }
 
-    subscription(queueName: string): Subscription {
+    private subscription(queueName: string): Subscription {
         let subscription = this.subscriptions.get(queueName);
         if (subscription) {
             return subscription;
