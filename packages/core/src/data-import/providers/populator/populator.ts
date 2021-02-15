@@ -101,7 +101,21 @@ export class Populator {
         switch (filter.code) {
             case 'facet-value-filter':
                 const facetValueIds = filter.args.facetValueNames
-                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .map(name =>
+                        allFacetValues.find(fv => {
+                            let facetName;
+                            let valueName;
+                            if (name.includes(':')) {
+                                [facetName, valueName] = name.split(':');
+                                return (
+                                    (fv.name === valueName || fv.code === valueName) &&
+                                    (fv.facet.name === facetName || fv.facet.code === facetName)
+                                );
+                            } else {
+                                return fv.name === valueName || fv.code === valueName;
+                            }
+                        }),
+                    )
                     .filter(notNullOrUndefined)
                     .map(fv => fv.id);
                 return {
