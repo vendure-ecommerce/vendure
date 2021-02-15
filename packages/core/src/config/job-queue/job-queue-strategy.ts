@@ -33,5 +33,8 @@ export interface JobQueueStrategy extends InjectableStrategy {
      * @description
      * Stops a queue from running. Its not guaranteed to stop immediately.
      */
-    stop(queueName: string): Promise<void>;
+    stop<Data extends JobData<Data> = {}>(
+        queueName: string,
+        process: (job: Job<Data>) => Promise<any>,
+    ): Promise<void>;
 }

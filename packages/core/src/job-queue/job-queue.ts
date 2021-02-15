@@ -49,7 +49,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             return;
         }
         this.running = false;
-        this.jobQueueStrategy.stop(this.options.name);
+        this.jobQueueStrategy.stop(this.options.name, this.options.process);
     }
 
     /** @internal */
@@ -58,7 +58,7 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             return;
         }
         this.running = false;
-        return this.jobQueueStrategy.stop(this.options.name);
+        return this.jobQueueStrategy.stop(this.options.name, this.options.process);
     }
 
     /**

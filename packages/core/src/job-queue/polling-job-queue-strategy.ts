@@ -6,6 +6,7 @@ import { Logger } from '../config/logger/vendure-logger';
 
 import { InjectableJobQueueStrategy } from './injectable-job-queue-strategy';
 import { Job } from './job';
+import { QueueNameProcessStorage } from './queue-name-process-storage';
 import { JobData } from './types';
 
 class ActiveQueue<Data extends JobData<Data> = {}> {
@@ -123,7 +124,7 @@ class ActiveQueue<Data extends JobData<Data> = {}> {
  * Instead of providing {@link JobQueueStrategy} `start()` you should provide a `next` method.
  */
 export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy {
-    private activeQueues = new Map<string, ActiveQueue<any>>();
+    private activeQueues = new QueueNameProcessStorage<ActiveQueue<any>>();
 
     constructor(public concurrency: number = 1, public pollInterval: number = 200) {
         super();
@@ -137,21 +138,23 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
             this.started.set(queueName, process);
             return;
         }
-        if (this.activeQueues.has(queueName)) {
+        if (this.activeQueues.has(queueName, process)) {
             return;
         }
         const active = new ActiveQueue<Data>(queueName, process, this);
         active.start();
-        this.activeQueues.set(queueName, active);
+        this.activeQueues.set(queueName, process, active);
     }
 
-    async stop(queueName: string) {
-        const active = this.activeQueues.get(queueName);
+    async stop<Data extends JobData<Data> = {}>(
+        queueName: string,
+        process: (job: Job<Data>) => Promise<any>,
+    ) {
+        const active = this.activeQueues.getAndDelete(queueName, process);
         if (!active) {
             return;
         }
         await active.stop();
-        this.activeQueues.delete(queueName);
     }
 
     async cancelJob(jobId: ID): Promise<Job | undefined> {
