@@ -50,6 +50,13 @@ export interface S3Config {
      * Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
      */
     nativeS3Configuration?: any;
+    /**
+     * @description
+     * Configuration object passed directly to the AWS SDK.
+     * ManagedUpload.ManagedUploadOptions can be used after importing aws-sdk.
+     * Using type `any` in order to avoid the need to include `aws-sdk` dependency in general.
+     */
+    nativeS3UploadConfiguration?: any;
 }
 
 /**
@@ -148,22 +155,28 @@ export class S3AssetStorageStrategy implements AssetStorageStrategy {
 
     async writeFileFromBuffer(fileName: string, data: Buffer): Promise<string> {
         const result = await this.s3
-            .upload({
-                Bucket: this.s3Config.bucket,
-                Key: fileName,
-                Body: data,
-            })
+            .upload(
+                {
+                    Bucket: this.s3Config.bucket,
+                    Key: fileName,
+                    Body: data,
+                },
+                this.s3Config.nativeS3UploadConfiguration,
+            )
             .promise();
         return result.Key;
     }
 
     async writeFileFromStream(fileName: string, data: Stream): Promise<string> {
         const result = await this.s3
-            .upload({
-                Bucket: this.s3Config.bucket,
-                Key: fileName,
-                Body: data,
-            })
+            .upload(
+                {
+                    Bucket: this.s3Config.bucket,
+                    Key: fileName,
+                    Body: data,
+                },
+                this.s3Config.nativeS3UploadConfiguration,
+            )
             .promise();
         return result.Key;
     }
