@@ -17,8 +17,8 @@ import { RefundStateTransitionError } from '../../common/error/generated-graphql
 import { IneligiblePaymentMethodError } from '../../common/error/generated-graphql-shop-errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { ConfigService } from '../../config/config.service';
-import { PaymentMethodEligibilityChecker } from '../../config/payment-method/payment-method-eligibility-checker';
-import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
+import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 import { OrderItem } from '../../entity/order-item/order-item.entity';
 import { Order } from '../../entity/order/order.entity';
 import { PaymentMethod } from '../../entity/payment-method/payment-method.entity';

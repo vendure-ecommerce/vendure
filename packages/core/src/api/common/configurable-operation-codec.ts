@@ -13,8 +13,8 @@ import {
 } from '../../config';
 import { CollectionFilter } from '../../config/catalog/collection-filter';
 import { ConfigService } from '../../config/config.service';
-import { PaymentMethodEligibilityChecker } from '../../config/payment-method/payment-method-eligibility-checker';
-import { PaymentMethodHandler } from '../../config/payment-method/payment-method-handler';
+import { PaymentMethodEligibilityChecker } from '../../config/payment/payment-method-eligibility-checker';
+import { PaymentMethodHandler } from '../../config/payment/payment-method-handler';
 
 import { IdCodecService } from './id-codec.service';
 
