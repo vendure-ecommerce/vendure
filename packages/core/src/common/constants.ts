@@ -1,6 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 
-import { CrudPermissionDefinition, PermissionDefinition } from './permission-definition';
+import { CrudPermissionDefinition, PermissionDefinition, PermissionMetadata } from './permission-definition';
 
 /**
  * This value should be rarely used - only in those contexts where we have no access to the
@@ -41,3 +41,8 @@ export const DEFAULT_PERMISSIONS: PermissionDefinition[] = [
     new CrudPermissionDefinition('Promotion'),
     new CrudPermissionDefinition('Settings'),
 ];
+
+export function getAllPermissionsMetadata(customPermissions: PermissionDefinition[]): PermissionMetadata[] {
+    const allPermissions = [...DEFAULT_PERMISSIONS, ...customPermissions];
+    return allPermissions.reduce((all, def) => [...all, ...def.getMetadata()], [] as PermissionMetadata[]);
+}
