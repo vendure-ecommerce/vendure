@@ -93,6 +93,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             stockAllocationStrategy,
         } = this.configService.orderOptions;
         const { customFulfillmentProcess } = this.configService.shippingOptions;
+        const { customPaymentProcess } = this.configService.paymentOptions;
         const { entityIdStrategy } = this.configService;
         return [
             ...adminAuthenticationStrategy,
@@ -110,6 +111,7 @@ export class ConfigModule implements OnApplicationBootstrap, OnApplicationShutdo
             orderItemPriceCalculationStrategy,
             ...process,
             ...customFulfillmentProcess,
+            ...customPaymentProcess,
             stockAllocationStrategy,
         ];
     }

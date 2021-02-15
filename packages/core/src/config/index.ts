@@ -31,6 +31,7 @@ export * from './order/use-guest-strategy';
 export * from './order/use-guest-if-existing-empty-strategy';
 export * from './order/order-item-price-calculation-strategy';
 export * from './order/stock-allocation-strategy';
+export * from './payment/custom-payment-process';
 export * from './payment/dummy-payment-method-handler';
 export * from './payment/example-payment-method-handler';
 export * from './payment/payment-method-handler';
