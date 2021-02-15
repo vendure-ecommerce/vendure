@@ -163,6 +163,11 @@ describe('Fulfillment process', () => {
     });
 
     describe('CustomFulfillmentProcess', () => {
+        it('is injectable', () => {
+            expect(initSpy).toHaveBeenCalled();
+            expect(initSpy.mock.calls[0][0]).toBe('default');
+        });
+
         it('replaced transition target', async () => {
             const { order } = await adminClient.query<
                 GetOrderFulfillments.Query,
