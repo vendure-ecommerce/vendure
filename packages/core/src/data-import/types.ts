@@ -1,4 +1,4 @@
-import { LanguageCode } from '@vendure/common/lib/generated-types';
+import { ConfigurableOperationInput, LanguageCode } from '@vendure/common/lib/generated-types';
 import { ID } from '@vendure/common/lib/shared-types';
 
 import { Zone } from '../entity/zone/zone.entity';
@@ -43,5 +43,6 @@ export interface InitialData {
     countries: CountryDefinition[];
     taxRates: Array<{ name: string; percentage: number }>;
     shippingMethods: Array<{ name: string; price: number }>;
+    paymentMethods: Array<{ name: string; handler: ConfigurableOperationInput }>;
     collections: CollectionDefinition[];
 }

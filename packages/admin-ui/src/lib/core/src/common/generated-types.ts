@@ -52,6 +52,8 @@ export type Query = {
   order?: Maybe<Order>;
   orders: OrderList;
   paymentMethod?: Maybe<PaymentMethod>;
+  paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+  paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
   paymentMethods: PaymentMethodList;
   /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
   product?: Maybe<Product>;
@@ -59,6 +61,9 @@ export type Query = {
   productOptionGroups: Array<ProductOptionGroup>;
   /** Get a ProductVariant by id */
   productVariant?: Maybe<ProductVariant>;
+  /** List ProductVariants */
+  productVariants: ProductVariantList;
+  /** List Products */
   products: ProductList;
   promotion?: Maybe<Promotion>;
   promotionActions: Array<ConfigurableOperationDefinition>;
@@ -71,6 +76,8 @@ export type Query = {
   shippingEligibilityCheckers: Array<ConfigurableOperationDefinition>;
   shippingMethod?: Maybe<ShippingMethod>;
   shippingMethods: ShippingMethodList;
+  tag: Tag;
+  tags: TagList;
   taxCategories: Array<TaxCategory>;
   taxCategory?: Maybe<TaxCategory>;
   taxRate?: Maybe<TaxRate>;
@@ -216,6 +223,11 @@ export type QueryProductVariantArgs = {
 };
 
 
+export type QueryProductVariantsArgs = {
+  options?: Maybe<ProductVariantListOptions>;
+};
+
+
 export type QueryProductsArgs = {
   options?: Maybe<ProductListOptions>;
 };
@@ -253,6 +265,16 @@ export type QueryShippingMethodArgs = {
 
 export type QueryShippingMethodsArgs = {
   options?: Maybe<ShippingMethodListOptions>;
+};
+
+
+export type QueryTagArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type QueryTagsArgs = {
+  options?: Maybe<TagListOptions>;
 };
 
 
@@ -333,6 +355,8 @@ export type Mutation = {
   createFacet: Facet;
   /** Create one or more FacetValues */
   createFacetValues: Array<FacetValue>;
+  /** Create existing PaymentMethod */
+  createPaymentMethod: PaymentMethod;
   /** Create a new Product */
   createProduct: Product;
   /** Create a new ProductOption within a ProductOptionGroup */
@@ -346,6 +370,8 @@ export type Mutation = {
   createRole: Role;
   /** Create a new ShippingMethod */
   createShippingMethod: ShippingMethod;
+  /** Create a new Tag */
+  createTag: Tag;
   /** Create a new TaxCategory */
   createTaxCategory: TaxCategory;
   /** Create a new TaxRate */
@@ -385,6 +411,8 @@ export type Mutation = {
   deleteRole: DeletionResponse;
   /** Delete a ShippingMethod */
   deleteShippingMethod: DeletionResponse;
+  /** Delete an existing Tag */
+  deleteTag: DeletionResponse;
   /** Deletes a TaxCategory */
   deleteTaxCategory: DeletionResponse;
   /** Delete a TaxRate */
@@ -469,6 +497,8 @@ export type Mutation = {
   updateRole: Role;
   /** Update an existing ShippingMethod */
   updateShippingMethod: ShippingMethod;
+  /** Update an existing Tag */
+  updateTag: Tag;
   /** Update an existing TaxCategory */
   updateTaxCategory: TaxCategory;
   /** Update an existing TaxRate */
@@ -601,6 +631,11 @@ export type MutationCreateFacetValuesArgs = {
 };
 
 
+export type MutationCreatePaymentMethodArgs = {
+  input: CreatePaymentMethodInput;
+};
+
+
 export type MutationCreateProductArgs = {
   input: CreateProductInput;
 };
@@ -633,6 +668,11 @@ export type MutationCreateRoleArgs = {
 
 export type MutationCreateShippingMethodArgs = {
   input: CreateShippingMethodInput;
+};
+
+
+export type MutationCreateTagArgs = {
+  input: CreateTagInput;
 };
 
 
@@ -741,6 +781,11 @@ export type MutationDeleteRoleArgs = {
 
 
 export type MutationDeleteShippingMethodArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type MutationDeleteTagArgs = {
   id: Scalars['ID'];
 };
 
@@ -984,6 +1029,11 @@ export type MutationUpdateShippingMethodArgs = {
 };
 
 
+export type MutationUpdateTagArgs = {
+  input: UpdateTagInput;
+};
+
+
 export type MutationUpdateTaxCategoryArgs = {
   input: UpdateTaxCategoryInput;
 };
@@ -1009,6 +1059,7 @@ export type CreateAdministratorInput = {
   emailAddress: Scalars['String'];
   password: Scalars['String'];
   roleIds: Array<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
@@ -1018,6 +1069,7 @@ export type UpdateAdministratorInput = {
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
   roleIds?: Maybe<Array<Scalars['ID']>>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateActiveAdministratorInput = {
@@ -1025,6 +1077,7 @@ export type UpdateActiveAdministratorInput = {
   lastName?: Maybe<Scalars['String']>;
   emailAddress?: Maybe<Scalars['String']>;
   password?: Maybe<Scalars['String']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Administrator = Node & {
@@ -1036,12 +1089,30 @@ export type Administrator = Node & {
   lastName: Scalars['String'];
   emailAddress: Scalars['String'];
   user: User;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AdministratorList = PaginatedList & {
   __typename?: 'AdministratorList';
   items: Array<Administrator>;
   totalItems: Scalars['Int'];
+};
+
+export type Asset = Node & {
+  __typename?: 'Asset';
+  tags: Array<Tag>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
+  type: AssetType;
+  fileSize: Scalars['Int'];
+  mimeType: Scalars['String'];
+  width: Scalars['Int'];
+  height: Scalars['Int'];
+  source: Scalars['String'];
+  preview: Scalars['String'];
+  focalPoint?: Maybe<Coordinate>;
 };
 
 export type MimeTypeError = ErrorResult & {
@@ -1054,8 +1125,18 @@ export type MimeTypeError = ErrorResult & {
 
 export type CreateAssetResult = Asset | MimeTypeError;
 
+export type AssetListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<AssetSortParameter>;
+  filter?: Maybe<AssetFilterParameter>;
+  tags?: Maybe<Array<Scalars['String']>>;
+  tagsOperator?: Maybe<LogicalOperator>;
+};
+
 export type CreateAssetInput = {
   file: Scalars['Upload'];
+  tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type CoordinateInput = {
@@ -1067,6 +1148,7 @@ export type UpdateAssetInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   focalPoint?: Maybe<CoordinateInput>;
+  tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -1081,6 +1163,7 @@ export type CreateChannelInput = {
   currencyCode: CurrencyCode;
   defaultTaxZoneId: Scalars['ID'];
   defaultShippingZoneId: Scalars['ID'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -1092,6 +1175,7 @@ export type UpdateChannelInput = {
   currencyCode?: Maybe<CurrencyCode>;
   defaultTaxZoneId?: Maybe<Scalars['ID']>;
   defaultShippingZoneId?: Maybe<Scalars['ID']>;
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -1855,11 +1939,23 @@ export type PaymentMethodList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type CreatePaymentMethodInput = {
+  name: Scalars['String'];
+  code: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
+  enabled: Scalars['Boolean'];
+  checker?: Maybe<ConfigurableOperationInput>;
+  handler: ConfigurableOperationInput;
+};
+
 export type UpdatePaymentMethodInput = {
   id: Scalars['ID'];
+  name?: Maybe<Scalars['String']>;
   code?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
   enabled?: Maybe<Scalars['Boolean']>;
-  configArgs?: Maybe<Array<ConfigArgInput>>;
+  checker?: Maybe<ConfigurableOperationInput>;
+  handler?: Maybe<ConfigurableOperationInput>;
 };
 
 export type PaymentMethod = Node & {
@@ -1867,10 +1963,12 @@ export type PaymentMethod = Node & {
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
+  name: Scalars['String'];
   code: Scalars['String'];
+  description: Scalars['String'];
   enabled: Scalars['Boolean'];
-  configArgs: Array<ConfigArg>;
-  definition: ConfigurableOperationDefinition;
+  checker?: Maybe<ConfigurableOperation>;
+  handler: ConfigurableOperation;
 };
 
 export type Payment = Node & {
@@ -2333,13 +2431,24 @@ export type StockMovementList = {
   totalItems: Scalars['Int'];
 };
 
+export type CreateTagInput = {
+  value: Scalars['String'];
+};
+
+export type UpdateTagInput = {
+  id: Scalars['ID'];
+  value?: Maybe<Scalars['String']>;
+};
+
 export type CreateTaxCategoryInput = {
   name: Scalars['String'];
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateTaxCategoryInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
+  isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateTaxRateInput = {
@@ -2390,22 +2499,6 @@ export type Address = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Asset = Node & {
-  __typename?: 'Asset';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  name: Scalars['String'];
-  type: AssetType;
-  fileSize: Scalars['Int'];
-  mimeType: Scalars['String'];
-  width: Scalars['Int'];
-  height: Scalars['Int'];
-  source: Scalars['String'];
-  preview: Scalars['String'];
-  focalPoint?: Maybe<Coordinate>;
-};
-
 export type Coordinate = {
   __typename?: 'Coordinate';
   x: Scalars['Float'];
@@ -2451,6 +2544,7 @@ export type Channel = Node & {
   defaultLanguageCode: LanguageCode;
   currencyCode: CurrencyCode;
   pricesIncludeTax: Scalars['Boolean'];
+  customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -2713,6 +2807,8 @@ export type ConfigArgDefinition = {
   name: Scalars['String'];
   type: Scalars['String'];
   list: Scalars['Boolean'];
+  required: Scalars['Boolean'];
+  defaultValue?: Maybe<Scalars['JSON']>;
   label?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   ui?: Maybe<Scalars['JSON']>;
@@ -2739,6 +2835,7 @@ export type DeletionResponse = {
 
 export type ConfigArgInput = {
   name: Scalars['String'];
+  /** A JSON stringified representation of the actual value */
   value: Scalars['String'];
 };
 
@@ -2848,6 +2945,25 @@ export type UpdateAddressInput = {
 export type Success = {
   __typename?: 'Success';
   success: Scalars['Boolean'];
+};
+
+export type ShippingMethodQuote = {
+  __typename?: 'ShippingMethodQuote';
+  id: Scalars['ID'];
+  price: Scalars['Int'];
+  priceWithTax: Scalars['Int'];
+  name: Scalars['String'];
+  description: Scalars['String'];
+  /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethodQuote = {
+  __typename?: 'PaymentMethodQuote';
+  id: Scalars['ID'];
+  code: Scalars['String'];
+  isEligible: Scalars['Boolean'];
+  eligibilityMessage?: Maybe<Scalars['String']>;
 };
 
 export type Country = Node & {
@@ -3300,13 +3416,26 @@ export type DateTimeCustomFieldConfig = CustomField & {
   step?: Maybe<Scalars['Int']>;
 };
 
+export type RelationCustomFieldConfig = CustomField & {
+  __typename?: 'RelationCustomFieldConfig';
+  name: Scalars['String'];
+  type: Scalars['String'];
+  list: Scalars['Boolean'];
+  label?: Maybe<Array<LocalizedString>>;
+  description?: Maybe<Array<LocalizedString>>;
+  readonly?: Maybe<Scalars['Boolean']>;
+  internal?: Maybe<Scalars['Boolean']>;
+  entity: Scalars['String'];
+  scalarFields: Array<Scalars['String']>;
+};
+
 export type LocalizedString = {
   __typename?: 'LocalizedString';
   languageCode: LanguageCode;
   value: Scalars['String'];
 };
 
-export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig;
+export type CustomFieldConfig = StringCustomFieldConfig | LocaleStringCustomFieldConfig | IntCustomFieldConfig | FloatCustomFieldConfig | BooleanCustomFieldConfig | DateTimeCustomFieldConfig | RelationCustomFieldConfig;
 
 export type CustomerGroup = Node & {
   __typename?: 'CustomerGroup';
@@ -3761,16 +3890,6 @@ export type OrderList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodQuote = {
-  __typename?: 'ShippingMethodQuote';
-  id: Scalars['ID'];
-  price: Scalars['Int'];
-  priceWithTax: Scalars['Int'];
-  name: Scalars['String'];
-  description: Scalars['String'];
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type ShippingLine = {
   __typename?: 'ShippingLine';
   shippingMethod: ShippingMethod;
@@ -3831,6 +3950,10 @@ export type OrderLine = Node & {
   unitPrice: Scalars['Int'];
   /** The price of a single unit, including tax but excluding discounts */
   unitPriceWithTax: Scalars['Int'];
+  /** If the unitPrice has changed since initially added to Order */
+  unitPriceChangeSinceAdded: Scalars['Int'];
+  /** If the unitPriceWithTax has changed since initially added to Order */
+  unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.
    * 
@@ -4097,12 +4220,27 @@ export type ShippingMethodList = PaginatedList & {
   totalItems: Scalars['Int'];
 };
 
+export type Tag = Node & {
+  __typename?: 'Tag';
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  value: Scalars['String'];
+};
+
+export type TagList = PaginatedList & {
+  __typename?: 'TagList';
+  items: Array<Tag>;
+  totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
   __typename?: 'TaxCategory';
   id: Scalars['ID'];
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   name: Scalars['String'];
+  isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
@@ -4159,13 +4297,6 @@ export type AdministratorListOptions = {
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<AdministratorSortParameter>;
   filter?: Maybe<AdministratorFilterParameter>;
-};
-
-export type AssetListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<AssetSortParameter>;
-  filter?: Maybe<AssetFilterParameter>;
 };
 
 export type CollectionListOptions = {
@@ -4231,6 +4362,13 @@ export type ProductListOptions = {
   filter?: Maybe<ProductFilterParameter>;
 };
 
+export type ProductVariantListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ProductVariantSortParameter>;
+  filter?: Maybe<ProductVariantFilterParameter>;
+};
+
 export type PromotionListOptions = {
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
@@ -4252,18 +4390,18 @@ export type ShippingMethodListOptions = {
   filter?: Maybe<ShippingMethodFilterParameter>;
 };
 
+export type TagListOptions = {
+  skip?: Maybe<Scalars['Int']>;
+  take?: Maybe<Scalars['Int']>;
+  sort?: Maybe<TagSortParameter>;
+  filter?: Maybe<TagFilterParameter>;
+};
+
 export type TaxRateListOptions = {
   skip?: Maybe<Scalars['Int']>;
   take?: Maybe<Scalars['Int']>;
   sort?: Maybe<TaxRateSortParameter>;
   filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type ProductVariantListOptions = {
-  skip?: Maybe<Scalars['Int']>;
-  take?: Maybe<Scalars['Int']>;
-  sort?: Maybe<ProductVariantSortParameter>;
-  filter?: Maybe<ProductVariantFilterParameter>;
 };
 
 export type HistoryEntryListOptions = {
@@ -4462,7 +4600,9 @@ export type OrderSortParameter = {
 export type PaymentMethodFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
+  name?: Maybe<StringOperators>;
   code?: Maybe<StringOperators>;
+  description?: Maybe<StringOperators>;
   enabled?: Maybe<BooleanOperators>;
 };
 
@@ -4470,7 +4610,9 @@ export type PaymentMethodSortParameter = {
   id?: Maybe<SortOrder>;
   createdAt?: Maybe<SortOrder>;
   updatedAt?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
   code?: Maybe<SortOrder>;
+  description?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -4490,6 +4632,38 @@ export type ProductSortParameter = {
   name?: Maybe<SortOrder>;
   slug?: Maybe<SortOrder>;
   description?: Maybe<SortOrder>;
+};
+
+export type ProductVariantFilterParameter = {
+  enabled?: Maybe<BooleanOperators>;
+  trackInventory?: Maybe<StringOperators>;
+  stockOnHand?: Maybe<NumberOperators>;
+  stockAllocated?: Maybe<NumberOperators>;
+  outOfStockThreshold?: Maybe<NumberOperators>;
+  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  languageCode?: Maybe<StringOperators>;
+  sku?: Maybe<StringOperators>;
+  name?: Maybe<StringOperators>;
+  price?: Maybe<NumberOperators>;
+  currencyCode?: Maybe<StringOperators>;
+  priceIncludesTax?: Maybe<BooleanOperators>;
+  priceWithTax?: Maybe<NumberOperators>;
+};
+
+export type ProductVariantSortParameter = {
+  stockOnHand?: Maybe<SortOrder>;
+  stockAllocated?: Maybe<SortOrder>;
+  outOfStockThreshold?: Maybe<SortOrder>;
+  id?: Maybe<SortOrder>;
+  productId?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  sku?: Maybe<SortOrder>;
+  name?: Maybe<SortOrder>;
+  price?: Maybe<SortOrder>;
+  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type PromotionFilterParameter = {
@@ -4548,6 +4722,19 @@ export type ShippingMethodSortParameter = {
   fulfillmentHandlerCode?: Maybe<SortOrder>;
 };
 
+export type TagFilterParameter = {
+  createdAt?: Maybe<DateOperators>;
+  updatedAt?: Maybe<DateOperators>;
+  value?: Maybe<StringOperators>;
+};
+
+export type TagSortParameter = {
+  id?: Maybe<SortOrder>;
+  createdAt?: Maybe<SortOrder>;
+  updatedAt?: Maybe<SortOrder>;
+  value?: Maybe<SortOrder>;
+};
+
 export type TaxRateFilterParameter = {
   createdAt?: Maybe<DateOperators>;
   updatedAt?: Maybe<DateOperators>;
@@ -4562,38 +4749,6 @@ export type TaxRateSortParameter = {
   updatedAt?: Maybe<SortOrder>;
   name?: Maybe<SortOrder>;
   value?: Maybe<SortOrder>;
-};
-
-export type ProductVariantFilterParameter = {
-  enabled?: Maybe<BooleanOperators>;
-  trackInventory?: Maybe<StringOperators>;
-  stockOnHand?: Maybe<NumberOperators>;
-  stockAllocated?: Maybe<NumberOperators>;
-  outOfStockThreshold?: Maybe<NumberOperators>;
-  useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
-  createdAt?: Maybe<DateOperators>;
-  updatedAt?: Maybe<DateOperators>;
-  languageCode?: Maybe<StringOperators>;
-  sku?: Maybe<StringOperators>;
-  name?: Maybe<StringOperators>;
-  price?: Maybe<NumberOperators>;
-  currencyCode?: Maybe<StringOperators>;
-  priceIncludesTax?: Maybe<BooleanOperators>;
-  priceWithTax?: Maybe<NumberOperators>;
-};
-
-export type ProductVariantSortParameter = {
-  stockOnHand?: Maybe<SortOrder>;
-  stockAllocated?: Maybe<SortOrder>;
-  outOfStockThreshold?: Maybe<SortOrder>;
-  id?: Maybe<SortOrder>;
-  productId?: Maybe<SortOrder>;
-  createdAt?: Maybe<SortOrder>;
-  updatedAt?: Maybe<SortOrder>;
-  sku?: Maybe<SortOrder>;
-  name?: Maybe<SortOrder>;
-  price?: Maybe<SortOrder>;
-  priceWithTax?: Maybe<SortOrder>;
 };
 
 export type HistoryEntryFilterParameter = {
@@ -4621,6 +4776,8 @@ export type NativeAuthInput = {
 export type CustomFields = {
   __typename?: 'CustomFields';
   Address: Array<CustomFieldConfig>;
+  Administrator: Array<CustomFieldConfig>;
+  Channel: Array<CustomFieldConfig>;
   Collection: Array<CustomFieldConfig>;
   Customer: Array<CustomFieldConfig>;
   Facet: Array<CustomFieldConfig>;
@@ -5906,6 +6063,11 @@ export type AssetFragment = (
   )> }
 );
 
+export type TagFragment = (
+  { __typename?: 'Tag' }
+  & Pick<Tag, 'id' | 'value'>
+);
+
 export type ProductOptionGroupFragment = (
   { __typename?: 'ProductOptionGroup' }
   & Pick<ProductOptionGroup, 'id' | 'code' | 'languageCode' | 'name'>
@@ -6136,6 +6298,20 @@ export type GetProductWithVariantsQuery = { product?: Maybe<(
     & ProductWithVariantsFragment
   )> };
 
+export type GetProductSimpleQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetProductSimpleQuery = { product?: Maybe<(
+    { __typename?: 'Product' }
+    & Pick<Product, 'id' | 'name'>
+    & { featuredAsset?: Maybe<(
+      { __typename?: 'Asset' }
+      & AssetFragment
+    )> }
+  )> };
+
 export type GetProductListQueryVariables = Exact<{
   options?: Maybe<ProductListOptions>;
 }>;
@@ -6178,6 +6354,10 @@ export type GetAssetListQuery = { assets: (
     & Pick<AssetList, 'totalItems'>
     & { items: Array<(
       { __typename?: 'Asset' }
+      & { tags: Array<(
+        { __typename?: 'Tag' }
+        & TagFragment
+      )> }
       & AssetFragment
     )> }
   ) };
@@ -6189,6 +6369,10 @@ export type GetAssetQueryVariables = Exact<{
 
 export type GetAssetQuery = { asset?: Maybe<(
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   )> };
 
@@ -6199,6 +6383,10 @@ export type CreateAssetsMutationVariables = Exact<{
 
 export type CreateAssetsMutation = { createAssets: Array<(
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   ) | (
     { __typename?: 'MimeTypeError' }
@@ -6212,6 +6400,10 @@ export type UpdateAssetMutationVariables = Exact<{
 
 export type UpdateAssetMutation = { updateAsset: (
     { __typename?: 'Asset' }
+    & { tags: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
     & AssetFragment
   ) };
 
@@ -6403,7 +6595,14 @@ export type GetProductVariantQueryVariables = Exact<{
 export type GetProductVariantQuery = { productVariant?: Maybe<(
     { __typename?: 'ProductVariant' }
     & Pick<ProductVariant, 'id' | 'name' | 'sku'>
-    & { product: (
+    & { featuredAsset?: Maybe<(
+      { __typename?: 'Asset' }
+      & Pick<Asset, 'id' | 'preview'>
+      & { focalPoint?: Maybe<(
+        { __typename?: 'Coordinate' }
+        & Pick<Coordinate, 'x' | 'y'>
+      )> }
+    )>, product: (
       { __typename?: 'Product' }
       & Pick<Product, 'id'>
       & { featuredAsset?: Maybe<(
@@ -6416,6 +6615,93 @@ export type GetProductVariantQuery = { productVariant?: Maybe<(
       )> }
     ) }
   )> };
+
+export type GetProductVariantListQueryVariables = Exact<{
+  options: ProductVariantListOptions;
+}>;
+
+
+export type GetProductVariantListQuery = { productVariants: (
+    { __typename?: 'ProductVariantList' }
+    & Pick<ProductVariantList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'ProductVariant' }
+      & Pick<ProductVariant, 'id' | 'name' | 'sku'>
+      & { featuredAsset?: Maybe<(
+        { __typename?: 'Asset' }
+        & Pick<Asset, 'id' | 'preview'>
+        & { focalPoint?: Maybe<(
+          { __typename?: 'Coordinate' }
+          & Pick<Coordinate, 'x' | 'y'>
+        )> }
+      )>, product: (
+        { __typename?: 'Product' }
+        & Pick<Product, 'id'>
+        & { featuredAsset?: Maybe<(
+          { __typename?: 'Asset' }
+          & Pick<Asset, 'id' | 'preview'>
+          & { focalPoint?: Maybe<(
+            { __typename?: 'Coordinate' }
+            & Pick<Coordinate, 'x' | 'y'>
+          )> }
+        )> }
+      ) }
+    )> }
+  ) };
+
+export type GetTagListQueryVariables = Exact<{
+  options?: Maybe<TagListOptions>;
+}>;
+
+
+export type GetTagListQuery = { tags: (
+    { __typename?: 'TagList' }
+    & Pick<TagList, 'totalItems'>
+    & { items: Array<(
+      { __typename?: 'Tag' }
+      & TagFragment
+    )> }
+  ) };
+
+export type GetTagQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type GetTagQuery = { tag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type CreateTagMutationVariables = Exact<{
+  input: CreateTagInput;
+}>;
+
+
+export type CreateTagMutation = { createTag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type UpdateTagMutationVariables = Exact<{
+  input: UpdateTagInput;
+}>;
+
+
+export type UpdateTagMutation = { updateTag: (
+    { __typename?: 'Tag' }
+    & TagFragment
+  ) };
+
+export type DeleteTagMutationVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type DeleteTagMutation = { deleteTag: (
+    { __typename?: 'DeletionResponse' }
+    & Pick<DeletionResponse, 'message' | 'result'>
+  ) };
 
 export type PromotionFragment = (
   { __typename?: 'Promotion' }
@@ -6656,7 +6942,7 @@ export type RemoveMembersFromZoneMutation = { removeMembersFromZone: (
 
 export type TaxCategoryFragment = (
   { __typename?: 'TaxCategory' }
-  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name'>
+  & Pick<TaxCategory, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'isDefault'>
 );
 
 export type GetTaxCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
@@ -6852,13 +7138,13 @@ export type DeleteChannelMutation = { deleteChannel: (
 
 export type PaymentMethodFragment = (
   { __typename?: 'PaymentMethod' }
-  & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'code' | 'enabled'>
-  & { configArgs: Array<(
-    { __typename?: 'ConfigArg' }
-    & Pick<ConfigArg, 'name' | 'value'>
-  )>, definition: (
-    { __typename?: 'ConfigurableOperationDefinition' }
-    & ConfigurableOperationDefFragment
+  & Pick<PaymentMethod, 'id' | 'createdAt' | 'updatedAt' | 'name' | 'code' | 'description' | 'enabled'>
+  & { checker?: Maybe<(
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
+  )>, handler: (
+    { __typename?: 'ConfigurableOperation' }
+    & ConfigurableOperationFragment
   ) }
 );
 
@@ -6876,6 +7162,17 @@ export type GetPaymentMethodListQuery = { paymentMethods: (
     )> }
   ) };
 
+export type GetPaymentMethodOperationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetPaymentMethodOperationsQuery = { paymentMethodEligibilityCheckers: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )>, paymentMethodHandlers: Array<(
+    { __typename?: 'ConfigurableOperationDefinition' }
+    & ConfigurableOperationDefFragment
+  )> };
+
 export type GetPaymentMethodQueryVariables = Exact<{
   id: Scalars['ID'];
 }>;
@@ -6885,6 +7182,16 @@ export type GetPaymentMethodQuery = { paymentMethod?: Maybe<(
     { __typename?: 'PaymentMethod' }
     & PaymentMethodFragment
   )> };
+
+export type CreatePaymentMethodMutationVariables = Exact<{
+  input: CreatePaymentMethodInput;
+}>;
+
+
+export type CreatePaymentMethodMutation = { createPaymentMethod: (
+    { __typename?: 'PaymentMethod' }
+    & PaymentMethodFragment
+  ) };
 
 export type UpdatePaymentMethodMutationVariables = Exact<{
   input: UpdatePaymentMethodInput;
@@ -7004,7 +7311,19 @@ type CustomFieldConfig_DateTimeCustomFieldConfig_Fragment = (
   )>> }
 );
 
-export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment;
+type CustomFieldConfig_RelationCustomFieldConfig_Fragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & Pick<RelationCustomFieldConfig, 'name' | 'type' | 'list' | 'readonly'>
+  & { description?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>>, label?: Maybe<Array<(
+    { __typename?: 'LocalizedString' }
+    & Pick<LocalizedString, 'languageCode' | 'value'>
+  )>> }
+);
+
+export type CustomFieldConfigFragment = CustomFieldConfig_StringCustomFieldConfig_Fragment | CustomFieldConfig_LocaleStringCustomFieldConfig_Fragment | CustomFieldConfig_IntCustomFieldConfig_Fragment | CustomFieldConfig_FloatCustomFieldConfig_Fragment | CustomFieldConfig_BooleanCustomFieldConfig_Fragment | CustomFieldConfig_DateTimeCustomFieldConfig_Fragment | CustomFieldConfig_RelationCustomFieldConfig_Fragment;
 
 export type StringCustomFieldFragment = (
   { __typename?: 'StringCustomFieldConfig' }
@@ -7049,6 +7368,12 @@ export type DateTimeCustomFieldFragment = (
   & CustomFieldConfig_DateTimeCustomFieldConfig_Fragment
 );
 
+export type RelationCustomFieldFragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & Pick<RelationCustomFieldConfig, 'entity' | 'scalarFields'>
+  & CustomFieldConfig_RelationCustomFieldConfig_Fragment
+);
+
 type CustomFields_StringCustomFieldConfig_Fragment = (
   { __typename?: 'StringCustomFieldConfig' }
   & StringCustomFieldFragment
@@ -7079,7 +7404,12 @@ type CustomFields_DateTimeCustomFieldConfig_Fragment = (
   & DateTimeCustomFieldFragment
 );
 
-export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment;
+type CustomFields_RelationCustomFieldConfig_Fragment = (
+  { __typename?: 'RelationCustomFieldConfig' }
+  & RelationCustomFieldFragment
+);
+
+export type CustomFieldsFragment = CustomFields_StringCustomFieldConfig_Fragment | CustomFields_LocaleStringCustomFieldConfig_Fragment | CustomFields_IntCustomFieldConfig_Fragment | CustomFields_FloatCustomFieldConfig_Fragment | CustomFields_BooleanCustomFieldConfig_Fragment | CustomFields_DateTimeCustomFieldConfig_Fragment | CustomFields_RelationCustomFieldConfig_Fragment;
 
 export type GetServerConfigQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -7116,6 +7446,51 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        )>, Administrator: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
+        )>, Channel: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Collection: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7134,6 +7509,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Customer: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7152,6 +7530,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Facet: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7170,6 +7551,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, FacetValue: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7188,6 +7572,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Fulfillment: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7206,6 +7593,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, GlobalSettings: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7224,6 +7614,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Order: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7242,6 +7635,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, OrderLine: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7260,6 +7656,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Product: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7278,6 +7677,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductOption: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7296,6 +7698,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductOptionGroup: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7314,6 +7719,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ProductVariant: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7332,6 +7740,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, ShippingMethod: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7350,6 +7761,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, User: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -7368,6 +7782,9 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'DateTimeCustomFieldConfig' }
           & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )> }
       ) }
     ) }
@@ -7452,7 +7869,7 @@ export type ConfigurableOperationDefFragment = (
   & Pick<ConfigurableOperationDefinition, 'code' | 'description'>
   & { args: Array<(
     { __typename?: 'ConfigArgDefinition' }
-    & Pick<ConfigArgDefinition, 'name' | 'type' | 'list' | 'ui' | 'label'>
+    & Pick<ConfigArgDefinition, 'name' | 'type' | 'required' | 'defaultValue' | 'list' | 'ui' | 'label'>
   )> }
 );
 
@@ -8349,6 +8766,10 @@ export namespace Asset {
   export type FocalPoint = (NonNullable<AssetFragment['focalPoint']>);
 }
 
+export namespace Tag {
+  export type Fragment = TagFragment;
+}
+
 export namespace ProductOptionGroup {
   export type Fragment = ProductOptionGroupFragment;
   export type Translations = NonNullable<(NonNullable<ProductOptionGroupFragment['translations']>)[number]>;
@@ -8462,6 +8883,13 @@ export namespace GetProductWithVariants {
   export type Product = (NonNullable<GetProductWithVariantsQuery['product']>);
 }
 
+export namespace GetProductSimple {
+  export type Variables = GetProductSimpleQueryVariables;
+  export type Query = GetProductSimpleQuery;
+  export type Product = (NonNullable<GetProductSimpleQuery['product']>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductSimpleQuery['product']>)['featuredAsset']>);
+}
+
 export namespace GetProductList {
   export type Variables = GetProductListQueryVariables;
   export type Query = GetProductListQuery;
@@ -8482,18 +8910,22 @@ export namespace GetAssetList {
   export type Query = GetAssetListQuery;
   export type Assets = (NonNullable<GetAssetListQuery['assets']>);
   export type Items = NonNullable<(NonNullable<(NonNullable<GetAssetListQuery['assets']>)['items']>)[number]>;
+  export type Tags = NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetAssetListQuery['assets']>)['items']>)[number]>['tags']>)[number]>;
 }
 
 export namespace GetAsset {
   export type Variables = GetAssetQueryVariables;
   export type Query = GetAssetQuery;
   export type Asset = (NonNullable<GetAssetQuery['asset']>);
+  export type Tags = NonNullable<(NonNullable<(NonNullable<GetAssetQuery['asset']>)['tags']>)[number]>;
 }
 
 export namespace CreateAssets {
   export type Variables = CreateAssetsMutationVariables;
   export type Mutation = CreateAssetsMutation;
   export type CreateAssets = NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>;
+  export type AssetInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'Asset' }>);
+  export type Tags = NonNullable<(NonNullable<(DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'Asset' }>)['tags']>)[number]>;
   export type ErrorResultInlineFragment = (DiscriminateUnion<NonNullable<(NonNullable<CreateAssetsMutation['createAssets']>)[number]>, { __typename?: 'ErrorResult' }>);
 }
 
@@ -8501,6 +8933,7 @@ export namespace UpdateAsset {
   export type Variables = UpdateAssetMutationVariables;
   export type Mutation = UpdateAssetMutation;
   export type UpdateAsset = (NonNullable<UpdateAssetMutation['updateAsset']>);
+  export type Tags = NonNullable<(NonNullable<(NonNullable<UpdateAssetMutation['updateAsset']>)['tags']>)[number]>;
 }
 
 export namespace DeleteAssets {
@@ -8590,9 +9023,54 @@ export namespace GetProductVariant {
   export type Variables = GetProductVariantQueryVariables;
   export type Query = GetProductVariantQuery;
   export type ProductVariant = (NonNullable<GetProductVariantQuery['productVariant']>);
+  export type FeaturedAsset = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['featuredAsset']>)['focalPoint']>);
   export type Product = (NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>);
-  export type FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
-  export type FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
+  export type _FeaturedAsset = (NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<(NonNullable<GetProductVariantQuery['productVariant']>)['product']>)['featuredAsset']>)['focalPoint']>);
+}
+
+export namespace GetProductVariantList {
+  export type Variables = GetProductVariantListQueryVariables;
+  export type Query = GetProductVariantListQuery;
+  export type ProductVariants = (NonNullable<GetProductVariantListQuery['productVariants']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>;
+  export type FeaturedAsset = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>);
+  export type FocalPoint = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['featuredAsset']>)['focalPoint']>);
+  export type Product = (NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>);
+  export type _FeaturedAsset = (NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>);
+  export type _FocalPoint = (NonNullable<(NonNullable<(NonNullable<NonNullable<(NonNullable<(NonNullable<GetProductVariantListQuery['productVariants']>)['items']>)[number]>['product']>)['featuredAsset']>)['focalPoint']>);
+}
+
+export namespace GetTagList {
+  export type Variables = GetTagListQueryVariables;
+  export type Query = GetTagListQuery;
+  export type Tags = (NonNullable<GetTagListQuery['tags']>);
+  export type Items = NonNullable<(NonNullable<(NonNullable<GetTagListQuery['tags']>)['items']>)[number]>;
+}
+
+export namespace GetTag {
+  export type Variables = GetTagQueryVariables;
+  export type Query = GetTagQuery;
+  export type Tag = (NonNullable<GetTagQuery['tag']>);
+}
+
+export namespace CreateTag {
+  export type Variables = CreateTagMutationVariables;
+  export type Mutation = CreateTagMutation;
+  export type CreateTag = (NonNullable<CreateTagMutation['createTag']>);
+}
+
+export namespace UpdateTag {
+  export type Variables = UpdateTagMutationVariables;
+  export type Mutation = UpdateTagMutation;
+  export type UpdateTag = (NonNullable<UpdateTagMutation['updateTag']>);
+}
+
+export namespace DeleteTag {
+  export type Variables = DeleteTagMutationVariables;
+  export type Mutation = DeleteTagMutation;
+  export type DeleteTag = (NonNullable<DeleteTagMutation['deleteTag']>);
 }
 
 export namespace Promotion {
@@ -8846,8 +9324,8 @@ export namespace DeleteChannel {
 
 export namespace PaymentMethod {
   export type Fragment = PaymentMethodFragment;
-  export type ConfigArgs = NonNullable<(NonNullable<PaymentMethodFragment['configArgs']>)[number]>;
-  export type Definition = (NonNullable<PaymentMethodFragment['definition']>);
+  export type Checker = (NonNullable<PaymentMethodFragment['checker']>);
+  export type Handler = (NonNullable<PaymentMethodFragment['handler']>);
 }
 
 export namespace GetPaymentMethodList {
@@ -8857,10 +9335,23 @@ export namespace GetPaymentMethodList {
   export type Items = NonNullable<(NonNullable<(NonNullable<GetPaymentMethodListQuery['paymentMethods']>)['items']>)[number]>;
 }
 
+export namespace GetPaymentMethodOperations {
+  export type Variables = GetPaymentMethodOperationsQueryVariables;
+  export type Query = GetPaymentMethodOperationsQuery;
+  export type PaymentMethodEligibilityCheckers = NonNullable<(NonNullable<GetPaymentMethodOperationsQuery['paymentMethodEligibilityCheckers']>)[number]>;
+  export type PaymentMethodHandlers = NonNullable<(NonNullable<GetPaymentMethodOperationsQuery['paymentMethodHandlers']>)[number]>;
+}
+
 export namespace GetPaymentMethod {
   export type Variables = GetPaymentMethodQueryVariables;
   export type Query = GetPaymentMethodQuery;
   export type PaymentMethod = (NonNullable<GetPaymentMethodQuery['paymentMethod']>);
+}
+
+export namespace CreatePaymentMethod {
+  export type Variables = CreatePaymentMethodMutationVariables;
+  export type Mutation = CreatePaymentMethodMutation;
+  export type CreatePaymentMethod = (NonNullable<CreatePaymentMethodMutation['createPaymentMethod']>);
 }
 
 export namespace UpdatePaymentMethod {
@@ -8920,6 +9411,10 @@ export namespace DateTimeCustomField {
   export type Fragment = DateTimeCustomFieldFragment;
 }
 
+export namespace RelationCustomField {
+  export type Fragment = RelationCustomFieldFragment;
+}
+
 export namespace CustomFields {
   export type Fragment = CustomFieldsFragment;
   export type StringCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'StringCustomFieldConfig' }>);
@@ -8928,6 +9423,7 @@ export namespace CustomFields {
   export type IntCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'IntCustomFieldConfig' }>);
   export type FloatCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'FloatCustomFieldConfig' }>);
   export type DateTimeCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'DateTimeCustomFieldConfig' }>);
+  export type RelationCustomFieldConfigInlineFragment = (DiscriminateUnion<CustomFieldsFragment, { __typename?: 'RelationCustomFieldConfig' }>);
 }
 
 export namespace GetServerConfig {
@@ -8939,6 +9435,8 @@ export namespace GetServerConfig {
   export type Permissions = NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['permissions']>)[number]>;
   export type CustomFieldConfig = (NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>);
   export type Address = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Address']>)[number]>;
+  export type Administrator = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Administrator']>)[number]>;
+  export type Channel = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Channel']>)[number]>;
   export type Collection = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Collection']>)[number]>;
   export type Customer = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Customer']>)[number]>;
   export type Facet = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Facet']>)[number]>;

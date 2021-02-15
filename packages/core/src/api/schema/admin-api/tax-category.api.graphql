@@ -16,9 +16,11 @@ type Mutation {
 
 input CreateTaxCategoryInput {
     name: String!
+    isDefault: Boolean
 }
 
 input UpdateTaxCategoryInput {
     id: ID!
     name: String
+    isDefault: Boolean
 }

@@ -1,13 +1,18 @@
 mutation ($id: ID! $qty: Int!) {
     addItemToOrder(productVariantId: $id quantity: $qty) {
-        id
-        code
-        lines {
+        ...on Order {
             id
-            quantity
-            productVariant {
+            code
+            lines {
                 id
+                quantity
+                productVariant {
+                    id
+                }
             }
+        }
+        ...on ErrorResult {
+            errorCode
         }
     }
 }

@@ -17,6 +17,8 @@ type Query {
     collection(id: ID, slug: String): Collection
     "Returns a list of eligible shipping methods based on the current active Order"
     eligibleShippingMethods: [ShippingMethodQuote!]!
+    "Returns a list of payment methods and their eligibility based on the current active Order"
+    eligiblePaymentMethods: [PaymentMethodQuote!]!
     "Returns information about the current authenticated User"
     me: CurrentUser
     "Returns the possible next states that the activeOrder can transition to"
@@ -194,6 +196,7 @@ union ApplyCouponCodeResult = Order | CouponCodeExpiredError | CouponCodeInvalid
 union AddPaymentToOrderResult =
       Order
     | OrderPaymentStateError
+    | IneligiblePaymentMethodError
     | PaymentFailedError
     | PaymentDeclinedError
     | OrderStateTransitionError

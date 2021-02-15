@@ -1,26 +1,22 @@
 import { DynamicModule } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { GqlModuleOptions, GraphQLModule, GraphQLTypesLoader } from '@nestjs/graphql';
-import { StockMovementType } from '@vendure/common/lib/generated-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-import { GraphQLUpload } from 'apollo-server-core';
-import { buildSchema, extendSchema, printSchema } from 'graphql';
-import { GraphQLDateTime } from 'graphql-iso-date';
-import GraphQLJSON from 'graphql-type-json';
+import { buildSchema, extendSchema, GraphQLSchema, printSchema } from 'graphql';
 import path from 'path';
 
-import {
-    adminErrorOperationTypeResolvers,
-    ErrorResult,
-} from '../../common/error/generated-graphql-admin-errors';
-import { shopErrorOperationTypeResolvers } from '../../common/error/generated-graphql-shop-errors';
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { I18nModule } from '../../i18n/i18n.module';
 import { I18nService } from '../../i18n/i18n.service';
 import { getDynamicGraphQlModulesForPlugins } from '../../plugin/dynamic-plugin-api.module';
 import { getPluginAPIExtensions } from '../../plugin/plugin-metadata';
+import { CustomFieldRelationService } from '../../service/helpers/custom-field-relation/custom-field-relation.service';
+import { ServiceModule } from '../../service/service.module';
+import { ProductVariantService } from '../../service/services/product-variant.service';
+import { TransactionalConnection } from '../../service/transaction/transactional-connection';
 import { ApiSharedModule } from '../api-internal-modules';
-import { ApiType } from '../common/get-api-type';
+import { CustomFieldRelationResolverService } from '../common/custom-field-relation-resolver.service';
 import { IdCodecService } from '../common/id-codec.service';
 import { AssetInterceptorPlugin } from '../middleware/asset-interceptor-plugin';
 import { IdCodecPlugin } from '../middleware/id-codec-plugin';
@@ -30,7 +26,9 @@ import { generateAuthenticationTypes } from './generate-auth-types';
 import { generateErrorCodeEnum } from './generate-error-code-enum';
 import { generateListOptions } from './generate-list-options';
 import { generatePermissionEnum } from './generate-permissions';
+import { generateResolvers } from './generate-resolvers';
 import {
+    addActiveAdministratorCustomFields,
     addGraphQLCustomFields,
     addModifyOrderCustomFields,
     addOrderLineCustomFieldsInput,
@@ -60,17 +58,25 @@ export function configureGraphQLModule(
             i18nService: I18nService,
             idCodecService: IdCodecService,
             typesLoader: GraphQLTypesLoader,
+            customFieldRelationResolverService: CustomFieldRelationResolverService,
         ) => {
             return createGraphQLOptions(
                 i18nService,
                 configService,
                 idCodecService,
                 typesLoader,
+                customFieldRelationResolverService,
                 getOptions(configService),
             );
         },
-        inject: [ConfigService, I18nService, IdCodecService, GraphQLTypesLoader],
-        imports: [ConfigModule, I18nModule, ApiSharedModule],
+        inject: [
+            ConfigService,
+            I18nService,
+            IdCodecService,
+            GraphQLTypesLoader,
+            CustomFieldRelationResolverService,
+        ],
+        imports: [ConfigModule, I18nModule, ApiSharedModule, ServiceModule.forRoot()],
     });
 }
 
@@ -79,13 +85,21 @@ async function createGraphQLOptions(
     configService: ConfigService,
     idCodecService: IdCodecService,
     typesLoader: GraphQLTypesLoader,
+    customFieldRelationResolverService: CustomFieldRelationResolverService,
     options: GraphQLApiOptions,
 ): Promise<GqlModuleOptions> {
+    const builtSchema = await buildSchemaForApi(options.apiType);
+    const resolvers = generateResolvers(
+        configService,
+        customFieldRelationResolverService,
+        options.apiType,
+        builtSchema,
+    );
     return {
         path: '/' + options.apiPath,
-        typeDefs: await createTypeDefs(options.apiType),
+        typeDefs: printSchema(builtSchema),
         include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
-        resolvers: createResolvers(options.apiType),
+        resolvers,
         uploads: {
             maxFileSize: configService.assetOptions.uploadMaxFileSize,
         },
@@ -108,7 +122,7 @@ async function createGraphQLOptions(
      * 2. any custom fields defined in the config
      * 3. any schema extensions defined by plugins
      */
-    async function createTypeDefs(apiType: 'shop' | 'admin'): Promise<string> {
+    async function buildSchemaForApi(apiType: 'shop' | 'admin'): Promise<GraphQLSchema> {
         const customFields = configService.customFields;
         // Paths must be normalized to use forward-slash separators.
         // See https://github.com/nestjs/graphql/issues/336
@@ -133,95 +147,12 @@ async function createGraphQLOptions(
         schema = generateErrorCodeEnum(schema);
         if (apiType === 'admin') {
             schema = addServerConfigCustomFields(schema, customFields);
+            schema = addActiveAdministratorCustomFields(schema, customFields.Administrator);
         }
         if (apiType === 'shop') {
             schema = addRegisterCustomerCustomFieldsInput(schema, customFields.Customer || []);
         }
 
-        return printSchema(schema);
+        return schema;
     }
-}
-
-function createResolvers(apiType: ApiType) {
-    // Prevent `Type "Node" is missing a "resolveType" resolver.` warnings.
-    // See https://github.com/apollographql/apollo-server/issues/1075
-    const dummyResolveType = {
-        __resolveType() {
-            return null;
-        },
-    };
-
-    const stockMovementResolveType = {
-        __resolveType(value: any) {
-            switch (value.type) {
-                case StockMovementType.ADJUSTMENT:
-                    return 'StockAdjustment';
-                case StockMovementType.ALLOCATION:
-                    return 'Allocation';
-                case StockMovementType.SALE:
-                    return 'Sale';
-                case StockMovementType.CANCELLATION:
-                    return 'Cancellation';
-                case StockMovementType.RETURN:
-                    return 'Return';
-                case StockMovementType.RELEASE:
-                    return 'Release';
-            }
-        },
-    };
-
-    const customFieldsConfigResolveType = {
-        __resolveType(value: any) {
-            switch (value.type) {
-                case 'string':
-                    return 'StringCustomFieldConfig';
-                case 'localeString':
-                    return 'LocaleStringCustomFieldConfig';
-                case 'int':
-                    return 'IntCustomFieldConfig';
-                case 'float':
-                    return 'FloatCustomFieldConfig';
-                case 'boolean':
-                    return 'BooleanCustomFieldConfig';
-                case 'datetime':
-                    return 'DateTimeCustomFieldConfig';
-            }
-        },
-    };
-
-    const commonResolvers = {
-        JSON: GraphQLJSON,
-        DateTime: GraphQLDateTime,
-        Node: dummyResolveType,
-        PaginatedList: dummyResolveType,
-        Upload: GraphQLUpload || dummyResolveType,
-        SearchResultPrice: {
-            __resolveType(value: any) {
-                return value.hasOwnProperty('value') ? 'SinglePrice' : 'PriceRange';
-            },
-        },
-        CustomFieldConfig: customFieldsConfigResolveType,
-        CustomField: customFieldsConfigResolveType,
-        ErrorResult: {
-            __resolveType(value: ErrorResult) {
-                return value.__typename;
-            },
-        },
-    };
-
-    const adminResolvers = {
-        StockMovementItem: stockMovementResolveType,
-        StockMovement: stockMovementResolveType,
-        ...adminErrorOperationTypeResolvers,
-    };
-
-    const shopResolvers = {
-        ...shopErrorOperationTypeResolvers,
-    };
-
-    const resolvers =
-        apiType === 'admin'
-            ? { ...commonResolvers, ...adminResolvers }
-            : { ...commonResolvers, ...shopResolvers };
-    return resolvers;
 }

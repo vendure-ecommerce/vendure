@@ -11,7 +11,10 @@ export const containsProducts = new PromotionCondition({
         { languageCode: LanguageCode.en, value: 'Buy at least { minimum } of the specified products' },
     ],
     args: {
-        minimum: { type: 'int' },
+        minimum: {
+            type: 'int',
+            defaultValue: 1,
+        },
         productVariantIds: {
             type: 'ID',
             list: true,

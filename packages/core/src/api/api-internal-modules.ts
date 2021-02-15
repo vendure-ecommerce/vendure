@@ -7,6 +7,7 @@ import { createDynamicGraphQlModulesForPlugins } from '../plugin/dynamic-plugin-
 import { ServiceModule } from '../service/service.module';
 
 import { ConfigurableOperationCodec } from './common/configurable-operation-codec';
+import { CustomFieldRelationResolverService } from './common/custom-field-relation-resolver.service';
 import { IdCodecService } from './common/id-codec.service';
 import { AdministratorResolver } from './resolvers/admin/administrator.resolver';
 import { AssetResolver } from './resolvers/admin/asset.resolver';
@@ -28,10 +29,12 @@ import { PromotionResolver } from './resolvers/admin/promotion.resolver';
 import { RoleResolver } from './resolvers/admin/role.resolver';
 import { SearchResolver } from './resolvers/admin/search.resolver';
 import { ShippingMethodResolver } from './resolvers/admin/shipping-method.resolver';
+import { TagResolver } from './resolvers/admin/tag.resolver';
 import { TaxCategoryResolver } from './resolvers/admin/tax-category.resolver';
 import { TaxRateResolver } from './resolvers/admin/tax-rate.resolver';
 import { ZoneResolver } from './resolvers/admin/zone.resolver';
 import { AdministratorEntityResolver } from './resolvers/entity/administrator-entity.resolver';
+import { AssetEntityResolver } from './resolvers/entity/asset-entity.resolver';
 import { CollectionEntityResolver } from './resolvers/entity/collection-entity.resolver';
 import {
     CustomerAdminEntityResolver,
@@ -92,6 +95,7 @@ const adminResolvers = [
     RoleResolver,
     SearchResolver,
     ShippingMethodResolver,
+    TagResolver,
     TaxCategoryResolver,
     TaxRateResolver,
     ZoneResolver,
@@ -127,6 +131,7 @@ export const entityResolvers = [
 
 export const adminEntityResolvers = [
     AdministratorEntityResolver,
+    AssetEntityResolver,
     CustomerAdminEntityResolver,
     OrderAdminEntityResolver,
     PaymentMethodEntityResolver,
@@ -141,9 +146,15 @@ export const adminEntityResolvers = [
  * one API module.
  */
 @Module({
-    imports: [ConfigModule],
-    providers: [IdCodecService, ConfigurableOperationCodec],
-    exports: [IdCodecService, ConfigModule, ConfigurableOperationCodec],
+    imports: [ConfigModule, ServiceModule.forRoot()],
+    providers: [IdCodecService, ConfigurableOperationCodec, CustomFieldRelationResolverService],
+    exports: [
+        IdCodecService,
+        ConfigModule,
+        ConfigurableOperationCodec,
+        CustomFieldRelationResolverService,
+        ServiceModule.forRoot(),
+    ],
 })
 export class ApiSharedModule {}
 
@@ -154,7 +165,6 @@ export class ApiSharedModule {}
     imports: [
         ApiSharedModule,
         JobQueueModule,
-        ServiceModule.forRoot(),
         DataImportModule,
         ...createDynamicGraphQlModulesForPlugins('admin'),
     ],
@@ -167,7 +177,7 @@ export class AdminApiModule {}
  * The internal module containing the Shop GraphQL API resolvers
  */
 @Module({
-    imports: [ApiSharedModule, ServiceModule.forRoot(), ...createDynamicGraphQlModulesForPlugins('shop')],
+    imports: [ApiSharedModule, ...createDynamicGraphQlModulesForPlugins('shop')],
     providers: [...shopResolvers, ...entityResolvers],
     exports: [...shopResolvers],
 })

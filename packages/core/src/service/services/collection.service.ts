@@ -15,11 +15,10 @@ import { merge } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { RequestContext, SerializedRequestContext } from '../../api/common/request-context';
-import { IllegalOperationError, UserInputError } from '../../common/error/errors';
+import { IllegalOperationError } from '../../common/error/errors';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { Translated } from '../../common/types/locale-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
-import { CollectionFilter } from '../../config/catalog/collection-filter';
 import { ConfigService } from '../../config/config.service';
 import { Logger } from '../../config/logger/vendure-logger';
 import { CollectionTranslation } from '../../entity/collection/collection-translation.entity';
@@ -33,6 +32,8 @@ import { Job } from '../../job-queue/job';
 import { JobQueue } from '../../job-queue/job-queue';
 import { JobQueueService } from '../../job-queue/job-queue.service';
 import { WorkerService } from '../../worker/worker.service';
+import { ConfigArgService } from '../helpers/config-arg/config-arg.service';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { SlugValidator } from '../helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
@@ -62,6 +63,8 @@ export class CollectionService implements OnModuleInit {
         private jobQueueService: JobQueueService,
         private configService: ConfigService,
         private slugValidator: SlugValidator,
+        private configArgService: ConfigArgService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
     onModuleInit() {
@@ -135,18 +138,19 @@ export class CollectionService implements OnModuleInit {
     }
 
     async findOneBySlug(ctx: RequestContext, slug: string): Promise<Translated<Collection> | undefined> {
-        const translation = await this.connection.getRepository(ctx, CollectionTranslation).findOne({
+        const translations = await this.connection.getRepository(ctx, CollectionTranslation).find({
             relations: ['base'],
-            where: {
-                languageCode: ctx.languageCode,
-                slug,
-            },
+            where: { slug },
         });
 
-        if (!translation) {
+        if (!translations?.length) {
             return;
         }
-        return this.findOne(ctx, translation.base.id);
+        const bestMatch =
+            translations.find(t => t.languageCode === ctx.languageCode) ??
+            translations.find(t => t.languageCode === ctx.channel.defaultLanguageCode) ??
+            translations[0];
+        return this.findOne(ctx, bestMatch.base.id);
     }
 
     getAvailableFilters(ctx: RequestContext): ConfigurableOperationDefinition[] {
@@ -295,6 +299,7 @@ export class CollectionService implements OnModuleInit {
             },
         });
         await this.assetService.updateEntityAssets(ctx, collection, input);
+        await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
@@ -317,6 +322,7 @@ export class CollectionService implements OnModuleInit {
                 await this.assetService.updateEntityAssets(ctx, coll, input);
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
             this.applyFiltersQueue.add({
                 ctx: ctx.serialize(),
@@ -381,18 +387,7 @@ export class CollectionService implements OnModuleInit {
         const filters: ConfigurableOperation[] = [];
         if (input.filters) {
             for (const filter of input.filters) {
-                const match = this.getFilterByCode(filter.code);
-                const output = {
-                    code: filter.code,
-                    description: match.description,
-                    args: filter.arguments.map((inputArg, i) => {
-                        return {
-                            name: inputArg.name,
-                            value: inputArg.value,
-                        };
-                    }),
-                };
-                filters.push(output);
+                filters.push(this.configArgService.parseInput('CollectionFilter', filter));
             }
         }
         return filters;
@@ -519,13 +514,5 @@ export class CollectionService implements OnModuleInit {
         await this.connection.getRepository(ctx, Collection).save(newRoot);
         this.rootCollection = newRoot;
         return newRoot;
-    }
-
-    private getFilterByCode(code: string): CollectionFilter<any> {
-        const match = this.configService.catalogOptions.collectionFilters.find(a => a.code === code);
-        if (!match) {
-            throw new UserInputError(`error.adjustment-operation-with-code-not-found`, { code });
-        }
-        return match;
     }
 }

@@ -30,6 +30,11 @@ type ProductList implements PaginatedList {
     totalItems: Int!
 }
 
+type ProductVariantList implements PaginatedList {
+    items: [ProductVariant!]!
+    totalItems: Int!
+}
+
 type ProductVariant implements Node {
     id: ID!
     product: Product!

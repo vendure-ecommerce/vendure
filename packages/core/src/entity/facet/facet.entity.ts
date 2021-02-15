@@ -1,9 +1,11 @@
 import { DeepPartial } from '@vendure/common/lib/shared-types';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
+import { ChannelAware } from '../../common/types/common-types';
 import { LocaleString, Translatable, Translation } from '../../common/types/locale-types';
 import { HasCustomFields } from '../../config/custom-field/custom-field-types';
 import { VendureEntity } from '../base/base.entity';
+import { Channel } from '../channel/channel.entity';
 import { CustomFacetFields } from '../custom-entity-fields';
 import { FacetValue } from '../facet-value/facet-value.entity';
 
@@ -21,7 +23,7 @@ import { FacetTranslation } from './facet-translation.entity';
  * @docsCategory entities
  */
 @Entity()
-export class Facet extends VendureEntity implements Translatable, HasCustomFields {
+export class Facet extends VendureEntity implements Translatable, HasCustomFields, ChannelAware {
     constructor(input?: DeepPartial<Facet>) {
         super(input);
     }
@@ -42,4 +44,8 @@ export class Facet extends VendureEntity implements Translatable, HasCustomField
 
     @Column(type => CustomFacetFields)
     customFields: CustomFacetFields;
+
+    @ManyToMany(type => Channel)
+    @JoinTable()
+    channels: Channel[];
 }

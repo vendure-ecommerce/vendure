@@ -1,3 +1,4 @@
+import { isObject } from '@vendure/common/lib/shared-utils';
 import { ApolloServerPlugin, GraphQLRequestListener, GraphQLServiceContext } from 'apollo-server-plugin-base';
 import { DocumentNode, OperationDefinitionNode } from 'graphql';
 
@@ -36,7 +37,7 @@ export class IdCodecPlugin implements ApolloServerPlugin {
         const typeTree = this.graphqlValueTransformer.getOutputTypeTree(document);
         this.graphqlValueTransformer.transformValues(typeTree, data, (value, type) => {
             const isIdType = type && type.name === 'ID';
-            if (type && type.name === 'JSON') {
+            if (type && type.name === 'JSON' && isObject(value)) {
                 return this.idCodecService.encode(value, [
                     'paymentId',
                     'fulfillmentId',

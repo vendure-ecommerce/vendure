@@ -12,8 +12,12 @@
     <vdr-dt-column>{{ 'common.name' | translate }}</vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
     <vdr-dt-column></vdr-dt-column>
+    <vdr-dt-column></vdr-dt-column>
     <ng-template let-taxCategory="item">
         <td class="left align-middle">{{ taxCategory.name }}</td>
+        <td class="left align-middle">
+            <vdr-chip *ngIf="taxCategory.isDefault">{{ 'common.default-tax-category' | translate }}</vdr-chip>
+        </td>
         <td class="right align-middle">
             <vdr-table-row-action
                 iconShape="edit"

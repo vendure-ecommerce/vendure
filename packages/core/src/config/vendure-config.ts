@@ -20,13 +20,15 @@ import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-proce
 import { FulfillmentHandler } from './fulfillment/fulfillment-handler';
 import { JobQueueStrategy } from './job-queue/job-queue-strategy';
 import { VendureLogger } from './logger/vendure-logger';
+import { ChangedPriceHandlingStrategy } from './order/changed-price-handling-strategy';
 import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
+import { PaymentMethodEligibilityChecker } from './payment-method/payment-method-eligibility-checker';
+import { PaymentMethodHandler } from './payment-method/payment-method-handler';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
-import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
@@ -433,6 +435,17 @@ export interface OrderOptions {
      * @default DefaultOrderCodeStrategy
      */
     orderCodeStrategy?: OrderCodeStrategy;
+    /**
+     * @description
+     * Defines how we handle the situation where an OrderItem exists in an Order, and
+     * then later on another is added but in the mean time the price of the ProductVariant has changed.
+     *
+     * By default, the latest price will be used. Any price changes resulting from using a newer price
+     * will be reflected in the GraphQL `OrderLine.unitPrice[WithTax]ChangeSinceAdded` field.
+     *
+     * @default DefaultChangedPriceHandlingStrategy
+     */
+    changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
 }
 
 /**
@@ -585,10 +598,16 @@ export interface SuperadminCredentials {
 export interface PaymentOptions {
     /**
      * @description
-     * An array of {@link PaymentMethodHandler}s with which to process payments.
+     * Defines which {@link PaymentMethodHandler}s are available when configuring
+     * {@link PaymentMethod}s
      */
     paymentMethodHandlers: PaymentMethodHandler[];
-
+    /**
+     * @description
+     * Defines which {@link PaymentMethodEligibilityChecker}s are available when configuring
+     * {@link PaymentMethod}s
+     */
+    paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
     /**
      * @description
      * Allows the definition of custom states and transition logic for the payment process state machine.

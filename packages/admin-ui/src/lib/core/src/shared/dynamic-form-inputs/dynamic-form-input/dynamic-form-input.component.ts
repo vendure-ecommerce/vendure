@@ -29,10 +29,7 @@ import { switchMap, take, takeUntil } from 'rxjs/operators';
 
 import { FormInputComponent } from '../../../common/component-registry-types';
 import { ConfigArgDefinition, CustomFieldConfig } from '../../../common/generated-types';
-import {
-    getConfigArgValue,
-    getDefaultConfigArgSingleValue,
-} from '../../../common/utilities/configurable-operation-utils';
+import { getConfigArgValue } from '../../../common/utilities/configurable-operation-utils';
 import { ComponentRegistryService } from '../../../providers/component-registry/component-registry.service';
 
 type InputListItem = {
@@ -211,7 +208,7 @@ export class DynamicFormInputComponent
         }
         this.listItems.push({
             id: this.listId++,
-            control: new FormControl(getDefaultConfigArgSingleValue(this.def.type as ConfigArgType)),
+            control: new FormControl((this.def as ConfigArgDefinition).defaultValue ?? null),
         });
         this.renderList$.next();
     }
@@ -309,6 +306,8 @@ export class DynamicFormInputComponent
                 return { component: 'date-form-input' };
             case 'ID':
                 return { component: 'text-form-input' };
+            case 'relation':
+                return { component: 'relation-form-input' };
             default:
                 assertNever(type);
         }

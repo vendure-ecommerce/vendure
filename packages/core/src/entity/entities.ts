@@ -54,6 +54,7 @@ import { Sale } from './stock-movement/sale.entity';
 import { StockAdjustment } from './stock-movement/stock-adjustment.entity';
 import { StockMovement } from './stock-movement/stock-movement.entity';
 import { Surcharge } from './surcharge/surcharge.entity';
+import { Tag } from './tag/tag.entity';
 import { TaxCategory } from './tax-category/tax-category.entity';
 import { TaxRate } from './tax-rate/tax-rate.entity';
 import { User } from './user/user.entity';
@@ -119,6 +120,7 @@ export const coreEntitiesMap = {
     StockAdjustment,
     StockMovement,
     Surcharge,
+    Tag,
     TaxCategory,
     TaxRate,
     User,

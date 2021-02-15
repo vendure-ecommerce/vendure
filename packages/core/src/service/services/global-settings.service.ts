@@ -5,12 +5,17 @@ import { RequestContext } from '../../api/common/request-context';
 import { InternalServerError } from '../../common/error/errors';
 import { ConfigService } from '../../config/config.service';
 import { GlobalSettings } from '../../entity/global-settings/global-settings.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
 
 @Injectable()
 export class GlobalSettingsService {
-    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
+    constructor(
+        private connection: TransactionalConnection,
+        private configService: ConfigService,
+        private customFieldRelationService: CustomFieldRelationService,
+    ) {}
 
     /**
      * Ensure there is a global settings row in the database.
@@ -37,6 +42,7 @@ export class GlobalSettingsService {
     async updateSettings(ctx: RequestContext, input: UpdateGlobalSettingsInput): Promise<GlobalSettings> {
         const settings = await this.getSettings(ctx);
         patchEntity(settings, input);
+        await this.customFieldRelationService.updateRelations(ctx, GlobalSettings, input, settings);
         return this.connection.getRepository(ctx, GlobalSettings).save(settings);
     }
 }

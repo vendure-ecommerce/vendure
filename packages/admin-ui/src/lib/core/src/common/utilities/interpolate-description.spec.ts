@@ -5,7 +5,7 @@ import { interpolateDescription } from './interpolate-description';
 describe('interpolateDescription()', () => {
     it('works for single argument', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string', list: false }],
+            args: [{ name: 'foo', type: 'string', list: false, required: false }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -16,8 +16,8 @@ describe('interpolateDescription()', () => {
     it('works for multiple arguments', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
             args: [
-                { name: 'foo', type: 'string', list: false },
-                { name: 'bar', type: 'string', list: false },
+                { name: 'foo', type: 'string', list: false, required: false },
+                { name: 'bar', type: 'string', list: false, required: false },
             ],
             description: 'The value is { foo } and { bar }',
         };
@@ -28,7 +28,7 @@ describe('interpolateDescription()', () => {
 
     it('is case-insensitive', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'string', list: false }],
+            args: [{ name: 'foo', type: 'string', list: false, required: false }],
             description: 'The value is { FOo }',
         };
         const result = interpolateDescription(operation as any, { foo: 'val' });
@@ -39,8 +39,8 @@ describe('interpolateDescription()', () => {
     it('ignores whitespaces in interpolation', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
             args: [
-                { name: 'foo', type: 'string', list: false },
-                { name: 'bar', type: 'string', list: false },
+                { name: 'foo', type: 'string', list: false, required: false },
+                { name: 'bar', type: 'string', list: false, required: false },
             ],
             description: 'The value is {foo} and {      bar    }',
         };
@@ -51,7 +51,15 @@ describe('interpolateDescription()', () => {
 
     it('formats currency-form-input value as a decimal', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'price', type: 'int', list: false, ui: { component: 'currency-form-input' } }],
+            args: [
+                {
+                    name: 'price',
+                    type: 'int',
+                    list: false,
+                    ui: { component: 'currency-form-input' },
+                    required: false,
+                },
+            ],
             description: 'The price is { price }',
         };
         const result = interpolateDescription(operation as any, { price: 1234 });
@@ -61,7 +69,7 @@ describe('interpolateDescription()', () => {
 
     it('formats Date object as human-readable', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'date', type: 'datetime', list: false }],
+            args: [{ name: 'date', type: 'datetime', list: false, required: false }],
             description: 'The date is { date }',
         };
         const date = new Date('2017-09-15 00:00:00');
@@ -72,7 +80,7 @@ describe('interpolateDescription()', () => {
 
     it('formats date string object as human-readable', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'date', type: 'datetime', list: false }],
+            args: [{ name: 'date', type: 'datetime', list: false, required: false }],
             description: 'The date is { date }',
         };
         const date = '2017-09-15';
@@ -83,7 +91,7 @@ describe('interpolateDescription()', () => {
 
     it('correctly interprets falsy-looking values', () => {
         const operation: Partial<ConfigurableOperationDefinition> = {
-            args: [{ name: 'foo', type: 'int', list: false }],
+            args: [{ name: 'foo', type: 'int', list: false, required: false }],
             description: 'The value is { foo }',
         };
         const result = interpolateDescription(operation as any, { foo: 0 });

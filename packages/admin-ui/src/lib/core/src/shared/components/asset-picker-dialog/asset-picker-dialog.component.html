@@ -1,6 +1,7 @@
 <ng-template vdrDialogTitle>
     <div class="title-row">
-        {{ 'asset.select-assets' | translate }}
+        <span>{{ 'asset.select-assets' | translate }}</span>
+        <div class="flex-spacer"></div>
         <vdr-asset-file-input
             class="ml3"
             (selectFiles)="createAssets($event)"
@@ -9,16 +10,15 @@
         ></vdr-asset-file-input>
     </div>
 </ng-template>
-<input
-    type="text"
-    name="searchTerm"
-    [formControl]="searchTerm"
-    [placeholder]="'asset.search-asset-name' | translate"
-    class="search-input"
-/>
+<vdr-asset-search-input
+    class="mb2"
+    [tags]="allTags$ | async"
+    (searchTermChange)="searchTerm$.next($event)"
+    (tagsChange)="filterByTags$.next($event)"
+></vdr-asset-search-input>
 <vdr-asset-gallery
     [assets]="(assets$ | async)! | paginate: paginationConfig"
-    [multiSelect]="true"
+    [multiSelect]="multiSelect"
     (selectionChange)="selection = $event"
 ></vdr-asset-gallery>
 

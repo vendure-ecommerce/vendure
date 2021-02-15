@@ -71,6 +71,8 @@ function getDefaultValue(type: CustomFieldType): any {
             return 0;
         case 'datetime':
             return new Date();
+        case 'relation':
+            return null;
         default:
             assertNever(type);
     }

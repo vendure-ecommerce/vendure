@@ -123,7 +123,7 @@ export class RoleDetailComponent extends BaseDetailComponent<Role> implements On
         this.detailForm.patchValue({
             description: role.description,
             code: role.code,
-            channelIds: role.channels.map(c => c.id),
+            channelIds: role.channels,
             permissions: role.permissions,
         });
         // This was required to get the channel selector component to

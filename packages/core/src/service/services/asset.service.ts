@@ -1,18 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import {
+    AssetListOptions,
     AssetType,
     CreateAssetInput,
     CreateAssetResult,
     DeletionResponse,
     DeletionResult,
+    LogicalOperator,
     UpdateAssetInput,
 } from '@vendure/common/lib/generated-types';
+import { omit } from '@vendure/common/lib/omit';
 import { ID, PaginatedList, Type } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 import { ReadStream } from 'fs-extra';
 import mime from 'mime-types';
 import path from 'path';
 import { Stream } from 'stream';
+import { Brackets } from 'typeorm';
 
 import { RequestContext } from '../../api/common/request-context';
 import { isGraphQlErrorResult } from '../../common/error/error-result';
@@ -33,6 +37,8 @@ import { AssetEvent } from '../../event-bus/events/asset-event';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { patchEntity } from '../helpers/utils/patch-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
+
+import { TagService } from './tag.service';
 // tslint:disable-next-line:no-var-requires
 const sizeOf = require('image-size');
 
@@ -55,6 +61,7 @@ export class AssetService {
         private configService: ConfigService,
         private listQueryBuilder: ListQueryBuilder,
         private eventBus: EventBus,
+        private tagService: TagService,
     ) {
         this.permittedMimeTypes = this.configService.assetOptions.permittedFileTypes
             .map(val => (/\.[\w]+/.test(val) ? mime.lookup(val) || undefined : val))
@@ -69,14 +76,34 @@ export class AssetService {
         return this.connection.getRepository(ctx, Asset).findOne(id);
     }
 
-    findAll(ctx: RequestContext, options?: ListQueryOptions<Asset>): Promise<PaginatedList<Asset>> {
-        return this.listQueryBuilder
-            .build(Asset, options, { ctx })
-            .getManyAndCount()
-            .then(([items, totalItems]) => ({
-                items,
-                totalItems,
-            }));
+    findAll(ctx: RequestContext, options?: AssetListOptions): Promise<PaginatedList<Asset>> {
+        const qb = this.listQueryBuilder.build(Asset, options, {
+            ctx,
+            relations: options?.tags ? ['tags'] : [],
+        });
+        const tags = options?.tags;
+        if (tags && tags.length) {
+            const operator = options?.tagsOperator ?? LogicalOperator.AND;
+            const subquery = qb.connection
+                .createQueryBuilder()
+                .select('asset.id')
+                .from(Asset, 'asset')
+                .leftJoin('asset.tags', 'tags')
+                .where(`tags.value IN (:...tags)`);
+
+            if (operator === LogicalOperator.AND) {
+                subquery.groupBy('asset.id').having('COUNT(asset.id) = :tagCount');
+            }
+
+            qb.andWhere(`asset.id IN (${subquery.getQuery()})`).setParameters({
+                tags,
+                tagCount: tags.length,
+            });
+        }
+        return qb.getManyAndCount().then(([items, totalItems]) => ({
+            items,
+            totalItems,
+        }));
     }
 
     async getFeaturedAsset<T extends Omit<EntityWithAssets, 'assets'>>(
@@ -162,6 +189,11 @@ export class AssetService {
         if (isGraphQlErrorResult(result)) {
             return result;
         }
+        if (input.tags) {
+            const tags = await this.tagService.valuesToTags(ctx, input.tags);
+            result.tags = tags;
+            await this.connection.getRepository(ctx, Asset).save(result);
+        }
         this.eventBus.publish(new AssetEvent(ctx, result, 'created'));
         return result;
     }
@@ -173,7 +205,10 @@ export class AssetService {
             input.focalPoint.x = to3dp(input.focalPoint.x);
             input.focalPoint.y = to3dp(input.focalPoint.y);
         }
-        patchEntity(asset, input);
+        patchEntity(asset, omit(input, ['tags']));
+        if (input.tags) {
+            asset.tags = await this.tagService.valuesToTags(ctx, input.tags);
+        }
         const updatedAsset = await this.connection.getRepository(ctx, Asset).save(asset);
         this.eventBus.publish(new AssetEvent(ctx, updatedAsset, 'updated'));
         return updatedAsset;

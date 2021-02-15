@@ -124,11 +124,16 @@ export class MysqlSearchStrategy implements SearchStrategy {
                      MATCH (description) AGAINST (:term)* 1`,
                     'score',
                 )
-                .where('sku LIKE :like_term')
-                .orWhere('MATCH (productName) AGAINST (:term)')
-                .orWhere('MATCH (productVariantName) AGAINST (:term)')
-                .orWhere('MATCH (description) AGAINST (:term)')
-                .setParameters({ term, like_term: `%${term}%` });
+                .where(
+                    new Brackets(qb1 => {
+                        qb1.where('sku LIKE :like_term')
+                            .orWhere('MATCH (productName) AGAINST (:term)')
+                            .orWhere('MATCH (productVariantName) AGAINST (:term)')
+                            .orWhere('MATCH (description) AGAINST (:term)');
+                    }),
+                )
+                .andWhere('channelId = :channelId')
+                .setParameters({ term, like_term: `%${term}%`, channelId: ctx.channelId });
 
             qb.innerJoin(`(${termScoreQuery.getQuery()})`, 'term_result', 'inner_productId = si.productId')
                 .addSelect(input.groupByProduct ? 'MAX(term_result.score)' : 'term_result.score', 'score')

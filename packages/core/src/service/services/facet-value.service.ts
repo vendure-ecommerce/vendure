@@ -17,9 +17,12 @@ import { Product, ProductVariant } from '../../entity';
 import { FacetValueTranslation } from '../../entity/facet-value/facet-value-translation.entity';
 import { FacetValue } from '../../entity/facet-value/facet-value.entity';
 import { Facet } from '../../entity/facet/facet.entity';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { translateDeep } from '../helpers/utils/translate-entity';
 import { TransactionalConnection } from '../transaction/transactional-connection';
+
+import { ChannelService } from './channel.service';
 
 @Injectable()
 export class FacetValueService {
@@ -27,6 +30,8 @@ export class FacetValueService {
         private connection: TransactionalConnection,
         private translatableSaver: TranslatableSaver,
         private configService: ConfigService,
+        private customFieldRelationService: CustomFieldRelationService,
+        private channelService: ChannelService,
     ) {}
 
     findAll(lang: LanguageCode): Promise<Array<Translated<FacetValue>>> {
@@ -77,8 +82,17 @@ export class FacetValueService {
             input,
             entityType: FacetValue,
             translationType: FacetValueTranslation,
-            beforeSave: fv => (fv.facet = facet),
+            beforeSave: fv => {
+                fv.facet = facet;
+                this.channelService.assignToCurrentChannel(fv, ctx);
+            },
         });
+        await this.customFieldRelationService.updateRelations(
+            ctx,
+            FacetValue,
+            input as CreateFacetValueInput,
+            facetValue,
+        );
         return assertFound(this.findOne(ctx, facetValue.id));
     }
 
@@ -89,6 +103,7 @@ export class FacetValueService {
             entityType: FacetValue,
             translationType: FacetValueTranslation,
         });
+        await this.customFieldRelationService.updateRelations(ctx, FacetValue, input, facetValue);
         return assertFound(this.findOne(ctx, facetValue.id));
     }
 

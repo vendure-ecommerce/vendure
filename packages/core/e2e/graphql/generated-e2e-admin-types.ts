@@ -49,12 +49,17 @@ export type Query = {
     orders: OrderList;
     paymentMethods: PaymentMethodList;
     paymentMethod?: Maybe<PaymentMethod>;
+    paymentMethodEligibilityCheckers: Array<ConfigurableOperationDefinition>;
+    paymentMethodHandlers: Array<ConfigurableOperationDefinition>;
     productOptionGroups: Array<ProductOptionGroup>;
     productOptionGroup?: Maybe<ProductOptionGroup>;
     search: SearchResponse;
+    /** List Products */
     products: ProductList;
     /** Get a Product either by id or slug. If neither id nor slug is speicified, an error will result. */
     product?: Maybe<Product>;
+    /** List ProductVariants */
+    productVariants: ProductVariantList;
     /** Get a ProductVariant by id */
     productVariant?: Maybe<ProductVariant>;
     promotion?: Maybe<Promotion>;
@@ -70,6 +75,8 @@ export type Query = {
     fulfillmentHandlers: Array<ConfigurableOperationDefinition>;
     testShippingMethod: TestShippingMethodResult;
     testEligibleShippingMethods: Array<ShippingMethodQuote>;
+    tag: Tag;
+    tags: TagList;
     taxCategories: Array<TaxCategory>;
     taxCategory?: Maybe<TaxCategory>;
     taxRates: TaxRateList;
@@ -188,6 +195,10 @@ export type QueryProductArgs = {
     slug?: Maybe<Scalars['String']>;
 };
 
+export type QueryProductVariantsArgs = {
+    options?: Maybe<ProductVariantListOptions>;
+};
+
 export type QueryProductVariantArgs = {
     id: Scalars['ID'];
 };
@@ -222,6 +233,14 @@ export type QueryTestShippingMethodArgs = {
 
 export type QueryTestEligibleShippingMethodsArgs = {
     input: TestEligibleShippingMethodsInput;
+};
+
+export type QueryTagArgs = {
+    id: Scalars['ID'];
+};
+
+export type QueryTagsArgs = {
+    options?: Maybe<TagListOptions>;
 };
 
 export type QueryTaxCategoryArgs = {
@@ -350,6 +369,8 @@ export type Mutation = {
      * Payment.
      */
     addManualPaymentToOrder: AddManualPaymentToOrderResult;
+    /** Create existing PaymentMethod */
+    createPaymentMethod: PaymentMethod;
     /** Update an existing PaymentMethod */
     updatePaymentMethod: PaymentMethod;
     /** Create a new ProductOptionGroup */
@@ -400,6 +421,12 @@ export type Mutation = {
     updateShippingMethod: ShippingMethod;
     /** Delete a ShippingMethod */
     deleteShippingMethod: DeletionResponse;
+    /** Create a new Tag */
+    createTag: Tag;
+    /** Update an existing Tag */
+    updateTag: Tag;
+    /** Delete an existing Tag */
+    deleteTag: DeletionResponse;
     /** Create a new TaxCategory */
     createTaxCategory: TaxCategory;
     /** Update an existing TaxCategory */
@@ -676,6 +703,10 @@ export type MutationAddManualPaymentToOrderArgs = {
     input: ManualPaymentInput;
 };
 
+export type MutationCreatePaymentMethodArgs = {
+    input: CreatePaymentMethodInput;
+};
+
 export type MutationUpdatePaymentMethodArgs = {
     input: UpdatePaymentMethodInput;
 };
@@ -782,6 +813,18 @@ export type MutationDeleteShippingMethodArgs = {
     id: Scalars['ID'];
 };
 
+export type MutationCreateTagArgs = {
+    input: CreateTagInput;
+};
+
+export type MutationUpdateTagArgs = {
+    input: UpdateTagInput;
+};
+
+export type MutationDeleteTagArgs = {
+    id: Scalars['ID'];
+};
+
 export type MutationCreateTaxCategoryArgs = {
     input: CreateTaxCategoryInput;
 };
@@ -834,6 +877,7 @@ export type CreateAdministratorInput = {
     emailAddress: Scalars['String'];
     password: Scalars['String'];
     roleIds: Array<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateAdministratorInput = {
@@ -843,6 +887,7 @@ export type UpdateAdministratorInput = {
     emailAddress?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
     roleIds?: Maybe<Array<Scalars['ID']>>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateActiveAdministratorInput = {
@@ -850,6 +895,7 @@ export type UpdateActiveAdministratorInput = {
     lastName?: Maybe<Scalars['String']>;
     emailAddress?: Maybe<Scalars['String']>;
     password?: Maybe<Scalars['String']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Administrator = Node & {
@@ -860,11 +906,28 @@ export type Administrator = Node & {
     lastName: Scalars['String'];
     emailAddress: Scalars['String'];
     user: User;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AdministratorList = PaginatedList & {
     items: Array<Administrator>;
     totalItems: Scalars['Int'];
+};
+
+export type Asset = Node & {
+    tags: Array<Tag>;
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
+    type: AssetType;
+    fileSize: Scalars['Int'];
+    mimeType: Scalars['String'];
+    width: Scalars['Int'];
+    height: Scalars['Int'];
+    source: Scalars['String'];
+    preview: Scalars['String'];
+    focalPoint?: Maybe<Coordinate>;
 };
 
 export type MimeTypeError = ErrorResult & {
@@ -876,8 +939,18 @@ export type MimeTypeError = ErrorResult & {
 
 export type CreateAssetResult = Asset | MimeTypeError;
 
+export type AssetListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<AssetSortParameter>;
+    filter?: Maybe<AssetFilterParameter>;
+    tags?: Maybe<Array<Scalars['String']>>;
+    tagsOperator?: Maybe<LogicalOperator>;
+};
+
 export type CreateAssetInput = {
     file: Scalars['Upload'];
+    tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type CoordinateInput = {
@@ -889,6 +962,7 @@ export type UpdateAssetInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
+    tags?: Maybe<Array<Scalars['String']>>;
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -903,6 +977,7 @@ export type CreateChannelInput = {
     currencyCode: CurrencyCode;
     defaultTaxZoneId: Scalars['ID'];
     defaultShippingZoneId: Scalars['ID'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type UpdateChannelInput = {
@@ -914,6 +989,7 @@ export type UpdateChannelInput = {
     currencyCode?: Maybe<CurrencyCode>;
     defaultTaxZoneId?: Maybe<Scalars['ID']>;
     defaultShippingZoneId?: Maybe<Scalars['ID']>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 /** Returned if attempting to set a Channel's defaultLanguageCode to a language which is not enabled in GlobalSettings */
@@ -1667,21 +1743,35 @@ export type PaymentMethodList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type CreatePaymentMethodInput = {
+    name: Scalars['String'];
+    code: Scalars['String'];
+    description?: Maybe<Scalars['String']>;
+    enabled: Scalars['Boolean'];
+    checker?: Maybe<ConfigurableOperationInput>;
+    handler: ConfigurableOperationInput;
+};
+
 export type UpdatePaymentMethodInput = {
     id: Scalars['ID'];
+    name?: Maybe<Scalars['String']>;
     code?: Maybe<Scalars['String']>;
+    description?: Maybe<Scalars['String']>;
     enabled?: Maybe<Scalars['Boolean']>;
-    configArgs?: Maybe<Array<ConfigArgInput>>;
+    checker?: Maybe<ConfigurableOperationInput>;
+    handler?: Maybe<ConfigurableOperationInput>;
 };
 
 export type PaymentMethod = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
+    name: Scalars['String'];
     code: Scalars['String'];
+    description: Scalars['String'];
     enabled: Scalars['Boolean'];
-    configArgs: Array<ConfigArg>;
-    definition: ConfigurableOperationDefinition;
+    checker?: Maybe<ConfigurableOperation>;
+    handler: ConfigurableOperation;
 };
 
 export type Payment = Node & {
@@ -2134,13 +2224,24 @@ export type StockMovementList = {
     totalItems: Scalars['Int'];
 };
 
+export type CreateTagInput = {
+    value: Scalars['String'];
+};
+
+export type UpdateTagInput = {
+    id: Scalars['ID'];
+    value?: Maybe<Scalars['String']>;
+};
+
 export type CreateTaxCategoryInput = {
     name: Scalars['String'];
+    isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type UpdateTaxCategoryInput = {
     id: Scalars['ID'];
     name?: Maybe<Scalars['String']>;
+    isDefault?: Maybe<Scalars['Boolean']>;
 };
 
 export type CreateTaxRateInput = {
@@ -2190,21 +2291,6 @@ export type Address = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Asset = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    name: Scalars['String'];
-    type: AssetType;
-    fileSize: Scalars['Int'];
-    mimeType: Scalars['String'];
-    width: Scalars['Int'];
-    height: Scalars['Int'];
-    source: Scalars['String'];
-    preview: Scalars['String'];
-    focalPoint?: Maybe<Coordinate>;
-};
-
 export type Coordinate = {
     x: Scalars['Float'];
     y: Scalars['Float'];
@@ -2245,6 +2331,7 @@ export type Channel = Node & {
     defaultLanguageCode: LanguageCode;
     currencyCode: CurrencyCode;
     pricesIncludeTax: Scalars['Boolean'];
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CollectionBreadcrumb = {
@@ -2488,6 +2575,8 @@ export type ConfigArgDefinition = {
     name: Scalars['String'];
     type: Scalars['String'];
     list: Scalars['Boolean'];
+    required: Scalars['Boolean'];
+    defaultValue?: Maybe<Scalars['JSON']>;
     label?: Maybe<Scalars['String']>;
     description?: Maybe<Scalars['String']>;
     ui?: Maybe<Scalars['JSON']>;
@@ -2511,6 +2600,7 @@ export type DeletionResponse = {
 
 export type ConfigArgInput = {
     name: Scalars['String'];
+    /** A JSON stringified representation of the actual value */
     value: Scalars['String'];
 };
 
@@ -2619,6 +2709,23 @@ export type UpdateAddressInput = {
 /** Indicates that an operation succeeded, where we do not want to return any more specific information. */
 export type Success = {
     success: Scalars['Boolean'];
+};
+
+export type ShippingMethodQuote = {
+    id: Scalars['ID'];
+    price: Scalars['Int'];
+    priceWithTax: Scalars['Int'];
+    name: Scalars['String'];
+    description: Scalars['String'];
+    /** Any optional metadata returned by the ShippingCalculator in the ShippingCalculationResult */
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
+export type PaymentMethodQuote = {
+    id: Scalars['ID'];
+    code: Scalars['String'];
+    isEligible: Scalars['Boolean'];
+    eligibilityMessage?: Maybe<Scalars['String']>;
 };
 
 export type Country = Node & {
@@ -3061,6 +3168,18 @@ export type DateTimeCustomFieldConfig = CustomField & {
     step?: Maybe<Scalars['Int']>;
 };
 
+export type RelationCustomFieldConfig = CustomField & {
+    name: Scalars['String'];
+    type: Scalars['String'];
+    list: Scalars['Boolean'];
+    label?: Maybe<Array<LocalizedString>>;
+    description?: Maybe<Array<LocalizedString>>;
+    readonly?: Maybe<Scalars['Boolean']>;
+    internal?: Maybe<Scalars['Boolean']>;
+    entity: Scalars['String'];
+    scalarFields: Array<Scalars['String']>;
+};
+
 export type LocalizedString = {
     languageCode: LanguageCode;
     value: Scalars['String'];
@@ -3072,7 +3191,8 @@ export type CustomFieldConfig =
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
-    | DateTimeCustomFieldConfig;
+    | DateTimeCustomFieldConfig
+    | RelationCustomFieldConfig;
 
 export type CustomerGroup = Node & {
     id: Scalars['ID'];
@@ -3516,15 +3636,6 @@ export type OrderList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
-export type ShippingMethodQuote = {
-    id: Scalars['ID'];
-    price: Scalars['Int'];
-    priceWithTax: Scalars['Int'];
-    name: Scalars['String'];
-    description: Scalars['String'];
-    metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type ShippingLine = {
     shippingMethod: ShippingMethod;
     price: Scalars['Int'];
@@ -3582,6 +3693,10 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
+    /** If the unitPrice has changed since initially added to Order */
+    unitPriceChangeSinceAdded: Scalars['Int'];
+    /** If the unitPriceWithTax has changed since initially added to Order */
+    unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
      *
@@ -3826,11 +3941,24 @@ export type ShippingMethodList = PaginatedList & {
     totalItems: Scalars['Int'];
 };
 
+export type Tag = Node & {
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    value: Scalars['String'];
+};
+
+export type TagList = PaginatedList & {
+    items: Array<Tag>;
+    totalItems: Scalars['Int'];
+};
+
 export type TaxCategory = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
     updatedAt: Scalars['DateTime'];
     name: Scalars['String'];
+    isDefault: Scalars['Boolean'];
 };
 
 export type TaxRate = Node & {
@@ -3882,13 +4010,6 @@ export type AdministratorListOptions = {
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<AdministratorSortParameter>;
     filter?: Maybe<AdministratorFilterParameter>;
-};
-
-export type AssetListOptions = {
-    skip?: Maybe<Scalars['Int']>;
-    take?: Maybe<Scalars['Int']>;
-    sort?: Maybe<AssetSortParameter>;
-    filter?: Maybe<AssetFilterParameter>;
 };
 
 export type CollectionListOptions = {
@@ -3954,6 +4075,13 @@ export type ProductListOptions = {
     filter?: Maybe<ProductFilterParameter>;
 };
 
+export type ProductVariantListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<ProductVariantSortParameter>;
+    filter?: Maybe<ProductVariantFilterParameter>;
+};
+
 export type PromotionListOptions = {
     skip?: Maybe<Scalars['Int']>;
     take?: Maybe<Scalars['Int']>;
@@ -3975,18 +4103,18 @@ export type ShippingMethodListOptions = {
     filter?: Maybe<ShippingMethodFilterParameter>;
 };
 
+export type TagListOptions = {
+    skip?: Maybe<Scalars['Int']>;
+    take?: Maybe<Scalars['Int']>;
+    sort?: Maybe<TagSortParameter>;
+    filter?: Maybe<TagFilterParameter>;
+};
+
 export type TaxRateListOptions = {
     skip?: Maybe<Scalars['Int']>;
     take?: Maybe<Scalars['Int']>;
     sort?: Maybe<TaxRateSortParameter>;
     filter?: Maybe<TaxRateFilterParameter>;
-};
-
-export type ProductVariantListOptions = {
-    skip?: Maybe<Scalars['Int']>;
-    take?: Maybe<Scalars['Int']>;
-    sort?: Maybe<ProductVariantSortParameter>;
-    filter?: Maybe<ProductVariantFilterParameter>;
 };
 
 export type HistoryEntryListOptions = {
@@ -4185,7 +4313,9 @@ export type OrderSortParameter = {
 export type PaymentMethodFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
+    name?: Maybe<StringOperators>;
     code?: Maybe<StringOperators>;
+    description?: Maybe<StringOperators>;
     enabled?: Maybe<BooleanOperators>;
 };
 
@@ -4193,7 +4323,9 @@ export type PaymentMethodSortParameter = {
     id?: Maybe<SortOrder>;
     createdAt?: Maybe<SortOrder>;
     updatedAt?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
     code?: Maybe<SortOrder>;
+    description?: Maybe<SortOrder>;
 };
 
 export type ProductFilterParameter = {
@@ -4213,6 +4345,38 @@ export type ProductSortParameter = {
     name?: Maybe<SortOrder>;
     slug?: Maybe<SortOrder>;
     description?: Maybe<SortOrder>;
+};
+
+export type ProductVariantFilterParameter = {
+    enabled?: Maybe<BooleanOperators>;
+    trackInventory?: Maybe<StringOperators>;
+    stockOnHand?: Maybe<NumberOperators>;
+    stockAllocated?: Maybe<NumberOperators>;
+    outOfStockThreshold?: Maybe<NumberOperators>;
+    useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    languageCode?: Maybe<StringOperators>;
+    sku?: Maybe<StringOperators>;
+    name?: Maybe<StringOperators>;
+    price?: Maybe<NumberOperators>;
+    currencyCode?: Maybe<StringOperators>;
+    priceIncludesTax?: Maybe<BooleanOperators>;
+    priceWithTax?: Maybe<NumberOperators>;
+};
+
+export type ProductVariantSortParameter = {
+    stockOnHand?: Maybe<SortOrder>;
+    stockAllocated?: Maybe<SortOrder>;
+    outOfStockThreshold?: Maybe<SortOrder>;
+    id?: Maybe<SortOrder>;
+    productId?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    sku?: Maybe<SortOrder>;
+    name?: Maybe<SortOrder>;
+    price?: Maybe<SortOrder>;
+    priceWithTax?: Maybe<SortOrder>;
 };
 
 export type PromotionFilterParameter = {
@@ -4271,6 +4435,19 @@ export type ShippingMethodSortParameter = {
     fulfillmentHandlerCode?: Maybe<SortOrder>;
 };
 
+export type TagFilterParameter = {
+    createdAt?: Maybe<DateOperators>;
+    updatedAt?: Maybe<DateOperators>;
+    value?: Maybe<StringOperators>;
+};
+
+export type TagSortParameter = {
+    id?: Maybe<SortOrder>;
+    createdAt?: Maybe<SortOrder>;
+    updatedAt?: Maybe<SortOrder>;
+    value?: Maybe<SortOrder>;
+};
+
 export type TaxRateFilterParameter = {
     createdAt?: Maybe<DateOperators>;
     updatedAt?: Maybe<DateOperators>;
@@ -4285,38 +4462,6 @@ export type TaxRateSortParameter = {
     updatedAt?: Maybe<SortOrder>;
     name?: Maybe<SortOrder>;
     value?: Maybe<SortOrder>;
-};
-
-export type ProductVariantFilterParameter = {
-    enabled?: Maybe<BooleanOperators>;
-    trackInventory?: Maybe<StringOperators>;
-    stockOnHand?: Maybe<NumberOperators>;
-    stockAllocated?: Maybe<NumberOperators>;
-    outOfStockThreshold?: Maybe<NumberOperators>;
-    useGlobalOutOfStockThreshold?: Maybe<BooleanOperators>;
-    createdAt?: Maybe<DateOperators>;
-    updatedAt?: Maybe<DateOperators>;
-    languageCode?: Maybe<StringOperators>;
-    sku?: Maybe<StringOperators>;
-    name?: Maybe<StringOperators>;
-    price?: Maybe<NumberOperators>;
-    currencyCode?: Maybe<StringOperators>;
-    priceIncludesTax?: Maybe<BooleanOperators>;
-    priceWithTax?: Maybe<NumberOperators>;
-};
-
-export type ProductVariantSortParameter = {
-    stockOnHand?: Maybe<SortOrder>;
-    stockAllocated?: Maybe<SortOrder>;
-    outOfStockThreshold?: Maybe<SortOrder>;
-    id?: Maybe<SortOrder>;
-    productId?: Maybe<SortOrder>;
-    createdAt?: Maybe<SortOrder>;
-    updatedAt?: Maybe<SortOrder>;
-    sku?: Maybe<SortOrder>;
-    name?: Maybe<SortOrder>;
-    price?: Maybe<SortOrder>;
-    priceWithTax?: Maybe<SortOrder>;
 };
 
 export type HistoryEntryFilterParameter = {
@@ -4343,6 +4488,8 @@ export type NativeAuthInput = {
 
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
+    Administrator: Array<CustomFieldConfig>;
+    Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;
     Facet: Array<CustomFieldConfig>;
@@ -4425,7 +4572,10 @@ export type CreateAssetsMutationVariables = Exact<{
 
 export type CreateAssetsMutation = {
     createAssets: Array<
-        | ({ focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>> } & AssetFragment)
+        | ({
+              focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
+              tags: Array<Pick<Tag, 'id' | 'value'>>;
+          } & AssetFragment)
         | Pick<MimeTypeError, 'message' | 'fileName' | 'mimeType'>
     >;
 };
@@ -4607,6 +4757,21 @@ export type GetProductCollectionsWithParentQuery = {
         Pick<Product, 'id'> & {
             collections: Array<
                 Pick<Collection, 'id' | 'name'> & { parent?: Maybe<Pick<Collection, 'id' | 'name'>> }
+            >;
+        }
+    >;
+};
+
+export type GetCheckersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetCheckersQuery = {
+    shippingEligibilityCheckers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<
+                Pick<
+                    ConfigArgDefinition,
+                    'defaultValue' | 'description' | 'label' | 'list' | 'name' | 'required' | 'type'
+                >
             >;
         }
     >;
@@ -5083,6 +5248,7 @@ export type GlobalSettingsFragment = Pick<
                 | Pick<FloatCustomFieldConfig, 'name'>
                 | Pick<BooleanCustomFieldConfig, 'name'>
                 | Pick<DateTimeCustomFieldConfig, 'name'>
+                | Pick<RelationCustomFieldConfig, 'name'>
             >;
         };
     };
@@ -5104,8 +5270,8 @@ export type ProductWithOptionsFragment = Pick<Product, 'id'> & {
 };
 
 export type ShippingMethodFragment = Pick<ShippingMethod, 'id' | 'code' | 'name' | 'description'> & {
-    calculator: Pick<ConfigurableOperation, 'code'>;
-    checker: Pick<ConfigurableOperation, 'code'>;
+    calculator: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
+    checker: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
 };
 
 export type CreateAdministratorMutationVariables = Exact<{
@@ -5358,7 +5524,10 @@ export type UpdateAssetMutationVariables = Exact<{
 }>;
 
 export type UpdateAssetMutation = {
-    updateAsset: { focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>> } & AssetFragment;
+    updateAsset: {
+        tags: Array<Pick<Tag, 'id' | 'value'>>;
+        focalPoint?: Maybe<Pick<Coordinate, 'x' | 'y'>>;
+    } & AssetFragment;
 };
 
 export type DeleteAssetMutationVariables = Exact<{
@@ -5699,6 +5868,12 @@ export type GetOrderHistoryQuery = {
     >;
 };
 
+export type UpdateShippingMethodMutationVariables = Exact<{
+    input: UpdateShippingMethodInput;
+}>;
+
+export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -5880,6 +6055,52 @@ export type GetOrderListWithQtyQuery = {
     };
 };
 
+export type PaymentMethodFragment = Pick<
+    PaymentMethod,
+    'id' | 'code' | 'name' | 'description' | 'enabled'
+> & {
+    checker?: Maybe<Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> }>;
+    handler: Pick<ConfigurableOperation, 'code'> & { args: Array<Pick<ConfigArg, 'name' | 'value'>> };
+};
+
+export type CreatePaymentMethodMutationVariables = Exact<{
+    input: CreatePaymentMethodInput;
+}>;
+
+export type CreatePaymentMethodMutation = { createPaymentMethod: PaymentMethodFragment };
+
+export type UpdatePaymentMethodMutationVariables = Exact<{
+    input: UpdatePaymentMethodInput;
+}>;
+
+export type UpdatePaymentMethodMutation = { updatePaymentMethod: PaymentMethodFragment };
+
+export type GetPaymentMethodHandlersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetPaymentMethodHandlersQuery = {
+    paymentMethodHandlers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type'>>;
+        }
+    >;
+};
+
+export type GetPaymentMethodCheckersQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetPaymentMethodCheckersQuery = {
+    paymentMethodEligibilityCheckers: Array<
+        Pick<ConfigurableOperationDefinition, 'code'> & {
+            args: Array<Pick<ConfigArgDefinition, 'name' | 'type'>>;
+        }
+    >;
+};
+
+export type GetPaymentMethodQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetPaymentMethodQuery = { paymentMethod?: Maybe<PaymentMethodFragment> };
+
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
 }>;
@@ -5930,6 +6151,16 @@ export type GetProductVariantQueryVariables = Exact<{
 }>;
 
 export type GetProductVariantQuery = { productVariant?: Maybe<Pick<ProductVariant, 'id' | 'name'>> };
+
+export type GetProductVariantListQueryVariables = Exact<{
+    options?: Maybe<ProductVariantListOptions>;
+}>;
+
+export type GetProductVariantListQuery = {
+    productVariants: Pick<ProductVariantList, 'totalItems'> & {
+        items: Array<Pick<ProductVariant, 'id' | 'name' | 'sku' | 'price'>>;
+    };
+};
 
 export type DeletePromotionMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6004,12 +6235,6 @@ export type GetShippingMethodQueryVariables = Exact<{
 }>;
 
 export type GetShippingMethodQuery = { shippingMethod?: Maybe<ShippingMethodFragment> };
-
-export type UpdateShippingMethodMutationVariables = Exact<{
-    input: UpdateShippingMethodInput;
-}>;
-
-export type UpdateShippingMethodMutation = { updateShippingMethod: ShippingMethodFragment };
 
 export type DeleteShippingMethodMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6134,27 +6359,61 @@ export type UpdateStockMutationVariables = Exact<{
 
 export type UpdateStockMutation = { updateProductVariants: Array<Maybe<VariantWithStockFragment>> };
 
+export type GetTagListQueryVariables = Exact<{
+    options?: Maybe<TagListOptions>;
+}>;
+
+export type GetTagListQuery = {
+    tags: Pick<TagList, 'totalItems'> & { items: Array<Pick<Tag, 'id' | 'value'>> };
+};
+
+export type GetTagQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetTagQuery = { tag: Pick<Tag, 'id' | 'value'> };
+
+export type CreateTagMutationVariables = Exact<{
+    input: CreateTagInput;
+}>;
+
+export type CreateTagMutation = { createTag: Pick<Tag, 'id' | 'value'> };
+
+export type UpdateTagMutationVariables = Exact<{
+    input: UpdateTagInput;
+}>;
+
+export type UpdateTagMutation = { updateTag: Pick<Tag, 'id' | 'value'> };
+
+export type DeleteTagMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type DeleteTagMutation = { deleteTag: Pick<DeletionResponse, 'message' | 'result'> };
+
 export type GetTaxCategoryListQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetTaxCategoryListQuery = { taxCategories: Array<Pick<TaxCategory, 'id' | 'name'>> };
+export type GetTaxCategoryListQuery = {
+    taxCategories: Array<Pick<TaxCategory, 'id' | 'name' | 'isDefault'>>;
+};
 
 export type GetTaxCategoryQueryVariables = Exact<{
     id: Scalars['ID'];
 }>;
 
-export type GetTaxCategoryQuery = { taxCategory?: Maybe<Pick<TaxCategory, 'id' | 'name'>> };
+export type GetTaxCategoryQuery = { taxCategory?: Maybe<Pick<TaxCategory, 'id' | 'name' | 'isDefault'>> };
 
 export type CreateTaxCategoryMutationVariables = Exact<{
     input: CreateTaxCategoryInput;
 }>;
 
-export type CreateTaxCategoryMutation = { createTaxCategory: Pick<TaxCategory, 'id' | 'name'> };
+export type CreateTaxCategoryMutation = { createTaxCategory: Pick<TaxCategory, 'id' | 'name' | 'isDefault'> };
 
 export type UpdateTaxCategoryMutationVariables = Exact<{
     input: UpdateTaxCategoryInput;
 }>;
 
-export type UpdateTaxCategoryMutation = { updateTaxCategory: Pick<TaxCategory, 'id' | 'name'> };
+export type UpdateTaxCategoryMutation = { updateTaxCategory: Pick<TaxCategory, 'id' | 'name' | 'isDefault'> };
 
 export type DeleteTaxCategoryMutationVariables = Exact<{
     id: Scalars['ID'];
@@ -6312,6 +6571,14 @@ export namespace CreateAssets {
             NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
             { __typename?: 'Asset' }
         >['focalPoint']
+    >;
+    export type Tags = NonNullable<
+        NonNullable<
+            DiscriminateUnion<
+                NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
+                { __typename?: 'Asset' }
+            >['tags']
+        >[number]
     >;
     export type MimeTypeErrorInlineFragment = DiscriminateUnion<
         NonNullable<NonNullable<CreateAssetsMutation['createAssets']>[number]>,
@@ -6556,6 +6823,19 @@ export namespace GetProductCollectionsWithParent {
         NonNullable<
             NonNullable<NonNullable<GetProductCollectionsWithParentQuery['product']>['collections']>[number]
         >['parent']
+    >;
+}
+
+export namespace GetCheckers {
+    export type Variables = GetCheckersQueryVariables;
+    export type Query = GetCheckersQuery;
+    export type ShippingEligibilityCheckers = NonNullable<
+        NonNullable<GetCheckersQuery['shippingEligibilityCheckers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GetCheckersQuery['shippingEligibilityCheckers']>[number]>['args']
+        >[number]
     >;
 }
 
@@ -7115,7 +7395,13 @@ export namespace ProductWithOptions {
 export namespace ShippingMethod {
     export type Fragment = ShippingMethodFragment;
     export type Calculator = NonNullable<ShippingMethodFragment['calculator']>;
+    export type Args = NonNullable<
+        NonNullable<NonNullable<ShippingMethodFragment['calculator']>['args']>[number]
+    >;
     export type Checker = NonNullable<ShippingMethodFragment['checker']>;
+    export type _Args = NonNullable<
+        NonNullable<NonNullable<ShippingMethodFragment['checker']>['args']>[number]
+    >;
 }
 
 export namespace CreateAdministrator {
@@ -7363,12 +7649,20 @@ export namespace UpdateAsset {
     export type UpdateAsset = NonNullable<UpdateAssetMutation['updateAsset']>;
     export type AssetInlineFragment = { __typename: 'Asset' } & Pick<
         NonNullable<UpdateAssetMutation['updateAsset']>,
-        'focalPoint'
+        'tags' | 'focalPoint'
+    >;
+    export type Tags = NonNullable<
+        NonNullable<
+            ({ __typename: 'Asset' } & Pick<
+                NonNullable<UpdateAssetMutation['updateAsset']>,
+                'tags' | 'focalPoint'
+            >)['tags']
+        >[number]
     >;
     export type FocalPoint = NonNullable<
         ({ __typename: 'Asset' } & Pick<
             NonNullable<UpdateAssetMutation['updateAsset']>,
-            'focalPoint'
+            'tags' | 'focalPoint'
         >)['focalPoint']
     >;
 }
@@ -7696,6 +7990,12 @@ export namespace GetOrderHistory {
     >;
 }
 
+export namespace UpdateShippingMethod {
+    export type Variables = UpdateShippingMethodMutationVariables;
+    export type Mutation = UpdateShippingMethodMutation;
+    export type UpdateShippingMethod = NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -7886,6 +8186,64 @@ export namespace GetOrderListWithQty {
     >;
 }
 
+export namespace PaymentMethod {
+    export type Fragment = PaymentMethodFragment;
+    export type Checker = NonNullable<PaymentMethodFragment['checker']>;
+    export type Args = NonNullable<
+        NonNullable<NonNullable<PaymentMethodFragment['checker']>['args']>[number]
+    >;
+    export type Handler = NonNullable<PaymentMethodFragment['handler']>;
+    export type _Args = NonNullable<
+        NonNullable<NonNullable<PaymentMethodFragment['handler']>['args']>[number]
+    >;
+}
+
+export namespace CreatePaymentMethod {
+    export type Variables = CreatePaymentMethodMutationVariables;
+    export type Mutation = CreatePaymentMethodMutation;
+    export type CreatePaymentMethod = NonNullable<CreatePaymentMethodMutation['createPaymentMethod']>;
+}
+
+export namespace UpdatePaymentMethod {
+    export type Variables = UpdatePaymentMethodMutationVariables;
+    export type Mutation = UpdatePaymentMethodMutation;
+    export type UpdatePaymentMethod = NonNullable<UpdatePaymentMethodMutation['updatePaymentMethod']>;
+}
+
+export namespace GetPaymentMethodHandlers {
+    export type Variables = GetPaymentMethodHandlersQueryVariables;
+    export type Query = GetPaymentMethodHandlersQuery;
+    export type PaymentMethodHandlers = NonNullable<
+        NonNullable<GetPaymentMethodHandlersQuery['paymentMethodHandlers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<NonNullable<GetPaymentMethodHandlersQuery['paymentMethodHandlers']>[number]>['args']
+        >[number]
+    >;
+}
+
+export namespace GetPaymentMethodCheckers {
+    export type Variables = GetPaymentMethodCheckersQueryVariables;
+    export type Query = GetPaymentMethodCheckersQuery;
+    export type PaymentMethodEligibilityCheckers = NonNullable<
+        NonNullable<GetPaymentMethodCheckersQuery['paymentMethodEligibilityCheckers']>[number]
+    >;
+    export type Args = NonNullable<
+        NonNullable<
+            NonNullable<
+                NonNullable<GetPaymentMethodCheckersQuery['paymentMethodEligibilityCheckers']>[number]
+            >['args']
+        >[number]
+    >;
+}
+
+export namespace GetPaymentMethod {
+    export type Variables = GetPaymentMethodQueryVariables;
+    export type Query = GetPaymentMethodQuery;
+    export type PaymentMethod = NonNullable<GetPaymentMethodQuery['paymentMethod']>;
+}
+
 export namespace UpdateProductOptionGroup {
     export type Variables = UpdateProductOptionGroupMutationVariables;
     export type Mutation = UpdateProductOptionGroupMutation;
@@ -7934,6 +8292,15 @@ export namespace GetProductVariant {
     export type Variables = GetProductVariantQueryVariables;
     export type Query = GetProductVariantQuery;
     export type ProductVariant = NonNullable<GetProductVariantQuery['productVariant']>;
+}
+
+export namespace GetProductVariantList {
+    export type Variables = GetProductVariantListQueryVariables;
+    export type Query = GetProductVariantListQuery;
+    export type ProductVariants = NonNullable<GetProductVariantListQuery['productVariants']>;
+    export type Items = NonNullable<
+        NonNullable<NonNullable<GetProductVariantListQuery['productVariants']>['items']>[number]
+    >;
 }
 
 export namespace DeletePromotion {
@@ -8021,12 +8388,6 @@ export namespace GetShippingMethod {
     export type Variables = GetShippingMethodQueryVariables;
     export type Query = GetShippingMethodQuery;
     export type ShippingMethod = NonNullable<GetShippingMethodQuery['shippingMethod']>;
-}
-
-export namespace UpdateShippingMethod {
-    export type Variables = UpdateShippingMethodMutationVariables;
-    export type Mutation = UpdateShippingMethodMutation;
-    export type UpdateShippingMethod = NonNullable<UpdateShippingMethodMutation['updateShippingMethod']>;
 }
 
 export namespace DeleteShippingMethod {
@@ -8186,6 +8547,37 @@ export namespace UpdateStock {
     export type UpdateProductVariants = NonNullable<
         NonNullable<UpdateStockMutation['updateProductVariants']>[number]
     >;
+}
+
+export namespace GetTagList {
+    export type Variables = GetTagListQueryVariables;
+    export type Query = GetTagListQuery;
+    export type Tags = NonNullable<GetTagListQuery['tags']>;
+    export type Items = NonNullable<NonNullable<NonNullable<GetTagListQuery['tags']>['items']>[number]>;
+}
+
+export namespace GetTag {
+    export type Variables = GetTagQueryVariables;
+    export type Query = GetTagQuery;
+    export type Tag = NonNullable<GetTagQuery['tag']>;
+}
+
+export namespace CreateTag {
+    export type Variables = CreateTagMutationVariables;
+    export type Mutation = CreateTagMutation;
+    export type CreateTag = NonNullable<CreateTagMutation['createTag']>;
+}
+
+export namespace UpdateTag {
+    export type Variables = UpdateTagMutationVariables;
+    export type Mutation = UpdateTagMutation;
+    export type UpdateTag = NonNullable<UpdateTagMutation['updateTag']>;
+}
+
+export namespace DeleteTag {
+    export type Variables = DeleteTagMutationVariables;
+    export type Mutation = DeleteTagMutation;
+    export type DeleteTag = NonNullable<DeleteTagMutation['deleteTag']>;
 }
 
 export namespace GetTaxCategoryList {

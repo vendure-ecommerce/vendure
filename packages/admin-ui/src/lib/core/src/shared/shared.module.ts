@@ -28,6 +28,7 @@ import { AssetGalleryComponent } from './components/asset-gallery/asset-gallery.
 import { AssetPickerDialogComponent } from './components/asset-picker-dialog/asset-picker-dialog.component';
 import { AssetPreviewDialogComponent } from './components/asset-preview-dialog/asset-preview-dialog.component';
 import { AssetPreviewComponent } from './components/asset-preview/asset-preview.component';
+import { AssetSearchInputComponent } from './components/asset-search-input/asset-search-input.component';
 import { ChannelAssignmentControlComponent } from './components/channel-assignment-control/channel-assignment-control.component';
 import { ChannelBadgeComponent } from './components/channel-badge/channel-badge.component';
 import { ChipComponent } from './components/chip/chip.component';
@@ -58,6 +59,7 @@ import { HistoryEntryDetailComponent } from './components/history-entry-detail/h
 import { ItemsPerPageControlsComponent } from './components/items-per-page-controls/items-per-page-controls.component';
 import { LabeledDataComponent } from './components/labeled-data/labeled-data.component';
 import { LanguageSelectorComponent } from './components/language-selector/language-selector.component';
+import { ManageTagsDialogComponent } from './components/manage-tags-dialog/manage-tags-dialog.component';
 import { DialogButtonsDirective } from './components/modal-dialog/dialog-buttons.directive';
 import { DialogComponentOutletComponent } from './components/modal-dialog/dialog-component-outlet.component';
 import { DialogTitleDirective } from './components/modal-dialog/dialog-title.directive';
@@ -72,6 +74,7 @@ import { RichTextEditorComponent } from './components/rich-text-editor/rich-text
 import { SelectToggleComponent } from './components/select-toggle/select-toggle.component';
 import { SimpleDialogComponent } from './components/simple-dialog/simple-dialog.component';
 import { TableRowActionComponent } from './components/table-row-action/table-row-action.component';
+import { TagSelectorComponent } from './components/tag-selector/tag-selector.component';
 import { TimelineEntryComponent } from './components/timeline-entry/timeline-entry.component';
 import { TitleInputComponent } from './components/title-input/title-input.component';
 import { DisabledDirective } from './directives/disabled.directive';
@@ -87,6 +90,17 @@ import { FacetValueFormInputComponent } from './dynamic-form-inputs/facet-value-
 import { NumberFormInputComponent } from './dynamic-form-inputs/number-form-input/number-form-input.component';
 import { PasswordFormInputComponent } from './dynamic-form-inputs/password-form-input/password-form-input.component';
 import { ProductSelectorFormInputComponent } from './dynamic-form-inputs/product-selector-form-input/product-selector-form-input.component';
+import { RelationAssetInputComponent } from './dynamic-form-inputs/relation-form-input/asset/relation-asset-input.component';
+import { RelationCustomerInputComponent } from './dynamic-form-inputs/relation-form-input/customer/relation-customer-input.component';
+import { RelationProductVariantInputComponent } from './dynamic-form-inputs/relation-form-input/product-variant/relation-product-variant-input.component';
+import { RelationProductInputComponent } from './dynamic-form-inputs/relation-form-input/product/relation-product-input.component';
+import {
+    RelationCardComponent,
+    RelationCardDetailDirective,
+    RelationCardPreviewDirective,
+} from './dynamic-form-inputs/relation-form-input/relation-card/relation-card.component';
+import { RelationFormInputComponent } from './dynamic-form-inputs/relation-form-input/relation-form-input.component';
+import { RelationSelectorDialogComponent } from './dynamic-form-inputs/relation-form-input/relation-selector-dialog/relation-selector-dialog.component';
 import { SelectFormInputComponent } from './dynamic-form-inputs/select-form-input/select-form-input.component';
 import { TextFormInputComponent } from './dynamic-form-inputs/text-form-input/text-form-input.component';
 import { AssetPreviewPipe } from './pipes/asset-preview.pipe';
@@ -124,6 +138,7 @@ const DECLARATIONS = [
     ActionBarRightComponent,
     AssetPreviewComponent,
     AssetPreviewDialogComponent,
+    AssetSearchInputComponent,
     ConfigurableInputComponent,
     AffixedInputComponent,
     ChipComponent,
@@ -197,6 +212,7 @@ const DECLARATIONS = [
     AddressFormComponent,
     LocaleDatePipe,
     LocaleCurrencyPipe,
+    TagSelectorComponent,
 ];
 
 const DYNAMIC_FORM_INPUTS = [
@@ -209,12 +225,26 @@ const DYNAMIC_FORM_INPUTS = [
     SelectFormInputComponent,
     FacetValueFormInputComponent,
     DynamicFormInputComponent,
+    RelationFormInputComponent,
+    RelationAssetInputComponent,
+    RelationProductInputComponent,
+    RelationProductVariantInputComponent,
+    RelationCustomerInputComponent,
+    RelationCardPreviewDirective,
+    RelationCardDetailDirective,
+    RelationSelectorDialogComponent,
 ];
 
 @NgModule({
     imports: [IMPORTS],
     exports: [...IMPORTS, ...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
-    declarations: [...DECLARATIONS, ...DYNAMIC_FORM_INPUTS],
+    declarations: [
+        ...DECLARATIONS,
+        ...DYNAMIC_FORM_INPUTS,
+        ManageTagsDialogComponent,
+        RelationSelectorDialogComponent,
+        RelationCardComponent,
+    ],
     providers: [
         // This needs to be shared, since lazy-loaded
         // modules have their own entryComponents which

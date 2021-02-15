@@ -24,6 +24,7 @@ import { OrderModification } from '../../../entity/order-modification/order-modi
 import { Order } from '../../../entity/order/order.entity';
 import { Payment } from '../../../entity/payment/payment.entity';
 import { ProductVariant } from '../../../entity/product-variant/product-variant.entity';
+import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { CountryService } from '../../services/country.service';
@@ -62,31 +63,45 @@ export class OrderModifier {
      * Ensure that the ProductVariant has sufficient saleable stock to add the given
      * quantity to an Order.
      */
-    async constrainQuantityToSaleable(ctx: RequestContext, variant: ProductVariant, quantity: number) {
-        let correctedQuantity = quantity;
+    async constrainQuantityToSaleable(
+        ctx: RequestContext,
+        variant: ProductVariant,
+        quantity: number,
+        existingQuantity = 0,
+    ) {
+        let correctedQuantity = quantity + existingQuantity;
         const saleableStockLevel = await this.productVariantService.getSaleableStockLevel(ctx, variant);
         if (saleableStockLevel < correctedQuantity) {
-            correctedQuantity = Math.max(saleableStockLevel, 0);
+            correctedQuantity = Math.max(saleableStockLevel - existingQuantity, 0);
         }
         return correctedQuantity;
+    }
+
+    getExistingOrderLine(
+        ctx: RequestContext,
+        order: Order,
+        productVariantId: ID,
+        customFields?: { [key: string]: any },
+    ): OrderLine | undefined {
+        return order.lines.find(line => {
+            return (
+                idsAreEqual(line.productVariant.id, productVariantId) &&
+                this.customFieldsAreEqual(customFields, line.customFields)
+            );
+        });
     }
 
     /**
      * Returns the OrderLine to which a new OrderItem belongs, creating a new OrderLine
      * if no existing line is found.
      */
-    async getOrCreateItemOrderLine(
+    async getOrCreateOrderLine(
         ctx: RequestContext,
         order: Order,
         productVariantId: ID,
         customFields?: { [key: string]: any },
     ) {
-        const existingOrderLine = order.lines.find(line => {
-            return (
-                idsAreEqual(line.productVariant.id, productVariantId) &&
-                this.customFieldsAreEqual(customFields, line.customFields)
-            );
-        });
+        const existingOrderLine = this.getExistingOrderLine(ctx, order, productVariantId, customFields);
         if (existingOrderLine) {
             return existingOrderLine;
         }
@@ -130,24 +145,16 @@ export class OrderModifier {
         order: Order,
     ): Promise<OrderLine> {
         const currentQuantity = orderLine.quantity;
-        const { orderItemPriceCalculationStrategy } = this.configService.orderOptions;
 
         if (currentQuantity < quantity) {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
-            const productVariant = orderLine.productVariant;
-            const { price, priceIncludesTax } = await orderItemPriceCalculationStrategy.calculateUnitPrice(
-                ctx,
-                productVariant,
-                orderLine.customFields || {},
-            );
-            const taxRate = productVariant.taxRateApplied;
             for (let i = currentQuantity; i < quantity; i++) {
                 const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
                     new OrderItem({
-                        listPrice: price,
-                        listPriceIncludesTax: priceIncludesTax,
+                        listPrice: orderLine.productVariant.price,
+                        listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
                         adjustments: [],
                         taxLines: [],
                         line: orderLine,
@@ -217,7 +224,7 @@ export class OrderModifier {
             }
 
             const customFields = (row as any).customFields || {};
-            const orderLine = await this.getOrCreateItemOrderLine(ctx, order, productVariantId, customFields);
+            const orderLine = await this.getOrCreateOrderLine(ctx, order, productVariantId, customFields);
             const correctedQuantity = await this.constrainQuantityToSaleable(
                 ctx,
                 orderLine.productVariant,
@@ -338,7 +345,7 @@ export class OrderModifier {
         if (input.updateBillingAddress) {
             order.billingAddress = {
                 ...order.billingAddress,
-                ...input.updateShippingAddress,
+                ...input.updateBillingAddress,
             };
             if (input.updateBillingAddress.countryCode) {
                 const country = await this.countryService.findOneByCode(
@@ -352,7 +359,11 @@ export class OrderModifier {
         }
 
         const updatedOrderLines = order.lines.filter(l => updatedOrderLineIds.includes(l.id));
-        await this.orderCalculator.applyPriceAdjustments(ctx, order, [], updatedOrderLines, {
+        const promotions = await this.connection.getRepository(ctx, Promotion).find({
+            where: { enabled: true, deletedAt: null },
+            order: { priorityScore: 'ASC' },
+        });
+        await this.orderCalculator.applyPriceAdjustments(ctx, order, promotions, updatedOrderLines, {
             recalculateShipping: input.options?.recalculateShipping,
         });
 

@@ -5,6 +5,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import {
     Administrator,
     BaseDetailComponent,
+    CustomFieldConfig,
     DataService,
     GetActiveAdministrator,
     LanguageCode,
@@ -23,6 +24,7 @@ import { mergeMap, take } from 'rxjs/operators';
 export class ProfileComponent
     extends BaseDetailComponent<GetActiveAdministrator.ActiveAdministrator>
     implements OnInit, OnDestroy {
+    customFields: CustomFieldConfig[];
     detailForm: FormGroup;
 
     constructor(
@@ -35,11 +37,15 @@ export class ProfileComponent
         private notificationService: NotificationService,
     ) {
         super(route, router, serverConfigService, dataService);
+        this.customFields = this.getCustomFieldConfig('Administrator');
         this.detailForm = this.formBuilder.group({
             emailAddress: ['', Validators.required],
             firstName: ['', Validators.required],
             lastName: ['', Validators.required],
             password: [''],
+            customFields: this.formBuilder.group(
+                this.customFields.reduce((hash, field) => ({ ...hash, [field.name]: '' }), {}),
+            ),
         });
     }
 
@@ -49,6 +55,10 @@ export class ProfileComponent
 
     ngOnDestroy(): void {
         this.destroy();
+    }
+
+    customFieldIsSet(name: string): boolean {
+        return !!this.detailForm.get(['customFields', name]);
     }
 
     save() {
@@ -62,6 +72,7 @@ export class ProfileComponent
                         firstName: formValue.firstName,
                         lastName: formValue.lastName,
                         password: formValue.password,
+                        customFields: formValue.customFields,
                     };
                     return this.dataService.administrator.updateActiveAdministrator(administrator);
                 }),
@@ -88,5 +99,17 @@ export class ProfileComponent
             firstName: administrator.firstName,
             lastName: administrator.lastName,
         });
+        if (this.customFields.length) {
+            const customFieldsGroup = this.detailForm.get('customFields') as FormGroup;
+
+            for (const fieldDef of this.customFields) {
+                const key = fieldDef.name;
+                const value = (administrator as any).customFields[key];
+                const control = customFieldsGroup.get(key);
+                if (control) {
+                    control.patchValue(value);
+                }
+            }
+        }
     }
 }

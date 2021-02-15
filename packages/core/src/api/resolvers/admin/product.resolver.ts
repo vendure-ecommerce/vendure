@@ -17,6 +17,7 @@ import {
     QueryProductArgs,
     QueryProductsArgs,
     QueryProductVariantArgs,
+    QueryProductVariantsArgs,
     RemoveOptionGroupFromProductResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
@@ -68,6 +69,15 @@ export class ProductResolver {
         } else {
             throw new UserInputError(`error.product-id-or-slug-must-be-provided`);
         }
+    }
+
+    @Query()
+    @Allow(Permission.ReadCatalog)
+    async productVariants(
+        @Ctx() ctx: RequestContext,
+        @Args() args: QueryProductVariantsArgs,
+    ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        return this.productVariantService.findAll(ctx, args.options || undefined);
     }
 
     @Query()

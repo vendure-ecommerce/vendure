@@ -1,4 +1,5 @@
 export class CustomAddressFields {}
+export class CustomAdministratorFields {}
 export class CustomFacetFields {}
 export class CustomFacetFieldsTranslation {}
 export class CustomFacetValueFields {}
@@ -10,6 +11,7 @@ export class CustomProductFields {}
 export class CustomProductFieldsTranslation {}
 export class CustomCollectionFields {}
 export class CustomCollectionFieldsTranslation {}
+export class CustomChannelFields {}
 export class CustomProductOptionFields {}
 export class CustomProductOptionFieldsTranslation {}
 export class CustomProductOptionGroupFields {}

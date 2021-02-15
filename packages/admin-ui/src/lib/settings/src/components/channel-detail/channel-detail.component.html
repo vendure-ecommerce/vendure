@@ -50,9 +50,9 @@
             formControlName="defaultLanguageCode"
             [vdrDisabled]="!('SuperAdmin' | hasPermission)"
         >
-            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode"
-                >{{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})</option
-            >
+            <option *ngFor="let languageCode of availableLanguageCodes$ | async" [value]="languageCode">
+                {{ 'lang.' + languageCode | translate }} ({{ languageCode | uppercase }})
+            </option>
         </select>
     </vdr-form-field>
     <vdr-form-field [label]="'settings.prices-include-tax' | translate" for="pricesIncludeTax">
@@ -76,7 +76,11 @@
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
-    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId" clrAlertType="danger" [clrAlertClosable]="false">
+    <clr-alert
+        *ngIf="detailForm.value.code && !detailForm.value.defaultTaxZoneId"
+        clrAlertType="danger"
+        [clrAlertClosable]="false"
+    >
         <clr-alert-item>
             <span class="alert-text">
                 {{ 'error.no-default-tax-zone-set' | translate }}
@@ -94,11 +98,27 @@
             <option *ngFor="let zone of zones$ | async" [value]="zone.id">{{ zone.name }}</option>
         </select>
     </vdr-form-field>
-    <clr-alert *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId" clrAlertType="warning" [clrAlertClosable]="false">
+    <clr-alert
+        *ngIf="detailForm.value.code && !detailForm.value.defaultShippingZoneId"
+        clrAlertType="warning"
+        [clrAlertClosable]="false"
+    >
         <clr-alert-item>
             <span class="alert-text">
                 {{ 'error.no-default-shipping-zone-set' | translate }}
             </span>
         </clr-alert-item>
     </clr-alert>
+
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="GlobalSettings"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
 </form>

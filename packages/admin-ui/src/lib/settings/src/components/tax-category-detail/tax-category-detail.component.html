@@ -35,4 +35,15 @@
             [readonly]="!('UpdateSettings' | hasPermission)"
         />
     </vdr-form-field>
+    <vdr-form-field [label]="'common.default-tax-category' | translate" for="isDefault">
+        <clr-toggle-wrapper>
+            <input
+                type="checkbox"
+                clrToggle
+                id="isDefault"
+                [vdrDisabled]="!('UpdateSettings' | hasPermission)"
+                formControlName="isDefault"
+            />
+        </clr-toggle-wrapper>
+    </vdr-form-field>
 </form>

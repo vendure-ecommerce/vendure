@@ -1,12 +1,13 @@
 /* tslint:disable:no-non-null-assertion */
 import { omit } from '@vendure/common/lib/omit';
+import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
-import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
+import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
-import { TEST_SETUP_TIMEOUT_MS, testConfig } from '../../../e2e-common/test-config';
+import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
 import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
@@ -18,6 +19,7 @@ import {
     GetAssetFragmentFirst,
     GetAssetList,
     GetProductWithVariants,
+    LogicalOperator,
     SortOrder,
     UpdateAsset,
 } from './graphql/generated-e2e-admin-types';
@@ -164,6 +166,7 @@ describe('Asset resolver', () => {
                     name: 'pps1.jpg',
                     preview: 'test-url/test-assets/pps1__preview.jpg',
                     source: 'test-url/test-assets/pps1.jpg',
+                    tags: [],
                     type: 'IMAGE',
                 },
                 {
@@ -173,6 +176,7 @@ describe('Asset resolver', () => {
                     name: 'pps2.jpg',
                     preview: 'test-url/test-assets/pps2__preview.jpg',
                     source: 'test-url/test-assets/pps2.jpg',
+                    tags: [],
                     type: 'IMAGE',
                 },
             ]);
@@ -200,6 +204,7 @@ describe('Asset resolver', () => {
                     name: 'dummy.pdf',
                     preview: 'test-url/test-assets/dummy__preview.pdf.png',
                     source: 'test-url/test-assets/dummy.pdf',
+                    tags: [],
                     type: 'BINARY',
                 },
             ]);
@@ -221,6 +226,118 @@ describe('Asset resolver', () => {
                 mimeType: 'text/plain',
                 fileName: 'dummy.txt',
             });
+        });
+
+        it('create with new tags', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/pps1.jpg')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null, tags: ['foo', 'bar'] })),
+                }),
+            });
+            const results = createAssets.filter(isAsset);
+
+            expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
+                {
+                    id: 'T_8',
+                    name: 'pps1.jpg',
+                    tags: [
+                        { id: 'T_1', value: 'foo' },
+                        { id: 'T_2', value: 'bar' },
+                    ],
+                },
+            ]);
+        });
+
+        it('create with existing tags', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/pps1.jpg')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null, tags: ['foo', 'bar'] })),
+                }),
+            });
+            const results = createAssets.filter(isAsset);
+
+            expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
+                {
+                    id: 'T_9',
+                    name: 'pps1.jpg',
+                    tags: [
+                        { id: 'T_1', value: 'foo' },
+                        { id: 'T_2', value: 'bar' },
+                    ],
+                },
+            ]);
+        });
+
+        it('create with new and existing tags', async () => {
+            const filesToUpload = [path.join(__dirname, 'fixtures/assets/pps1.jpg')];
+            const { createAssets }: CreateAssets.Mutation = await adminClient.fileUploadMutation({
+                mutation: CREATE_ASSETS,
+                filePaths: filesToUpload,
+                mapVariables: filePaths => ({
+                    input: filePaths.map(p => ({ file: null, tags: ['quux', 'bar'] })),
+                }),
+            });
+            const results = createAssets.filter(isAsset);
+
+            expect(results.map(a => pick(a, ['id', 'name', 'tags']))).toEqual([
+                {
+                    id: 'T_10',
+                    name: 'pps1.jpg',
+                    tags: [
+                        { id: 'T_3', value: 'quux' },
+                        { id: 'T_2', value: 'bar' },
+                    ],
+                },
+            ]);
+        });
+    });
+
+    describe('filter by tags', () => {
+        it('and', async () => {
+            const { assets } = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
+                GET_ASSET_LIST,
+                {
+                    options: {
+                        tags: ['foo', 'bar'],
+                        tagsOperator: LogicalOperator.AND,
+                    },
+                },
+            );
+
+            expect(assets.items.map(i => i.id).sort()).toEqual(['T_8', 'T_9']);
+        });
+
+        it('or', async () => {
+            const { assets } = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
+                GET_ASSET_LIST,
+                {
+                    options: {
+                        tags: ['foo', 'bar'],
+                        tagsOperator: LogicalOperator.OR,
+                    },
+                },
+            );
+
+            expect(assets.items.map(i => i.id).sort()).toEqual(['T_10', 'T_8', 'T_9']);
+        });
+
+        it('empty array', async () => {
+            const { assets } = await adminClient.query<GetAssetList.Query, GetAssetList.Variables>(
+                GET_ASSET_LIST,
+                {
+                    options: {
+                        tags: [],
+                    },
+                },
+            );
+
+            expect(assets.totalItems).toBe(10);
         });
     });
 
@@ -271,6 +388,37 @@ describe('Asset resolver', () => {
             );
 
             expect(updateAsset.focalPoint).toEqual(null);
+        });
+
+        it('update tags', async () => {
+            const { updateAsset } = await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(
+                UPDATE_ASSET,
+                {
+                    input: {
+                        id: firstAssetId,
+                        tags: ['foo', 'quux'],
+                    },
+                },
+            );
+
+            expect(updateAsset.tags).toEqual([
+                { id: 'T_1', value: 'foo' },
+                { id: 'T_3', value: 'quux' },
+            ]);
+        });
+
+        it('remove tags', async () => {
+            const { updateAsset } = await adminClient.query<UpdateAsset.Mutation, UpdateAsset.Variables>(
+                UPDATE_ASSET,
+                {
+                    input: {
+                        id: firstAssetId,
+                        tags: [],
+                    },
+                },
+            );
+
+            expect(updateAsset.tags).toEqual([]);
         });
     });
 
@@ -389,6 +537,10 @@ export const CREATE_ASSETS = gql`
                 focalPoint {
                     x
                     y
+                }
+                tags {
+                    id
+                    value
                 }
             }
             ... on MimeTypeError {

@@ -294,7 +294,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
             priceWithTax: {
                 value: source.priceWithTax,
             },
-            score: hit._score,
+            score: hit._score || 0,
         };
 
         this.addCustomMappings(result, source, this.options.customProductVariantMappings);
@@ -328,7 +328,7 @@ export class ElasticsearchService implements OnModuleInit, OnModuleDestroy {
                 max: source.priceWithTaxMax,
             },
             channelIds: [],
-            score: hit._score,
+            score: hit._score || 0,
         };
         this.addCustomMappings(result, source, this.options.customProductMappings);
         return result;

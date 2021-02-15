@@ -1,5 +1,6 @@
 import { VendureEntity } from '../../entity/base/base.entity';
 import { Channel } from '../../entity/channel/channel.entity';
+import { Tag } from '../../entity/tag/tag.entity';
 
 import { LocaleString } from './locale-types';
 
@@ -22,6 +23,13 @@ export interface SoftDeletable {
  */
 export interface Orderable {
     position: number;
+}
+
+/**
+ * Entities which can have Tags applied to them.
+ */
+export interface Taggable {
+    tags: Tag[];
 }
 
 /**

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { NgSelectComponent, SELECTION_MODEL_FACTORY } from '@ng-select/ng-select';
-import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
-
 import { SearchProducts } from '@vendure/admin-ui/core';
+import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
 import { ProductSearchSelectionModelFactory } from './product-search-selection-model';
 
@@ -69,14 +68,6 @@ export class ProductSearchInputComponent {
         );
     };
 
-    groupByFacet = (item: SearchProducts.FacetValues | { label: string }) => {
-        if (this.isFacetValueItem(item)) {
-            return item.facetValue.facet.name;
-        } else {
-            return '';
-        }
-    };
-
     onSelectChange(selectedItems: Array<SearchProducts.FacetValues | { label: string }>) {
         if (!Array.isArray(selectedItems)) {
             selectedItems = [selectedItems];
@@ -96,6 +87,10 @@ export class ProductSearchInputComponent {
             this.facetValueChange.emit(facetValueIds);
             this.lastFacetValueIds = facetValueIds;
         }
+    }
+
+    addTagFn(item: any) {
+        return { label: item };
     }
 
     isSearchHeaderSelected(): boolean {

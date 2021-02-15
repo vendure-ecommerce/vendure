@@ -108,8 +108,11 @@ export class OrderStateMachine {
                 return `message.cannot-transition-to-payment-without-customer`;
             }
         }
-        if (toState === 'PaymentAuthorized' && !orderTotalIsCovered(data.order, 'Authorized')) {
-            return `message.cannot-transition-without-authorized-payments`;
+        if (toState === 'PaymentAuthorized') {
+            const hasAnAuthorizedPayment = !!data.order.payments.find(p => p.state === 'Authorized');
+            if (!orderTotalIsCovered(data.order, ['Authorized', 'Settled']) || !hasAnAuthorizedPayment) {
+                return `message.cannot-transition-without-authorized-payments`;
+            }
         }
         if (toState === 'PaymentSettled' && !orderTotalIsCovered(data.order, 'Settled')) {
             return `message.cannot-transition-without-settled-payments`;

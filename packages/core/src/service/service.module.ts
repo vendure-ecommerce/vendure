@@ -11,6 +11,8 @@ import { WorkerServiceModule } from '../worker/worker-service.module';
 
 import { CollectionController } from './controllers/collection.controller';
 import { TaxRateController } from './controllers/tax-rate.controller';
+import { ConfigArgService } from './helpers/config-arg/config-arg.service';
+import { CustomFieldRelationService } from './helpers/custom-field-relation/custom-field-relation.service';
 import { ExternalAuthenticationService } from './helpers/external-authentication/external-authentication.service';
 import { FulfillmentStateMachine } from './helpers/fulfillment-state-machine/fulfillment-state-machine';
 import { ListQueryBuilder } from './helpers/list-query-builder/list-query-builder';
@@ -22,7 +24,6 @@ import { PasswordCiper } from './helpers/password-cipher/password-ciper';
 import { PaymentStateMachine } from './helpers/payment-state-machine/payment-state-machine';
 import { RefundStateMachine } from './helpers/refund-state-machine/refund-state-machine';
 import { ShippingCalculator } from './helpers/shipping-calculator/shipping-calculator';
-import { ShippingConfiguration } from './helpers/shipping-configuration/shipping-configuration';
 import { SlugValidator } from './helpers/slug-validator/slug-validator';
 import { TranslatableSaver } from './helpers/translatable-saver/translatable-saver';
 import { VerificationTokenGenerator } from './helpers/verification-token-generator/verification-token-generator';
@@ -54,6 +55,7 @@ import { SearchService } from './services/search.service';
 import { SessionService } from './services/session.service';
 import { ShippingMethodService } from './services/shipping-method.service';
 import { StockMovementService } from './services/stock-movement.service';
+import { TagService } from './services/tag.service';
 import { TaxCategoryService } from './services/tax-category.service';
 import { TaxRateService } from './services/tax-rate.service';
 import { UserService } from './services/user.service';
@@ -88,6 +90,7 @@ const services = [
     SessionService,
     ShippingMethodService,
     StockMovementService,
+    TagService,
     TaxCategoryService,
     TaxRateService,
     UserService,
@@ -107,10 +110,11 @@ const helpers = [
     ShippingCalculator,
     VerificationTokenGenerator,
     RefundStateMachine,
-    ShippingConfiguration,
+    ConfigArgService,
     SlugValidator,
     ExternalAuthenticationService,
     TransactionalConnection,
+    CustomFieldRelationService,
 ];
 
 const workerControllers = [CollectionController, TaxRateController];

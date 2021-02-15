@@ -29,11 +29,20 @@ export class OrderItem extends VendureEntity {
 
     /**
      * @description
-     * This is the price as listed by the ProductVariant, which, depending on the
-     * current Channel, may or may not include tax.
+     * The price as calculated when the OrderItem was first added to the Order. Usually will be identical to the
+     * `listPrice`, except when the ProductVariant price has changed in the mean time and a re-calculation of
+     * the Order has been performed.
+     */
+    @Column({ nullable: true })
+    initialListPrice: number;
+
+    /**
+     * @description
+     * This is the price as listed by the ProductVariant (and possibly modified by the {@link OrderItemPriceCalculationStrategy}),
+     * which, depending on the current Channel, may or may not include tax.
      */
     @Column()
-    readonly listPrice: number;
+    listPrice: number;
 
     /**
      * @description
@@ -41,7 +50,7 @@ export class OrderItem extends VendureEntity {
      * of the current Channel.
      */
     @Column()
-    readonly listPriceIncludesTax: boolean;
+    listPriceIncludesTax: boolean;
 
     @Column('simple-json')
     adjustments: Adjustment[];

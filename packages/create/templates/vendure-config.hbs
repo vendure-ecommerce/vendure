@@ -1,5 +1,5 @@
 {{#if isTs }}import{{ else }}const{{/if}} {
-    examplePaymentHandler,
+    dummyPaymentHandler,
     DefaultJobQueuePlugin,
     DefaultSearchPlugin,{{#if isTs}}
     VendureConfig,{{/if}}
@@ -71,7 +71,7 @@ const path = require('path');
         migrations: [path.join(__dirname, '../migrations/*.ts')],
     },
     paymentOptions: {
-        paymentMethodHandlers: [examplePaymentHandler],
+        paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {},
     plugins: [

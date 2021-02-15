@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
+import { Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
+import { DataService } from '../../data/providers/data.service';
 import { HealthCheckService } from '../../providers/health-check/health-check.service';
 import { JobQueueService } from '../../providers/job-queue/job-queue.service';
 import { NavMenuBadge, NavMenuItem } from '../../providers/nav-builder/nav-builder-types';
@@ -13,16 +15,55 @@ import { NavBuilderService } from '../../providers/nav-builder/nav-builder.servi
     templateUrl: './main-nav.component.html',
     styleUrls: ['./main-nav.component.scss'],
 })
-export class MainNavComponent implements OnInit {
+export class MainNavComponent implements OnInit, OnDestroy {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         public navBuilderService: NavBuilderService,
         private healthCheckService: HealthCheckService,
         private jobQueueService: JobQueueService,
+        private dataService: DataService,
     ) {}
 
+    private userPermissions: string[];
+    private subscription: Subscription;
+
+    shouldDisplayLink(menuItem: Pick<NavMenuItem, 'requiresPermission'>) {
+        if (!this.userPermissions) {
+            return false;
+        }
+        if (!menuItem.requiresPermission) {
+            return true;
+        }
+        if (typeof menuItem.requiresPermission === 'string') {
+            return this.userPermissions.includes(menuItem.requiresPermission);
+        }
+        if (typeof menuItem.requiresPermission === 'function') {
+            return menuItem.requiresPermission(this.userPermissions);
+        }
+    }
+
     ngOnInit(): void {
+        this.defineNavMenu();
+        this.subscription = this.dataService.client
+            .userStatus()
+            .mapStream(({ userStatus }) => {
+                this.userPermissions = userStatus.permissions;
+            })
+            .subscribe();
+    }
+
+    ngOnDestroy() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+    }
+
+    getRouterLink(item: NavMenuItem) {
+        return this.navBuilderService.getRouterLink(item, this.route);
+    }
+
+    private defineNavMenu() {
         this.navBuilderService.defineNavMenuSections([
             {
                 requiresPermission: 'ReadCatalog',
@@ -186,7 +227,7 @@ export class MainNavComponent implements OnInit {
                         statusBadge: this.jobQueueService.activeJobs$.pipe(
                             startWith([]),
                             map(
-                                (jobs) =>
+                                jobs =>
                                     ({
                                         type: jobs.length === 0 ? 'none' : 'info',
                                         propagateToSection: jobs.length > 0,
@@ -200,7 +241,7 @@ export class MainNavComponent implements OnInit {
                         routerLink: ['/system', 'system-status'],
                         icon: 'rack-server',
                         statusBadge: this.healthCheckService.status$.pipe(
-                            map((status) => ({
+                            map(status => ({
                                 type: status === 'ok' ? 'success' : 'error',
                                 propagateToSection: status === 'error',
                             })),
@@ -209,9 +250,5 @@ export class MainNavComponent implements OnInit {
                 ],
             },
         ]);
-    }
-
-    getRouterLink(item: NavMenuItem) {
-        return this.navBuilderService.getRouterLink(item, this.route);
     }
 }

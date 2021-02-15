@@ -611,9 +611,17 @@ export const SHIPPING_METHOD_FRAGMENT = gql`
         description
         calculator {
             code
+            args {
+                name
+                value
+            }
         }
         checker {
             code
+            args {
+                name
+                value
+            }
         }
     }
 `;

@@ -1,3 +1,5 @@
+import { CustomFieldConfig } from './generated-types';
+
 /**
  * Predicate with type guard, used to filter out null or undefined values
  * in a filter operation.
@@ -77,5 +79,17 @@ export function generateAllCombinations<T>(
         }
         // tslint:enable:prefer-for-of
         return output;
+    }
+}
+
+/**
+ * @description
+ * Returns the input field name of a relation custom field.
+ */
+export function getGraphQlInputName(config: { name: string; type: string; list?: boolean }): string {
+    if (config.type === 'relation') {
+        return config.list === true ? `${config.name}Ids` : `${config.name}Id`;
+    } else {
+        return config.name;
     }
 }

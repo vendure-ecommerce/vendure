@@ -1,13 +1,14 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ID, Type } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
-import { FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
+import { Brackets, FindConditions, FindManyOptions, FindOneOptions, SelectQueryBuilder } from 'typeorm';
 import { BetterSqlite3Driver } from 'typeorm/driver/better-sqlite3/BetterSqlite3Driver';
 import { SqljsDriver } from 'typeorm/driver/sqljs/SqljsDriver';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
 import { ListQueryOptions } from '../../../common/types/common-types';
+import { ConfigService } from '../../../config/config.service';
 import { VendureEntity } from '../../../entity/base/base.entity';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
 
@@ -31,7 +32,7 @@ export type ExtendedListQueryOptions<T extends VendureEntity> = {
 
 @Injectable()
 export class ListQueryBuilder implements OnApplicationBootstrap {
-    constructor(private connection: TransactionalConnection) {}
+    constructor(private connection: TransactionalConnection, private configService: ConfigService) {}
 
     onApplicationBootstrap(): any {
         this.registerSQLiteRegexpFunction();
@@ -45,9 +46,9 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         options: ListQueryOptions<T> = {},
         extendedOptions: ExtendedListQueryOptions<T> = {},
     ): SelectQueryBuilder<T> {
-        const skip = options.skip;
         const rawConnection = this.connection.rawConnection;
-        let take = options.take;
+        const skip = Math.max(options.skip ?? 0, 0);
+        let take = Math.max(options.take ?? 0, 0);
         if (options.skip !== undefined && options.take === undefined) {
             take = Number.MAX_SAFE_INTEGER;
         }
@@ -70,6 +71,8 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
         } as FindManyOptions<T>);
         // tslint:disable-next-line:no-non-null-assertion
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, qb.expressionMap.mainAlias!.metadata);
+
+        this.applyTranslationConditions(qb, entity, extendedOptions.ctx);
 
         // join the tables required by calculated columns
         this.joinCalculatedColumnRelations(qb, entity, options);
@@ -110,15 +113,74 @@ export class ListQueryBuilder implements OnApplicationBootstrap {
             if (instruction) {
                 const relations = instruction.relations || [];
                 for (const relation of relations) {
-                    const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
-                    const relationAlias = relation.includes('.')
-                        ? relation.split('.').reverse()[0]
-                        : relation;
-                    qb.innerJoinAndSelect(propertyPath, relationAlias);
+                    const relationIsAlreadyJoined = qb.expressionMap.joinAttributes.find(
+                        ja => ja.entityOrProperty === `${alias}.${relation}`,
+                    );
+                    if (!relationIsAlreadyJoined) {
+                        const propertyPath = relation.includes('.') ? relation : `${alias}.${relation}`;
+                        const relationAlias = relation.includes('.')
+                            ? relation.split('.').reverse()[0]
+                            : relation;
+                        qb.innerJoinAndSelect(propertyPath, relationAlias);
+                    }
                 }
                 if (typeof instruction.query === 'function') {
                     instruction.query(qb);
                 }
+            }
+        }
+    }
+
+    /**
+     * If this entity is Translatable, then we need to apply appropriate WHERE clauses to limit
+     * the joined translation relations. This method applies a simple "WHERE" on the languageCode
+     * in the case of the default language, otherwise we use a more complex.
+     */
+    private applyTranslationConditions<T extends VendureEntity>(
+        qb: SelectQueryBuilder<any>,
+        entity: Type<T>,
+        ctx?: RequestContext,
+    ) {
+        const languageCode = ctx?.languageCode || this.configService.defaultLanguageCode;
+
+        const { columns, translationColumns, alias } = getColumnMetadata(
+            this.connection.rawConnection,
+            entity,
+        );
+
+        if (translationColumns.length) {
+            const translationsAlias = qb.connection.namingStrategy.eagerJoinRelationAlias(
+                alias,
+                'translations',
+            );
+
+            qb.andWhere(`${translationsAlias}.languageCode = :languageCode`, { languageCode });
+
+            if (languageCode !== this.configService.defaultLanguageCode) {
+                // If the current languageCode is not the default, then we create a more
+                // complex WHERE clause to allow us to use the non-default translations and
+                // fall back to the default language if no translation exists.
+                qb.orWhere(
+                    new Brackets(qb1 => {
+                        const translationEntity = translationColumns[0].entityMetadata.target;
+                        const subQb1 = this.connection.rawConnection
+                            .createQueryBuilder(translationEntity, 'translation')
+                            .where(`translation.base = ${alias}.id`)
+                            .andWhere('translation.languageCode = :defaultLanguageCode');
+                        const subQb2 = this.connection.rawConnection
+                            .createQueryBuilder(translationEntity, 'translation')
+                            .where(`translation.base = ${alias}.id`)
+                            .andWhere('translation.languageCode = :nonDefaultLanguageCode');
+
+                        qb1.where(`EXISTS (${subQb1.getQuery()})`).andWhere(
+                            `NOT EXISTS (${subQb2.getQuery()})`,
+                        );
+                    }),
+                );
+                qb.setParameters({
+                    nonDefaultLanguageCode: languageCode,
+                    defaultLanguageCode: this.configService.defaultLanguageCode,
+                });
             }
         }
     }

@@ -17,6 +17,11 @@ export function isEntityCreateOrUpdateMutation(documentNode: DocumentNode): stri
             const namedType = extractInputType(variableDef.type);
             const inputTypeName = namedType.name.value;
 
+            // special cases which don't follow the usual pattern
+            if (inputTypeName === 'UpdateActiveAdministratorInput') {
+                return 'Administrator';
+            }
+
             const createMatch = inputTypeName.match(CREATE_ENTITY_REGEX);
             if (createMatch) {
                 return createMatch[1];
@@ -43,15 +48,14 @@ function extractInputType(type: TypeNode): NamedTypeNode {
  * Removes any `readonly` custom fields from an entity (including its translations).
  * To be used before submitting the entity for a create or update request.
  */
-export function removeReadonlyCustomFields<T extends any = any>(
+export function removeReadonlyCustomFields<T extends { input?: any } & Record<string, any> = any>(
     variables: T,
     customFieldConfig: CustomFieldConfig[],
 ): T {
-    const clone = simpleDeepClone(variables as any);
-    if (clone.input) {
-        removeReadonly(clone.input, customFieldConfig);
+    if (variables.input) {
+        removeReadonly(variables.input, customFieldConfig);
     }
-    return removeReadonly(clone, customFieldConfig);
+    return removeReadonly(variables, customFieldConfig);
 }
 
 function removeReadonly(input: any, customFieldConfig: CustomFieldConfig[]) {

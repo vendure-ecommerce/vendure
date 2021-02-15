@@ -61,6 +61,17 @@
     >
         <input id="password" type="password" formControlName="password" />
     </vdr-form-field>
+    <section formGroupName="customFields" *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="GlobalSettings"
+                [customFieldsFormGroup]="detailForm.get('customFields')"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
     <label class="clr-control-label">{{ 'settings.roles' | translate }}</label>
     <ng-select
         [items]="allRoles$ | async"

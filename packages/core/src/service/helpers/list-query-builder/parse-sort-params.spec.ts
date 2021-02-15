@@ -1,4 +1,5 @@
 import { Type } from '@vendure/common/lib/shared-types';
+import { DefaultNamingStrategy } from 'typeorm';
 import { ColumnMetadata } from 'typeorm/metadata/ColumnMetadata';
 import { RelationMetadata } from 'typeorm/metadata/RelationMetadata';
 
@@ -146,6 +147,7 @@ export class MockConnection {
             relations: this.relationsMap.get(entity) || [],
         };
     };
+    namingStrategy = new DefaultNamingStrategy();
     readonly options = {
         type: 'sqljs',
     };

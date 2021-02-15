@@ -4,7 +4,7 @@ type OrderModificationError implements ErrorResult {
     message: String!
 }
 
-"Returned when attempting to set a ShippingMethod for which the order is not eligible"
+"Returned when attempting to set a ShippingMethod for which the Order is not eligible"
 type IneligibleShippingMethodError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
@@ -14,6 +14,13 @@ type IneligibleShippingMethodError implements ErrorResult {
 type OrderPaymentStateError implements ErrorResult {
     errorCode: ErrorCode!
     message: String!
+}
+
+"Returned when attempting to add a Payment using a PaymentMethod for which the Order is not eligible."
+type IneligiblePaymentMethodError implements ErrorResult {
+    errorCode: ErrorCode!
+    message: String!
+    eligibilityCheckerMessage: String
 }
 
 "Returned when a Payment fails due to an error."

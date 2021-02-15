@@ -27,6 +27,7 @@ import { Product } from '../../entity/product/product.entity';
 import { EventBus } from '../../event-bus/event-bus';
 import { ProductVariantChannelEvent } from '../../event-bus/events/product-variant-channel-event';
 import { ProductVariantEvent } from '../../event-bus/events/product-variant-event';
+import { CustomFieldRelationService } from '../helpers/custom-field-relation/custom-field-relation.service';
 import { ListQueryBuilder } from '../helpers/list-query-builder/list-query-builder';
 import { TranslatableSaver } from '../helpers/translatable-saver/translatable-saver';
 import { samplesEach } from '../helpers/utils/samples-each';
@@ -60,7 +61,32 @@ export class ProductVariantService {
         private stockMovementService: StockMovementService,
         private channelService: ChannelService,
         private roleService: RoleService,
+        private customFieldRelationService: CustomFieldRelationService,
     ) {}
+
+    async findAll(
+        ctx: RequestContext,
+        options?: ListQueryOptions<ProductVariant>,
+    ): Promise<PaginatedList<Translated<ProductVariant>>> {
+        const relations = ['featuredAsset', 'taxCategory', 'channels'];
+        return this.listQueryBuilder
+            .build(ProductVariant, options, {
+                relations,
+                channelId: ctx.channelId,
+                where: { deletedAt: null },
+                ctx,
+            })
+            .getManyAndCount()
+            .then(async ([variants, totalItems]) => {
+                const items = variants.map(variant =>
+                    translateDeep(this.applyChannelPriceAndTax(variant, ctx), ctx.languageCode),
+                );
+                return {
+                    items,
+                    totalItems,
+                };
+            });
+    }
 
     findOne(ctx: RequestContext, productVariantId: ID): Promise<Translated<ProductVariant> | undefined> {
         const relations = ['product', 'product.featuredAsset', 'taxCategory'];
@@ -191,7 +217,7 @@ export class ProductVariantService {
     getFacetValuesForVariant(ctx: RequestContext, variantId: ID): Promise<Array<Translated<FacetValue>>> {
         return this.connection
             .findOneInChannel(ctx, ProductVariant, variantId, ctx.channelId, {
-                relations: ['facetValues', 'facetValues.facet'],
+                relations: ['facetValues', 'facetValues.facet', 'facetValues.channels'],
             })
             .then(variant =>
                 !variant ? [] : variant.facetValues.map(o => translateDeep(o, ctx.languageCode, ['facet'])),
@@ -314,6 +340,7 @@ export class ProductVariantService {
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, createdVariant);
         await this.assetService.updateEntityAssets(ctx, createdVariant, input);
         if (input.stockOnHand != null && input.stockOnHand !== 0) {
             await this.stockMovementService.adjustProductVariantStock(
@@ -325,12 +352,17 @@ export class ProductVariantService {
         }
 
         const defaultChannelId = this.channelService.getDefaultChannel().id;
-        await this.createProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
+        await this.createOrUpdateProductVariantPrice(ctx, createdVariant.id, input.price, ctx.channelId);
         if (!idsAreEqual(ctx.channelId, defaultChannelId)) {
             // When creating a ProductVariant _not_ in the default Channel, we still need to
             // create a ProductVariantPrice for it in the default Channel, otherwise errors will
             // result when trying to query it there.
-            await this.createProductVariantPrice(ctx, createdVariant.id, input.price, defaultChannelId);
+            await this.createOrUpdateProductVariantPrice(
+                ctx,
+                createdVariant.id,
+                input.price,
+                defaultChannelId,
+            );
         }
         return createdVariant.id;
     }
@@ -338,6 +370,7 @@ export class ProductVariantService {
     private async updateSingle(ctx: RequestContext, input: UpdateProductVariantInput): Promise<ID> {
         const existingVariant = await this.connection.getEntityOrThrow(ctx, ProductVariant, input.id, {
             channelId: ctx.channelId,
+            relations: ['facetValues', 'facetValues.channels'],
         });
         if (input.stockOnHand && input.stockOnHand < 0) {
             throw new UserInputError('error.stockonhand-cannot-be-negative');
@@ -359,10 +392,13 @@ export class ProductVariantService {
                     }
                 }
                 if (input.facetValueIds) {
-                    updatedVariant.facetValues = await this.facetValueService.findByIds(
-                        ctx,
-                        input.facetValueIds,
+                    const facetValuesInOtherChannels = existingVariant.facetValues.filter(fv =>
+                        fv.channels.every(channel => !idsAreEqual(channel.id, ctx.channelId)),
                     );
+                    updatedVariant.facetValues = [
+                        ...facetValuesInOtherChannels,
+                        ...(await this.facetValueService.findByIds(ctx, input.facetValueIds)),
+                    ];
                 }
                 if (input.stockOnHand != null) {
                     await this.stockMovementService.adjustProductVariantStock(
@@ -380,6 +416,7 @@ export class ProductVariantService {
                 taxCategoryId: input.taxCategoryId,
             },
         });
+        await this.customFieldRelationService.updateRelations(ctx, ProductVariant, input, existingVariant);
         if (input.price != null) {
             const variantPriceRepository = this.connection.getRepository(ctx, ProductVariantPrice);
             const variantPrice = await variantPriceRepository.findOne({
@@ -400,17 +437,25 @@ export class ProductVariantService {
     /**
      * Creates a ProductVariantPrice for the given ProductVariant/Channel combination.
      */
-    async createProductVariantPrice(
+    async createOrUpdateProductVariantPrice(
         ctx: RequestContext,
         productVariantId: ID,
         price: number,
         channelId: ID,
     ): Promise<ProductVariantPrice> {
-        const variantPrice = new ProductVariantPrice({
-            price,
-            channelId,
+        let variantPrice = await this.connection.getRepository(ctx, ProductVariantPrice).findOne({
+            where: {
+                variant: productVariantId,
+                channelId,
+            },
         });
-        variantPrice.variant = new ProductVariant({ id: productVariantId });
+        if (!variantPrice) {
+            variantPrice = new ProductVariantPrice({
+                channelId,
+                variant: new ProductVariant({ id: productVariantId }),
+            });
+        }
+        variantPrice.price = price;
         return this.connection.getRepository(ctx, ProductVariantPrice).save(variantPrice);
     }
 
@@ -430,7 +475,10 @@ export class ProductVariantService {
     applyChannelPriceAndTax(variant: ProductVariant, ctx: RequestContext): ProductVariant {
         const channelPrice = variant.productVariantPrices.find(p => idsAreEqual(p.channelId, ctx.channelId));
         if (!channelPrice) {
-            throw new InternalServerError(`error.no-price-found-for-channel`);
+            throw new InternalServerError(`error.no-price-found-for-channel`, {
+                variantId: variant.id,
+                channel: ctx.channel.code,
+            });
         }
         const { taxZoneStrategy } = this.configService.taxOptions;
         const zones = this.zoneService.findAll(ctx);
@@ -478,18 +526,24 @@ export class ProductVariantService {
             this.applyChannelPriceAndTax(variant, ctx);
             await this.channelService.assignToChannels(ctx, Product, variant.productId, [input.channelId]);
             await this.channelService.assignToChannels(ctx, ProductVariant, variant.id, [input.channelId]);
-            await this.createProductVariantPrice(
+            await this.createOrUpdateProductVariantPrice(
                 ctx,
                 variant.id,
                 variant.price * priceFactor,
                 input.channelId,
             );
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
         }
-        return this.findByIds(
+        const result = await this.findByIds(
             ctx,
             variants.map(v => v.id),
         );
+        // Publish the events at the latest possible stage to decrease the chance of race conditions
+        // whereby an event listener triggers a query which does not yet have access to the changes
+        // within the current transaction.
+        for (const variant of variants) {
+            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'assigned'));
+        }
+        return result;
     }
 
     async removeProductVariantsFromChannel(
@@ -531,12 +585,18 @@ export class ProductVariantService {
                     input.channelId,
                 ]);
             }
-            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
         }
-        return this.findByIds(
+        const result = await this.findByIds(
             ctx,
             variants.map(v => v.id),
         );
+        // Publish the events at the latest possible stage to decrease the chance of race conditions
+        // whereby an event listener triggers a query which does not yet have access to the changes
+        // within the current transaction.
+        for (const variant of variants) {
+            this.eventBus.publish(new ProductVariantChannelEvent(ctx, variant, input.channelId, 'removed'));
+        }
+        return result;
     }
 
     private async validateVariantOptionIds(ctx: RequestContext, input: CreateProductVariantInput) {
@@ -606,7 +666,7 @@ export class ProductVariantService {
             taxCategory = await this.connection.getEntityOrThrow(ctx, TaxCategory, taxCategoryId);
         } else {
             const taxCategories = await this.taxCategoryService.findAll(ctx);
-            taxCategory = taxCategories[0];
+            taxCategory = taxCategories.find(t => t.isDefault === true) ?? taxCategories[0];
         }
         if (!taxCategory) {
             // there is no TaxCategory set up, so create a default

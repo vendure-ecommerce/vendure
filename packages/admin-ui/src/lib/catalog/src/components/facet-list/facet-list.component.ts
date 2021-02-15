@@ -52,7 +52,7 @@ export class FacetListComponent extends BaseListComponent<GetFacetList.Query, Ge
                     }
                 }),
                 // Refresh the cached facets to reflect the changes
-                switchMap(() => this.dataService.facet.getAllFacets(true).single$),
+                switchMap(() => this.dataService.facet.getAllFacets().single$),
             )
             .subscribe(
                 () => {

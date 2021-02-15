@@ -6,9 +6,13 @@ import {
     IntCustomFieldConfig as GraphQLIntCustomFieldConfig,
     LocaleStringCustomFieldConfig as GraphQLLocaleStringCustomFieldConfig,
     LocalizedString,
+    RelationCustomFieldConfig as GraphQLRelationCustomFieldConfig,
     StringCustomFieldConfig as GraphQLStringCustomFieldConfig,
 } from '@vendure/common/lib/generated-types';
-import { CustomFieldsObject, CustomFieldType } from '@vendure/common/lib/shared-types';
+import { CustomFieldsObject, CustomFieldType, Type } from '@vendure/common/lib/shared-types';
+
+import { Injector } from '../../common/injector';
+import { VendureEntity } from '../../entity/base/base.entity';
 
 // prettier-ignore
 export type DefaultValueType<T extends CustomFieldType> =
@@ -43,7 +47,10 @@ export type TypedCustomSingleFieldConfig<
 > = BaseTypedCustomFieldConfig<T, C> & {
     list?: false;
     defaultValue?: DefaultValueType<T>;
-    validate?: (value: DefaultValueType<T>) => string | LocalizedString[] | void;
+    validate?: (
+        value: DefaultValueType<T>,
+        injector: Injector,
+    ) => string | LocalizedString[] | void | Promise<string | LocalizedString[] | void>;
 };
 
 export type TypedCustomListFieldConfig<
@@ -70,6 +77,10 @@ export type IntCustomFieldConfig = TypedCustomFieldConfig<'int', GraphQLIntCusto
 export type FloatCustomFieldConfig = TypedCustomFieldConfig<'float', GraphQLFloatCustomFieldConfig>;
 export type BooleanCustomFieldConfig = TypedCustomFieldConfig<'boolean', GraphQLBooleanCustomFieldConfig>;
 export type DateTimeCustomFieldConfig = TypedCustomFieldConfig<'datetime', GraphQLDateTimeCustomFieldConfig>;
+export type RelationCustomFieldConfig = TypedCustomFieldConfig<
+    'relation',
+    Omit<GraphQLRelationCustomFieldConfig, 'entity' | 'scalarFields'>
+> & { entity: Type<VendureEntity>; graphQLType?: string; eager?: boolean };
 
 /**
  * @description
@@ -83,7 +94,8 @@ export type CustomFieldConfig =
     | IntCustomFieldConfig
     | FloatCustomFieldConfig
     | BooleanCustomFieldConfig
-    | DateTimeCustomFieldConfig;
+    | DateTimeCustomFieldConfig
+    | RelationCustomFieldConfig;
 
 /**
  * @description
@@ -144,6 +156,13 @@ export type CustomFieldConfig =
  * * `max?: string`: The latest permitted date
  * * `step?: string`: The step value
  *
+ * #### `relation` type
+ *
+ * * `entity: VendureEntity`: The entity which this custom field is referencing
+ * * `eager?: boolean`: Whether to [eagerly load](https://typeorm.io/#/eager-and-lazy-relations) the relation. Defaults to false.
+ * * `graphQLType?: string`: The name of the GraphQL type that corresponds to the entity.
+ *     Can be omitted if it is the same, which is usually the case.
+ *
  * @example
  * ```TypeScript
  * bootstrap({
@@ -165,6 +184,8 @@ export type CustomFieldConfig =
  */
 export interface CustomFields {
     Address?: CustomFieldConfig[];
+    Administrator?: CustomFieldConfig[];
+    Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];
     Facet?: CustomFieldConfig[];

@@ -7,7 +7,12 @@ import { RequestContext } from '../../../api/common/request-context';
 import { defaultShippingCalculator, defaultShippingEligibilityChecker } from '../../../config';
 import { manualFulfillmentHandler } from '../../../config/fulfillment/manual-fulfillment-handler';
 import { Channel, Collection, FacetValue, TaxCategory } from '../../../entity';
-import { CollectionService, FacetValueService, ShippingMethodService } from '../../../service';
+import {
+    CollectionService,
+    FacetValueService,
+    PaymentMethodService,
+    ShippingMethodService,
+} from '../../../service';
 import { ChannelService } from '../../../service/services/channel.service';
 import { CountryService } from '../../../service/services/country.service';
 import { SearchService } from '../../../service/services/search.service';
@@ -29,6 +34,7 @@ export class Populator {
         private taxRateService: TaxRateService,
         private taxCategoryService: TaxCategoryService,
         private shippingMethodService: ShippingMethodService,
+        private paymentMethodService: PaymentMethodService,
         private collectionService: CollectionService,
         private facetValueService: FacetValueService,
         private searchService: SearchService,
@@ -45,6 +51,7 @@ export class Populator {
         const zoneMap = await this.populateCountries(ctx, data.countries);
         await this.populateTaxRates(ctx, data.taxRates, zoneMap);
         await this.populateShippingMethods(ctx, data.shippingMethods);
+        await this.populatePaymentMethods(ctx, data.paymentMethods);
         await this.setChannelDefaults(zoneMap, data, channel);
     }
 
@@ -94,7 +101,21 @@ export class Populator {
         switch (filter.code) {
             case 'facet-value-filter':
                 const facetValueIds = filter.args.facetValueNames
-                    .map(name => allFacetValues.find(fv => fv.name === name))
+                    .map(name =>
+                        allFacetValues.find(fv => {
+                            let facetName;
+                            let valueName;
+                            if (name.includes(':')) {
+                                [facetName, valueName] = name.split(':');
+                                return (
+                                    (fv.name === valueName || fv.code === valueName) &&
+                                    (fv.facet.name === facetName || fv.facet.code === facetName)
+                                );
+                            } else {
+                                return fv.name === valueName || fv.code === valueName;
+                            }
+                        }),
+                    )
                     .filter(notNullOrUndefined)
                     .map(fv => fv.id);
                 return {
@@ -212,6 +233,18 @@ export class Populator {
                 },
                 code: normalizeString(method.name, '-'),
                 translations: [{ languageCode: ctx.languageCode, name: method.name, description: '' }],
+            });
+        }
+    }
+
+    private async populatePaymentMethods(ctx: RequestContext, paymentMethods: InitialData['paymentMethods']) {
+        for (const method of paymentMethods) {
+            await this.paymentMethodService.create(ctx, {
+                name: method.name,
+                code: normalizeString(method.name, '-'),
+                description: '',
+                enabled: true,
+                handler: method.handler,
             });
         }
     }
