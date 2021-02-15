@@ -28,7 +28,7 @@ export class OrderItem extends VendureEntity {
     line: OrderLine;
 
     @EntityId()
-    lineId: ID;
+    lineId: ID; // TypeORM requires this ID field on the entity explicitly in order to save the foreign key via `.insert`
 
     /**
      * @description

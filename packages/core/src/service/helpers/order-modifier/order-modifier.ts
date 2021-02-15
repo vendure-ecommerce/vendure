@@ -158,7 +158,7 @@ export class OrderModifier {
                         listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
                         adjustments: [],
                         taxLines: [],
-                        line: orderLine,
+                        lineId: orderLine.id,
                     }),
                 );
             }

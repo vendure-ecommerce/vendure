@@ -1328,7 +1328,13 @@ export class OrderService {
             promotions,
             updatedOrderLine ? [updatedOrderLine] : [],
         );
-        // await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
+        const updateFields: Array<keyof OrderItem> = [
+            'initialListPrice',
+            'listPrice',
+            'listPriceIncludesTax',
+            'adjustments',
+            'taxLines',
+        ];
         await this.connection
             .getRepository(ctx, OrderItem)
             .createQueryBuilder()
@@ -1336,13 +1342,7 @@ export class OrderService {
             .values(updatedItems)
             .orUpdate({
                 conflict_target: ['id'],
-                overwrite: [
-                    'initialListPrice',
-                    'listPrice',
-                    'listPriceIncludesTax',
-                    'adjustments',
-                    'taxLines',
-                ],
+                overwrite: updateFields,
             })
             .updateEntity(false)
             .execute();
