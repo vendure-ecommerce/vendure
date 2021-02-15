@@ -359,10 +359,14 @@ export class OrderService {
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
+        const orderLineByVariant = order.lines.find(line =>
+            idsAreEqual(line.productVariant.id, productVariantId),
+        );
         const validationError =
             this.assertQuantityIsPositive(quantity) ||
             this.assertAddingItemsState(order) ||
-            this.assertNotOverOrderItemsLimit(order, quantity);
+            this.assertNotOverOrderItemsLimit(order, quantity) ||
+            (orderLineByVariant && this.assertNotOverOrderLineItemsLimit(orderLineByVariant, quantity));
         if (validationError) {
             return validationError;
         }
@@ -413,7 +417,8 @@ export class OrderService {
         const validationError =
             this.assertAddingItemsState(order) ||
             this.assertQuantityIsPositive(quantity) ||
-            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity);
+            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity) ||
+            this.assertNotOverOrderLineItemsLimit(orderLine, quantity - orderLine.quantity);
         if (validationError) {
             return validationError;
         }
@@ -1279,6 +1284,17 @@ export class OrderService {
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
             return new OrderLimitError(orderItemsLimit);
+        }
+    }
+
+    /**
+     * Throws if adding the given quantity would exceed the maximum allowed
+     * quantity for one order line.
+     */
+    private assertNotOverOrderLineItemsLimit(orderLine: OrderLine, quantityToAdd: number) {
+        const { orderLineItemsLimit } = this.configService.orderOptions;
+        if (orderLineItemsLimit < orderLine.quantity + quantityToAdd) {
+            return new OrderLimitError(orderLineItemsLimit);
         }
     }
 
