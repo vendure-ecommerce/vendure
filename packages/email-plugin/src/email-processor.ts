@@ -30,11 +30,9 @@ export class EmailProcessor {
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
-        this.emailSender = this.options.customEmailSender
-            ? this.options.customEmailSender
-            : new DefaultEmailSender();
-        this.generator = this.options.customEmailGenerator
-            ? this.options.customEmailGenerator
+        this.emailSender = this.options.emailSender ? this.options.emailSender : new DefaultEmailSender();
+        this.generator = this.options.emailGenerator
+            ? this.options.emailGenerator
             : new HandlebarsMjmlGenerator();
         if (this.generator.onInit) {
             await this.generator.onInit.call(this.generator, this.options);

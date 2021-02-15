@@ -643,7 +643,7 @@ describe('EmailPlugin', () => {
             fakeSender.send = send;
 
             await initPluginWithHandlers([handler], {
-                customEmailSender: fakeSender,
+                emailSender: fakeSender,
             });
 
             eventBus.publish(new MockEvent(ctx, true));
