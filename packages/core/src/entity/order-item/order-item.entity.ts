@@ -27,6 +27,9 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => OrderLine, line => line.items, { onDelete: 'CASCADE' })
     line: OrderLine;
 
+    @EntityId()
+    lineId: ID;
+
     /**
      * @description
      * The price as calculated when the OrderItem was first added to the Order. Usually will be identical to the

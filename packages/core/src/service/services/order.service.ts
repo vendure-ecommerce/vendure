@@ -1328,8 +1328,25 @@ export class OrderService {
             promotions,
             updatedOrderLine ? [updatedOrderLine] : [],
         );
+        // await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
+        await this.connection
+            .getRepository(ctx, OrderItem)
+            .createQueryBuilder()
+            .insert()
+            .values(updatedItems)
+            .orUpdate({
+                conflict_target: ['id'],
+                overwrite: [
+                    'initialListPrice',
+                    'listPrice',
+                    'listPriceIncludesTax',
+                    'adjustments',
+                    'taxLines',
+                ],
+            })
+            .updateEntity(false)
+            .execute();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return order;
     }
