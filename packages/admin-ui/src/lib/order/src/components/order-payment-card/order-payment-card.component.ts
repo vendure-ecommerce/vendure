@@ -12,9 +12,17 @@ export class OrderPaymentCardComponent {
     @Input() payment: OrderDetail.Payments;
     @Input() currencyCode: CurrencyCode;
     @Output() settlePayment = new EventEmitter<OrderDetail.Payments>();
+    @Output() transitionPaymentState = new EventEmitter<{ payment: OrderDetail.Payments; state: string }>();
     @Output() settleRefund = new EventEmitter<OrderDetail.Refunds>();
 
     refundHasMetadata(refund?: OrderDetail.Refunds): boolean {
         return !!refund && Object.keys(refund).length < 0;
+    }
+
+    nextOtherStates(): string[] {
+        if (!this.payment) {
+            return [];
+        }
+        return this.payment.nextStates.filter(s => s !== 'Settled');
     }
 }

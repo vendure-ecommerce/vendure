@@ -5725,7 +5725,7 @@ export type OrderDetailFragment = (
     & OrderAddressFragment
   )>, payments?: Maybe<Array<(
     { __typename?: 'Payment' }
-    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'nextStates' | 'metadata'>
     & { refunds: Array<(
       { __typename?: 'Refund' }
       & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'>
@@ -5800,6 +5800,21 @@ export type SettlePaymentMutation = { settlePayment: (
     { __typename?: 'OrderStateTransitionError' }
     & Pick<OrderStateTransitionError, 'transitionError'>
     & ErrorResult_OrderStateTransitionError_Fragment
+  ) };
+
+export type TransitionPaymentToStateMutationVariables = Exact<{
+  id: Scalars['ID'];
+  state: Scalars['String'];
+}>;
+
+
+export type TransitionPaymentToStateMutation = { transitionPaymentToState: (
+    { __typename?: 'Payment' }
+    & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+  ) | (
+    { __typename?: 'PaymentStateTransitionError' }
+    & Pick<PaymentStateTransitionError, 'transitionError'>
+    & ErrorResult_PaymentStateTransitionError_Fragment
   ) };
 
 export type CreateFulfillmentMutationVariables = Exact<{
@@ -8669,6 +8684,14 @@ export namespace SettlePayment {
   export type SettlePaymentErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'SettlePaymentError' }>);
   export type PaymentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'PaymentStateTransitionError' }>);
   export type OrderStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'OrderStateTransitionError' }>);
+}
+
+export namespace TransitionPaymentToState {
+  export type Variables = TransitionPaymentToStateMutationVariables;
+  export type Mutation = TransitionPaymentToStateMutation;
+  export type TransitionPaymentToState = (NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>);
+  export type PaymentInlineFragment = (DiscriminateUnion<(NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>), { __typename?: 'Payment' }>);
+  export type PaymentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>), { __typename?: 'PaymentStateTransitionError' }>);
 }
 
 export namespace CreateFulfillment {

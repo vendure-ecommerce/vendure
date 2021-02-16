@@ -18,11 +18,21 @@
         <vdr-action-bar-items locationId="order-detail"></vdr-action-bar-items>
         <button
             class="btn btn-primary"
-            *ngIf="hasUnsettledModifications(order)"
+            *ngIf="
+                order.state === 'ArrangingAdditionalPayment' &&
+                (hasUnsettledModifications(order) || 0 < outstandingPaymentAmount(order))
+            "
             (click)="addManualPayment(order)"
         >
             {{ 'order.add-payment-to-order' | translate }}
-            ({{ getOutstandingModificationAmount(order) | localeCurrency: order.currencyCode }})
+            ({{ outstandingPaymentAmount(order) | localeCurrency: order.currencyCode }})
+        </button>
+        <button
+            class="btn btn-primary"
+            *ngIf="order.state !== 'ArrangingAdditionalPayment' && 0 < outstandingPaymentAmount(order)"
+            (click)="transitionToState('ArrangingAdditionalPayment')"
+        >
+            {{ 'order.arrange-additional-payment' | translate }}
         </button>
         <button class="btn btn-primary" (click)="fulfillOrder()" [disabled]="!canAddFulfillment(order)">
             {{ 'order.fulfill-order' | translate }}
@@ -146,6 +156,7 @@
                     [currencyCode]="order.currencyCode"
                     [payment]="payment"
                     (settlePayment)="settlePayment($event)"
+                    (transitionPaymentState)="transitionPaymentState($event)"
                     (settleRefund)="settleRefund($event)"
                 ></vdr-order-payment-card>
             </ng-container>

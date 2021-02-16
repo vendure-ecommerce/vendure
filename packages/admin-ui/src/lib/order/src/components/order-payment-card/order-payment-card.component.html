@@ -38,9 +38,40 @@
             </button>
         </div>
     </ng-container>
-    <div class="card-footer" *ngIf="payment.state === 'Authorized'">
-        <button class="btn btn-sm btn-primary" (click)="settlePayment.emit(payment)">
+    <div class="card-footer" *ngIf="payment.nextStates.length">
+        <button
+            class="btn btn-sm btn-primary"
+            *ngIf="payment.nextStates.includes('Settled')"
+            (click)="settlePayment.emit(payment)"
+        >
             {{ 'order.settle-payment' | translate }}
         </button>
+        <vdr-dropdown>
+            <button class="icon-button" vdrDropdownTrigger>
+                <clr-icon shape="ellipsis-vertical"></clr-icon>
+            </button>
+            <vdr-dropdown-menu vdrPosition="bottom-right">
+                <ng-container *ngFor="let nextState of nextOtherStates()">
+                    <button
+                        type="button"
+                        class="btn"
+                        vdrDropdownItem
+                        (click)="transitionPaymentState.emit({ payment: payment, state: nextState })"
+                    >
+                        <ng-container *ngIf="nextState !== 'Cancelled'; else cancel">
+                            <clr-icon shape="step-forward-2"></clr-icon>
+                            {{
+                                'order.transition-to-state'
+                                    | translate: { state: (nextState | stateI18nToken | translate) }
+                            }}
+                        </ng-container>
+                        <ng-template #cancel>
+                            <clr-icon shape="error-standard" class="is-error"></clr-icon>
+                            {{ 'order.cancel-payment' | translate }}
+                        </ng-template>
+                    </button>
+                </ng-container>
+            </vdr-dropdown-menu>
+        </vdr-dropdown>
     </div>
 </div>

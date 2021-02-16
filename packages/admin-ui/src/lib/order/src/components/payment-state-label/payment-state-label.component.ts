@@ -16,6 +16,7 @@ export class PaymentStateLabelComponent {
             case 'Settled':
                 return 'success';
             case 'Declined':
+            case 'Cancelled':
                 return 'error';
         }
     }
