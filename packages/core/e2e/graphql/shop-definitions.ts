@@ -445,6 +445,15 @@ export const GET_ORDER_BY_CODE = gql`
     ${TEST_ORDER_FRAGMENT}
 `;
 
+export const GET_ORDER_SHOP = gql`
+    query GetOrderShop($id: ID!) {
+        order(id: $id) {
+            ...TestOrderFragment
+        }
+    }
+    ${TEST_ORDER_FRAGMENT}
+`;
+
 export const GET_ORDER_PROMOTIONS_BY_CODE = gql`
     query GetOrderPromotionsByCode($code: String!) {
         orderByCode(code: $code) {

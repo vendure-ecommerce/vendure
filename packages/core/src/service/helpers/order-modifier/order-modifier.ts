@@ -28,7 +28,7 @@ import { Promotion } from '../../../entity/promotion/promotion.entity';
 import { ShippingLine } from '../../../entity/shipping-line/shipping-line.entity';
 import { Surcharge } from '../../../entity/surcharge/surcharge.entity';
 import { CountryService } from '../../services/country.service';
-import { PaymentMethodService } from '../../services/payment-method.service';
+import { PaymentService } from '../../services/payment.service';
 import { ProductVariantService } from '../../services/product-variant.service';
 import { StockMovementService } from '../../services/stock-movement.service';
 import { TransactionalConnection } from '../../transaction/transactional-connection';
@@ -53,7 +53,7 @@ export class OrderModifier {
         private connection: TransactionalConnection,
         private configService: ConfigService,
         private orderCalculator: OrderCalculator,
-        private paymentMethodService: PaymentMethodService,
+        private paymentService: PaymentService,
         private countryService: CountryService,
         private stockMovementService: StockMovementService,
         private productVariantService: ProductVariantService,
@@ -386,7 +386,7 @@ export class OrderModifier {
             const existingPayments = await this.getOrderPayments(ctx, order.id);
             const payment = existingPayments.find(p => idsAreEqual(p.id, input.refund?.paymentId));
             if (payment) {
-                const refund = await this.paymentMethodService.createRefund(
+                const refund = await this.paymentService.createRefund(
                     ctx,
                     refundInput,
                     order,

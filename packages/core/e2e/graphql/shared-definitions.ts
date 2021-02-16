@@ -14,6 +14,7 @@ import {
     GLOBAL_SETTINGS_FRAGMENT,
     ORDER_FRAGMENT,
     ORDER_WITH_LINES_FRAGMENT,
+    PAYMENT_FRAGMENT,
     PRODUCT_OPTION_GROUP_FRAGMENT,
     PRODUCT_VARIANT_FRAGMENT,
     PRODUCT_WITH_OPTIONS_FRAGMENT,
@@ -792,11 +793,7 @@ export const SETTLE_PAYMENT = gql`
             }
         }
     }
-    fragment Payment on Payment {
-        id
-        state
-        metadata
-    }
+    ${PAYMENT_FRAGMENT}
 `;
 
 export const GET_ORDER_HISTORY = gql`

@@ -1572,6 +1572,21 @@ export type Fulfillment = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type Payment = Node & {
+  __typename?: 'Payment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type OrderModification = Node & {
   __typename?: 'OrderModification';
   id: Scalars['ID'];
@@ -1932,21 +1947,6 @@ export type PaymentMethod = Node & {
   enabled: Scalars['Boolean'];
   checker?: Maybe<ConfigurableOperation>;
   handler: ConfigurableOperation;
-};
-
-export type Payment = Node & {
-  __typename?: 'Payment';
-  nextStates: Array<Scalars['String']>;
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  method: Scalars['String'];
-  amount: Scalars['Int'];
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  refunds: Array<Refund>;
-  metadata?: Maybe<Scalars['JSON']>;
 };
 
 export type Product = Node & {
@@ -3912,9 +3912,9 @@ export type OrderLine = Node & {
   unitPrice: Scalars['Int'];
   /** The price of a single unit, including tax but excluding discounts */
   unitPriceWithTax: Scalars['Int'];
-  /** If the unitPrice has changed since initially added to Order */
+  /** Non-zero if the unitPrice has changed since it was initially added to Order */
   unitPriceChangeSinceAdded: Scalars['Int'];
-  /** If the unitPriceWithTax has changed since initially added to Order */
+  /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
   unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
   /**
    * The price of a single unit including discounts, excluding tax.

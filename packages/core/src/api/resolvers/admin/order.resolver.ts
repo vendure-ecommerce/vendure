@@ -21,6 +21,7 @@ import {
     QueryOrdersArgs,
     RefundOrderResult,
     SettlePaymentResult,
+    TransitionPaymentToStateResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -156,7 +157,7 @@ export class OrderResolver {
     async transitionPaymentToState(
         @Ctx() ctx: RequestContext,
         @Args() args: MutationTransitionPaymentToStateArgs,
-    ) {
+    ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
         return this.orderService.transitionPaymentToState(ctx, args.id, args.state as PaymentState);
     }
 

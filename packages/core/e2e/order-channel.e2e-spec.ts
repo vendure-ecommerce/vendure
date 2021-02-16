@@ -15,21 +15,24 @@ import {
     CreateChannel,
     CurrencyCode,
     GetCustomerList,
-    GetOrder,
     GetOrderList,
     GetProductWithVariants,
     LanguageCode,
 } from './graphql/generated-e2e-admin-types';
-import { AddItemToOrder, GetActiveOrder, UpdatedOrderFragment } from './graphql/generated-e2e-shop-types';
+import {
+    AddItemToOrder,
+    GetActiveOrder,
+    GetOrderShop,
+    UpdatedOrderFragment,
+} from './graphql/generated-e2e-shop-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
     CREATE_CHANNEL,
     GET_CUSTOMER_LIST,
-    GET_ORDER,
     GET_ORDERS_LIST,
     GET_PRODUCT_WITH_VARIANTS,
 } from './graphql/shared-definitions';
-import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER } from './graphql/shop-definitions';
+import { ADD_ITEM_TO_ORDER, GET_ACTIVE_ORDER, GET_ORDER_SHOP } from './graphql/shop-definitions';
 
 describe('Channelaware orders', () => {
     const { server, adminClient, shopClient } = createTestEnvironment(testConfig);
@@ -177,14 +180,14 @@ describe('Channelaware orders', () => {
     });
 
     it('returns null when requesting order from other channel', async () => {
-        const result = await shopClient.query<GetOrder.Query>(GET_ORDER, {
+        const result = await shopClient.query<GetOrderShop.Query>(GET_ORDER_SHOP, {
             id: order2Id,
         });
         expect(result!.order).toBeNull();
     });
 
     it('returns order when requesting order from correct channel', async () => {
-        const result = await shopClient.query<GetOrder.Query>(GET_ORDER, {
+        const result = await shopClient.query<GetOrderShop.Query>(GET_ORDER_SHOP, {
             id: order1Id,
         });
         expect(result.order!.id).toBe(order1Id);

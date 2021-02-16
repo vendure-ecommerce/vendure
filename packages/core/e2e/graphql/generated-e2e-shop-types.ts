@@ -1848,9 +1848,9 @@ export type OrderLine = Node & {
     unitPrice: Scalars['Int'];
     /** The price of a single unit, including tax but excluding discounts */
     unitPriceWithTax: Scalars['Int'];
-    /** If the unitPrice has changed since initially added to Order */
+    /** Non-zero if the unitPrice has changed since it was initially added to Order */
     unitPriceChangeSinceAdded: Scalars['Int'];
-    /** If the unitPriceWithTax has changed since initially added to Order */
+    /** Non-zero if the unitPriceWithTax has changed since it was initially added to Order */
     unitPriceWithTaxChangeSinceAdded: Scalars['Int'];
     /**
      * The price of a single unit including discounts, excluding tax.
@@ -3008,6 +3008,12 @@ export type GetOrderByCodeQueryVariables = Exact<{
 
 export type GetOrderByCodeQuery = { orderByCode?: Maybe<TestOrderFragmentFragment> };
 
+export type GetOrderShopQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetOrderShopQuery = { order?: Maybe<TestOrderFragmentFragment> };
+
 export type GetOrderPromotionsByCodeQueryVariables = Exact<{
     code: Scalars['String'];
 }>;
@@ -3513,6 +3519,12 @@ export namespace GetOrderByCode {
     export type Variables = GetOrderByCodeQueryVariables;
     export type Query = GetOrderByCodeQuery;
     export type OrderByCode = NonNullable<GetOrderByCodeQuery['orderByCode']>;
+}
+
+export namespace GetOrderShop {
+    export type Variables = GetOrderShopQueryVariables;
+    export type Query = GetOrderShopQuery;
+    export type Order = NonNullable<GetOrderShopQuery['order']>;
 }
 
 export namespace GetOrderPromotionsByCode {

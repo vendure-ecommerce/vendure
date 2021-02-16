@@ -30,6 +30,7 @@ import {
     SettlePaymentResult,
     SettleRefundInput,
     ShippingMethodQuote,
+    TransitionPaymentToStateResult,
     UpdateOrderNoteInput,
 } from '@vendure/common/lib/generated-types';
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
@@ -745,14 +746,17 @@ export class OrderService {
         ctx: RequestContext,
         paymentId: ID,
         state: PaymentState,
-    ): Promise<Payment> {
-        const payment = await this.paymentService.transitionToState(ctx, paymentId, state);
-
-        const order = payment.order;
-
-        await this.transitionOrderIfTotalIsCovered(ctx, order);
-
-        return payment;
+    ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
+        const result = await this.paymentService.transitionToState(ctx, paymentId, state);
+        if (isGraphQlErrorResult(result)) {
+            return result;
+        }
+        const order = await this.findOne(ctx, result.order.id);
+        if (order) {
+            order.payments = await this.getOrderPayments(ctx, order.id);
+            await this.transitionOrderIfTotalIsCovered(ctx, order);
+        }
+        return result;
     }
 
     async addPaymentToOrder(
@@ -764,7 +768,7 @@ export class OrderService {
         if (order.state !== 'ArrangingPayment') {
             return new OrderPaymentStateError();
         }
-        const payment = await this.paymentMethodService.createPayment(
+        const payment = await this.paymentService.createPayment(
             ctx,
             order,
             order.totalWithTax,
@@ -817,14 +821,16 @@ export class OrderService {
         const amount = order.totalWithTax - totalCoveredByPayments(order);
         const modifications = await this.getOrderModifications(ctx, order.id);
         const unsettledModifications = modifications.filter(m => !m.isSettled);
-        const outstandingModificationsTotal = summate(unsettledModifications, 'priceChange');
-        if (outstandingModificationsTotal !== amount) {
-            throw new InternalServerError(
-                `The outstanding order amount (${amount}) should equal the unsettled OrderModifications total (${outstandingModificationsTotal})`,
-            );
+        if (0 < unsettledModifications.length) {
+            const outstandingModificationsTotal = summate(unsettledModifications, 'priceChange');
+            if (outstandingModificationsTotal !== amount) {
+                throw new InternalServerError(
+                    `The outstanding order amount (${amount}) should equal the unsettled OrderModifications total (${outstandingModificationsTotal})`,
+                );
+            }
         }
 
-        const payment = await this.paymentMethodService.createManualPayment(ctx, order, amount, input);
+        const payment = await this.paymentService.createManualPayment(ctx, order, amount, input);
         order.payments.push(payment);
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
         for (const modification of unsettledModifications) {
@@ -838,28 +844,11 @@ export class OrderService {
         ctx: RequestContext,
         paymentId: ID,
     ): Promise<ErrorResultUnion<SettlePaymentResult, Payment>> {
-        const payment = await this.connection.getEntityOrThrow(ctx, Payment, paymentId, {
-            relations: ['order'],
-        });
-        const settlePaymentResult = await this.paymentMethodService.settlePayment(
-            ctx,
-            payment,
-            payment.order,
-        );
-        if (settlePaymentResult.success) {
-            const fromState = payment.state;
-            const toState = 'Settled';
-            try {
-                await this.paymentStateMachine.transition(ctx, payment.order, payment, toState);
-            } catch (e) {
-                const transitionError = ctx.translate(e.message, { fromState, toState });
-                return new PaymentStateTransitionError(transitionError, fromState, toState);
+        const payment = await this.paymentService.settlePayment(ctx, paymentId);
+        if (!isGraphQlErrorResult(payment)) {
+            if (payment.state !== 'Settled') {
+                return new SettlePaymentError(payment.errorMessage || '');
             }
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-            this.eventBus.publish(
-                new PaymentStateTransitionEvent(fromState, toState, ctx, payment, payment.order),
-            );
             const orderTotalSettled = payment.amount === payment.order.totalWithTax;
             if (
                 orderTotalSettled &&
@@ -874,11 +863,6 @@ export class OrderService {
                     return orderTransitionResult;
                 }
             }
-        } else {
-            payment.errorMessage = settlePaymentResult.errorMessage;
-            payment.metadata = this.mergePaymentMetadata(payment.metadata, settlePaymentResult.metadata);
-            await this.connection.getRepository(ctx, Payment).save(payment, { reload: false });
-            return new SettlePaymentError(settlePaymentResult.errorMessage || '');
         }
         return payment;
     }
@@ -1109,7 +1093,7 @@ export class OrderService {
             return new AlreadyRefundedError(alreadyRefunded.refundId as string);
         }
 
-        return await this.paymentMethodService.createRefund(ctx, input, order, items, payment);
+        return await this.paymentService.createRefund(ctx, input, order, items, payment);
     }
 
     async settleRefund(ctx: RequestContext, input: SettleRefundInput): Promise<Refund> {
