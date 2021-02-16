@@ -30,9 +30,6 @@ import {
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
-// FIXME
-testConfig.logger = new DefaultLogger({ level: LogLevel.Debug });
-
 const { server, adminClient } = createTestEnvironment(testConfig);
 const SECOND_CHANNEL_TOKEN = 'second_channel_token';
 let createdAssetId: string;
