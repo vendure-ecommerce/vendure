@@ -1337,8 +1337,26 @@ export class OrderService {
             promotions,
             updatedOrderLine ? [updatedOrderLine] : [],
         );
+        const updateFields: Array<keyof OrderItem> = [
+            'initialListPrice',
+            'listPrice',
+            'listPriceIncludesTax',
+            'adjustments',
+            'taxLines',
+        ];
+        await this.connection
+            .getRepository(ctx, OrderItem)
+            .createQueryBuilder()
+            .insert()
+            .into(OrderItem, [...updateFields, 'id', 'lineId'])
+            .values(updatedItems)
+            .orUpdate({
+                conflict_target: ['id'],
+                overwrite: updateFields,
+            })
+            .updateEntity(false)
+            .execute();
         await this.connection.getRepository(ctx, Order).save(order, { reload: false });
-        await this.connection.getRepository(ctx, OrderItem).save(updatedItems, { reload: false });
         await this.connection.getRepository(ctx, ShippingLine).save(order.shippingLines, { reload: false });
         return order;
     }

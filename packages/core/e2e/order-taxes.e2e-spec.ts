@@ -1,7 +1,6 @@
 /* tslint:disable:no-non-null-assertion */
 import { summate } from '@vendure/common/lib/shared-utils';
 import { createErrorResultGuard, createTestEnvironment, ErrorResultGuard } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
@@ -11,7 +10,6 @@ import { testSuccessfulPaymentMethod } from './fixtures/test-payment-methods';
 import { GetProductsWithVariantPrices, UpdateChannel } from './graphql/generated-e2e-admin-types';
 import {
     AddItemToOrder,
-    AdjustmentType,
     GetActiveOrderWithPriceData,
     TestOrderFragmentFragment,
     UpdatedOrderFragment,

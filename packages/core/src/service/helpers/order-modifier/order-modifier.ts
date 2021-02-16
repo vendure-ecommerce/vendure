@@ -150,18 +150,29 @@ export class OrderModifier {
             if (!orderLine.items) {
                 orderLine.items = [];
             }
+            const newOrderItems = [];
             for (let i = currentQuantity; i < quantity; i++) {
-                const orderItem = await this.connection.getRepository(ctx, OrderItem).save(
+                newOrderItems.push(
                     new OrderItem({
                         listPrice: orderLine.productVariant.price,
                         listPriceIncludesTax: orderLine.productVariant.priceIncludesTax,
                         adjustments: [],
                         taxLines: [],
-                        line: orderLine,
+                        lineId: orderLine.id,
                     }),
                 );
-                orderLine.items.push(orderItem);
             }
+            const { identifiers } = await this.connection
+                .getRepository(ctx, OrderItem)
+                .createQueryBuilder()
+                .insert()
+                .into(OrderItem)
+                .values(newOrderItems)
+                .execute();
+            newOrderItems.forEach((item, i) => (item.id = identifiers[i].id));
+            orderLine.items = await this.connection
+                .getRepository(ctx, OrderItem)
+                .find({ where: { line: orderLine } });
         } else if (quantity < currentQuantity) {
             if (order.active) {
                 // When an Order is still active, it is fine to just delete
@@ -169,7 +180,12 @@ export class OrderModifier {
                 const keepItems = orderLine.items.slice(0, quantity);
                 const removeItems = orderLine.items.slice(quantity);
                 orderLine.items = keepItems;
-                await this.connection.getRepository(ctx, OrderItem).remove(removeItems);
+                await this.connection
+                    .getRepository(ctx, OrderItem)
+                    .createQueryBuilder()
+                    .delete()
+                    .whereInIds(removeItems.map(i => i.id))
+                    .execute();
             } else {
                 // When an Order is not active (i.e. Customer checked out), then we don't want to just
                 // delete the OrderItems - instead we will cancel them

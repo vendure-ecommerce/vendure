@@ -27,6 +27,9 @@ export class OrderItem extends VendureEntity {
     @ManyToOne(type => OrderLine, line => line.items, { onDelete: 'CASCADE' })
     line: OrderLine;
 
+    @EntityId()
+    lineId: ID; // TypeORM requires this ID field on the entity explicitly in order to save the foreign key via `.insert`
+
     /**
      * @description
      * The price as calculated when the OrderItem was first added to the Order. Usually will be identical to the
