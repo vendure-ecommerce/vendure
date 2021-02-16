@@ -92,6 +92,9 @@ function registerCustomFieldsForEntity(
                         }
                         options.length = length;
                     }
+                    if (customField.type === 'float') {
+                        options.scale = 2;
+                    }
                     if (
                         customField.type === 'datetime' &&
                         options.precision == null &&
