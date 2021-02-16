@@ -14,12 +14,14 @@ import {
     MutationSettleRefundArgs,
     MutationTransitionFulfillmentToStateArgs,
     MutationTransitionOrderToStateArgs,
+    MutationTransitionPaymentToStateArgs,
     MutationUpdateOrderNoteArgs,
     Permission,
     QueryOrderArgs,
     QueryOrdersArgs,
     RefundOrderResult,
     SettlePaymentResult,
+    TransitionPaymentToStateResult,
 } from '@vendure/common/lib/generated-types';
 import { PaginatedList } from '@vendure/common/lib/shared-types';
 
@@ -30,6 +32,7 @@ import { Payment } from '../../../entity/payment/payment.entity';
 import { Refund } from '../../../entity/refund/refund.entity';
 import { FulfillmentState } from '../../../service/helpers/fulfillment-state-machine/fulfillment-state';
 import { OrderState } from '../../../service/helpers/order-state-machine/order-state';
+import { PaymentState } from '../../../service/helpers/payment-state-machine/payment-state';
 import { OrderService } from '../../../service/services/order.service';
 import { ShippingMethodService } from '../../../service/services/shipping-method.service';
 import { RequestContext } from '../../common/request-context';
@@ -146,6 +149,16 @@ export class OrderResolver {
         @Args() args: MutationTransitionFulfillmentToStateArgs,
     ) {
         return this.orderService.transitionFulfillmentToState(ctx, args.id, args.state as FulfillmentState);
+    }
+
+    @Transaction()
+    @Mutation()
+    @Allow(Permission.UpdateOrder)
+    async transitionPaymentToState(
+        @Ctx() ctx: RequestContext,
+        @Args() args: MutationTransitionPaymentToStateArgs,
+    ): Promise<ErrorResultUnion<TransitionPaymentToStateResult, Payment>> {
+        return this.orderService.transitionPaymentToState(ctx, args.id, args.state as PaymentState);
     }
 
     @Transaction('manual')

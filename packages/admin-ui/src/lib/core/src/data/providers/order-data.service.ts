@@ -23,6 +23,7 @@ import {
     SettleRefundInput,
     TransitionFulfillmentToState,
     TransitionOrderToState,
+    TransitionPaymentToState,
     UpdateOrderCustomFields,
     UpdateOrderInput,
     UpdateOrderNote,
@@ -44,6 +45,7 @@ import {
     SETTLE_REFUND,
     TRANSITION_FULFILLMENT_TO_STATE,
     TRANSITION_ORDER_TO_STATE,
+    TRANSITION_PAYMENT_TO_STATE,
     UPDATE_ORDER_CUSTOM_FIELDS,
     UPDATE_ORDER_NOTE,
 } from '../definitions/order-definitions';
@@ -76,6 +78,16 @@ export class OrderDataService {
     settlePayment(id: string) {
         return this.baseDataService.mutate<SettlePayment.Mutation, SettlePayment.Variables>(SETTLE_PAYMENT, {
             id,
+        });
+    }
+
+    transitionPaymentToState(id: string, state: string) {
+        return this.baseDataService.mutate<
+            TransitionPaymentToState.Mutation,
+            TransitionPaymentToState.Variables
+        >(TRANSITION_PAYMENT_TO_STATE, {
+            id,
+            state,
         });
     }
 

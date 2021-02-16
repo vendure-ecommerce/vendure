@@ -49,7 +49,10 @@ import {
 } from './resolvers/entity/fulfillment-entity.resolver';
 import { OrderAdminEntityResolver, OrderEntityResolver } from './resolvers/entity/order-entity.resolver';
 import { OrderLineEntityResolver } from './resolvers/entity/order-line-entity.resolver';
-import { PaymentEntityResolver } from './resolvers/entity/payment-entity.resolver';
+import {
+    PaymentAdminEntityResolver,
+    PaymentEntityResolver,
+} from './resolvers/entity/payment-entity.resolver';
 import { PaymentMethodEntityResolver } from './resolvers/entity/payment-method-entity.resolver';
 import {
     ProductAdminEntityResolver,
@@ -133,6 +136,7 @@ export const adminEntityResolvers = [
     OrderAdminEntityResolver,
     PaymentMethodEntityResolver,
     FulfillmentAdminEntityResolver,
+    PaymentAdminEntityResolver,
     ProductVariantAdminEntityResolver,
     ProductAdminEntityResolver,
 ];

@@ -40,7 +40,7 @@ export class OrderHistoryComponent {
             }
         }
         if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
-            if (entry.data.to === 'Declined') {
+            if (entry.data.to === 'Declined' || entry.data.to === 'Cancelled') {
                 return 'error';
             }
         }
@@ -62,8 +62,10 @@ export class OrderHistoryComponent {
                 return 'ban';
             }
         }
-        if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION && entry.data.to === 'Settled') {
-            return 'credit-card';
+        if (entry.type === HistoryEntryType.ORDER_PAYMENT_TRANSITION) {
+            if (entry.data.to === 'Settled') {
+                return 'credit-card';
+            }
         }
         if (entry.type === HistoryEntryType.ORDER_NOTE) {
             return 'note';
@@ -91,7 +93,7 @@ export class OrderHistoryComponent {
                 );
             }
             case HistoryEntryType.ORDER_PAYMENT_TRANSITION:
-                return entry.data.to === 'Settled';
+                return entry.data.to === 'Settled' || entry.data.to === 'Cancelled';
             case HistoryEntryType.ORDER_FULFILLMENT_TRANSITION:
                 return entry.data.to === 'Delivered' || entry.data.to === 'Shipped';
             case HistoryEntryType.ORDER_NOTE:

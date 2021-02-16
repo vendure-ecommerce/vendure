@@ -458,6 +458,7 @@ export type Mutation = {
   settleRefund: SettleRefundResult;
   transitionFulfillmentToState: TransitionFulfillmentToStateResult;
   transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
+  transitionPaymentToState: TransitionPaymentToStateResult;
   /** Update the active (currently logged-in) Administrator */
   updateActiveAdministrator: Administrator;
   /** Update an existing Administrator */
@@ -912,6 +913,12 @@ export type MutationTransitionFulfillmentToStateArgs = {
 
 
 export type MutationTransitionOrderToStateArgs = {
+  id: Scalars['ID'];
+  state: Scalars['String'];
+};
+
+
+export type MutationTransitionPaymentToStateArgs = {
   id: Scalars['ID'];
   state: Scalars['String'];
 };
@@ -1624,6 +1631,21 @@ export type Fulfillment = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type Payment = Node & {
+  __typename?: 'Payment';
+  nextStates: Array<Scalars['String']>;
+  id: Scalars['ID'];
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
+  method: Scalars['String'];
+  amount: Scalars['Int'];
+  state: Scalars['String'];
+  transactionId?: Maybe<Scalars['String']>;
+  errorMessage?: Maybe<Scalars['String']>;
+  refunds: Array<Refund>;
+  metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type OrderModification = Node & {
   __typename?: 'OrderModification';
   id: Scalars['ID'];
@@ -1941,6 +1963,8 @@ export type RefundOrderResult = Refund | QuantityTooGreatError | NothingToRefund
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
+
+export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionError;
 
 export type ModifyOrderResult = Order | NoChangesSpecifiedError | OrderModificationStateError | PaymentMethodMissingError | RefundPaymentIdMissingError | OrderLimitError | NegativeQuantityError | InsufficientStockError;
 
@@ -4002,20 +4026,6 @@ export type OrderLine = Node & {
   customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Payment = Node & {
-  __typename?: 'Payment';
-  id: Scalars['ID'];
-  createdAt: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-  method: Scalars['String'];
-  amount: Scalars['Int'];
-  state: Scalars['String'];
-  transactionId?: Maybe<Scalars['String']>;
-  errorMessage?: Maybe<Scalars['String']>;
-  refunds: Array<Refund>;
-  metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type Refund = Node & {
   __typename?: 'Refund';
   id: Scalars['ID'];
@@ -5737,7 +5747,7 @@ export type OrderDetailFragment = (
     & OrderAddressFragment
   )>, payments?: Maybe<Array<(
     { __typename?: 'Payment' }
-    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+    & Pick<Payment, 'id' | 'createdAt' | 'transactionId' | 'amount' | 'method' | 'state' | 'nextStates' | 'metadata'>
     & { refunds: Array<(
       { __typename?: 'Refund' }
       & Pick<Refund, 'id' | 'createdAt' | 'state' | 'items' | 'adjustment' | 'total' | 'paymentId' | 'reason' | 'transactionId' | 'method' | 'metadata'>
@@ -5812,6 +5822,21 @@ export type SettlePaymentMutation = { settlePayment: (
     { __typename?: 'OrderStateTransitionError' }
     & Pick<OrderStateTransitionError, 'transitionError'>
     & ErrorResult_OrderStateTransitionError_Fragment
+  ) };
+
+export type TransitionPaymentToStateMutationVariables = Exact<{
+  id: Scalars['ID'];
+  state: Scalars['String'];
+}>;
+
+
+export type TransitionPaymentToStateMutation = { transitionPaymentToState: (
+    { __typename?: 'Payment' }
+    & Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'>
+  ) | (
+    { __typename?: 'PaymentStateTransitionError' }
+    & Pick<PaymentStateTransitionError, 'transitionError'>
+    & ErrorResult_PaymentStateTransitionError_Fragment
   ) };
 
 export type CreateFulfillmentMutationVariables = Exact<{
@@ -8680,6 +8705,14 @@ export namespace SettlePayment {
   export type SettlePaymentErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'SettlePaymentError' }>);
   export type PaymentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'PaymentStateTransitionError' }>);
   export type OrderStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<SettlePaymentMutation['settlePayment']>), { __typename?: 'OrderStateTransitionError' }>);
+}
+
+export namespace TransitionPaymentToState {
+  export type Variables = TransitionPaymentToStateMutationVariables;
+  export type Mutation = TransitionPaymentToStateMutation;
+  export type TransitionPaymentToState = (NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>);
+  export type PaymentInlineFragment = (DiscriminateUnion<(NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>), { __typename?: 'Payment' }>);
+  export type PaymentStateTransitionErrorInlineFragment = (DiscriminateUnion<(NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>), { __typename?: 'PaymentStateTransitionError' }>);
 }
 
 export namespace CreateFulfillment {

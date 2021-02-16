@@ -25,9 +25,11 @@ import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
+import { OrderPlacedStrategy } from './order/order-placed-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
-import { PaymentMethodEligibilityChecker } from './payment-method/payment-method-eligibility-checker';
-import { PaymentMethodHandler } from './payment-method/payment-method-handler';
+import { CustomPaymentProcess } from './payment/custom-payment-process';
+import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
+import { PaymentMethodHandler } from './payment/payment-method-handler';
 import { PromotionAction } from './promotion/promotion-action';
 import { PromotionCondition } from './promotion/promotion-condition';
 import { SessionCacheStrategy } from './session-cache/session-cache-strategy';
@@ -445,6 +447,13 @@ export interface OrderOptions {
      * @default DefaultChangedPriceHandlingStrategy
      */
     changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
+    /**
+     * @description
+     * Defines the point of the order process at which the Order is set as "placed".
+     *
+     * @default DefaultOrderPlacedStrategy
+     */
+    orderPlacedStrategy?: OrderPlacedStrategy;
 }
 
 /**
@@ -607,6 +616,12 @@ export interface PaymentOptions {
      * {@link PaymentMethod}s
      */
     paymentMethodEligibilityCheckers?: PaymentMethodEligibilityChecker[];
+    /**
+     * @description
+     * Allows the definition of custom states and transition logic for the payment process state machine.
+     * Takes an array of objects implementing the {@link CustomPaymentProcess} interface.
+     */
+    customPaymentProcess?: Array<CustomPaymentProcess<any>>;
 }
 
 /**

@@ -83,8 +83,8 @@ export class ConfigService implements VendureConfig {
         return this.activeConfig.orderOptions as Required<OrderOptions>;
     }
 
-    get paymentOptions(): PaymentOptions {
-        return this.activeConfig.paymentOptions;
+    get paymentOptions(): Required<PaymentOptions> {
+        return this.activeConfig.paymentOptions as Required<PaymentOptions>;
     }
 
     get taxOptions(): Required<TaxOptions> {

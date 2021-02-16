@@ -148,6 +148,8 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
         'taxCategory',
         'variantAssets',
         'variantFacets',
+        'stockOnHand',
+        'trackInventory',
     ];
 
     writeFn(headers);
@@ -168,6 +170,8 @@ function generateMockData(productCount: number, writeFn: (row: string[]) => void
             taxCategory: 'standard',
             variantAssets: '',
             variantFacets: '',
+            stockOnHand: '1000',
+            trackInventory: 'false',
         };
         writeFn(Object.values(outputRow) as string[]);
     }

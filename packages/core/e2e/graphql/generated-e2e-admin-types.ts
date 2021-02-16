@@ -357,6 +357,7 @@ export type Mutation = {
     deleteOrderNote: DeletionResponse;
     transitionOrderToState?: Maybe<TransitionOrderToStateResult>;
     transitionFulfillmentToState: TransitionFulfillmentToStateResult;
+    transitionPaymentToState: TransitionPaymentToStateResult;
     setOrderCustomFields?: Maybe<Order>;
     /**
      * Allows an Order to be modified after it has been completed by the Customer. The Order must first
@@ -685,6 +686,11 @@ export type MutationTransitionOrderToStateArgs = {
 };
 
 export type MutationTransitionFulfillmentToStateArgs = {
+    id: Scalars['ID'];
+    state: Scalars['String'];
+};
+
+export type MutationTransitionPaymentToStateArgs = {
     id: Scalars['ID'];
     state: Scalars['String'];
 };
@@ -1417,6 +1423,20 @@ export type Fulfillment = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
+export type Payment = Node & {
+    nextStates: Array<Scalars['String']>;
+    id: Scalars['ID'];
+    createdAt: Scalars['DateTime'];
+    updatedAt: Scalars['DateTime'];
+    method: Scalars['String'];
+    amount: Scalars['Int'];
+    state: Scalars['String'];
+    transactionId?: Maybe<Scalars['String']>;
+    errorMessage?: Maybe<Scalars['String']>;
+    refunds: Array<Refund>;
+    metadata?: Maybe<Scalars['JSON']>;
+};
+
 export type OrderModification = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -1738,6 +1758,8 @@ export type RefundOrderResult =
 export type SettleRefundResult = Refund | RefundStateTransitionError;
 
 export type TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError;
+
+export type TransitionPaymentToStateResult = Payment | PaymentStateTransitionError;
 
 export type ModifyOrderResult =
     | Order
@@ -3746,19 +3768,6 @@ export type OrderLine = Node & {
     customFields?: Maybe<Scalars['JSON']>;
 };
 
-export type Payment = Node & {
-    id: Scalars['ID'];
-    createdAt: Scalars['DateTime'];
-    updatedAt: Scalars['DateTime'];
-    method: Scalars['String'];
-    amount: Scalars['Int'];
-    state: Scalars['String'];
-    transactionId?: Maybe<Scalars['String']>;
-    errorMessage?: Maybe<Scalars['String']>;
-    refunds: Array<Refund>;
-    metadata?: Maybe<Scalars['JSON']>;
-};
-
 export type Refund = Node & {
     id: Scalars['ID'];
     createdAt: Scalars['DateTime'];
@@ -5134,6 +5143,7 @@ export type OrderFragment = Pick<
     | 'createdAt'
     | 'updatedAt'
     | 'code'
+    | 'active'
     | 'state'
     | 'total'
     | 'totalWithTax'
@@ -5145,6 +5155,11 @@ export type OrderItemFragment = Pick<
     OrderItem,
     'id' | 'cancelled' | 'unitPrice' | 'unitPriceWithTax' | 'taxRate'
 > & { fulfillment?: Maybe<Pick<Fulfillment, 'id'>> };
+
+export type PaymentFragment = Pick<
+    Payment,
+    'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'nextStates' | 'metadata'
+> & { refunds: Array<Pick<Refund, 'id' | 'total' | 'reason'>> };
 
 export type OrderWithLinesFragment = Pick<
     Order,
@@ -5174,13 +5189,7 @@ export type OrderWithLinesFragment = Pick<
     surcharges: Array<Pick<Surcharge, 'id' | 'description' | 'sku' | 'price' | 'priceWithTax'>>;
     shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;
     shippingAddress?: Maybe<ShippingAddressFragment>;
-    payments?: Maybe<
-        Array<
-            Pick<Payment, 'id' | 'transactionId' | 'amount' | 'method' | 'state' | 'metadata'> & {
-                refunds: Array<Pick<Refund, 'id' | 'total' | 'reason'>>;
-            }
-        >
-    >;
+    payments?: Maybe<Array<PaymentFragment>>;
 };
 
 export type PromotionFragment = Pick<
@@ -5836,8 +5845,6 @@ export type SettlePaymentMutation = {
         | Pick<OrderStateTransitionError, 'errorCode' | 'message'>;
 };
 
-export type PaymentFragment = Pick<Payment, 'id' | 'state' | 'metadata'>;
-
 export type GetOrderHistoryQueryVariables = Exact<{
     id: Scalars['ID'];
     options?: Maybe<HistoryEntryListOptions>;
@@ -6117,6 +6124,25 @@ export type GetPaymentMethodQueryVariables = Exact<{
 }>;
 
 export type GetPaymentMethodQuery = { paymentMethod?: Maybe<PaymentMethodFragment> };
+
+export type TransitionPaymentToStateMutationVariables = Exact<{
+    id: Scalars['ID'];
+    state: Scalars['String'];
+}>;
+
+export type TransitionPaymentToStateMutation = {
+    transitionPaymentToState:
+        | PaymentFragment
+        | Pick<PaymentStateTransitionError, 'errorCode' | 'message' | 'transitionError'>;
+};
+
+export type AddManualPayment2MutationVariables = Exact<{
+    input: ManualPaymentInput;
+}>;
+
+export type AddManualPayment2Mutation = {
+    addManualPaymentToOrder: OrderWithLinesFragment | Pick<ManualPaymentStateError, 'errorCode' | 'message'>;
+};
 
 export type UpdateProductOptionGroupMutationVariables = Exact<{
     input: UpdateProductOptionGroupInput;
@@ -7249,6 +7275,11 @@ export namespace OrderItem {
     export type Fulfillment = NonNullable<OrderItemFragment['fulfillment']>;
 }
 
+export namespace Payment {
+    export type Fragment = PaymentFragment;
+    export type Refunds = NonNullable<NonNullable<PaymentFragment['refunds']>[number]>;
+}
+
 export namespace OrderWithLines {
     export type Fragment = OrderWithLinesFragment;
     export type Customer = NonNullable<OrderWithLinesFragment['customer']>;
@@ -7269,9 +7300,6 @@ export namespace OrderWithLines {
     >;
     export type ShippingAddress = NonNullable<OrderWithLinesFragment['shippingAddress']>;
     export type Payments = NonNullable<NonNullable<OrderWithLinesFragment['payments']>[number]>;
-    export type Refunds = NonNullable<
-        NonNullable<NonNullable<NonNullable<OrderWithLinesFragment['payments']>[number]>['refunds']>[number]
-    >;
 }
 
 export namespace Promotion {
@@ -7952,10 +7980,6 @@ export namespace SettlePayment {
     >;
 }
 
-export namespace Payment {
-    export type Fragment = PaymentFragment;
-}
-
 export namespace GetOrderHistory {
     export type Variables = GetOrderHistoryQueryVariables;
     export type Query = GetOrderHistoryQuery;
@@ -8267,6 +8291,32 @@ export namespace GetPaymentMethod {
     export type Variables = GetPaymentMethodQueryVariables;
     export type Query = GetPaymentMethodQuery;
     export type PaymentMethod = NonNullable<GetPaymentMethodQuery['paymentMethod']>;
+}
+
+export namespace TransitionPaymentToState {
+    export type Variables = TransitionPaymentToStateMutationVariables;
+    export type Mutation = TransitionPaymentToStateMutation;
+    export type TransitionPaymentToState = NonNullable<
+        TransitionPaymentToStateMutation['transitionPaymentToState']
+    >;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
+        { __typename?: 'ErrorResult' }
+    >;
+    export type PaymentStateTransitionErrorInlineFragment = DiscriminateUnion<
+        NonNullable<TransitionPaymentToStateMutation['transitionPaymentToState']>,
+        { __typename?: 'PaymentStateTransitionError' }
+    >;
+}
+
+export namespace AddManualPayment2 {
+    export type Variables = AddManualPayment2MutationVariables;
+    export type Mutation = AddManualPayment2Mutation;
+    export type AddManualPaymentToOrder = NonNullable<AddManualPayment2Mutation['addManualPaymentToOrder']>;
+    export type ErrorResultInlineFragment = DiscriminateUnion<
+        NonNullable<AddManualPayment2Mutation['addManualPaymentToOrder']>,
+        { __typename?: 'ErrorResult' }
+    >;
 }
 
 export namespace UpdateProductOptionGroup {

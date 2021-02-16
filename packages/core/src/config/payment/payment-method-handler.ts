@@ -290,6 +290,7 @@ export class PaymentMethodHandler<T extends ConfigArgs = ConfigArgs> extends Con
         );
         return {
             method: this.code,
+            metadata: {},
             ...paymentConfig,
         };
     }

@@ -184,6 +184,7 @@ export const ORDER_DETAIL_FRAGMENT = gql`
             amount
             method
             state
+            nextStates
             metadata
             refunds {
                 id
@@ -274,6 +275,26 @@ export const SETTLE_PAYMENT = gql`
                 transitionError
             }
             ... on OrderStateTransitionError {
+                transitionError
+            }
+        }
+    }
+    ${ERROR_RESULT_FRAGMENT}
+`;
+
+export const TRANSITION_PAYMENT_TO_STATE = gql`
+    mutation TransitionPaymentToState($id: ID!, $state: String!) {
+        transitionPaymentToState(id: $id, state: $state) {
+            ... on Payment {
+                id
+                transactionId
+                amount
+                method
+                state
+                metadata
+            }
+            ...ErrorResult
+            ... on PaymentStateTransitionError {
                 transitionError
             }
         }

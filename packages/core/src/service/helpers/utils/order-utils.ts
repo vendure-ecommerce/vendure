@@ -20,7 +20,9 @@ export function totalCoveredByPayments(order: Order, state?: PaymentState | Paym
         ? Array.isArray(state)
             ? order.payments.filter(p => state.includes(p.state))
             : order.payments.filter(p => p.state === state)
-        : order.payments.filter(p => p.state !== 'Error' && p.state !== 'Declined');
+        : order.payments.filter(
+              p => p.state !== 'Error' && p.state !== 'Declined' && p.state !== 'Cancelled',
+          );
     let total = 0;
     for (const payment of payments) {
         const refundTotal = summate(payment.refunds, 'total');

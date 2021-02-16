@@ -14,6 +14,7 @@ type Mutation {
     deleteOrderNote(id: ID!): DeletionResponse!
     transitionOrderToState(id: ID!, state: String!): TransitionOrderToStateResult
     transitionFulfillmentToState(id: ID!, state: String!): TransitionFulfillmentToStateResult!
+    transitionPaymentToState(id: ID!, state: String!): TransitionPaymentToStateResult!
     setOrderCustomFields(input: UpdateOrderInput!): Order
     """
     Allows an Order to be modified after it has been completed by the Customer. The Order must first
@@ -343,6 +344,7 @@ union RefundOrderResult =
     | RefundStateTransitionError
 union SettleRefundResult = Refund | RefundStateTransitionError
 union TransitionFulfillmentToStateResult = Fulfillment | FulfillmentStateTransitionError
+union TransitionPaymentToStateResult = Payment | PaymentStateTransitionError
 union ModifyOrderResult =
       Order
     | NoChangesSpecifiedError
