@@ -37,7 +37,15 @@ export const orderStateTransitions: Transitions<OrderState> = {
         to: ['PaymentSettled', 'Cancelled', 'Modifying', 'ArrangingAdditionalPayment'],
     },
     PaymentSettled: {
-        to: ['PartiallyDelivered', 'Delivered', 'PartiallyShipped', 'Shipped', 'Cancelled', 'Modifying'],
+        to: [
+            'PartiallyDelivered',
+            'Delivered',
+            'PartiallyShipped',
+            'Shipped',
+            'Cancelled',
+            'Modifying',
+            'ArrangingAdditionalPayment',
+        ],
     },
     PartiallyShipped: {
         to: ['Shipped', 'PartiallyDelivered', 'Cancelled', 'Modifying'],

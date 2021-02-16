@@ -78,7 +78,7 @@ export class OrderStateMachine {
                 .getRepository(data.ctx, OrderModification)
                 .find({ where: { order: data.order }, relations: ['refund', 'payment'] });
             if (toState === 'ArrangingAdditionalPayment') {
-                if (modifications.every(modification => modification.isSettled)) {
+                if (0 < modifications.length && modifications.every(modification => modification.isSettled)) {
                     return `message.cannot-transition-no-additional-payments-needed`;
                 }
             } else {
