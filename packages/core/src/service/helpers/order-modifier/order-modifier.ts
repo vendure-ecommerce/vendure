@@ -170,7 +170,9 @@ export class OrderModifier {
                 .values(newOrderItems)
                 .execute();
             newOrderItems.forEach((item, i) => (item.id = identifiers[i].id));
-            orderLine.items.push(...newOrderItems);
+            orderLine.items = await this.connection
+                .getRepository(ctx, OrderItem)
+                .find({ where: { line: orderLine } });
         } else if (quantity < currentQuantity) {
             if (order.active) {
                 // When an Order is still active, it is fine to just delete

@@ -1339,6 +1339,7 @@ export class OrderService {
             .getRepository(ctx, OrderItem)
             .createQueryBuilder()
             .insert()
+            .into(OrderItem, [...updateFields, 'id', 'lineId'])
             .values(updatedItems)
             .orUpdate({
                 conflict_target: ['id'],
