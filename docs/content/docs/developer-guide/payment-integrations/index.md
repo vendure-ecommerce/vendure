@@ -140,3 +140,88 @@ If the `createPayment()` function returns a result with the state set to `'Autho
 
 {{< figure src="./payment_sequence_two_step.png" >}}
 
+## Custom Payment Flows
+
+If you need to support an entirely different payment flow than the above, it is also possible to do so by configuring a [CustomPaymentProcess]({{< relref "custom-payment-process" >}}). This allows new Payment states and transitions to be defined, as well as allowing custom logic to run on Payment state transitions.
+
+Here's an example which adds a new "Validating" state to the Payment state machine, and combines it with a [CustomOrderProcess]({{< relref "custom-order-process" >}}), [PaymentMethodHandler]({{< relref "payment-method-handler" >}}) and [OrderPlacedStrategy]({{< relref "order-placed-strategy" >}}).
+
+```TypeScript
+/**
+ * Define a new "Validating" Payment state, and set up the 
+ * permitted transitions to/from it.
+ */
+const customPaymentProcess: CustomPaymentProcess<'Validating'> = {
+  transitions: {
+    Created: {
+      to: ['Validating'],
+      mergeStrategy: 'replace',
+    },
+    Validating: {
+      to: ['Settled', 'Declined', 'Cancelled'],
+    },
+  },
+};
+
+/**
+ * Define a new "ValidatingPayment" Order state, and set up the 
+ * permitted transitions to/from it.
+ */
+const customOrderProcess: CustomOrderProcess<'ValidatingPayment'> = {
+  transitions: {
+    ArrangingPayment: {
+      to: ['ValidatingPayment'],
+      mergeStrategy: 'replace',
+    },
+    ValidatingPayment: {
+      to: ['PaymentAuthorized', 'PaymentSettled', 'ArrangingAdditionalPayment'],
+    },
+  },
+};
+
+/**
+ * This PaymentMethodHandler creates the Payment in the custom "Validating"
+ * state.
+ */
+const myPaymentHandler = new PaymentMethodHandler({
+  code: 'my-payment-handler',
+  description: [{ languageCode: LanguageCode.en, value: 'My payment handler' }],
+  args: {},
+  createPayment: (ctx, order, amount, args, metadata) => {
+    // payment provider logic omitted
+    return {
+      state: 'Validating' as any,
+      amount,
+      metadata,
+    };
+  },
+  settlePayment: (ctx, order, payment) => {
+    return {
+      success: true,
+    };
+  },
+});
+
+/**
+ * This OrderPlacedStrategy tells Vendure to set the Order as "placed"
+ * when it transitions to the custom "ValidatingPayment" state.
+ */
+class MyOrderPlacedStrategy implements OrderPlacedStrategy {
+  shouldSetAsPlaced(ctx: RequestContext, fromState: OrderState, toState: OrderState): boolean | Promise<boolean> {
+    return fromState === 'ArrangingPayment' && toState === ('ValidatingPayment' as any);
+  }
+}
+
+// Combine the above in the VendureConfig
+export const config: VendureConfig = {
+  // ...
+  orderOptions: {
+    process: [customOrderProcess],
+    orderPlacedStrategy: new MyOrderPlacedStrategy(),
+  },
+  paymentOptions: {
+    customPaymentProcess: [customPaymentProcess],
+    paymentMethodHandlers: [myPaymentHandler],
+  },
+};
+```
