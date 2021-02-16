@@ -104,7 +104,7 @@ export class Populator {
                     .map(name =>
                         allFacetValues.find(fv => {
                             let facetName;
-                            let valueName;
+                            let valueName = name;
                             if (name.includes(':')) {
                                 [facetName, valueName] = name.split(':');
                                 return (
