@@ -153,14 +153,14 @@ export class OrderStateMachine {
      */
     private async onTransitionEnd(fromState: OrderState, toState: OrderState, data: OrderTransitionData) {
         const { ctx, order } = data;
-        const { stockAllocationStrategy } = this.configService.orderOptions;
-        if (
-            fromState === 'ArrangingPayment' &&
-            (toState === 'PaymentAuthorized' || toState === 'PaymentSettled')
-        ) {
-            order.active = false;
-            order.orderPlacedAt = new Date();
-            await this.promotionService.addPromotionsToOrder(ctx, order);
+        const { stockAllocationStrategy, orderPlacedStrategy } = this.configService.orderOptions;
+        if (order.active) {
+            const shouldSetAsPlaced = orderPlacedStrategy.shouldSetAsPlaced(ctx, fromState, toState, order);
+            if (shouldSetAsPlaced) {
+                order.active = false;
+                order.orderPlacedAt = new Date();
+                await this.promotionService.addPromotionsToOrder(ctx, order);
+            }
         }
         const shouldAllocateStock = await stockAllocationStrategy.shouldAllocateStock(
             ctx,

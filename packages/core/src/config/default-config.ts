@@ -19,6 +19,7 @@ import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handl
 import { DefaultLogger } from './logger/default-logger';
 import { DefaultChangedPriceHandlingStrategy } from './order/default-changed-price-handling-strategy';
 import { DefaultOrderItemPriceCalculationStrategy } from './order/default-order-item-price-calculation-strategy';
+import { DefaultOrderPlacedStrategy } from './order/default-order-placed-strategy';
 import { DefaultStockAllocationStrategy } from './order/default-stock-allocation-strategy';
 import { MergeOrdersStrategy } from './order/merge-orders-strategy';
 import { DefaultOrderCodeStrategy } from './order/order-code-strategy';
@@ -115,6 +116,7 @@ export const defaultConfig: RuntimeVendureConfig = {
         stockAllocationStrategy: new DefaultStockAllocationStrategy(),
         orderCodeStrategy: new DefaultOrderCodeStrategy(),
         changedPriceHandlingStrategy: new DefaultChangedPriceHandlingStrategy(),
+        orderPlacedStrategy: new DefaultOrderPlacedStrategy(),
     },
     paymentOptions: {
         paymentMethodEligibilityCheckers: [],

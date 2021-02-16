@@ -13,7 +13,7 @@ import { OrderState } from '../../service/helpers/order-state-machine/order-stat
 export interface StockAllocationStrategy extends InjectableStrategy {
     /**
      * @description
-     * This method is called whenever and Order transitions from one state to another.
+     * This method is called whenever an Order transitions from one state to another.
      * If it resolves to `true`, then stock will be allocated for this order.
      */
     shouldAllocateStock(

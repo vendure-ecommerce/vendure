@@ -25,6 +25,7 @@ import { CustomOrderProcess } from './order/custom-order-process';
 import { OrderCodeStrategy } from './order/order-code-strategy';
 import { OrderItemPriceCalculationStrategy } from './order/order-item-price-calculation-strategy';
 import { OrderMergeStrategy } from './order/order-merge-strategy';
+import { OrderPlacedStrategy } from './order/order-placed-strategy';
 import { StockAllocationStrategy } from './order/stock-allocation-strategy';
 import { CustomPaymentProcess } from './payment/custom-payment-process';
 import { PaymentMethodEligibilityChecker } from './payment/payment-method-eligibility-checker';
@@ -446,6 +447,13 @@ export interface OrderOptions {
      * @default DefaultChangedPriceHandlingStrategy
      */
     changedPriceHandlingStrategy?: ChangedPriceHandlingStrategy;
+    /**
+     * @description
+     * Defines the point of the order process at which the Order is set as "placed".
+     *
+     * @default DefaultOrderPlacedStrategy
+     */
+    orderPlacedStrategy?: OrderPlacedStrategy;
 }
 
 /**
