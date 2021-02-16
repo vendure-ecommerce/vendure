@@ -439,8 +439,8 @@ export const UPDATE_ASSET = gql`
 `;
 
 export const DELETE_ASSETS = gql`
-    mutation DeleteAssets($ids: [ID!]!, $force: Boolean) {
-        deleteAssets(ids: $ids, force: $force) {
+    mutation DeleteAssets($input: DeleteAssetsInput!) {
+        deleteAssets(input: $input) {
             result
             message
         }

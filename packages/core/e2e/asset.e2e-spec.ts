@@ -3,13 +3,11 @@ import { omit } from '@vendure/common/lib/omit';
 import { pick } from '@vendure/common/lib/pick';
 import { mergeConfig } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
-import gql from 'graphql-tag';
 import path from 'path';
 
 import { initialData } from '../../../e2e-common/e2e-initial-data';
 import { testConfig, TEST_SETUP_TIMEOUT_MS } from '../../../e2e-common/test-config';
 
-import { ASSET_FRAGMENT } from './graphql/fragments';
 import {
     AssetFragment,
     CreateAssets,
@@ -24,7 +22,10 @@ import {
     UpdateAsset,
 } from './graphql/generated-e2e-admin-types';
 import {
+    CREATE_ASSETS,
     DELETE_ASSET,
+    GET_ASSET,
+    GET_ASSET_FRAGMENT_FIRST,
     GET_ASSET_LIST,
     GET_PRODUCT_WITH_VARIANTS,
     UPDATE_ASSET,
@@ -440,7 +441,9 @@ describe('Asset resolver', () => {
             const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
                 DELETE_ASSET,
                 {
-                    id: createdAssetId,
+                    input: {
+                        assetId: createdAssetId,
+                    },
                 },
             );
 
@@ -456,7 +459,9 @@ describe('Asset resolver', () => {
             const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
                 DELETE_ASSET,
                 {
-                    id: firstProduct.featuredAsset!.id,
+                    input: {
+                        assetId: firstProduct.featuredAsset!.id,
+                    },
                 },
             );
 
@@ -481,8 +486,10 @@ describe('Asset resolver', () => {
             const { deleteAsset } = await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(
                 DELETE_ASSET,
                 {
-                    id: firstProduct.featuredAsset!.id,
-                    force: true,
+                    input: {
+                        assetId: firstProduct.featuredAsset!.id,
+                        force: true,
+                    },
                 },
             );
 
@@ -504,51 +511,3 @@ describe('Asset resolver', () => {
         });
     });
 });
-
-export const GET_ASSET = gql`
-    query GetAsset($id: ID!) {
-        asset(id: $id) {
-            ...Asset
-            width
-            height
-        }
-    }
-    ${ASSET_FRAGMENT}
-`;
-
-export const GET_ASSET_FRAGMENT_FIRST = gql`
-    fragment AssetFragFirst on Asset {
-        id
-        preview
-    }
-
-    query GetAssetFragmentFirst($id: ID!) {
-        asset(id: $id) {
-            ...AssetFragFirst
-        }
-    }
-`;
-
-export const CREATE_ASSETS = gql`
-    mutation CreateAssets($input: [CreateAssetInput!]!) {
-        createAssets(input: $input) {
-            ...Asset
-            ... on Asset {
-                focalPoint {
-                    x
-                    y
-                }
-                tags {
-                    id
-                    value
-                }
-            }
-            ... on MimeTypeError {
-                message
-                fileName
-                mimeType
-            }
-        }
-    }
-    ${ASSET_FRAGMENT}
-`;

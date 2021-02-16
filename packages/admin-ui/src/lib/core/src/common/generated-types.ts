@@ -325,6 +325,8 @@ export type Mutation = {
   addNoteToOrder: Order;
   /** Add an OptionGroup to a Product */
   addOptionGroupToProduct: Product;
+  /** Assign assets to channel */
+  assignAssetsToChannel: Array<Asset>;
   /** Assigns ProductVariants to the specified Channel */
   assignProductVariantsToChannel: Array<ProductVariant>;
   /** Assigns all ProductVariants of Product to the specified Channel */
@@ -547,6 +549,11 @@ export type MutationAddOptionGroupToProductArgs = {
 };
 
 
+export type MutationAssignAssetsToChannelArgs = {
+  input: AssignAssetsToChannelInput;
+};
+
+
 export type MutationAssignProductVariantsToChannelArgs = {
   input: AssignProductVariantsToChannelInput;
 };
@@ -697,14 +704,12 @@ export type MutationDeleteAdministratorArgs = {
 
 
 export type MutationDeleteAssetArgs = {
-  id: Scalars['ID'];
-  force?: Maybe<Scalars['Boolean']>;
+  input: DeleteAssetInput;
 };
 
 
 export type MutationDeleteAssetsArgs = {
-  ids: Array<Scalars['ID']>;
-  force?: Maybe<Scalars['Boolean']>;
+  input: DeleteAssetsInput;
 };
 
 
@@ -1144,11 +1149,28 @@ export type CoordinateInput = {
   y: Scalars['Float'];
 };
 
+export type DeleteAssetInput = {
+  assetId: Scalars['ID'];
+  force?: Maybe<Scalars['Boolean']>;
+  deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
+export type DeleteAssetsInput = {
+  assetIds: Array<Scalars['ID']>;
+  force?: Maybe<Scalars['Boolean']>;
+  deleteFromAllChannels?: Maybe<Scalars['Boolean']>;
+};
+
 export type UpdateAssetInput = {
   id: Scalars['ID'];
   name?: Maybe<Scalars['String']>;
   focalPoint?: Maybe<CoordinateInput>;
   tags?: Maybe<Array<Scalars['String']>>;
+};
+
+export type AssignAssetsToChannelInput = {
+  assetIds: Array<Scalars['ID']>;
+  channelId: Scalars['ID'];
 };
 
 export type NativeAuthenticationResult = CurrentUser | InvalidCredentialsError | NativeAuthStrategyError;
@@ -6423,8 +6445,7 @@ export type UpdateAssetMutation = { updateAsset: (
   ) };
 
 export type DeleteAssetsMutationVariables = Exact<{
-  ids: Array<Scalars['ID']>;
-  force?: Maybe<Scalars['Boolean']>;
+  input: DeleteAssetsInput;
 }>;
 
 

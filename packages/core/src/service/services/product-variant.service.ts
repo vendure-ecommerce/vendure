@@ -520,7 +520,7 @@ export class ProductVariantService {
         }
         const variants = await this.connection
             .getRepository(ctx, ProductVariant)
-            .findByIds(input.productVariantIds, { relations: ['taxCategory'] });
+            .findByIds(input.productVariantIds, { relations: ['taxCategory', 'assets'] });
         const priceFactor = input.priceFactor != null ? input.priceFactor : 1;
         for (const variant of variants) {
             this.applyChannelPriceAndTax(variant, ctx);
@@ -532,6 +532,8 @@ export class ProductVariantService {
                 variant.price * priceFactor,
                 input.channelId,
             );
+            const assetIds = variant.assets?.map(a => a.assetId) || [];
+            await this.assetService.assignToChannel(ctx, { channelId: input.channelId, assetIds });
         }
         const result = await this.findByIds(
             ctx,

@@ -348,8 +348,10 @@ export class ProductDataService {
 
     deleteAssets(ids: string[], force: boolean) {
         return this.baseDataService.mutate<DeleteAssets.Mutation, DeleteAssets.Variables>(DELETE_ASSETS, {
-            ids,
-            force,
+            input: {
+                assetIds: ids,
+                force,
+            },
         });
     }
 

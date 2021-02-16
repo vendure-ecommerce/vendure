@@ -390,8 +390,8 @@ export const UPDATE_ASSET = gql`
 `;
 
 export const DELETE_ASSET = gql`
-    mutation DeleteAsset($id: ID!, $force: Boolean) {
-        deleteAsset(id: $id, force: $force) {
+    mutation DeleteAsset($input: DeleteAssetInput!) {
+        deleteAsset(input: $input) {
             result
             message
         }
@@ -822,4 +822,52 @@ export const UPDATE_SHIPPING_METHOD = gql`
         }
     }
     ${SHIPPING_METHOD_FRAGMENT}
+`;
+
+export const GET_ASSET = gql`
+    query GetAsset($id: ID!) {
+        asset(id: $id) {
+            ...Asset
+            width
+            height
+        }
+    }
+    ${ASSET_FRAGMENT}
+`;
+
+export const GET_ASSET_FRAGMENT_FIRST = gql`
+    fragment AssetFragFirst on Asset {
+        id
+        preview
+    }
+
+    query GetAssetFragmentFirst($id: ID!) {
+        asset(id: $id) {
+            ...AssetFragFirst
+        }
+    }
+`;
+
+export const CREATE_ASSETS = gql`
+    mutation CreateAssets($input: [CreateAssetInput!]!) {
+        createAssets(input: $input) {
+            ...Asset
+            ... on Asset {
+                focalPoint {
+                    x
+                    y
+                }
+                tags {
+                    id
+                    value
+                }
+            }
+            ... on MimeTypeError {
+                message
+                fileName
+                mimeType
+            }
+        }
+    }
+    ${ASSET_FRAGMENT}
 `;

@@ -769,8 +769,10 @@ describe('Default search plugin', () => {
                     expect(assetId).toBeTruthy();
 
                     await adminClient.query<DeleteAsset.Mutation, DeleteAsset.Variables>(DELETE_ASSET, {
-                        id: assetId!,
-                        force: true,
+                        input: {
+                            assetId: assetId!,
+                            force: true,
+                        },
                     });
 
                     await awaitRunningJobs(adminClient);
