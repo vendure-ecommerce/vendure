@@ -16,13 +16,13 @@ import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { unique } from '@vendure/common/lib/unique';
 
 import { RequestContext } from '../../api/common/request-context';
+import { getAllPermissionsMetadata } from '../../common/constants';
 import {
     EntityNotFoundError,
     ForbiddenError,
     InternalServerError,
     UserInputError,
 } from '../../common/error/errors';
-import { getAllPermissionsMetadata } from '../../common/permission-definition';
 import { ListQueryOptions } from '../../common/types/common-types';
 import { assertFound, idsAreEqual } from '../../common/utils';
 import { ConfigService } from '../../config/config.service';

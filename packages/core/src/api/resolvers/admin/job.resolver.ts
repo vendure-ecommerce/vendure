@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import {
+    JobQueue,
     MutationCancelJobArgs,
     MutationRemoveSettledJobsArgs,
     Permission,
@@ -8,46 +9,78 @@ import {
     QueryJobsByIdArgs,
 } from '@vendure/common/lib/generated-types';
 
-import { JobQueueService } from '../../../job-queue/job-queue.service';
+import { ConfigService, InspectableJobQueueStrategy, isInspectableJobQueueStrategy } from '../../../config';
+import { JobQueueService } from '../../../job-queue';
 import { Allow } from '../../decorators/allow.decorator';
 
 @Resolver()
 export class JobResolver {
-    constructor(private jobService: JobQueueService) {}
+    constructor(private configService: ConfigService, private jobService: JobQueueService) {}
 
     @Query()
     @Allow(Permission.ReadSettings)
-    job(@Args() args: QueryJobArgs) {
-        return this.jobService.getJob(args.jobId);
+    async job(@Args() args: QueryJobArgs) {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return;
+        }
+        return strategy.findOne(args.jobId);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    jobs(@Args() args: QueryJobsArgs) {
-        return this.jobService.getJobs(args.options || undefined);
+    async jobs(@Args() args: QueryJobsArgs) {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return {
+                items: [],
+                totalItems: 0,
+            };
+        }
+        return strategy.findMany(args.options || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    jobsById(@Args() args: QueryJobsByIdArgs) {
-        return this.jobService.getJobsById(args.jobIds || undefined);
+    async jobsById(@Args() args: QueryJobsByIdArgs) {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return [];
+        }
+        return strategy.findManyById(args.jobIds || undefined);
     }
 
     @Query()
     @Allow(Permission.ReadSettings)
-    jobQueues() {
+    jobQueues(): JobQueue[] {
         return this.jobService.getJobQueues();
     }
 
     @Mutation()
     @Allow(Permission.DeleteSettings)
-    removeSettledJobs(@Args() args: MutationRemoveSettledJobsArgs) {
-        return this.jobService.removeSettledJobs(args.queueNames || [], args.olderThan);
+    async removeSettledJobs(@Args() args: MutationRemoveSettledJobsArgs) {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return 0;
+        }
+        return strategy.removeSettledJobs(args.queueNames || [], args.olderThan);
     }
 
     @Mutation()
     @Allow(Permission.DeleteSettings)
-    cancelJob(@Args() args: MutationCancelJobArgs) {
-        return this.jobService.cancelJob(args.jobId);
+    async cancelJob(@Args() args: MutationCancelJobArgs) {
+        const strategy = this.requireInspectableJobQueueStrategy();
+        if (!strategy) {
+            return;
+        }
+        return strategy.cancelJob(args.jobId);
+    }
+
+    private requireInspectableJobQueueStrategy(): InspectableJobQueueStrategy | undefined {
+        if (!isInspectableJobQueueStrategy(this.configService.jobQueueOptions.jobQueueStrategy)) {
+            return;
+        }
+
+        return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 }

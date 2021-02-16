@@ -1,3 +1,4 @@
+import { OnApplicationBootstrap } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import {
     createProxyHandler,
@@ -172,7 +173,7 @@ import {
     workers: [EmailProcessorController],
     configuration: config => EmailPlugin.configure(config),
 })
-export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
+export class EmailPlugin implements OnApplicationBootstrap, OnVendureBootstrap, OnVendureClose {
     private static options: EmailPluginOptions | EmailPluginDevModeOptions;
     private devMailbox: DevMailbox | undefined;
     private jobQueue: JobQueue<IntermediateEmailDetails> | undefined;
@@ -207,7 +208,7 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
     }
 
     /** @internal */
-    async onVendureBootstrap(): Promise<void> {
+    async onVendureBootstrap() {
         const options = EmailPlugin.options;
 
         if (isDevModeOptions(options) && options.mailboxPort !== undefined) {
@@ -215,9 +216,13 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
             this.devMailbox.serve(options);
             this.devMailbox.handleMockEvent((handler, event) => this.handleEvent(handler, event));
         }
+    }
+
+    /** @internal */
+    async onApplicationBootstrap(): Promise<void> {
+        const options = EmailPlugin.options;
 
         await this.setupEventSubscribers();
-
         if (!isDevModeOptions(options) && options.transport.type === 'testing') {
             // When running tests, we don't want to go through the JobQueue system,
             // so we just call the email sending logic directly.
@@ -226,11 +231,12 @@ export class EmailPlugin implements OnVendureBootstrap, OnVendureClose {
         } else {
             this.jobQueue = this.jobQueueService.createQueue({
                 name: 'send-email',
-                concurrency: 5,
                 process: job => {
-                    this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
-                        complete: () => job.complete(),
-                        error: err => job.fail(err),
+                    return new Promise((resolve, reject) => {
+                        this.workerService.send(new EmailWorkerMessage(job.data)).subscribe({
+                            complete: () => resolve(),
+                            error: err => reject(err),
+                        });
                     });
                 },
             });

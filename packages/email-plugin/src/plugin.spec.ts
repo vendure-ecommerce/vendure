@@ -60,7 +60,7 @@ describe('EmailPlugin', () => {
 
         const plugin = module.get(EmailPlugin);
         eventBus = module.get(EventBus);
-        await plugin.onVendureBootstrap();
+        await plugin.onApplicationBootstrap();
         return module;
     }
 

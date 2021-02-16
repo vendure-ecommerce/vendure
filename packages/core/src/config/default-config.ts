@@ -139,7 +139,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     },
     jobQueueOptions: {
         jobQueueStrategy: new InMemoryJobQueueStrategy(),
-        pollInterval: 200,
+        activeQueues: [],
     },
     customFields: {
         Address: [],

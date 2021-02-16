@@ -731,12 +731,11 @@ export interface JobQueueOptions {
     jobQueueStrategy?: JobQueueStrategy;
     /**
      * @description
-     * Defines the interval in ms used by the {@link JobQueueService} to poll for new
-     * jobs in the queue to process.
-     *
-     * @default 200
+     * Defines the queues that will run in this process.
+     * This can be used to configure only certain queues to run in this process.
+     * If its empty all queues will be run
      */
-    pollInterval?: number;
+    activeQueues?: string[];
 }
 
 /**

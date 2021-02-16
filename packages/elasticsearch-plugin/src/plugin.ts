@@ -1,4 +1,5 @@
 import { NodeOptions } from '@elastic/elasticsearch';
+import { OnApplicationBootstrap } from '@nestjs/common';
 import {
     AssetEvent,
     CollectionModificationEvent,
@@ -7,7 +8,6 @@ import {
     ID,
     idsAreEqual,
     Logger,
-    OnVendureBootstrap,
     PluginCommonModule,
     ProductChannelEvent,
     ProductEvent,
@@ -215,7 +215,7 @@ import { ElasticsearchOptions, ElasticsearchRuntimeOptions, mergeWithDefaults } 
     },
     workers: [ElasticsearchIndexerController],
 })
-export class ElasticsearchPlugin implements OnVendureBootstrap {
+export class ElasticsearchPlugin implements OnApplicationBootstrap {
     private static options: ElasticsearchRuntimeOptions;
 
     /** @internal */
@@ -236,7 +236,7 @@ export class ElasticsearchPlugin implements OnVendureBootstrap {
     }
 
     /** @internal */
-    async onVendureBootstrap(): Promise<void> {
+    async onApplicationBootstrap(): Promise<void> {
         const { host, port } = ElasticsearchPlugin.options;
         const nodeName = this.nodeName();
         try {

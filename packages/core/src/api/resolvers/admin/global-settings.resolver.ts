@@ -19,10 +19,10 @@ import {
     TypeNode,
 } from 'graphql';
 
+import { getAllPermissionsMetadata } from '../../../common/constants';
 import { ErrorResultUnion } from '../../../common/error/error-result';
 import { UserInputError } from '../../../common/error/errors';
 import { ChannelDefaultLanguageError } from '../../../common/error/generated-graphql-admin-errors';
-import { getAllPermissionsMetadata } from '../../../common/permission-definition';
 import { ConfigService } from '../../../config/config.service';
 import {
     CustomFieldConfig,

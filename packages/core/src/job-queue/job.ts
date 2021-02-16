@@ -1,5 +1,4 @@
 import { JobState } from '@vendure/common/lib/generated-types';
-import { ID } from '@vendure/common/lib/shared-types';
 import { isClassInstance, isObject } from '@vendure/common/lib/shared-utils';
 
 import { JobConfig, JobData } from './types';
@@ -11,7 +10,7 @@ import { JobConfig, JobData } from './types';
  * @docsCategory JobQueue
  * @docsPage Job
  */
-export type JobEventType = 'start' | 'progress' | 'complete' | 'fail' | 'cancel';
+export type JobEventType = 'progress';
 
 /**
  * @description
@@ -34,7 +33,7 @@ export type JobEventListener<T extends JobData<T>> = (job: Job<T>) => void;
  * @docsWeight 0
  */
 export class Job<T extends JobData<T> = any> {
-    readonly id: ID | null;
+    readonly id: number | string | null;
     readonly queueName: string;
     readonly retries: number;
     readonly createdAt: Date;
@@ -47,11 +46,7 @@ export class Job<T extends JobData<T> = any> {
     private _startedAt?: Date;
     private _settledAt?: Date;
     private readonly eventListeners: { [type in JobEventType]: Array<JobEventListener<T>> } = {
-        start: [],
         progress: [],
-        complete: [],
-        fail: [],
-        cancel: [],
     };
 
     get name(): string {
@@ -124,7 +119,6 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.RUNNING;
             this._startedAt = new Date();
             this._attempts++;
-            this.fireEvent('start');
         }
     }
 
@@ -147,7 +141,6 @@ export class Job<T extends JobData<T> = any> {
         this._progress = 100;
         this._state = JobState.COMPLETED;
         this._settledAt = new Date();
-        this.fireEvent('complete');
     }
 
     /**
@@ -163,14 +156,12 @@ export class Job<T extends JobData<T> = any> {
             this._state = JobState.FAILED;
             this._settledAt = new Date();
         }
-        this.fireEvent('fail');
     }
 
     cancel() {
         this._progress = 0;
         this._settledAt = new Date();
         this._state = JobState.CANCELLED;
-        this.fireEvent('cancel');
     }
 
     /**
@@ -191,6 +182,13 @@ export class Job<T extends JobData<T> = any> {
      */
     on(eventType: JobEventType, listener: JobEventListener<T>) {
         this.eventListeners[eventType].push(listener);
+    }
+
+    off(eventType: JobEventType, listener: JobEventListener<T>) {
+        const idx = this.eventListeners[eventType].indexOf(listener);
+        if (idx !== -1) {
+            this.eventListeners[eventType].splice(idx, 1);
+        }
     }
 
     private fireEvent(eventType: JobEventType) {

@@ -1,6 +1,7 @@
 import { Controller, Get, OnModuleInit } from '@nestjs/common';
 import { JobQueue, JobQueueService, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Controller('run-job')
 class TestController implements OnModuleInit {
@@ -11,22 +12,20 @@ class TestController implements OnModuleInit {
     onModuleInit(): any {
         this.queue = this.jobQueueService.createQueue({
             name: 'test',
-            concurrency: 1,
             process: job => {
-                PluginWithJobQueue.jobSubject.subscribe({
-                    next: () => {
+                return PluginWithJobQueue.jobSubject
+                    .pipe(take(1))
+                    .toPromise()
+                    .then(() => {
                         PluginWithJobQueue.jobHasDoneWork = true;
-                        job.complete();
-                    },
-                    error: err => job.fail(err),
-                });
+                    });
             },
         });
     }
 
     @Get()
-    runJob() {
-        this.queue.add({});
+    async runJob() {
+        await this.queue.add({});
         return true;
     }
 }

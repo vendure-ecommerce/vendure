@@ -41,49 +41,37 @@ export class SearchIndexService {
     initJobQueue() {
         updateIndexQueue = this.jobService.createQueue({
             name: 'update-search-index',
-            concurrency: 1,
             process: job => {
                 const data = job.data;
                 switch (data.type) {
                     case 'reindex':
                         Logger.verbose(`sending ReindexMessage`);
-                        this.sendMessageWithProgress(job, new ReindexMessage(data));
-                        break;
+                        return this.sendMessageWithProgress(job, new ReindexMessage(data));
                     case 'update-product':
-                        this.sendMessage(job, new UpdateProductMessage(data));
-                        break;
+                        return this.sendMessage(job, new UpdateProductMessage(data));
                     case 'update-variants':
-                        this.sendMessage(job, new UpdateVariantMessage(data));
-                        break;
+                        return this.sendMessage(job, new UpdateVariantMessage(data));
                     case 'delete-product':
-                        this.sendMessage(job, new DeleteProductMessage(data));
-                        break;
+                        return this.sendMessage(job, new DeleteProductMessage(data));
                     case 'delete-variant':
-                        this.sendMessage(job, new DeleteVariantMessage(data));
-                        break;
+                        return this.sendMessage(job, new DeleteVariantMessage(data));
                     case 'update-variants-by-id':
-                        this.sendMessageWithProgress(job, new UpdateVariantsByIdMessage(data));
-                        break;
+                        return this.sendMessageWithProgress(job, new UpdateVariantsByIdMessage(data));
                     case 'update-asset':
-                        this.sendMessage(job, new UpdateAssetMessage(data));
-                        break;
+                        return this.sendMessage(job, new UpdateAssetMessage(data));
                     case 'delete-asset':
-                        this.sendMessage(job, new DeleteAssetMessage(data));
-                        break;
+                        return this.sendMessage(job, new DeleteAssetMessage(data));
                     case 'assign-product-to-channel':
-                        this.sendMessage(job, new AssignProductToChannelMessage(data));
-                        break;
+                        return this.sendMessage(job, new AssignProductToChannelMessage(data));
                     case 'remove-product-from-channel':
-                        this.sendMessage(job, new RemoveProductFromChannelMessage(data));
-                        break;
+                        return this.sendMessage(job, new RemoveProductFromChannelMessage(data));
                     case 'assign-variant-to-channel':
-                        this.sendMessage(job, new AssignVariantToChannelMessage(data));
-                        break;
+                        return this.sendMessage(job, new AssignVariantToChannelMessage(data));
                     case 'remove-variant-from-channel':
-                        this.sendMessage(job, new RemoveVariantFromChannelMessage(data));
-                        break;
+                        return this.sendMessage(job, new RemoveVariantFromChannelMessage(data));
                     default:
                         assertNever(data);
+                        return Promise.resolve();
                 }
             },
         });
@@ -165,41 +153,45 @@ export class SearchIndexService {
         }
     }
 
-    private sendMessage(job: Job<any>, message: WorkerMessage<any, any>) {
-        this.workerService.send(message).subscribe({
-            complete: () => job.complete(true),
-            error: err => {
-                Logger.error(err);
-                job.fail(err);
-            },
+    private sendMessage(job: Job<any>, message: WorkerMessage<any, any>): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.workerService.send(message).subscribe({
+                complete: () => resolve(),
+                error: err => {
+                    Logger.error(err);
+                    reject(err);
+                },
+            });
         });
     }
 
-    private sendMessageWithProgress(job: Job<any>, message: ReindexMessage | UpdateVariantsByIdMessage) {
-        let total: number | undefined;
-        let duration = 0;
-        let completed = 0;
-        this.workerService.send(message).subscribe({
-            next: (response: ReindexMessageResponse) => {
-                if (!total) {
-                    total = response.total;
-                }
-                duration = response.duration;
-                completed = response.completed;
-                const progress = total === 0 ? 100 : Math.ceil((completed / total) * 100);
-                job.setProgress(progress);
-            },
-            complete: () => {
-                job.complete({
-                    success: true,
-                    indexedItemCount: total,
-                    timeTaken: duration,
-                });
-            },
-            error: (err: any) => {
-                Logger.error(JSON.stringify(err));
-                job.fail();
-            },
+    private sendMessageWithProgress(job: Job<any>, message: ReindexMessage | UpdateVariantsByIdMessage): Promise<any> {
+        return new Promise((resolve, reject) => {
+            let total: number | undefined;
+            let duration = 0;
+            let completed = 0;
+            this.workerService.send(message).subscribe({
+                next: (response: ReindexMessageResponse) => {
+                    if (!total) {
+                        total = response.total;
+                    }
+                    duration = response.duration;
+                    completed = response.completed;
+                    const progress = total === 0 ? 100 : Math.ceil((completed / total) * 100);
+                    job.setProgress(progress);
+                },
+                complete: () => {
+                    resolve({
+                        success: true,
+                        indexedItemCount: total,
+                        timeTaken: duration,
+                    });
+                },
+                error: (err: any) => {
+                    Logger.error(JSON.stringify(err));
+                    reject(err);
+                },
+            });
         });
     }
 }

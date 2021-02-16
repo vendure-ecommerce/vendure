@@ -1,0 +1,29 @@
+{
+  "name": "@vendure/pub-sub-plugin",
+  "version": "0.18.2",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
+  "scripts": {
+    "watch": "tsc -p ./tsconfig.build.json --watch",
+    "build": "rimraf lib && tsc -p ./tsconfig.build.json",
+    "lint": "tslint --fix --project ./",
+    "test": "jest --config ./jest.config.js",
+    "ci": "yarn build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^2.8.0"
+  },
+  "devDependencies": {
+    "@vendure/common": "^0.18.1",
+    "@vendure/core": "^0.18.2",
+    "rimraf": "^3.0.2",
+    "typescript": "4.0.3"
+  }
+}

@@ -1,13 +1,9 @@
-import { Injectable, OnApplicationBootstrap, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { JobListOptions, JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
-import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
+import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
+import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
 
-import { ConfigService } from '../config/config.service';
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
-import { Logger } from '../config/logger/vendure-logger';
-import { ProcessContext } from '../process-context/process-context';
+import { ConfigService, JobQueueStrategy } from '../config';
+import { ProcessContext } from '../process-context';
 
-import { Job } from './job';
 import { JobQueue } from './job-queue';
 import { CreateQueueOptions, JobData } from './types';
 
@@ -27,14 +23,8 @@ import { CreateQueueOptions, JobData } from './types';
  *     // The JobQueue is created on initialization
  *     this.jobQueue = this.jobQueueService.createQueue({
  *       name: 'transcode-video',
- *       concurrency: 5,
  *       process: async job => {
- *         try {
- *           const result = await this.transcodeVideo(job.data.videoId);
- *           job.complete(result);
- *         } catch (e) {
- *           job.fail(e);
- *         }
+ *         return await this.transcodeVideo(job.data.videoId);
  *       },
  *     });
  *   }
@@ -43,7 +33,7 @@ import { CreateQueueOptions, JobData } from './types';
  *     this.jobQueue.add({ videoId, })
  *   }
  *
- *   private transcodeVideo(videoId: string) {
+ *   private async transcodeVideo(videoId: string) {
  *     // e.g. call some external transcoding service
  *   }
  *
@@ -54,7 +44,6 @@ import { CreateQueueOptions, JobData } from './types';
  */
 @Injectable()
 export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy {
-    private cleanJobsTimer: NodeJS.Timeout;
     private queues: Array<JobQueue<any>> = [];
     private hasInitialized = false;
 
@@ -66,25 +55,17 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
 
     /** @internal */
     async onApplicationBootstrap() {
-        if (this.processContext.isServer) {
-            const { pollInterval } = this.configService.jobQueueOptions;
-            if (pollInterval < 100) {
-                Logger.warn(
-                    `jobQueueOptions.pollInterval is set to ${pollInterval}ms. It is not recommended to set this lower than 100ms`,
-                );
-            }
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            this.hasInitialized = true;
-            for (const queue of this.queues) {
-                if (!queue.started) {
-                    queue.start();
-                }
+        this.hasInitialized = true;
+        for (const queue of this.queues) {
+            if (!queue.started && this.shouldStartQueue(queue.name)) {
+                queue.start();
             }
         }
     }
 
     /** @internal */
     onModuleDestroy() {
+        this.hasInitialized = false;
         return Promise.all(this.queues.map(q => q.destroy()));
     }
 
@@ -93,40 +74,13 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
      * Configures and creates a new {@link JobQueue} instance.
      */
     createQueue<Data extends JobData<Data>>(options: CreateQueueOptions<Data>): JobQueue<Data> {
-        const { jobQueueStrategy, pollInterval } = this.configService.jobQueueOptions;
-        const queue = new JobQueue(options, jobQueueStrategy, pollInterval);
-        if (this.processContext.isServer && this.hasInitialized) {
+        const { jobQueueStrategy } = this.configService.jobQueueOptions;
+        const queue = new JobQueue(options, jobQueueStrategy);
+        if (this.hasInitialized && this.shouldStartQueue(queue.name)) {
             queue.start();
         }
         this.queues.push(queue);
         return queue;
-    }
-
-    /**
-     * @description
-     * Gets a job by id. The implementation is handled by the configured
-     * {@link JobQueueStrategy}.
-     */
-    getJob(id: ID): Promise<Job | undefined> {
-        return this.jobQueueStrategy.findOne(id);
-    }
-
-    /**
-     * @description
-     * Gets jobs according to the supplied options. The implementation is handled by the configured
-     * {@link JobQueueStrategy}.
-     */
-    getJobs(options?: JobListOptions): Promise<PaginatedList<Job>> {
-        return this.jobQueueStrategy.findMany(options);
-    }
-
-    /**
-     * @description
-     * Gets jobs by ids. The implementation is handled by the configured
-     * {@link JobQueueStrategy}.
-     */
-    getJobsById(ids: ID[]): Promise<Job[]> {
-        return this.jobQueueStrategy.findManyById(ids);
     }
 
     /**
@@ -141,21 +95,17 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
         }));
     }
 
-    /**
-     * @description
-     * Removes settled jobs (completed or failed). The implementation is handled by the configured
-     * {@link JobQueueStrategy}.
-     */
-    removeSettledJobs(queueNames: string[], olderThan?: Date) {
-        return this.jobQueueStrategy.removeSettledJobs(queueNames, olderThan);
-    }
-
-    async cancelJob(jobId: ID) {
-        const job = await this.jobQueueStrategy.findOne(jobId);
-        if (job) {
-            job.cancel();
-            await this.jobQueueStrategy.update(job);
-            return job;
+    private shouldStartQueue(queueName: string): boolean {
+        if (this.processContext.isServer) {
+            return false;
         }
+
+        if (this.configService.jobQueueOptions.activeQueues.length > 0) {
+            if (!this.configService.jobQueueOptions.activeQueues.includes(queueName)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

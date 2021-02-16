@@ -1,10 +1,14 @@
 /* tslint:disable:no-non-null-assertion */
+import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject } from 'rxjs';
+import { take } from 'rxjs/operators';
 
+import { Injector } from '../common';
 import { ConfigService } from '../config/config.service';
-import { ProcessContext, ServerProcessContext } from '../process-context/process-context';
+import { ProcessContext, WorkerProcessContext } from '../process-context/process-context';
 
 import { Job } from './job';
 import { JobQueueService } from './job-queue.service';
@@ -20,7 +24,7 @@ describe('JobQueueService', () => {
         module = await Test.createTestingModule({
             providers: [
                 { provide: ConfigService, useClass: MockConfigService },
-                { provide: ProcessContext, useClass: ServerProcessContext },
+                { provide: ProcessContext, useClass: WorkerProcessContext },
                 JobQueueService,
             ],
         }).compile();
@@ -33,29 +37,27 @@ describe('JobQueueService', () => {
         await module.close();
     });
 
-    it('data is passed into job', (cb) => {
+    it('data is passed into job', async () => {
+        const subject = new Subject<string>();
+        const subNext = subject.pipe(take(1)).toPromise();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                job.complete();
-                expect(job.data).toBe('hello');
-                cb();
+            process: async job => {
+                subject.next(job.data);
             },
         });
 
-        testQueue.add('hello');
+        await testQueue.add('hello');
+        const data = await subNext;
+        expect(data).toBe('hello');
     });
 
     it('job marked as complete', async () => {
-        const subject = new Subject();
+        const subject = new Subject<string>();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                subject.subscribe(() => {
-                    job.complete('yay');
-                });
+            process: job => {
+                return subject.toPromise();
             },
         });
 
@@ -65,22 +67,22 @@ describe('JobQueueService', () => {
         await tick(queuePollInterval);
         expect(testJob.state).toBe(JobState.RUNNING);
 
-        subject.next();
+        subject.next('yay');
+        subject.complete();
+
+        await tick();
+
         expect(testJob.state).toBe(JobState.COMPLETED);
         expect(testJob.result).toBe('yay');
-
-        subject.complete();
     });
 
-    it('job marked as failed when .fail() called', async () => {
+    it('job marked as failed when exception thrown', async () => {
         const subject = new Subject();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                subject.subscribe(() => {
-                    job.fail('uh oh');
-                });
+            process: async job => {
+                const result = await subject.toPromise();
+                throw result;
             },
         });
 
@@ -90,41 +92,19 @@ describe('JobQueueService', () => {
         await tick(queuePollInterval);
         expect(testJob.state).toBe(JobState.RUNNING);
 
-        subject.next();
+        subject.next('uh oh');
+        subject.complete();
+        await tick();
+
         expect(testJob.state).toBe(JobState.FAILED);
         expect(testJob.error).toBe('uh oh');
-
-        subject.complete();
-    });
-
-    it('job marked as failed when sync error thrown', async () => {
-        const subject = new Subject();
-        const err = new Error('something bad happened');
-        const testQueue = jobQueueService.createQueue<string>({
-            name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                throw err;
-            },
-        });
-
-        const testJob = await testQueue.add('hello');
-        expect(testJob.state).toBe(JobState.PENDING);
-
-        await tick(queuePollInterval);
-        expect(testJob.state).toBe(JobState.FAILED);
-        expect(testJob.error).toBe(err.message);
-
-        subject.complete();
     });
 
     it('job marked as failed when async error thrown', async () => {
-        const subject = new Subject();
         const err = new Error('something bad happened');
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: async (job) => {
+            process: async job => {
                 throw err;
             },
         });
@@ -135,19 +115,14 @@ describe('JobQueueService', () => {
         await tick(queuePollInterval);
         expect(testJob.state).toBe(JobState.FAILED);
         expect(testJob.error).toBe(err.message);
-
-        subject.complete();
     });
 
     it('jobs processed in FIFO queue', async () => {
         const subject = new Subject();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                subject.subscribe(() => {
-                    job.complete();
-                });
+            process: job => {
+                return subject.pipe(take(1)).toPromise();
             },
         });
 
@@ -162,32 +137,37 @@ describe('JobQueueService', () => {
         expect(getStates()).toEqual([JobState.RUNNING, JobState.PENDING, JobState.PENDING]);
 
         subject.next();
+        await tick();
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.PENDING, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.RUNNING, JobState.PENDING]);
 
         subject.next();
+        await tick();
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
         subject.next();
+        await tick();
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 
         subject.complete();
     });
 
     it('with concurrency', async () => {
+        const testingJobQueueStrategy = module.get(ConfigService).jobQueueOptions
+            .jobQueueStrategy as TestingJobQueueStrategy;
+
+        testingJobQueueStrategy.concurrency = 2;
+
         const subject = new Subject();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 2,
-            process: (job) => {
-                subject.subscribe(() => {
-                    job.complete();
-                });
+            process: job => {
+                return subject.pipe(take(1)).toPromise();
             },
         });
 
@@ -202,12 +182,14 @@ describe('JobQueueService', () => {
         expect(getStates()).toEqual([JobState.RUNNING, JobState.RUNNING, JobState.PENDING]);
 
         subject.next();
+        await tick();
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.PENDING]);
 
         await tick(queuePollInterval);
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.RUNNING]);
 
         subject.next();
+        await tick();
         expect(getStates()).toEqual([JobState.COMPLETED, JobState.COMPLETED, JobState.COMPLETED]);
 
         subject.complete();
@@ -217,7 +199,7 @@ describe('JobQueueService', () => {
         const testingJobQueueStrategy = module.get(ConfigService).jobQueueOptions
             .jobQueueStrategy as TestingJobQueueStrategy;
 
-        testingJobQueueStrategy.prePopulate([
+        await testingJobQueueStrategy.prePopulate([
             new Job<any>({
                 queueName: 'test',
                 data: {},
@@ -232,14 +214,15 @@ describe('JobQueueService', () => {
 
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                job.complete();
+            process: async job => {
+                return;
             },
         });
 
-        const job1 = await jobQueueService.getJob('job-1');
-        const job2 = await jobQueueService.getJob('job-2');
+        await tick();
+
+        const job1 = await testingJobQueueStrategy.findOne('job-1');
+        const job2 = await testingJobQueueStrategy.findOne('job-2');
         expect(job1?.state).toBe(JobState.COMPLETED);
         expect(job2?.state).toBe(JobState.PENDING);
 
@@ -251,9 +234,15 @@ describe('JobQueueService', () => {
         const subject = new Subject<boolean>();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                subject.subscribe((success) => (success ? job.complete() : job.fail()));
+            process: job => {
+                return subject
+                    .pipe(take(1))
+                    .toPromise()
+                    .then(success => {
+                        if (!success) {
+                            throw new Error();
+                        }
+                    });
             },
         });
 
@@ -264,27 +253,32 @@ describe('JobQueueService', () => {
         expect(testJob.isSettled).toBe(false);
 
         subject.next(false);
+        await tick();
         expect(testJob.state).toBe(JobState.RETRYING);
         expect(testJob.isSettled).toBe(false);
 
         await tick(queuePollInterval);
         subject.next(false);
+        await tick();
         expect(testJob.state).toBe(JobState.RETRYING);
         expect(testJob.isSettled).toBe(false);
 
         await tick(queuePollInterval);
         subject.next(false);
+        await tick();
         expect(testJob.state).toBe(JobState.FAILED);
         expect(testJob.isSettled).toBe(true);
     });
 
     it('sets long-running jobs to pending on destroy', async () => {
+        const testingJobQueueStrategy = module.get(ConfigService).jobQueueOptions
+            .jobQueueStrategy as TestingJobQueueStrategy;
+
         const subject = new Subject<boolean>();
         const testQueue = jobQueueService.createQueue<string>({
             name: 'test',
-            concurrency: 1,
-            process: (job) => {
-                subject.subscribe((success) => (success ? job.complete() : job.fail()));
+            process: job => {
+                return subject.pipe(take(1)).toPromise();
             },
         });
 
@@ -292,21 +286,87 @@ describe('JobQueueService', () => {
 
         await tick(queuePollInterval);
 
-        expect((await jobQueueService.getJob(testJob.id!))?.state).toBe(JobState.RUNNING);
+        expect((await testingJobQueueStrategy.findOne(testJob.id!))?.state).toBe(JobState.RUNNING);
 
         await testQueue.destroy();
 
-        expect((await jobQueueService.getJob(testJob.id!))?.state).toBe(JobState.PENDING);
+        expect((await testingJobQueueStrategy.findOne(testJob.id!))?.state).toBe(JobState.PENDING);
     }, 10000);
+
+    it('should start a queue if its name is in the active list', async () => {
+        module.get(ConfigService).jobQueueOptions.activeQueues = ['test'];
+
+        const subject = new Subject();
+        const testQueue = jobQueueService.createQueue<string>({
+            name: 'test',
+            process: job => {
+                return subject.toPromise();
+            },
+        });
+
+        const testJob = await testQueue.add('hello');
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        await tick(queuePollInterval);
+        expect(testJob.state).toBe(JobState.RUNNING);
+
+        subject.next('yay');
+        subject.complete();
+        await tick();
+
+        expect(testJob.state).toBe(JobState.COMPLETED);
+        expect(testJob.result).toBe('yay');
+    });
+
+    it('should not start a queue if its name is in the active list', async () => {
+        module.get(ConfigService).jobQueueOptions.activeQueues = ['another'];
+
+        const subject = new Subject();
+        const testQueue = jobQueueService.createQueue<string>({
+            name: 'test',
+            process: job => {
+                return subject.toPromise();
+            },
+        });
+
+        const testJob = await testQueue.add('hello');
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        await tick(queuePollInterval);
+        expect(testJob.state).toBe(JobState.PENDING);
+
+        subject.next('yay');
+        subject.complete();
+
+        expect(testJob.state).toBe(JobState.PENDING);
+    });
 });
 
-function tick(ms: number): Promise<void> {
-    return new Promise<void>((resolve) => setTimeout(resolve, ms));
+function tick(ms: number = 0): Promise<void> {
+    return new Promise<void>(resolve => {
+        if (ms > 0) {
+            setTimeout(resolve, ms);
+        } else {
+            process.nextTick(resolve);
+        }
+    });
 }
 
-class MockConfigService {
+@Injectable()
+class MockConfigService implements OnApplicationBootstrap, OnModuleDestroy {
+    constructor(private moduleRef: ModuleRef) {}
+
     jobQueueOptions = {
-        jobQueueStrategy: new TestingJobQueueStrategy(),
-        pollInterval: queuePollInterval,
+        jobQueueStrategy: new TestingJobQueueStrategy(1, queuePollInterval),
+        activeQueues: [],
     };
+
+    async onApplicationBootstrap() {
+        const injector = new Injector(this.moduleRef);
+        await this.jobQueueOptions.jobQueueStrategy.init(injector);
+    }
+
+    async onModuleDestroy() {
+        await this.jobQueueOptions.jobQueueStrategy.destroy();
+    }
 }

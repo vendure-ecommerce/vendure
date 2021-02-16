@@ -10,11 +10,12 @@ import {
 import { ID, PaginatedList } from '@vendure/common/lib/shared-types';
 import { notNullOrUndefined } from '@vendure/common/lib/shared-utils';
 
-import { generatePublicId } from '../common/generate-public-id';
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
-import { Logger } from '../config/logger/vendure-logger';
+import { Injector } from '../common';
+import { InspectableJobQueueStrategy } from '../config';
 
 import { Job } from './job';
+import { PollingJobQueueStrategy } from './polling-job-queue-strategy';
+import { JobData } from './types';
 
 /**
  * @description
@@ -25,21 +26,23 @@ import { Job } from './job';
  *
  * @docsCategory JobQueue
  */
-export class InMemoryJobQueueStrategy implements JobQueueStrategy {
+export class InMemoryJobQueueStrategy extends PollingJobQueueStrategy implements InspectableJobQueueStrategy {
     protected jobs = new Map<ID, Job>();
     protected unsettledJobs: { [queueName: string]: Job[] } = {};
     private timer: any;
     private evictJobsAfterMs = 1000 * 60 * 60 * 2; // 2 hours
 
-    init() {
+    init(injector: Injector) {
+        super.init(injector);
         this.timer = setTimeout(this.evictSettledJobs, this.evictJobsAfterMs);
     }
 
     destroy() {
+        super.destroy();
         clearTimeout(this.timer);
     }
 
-    async add(job: Job): Promise<Job> {
+    async add<Data extends JobData<Data> = {}>(job: Job<Data>): Promise<Job<Data>> {
         if (!job.id) {
             (job as any).id = Math.floor(Math.random() * 1000000000)
                 .toString()

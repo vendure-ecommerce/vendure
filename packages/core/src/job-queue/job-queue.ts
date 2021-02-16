@@ -2,7 +2,7 @@ import { JobState } from '@vendure/common/lib/generated-types';
 import { Subject, Subscription } from 'rxjs';
 import { throttleTime } from 'rxjs/operators';
 
-import { JobQueueStrategy } from '../config/job-queue/job-queue-strategy';
+import { JobQueueStrategy } from '../config';
 import { Logger } from '../config/logger/vendure-logger';
 
 import { Job } from './job';
@@ -21,16 +21,7 @@ import { CreateQueueOptions, JobConfig, JobData } from './types';
  * @docsCategory JobQueue
  */
 export class JobQueue<Data extends JobData<Data> = {}> {
-    private activeJobs: Array<Job<Data>> = [];
-    private timer: any;
-    private fooId: number;
     private running = false;
-    private errorNotifier$ = new Subject<[string, string]>();
-    private subscription: Subscription;
-
-    get concurrency(): number {
-        return this.options.concurrency;
-    }
 
     get name(): string {
         return this.options.name;
@@ -40,94 +31,34 @@ export class JobQueue<Data extends JobData<Data> = {}> {
         return this.running;
     }
 
-    constructor(
-        private options: CreateQueueOptions<Data>,
-        private jobQueueStrategy: JobQueueStrategy,
-        private pollInterval: number,
-    ) {
-        this.subscription = this.errorNotifier$.pipe(throttleTime(3000)).subscribe(([message, stack]) => {
-            Logger.error(message);
-            Logger.debug(stack);
-        });
-    }
+    constructor(private options: CreateQueueOptions<Data>, private jobQueueStrategy: JobQueueStrategy) {}
 
     /** @internal */
     start() {
         if (this.running) {
             return;
         }
-        Logger.debug(`Starting JobQueue "${this.options.name}"`);
         this.running = true;
-        const concurrency = this.options.concurrency;
-        const runNextJobs = async () => {
-            try {
-                const runningJobsCount = this.activeJobs.length;
-                for (let i = runningJobsCount; i < concurrency; i++) {
-                    const nextJob: Job<Data> | undefined = await this.jobQueueStrategy.next(
-                        this.options.name,
-                    );
-                    if (nextJob) {
-                        this.activeJobs.push(nextJob);
-                        await this.jobQueueStrategy.update(nextJob);
-                        nextJob.on('complete', job => this.onFailOrComplete(job));
-                        nextJob.on('progress', job => this.jobQueueStrategy.update(job));
-                        nextJob.on('fail', job => this.onFailOrComplete(job));
-                        try {
-                            const returnVal = this.options.process(nextJob);
-                            if (returnVal instanceof Promise) {
-                                returnVal.catch(err => nextJob.fail(err));
-                            }
-                        } catch (err) {
-                            nextJob.fail(err);
-                        }
-                    }
-                }
-            } catch (e) {
-                this.errorNotifier$.next([
-                    `Job queue "${this.options.name}" encountered an error (set log level to Debug for trace): ${e.message}`,
-                    e.stack,
-                ]);
-            }
-            if (this.running) {
-                this.timer = setTimeout(runNextJobs, this.pollInterval);
-            }
-        };
-
-        runNextJobs();
+        this.jobQueueStrategy.start<Data>(this.options.name, this.options.process);
     }
 
     /** @internal */
     pause() {
         Logger.debug(`Pausing JobQueue "${this.options.name}"`);
+        if (!this.running) {
+            return;
+        }
         this.running = false;
-        clearTimeout(this.timer);
+        this.jobQueueStrategy.stop(this.options.name, this.options.process);
     }
 
     /** @internal */
     async destroy(): Promise<void> {
+        if (!this.running) {
+            return;
+        }
         this.running = false;
-        clearTimeout(this.timer);
-        const start = +new Date();
-        // Wait for 2 seconds to allow running jobs to complete
-        const maxTimeout = 2000;
-        return new Promise(resolve => {
-            const pollActiveJobs = async () => {
-                const timedOut = +new Date() - start > maxTimeout;
-                if (this.activeJobs.length === 0 || timedOut) {
-                    // if there are any incomplete jobs after the 2 second
-                    // wait period, set them back to "pending" so they can
-                    // be re-run on next bootstrap.
-                    for (const job of this.activeJobs) {
-                        job.defer();
-                        await this.jobQueueStrategy.update(job);
-                    }
-                    resolve();
-                } else {
-                    setTimeout(pollActiveJobs, 50);
-                }
-            };
-            pollActiveJobs();
-        });
+        return this.jobQueueStrategy.stop(this.options.name, this.options.process);
     }
 
     /**
@@ -141,15 +72,5 @@ export class JobQueue<Data extends JobData<Data> = {}> {
             retries: options?.retries ?? 0,
         });
         return this.jobQueueStrategy.add(job);
-    }
-
-    private async onFailOrComplete(job: Job<Data>) {
-        await this.jobQueueStrategy.update(job);
-        this.removeJobFromActive(job);
-    }
-
-    private removeJobFromActive(job: Job<Data>) {
-        const index = this.activeJobs.indexOf(job);
-        this.activeJobs.splice(index, 1);
     }
 }

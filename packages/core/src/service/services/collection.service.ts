@@ -75,7 +75,7 @@ export class CollectionService implements OnModuleInit {
             .pipe(debounceTime(50))
             .subscribe(async event => {
                 const collections = await this.connection.getRepository(Collection).find();
-                this.applyFiltersQueue.add({
+                await this.applyFiltersQueue.add({
                     ctx: event.ctx.serialize(),
                     collectionIds: collections.map(c => c.id),
                 });
@@ -83,12 +83,11 @@ export class CollectionService implements OnModuleInit {
 
         this.applyFiltersQueue = this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
-            concurrency: 1,
             process: async job => {
                 const collections = await this.connection
                     .getRepository(Collection)
                     .findByIds(job.data.collectionIds);
-                this.applyCollectionFilters(job.data.ctx, collections, job);
+                return this.applyCollectionFilters(job.data.ctx, collections, job);
             },
         });
     }
@@ -300,7 +299,7 @@ export class CollectionService implements OnModuleInit {
         });
         await this.assetService.updateEntityAssets(ctx, collection, input);
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
-        this.applyFiltersQueue.add({
+        await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [collection.id],
         });
@@ -324,7 +323,7 @@ export class CollectionService implements OnModuleInit {
         });
         await this.customFieldRelationService.updateRelations(ctx, Collection, input, collection);
         if (input.filters) {
-            this.applyFiltersQueue.add({
+            await this.applyFiltersQueue.add({
                 ctx: ctx.serialize(),
                 collectionIds: [collection.id],
             });
@@ -374,7 +373,7 @@ export class CollectionService implements OnModuleInit {
         siblings = moveToIndex(input.index, target, siblings);
 
         await this.connection.getRepository(ctx, Collection).save(siblings);
-        this.applyFiltersQueue.add({
+        await this.applyFiltersQueue.add({
             ctx: ctx.serialize(),
             collectionIds: [target.id],
         });
@@ -404,24 +403,26 @@ export class CollectionService implements OnModuleInit {
         const collectionIds = collections.map(c => c.id);
         const requestContext = RequestContext.deserialize(ctx);
 
-        this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
-            next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
-                const progress = Math.ceil((completed / total) * 100);
-                const collection = collections.find(c => idsAreEqual(c.id, collectionId));
-                if (collection) {
-                    this.eventBus.publish(
-                        new CollectionModificationEvent(requestContext, collection, affectedVariantIds),
-                    );
-                }
-                job.setProgress(progress);
-            },
-            complete: () => {
-                job.complete();
-            },
-            error: err => {
-                Logger.error(err);
-                job.fail(err);
-            },
+        return new Promise<void>((resolve, reject) => {
+            this.workerService.send(new ApplyCollectionFiltersMessage({ collectionIds })).subscribe({
+                next: ({ total, completed, duration, collectionId, affectedVariantIds }) => {
+                    const progress = Math.ceil((completed / total) * 100);
+                    const collection = collections.find(c => idsAreEqual(c.id, collectionId));
+                    if (collection) {
+                        this.eventBus.publish(
+                            new CollectionModificationEvent(requestContext, collection, affectedVariantIds),
+                        );
+                    }
+                    job.setProgress(progress);
+                },
+                complete: () => {
+                    resolve();
+                },
+                error: err => {
+                    Logger.error(err);
+                    reject(err);
+                },
+            });
         });
     }
 
