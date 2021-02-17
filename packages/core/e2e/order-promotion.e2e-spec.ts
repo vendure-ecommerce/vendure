@@ -53,6 +53,7 @@ import {
     GetActiveOrder,
     GetOrderPromotionsByCode,
     RemoveCouponCode,
+    RemoveItemFromOrder,
     SetCustomerForOrder,
     SetShippingMethod,
     TestOrderFragmentFragment,
@@ -76,6 +77,7 @@ import {
     GET_ACTIVE_ORDER,
     GET_ORDER_PROMOTIONS_BY_CODE,
     REMOVE_COUPON_CODE,
+    REMOVE_ITEM_FROM_ORDER,
     SET_CUSTOMER,
     SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
@@ -1385,6 +1387,54 @@ describe('Promotions applied to Orders', () => {
                 expect(activeOrder!.couponCodes).toEqual([]);
             });
         });
+    });
+
+    // https://github.com/vendure-ecommerce/vendure/issues/710
+    it('removes order-level discount made invalid by removing OrderLine', async () => {
+        const promotion = await createPromotion({
+            enabled: true,
+            name: 'Test Promo',
+            conditions: [minOrderAmountCondition(10000)],
+            actions: [
+                {
+                    code: orderFixedDiscount.code,
+                    arguments: [{ name: 'discount', value: '1000' }],
+                },
+            ],
+        });
+
+        await shopClient.asAnonymousUser();
+        await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+            productVariantId: getVariantBySlug('item-1000').id,
+            quantity: 8,
+        });
+        const { addItemToOrder } = await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(
+            ADD_ITEM_TO_ORDER,
+            {
+                productVariantId: getVariantBySlug('item-5000').id,
+                quantity: 1,
+            },
+        );
+        orderResultGuard.assertSuccess(addItemToOrder);
+        expect(addItemToOrder!.discounts.length).toBe(1);
+        expect(addItemToOrder!.discounts[0].description).toBe('Test Promo');
+
+        const { activeOrder: check1 } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+        expect(check1!.discounts.length).toBe(1);
+        expect(check1!.discounts[0].description).toBe('Test Promo');
+
+        const { removeOrderLine } = await shopClient.query<
+            RemoveItemFromOrder.Mutation,
+            RemoveItemFromOrder.Variables
+        >(REMOVE_ITEM_FROM_ORDER, {
+            orderLineId: addItemToOrder.lines[1].id,
+        });
+
+        orderResultGuard.assertSuccess(removeOrderLine);
+        expect(removeOrderLine.discounts.length).toBe(0);
+
+        const { activeOrder: check2 } = await shopClient.query<GetActiveOrder.Query>(GET_ACTIVE_ORDER);
+        expect(check2!.discounts.length).toBe(0);
     });
 
     async function getProducts() {

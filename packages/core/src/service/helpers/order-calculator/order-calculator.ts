@@ -265,7 +265,20 @@ export class OrderCalculator {
         promotions: Promotion[],
     ): Promise<OrderItem[]> {
         const updatedItems = new Set<OrderItem>();
-        order.lines.forEach(line => line.clearAdjustments(AdjustmentType.DISTRIBUTED_ORDER_PROMOTION));
+        const orderHasDistributedPromotions = !!order.discounts.find(
+            adjustment => adjustment.type === AdjustmentType.DISTRIBUTED_ORDER_PROMOTION,
+        );
+        if (orderHasDistributedPromotions) {
+            // If the Order currently has any Order-level discounts applied, we need to
+            // mark all OrderItems in the Order as "updated", since one or more of those
+            // Order-level discounts may become invalid, which will require _all_ OrderItems
+            // to be saved.
+            order.lines.forEach(line => {
+                line.clearAdjustments(AdjustmentType.DISTRIBUTED_ORDER_PROMOTION);
+                line.items.forEach(item => updatedItems.add(item));
+            });
+        }
+
         this.calculateOrderTotals(order);
         const applicableOrderPromotions = await filterAsync(promotions, p => p.test(ctx, order));
         if (applicableOrderPromotions.length) {
