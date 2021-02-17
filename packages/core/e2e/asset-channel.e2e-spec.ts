@@ -19,6 +19,7 @@ import {
     GetAsset,
     GetProductWithVariants,
     LanguageCode,
+    UpdateProduct,
 } from './graphql/generated-e2e-admin-types';
 import {
     ASSIGN_PRODUCT_TO_CHANNEL,
@@ -27,6 +28,7 @@ import {
     DELETE_ASSET,
     GET_ASSET,
     GET_PRODUCT_WITH_VARIANTS,
+    UPDATE_PRODUCT,
 } from './graphql/shared-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 
@@ -239,6 +241,46 @@ describe('Product related assets', () => {
             id: featuredAssetId,
         });
         expect(asset?.id).toEqual(featuredAssetId);
+    });
+
+    it('Add Product 2 to channel2', async () => {
+        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const { assignProductsToChannel } = await adminClient.query<
+            AssignProductsToChannel.Mutation,
+            AssignProductsToChannel.Variables
+        >(ASSIGN_PRODUCT_TO_CHANNEL, {
+            input: {
+                channelId: channel2Id,
+                productIds: ['T_2'],
+            },
+        });
+        expect(assignProductsToChannel[0].id).toEqual('T_2');
+        expect(assignProductsToChannel[0].channels.map(c => c.id)).toContain(channel2Id);
+    });
+
+    it('Add asset A to Product 2 in default channel', async () => {
+        await adminClient.setChannelToken(E2E_DEFAULT_CHANNEL_TOKEN);
+        const { updateProduct } = await adminClient.query<UpdateProduct.Mutation, UpdateProduct.Variables>(
+            UPDATE_PRODUCT,
+            {
+                input: {
+                    id: 'T_2',
+                    assetIds: ['T_3'],
+                },
+            },
+        );
+        expect(updateProduct.assets.map(a => a.id)).toContain('T_3');
+    });
+
+    it('Channel2 does not have asset A', async () => {
+        await adminClient.setChannelToken(SECOND_CHANNEL_TOKEN);
+        const { product } = await adminClient.query<
+            GetProductWithVariants.Query,
+            GetProductWithVariants.Variables
+        >(GET_PRODUCT_WITH_VARIANTS, {
+            id: 'T_2',
+        });
+        expect(product!.assets.find(a => a.id === 'T_3')).toBeUndefined();
     });
 });
 

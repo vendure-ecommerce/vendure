@@ -134,21 +134,43 @@ export class AssetService {
         ctx: RequestContext,
         entity: T,
     ): Promise<Asset[] | undefined> {
-        let assets = entity.assets;
-        if (!assets) {
+        let orderableAssets = entity.assets;
+        if (!orderableAssets) {
             const entityType: Type<EntityWithAssets> = Object.getPrototypeOf(entity).constructor;
-            const entityWithAssets = await this.connection.findOneInChannel(
-                ctx,
-                entityType,
-                entity.id,
-                ctx.channelId,
-                {
-                    relations: ['assets'],
-                },
-            );
-            assets = (entityWithAssets && entityWithAssets.assets) || [];
+            const entityWithAssets = await this.connection
+                .getRepository(ctx, entityType)
+                .createQueryBuilder('entity')
+                .leftJoinAndSelect('entity.assets', 'orderable_asset')
+                .leftJoinAndSelect('orderable_asset.asset', 'asset')
+                .leftJoinAndSelect('asset.channels', 'asset_channel')
+                .where('entity.id = :id', { id: entity.id })
+                .andWhere('asset_channel.id = :channelId', { channelId: ctx.channelId })
+                .getOne();
+
+            orderableAssets = entityWithAssets?.assets ?? [];
+        } else if (0 < orderableAssets.length) {
+            // the Assets are already loaded, but we need to limit them by Channel
+            if (orderableAssets[0].asset?.channels) {
+                orderableAssets = orderableAssets.filter(
+                    a => !!a.asset.channels.map(c => c.id).find(id => idsAreEqual(id, ctx.channelId)),
+                );
+            } else {
+                const assetsInChannel = await this.connection
+                    .getRepository(ctx, Asset)
+                    .createQueryBuilder('asset')
+                    .leftJoinAndSelect('asset.channels', 'asset_channel')
+                    .where('asset.id IN (:...ids)', { ids: orderableAssets.map(a => a.assetId) })
+                    .andWhere('asset_channel.id = :channelId', { channelId: ctx.channelId })
+                    .getMany();
+
+                orderableAssets = orderableAssets.filter(
+                    oa => !!assetsInChannel.find(a => idsAreEqual(a.id, oa.assetId)),
+                );
+            }
+        } else {
+            orderableAssets = [];
         }
-        return assets.sort((a, b) => a.position - b.position).map(a => a.asset);
+        return orderableAssets.sort((a, b) => a.position - b.position).map(a => a.asset);
     }
 
     async updateFeaturedAsset<T extends EntityWithAssets>(
