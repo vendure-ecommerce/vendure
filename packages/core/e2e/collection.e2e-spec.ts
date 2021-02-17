@@ -54,7 +54,7 @@ import { awaitRunningJobs } from './utils/await-running-jobs';
 import { sortById } from './utils/test-order-utils';
 
 describe('Collection resolver', () => {
-    const { server, adminClient } = createTestEnvironment({
+    const { server, adminClient, shopClient } = createTestEnvironment({
         ...testConfig,
         plugins: [DefaultJobQueuePlugin],
     });
@@ -1363,24 +1363,75 @@ describe('Collection resolver', () => {
         });
     });
 
-    it('collection does not list deleted products', async () => {
-        await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
-            id: 'T_2', // curvy monitor
+    describe('productVariants list', () => {
+        it('does not list variants from deleted products', async () => {
+            await adminClient.query<DeleteProduct.Mutation, DeleteProduct.Variables>(DELETE_PRODUCT, {
+                id: 'T_2', // curvy monitor
+            });
+            const { collection } = await adminClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: pearCollection.id,
+            });
+            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                'Laptop 13 inch 8GB',
+                'Laptop 15 inch 8GB',
+                'Laptop 13 inch 16GB',
+                'Laptop 15 inch 16GB',
+                'Gaming PC i7-8700 240GB SSD',
+                'Instant Camera',
+            ]);
         });
-        const { collection } = await adminClient.query<
-            GetCollectionProducts.Query,
-            GetCollectionProducts.Variables
-        >(GET_COLLECTION_PRODUCT_VARIANTS, {
-            id: pearCollection.id,
+
+        it('does not list disabled variants in Shop API', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [{ id: 'T_1', enabled: false }],
+                },
+            );
+            await awaitRunningJobs(adminClient);
+
+            const { collection } = await shopClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(GET_COLLECTION_PRODUCT_VARIANTS, {
+                id: pearCollection.id,
+            });
+            expect(collection!.productVariants.items.map(i => i.id).includes('T_1')).toBe(false);
         });
-        expect(collection!.productVariants.items.map(i => i.name)).toEqual([
-            'Laptop 13 inch 8GB',
-            'Laptop 15 inch 8GB',
-            'Laptop 13 inch 16GB',
-            'Laptop 15 inch 16GB',
-            'Gaming PC i7-8700 240GB SSD',
-            'Instant Camera',
-        ]);
+
+        it('handles other languages', async () => {
+            await adminClient.query<UpdateProductVariants.Mutation, UpdateProductVariants.Variables>(
+                UPDATE_PRODUCT_VARIANTS,
+                {
+                    input: [
+                        {
+                            id: 'T_2',
+                            translations: [{ languageCode: LanguageCode.de, name: 'Taschenrechner 15 Zoll' }],
+                        },
+                    ],
+                },
+            );
+            const { collection } = await shopClient.query<
+                GetCollectionProducts.Query,
+                GetCollectionProducts.Variables
+            >(
+                GET_COLLECTION_PRODUCT_VARIANTS,
+                {
+                    id: pearCollection.id,
+                },
+                { languageCode: LanguageCode.de },
+            );
+            expect(collection!.productVariants.items.map(i => i.name)).toEqual([
+                'Taschenrechner 15 Zoll',
+                'Laptop 13 inch 16GB',
+                'Laptop 15 inch 16GB',
+                'Gaming PC i7-8700 240GB SSD',
+                'Instant Camera',
+            ]);
+        });
     });
 
     function getFacetValueId(code: string): string {
