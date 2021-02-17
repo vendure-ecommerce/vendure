@@ -1,7 +1,6 @@
 import { LanguageCode } from '@vendure/common/lib/generated-types';
 import { Omit } from '@vendure/common/lib/omit';
-import { JsonCompatible } from '@vendure/common/lib/shared-types';
-import { Injector, RequestContext, VendureEvent, WorkerMessage } from '@vendure/core';
+import { Injector, RequestContext, VendureEvent } from '@vendure/core';
 import { Attachment } from 'nodemailer/lib/mailer';
 
 import { EmailEventHandler } from './event-handler';
@@ -93,11 +92,9 @@ export interface EmailPluginDevModeOptions extends Omit<EmailPluginOptions, 'tra
     outputPath: string;
     /**
      * @description
-     * If set, a "mailbox" server will be started which will serve the contents of the
-     * `outputPath` similar to a web-based email client, available at the route `/mailbox`,
-     * e.g. http://localhost:3000/mailbox.
+     * The route to the dev mailbox server.
      */
-    mailboxPort?: number;
+    route: string;
 }
 
 /**
@@ -390,10 +387,6 @@ export type IntermediateEmailDetails = {
     templateFile: string;
     attachments: SerializedAttachment[];
 };
-
-export class EmailWorkerMessage extends WorkerMessage<IntermediateEmailDetails, boolean> {
-    static readonly pattern = 'send-email';
-}
 
 /**
  * @description

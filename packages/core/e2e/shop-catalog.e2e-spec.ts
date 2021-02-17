@@ -1,5 +1,5 @@
 /* tslint:disable:no-non-null-assertion */
-import { facetValueCollectionFilter } from '@vendure/core';
+import { facetValueCollectionFilter, JobQueueService } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';
 import gql from 'graphql-tag';
 import path from 'path';

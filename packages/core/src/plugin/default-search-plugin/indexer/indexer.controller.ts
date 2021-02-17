@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { FindOptionsUtils } from 'typeorm/find-options/FindOptionsUtils';
 
 import { RequestContext } from '../../../api/common/request-context';
+import { asyncObservable } from '../../../async';
 import { AsyncQueue } from '../../../common/async-queue';
 import { Translatable, Translation } from '../../../common/types/locale-types';
 import { idsAreEqual } from '../../../common/utils';
@@ -16,7 +17,6 @@ import { ProductVariant } from '../../../entity/product-variant/product-variant.
 import { Product } from '../../../entity/product/product.entity';
 import { ProductVariantService } from '../../../service/services/product-variant.service';
 import { TransactionalConnection } from '../../../service/transaction/transactional-connection';
-import { asyncObservable } from '../../../worker/async-observable';
 import { SearchIndexItem } from '../search-index-item.entity';
 import {
     ProductChannelMessageData,

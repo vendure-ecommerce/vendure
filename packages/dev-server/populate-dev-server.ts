@@ -26,9 +26,6 @@ if (require.main === module) {
             importExportOptions: {
                 importAssetsDir: path.join(__dirname, '../core/mock-data/assets'),
             },
-            workerOptions: {
-                runInMainProcess: true,
-            },
             customFields: {},
         }),
     );

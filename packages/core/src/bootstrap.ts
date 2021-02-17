@@ -1,6 +1,5 @@
-import { INestApplication, INestMicroservice } from '@nestjs/common';
+import { INestApplication, INestApplicationContext } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { TcpClientOptions, Transport } from '@nestjs/microservices';
 import { getConnectionToken } from '@nestjs/typeorm';
 import { Type } from '@vendure/common/lib/shared-types';
 import cookieSession = require('cookie-session');
@@ -18,7 +17,6 @@ import { setEntityIdStrategy } from './entity/set-entity-id-strategy';
 import { validateCustomFieldsConfig } from './entity/validate-custom-fields-config';
 import { getConfigurationFunction, getEntitiesFromPlugins } from './plugin/plugin-metadata';
 import { getProxyMiddlewareCliGreetings } from './plugin/plugin-utils';
-import { BeforeVendureBootstrap, BeforeVendureWorkerBootstrap } from './plugin/vendure-plugin';
 
 export type VendureBootstrapFunction = (config: VendureConfig) => Promise<INestApplication>;
 
@@ -54,7 +52,6 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     });
     DefaultLogger.restoreOriginalLogLevel();
     app.useLogger(new Logger());
-    await runBeforeBootstrapHooks(config, app);
     if (config.authOptions.tokenMethod === 'cookie') {
         const { sessionSecret, cookieOptions } = config.authOptions;
         app.use(
@@ -67,24 +64,13 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
     }
     await app.listen(port, hostname || '');
     app.enableShutdownHooks();
-    if (config.workerOptions.runInMainProcess) {
-        try {
-            const worker = await bootstrapWorkerInternal(config);
-            Logger.warn(`Worker is running in main process. This is not recommended for production.`);
-            Logger.warn(`[VendureConfig.workerOptions.runInMainProcess = true]`);
-            closeWorkerOnAppClose(app, worker);
-        } catch (e) {
-            Logger.error(`Could not start the worker process: ${e.message || e}`, 'Vendure Worker');
-        }
-    }
     logWelcomeMessage(config);
     return app;
 }
 
 /**
  * @description
- * Bootstraps the Vendure worker. Read more about the [Vendure Worker]({{< relref "vendure-worker" >}}) or see the worker-specific options
- * defined in {@link WorkerOptions}.
+ * Bootstraps the Vendure . Read more about the [Vendure Worker]({{< relref "vendure-worker" >}})
  *
  * @example
  * ```TypeScript
@@ -97,59 +83,22 @@ export async function bootstrap(userConfig: Partial<VendureConfig>): Promise<INe
  * ```
  * @docsCategory worker
  * */
-export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestMicroservice> {
-    if (userConfig.workerOptions && userConfig.workerOptions.runInMainProcess === true) {
-        Logger.useLogger(userConfig.logger || new DefaultLogger());
-        const errorMessage = `Cannot bootstrap worker when "runInMainProcess" is set to true`;
-        Logger.error(errorMessage, 'Vendure Worker');
-        throw new Error(errorMessage);
-    } else {
-        try {
-            const vendureConfig = await preBootstrapConfig(userConfig);
-            return await bootstrapWorkerInternal(vendureConfig);
-        } catch (e) {
-            Logger.error(`Could not start the worker process: ${e.message}`, 'Vendure Worker');
-            throw e;
-        }
-    }
-}
-
-async function bootstrapWorkerInternal(
-    vendureConfig: Readonly<RuntimeVendureConfig>,
-): Promise<INestMicroservice> {
+export async function bootstrapWorker(userConfig: Partial<VendureConfig>): Promise<INestApplicationContext> {
+    const vendureConfig = await preBootstrapConfig(userConfig);
     const config = disableSynchronize(vendureConfig);
-    if (!config.workerOptions.runInMainProcess && (config.logger as any).setDefaultContext) {
-        (config.logger as any).setDefaultContext('Vendure Worker');
-    }
+    (config.logger as any).setDefaultContext('Vendure Worker');
     Logger.useLogger(config.logger);
     Logger.info(`Bootstrapping Vendure Worker (pid: ${process.pid})...`);
 
-    const workerModule = await import('./worker/worker.module');
+    const appModule = await import('./app.module');
     DefaultLogger.hideNestBoostrapLogs();
-    const workerApp = await NestFactory.createMicroservice(workerModule.WorkerModule, {
-        transport: config.workerOptions.transport,
+    const workerApp = await NestFactory.createApplicationContext(appModule.AppModule, {
         logger: new Logger(),
-        options: config.workerOptions.options,
     });
     DefaultLogger.restoreOriginalLogLevel();
     workerApp.useLogger(new Logger());
     workerApp.enableShutdownHooks();
     await validateDbTablesForWorker(workerApp);
-    await runBeforeWorkerBootstrapHooks(config, workerApp);
-    // A work-around to correctly handle errors when attempting to start the
-    // microservice server listening.
-    // See https://github.com/nestjs/nest/issues/2777
-    // TODO: Remove if & when the above issue is resolved.
-    await new Promise((resolve, reject) => {
-        const tcpServer = (workerApp as any).server.server;
-        if (tcpServer) {
-            tcpServer.on('error', (e: any) => {
-                reject(e);
-            });
-        }
-        workerApp.listenAsync().then(resolve);
-    });
-    workerWelcomeMessage(config);
     return workerApp;
 }
 
@@ -246,62 +195,6 @@ function setExposedHeaders(config: Readonly<RuntimeVendureConfig>) {
     }
 }
 
-export async function runBeforeBootstrapHooks(config: Readonly<RuntimeVendureConfig>, app: INestApplication) {
-    function hasBeforeBootstrapHook(
-        plugin: any,
-    ): plugin is { beforeVendureBootstrap: BeforeVendureBootstrap } {
-        return typeof plugin.beforeVendureBootstrap === 'function';
-    }
-    for (const plugin of config.plugins) {
-        if (hasBeforeBootstrapHook(plugin)) {
-            await plugin.beforeVendureBootstrap(app);
-        }
-    }
-}
-
-export async function runBeforeWorkerBootstrapHooks(
-    config: Readonly<RuntimeVendureConfig>,
-    worker: INestMicroservice,
-) {
-    function hasBeforeBootstrapHook(
-        plugin: any,
-    ): plugin is { beforeVendureWorkerBootstrap: BeforeVendureWorkerBootstrap } {
-        return typeof plugin.beforeVendureWorkerBootstrap === 'function';
-    }
-    for (const plugin of config.plugins) {
-        if (hasBeforeBootstrapHook(plugin)) {
-            await plugin.beforeVendureWorkerBootstrap(worker);
-        }
-    }
-}
-
-/**
- * Monkey-patches the app's .close() method to also close the worker microservice
- * instance too.
- */
-function closeWorkerOnAppClose(app: INestApplication, worker: INestMicroservice) {
-    // A Nest app is a nested Proxy. By getting the prototype we are
-    // able to access and override the actual close() method.
-    const appPrototype = Object.getPrototypeOf(app);
-    const appClose = appPrototype.close.bind(app);
-    appPrototype.close = async () => {
-        return Promise.all([appClose(), worker.close()]);
-    };
-}
-
-function workerWelcomeMessage(config: VendureConfig) {
-    let transportString = '';
-    let connectionString = '';
-    const transport = (config.workerOptions && config.workerOptions.transport) || Transport.TCP;
-    transportString = ` with ${Transport[transport]} transport`;
-    const options = (config.workerOptions as TcpClientOptions).options;
-    if (options) {
-        const { host, port } = options;
-        connectionString = ` at ${host || 'localhost'}:${port}`;
-    }
-    Logger.info(`Vendure Worker started${transportString}${connectionString}`);
-}
-
 function logWelcomeMessage(config: RuntimeVendureConfig) {
     let version: string;
     try {
@@ -351,7 +244,7 @@ function disableSynchronize(userConfig: Readonly<RuntimeVendureConfig>): Readonl
  * before allowing the rest of the worker bootstrap to continue.
  * @param worker
  */
-async function validateDbTablesForWorker(worker: INestMicroservice) {
+async function validateDbTablesForWorker(worker: INestApplicationContext) {
     const connection: Connection = worker.get(getConnectionToken());
     await new Promise(async (resolve, reject) => {
         const checkForTables = async (): Promise<boolean> => {

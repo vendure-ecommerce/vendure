@@ -78,7 +78,6 @@ export const devConfig: VendureConfig = {
         AssetServerPlugin.init({
             route: 'assets',
             assetUploadDir: path.join(__dirname, 'assets'),
-            port: 5002,
         }),
         DefaultSearchPlugin,
         DefaultJobQueuePlugin,
@@ -88,10 +87,10 @@ export const devConfig: VendureConfig = {
         // }),
         EmailPlugin.init({
             devMode: true,
+            route: 'mailbox',
             handlers: defaultEmailHandlers,
             templatePath: path.join(__dirname, '../email-plugin/templates'),
             outputPath: path.join(__dirname, 'test-emails'),
-            mailboxPort: 5003,
             globalTemplateVars: {
                 verifyEmailAddressUrl: 'http://localhost:4201/verify',
                 passwordResetUrl: 'http://localhost:4201/reset-password',
@@ -99,6 +98,7 @@ export const devConfig: VendureConfig = {
             },
         }),
         AdminUiPlugin.init({
+            route: 'admin',
             port: 5001,
         }),
     ],

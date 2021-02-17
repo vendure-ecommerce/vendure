@@ -27,7 +27,7 @@ export interface JobQueueStrategy extends InjectableStrategy {
     start<Data extends JobData<Data> = {}>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
-    ): void;
+    ): Promise<void>;
 
     /**
      * @description

@@ -44,17 +44,9 @@ export interface ImageTransformPreset {
  * @docsCategory AssetServerPlugin
  */
 export interface AssetServerOptions {
-    hostname?: string;
     /**
      * @description
-     * The local port that the server will run on. Note that the AssetServerPlugin
-     * includes a proxy server which allows the asset server to be accessed on the same
-     * port as the main Vendure server.
-     */
-    port: number;
-    /**
-     * @description
-     * The proxy route to the asset server.
+     * The route to the asset server.
      */
     route: string;
     /**

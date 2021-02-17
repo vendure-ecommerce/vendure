@@ -12,15 +12,14 @@ import { EmailPluginDevModeOptions, EventWithContext } from './types';
  * An email inbox application that serves the contents of the dev mode `outputPath` directory.
  */
 export class DevMailbox {
-    server: http.Server;
     private handleMockEventFn: (
         handler: EmailEventHandler<string, any>,
         event: EventWithContext,
     ) => void | undefined;
 
     serve(options: EmailPluginDevModeOptions) {
-        const { outputPath, handlers, mailboxPort } = options;
-        const server = express();
+        const { outputPath, handlers } = options;
+        const server = express.Router();
         server.get('/', (req, res) => {
             res.sendFile(path.join(__dirname, '../../dev-mailbox.html'));
         });
@@ -61,15 +60,12 @@ export class DevMailbox {
             const content = await this.getEmail(outputPath, fileName);
             res.send(content);
         });
-        this.server = server.listen(mailboxPort);
+
+        return server;
     }
 
     handleMockEvent(handler: (handler: EmailEventHandler<string, any>, event: EventWithContext) => void) {
         this.handleMockEventFn = handler;
-    }
-
-    destroy() {
-        this.server.close();
     }
 
     private async getEmailList(outputPath: string) {

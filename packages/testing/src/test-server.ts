@@ -1,11 +1,7 @@
-import { INestApplication, INestMicroservice } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DefaultLogger, Logger, VendureConfig } from '@vendure/core';
-import {
-    preBootstrapConfig,
-    runBeforeBootstrapHooks,
-    runBeforeWorkerBootstrapHooks,
-} from '@vendure/core/dist/bootstrap';
+import { DefaultLogger, JobQueueService, Logger, VendureConfig } from '@vendure/core';
+import { preBootstrapConfig } from '@vendure/core/dist/bootstrap';
 
 import { populateForTesting } from './data-population/populate-for-testing';
 import { getInitializerFor } from './initializers/initializers';
@@ -20,7 +16,6 @@ import { TestServerOptions } from './types';
  */
 export class TestServer {
     public app: INestApplication;
-    public worker?: INestMicroservice;
 
     constructor(private vendureConfig: Required<VendureConfig>) {}
 
@@ -55,16 +50,7 @@ export class TestServer {
      * start and stop a Vendure instance multiple times without re-populating data.
      */
     async bootstrap() {
-        const [app, worker] = await this.bootstrapForTesting(this.vendureConfig);
-        if (app) {
-            this.app = app;
-        } else {
-            console.error(`Could not bootstrap app`);
-            process.exit(1);
-        }
-        if (worker) {
-            this.worker = worker;
-        }
+        this.app = await this.bootstrapForTesting(this.vendureConfig);
     }
 
     /**
@@ -75,9 +61,6 @@ export class TestServer {
     async destroy() {
         // allow a grace period of any outstanding async tasks to complete
         await new Promise(resolve => global.setTimeout(resolve, 500));
-        if (this.worker) {
-            await this.worker.close();
-        }
         await this.app.close();
     }
 
@@ -111,22 +94,17 @@ export class TestServer {
         testingConfig: Required<VendureConfig>,
         options: TestServerOptions,
     ): Promise<void> {
-        const [app, worker] = await populateForTesting(testingConfig, this.bootstrapForTesting, {
+        const app = await populateForTesting(testingConfig, this.bootstrapForTesting, {
             logging: false,
             ...options,
         });
-        if (worker) {
-            await worker.close();
-        }
         await app.close();
     }
 
     /**
      * Bootstraps an instance of the Vendure server for testing against.
      */
-    private async bootstrapForTesting(
-        userConfig: Partial<VendureConfig>,
-    ): Promise<[INestApplication, INestMicroservice | undefined]> {
+    private async bootstrapForTesting(userConfig: Partial<VendureConfig>): Promise<INestApplication> {
         const config = await preBootstrapConfig(userConfig);
         Logger.useLogger(config.logger);
         const appModule = await import('@vendure/core/dist/app.module');
@@ -136,21 +114,10 @@ export class TestServer {
                 cors: config.apiOptions.cors,
                 logger: new Logger(),
             });
-            let worker: INestMicroservice | undefined;
-            await runBeforeBootstrapHooks(config, app);
             await app.listen(config.apiOptions.port);
-            if (config.workerOptions.runInMainProcess) {
-                const workerModule = await import('@vendure/core/dist/worker/worker.module');
-                worker = await NestFactory.createMicroservice(workerModule.WorkerModule, {
-                    transport: config.workerOptions.transport,
-                    logger: new Logger(),
-                    options: config.workerOptions.options,
-                });
-                await runBeforeWorkerBootstrapHooks(config, worker);
-                await worker.listenAsync();
-            }
+            await app.get(JobQueueService).start();
             DefaultLogger.restoreOriginalLogLevel();
-            return [app, worker];
+            return app;
         } catch (e) {
             console.log(e);
             throw e;

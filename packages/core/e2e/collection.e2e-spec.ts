@@ -3,6 +3,7 @@ import { ROOT_COLLECTION_NAME } from '@vendure/common/lib/shared-constants';
 import {
     DefaultJobQueuePlugin,
     facetValueCollectionFilter,
+    JobQueueService,
     variantNameCollectionFilter,
 } from '@vendure/core';
 import { createTestEnvironment } from '@vendure/testing';

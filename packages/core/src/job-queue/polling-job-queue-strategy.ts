@@ -130,10 +130,10 @@ export abstract class PollingJobQueueStrategy extends InjectableJobQueueStrategy
         super();
     }
 
-    start<Data extends JobData<Data> = {}>(
+    async start<Data extends JobData<Data> = {}>(
         queueName: string,
         process: (job: Job<Data>) => Promise<any>,
-    ): void {
+    ) {
         if (!this.hasInitialized) {
             this.started.set(queueName, process);
             return;

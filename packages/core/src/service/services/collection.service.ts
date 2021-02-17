@@ -65,7 +65,7 @@ export class CollectionService implements OnModuleInit {
         private customFieldRelationService: CustomFieldRelationService,
     ) {}
 
-    onModuleInit() {
+    async onModuleInit() {
         const productEvents$ = this.eventBus.ofType(ProductEvent);
         const variantEvents$ = this.eventBus.ofType(ProductVariantEvent);
 
@@ -79,7 +79,7 @@ export class CollectionService implements OnModuleInit {
                 });
             });
 
-        this.applyFiltersQueue = this.jobQueueService.createQueue({
+        this.applyFiltersQueue = await this.jobQueueService.createQueue({
             name: 'apply-collection-filters',
             process: async job => {
                 const ctx = RequestContext.deserialize(job.data.ctx);

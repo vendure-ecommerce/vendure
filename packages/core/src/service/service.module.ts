@@ -163,38 +163,6 @@ export class ServiceModule {
         };
     }
 
-    static forWorker(): DynamicModule {
-        if (!workerTypeOrmModule) {
-            workerTypeOrmModule = TypeOrmModule.forRootAsync({
-                imports: [ConfigModule],
-                useFactory: (configService: ConfigService) => {
-                    const { dbConnectionOptions, workerOptions } = configService;
-                    const logger = ServiceModule.getTypeOrmLogger(dbConnectionOptions);
-                    if (workerOptions.runInMainProcess) {
-                        // When running in the main process, we can re-use the existing
-                        // default connection.
-                        return {
-                            ...dbConnectionOptions,
-                            logger,
-                            name: 'default',
-                            keepConnectionAlive: true,
-                        };
-                    } else {
-                        return {
-                            ...dbConnectionOptions,
-                            logger,
-                        };
-                    }
-                },
-                inject: [ConfigService],
-            });
-        }
-        return {
-            module: ServiceModule,
-            imports: [workerTypeOrmModule, ConfigModule],
-        };
-    }
-
     static forPlugin(): DynamicModule {
         return {
             module: ServiceModule,

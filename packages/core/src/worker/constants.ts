@@ -1,1 +1,0 @@
-export const VENDURE_WORKER_CLIENT = Symbol('VENDURE_WORKER_CLIENT');

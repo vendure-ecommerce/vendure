@@ -25,8 +25,8 @@ export class ElasticsearchIndexService implements OnApplicationBootstrap {
         private indexerController: ElasticsearchIndexerController,
     ) {}
 
-    onApplicationBootstrap() {
-        this.updateIndexQueue = this.jobService.createQueue({
+    async onApplicationBootstrap() {
+        this.updateIndexQueue = await this.jobService.createQueue({
             name: 'update-search-index',
             process: job => {
                 const data = job.data;

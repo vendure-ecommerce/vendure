@@ -687,60 +687,6 @@ export interface ImportExportOptions {
 
 /**
  * @description
- * Options related to the Vendure Worker.
- *
- * @example
- * ```TypeScript
- * import { Transport } from '\@nestjs/microservices';
- *
- * const config: VendureConfig = {
- *     // ...
- *     workerOptions: {
- *         transport: Transport.TCP,
- *         options: {
- *             host: 'localhost',
- *             port: 3001,
- *         },
- *     },
- * }
- * ```
- *
- * @docsCategory worker
- */
-export interface WorkerOptions {
-    /**
-     * @description
-     * If set to `true`, the Worker will run be bootstrapped as part of the main Vendure server (when invoking the
-     * `bootstrap()` function) and will run in the same process. This mode is intended only for development and
-     * testing purposes, not for production, since running the Worker in the main process negates the benefits
-     * of having long-running or expensive tasks run in the background.
-     *
-     * @default false
-     */
-    runInMainProcess?: boolean;
-    /**
-     * @description
-     * Sets the transport protocol used to communicate with the Worker. Options include TCP, Redis, gPRC and more. See the
-     * [NestJS microservices documentation](https://docs.nestjs.com/microservices/basics) for a full list.
-     *
-     * @default Transport.TCP
-     */
-    transport?: Transport;
-    /**
-     * @description
-     * Additional options related to the chosen transport method. See See the
-     * [NestJS microservices documentation](https://docs.nestjs.com/microservices/basics) for details on the options relating to each of the
-     * transport methods.
-     *
-     * By default, the options for the TCP transport will run with the following settings:
-     * * host: 'localhost'
-     * * port: 3020
-     */
-    options?: ClientOptions['options'];
-}
-
-/**
- * @description
  * Options related to the built-in job queue.
  *
  * @docsCategory JobQueue
@@ -878,11 +824,6 @@ export interface VendureConfig {
     taxOptions?: TaxOptions;
     /**
      * @description
-     * Configures the Vendure Worker, which is used for long-running background tasks.
-     */
-    workerOptions?: WorkerOptions;
-    /**
-     * @description
      * Configures how the job queue is persisted and processed.
      */
     jobQueueOptions?: JobQueueOptions;
@@ -905,7 +846,6 @@ export interface RuntimeVendureConfig extends Required<VendureConfig> {
     orderOptions: Required<OrderOptions>;
     promotionOptions: Required<PromotionOptions>;
     shippingOptions: Required<ShippingOptions>;
-    workerOptions: Required<WorkerOptions>;
     taxOptions: Required<TaxOptions>;
 }
 

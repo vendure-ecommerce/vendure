@@ -1,9 +1,9 @@
-import { Injectable, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { JobQueue as GraphQlJobQueue } from '@vendure/common/lib/generated-types';
 
-import { ConfigService, JobQueueStrategy } from '../config';
-import { ProcessContext } from '../process-context';
+import { ConfigService, JobQueueStrategy, Logger } from '../config';
 
+import { loggerCtx } from './constants';
 import { JobQueue } from './job-queue';
 import { CreateQueueOptions, JobData } from './types';
 
@@ -43,44 +43,45 @@ import { CreateQueueOptions, JobData } from './types';
  * @docsCategory JobQueue
  */
 @Injectable()
-export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy {
+export class JobQueueService implements OnModuleDestroy {
     private queues: Array<JobQueue<any>> = [];
-    private hasInitialized = false;
+    private hasStarted = false;
 
     private get jobQueueStrategy(): JobQueueStrategy {
         return this.configService.jobQueueOptions.jobQueueStrategy;
     }
 
-    constructor(private configService: ConfigService, private processContext: ProcessContext) {}
-
-    /** @internal */
-    async onApplicationBootstrap() {
-        this.hasInitialized = true;
-        for (const queue of this.queues) {
-            if (!queue.started && this.shouldStartQueue(queue.name)) {
-                queue.start();
-            }
-        }
-    }
+    constructor(private configService: ConfigService) {}
 
     /** @internal */
     onModuleDestroy() {
-        this.hasInitialized = false;
-        return Promise.all(this.queues.map(q => q.destroy()));
+        this.hasStarted = false;
+        return Promise.all(this.queues.map(q => q.stop()));
     }
 
     /**
      * @description
      * Configures and creates a new {@link JobQueue} instance.
      */
-    createQueue<Data extends JobData<Data>>(options: CreateQueueOptions<Data>): JobQueue<Data> {
-        const { jobQueueStrategy } = this.configService.jobQueueOptions;
-        const queue = new JobQueue(options, jobQueueStrategy);
-        if (this.hasInitialized && this.shouldStartQueue(queue.name)) {
-            queue.start();
+    async createQueue<Data extends JobData<Data>>(
+        options: CreateQueueOptions<Data>,
+    ): Promise<JobQueue<Data>> {
+        const queue = new JobQueue(options, this.jobQueueStrategy);
+        if (this.hasStarted && this.shouldStartQueue(queue.name)) {
+            await queue.start();
         }
         this.queues.push(queue);
         return queue;
+    }
+
+    async start(): Promise<void> {
+        this.hasStarted = true;
+        for (const queue of this.queues) {
+            if (!queue.started && this.shouldStartQueue(queue.name)) {
+                Logger.info(`Starting queue: ${queue.name}`, loggerCtx);
+                await queue.start();
+            }
+        }
     }
 
     /**
@@ -96,10 +97,6 @@ export class JobQueueService implements OnApplicationBootstrap, OnModuleDestroy 
     }
 
     private shouldStartQueue(queueName: string): boolean {
-        if (this.processContext.isServer) {
-            return false;
-        }
-
         if (this.configService.jobQueueOptions.activeQueues.length > 0) {
             if (!this.configService.jobQueueOptions.activeQueues.includes(queueName)) {
                 return false;

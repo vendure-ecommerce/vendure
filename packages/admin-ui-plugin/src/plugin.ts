@@ -1,3 +1,4 @@
+import { MiddlewareConsumer, NestModule, OnApplicationBootstrap, OnModuleDestroy } from '@nestjs/common';
 import { DEFAULT_AUTH_TOKEN_HEADER_KEY } from '@vendure/common/lib/shared-constants';
 import {
     AdminUiAppConfig,
@@ -5,20 +6,9 @@ import {
     AdminUiConfig,
     Type,
 } from '@vendure/common/lib/shared-types';
-import {
-    ConfigService,
-    createProxyHandler,
-    LanguageCode,
-    Logger,
-    OnVendureBootstrap,
-    OnVendureClose,
-    PluginCommonModule,
-    RuntimeVendureConfig,
-    VendurePlugin,
-} from '@vendure/core';
+import { ConfigService, createProxyHandler, Logger, PluginCommonModule, VendurePlugin } from '@vendure/core';
 import express from 'express';
 import fs from 'fs-extra';
-import { Server } from 'http';
 import path from 'path';
 
 import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx } from './constants';
@@ -30,6 +20,11 @@ import { defaultAvailableLanguages, defaultLanguage, DEFAULT_APP_PATH, loggerCtx
  * @docsCategory AdminUiPlugin
  */
 export interface AdminUiPluginOptions {
+    /**
+     * @description
+     * The route to the admin ui.
+     */
+    route: string;
     /**
      * @description
      * The port on which the server will listen. If not
@@ -49,26 +44,6 @@ export interface AdminUiPluginOptions {
      * version, e.g. one pre-compiled with one or more ui extensions.
      */
     app?: AdminUiAppConfig | AdminUiAppDevModeConfig;
-    /**
-     * @description
-     * The hostname of the Vendure server which the admin ui will be making API calls
-     * to. If set to "auto", the admin ui app will determine the hostname from the
-     * current location (i.e. `window.location.hostname`).
-     *
-     * @deprecated Use the adminUiConfig property instead
-     * @default 'auto'
-     */
-    apiHost?: string | 'auto';
-    /**
-     * @description
-     * The port of the Vendure server which the admin ui will be making API calls
-     * to. If set to "auto", the admin ui app will determine the port from the
-     * current location (i.e. `window.location.port`).
-     *
-     * @deprecated Use the adminUiConfig property instead
-     * @default 'auto'
-     */
-    apiPort?: number | 'auto';
     /**
      * @description
      * Allows the contents of the `vendure-ui-config.json` file to be set, e.g.
@@ -109,11 +84,9 @@ export interface AdminUiPluginOptions {
 @VendurePlugin({
     imports: [PluginCommonModule],
     providers: [],
-    configuration: config => AdminUiPlugin.configure(config),
 })
-export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
+export class AdminUiPlugin implements NestModule {
     private static options: AdminUiPluginOptions;
-    private server: Server;
 
     constructor(private configService: ConfigService) {}
 
@@ -126,56 +99,8 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         return AdminUiPlugin;
     }
 
-    /** @internal */
-    static async configure(config: RuntimeVendureConfig): Promise<RuntimeVendureConfig> {
-        const route = 'admin';
-        const { app } = this.options;
-        const appWatchMode = this.isDevModeApp(app);
-        let port: number;
-        if (this.isDevModeApp(app)) {
-            port = app.port;
-        } else {
-            port = this.options.port;
-        }
-        config.apiOptions.middleware.push({
-            handler: createProxyHandler({
-                hostname: this.options.hostname,
-                port,
-                route: 'admin',
-                label: 'Admin UI',
-                basePath: appWatchMode ? 'admin' : undefined,
-            }),
-            route,
-        });
-        if (this.isDevModeApp(app)) {
-            config.apiOptions.middleware.push({
-                handler: createProxyHandler({
-                    hostname: this.options.hostname,
-                    port,
-                    route: 'sockjs-node',
-                    label: 'Admin UI live reload',
-                    basePath: 'sockjs-node',
-                }),
-                route: 'sockjs-node',
-            });
-        }
-        return config;
-    }
-
-    /** @internal */
-    async onVendureBootstrap() {
-        const { apiHost, apiPort, port, app, adminUiConfig } = AdminUiPlugin.options;
-        // TODO: Remove in next minor version (0.11.0)
-        if (apiHost || apiPort) {
-            Logger.warn(
-                `The "apiHost" and "apiPort" options are deprecated and will be removed in a future version.`,
-                loggerCtx,
-            );
-            Logger.warn(
-                `Use the "adminUiConfig.apiHost", "adminUiConfig.apiPort" properties instead.`,
-                loggerCtx,
-            );
-        }
+    async configure(consumer: MiddlewareConsumer) {
+        const { app, hostname, port, route, adminUiConfig } = AdminUiPlugin.options;
         const adminUiAppPath = AdminUiPlugin.isDevModeApp(app)
             ? path.join(app.sourcePath, 'src')
             : (app && app.path) || DEFAULT_APP_PATH;
@@ -186,14 +111,45 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             return this.overwriteAdminUiConfig(adminUiConfigPath, uiConfig);
         };
 
-        if (!AdminUiPlugin.isDevModeApp(app)) {
-            // If not in dev mode, start a static server for the compiled app
-            const adminUiServer = express();
-            adminUiServer.use(express.static(adminUiAppPath));
-            adminUiServer.use((req, res) => {
-                res.sendFile(path.join(adminUiAppPath, 'index.html'));
-            });
-            this.server = adminUiServer.listen(AdminUiPlugin.options.port);
+        if (AdminUiPlugin.isDevModeApp(app)) {
+            Logger.info('Creating admin ui middleware (dev mode)', loggerCtx);
+            consumer
+                .apply(
+                    createProxyHandler({
+                        hostname,
+                        port,
+                        route,
+                        label: 'Admin UI',
+                        basePath: route,
+                    }),
+                )
+                .forRoutes(route);
+            consumer
+                .apply(
+                    createProxyHandler({
+                        hostname,
+                        port,
+                        route: 'sockjs-node',
+                        label: 'Admin UI live reload',
+                        basePath: 'sockjs-node',
+                    }),
+                )
+                .forRoutes('sockjs-node');
+
+            Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
+            app.compile().then(
+                () => {
+                    Logger.info(`Admin UI compiling and watching for changes...`, loggerCtx);
+                },
+                (err: any) => {
+                    Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
+                },
+            );
+            await overwriteConfig();
+        } else {
+            Logger.info('Creating admin ui middleware (prod mode)', loggerCtx);
+            consumer.apply(await this.createStaticServer(app)).forRoutes(route);
+
             if (app && typeof app.compile === 'function') {
                 Logger.info(`Compiling Admin UI app in production mode...`, loggerCtx);
                 app.compile()
@@ -209,25 +165,19 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
             } else {
                 await overwriteConfig();
             }
-        } else {
-            Logger.info(`Compiling Admin UI app in development mode`, loggerCtx);
-            app.compile().then(
-                () => {
-                    Logger.info(`Admin UI compiling and watching for changes...`, loggerCtx);
-                },
-                (err: any) => {
-                    Logger.error(`Failed to compile: ${err}`, loggerCtx, err.stack);
-                },
-            );
-            await overwriteConfig();
         }
     }
 
-    /** @internal */
-    async onVendureClose(): Promise<void> {
-        if (this.server) {
-            await new Promise(resolve => this.server.close(() => resolve()));
-        }
+    private async createStaticServer(app?: AdminUiAppConfig) {
+        const adminUiAppPath = (app && app.path) || DEFAULT_APP_PATH;
+
+        const adminUiServer = express.Router();
+        adminUiServer.use(express.static(adminUiAppPath));
+        adminUiServer.use((req, res) => {
+            res.sendFile(path.join(adminUiAppPath, 'index.html'));
+        });
+
+        return adminUiServer;
     }
 
     /**
@@ -245,8 +195,8 @@ export class AdminUiPlugin implements OnVendureBootstrap, OnVendureClose {
         };
         return {
             adminApiPath: propOrDefault('adminApiPath', this.configService.apiOptions.adminApiPath),
-            apiHost: propOrDefault('apiHost', AdminUiPlugin.options.apiHost || 'auto'),
-            apiPort: propOrDefault('apiPort', AdminUiPlugin.options.apiPort || 'auto'),
+            apiHost: propOrDefault('apiHost', 'auto'),
+            apiPort: propOrDefault('apiPort', 'auto'),
             tokenMethod: propOrDefault('tokenMethod', authOptions.tokenMethod || 'cookie'),
             authTokenHeaderKey: propOrDefault(
                 'authTokenHeaderKey',
