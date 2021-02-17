@@ -8,7 +8,8 @@ import { TaxRateService } from '../../service/services/tax-rate.service';
  * @description
  * Defines how ProductVariant are calculated based on the input price, tax zone and current request context.
  *
- * @docsCategory tax
+ * @docsCategory configuration
+ * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationStrategy extends InjectableStrategy {
     calculate(args: ProductVariantPriceCalculationArgs): PriceCalculationResult;
@@ -18,8 +19,8 @@ export interface ProductVariantPriceCalculationStrategy extends InjectableStrate
  * @description
  * The arguments passed the the `calculate` method of the configured {@link ProductVariantPriceCalculationStrategy}.
  *
- * @docsCategory tax
- * @docsPage Tax Types
+ * @docsCategory configuration
+ * @docsPage ProductVariantPriceCalculationStrategy
  */
 export interface ProductVariantPriceCalculationArgs {
     inputPrice: number;
@@ -33,6 +34,6 @@ export interface ProductVariantPriceCalculationArgs {
  * This is an alias of {@link ProductVariantPriceCalculationStrategy} to preserve compatibility when upgrading.
  *
  * @deprecated Use ProductVariantPriceCalculationStrategy
- * @docsCategory Orders
+ * @docsCategory tax
  */
 export interface TaxCalculationStrategy extends ProductVariantPriceCalculationStrategy {}

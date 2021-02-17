@@ -87,6 +87,11 @@ export class ProductVariantEntityResolver {
             return true;
         });
     }
+
+    @ResolveField()
+    async stockLevel(@Ctx() ctx: RequestContext, @Parent() productVariant: ProductVariant): Promise<string> {
+        return this.productVariantService.getDisplayStockLevel(ctx, productVariant);
+    }
 }
 
 @Resolver('ProductVariant')

@@ -2188,6 +2188,7 @@ export type ProductVariant = Node & {
     /** @deprecated price now always excludes tax */
     priceIncludesTax: Scalars['Boolean'];
     priceWithTax: Scalars['Int'];
+    stockLevel: Scalars['String'];
     taxRateApplied: TaxRate;
     taxCategory: TaxCategory;
     options: Array<ProductOption>;
@@ -2718,6 +2719,7 @@ export type ProductVariantFilterParameter = {
     currencyCode?: Maybe<StringOperators>;
     priceIncludesTax?: Maybe<BooleanOperators>;
     priceWithTax?: Maybe<NumberOperators>;
+    stockLevel?: Maybe<StringOperators>;
 };
 
 export type ProductVariantSortParameter = {
@@ -2729,6 +2731,7 @@ export type ProductVariantSortParameter = {
     name?: Maybe<SortOrder>;
     price?: Maybe<SortOrder>;
     priceWithTax?: Maybe<SortOrder>;
+    stockLevel?: Maybe<SortOrder>;
 };
 
 export type CustomerFilterParameter = {

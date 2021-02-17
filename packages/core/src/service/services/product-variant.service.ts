@@ -240,6 +240,7 @@ export class ProductVariantService {
      * for purchase by Customers.
      */
     async getSaleableStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<number> {
+        // TODO: Use caching (RequestContextCacheService) to reduce DB calls
         const { outOfStockThreshold, trackInventory } = await this.globalSettingsService.getSettings(ctx);
         const inventoryNotTracked =
             variant.trackInventory === GlobalFlag.FALSE ||
@@ -253,6 +254,17 @@ export class ProductVariantService {
             : variant.outOfStockThreshold;
 
         return variant.stockOnHand - variant.stockAllocated - effectiveOutOfStockThreshold;
+    }
+
+    /**
+     * @description
+     * Returns the stockLevel to display to the customer, as specified by the configured
+     * {@link StockDisplayStrategy}.
+     */
+    async getDisplayStockLevel(ctx: RequestContext, variant: ProductVariant): Promise<string> {
+        const { stockDisplayStrategy } = this.configService.catalogOptions;
+        const saleableStockLevel = await this.getSaleableStockLevel(ctx, variant);
+        return stockDisplayStrategy.getStockLevel(ctx, variant, saleableStockLevel);
     }
 
     /**

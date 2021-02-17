@@ -693,3 +693,15 @@ export const GET_ELIGIBLE_PAYMENT_METHODS = gql`
         }
     }
 `;
+
+export const GET_PRODUCT_WITH_STOCK_LEVEL = gql`
+    query GetProductStockLevel($id: ID!) {
+        product(id: $id) {
+            id
+            variants {
+                id
+                stockLevel
+            }
+        }
+    }
+`;

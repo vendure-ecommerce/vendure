@@ -2109,6 +2109,7 @@ export type ProductVariant = Node & {
     /** @deprecated price now always excludes tax */
     priceIncludesTax: Scalars['Boolean'];
     priceWithTax: Scalars['Int'];
+    stockLevel: Scalars['String'];
     taxRateApplied: TaxRate;
     taxCategory: TaxCategory;
     options: Array<ProductOption>;
@@ -2603,6 +2604,7 @@ export type ProductVariantFilterParameter = {
     currencyCode?: Maybe<StringOperators>;
     priceIncludesTax?: Maybe<BooleanOperators>;
     priceWithTax?: Maybe<NumberOperators>;
+    stockLevel?: Maybe<StringOperators>;
 };
 
 export type ProductVariantSortParameter = {
@@ -2614,6 +2616,7 @@ export type ProductVariantSortParameter = {
     name?: Maybe<SortOrder>;
     price?: Maybe<SortOrder>;
     priceWithTax?: Maybe<SortOrder>;
+    stockLevel?: Maybe<SortOrder>;
 };
 
 export type CustomerFilterParameter = {
@@ -3188,6 +3191,14 @@ export type GetEligiblePaymentMethodsQuery = {
     >;
 };
 
+export type GetProductStockLevelQueryVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type GetProductStockLevelQuery = {
+    product?: Maybe<Pick<Product, 'id'> & { variants: Array<Pick<ProductVariant, 'id' | 'stockLevel'>> }>;
+};
+
 type DiscriminateUnion<T, U> = T extends U ? T : never;
 
 export namespace TestOrderFragment {
@@ -3711,5 +3722,14 @@ export namespace GetEligiblePaymentMethods {
     export type Query = GetEligiblePaymentMethodsQuery;
     export type EligiblePaymentMethods = NonNullable<
         NonNullable<GetEligiblePaymentMethodsQuery['eligiblePaymentMethods']>[number]
+    >;
+}
+
+export namespace GetProductStockLevel {
+    export type Variables = GetProductStockLevelQueryVariables;
+    export type Query = GetProductStockLevelQuery;
+    export type Product = NonNullable<GetProductStockLevelQuery['product']>;
+    export type Variants = NonNullable<
+        NonNullable<NonNullable<GetProductStockLevelQuery['product']>['variants']>[number]
     >;
 }

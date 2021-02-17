@@ -14,6 +14,7 @@ import { NoAssetStorageStrategy } from './asset-storage-strategy/no-asset-storag
 import { NativeAuthenticationStrategy } from './auth/native-authentication-strategy';
 import { defaultCollectionFilters } from './catalog/default-collection-filters';
 import { DefaultProductVariantPriceCalculationStrategy } from './catalog/default-product-variant-price-calculation-strategy';
+import { DefaultStockDisplayStrategy } from './catalog/default-stock-display-strategy';
 import { AutoIncrementIdStrategy } from './entity-id-strategy/auto-increment-id-strategy';
 import { manualFulfillmentHandler } from './fulfillment/manual-fulfillment-handler';
 import { DefaultLogger } from './logger/default-logger';
@@ -84,6 +85,7 @@ export const defaultConfig: RuntimeVendureConfig = {
     catalogOptions: {
         collectionFilters: defaultCollectionFilters,
         productVariantPriceCalculationStrategy: new DefaultProductVariantPriceCalculationStrategy(),
+        stockDisplayStrategy: new DefaultStockDisplayStrategy(),
     },
     entityIdStrategy: new AutoIncrementIdStrategy(),
     assetOptions: {

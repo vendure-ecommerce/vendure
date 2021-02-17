@@ -14,6 +14,7 @@ import { AssetStorageStrategy } from './asset-storage-strategy/asset-storage-str
 import { AuthenticationStrategy } from './auth/authentication-strategy';
 import { CollectionFilter } from './catalog/collection-filter';
 import { ProductVariantPriceCalculationStrategy } from './catalog/product-variant-price-calculation-strategy';
+import { StockDisplayStrategy } from './catalog/stock-display-strategy';
 import { CustomFields } from './custom-field/custom-field-types';
 import { EntityIdStrategy } from './entity-id-strategy/entity-id-strategy';
 import { CustomFulfillmentProcess } from './fulfillment/custom-fulfillment-process';
@@ -527,6 +528,18 @@ export interface CatalogOptions {
      * @default DefaultTaxCalculationStrategy
      */
     productVariantPriceCalculationStrategy: ProductVariantPriceCalculationStrategy;
+    /**
+     * @description
+     * Defines how the `ProductVariant.stockLevel` value is obtained. It is usually not desirable
+     * to directly expose stock levels over a public API, as this could be considered a leak of
+     * sensitive information. However, the storefront will usually want to display _some_ indication
+     * of whether a given ProductVariant is in stock. The default StockDisplayStrategy will
+     * display "IN_STOCK", "OUT_OF_STOCK" or "LOW_STOCK" rather than exposing the actual saleable
+     * stock level.
+     *
+     * @default DefaultStockDisplayStrategy
+     */
+    stockDisplayStrategy: StockDisplayStrategy;
 }
 
 /**
