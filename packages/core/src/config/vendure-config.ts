@@ -387,6 +387,17 @@ export interface OrderOptions {
     orderItemsLimit?: number;
     /**
      * @description
+     * The maximum number of items allowed per order line. This option is an addition
+     * on the `orderItemsLimit` for more granular control. Note `orderItemsLimit` is still
+     * important in order to prevent excessive resource usage.
+     *
+     * Attempting to exceed this limit will cause Vendure to throw a {@link OrderItemsLimitError}.
+     *
+     * @default 999
+     */
+    orderLineItemsLimit?: number;
+    /**
+     * @description
      * Defines the logic used to calculate the unit price of an OrderItem when adding an
      * item to an Order.
      *

@@ -363,20 +363,21 @@ export class OrderService {
         customFields?: { [key: string]: any },
     ): Promise<ErrorResultUnion<UpdateOrderItemsResult, Order>> {
         const order = await this.getOrderOrThrow(ctx, orderId);
-        const validationError =
-            this.assertQuantityIsPositive(quantity) ||
-            this.assertAddingItemsState(order) ||
-            this.assertNotOverOrderItemsLimit(order, quantity);
-        if (validationError) {
-            return validationError;
-        }
-        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
         const existingOrderLine = this.orderModifier.getExistingOrderLine(
             ctx,
             order,
             productVariantId,
             customFields,
         );
+        const validationError =
+            this.assertQuantityIsPositive(quantity) ||
+            this.assertAddingItemsState(order) ||
+            this.assertNotOverOrderItemsLimit(order, quantity) ||
+            this.assertNotOverOrderLineItemsLimit(existingOrderLine, quantity);
+        if (validationError) {
+            return validationError;
+        }
+        const variant = await this.connection.getEntityOrThrow(ctx, ProductVariant, productVariantId);
         const correctedQuantity = await this.orderModifier.constrainQuantityToSaleable(
             ctx,
             variant,
@@ -417,7 +418,8 @@ export class OrderService {
         const validationError =
             this.assertAddingItemsState(order) ||
             this.assertQuantityIsPositive(quantity) ||
-            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity);
+            this.assertNotOverOrderItemsLimit(order, quantity - orderLine.quantity) ||
+            this.assertNotOverOrderLineItemsLimit(orderLine, quantity - orderLine.quantity);
         if (validationError) {
             return validationError;
         }
@@ -1288,6 +1290,18 @@ export class OrderService {
         const { orderItemsLimit } = this.configService.orderOptions;
         if (orderItemsLimit < currentItemsCount + quantityToAdd) {
             return new OrderLimitError(orderItemsLimit);
+        }
+    }
+
+    /**
+     * Throws if adding the given quantity would exceed the maximum allowed
+     * quantity for one order line.
+     */
+    private assertNotOverOrderLineItemsLimit(orderLine: OrderLine | undefined, quantityToAdd: number) {
+        const currentQuantity = orderLine?.quantity || 0;
+        const { orderLineItemsLimit } = this.configService.orderOptions;
+        if (orderLineItemsLimit < currentQuantity + quantityToAdd) {
+            return new OrderLimitError(orderLineItemsLimit);
         }
     }
 
