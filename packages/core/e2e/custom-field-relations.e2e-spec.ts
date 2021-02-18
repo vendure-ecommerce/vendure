@@ -126,6 +126,7 @@ describe('Custom field relations', () => {
             'height',
             'source',
             'preview',
+            'customFields',
         ]);
     });
 

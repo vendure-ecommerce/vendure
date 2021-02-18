@@ -185,6 +185,7 @@ export type CustomFieldConfig =
 export interface CustomFields {
     Address?: CustomFieldConfig[];
     Administrator?: CustomFieldConfig[];
+    Asset?: CustomFieldConfig[];
     Channel?: CustomFieldConfig[];
     Collection?: CustomFieldConfig[];
     Customer?: CustomFieldConfig[];

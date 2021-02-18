@@ -21,6 +21,7 @@ import { VendureConfig } from '../config/vendure-config';
 import {
     CustomAddressFields,
     CustomAdministratorFields,
+    CustomAssetFields,
     CustomChannelFields,
     CustomCollectionFields,
     CustomCollectionFieldsTranslation,
@@ -214,6 +215,7 @@ function getDefault(customField: CustomFieldConfig, dbEngine: ConnectionOptions[
 export function registerCustomEntityFields(config: VendureConfig) {
     registerCustomFieldsForEntity(config, 'Address', CustomAddressFields);
     registerCustomFieldsForEntity(config, 'Administrator', CustomAdministratorFields);
+    registerCustomFieldsForEntity(config, 'Asset', CustomAssetFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFields);
     registerCustomFieldsForEntity(config, 'Collection', CustomCollectionFieldsTranslation, true);
     registerCustomFieldsForEntity(config, 'Customer', CustomCustomerFields);

@@ -932,6 +932,7 @@ export type Asset = Node & {
     source: Scalars['String'];
     preview: Scalars['String'];
     focalPoint?: Maybe<Coordinate>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type MimeTypeError = ErrorResult & {
@@ -955,6 +956,7 @@ export type AssetListOptions = {
 export type CreateAssetInput = {
     file: Scalars['Upload'];
     tags?: Maybe<Array<Scalars['String']>>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type CoordinateInput = {
@@ -979,6 +981,7 @@ export type UpdateAssetInput = {
     name?: Maybe<Scalars['String']>;
     focalPoint?: Maybe<CoordinateInput>;
     tags?: Maybe<Array<Scalars['String']>>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type AssignAssetsToChannelInput = {
@@ -4513,6 +4516,7 @@ export type NativeAuthInput = {
 export type CustomFields = {
     Address: Array<CustomFieldConfig>;
     Administrator: Array<CustomFieldConfig>;
+    Asset: Array<CustomFieldConfig>;
     Channel: Array<CustomFieldConfig>;
     Collection: Array<CustomFieldConfig>;
     Customer: Array<CustomFieldConfig>;

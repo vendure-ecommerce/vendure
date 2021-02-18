@@ -65,11 +65,7 @@ export const devConfig: VendureConfig = {
         paymentMethodHandlers: [dummyPaymentHandler],
     },
     customFields: {
-        /*Administrator: [
-            { name: 'profileLink', type: 'string' },
-            { name: 'avatar', type: 'relation', entity: Asset },
-        ],
-        Channel: [{ name: 'description', type: 'string' }],*/
+        /*Asset: [{ name: 'description', type: 'string' }],*/
     },
     logger: new DefaultLogger({ level: LogLevel.Info }),
     importExportOptions: {

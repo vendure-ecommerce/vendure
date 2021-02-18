@@ -322,6 +322,7 @@ export type Asset = Node & {
     source: Scalars['String'];
     preview: Scalars['String'];
     focalPoint?: Maybe<Coordinate>;
+    customFields?: Maybe<Scalars['JSON']>;
 };
 
 export type Coordinate = {
