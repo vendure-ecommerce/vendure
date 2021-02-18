@@ -4,9 +4,7 @@ import { Logger } from '@vendure/core';
 import fs from 'fs-extra';
 import { createTransport } from 'nodemailer';
 import { default as Mail } from 'nodemailer/lib/mailer';
-import SendmailTransport from 'nodemailer/lib/sendmail-transport';
 import { LoggerLevel } from 'nodemailer/lib/shared';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import path from 'path';
 import { Stream } from 'stream';
 import { format } from 'util';
@@ -30,9 +28,13 @@ export type StreamTransportInfo = {
 };
 
 /**
+ * @description
  * Uses the configured transport to send the generated email.
+ *
+ * @docsCategory EmailPlugin
+ * @docsPage EmailSender
  */
-export class DefaultEmailSender implements EmailSender {
+export class NodemailerEmailSender implements EmailSender {
     private _smtpTransport: Mail | undefined;
     private _sendMailTransport: Mail | undefined;
 

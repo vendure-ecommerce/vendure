@@ -4,8 +4,8 @@ import fs from 'fs-extra';
 import { deserializeAttachments } from './attachment-utils';
 import { isDevModeOptions } from './common';
 import { loggerCtx } from './constants';
-import { DefaultEmailSender } from './email-sender';
 import { HandlebarsMjmlGenerator } from './handlebars-mjml-generator';
+import { NodemailerEmailSender } from './nodemailer-email-sender';
 import { TemplateLoader } from './template-loader';
 import {
     EmailGenerator,
@@ -17,7 +17,7 @@ import {
 
 /**
  * This class combines the template loading, generation, and email sending - the actual "work" of
- * the EmailPlugin. It is arranged this way primarily to accomodate easier testing, so that the
+ * the EmailPlugin. It is arranged this way primarily to accommodate easier testing, so that the
  * tests can be run without needing all the JobQueue stuff which would require a full e2e test.
  */
 export class EmailProcessor {
@@ -30,7 +30,7 @@ export class EmailProcessor {
 
     async init() {
         this.templateLoader = new TemplateLoader(this.options.templatePath);
-        this.emailSender = this.options.emailSender ? this.options.emailSender : new DefaultEmailSender();
+        this.emailSender = this.options.emailSender ? this.options.emailSender : new NodemailerEmailSender();
         this.generator = this.options.emailGenerator
             ? this.options.emailGenerator
             : new HandlebarsMjmlGenerator();

@@ -32,8 +32,8 @@ import {
 
 /**
  * @description
- * The EmailPlugin creates and sends transactional emails based on Vendure events. It uses an [MJML](https://mjml.io/)-based
- * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emais.
+ * The EmailPlugin creates and sends transactional emails based on Vendure events. By default it uses an [MJML](https://mjml.io/)-based
+ * email generator to generate the email body and [Nodemailer](https://nodemailer.com/about/) to send the emails.
  *
  * ## Installation
  *
