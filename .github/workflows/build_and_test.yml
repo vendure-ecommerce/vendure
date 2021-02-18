@@ -10,7 +10,7 @@ on:
       - next
 env:
   CI: true
-  node: 12.x
+  node: 14.x
 jobs:
   build:
     name: build
