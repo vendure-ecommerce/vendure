@@ -1,3 +1,26 @@
+## <small>0.18.4 (2021-02-10)</small>
+
+
+#### Features
+
+* **core** Implement productVariants list query in Admin API ([6d830a0](https://github.com/vendure-ecommerce/vendure/commit/6d830a0))
+* **core** Language fallback when querying Product/Collection by slug ([5967c8a](https://github.com/vendure-ecommerce/vendure/commit/5967c8a)), closes [#538](https://github.com/vendure-ecommerce/vendure/issues/538)
+
+#### Fixes
+
+* **admin-ui** Fix modification of order addresses ([cd9a812](https://github.com/vendure-ecommerce/vendure/commit/cd9a812)), closes [#688](https://github.com/vendure-ecommerce/vendure/issues/688)
+* **common** Correctly normalize strings with single quotes ([d12f369](https://github.com/vendure-ecommerce/vendure/commit/d12f369)), closes [#679](https://github.com/vendure-ecommerce/vendure/issues/679)
+* **core** Clean up Sessions when deleting a Channel ([7e7d4b8](https://github.com/vendure-ecommerce/vendure/commit/7e7d4b8)), closes [#686](https://github.com/vendure-ecommerce/vendure/issues/686)
+* **core** Correctly constrain inventory on addItemToOrder mutation ([8975247](https://github.com/vendure-ecommerce/vendure/commit/8975247)), closes [#691](https://github.com/vendure-ecommerce/vendure/issues/691)
+* **core** Do not modify billing address when shipping address changed ([7e9a709](https://github.com/vendure-ecommerce/vendure/commit/7e9a709)), closes [#688](https://github.com/vendure-ecommerce/vendure/issues/688)
+* **core** Fix bad column reference in querybuilder string ([61e9f83](https://github.com/vendure-ecommerce/vendure/commit/61e9f83)), closes [#687](https://github.com/vendure-ecommerce/vendure/issues/687)
+* **core** Fix sorting by price on productVariants list ([0102232](https://github.com/vendure-ecommerce/vendure/commit/0102232)), closes [#690](https://github.com/vendure-ecommerce/vendure/issues/690)
+* **core** Fix sorting by translatable fields in list queries ([d00bafb](https://github.com/vendure-ecommerce/vendure/commit/d00bafb)), closes [#689](https://github.com/vendure-ecommerce/vendure/issues/689)
+* **core** Loosen restriction on transitioning to PaymentAuthorized ([59d39d6](https://github.com/vendure-ecommerce/vendure/commit/59d39d6))
+* **core** Products without variants are indexed by DefaultSearchPlugin ([2dab174](https://github.com/vendure-ecommerce/vendure/commit/2dab174)), closes [#609](https://github.com/vendure-ecommerce/vendure/issues/609)
+* **core** Reduce chance of index err in assigning variants to channels ([58e3f7b](https://github.com/vendure-ecommerce/vendure/commit/58e3f7b))
+* **elasticsearch-plugin** Products without variants are indexed ([21b6aa3](https://github.com/vendure-ecommerce/vendure/commit/21b6aa3)), closes [#609](https://github.com/vendure-ecommerce/vendure/issues/609)
+
 ## <small>0.18.3 (2021-01-29)</small>
 
 
