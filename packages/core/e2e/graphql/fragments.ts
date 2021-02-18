@@ -408,9 +408,11 @@ export const ORDER_WITH_LINES_FRAGMENT = gql`
         shipping
         shippingWithTax
         shippingLines {
+            priceWithTax
             shippingMethod {
                 id
                 code
+                name
                 description
             }
         }

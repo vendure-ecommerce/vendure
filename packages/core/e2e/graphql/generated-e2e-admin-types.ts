@@ -5190,7 +5190,11 @@ export type OrderWithLinesFragment = Pick<
         }
     >;
     surcharges: Array<Pick<Surcharge, 'id' | 'description' | 'sku' | 'price' | 'priceWithTax'>>;
-    shippingLines: Array<{ shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'description'> }>;
+    shippingLines: Array<
+        Pick<ShippingLine, 'priceWithTax'> & {
+            shippingMethod: Pick<ShippingMethod, 'id' | 'code' | 'name' | 'description'>;
+        }
+    >;
     shippingAddress?: Maybe<ShippingAddressFragment>;
     payments?: Maybe<Array<PaymentFragment>>;
 };
@@ -5901,6 +5905,14 @@ export type CreateAssetsMutation = {
     >;
 };
 
+export type DeleteShippingMethodMutationVariables = Exact<{
+    id: Scalars['ID'];
+}>;
+
+export type DeleteShippingMethodMutation = {
+    deleteShippingMethod: Pick<DeletionResponse, 'result' | 'message'>;
+};
+
 export type CancelJobMutationVariables = Exact<{
     id: Scalars['ID'];
 }>;
@@ -6281,14 +6293,6 @@ export type GetShippingMethodQueryVariables = Exact<{
 }>;
 
 export type GetShippingMethodQuery = { shippingMethod?: Maybe<ShippingMethodFragment> };
-
-export type DeleteShippingMethodMutationVariables = Exact<{
-    id: Scalars['ID'];
-}>;
-
-export type DeleteShippingMethodMutation = {
-    deleteShippingMethod: Pick<DeletionResponse, 'result' | 'message'>;
-};
 
 export type GetEligibilityCheckersQueryVariables = Exact<{ [key: string]: never }>;
 
@@ -8048,6 +8052,12 @@ export namespace CreateAssets {
     >;
 }
 
+export namespace DeleteShippingMethod {
+    export type Variables = DeleteShippingMethodMutationVariables;
+    export type Mutation = DeleteShippingMethodMutation;
+    export type DeleteShippingMethod = NonNullable<DeleteShippingMethodMutation['deleteShippingMethod']>;
+}
+
 export namespace CancelJob {
     export type Variables = CancelJobMutationVariables;
     export type Mutation = CancelJobMutation;
@@ -8466,12 +8476,6 @@ export namespace GetShippingMethod {
     export type Variables = GetShippingMethodQueryVariables;
     export type Query = GetShippingMethodQuery;
     export type ShippingMethod = NonNullable<GetShippingMethodQuery['shippingMethod']>;
-}
-
-export namespace DeleteShippingMethod {
-    export type Variables = DeleteShippingMethodMutationVariables;
-    export type Mutation = DeleteShippingMethodMutation;
-    export type DeleteShippingMethod = NonNullable<DeleteShippingMethodMutation['deleteShippingMethod']>;
 }
 
 export namespace GetEligibilityCheckers {

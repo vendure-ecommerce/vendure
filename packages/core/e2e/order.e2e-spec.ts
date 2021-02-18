@@ -1,6 +1,10 @@
 /* tslint:disable:no-non-null-assertion */
 import { pick } from '@vendure/common/lib/pick';
-import { manualFulfillmentHandler } from '@vendure/core';
+import {
+    defaultShippingCalculator,
+    defaultShippingEligibilityChecker,
+    manualFulfillmentHandler,
+} from '@vendure/core';
 import {
     createErrorResultGuard,
     createTestEnvironment,
@@ -25,7 +29,9 @@ import {
     CanceledOrderFragment,
     CancelOrder,
     CreateFulfillment,
+    CreateShippingMethod,
     DeleteOrderNote,
+    DeleteShippingMethod,
     ErrorCode,
     FulfillmentFragment,
     GetCustomerList,
@@ -41,6 +47,7 @@ import {
     GetStockMovement,
     GlobalFlag,
     HistoryEntryType,
+    LanguageCode,
     OrderLineInput,
     PaymentFragment,
     RefundFragment,
@@ -59,6 +66,8 @@ import {
     DeletionResult,
     GetActiveOrder,
     GetOrderByCodeWithPayments,
+    SetShippingAddress,
+    SetShippingMethod,
     TestOrderFragmentFragment,
     UpdatedOrder,
     UpdatedOrderFragment,
@@ -66,6 +75,8 @@ import {
 import {
     CANCEL_ORDER,
     CREATE_FULFILLMENT,
+    CREATE_SHIPPING_METHOD,
+    DELETE_SHIPPING_METHOD,
     GET_CUSTOMER_LIST,
     GET_ORDER,
     GET_ORDERS_LIST,
@@ -82,6 +93,8 @@ import {
     APPLY_COUPON_CODE,
     GET_ACTIVE_ORDER,
     GET_ORDER_BY_CODE_WITH_PAYMENTS,
+    SET_SHIPPING_ADDRESS,
+    SET_SHIPPING_METHOD,
 } from './graphql/shop-definitions';
 import { assertThrowsWithMessage } from './utils/assert-throws-with-message';
 import { addPaymentToOrder, proceedToArrangingPayment, sortById } from './utils/test-order-utils';
@@ -1743,6 +1756,70 @@ describe('Orders resolver', () => {
 
             expect(orders.items[0].totalQuantity).toBe(2);
             expect(orders.items[0].lines[0].quantity).toBe(2);
+        });
+
+        // https://github.com/vendure-ecommerce/vendure/issues/716
+        it('get an Order with a deleted ShippingMethod', async () => {
+            const { createShippingMethod: shippingMethod } = await adminClient.query<
+                CreateShippingMethod.Mutation,
+                CreateShippingMethod.Variables
+            >(CREATE_SHIPPING_METHOD, {
+                input: {
+                    code: 'royal-mail',
+                    translations: [{ languageCode: LanguageCode.en, name: 'Royal Mail', description: '' }],
+                    fulfillmentHandler: manualFulfillmentHandler.code,
+                    checker: {
+                        code: defaultShippingEligibilityChecker.code,
+                        arguments: [{ name: 'orderMinimum', value: '0' }],
+                    },
+                    calculator: {
+                        code: defaultShippingCalculator.code,
+                        arguments: [
+                            { name: 'rate', value: '500' },
+                            { name: 'taxRate', value: '0' },
+                        ],
+                    },
+                },
+            });
+            await shopClient.asUserWithCredentials(customers[0].emailAddress, password);
+            await shopClient.query<AddItemToOrder.Mutation, AddItemToOrder.Variables>(ADD_ITEM_TO_ORDER, {
+                productVariantId: 'T_1',
+                quantity: 2,
+            });
+            await shopClient.query<SetShippingAddress.Mutation, SetShippingAddress.Variables>(
+                SET_SHIPPING_ADDRESS,
+                {
+                    input: {
+                        fullName: 'name',
+                        streetLine1: '12 the street',
+                        city: 'foo',
+                        postalCode: '123456',
+                        countryCode: 'US',
+                    },
+                },
+            );
+            const { setOrderShippingMethod: order } = await shopClient.query<
+                SetShippingMethod.Mutation,
+                SetShippingMethod.Variables
+            >(SET_SHIPPING_METHOD, {
+                id: shippingMethod.id,
+            });
+            orderGuard.assertSuccess(order);
+
+            await adminClient.query<DeleteShippingMethod.Mutation, DeleteShippingMethod.Variables>(
+                DELETE_SHIPPING_METHOD,
+                {
+                    id: shippingMethod.id,
+                },
+            );
+
+            const { order: order2 } = await adminClient.query<GetOrder.Query, GetOrder.Variables>(GET_ORDER, {
+                id: order.id,
+            });
+            expect(order2?.shippingLines[0]).toEqual({
+                priceWithTax: 500,
+                shippingMethod: pick(shippingMethod, ['id', 'name', 'code', 'description']),
+            });
         });
     });
 });

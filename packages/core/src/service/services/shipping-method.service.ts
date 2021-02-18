@@ -68,7 +68,11 @@ export class ShippingMethodService {
             }));
     }
 
-    async findOne(ctx: RequestContext, shippingMethodId: ID): Promise<ShippingMethod | undefined> {
+    async findOne(
+        ctx: RequestContext,
+        shippingMethodId: ID,
+        includeDeleted = false,
+    ): Promise<ShippingMethod | undefined> {
         const shippingMethod = await this.connection.findOneInChannel(
             ctx,
             ShippingMethod,
@@ -76,7 +80,7 @@ export class ShippingMethodService {
             ctx.channelId,
             {
                 relations: ['channels'],
-                where: { deletedAt: null },
+                ...(includeDeleted === false ? { where: { deletedAt: null } } : {}),
             },
         );
         return shippingMethod && translateDeep(shippingMethod, ctx.languageCode);

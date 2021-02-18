@@ -871,3 +871,12 @@ export const CREATE_ASSETS = gql`
     }
     ${ASSET_FRAGMENT}
 `;
+
+export const DELETE_SHIPPING_METHOD = gql`
+    mutation DeleteShippingMethod($id: ID!) {
+        deleteShippingMethod(id: $id) {
+            result
+            message
+        }
+    }
+`;
