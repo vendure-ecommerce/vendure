@@ -1,9 +1,9 @@
 import { StockMovementType } from '@vendure/common/lib/generated-types';
-import { GraphQLUpload } from 'apollo-server-core';
 import { IFieldResolver, IResolvers } from 'apollo-server-express';
 import { GraphQLSchema } from 'graphql';
 import { GraphQLDateTime } from 'graphql-iso-date';
 import GraphQLJSON from 'graphql-type-json';
+import { GraphQLUpload } from 'graphql-upload';
 
 import { REQUEST_CONTEXT_KEY } from '../../common/constants';
 import {

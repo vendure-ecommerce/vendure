@@ -100,9 +100,9 @@ async function createGraphQLOptions(
         typeDefs: printSchema(builtSchema),
         include: [options.resolverModule, ...getDynamicGraphQlModulesForPlugins(options.apiType)],
         resolvers,
-        uploads: {
-            maxFileSize: configService.assetOptions.uploadMaxFileSize,
-        },
+        // We no longer rely on the upload facility bundled with Apollo Server, and instead
+        // manually configure the graphql-upload package. See https://github.com/vendure-ecommerce/vendure/issues/396
+        uploads: false,
         playground: options.playground || false,
         debug: options.debug || false,
         context: (req: any) => req,

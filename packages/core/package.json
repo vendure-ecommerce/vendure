@@ -62,6 +62,7 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-tag": "^2.11.0",
     "graphql-type-json": "^0.3.2",
+    "graphql-upload": "^11.0.0",
     "http-proxy-middleware": "^1.0.5",
     "i18next": "^19.8.1",
     "i18next-express-middleware": "^2.0.0",
