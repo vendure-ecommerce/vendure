@@ -59,6 +59,18 @@ export interface EmailPluginOptions {
      * email.
      */
     globalTemplateVars?: { [key: string]: any };
+    /**
+     * @description
+     * An optional allowed EmailSender, used to allow custom implementations of the send functionality
+     * while still utilizing the existing emailPlugin functionality.
+     */
+    emailSender?: EmailSender;
+    /**
+     * @description
+     * An optional allowed EmailGenerator, used to allow custom email generation functionality to
+     * better match with custom email sending functionality.
+     */
+    emailGenerator?: EmailGenerator;
 }
 
 /**
@@ -260,6 +272,10 @@ export interface TestingTransportOptions {
      * Callback to be invoked when an email would be sent.
      */
     onSend: (details: EmailDetails) => void;
+}
+
+export interface EmailSender {
+    send: (email: EmailDetails, options: EmailTransportOptions) => void;
 }
 
 /**
