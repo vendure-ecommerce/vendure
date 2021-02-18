@@ -7513,6 +7513,27 @@ export type GetServerConfigQuery = { globalSettings: (
         ) | (
           { __typename?: 'RelationCustomFieldConfig' }
           & CustomFields_RelationCustomFieldConfig_Fragment
+        )>, Asset: Array<(
+          { __typename?: 'StringCustomFieldConfig' }
+          & CustomFields_StringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'LocaleStringCustomFieldConfig' }
+          & CustomFields_LocaleStringCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'IntCustomFieldConfig' }
+          & CustomFields_IntCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'FloatCustomFieldConfig' }
+          & CustomFields_FloatCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'BooleanCustomFieldConfig' }
+          & CustomFields_BooleanCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'DateTimeCustomFieldConfig' }
+          & CustomFields_DateTimeCustomFieldConfig_Fragment
+        ) | (
+          { __typename?: 'RelationCustomFieldConfig' }
+          & CustomFields_RelationCustomFieldConfig_Fragment
         )>, Channel: Array<(
           { __typename?: 'StringCustomFieldConfig' }
           & CustomFields_StringCustomFieldConfig_Fragment
@@ -9487,6 +9508,7 @@ export namespace GetServerConfig {
   export type CustomFieldConfig = (NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>);
   export type Address = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Address']>)[number]>;
   export type Administrator = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Administrator']>)[number]>;
+  export type Asset = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Asset']>)[number]>;
   export type Channel = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Channel']>)[number]>;
   export type Collection = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Collection']>)[number]>;
   export type Customer = NonNullable<(NonNullable<(NonNullable<(NonNullable<(NonNullable<GetServerConfigQuery['globalSettings']>)['serverConfig']>)['customFieldConfig']>)['Customer']>)[number]>;

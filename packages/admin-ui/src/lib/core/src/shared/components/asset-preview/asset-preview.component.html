@@ -87,16 +87,30 @@
             <ng-container *ngIf="editable">
                 <vdr-tag-selector formControlName="tags"></vdr-tag-selector>
                 <button class="btn btn-link btn-sm" (click)="manageTags()">
-                    <clr-icon shape="tags"></clr-icon> {{ 'common.manage-tags' | translate }}
+                    <clr-icon shape="tags"></clr-icon>
+                    {{ 'common.manage-tags' | translate }}
                 </button>
             </ng-container>
             <div *ngIf="!editable">
-                <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value"
-                    ><clr-icon shape="tag" class="mr2"></clr-icon> {{ tag.value }}</vdr-chip
+                <vdr-chip *ngFor="let tag of asset.tags" [colorFrom]="tag.value">
+                    <clr-icon shape="tag" class="mr2"></clr-icon>
+                    {{ tag.value }}</vdr-chip
                 >
             </div>
         </vdr-labeled-data>
     </form>
+    <section *ngIf="customFields.length">
+        <label>{{ 'common.custom-fields' | translate }}</label>
+        <ng-container *ngFor="let customField of customFields">
+            <vdr-custom-field-control
+                *ngIf="customFieldIsSet(customField.name)"
+                entityName="Asset"
+                [compact]="true"
+                [customFieldsFormGroup]="customFieldsForm"
+                [customField]="customField"
+            ></vdr-custom-field-control>
+        </ng-container>
+    </section>
     <div class="flex-spacer"></div>
     <div class="preview-select">
         <clr-select-container>

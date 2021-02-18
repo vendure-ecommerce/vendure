@@ -35,7 +35,7 @@
         <ng-container *ngFor="let customField of customFields">
             <vdr-custom-field-control
                 *ngIf="customFieldIsSet(customField.name)"
-                entityName="GlobalSettings"
+                entityName="Administrator"
                 [customFieldsFormGroup]="detailForm.get('customFields')"
                 [customField]="customField"
             ></vdr-custom-field-control>

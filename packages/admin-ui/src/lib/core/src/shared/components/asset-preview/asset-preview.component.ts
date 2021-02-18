@@ -15,7 +15,7 @@ import { marker as _ } from '@biesbjerg/ngx-translate-extract-marker';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
+import { CustomFieldConfig, GetAsset, GetAssetList, UpdateAssetInput } from '../../../common/generated-types';
 import { DataService } from '../../../data/providers/data.service';
 import { ModalService } from '../../../providers/modal/modal.service';
 import { NotificationService } from '../../../providers/notification/notification.service';
@@ -34,6 +34,8 @@ type AssetLike = GetAssetList.Items | GetAsset.Asset;
 export class AssetPreviewComponent implements OnInit, OnDestroy {
     @Input() asset: AssetLike;
     @Input() editable = false;
+    @Input() customFields: CustomFieldConfig[] = [];
+    @Input() customFieldsForm: FormGroup | undefined;
     @Output() assetChange = new EventEmitter<Omit<UpdateAssetInput, 'focalPoint'>>();
     @Output() editClick = new EventEmitter();
 
@@ -94,6 +96,10 @@ export class AssetPreviewComponent implements OnInit, OnDestroy {
         if (this.subscription) {
             this.subscription.unsubscribe();
         }
+    }
+
+    customFieldIsSet(name: string): boolean {
+        return !!this.customFieldsForm?.get([name]);
     }
 
     getSourceFileName(): string {

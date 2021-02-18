@@ -18,5 +18,7 @@
 <vdr-asset-preview
     [asset]="entity$ | async"
     [editable]="true"
+    [customFields]="customFields"
+    [customFieldsForm]="detailForm.get('customFields')"
     (assetChange)="onAssetChange($event)"
 ></vdr-asset-preview>
