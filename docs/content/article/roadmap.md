@@ -6,18 +6,13 @@ showtoc: false
 
 ## Vendure beta ➡ v1.0
 
-Here is a list of some of the main outstanding tasks that are planned for the v1.0 release, at which point Vendure will come out of beta:
+Vendure is soon to enter the v1.0-beta phase. At that point no more breaking changes are planned. Non-breaking features and fixes will then be added over a period of one to several months while we progress from beta to release candidate. At that point, the final v1.0 state will be released. This is currently planned for around April 2021.
 
-* Complete the Channels implementation
-* ~~Back order handling~~ ✅
-* Administrator creation & editing of orders
-* ~~Custom authentication support~~ ✅
-* Improved promotions support
-* Improved tax calculation support
-* Improved support for running Vendure in cloud environments
-* Performance improvements
+ For an up-to-date overview of where we stand, refer to the [v1.0 milestone on GitHub](https://github.com/vendure-ecommerce/vendure/milestones/4).
 
-We currently hope to **reach v1.0 by the end of 2020**. For an up-to-date overview of where we stand, refer to the [GitHub milestones page](https://github.com/vendure-ecommerce/vendure/milestones).
+{{< alert "primary" >}}
+[Join our mailing list](https://mailchi.mp/17af21ad4b64/vendure-mailing-list) to be informed when the final v1.0 is released
+{{< /alert >}}
 
 ## Post v1.0
 
